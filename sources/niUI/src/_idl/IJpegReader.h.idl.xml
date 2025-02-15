@@ -1,0 +1,105 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iJpegReader" uuid1="8E453086-379F-4848-BCB4-6F0303A1C6AF" uuid2="0x8e453086,0x379f,0x4848,0xbc,0xb4,0x6f,0x03,0x03,0xa1,0xc6,0xaf">
+			<comments desc="Jpeg reader interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="readHeaderTables" name="ReadHeaderTables" num_parameters="0">
+				<comments desc="Read the jpeg header tables only. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="beginRead" name="BeginRead" num_parameters="0">
+				<comments desc="Start reading a jpeg image. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="endRead" name="EndRead" num_parameters="0">
+				<comments desc="End reading a jpeg image. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="discardBuffer" name="DiscardBuffer" num_parameters="0">
+				<comments desc="Discard existing bytes in the buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFile"
+				name="GetFile"
+				num_parameters="0"
+				property="get"
+				property_name2="file"
+				property_name="file">
+				<comments desc="Get the file from which the data are read. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidth"
+				name="GetWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="width"
+				property_name="width">
+				<comments desc="Get the width of the current image. ">
+					<remark text="The value will be valid only between Begin/EndRead; "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHeight"
+				name="GetHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="height"
+				property_name="height">
+				<comments desc="Get the height of the current image. ">
+					<remark text="The value will be valid only between Begin/EndRead; "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumComponents"
+				name="GetNumComponents"
+				num_parameters="0"
+				property="get"
+				property_name2="numComponents"
+				property_name="num_components">
+				<comments desc="Get the number of 8bits components. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColorSpace"
+				name="GetColorSpace"
+				num_parameters="0"
+				property="get"
+				property_name2="colorSpace"
+				property_name="color_space">
+				<comments desc="Get the color space. "/>
+				<return type="eColorSpace" typec="eColorSpace" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="readScanline" name="ReadScanline" num_parameters="1">
+				<comments desc="Read the next scanline. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apOut"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="readBitmap" name="ReadBitmap" num_parameters="1">
+				<comments desc="Read a 2d bitmap from the result of the next begin/end read. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apGraphics"
+					type="iGraphics *"
+					typec="iGraphics*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

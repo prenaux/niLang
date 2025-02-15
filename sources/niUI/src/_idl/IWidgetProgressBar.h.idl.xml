@@ -1,0 +1,61 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetProgressBarStyle">
+			<comments desc=""/>
+			<value name="eWidgetProgressBarStyle_Vert" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eWidgetProgressBarStyle_DWORD" value="0xFFFFFFFF">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface name="iWidgetProgressBar" uuid1="05AB2A34-0AD3-4C69-AF6B-D6298B01EB8A" uuid2="0x05ab2a34,0x0ad3,0x4c69,0xaf,0x6b,0xd6,0x29,0x8b,0x01,0xeb,0x8a">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="setRange" name="SetRange" num_parameters="2">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="afMin"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="afMax"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setProgress"
+				name="SetProgress"
+				num_parameters="1"
+				property="set"
+				property_name2="progress"
+				property_name="progress">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProgress"
+				name="GetProgress"
+				num_parameters="0"
+				property="get"
+				property_name2="progress"
+				property_name="progress">
+				<comments desc=""/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,24 @@
+<niIDL
+	desc="niScriptCpp module"
+	initfunctions="no"
+	moduleinclude=""
+	name="niScriptCpp"
+	version="1,0,0">
+	<dependencies>
+		<dependency name="niLang"/>
+	</dependencies>
+	<objecttypes>
+		<objecttype name="ScriptingHost"/>
+	</objecttypes>
+	<includes>
+		<include>niScriptCpp/src/_idl/ScriptCpp.h.idl.xml</include>
+	</includes>
+	<namespace name="ni" source="niScriptCpp/src/_idl/ScriptCpp.h.idl.xml">
+		<struct name="sScriptCppModuleCache">
+			<comments desc=""/>
+		</struct>
+		<struct name="sScriptCppStats">
+			<comments desc=""/>
+		</struct>
+	</namespace>
+</niIDL>

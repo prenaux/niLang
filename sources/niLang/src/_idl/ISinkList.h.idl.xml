@@ -1,0 +1,92 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iSinkList" uuid1="EAACE572-345E-44F6-B0EB-D9B7995237C4" uuid2="0xeaace572,0x345e,0x44f6,0xb0,0xeb,0xd9,0xb7,0x99,0x52,0x37,0xc4">
+			<comments desc="Sink list interface. "/>
+			<parents>
+				<parent name="iCollection"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getSinkUUID"
+				name="GetSinkUUID"
+				num_parameters="0"
+				property="get"
+				property_name2="sinkUUID"
+				property_name="sink_uuid">
+				<comments desc="Get the UUID of the sink. "/>
+				<return type="const tUUID &amp;" typec="const tUUID&amp;" typei="ni::eTypeFlags_Constant|ni::eType_UUID|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Remove all the sinks. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="hasSink" name="HasSink" num_parameters="1">
+				<comments desc="Check whether the specified sink has already been added. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addSink" name="AddSink" num_parameters="1">
+				<comments desc="Add a sink to the sink list. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeSink" name="RemoveSink" num_parameters="1">
+				<comments desc="Remove a sink from the sink list. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addFrontSink" name="AddFrontSink" num_parameters="1">
+				<comments desc="Add a sink to the front of the sink list. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMute"
+				name="SetMute"
+				num_parameters="1"
+				property="set"
+				property_name2="mute"
+				property_name="mute">
+				<comments desc="Mute the sink. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abMute"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMute"
+				name="GetMute"
+				num_parameters="0"
+				property="get"
+				property_name2="mute"
+				property_name="mute">
+				<comments desc="Get the muted status of the sink. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

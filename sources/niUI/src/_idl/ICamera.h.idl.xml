@@ -1,0 +1,796 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eCameraMoveType">
+			<comments desc="Camera move type "/>
+			<value name="eCameraMoveType_None" value="0 ">
+				<comments desc="The camera view is set through the position, target &amp; target up directly. "/>
+			</value>
+			<value name="eCameraMoveType_Fly" value="1 ">
+				<comments desc="The camera simulates a flying object. ">
+					<remark text="Moves the target with the position. "/>
+				</comments>
+			</value>
+			<value name="eCameraMoveType_Orbit" value="2 ">
+				<comments desc="The camera orbits around it&apos;s target. ">
+					<remark text="Move up will &apos;orbit up/down&apos;, move forward will zoom in/out, move sidewards will &apos;orbit left/right&apos;. The movements should be in radians, zoom in/out in the same unit as the regular move forward. "/>
+					<remark text="The target is never moved directly in orbit mode. "/>
+				</comments>
+			</value>
+			<value name="eCameraMoveType_FlyFixedTarget" value="3 ">
+				<comments desc="The camera simulates a flying object with a fixed target. "/>
+			</value>
+			<value name="eCameraMoveType_SetMatrix" value="4 ">
+				<comments desc="The camera view is set through SetViewMatrix directly. "/>
+			</value>
+		</enum>
+		<enum name="eCameraProjectionType">
+			<comments desc="Camera projection type. "/>
+			<value name="eCameraProjectionType_Perspective" value="0 ">
+				<comments desc="Perspective camera. "/>
+			</value>
+			<value name="eCameraProjectionType_Orthogonal" value="1 ">
+				<comments desc="Orthogonal with a free view pov. "/>
+			</value>
+			<value name="eCameraProjectionType_SetMatrix" value="2 ">
+				<comments desc="The camera projection is set through SetProjectionMatrix directly. "/>
+			</value>
+		</enum>
+		<interface name="iCamera" uuid1="3769AFCF-3B13-4545-8474-EF463A1E6755" uuid2="0x3769afcf,0x3b13,0x4545,0x84,0x74,0xef,0x46,0x3a,0x1e,0x67,0x55">
+			<comments desc="Camera interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy the camera. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="pSrc"
+					type="const iCamera *"
+					typec="const iCamera*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the camera. "/>
+				<return type="iCamera *" typec="iCamera*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWorldMatrix"
+				name="GetWorldMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="worldMatrix"
+				property_name="world_matrix">
+				<comments desc="Get the world matrix. "/>
+				<return type="ni::sMatrixf" typec="ni::sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getViewMatrix"
+				name="GetViewMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="viewMatrix"
+				property_name="view_matrix">
+				<comments desc="Get the view matrix. "/>
+				<return type="ni::sMatrixf" typec="ni::sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProjectionMatrix"
+				name="GetProjectionMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="projectionMatrix"
+				property_name="projection_matrix">
+				<comments desc="Get the projection matrix. "/>
+				<return type="ni::sMatrixf" typec="ni::sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrustum"
+				name="GetFrustum"
+				num_parameters="0"
+				property="get"
+				property_name2="frustum"
+				property_name="frustum">
+				<comments desc="Get the frustum. "/>
+				<return type="ni::iFrustum *" typec="ni::iFrustum*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="getRay" name="GetRay" num_parameters="3">
+				<comments desc="Compute a ray from the given screen position and rectangle. " return="The normalized direction of a ray going starting at RayStart and going in the direction of the point in the specified rectangle projected in the camera&apos;s space. ">
+					<remark text="The starting point of the ray should be retrieved with iCamera::GetRayStart(), while it usually coincide with the camera&apos;s position it might not always be the case (such as for orthographic projections). "/>
+					<remark text="This method is commonly used to build a ray to be used by picking in camera space. "/>
+				</comments>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="afX"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					name="afY"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const ni::sRectf &amp;"
+					typec="const ni::sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRayStart"
+				name="GetRayStart"
+				num_parameters="0"
+				property="get"
+				property_name2="rayStart"
+				property_name="ray_start">
+				<comments desc="Get the starting point of the last ray "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScreenPosition"
+				name="GetScreenPosition"
+				num_parameters="2">
+				<comments desc="Get a screen position from the given 3d position. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="avPos"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const ni::sRectf &amp;"
+					typec="const ni::sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setViewMatrix"
+				name="SetViewMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="viewMatrix"
+				property_name="view_matrix">
+				<comments desc="Set the view matrix directly. ">
+					<remark text="This should one be used with eCameraMoveType_None. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aViewMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setProjectionMatrix"
+				name="SetProjectionMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="projectionMatrix"
+				property_name="projection_matrix">
+				<comments desc="Set the projection matrix directly. ">
+					<remark text="This should one be used with eCameraProjectionType_None. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aProjMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setFromWorldMatrix" name="SetFromWorldMatrix" num_parameters="2">
+				<comments desc="Set the camera position, target and up vector from a matrix. ">
+					<params text="aMatrix is the matrix from which the new camera position and target will be derived "/>
+					<params text="abSetUp if true the target&apos;s up vector will also be derived from the specifed matrix. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aMatrix"
+					type="const ni::sMatrixf &amp;"
+					typec="const ni::sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abSetUp"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setProjection"
+				name="SetProjection"
+				num_parameters="1"
+				property="set"
+				property_name2="projection"
+				property_name="projection">
+				<comments desc="Set projection type. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aProjectionType"
+					type="eCameraProjectionType"
+					typec="eCameraProjectionType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getProjection"
+				name="GetProjection"
+				num_parameters="0"
+				property="get"
+				property_name2="projection"
+				property_name="projection">
+				<comments desc="Get orthogonal projection. "/>
+				<return type="eCameraProjectionType" typec="eCameraProjectionType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setViewport"
+				name="SetViewport"
+				num_parameters="1"
+				property="set"
+				property_name2="viewport"
+				property_name="viewport">
+				<comments desc="Set the camera&apos;s viewport rectangle. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const ni::sRectf &amp;"
+					typec="const ni::sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getViewport"
+				name="GetViewport"
+				num_parameters="0"
+				property="get"
+				property_name2="viewport"
+				property_name="viewport">
+				<comments desc="Get the camera&apos;s viewport rectangle. "/>
+				<return type="ni::sRectf" typec="ni::sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setFov"
+				name="SetFov"
+				num_parameters="1"
+				property="set"
+				property_name2="fov"
+				property_name="fov">
+				<comments desc="Set the vertical field of view. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="fFOV"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFov"
+				name="GetFov"
+				num_parameters="0"
+				property="get"
+				property_name2="fov"
+				property_name="fov">
+				<comments desc="Get the vertical field of view. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setAspect"
+				name="SetAspect"
+				num_parameters="1"
+				property="set"
+				property_name2="aspect"
+				property_name="aspect">
+				<comments desc="Set the aspect ratio. ">
+					<remark text="If the aspect ratio is 0, the aspect of the viewport is used. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="fAspect"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAspect"
+				name="GetAspect"
+				num_parameters="0"
+				property="get"
+				property_name2="aspect"
+				property_name="aspect">
+				<comments desc="Get the aspect ratio. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteAspect"
+				name="GetAbsoluteAspect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteAspect"
+				property_name="absolute_aspect">
+				<comments desc="Get the absolute aspect ratio. ">
+					<remark text="The absolute aspect ratio is the aspect ratio of the viewport if the aspect is &lt;= 0. "/>
+				</comments>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setNearClipPlane"
+				name="SetNearClipPlane"
+				num_parameters="1"
+				property="set"
+				property_name2="nearClipPlane"
+				property_name="near_clip_plane">
+				<comments desc="Set the near clipping plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNearClipPlane"
+				name="GetNearClipPlane"
+				num_parameters="0"
+				property="get"
+				property_name2="nearClipPlane"
+				property_name="near_clip_plane">
+				<comments desc="Get the near clipping plane. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setFarClipPlane"
+				name="SetFarClipPlane"
+				num_parameters="1"
+				property="set"
+				property_name2="farClipPlane"
+				property_name="far_clip_plane">
+				<comments desc="Set the far clipping plane. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afD"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFarClipPlane"
+				name="GetFarClipPlane"
+				num_parameters="0"
+				property="get"
+				property_name2="farClipPlane"
+				property_name="far_clip_plane">
+				<comments desc="Get the far clipping plane. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setOrthoSize"
+				name="SetOrthoSize"
+				num_parameters="1"
+				property="set"
+				property_name2="orthoSize"
+				property_name="ortho_size">
+				<comments desc="Set the orthogonal projection size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afSize"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getOrthoSize"
+				name="GetOrthoSize"
+				num_parameters="0"
+				property="get"
+				property_name2="orthoSize"
+				property_name="ortho_size">
+				<comments desc="Get the orthogonal projection size. ">
+					<remark text="Height of the othogonal projection, Width = OrthoSize * AbsoluteAspect "/>
+				</comments>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setPosition"
+				name="SetPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Set the position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="vPos"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the position. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setTarget"
+				name="SetTarget"
+				num_parameters="1"
+				property="set"
+				property_name2="target"
+				property_name="target">
+				<comments desc="Set the target. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avTarget"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTarget"
+				name="GetTarget"
+				num_parameters="0"
+				property="get"
+				property_name2="target"
+				property_name="target">
+				<comments desc="Get the target. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setTargetUp"
+				name="SetTargetUp"
+				num_parameters="1"
+				property="set"
+				property_name2="targetUp"
+				property_name="target_up">
+				<comments desc="Set the target up vector. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avUp"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTargetUp"
+				name="GetTargetUp"
+				num_parameters="0"
+				property="get"
+				property_name2="targetUp"
+				property_name="target_up">
+				<comments desc="Get the target up vector. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setTargetDistance"
+				name="SetTargetDistance"
+				num_parameters="1"
+				property="set"
+				property_name2="targetDistance"
+				property_name="target_distance">
+				<comments desc="Set the distance between the camera and it&apos;s target by moving the target. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afDist"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTargetDistance"
+				name="GetTargetDistance"
+				num_parameters="0"
+				property="get"
+				property_name2="targetDistance"
+				property_name="target_distance">
+				<comments desc="Get the distance between the camera and it&apos;s target. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setPositionDistance"
+				name="SetPositionDistance"
+				num_parameters="1"
+				property="set"
+				property_name2="positionDistance"
+				property_name="position_distance">
+				<comments desc="Set the distance between the camera and it&apos;s target by moving the position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afDist"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPositionDistance"
+				name="GetPositionDistance"
+				num_parameters="0"
+				property="get"
+				property_name2="positionDistance"
+				property_name="position_distance">
+				<comments desc="Get the distance between the camera and it&apos;s target. "/>
+				<return type="ni::tF32" typec="ni::tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setTargetDirection"
+				name="SetTargetDirection"
+				num_parameters="1"
+				property="set"
+				property_name2="targetDirection"
+				property_name="target_direction">
+				<comments desc="Set the direction of the target. ">
+					<remark text="The direction is from the camera to the target. "/>
+					<remark text="The direction is a normal vector. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avDir"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTargetDirection"
+				name="GetTargetDirection"
+				num_parameters="0"
+				property="get"
+				property_name2="targetDirection"
+				property_name="target_direction">
+				<comments desc="Get the direction of the target. ">
+					<remark text="The direction is from the camera to the target. "/>
+					<remark text="The direction is a normal vector. "/>
+				</comments>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setMoveType"
+				name="SetMoveType"
+				num_parameters="1"
+				property="set"
+				property_name2="moveType"
+				property_name="move_type">
+				<comments desc="Set the camera move mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="eCameraMoveType"
+					typec="eCameraMoveType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMoveType"
+				name="GetMoveType"
+				num_parameters="0"
+				property="get"
+				property_name2="moveType"
+				property_name="move_type">
+				<comments desc="Get the camera move mode. "/>
+				<return type="eCameraMoveType" typec="eCameraMoveType" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="moveSidewards" name="MoveSidewards" num_parameters="1">
+				<comments desc="Move the camera sidewards relatively to itself. (X axis) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="delta"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="moveUp" name="MoveUp" num_parameters="1">
+				<comments desc="Move the camera upward relatively to itself. (Y axis) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="delta"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="moveForward" name="MoveForward" num_parameters="1">
+				<comments desc="Move the camera forward relatively to itself. (Y axis) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="delta"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setMove"
+				name="SetMove"
+				num_parameters="1"
+				property="set"
+				property_name2="move"
+				property_name="move">
+				<comments desc="Set the relative movement vector. (x+ sidewards, y+ upwards and z+ forward) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMove"
+					type="const ni::sVec3f &amp;"
+					typec="const ni::sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMove"
+				name="GetMove"
+				num_parameters="0"
+				property="get"
+				property_name2="move"
+				property_name="move">
+				<comments desc="Get the relative movement vector. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method java_name="rotateTarget" name="RotateTarget" num_parameters="2">
+				<comments desc="Rotates the target around the specified axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avAxis"
+					type="ni::sVec3f"
+					typec="ni::sVec3f"
+					typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="afAngle"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="rotateTargetUp" name="RotateTargetUp" num_parameters="2">
+				<comments desc="Rotates the target up around the specified axis. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avAxis"
+					type="ni::sVec3f"
+					typec="ni::sVec3f"
+					typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="afAngle"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="addYaw" name="AddYaw" num_parameters="1">
+				<comments desc="Rotates the target up around the specified axis. Add yaw. ">
+					<remark text="Rotates the target around the Y axis. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="a"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="addPitch" name="AddPitch" num_parameters="1">
+				<comments desc="Add pitch. ">
+					<remark text="Rotates the target around the right axis projected on the XZ plane. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="a"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="addRoll" name="AddRoll" num_parameters="1">
+				<comments desc="Add roll. ">
+					<remark text="Rotates the target up around the forward axis projected on the XZ plane. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="a"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="orbitUp" name="OrbitUp" num_parameters="1">
+				<comments desc="Orbit up/down the position of the camera around the current target. ">
+					<remark text="Rotates the position around the target about it&apos;s right axis. "/>
+					<remark text="The rotation is clamped to the the pole of the orbit sphere, so that trying to orbit up when the camera is already at the north/top pole will not have any effect, and reciprocicaly at the south/bottom pole. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afA"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="orbitSidewards" name="OrbitSidewards" num_parameters="1">
+				<comments desc="Orbit left/right the position of the camera around the current target. ">
+					<remark text="Rotates the position around the target about the y axis. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afA"
+					type="ni::tF32"
+					typec="ni::tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getForward"
+				name="GetForward"
+				num_parameters="0"
+				property="get"
+				property_name2="forward"
+				property_name="forward">
+				<comments desc="Get the forward vector. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRight"
+				name="GetRight"
+				num_parameters="0"
+				property="get"
+				property_name2="right"
+				property_name="right">
+				<comments desc="Get the right vector. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUp"
+				name="GetUp"
+				num_parameters="0"
+				property="get"
+				property_name2="up"
+				property_name="up">
+				<comments desc="Get the up vector. "/>
+				<return type="ni::sVec3f" typec="ni::sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

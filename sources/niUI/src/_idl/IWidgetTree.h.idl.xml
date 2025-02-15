@@ -1,0 +1,1158 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetTreeNodeDropMode">
+			<comments desc="Widget tree node drop mode. "/>
+			<value name="eWidgetTreeNodeDropMode_On" value="0 ">
+				<comments desc="Drop on the node. "/>
+			</value>
+			<value name="eWidgetTreeNodeDropMode_Below" value="1 ">
+				<comments desc="Drop below the node. "/>
+			</value>
+			<value name="eWidgetTreeNodeDropMode_Above" value="2 ">
+				<comments desc="Drop above the node. "/>
+			</value>
+			<value name="eWidgetTreeNodeDropMode_Invalid" value="3 ">
+				<comments desc="Invalid drop area. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetTreeStyle">
+			<comments desc="Widget tree style. "/>
+			<value name="eWidgetTreeStyle_ClickDownSelect" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Select the item on left click down. Note that this disables the secondary selection. "/>
+			</value>
+			<value name="eWidgetTreeStyle_NoHScroll" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Don&apos;t show the horizontal scrollbar. "/>
+			</value>
+			<value name="eWidgetTreeStyle_NoVScroll" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Don&apos;t show the vertical scrollbar. "/>
+			</value>
+			<value name="eWidgetTreeStyle_Autoscroll" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="Automaticall scroll to the selected nodes. "/>
+			</value>
+			<value name="eWidgetTreeStyle_DontDrawRoot" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="Don&apos;t draw the root node. "/>
+			</value>
+			<value name="eWidgetTreeStyle_AlwaysHScroll" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+				<comments desc="Always show the horizontal scrollbar. "/>
+			</value>
+			<value name="eWidgetTreeStyle_AlwaysVScroll" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+				<comments desc="Always show the vertical scrollbar. "/>
+			</value>
+			<value name="eWidgetTreeStyle_SingleSelection" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+				<comments desc="Single selection only. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetTreeCmd">
+			<comments desc="Widget tree notify message "/>
+			<value name="eWidgetTreeCmd_Selected" value="0 ">
+				<comments desc="A tree node has been selected. "/>
+			</value>
+			<value name="eWidgetTreeCmd_Unselected" value="1 ">
+				<comments desc="">
+					<params text="A iWidgetTreeNode A tree node has been unselected. "/>
+					<params text="A iWidgetTreeNode "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_Expanded" value="2 ">
+				<comments desc="A tree node has been expanded. ">
+					<remark text="This is sent before the node is actually drawn so it&apos;s the good time to fill the node with the appropriate children if it&apos;s not already done. "/>
+					<params text="A iWidgetTreeNode "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_Collapsed" value="3 ">
+				<comments desc="A tree node has been collapsed. ">
+					<params text="A iWidgetTreeNode "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_SecondarySelected" value="4 ">
+				<comments desc="A tree node has been selected as a secondary selection. ">
+					<params text="A iWidgetTreeNode "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_SecondaryUnselected" value="5 ">
+				<comments desc="A tree node has been unselected as a secondary selection. ">
+					<params text="A iWidgetTreeNode "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_SetAttributes" value="6 ">
+				<comments desc="A tree node&apos;s attribute have changed. ">
+					<params text="A iWidgetTreeNode "/>
+					<params text="B the previous attributes "/>
+				</comments>
+			</value>
+			<value name="eWidgetTreeCmd_SetName" value="7 ">
+				<comments desc="A tree node&apos;s name has changed. ">
+					<params text="A iWidgetTreeNode "/>
+					<params text="B the previous attributes "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eWidgetTreeNodeFlags">
+			<comments desc="Widget tree node flags. "/>
+			<value name="eWidgetTreeNodeFlags_Selected" value="niBit ( 0 ) ">
+				<comments desc="The node is selected. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_Expanded" value="niBit ( 1 ) ">
+				<comments desc="The node is expanded. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_DontDrawName" value="niBit ( 2 ) ">
+				<comments desc="Don&apos;t draw the name of the node. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_Expandable" value="niBit ( 3 ) ">
+				<comments desc="The node is expandable even if it doesn&apos;t have any children. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_WidgetPlaceV" value="niBit ( 4 ) ">
+				<comments desc="The widget in the tree node will be placed vertically. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_WidgetPlaceH" value="niBit ( 5 ) ">
+				<comments desc="The widget in the tree node will be placed horizontally. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_WidgetPlace" value="eWidgetTreeNodeFlags_WidgetPlaceV|eWidgetTreeNodeFlags_WidgetPlaceH ">
+				<comments desc="The widget in the tree node will be placed vertically and horizontally. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_WidgetSize" value="niBit ( 6 ) ">
+				<comments desc="The widget in the tree node will be sized to fit in the tree. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_WidgetLeft" value="niBit ( 7 ) ">
+				<comments desc="The widget in the tree node will be placed at the left of the text. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_UseTextColor" value="niBit ( 8 ) ">
+				<comments desc="Use the tree node&apos;s text color. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_Visible" value="niBit ( 9 ) ">
+				<comments desc="The widget tree node is visible. "/>
+			</value>
+			<value name="eWidgetTreeNodeFlags_Default" value="eWidgetTreeNodeFlags_WidgetPlace|eWidgetTreeNodeFlags_Visible ">
+				<comments desc="Default tree node flags. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetTreeNode" uuid1="96FA976D-C757-42D9-B8EF-DE82359D1A6C" uuid2="0x96fa976d,0xc757,0x42d9,0xb8,0xef,0xde,0x82,0x35,0x9d,0x1a,0x6c">
+			<comments desc="Widget tree node interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getParentWidget"
+				name="GetParentWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="parentWidget"
+				property_name="parent_widget">
+				<comments desc="Get the parent widget tree. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParentNode"
+				name="GetParentNode"
+				num_parameters="0"
+				property="get"
+				property_name2="parentNode"
+				property_name="parent_node">
+				<comments desc="Get the parent node. ">
+					<remark text="NULL if root node. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNodeRect"
+				name="GetNodeRect"
+				num_parameters="0"
+				property="get"
+				property_name2="nodeRect"
+				property_name="node_rect">
+				<comments desc="Get the node&apos;s rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrolledNodeRect"
+				name="GetScrolledNodeRect"
+				num_parameters="0"
+				property="get"
+				property_name2="scrolledNodeRect"
+				property_name="scrolled_node_rect">
+				<comments desc="Get the node&apos;s scrolled rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteNodeRect"
+				name="GetAbsoluteNodeRect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteNodeRect"
+				property_name="absolute_node_rect">
+				<comments desc="Get the node&apos;s absolute rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextRect"
+				name="GetTextRect"
+				num_parameters="0"
+				property="get"
+				property_name2="textRect"
+				property_name="text_rect">
+				<comments desc="Get the node&apos;s text rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrolledTextRect"
+				name="GetScrolledTextRect"
+				num_parameters="0"
+				property="get"
+				property_name2="scrolledTextRect"
+				property_name="scrolled_text_rect">
+				<comments desc="Get the node&apos;s scrolled text rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbsoluteTextRect"
+				name="GetAbsoluteTextRect"
+				num_parameters="0"
+				property="get"
+				property_name2="absoluteTextRect"
+				property_name="absolute_text_rect">
+				<comments desc="Get the node&apos;s absolute rectangle. ">
+					<remark text="Zero if the node is not visible. "/>
+				</comments>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndex"
+				name="GetIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="index"
+				property_name="index">
+				<comments desc="Get the node index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTreeIndex"
+				name="GetTreeIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="treeIndex"
+				property_name="tree_index">
+				<comments desc="Get the tree index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChildNodes"
+				name="GetNumChildNodes"
+				num_parameters="0"
+				property="get"
+				property_name2="numChildNodes"
+				property_name="num_child_nodes">
+				<comments desc="Get the number of child nodes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildNode"
+				name="GetChildNode"
+				num_parameters="1"
+				property="get"
+				property_name2="childNode"
+				property_name="child_node">
+				<comments desc="Get the child node at the specified index. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildNodeIndex"
+				name="GetChildNodeIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="childNodeIndex"
+				property_name="child_node_index">
+				<comments desc="Get the index of the specified child node. ">
+					<remark text="Return eInvalidHandle if the specified node isnt a child of this node. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apNode"
+					type="const iWidgetTreeNode *"
+					typec="const iWidgetTreeNode*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildNodeFromName"
+				name="GetChildNodeFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="childNodeFromName"
+				property_name="child_node_from_name">
+				<comments desc="Get the first child node with the specified name. ">
+					<remark text="This function will search in the children nodes as well. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addChildNode" name="AddChildNode" num_parameters="1">
+				<comments desc="Add a new child node. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addChildNodeBefore" name="AddChildNodeBefore" num_parameters="2">
+				<comments desc="Add a new child node before the specified index. ">
+					<remark text="If the index is out of range it behaves like AddChildNode (aka add a node at the end) "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="removeChildNode" name="RemoveChildNode" num_parameters="1">
+				<comments desc="Remove a child node. ">
+					<remark text="This function will search in the children nodes as well. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apNode"
+					type="iWidgetTreeNode *"
+					typec="iWidgetTreeNode*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Remove all children. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findNodeFromName"
+				name="FindNodeFromName"
+				num_parameters="1">
+				<comments desc="Find the first node with the specified name. ">
+					<remark text="This include this node. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findNodeFromUserdata"
+				name="FindNodeFromUserdata"
+				num_parameters="1">
+				<comments desc="Find the first node with the specified userdata. ">
+					<remark text="This include this node. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apUserdata"
+					type="const iUnknown *"
+					typec="const iUnknown*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findNodeFromWidget"
+				name="FindNodeFromWidget"
+				num_parameters="1">
+				<comments desc="Find the first node with the specified widget. ">
+					<remark text="This include this node. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="const iWidget *"
+					typec="const iWidget*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="findNodeFromPosition"
+				name="FindNodeFromPosition"
+				num_parameters="1">
+				<comments desc="Find the node that is below the specified position, position in absolute coordinates. ">
+					<remark text="This include this node. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPrevSibling"
+				name="GetPrevSibling"
+				num_parameters="0"
+				property="get"
+				property_name2="prevSibling"
+				property_name="prev_sibling">
+				<comments desc="Get the previous sibiling of this tree node. ">
+					<remark text="Return NULL if it&apos;s the first child of its parent. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNextSibling"
+				name="GetNextSibling"
+				num_parameters="0"
+				property="get"
+				property_name2="nextSibling"
+				property_name="next_sibling">
+				<comments desc="Get the next sibiling of this tree node. ">
+					<remark text="Return NULL if it&apos;s the last child of its parent. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAbove"
+				name="GetAbove"
+				num_parameters="0"
+				property="get"
+				property_name2="above"
+				property_name="above">
+				<comments desc="Get the node above of this node, can be in another parent node. ">
+					<remark text="Return null if its the node the most above. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBelow"
+				name="GetBelow"
+				num_parameters="0"
+				property="get"
+				property_name2="below"
+				property_name="below">
+				<comments desc="Get the node below of this node, can be in another parent node. ">
+					<remark text="Return null if its the node the most below. "/>
+				</comments>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Set the node&apos;s flags. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tWidgetTreeNodeFlags"
+					typec="tWidgetTreeNodeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the node&apos;s flags. "/>
+				<return type="tWidgetTreeNodeFlags" typec="tWidgetTreeNodeFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setName"
+				name="SetName"
+				num_parameters="1"
+				property="set"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Set the node&apos;s name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the node&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIcon"
+				name="SetIcon"
+				num_parameters="1"
+				property="set"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Set the node&apos;s icon "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIcon"
+				name="GetIcon"
+				num_parameters="0"
+				property="get"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Get the node&apos;s icon "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSelected"
+				name="SetSelected"
+				num_parameters="1"
+				property="set"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Set the node&apos;s selected status. ">
+					<remark text="When set/unset selected the node&apos;s tree selection list will be automatically updated. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abSelected"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelected"
+				name="GetSelected"
+				num_parameters="0"
+				property="get"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Get the node&apos;s selected status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setExpanded"
+				name="SetExpanded"
+				num_parameters="1"
+				property="set"
+				property_name2="expanded"
+				property_name="expanded">
+				<comments desc="Set the node&apos;s expanded status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abExpanded"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getExpanded"
+				name="GetExpanded"
+				num_parameters="0"
+				property="get"
+				property_name2="expanded"
+				property_name="expanded">
+				<comments desc="Get the node&apos;s expanded status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setUserdata"
+				name="SetUserdata"
+				num_parameters="1"
+				property="set"
+				property_name2="userdata"
+				property_name="userdata">
+				<comments desc="Set the node&apos;s user data. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apUserData"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUserdata"
+				name="GetUserdata"
+				num_parameters="0"
+				property="get"
+				property_name2="userdata"
+				property_name="userdata">
+				<comments desc="Get the node&apos;s user data. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setWidget"
+				name="SetWidget"
+				num_parameters="1"
+				property="set"
+				property_name2="widget"
+				property_name="widget">
+				<comments desc="Set the node&apos;s widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWidget"
+				name="GetWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="widget"
+				property_name="widget">
+				<comments desc="Get the node&apos;s widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setTextColor"
+				name="SetTextColor"
+				num_parameters="1"
+				property="set"
+				property_name2="textColor"
+				property_name="text_color">
+				<comments desc="Set the text foreground color. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextColor"
+				name="GetTextColor"
+				num_parameters="0"
+				property="get"
+				property_name2="textColor"
+				property_name="text_color">
+				<comments desc="Get the text foreground color. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setTextBackColor"
+				name="SetTextBackColor"
+				num_parameters="1"
+				property="set"
+				property_name2="textBackColor"
+				property_name="text_back_color">
+				<comments desc="Set the text background color. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextBackColor"
+				name="GetTextBackColor"
+				num_parameters="0"
+				property="get"
+				property_name2="textBackColor"
+				property_name="text_back_color">
+				<comments desc="Get the text background color. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setRowColor"
+				name="SetRowColor"
+				num_parameters="1"
+				property="set"
+				property_name2="rowColor"
+				property_name="row_color">
+				<comments desc="Set an explicit row background color. ">
+					<remark text="Enabled if the color is different of 0x00000000 "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anRow"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRowColor"
+				name="GetRowColor"
+				num_parameters="0"
+				property="get"
+				property_name2="rowColor"
+				property_name="row_color">
+				<comments desc="Get an explicit row background color. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setAttributes"
+				name="SetAttributes"
+				num_parameters="1"
+				property="set"
+				property_name2="attributes"
+				property_name="attributes">
+				<comments desc="Set the node&apos;s attributes. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anAttributes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAttributes"
+				name="GetAttributes"
+				num_parameters="0"
+				property="get"
+				property_name2="attributes"
+				property_name="attributes">
+				<comments desc="Get the node&apos;s attributes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setVisibleAttributesMask"
+				name="SetVisibleAttributesMask"
+				num_parameters="1"
+				property="set"
+				property_name2="visibleAttributesMask"
+				property_name="visible_attributes_mask">
+				<comments desc="Set the visible attributes mask. ">
+					<remark text="By default is 0xFFFFFFFF, all visible "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anAttributes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVisibleAttributesMask"
+				name="GetVisibleAttributesMask"
+				num_parameters="0"
+				property="get"
+				property_name2="visibleAttributesMask"
+				property_name="visible_attributes_mask">
+				<comments desc="Set the visible attributes mask. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iWidgetTree" uuid1="B9CD35A1-6AD7-442D-877B-FDC0AA9F6CF9" uuid2="0xb9cd35a1,0x6ad7,0x442d,0x87,0x7b,0xfd,0xc0,0xaa,0x9f,0x6c,0xf9">
+			<comments desc="Widget tree interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getRootNode"
+				name="GetRootNode"
+				num_parameters="0"
+				property="get"
+				property_name2="rootNode"
+				property_name="root_node">
+				<comments desc="Get the root tree node. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumNodes"
+				name="GetNumNodes"
+				num_parameters="0"
+				property="get"
+				property_name2="numNodes"
+				property_name="num_nodes">
+				<comments desc="Get the number of nodes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNode"
+				name="GetNode"
+				num_parameters="1"
+				property="get"
+				property_name2="node"
+				property_name="node">
+				<comments desc="Get the node at the specified index. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSelectedNodes"
+				name="GetNumSelectedNodes"
+				num_parameters="0"
+				property="get"
+				property_name2="numSelectedNodes"
+				property_name="num_selected_nodes">
+				<comments desc="Get the number of nodes selected. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectedNode"
+				name="GetSelectedNode"
+				num_parameters="1"
+				property="get"
+				property_name2="selectedNode"
+				property_name="selected_node">
+				<comments desc="Get the selected node at the specified index. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the tree. ">
+					<remark text="This clear the root node, notify node and selection. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="clearSelection" name="ClearSelection" num_parameters="0">
+				<comments desc="Clear the selection of all nodes. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNodeFromPosition"
+				name="GetNodeFromPosition"
+				num_parameters="1">
+				<comments desc="Get a node from an absolute position. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avAbsPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNodeDropMode"
+				name="GetNodeDropMode"
+				num_parameters="2">
+				<comments desc="Get the drop mode of the specified node from the specified absolute position. "/>
+				<return type="eWidgetTreeNodeDropMode" typec="eWidgetTreeNodeDropMode" typei="ni::eType_Enum"/>
+				<parameter
+					name="apNode"
+					type="iWidgetTreeNode *"
+					typec="iWidgetTreeNode*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avAbsPos"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSecondarySelection"
+				name="SetSecondarySelection"
+				num_parameters="1"
+				property="set"
+				property_name2="secondarySelection"
+				property_name="secondary_selection">
+				<comments desc="Set the secondary selection item. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apNode"
+					type="iWidgetTreeNode *"
+					typec="iWidgetTreeNode*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSecondarySelection"
+				name="GetSecondarySelection"
+				num_parameters="0"
+				property="get"
+				property_name2="secondarySelection"
+				property_name="secondary_selection">
+				<comments desc="Get the secondary selection item. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPivotSelection"
+				name="GetPivotSelection"
+				num_parameters="0"
+				property="get"
+				property_name2="pivotSelection"
+				property_name="pivot_selection">
+				<comments desc="Get the pivot selection. "/>
+				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="scrollToNode"
+				name="ScrollToNode"
+				num_parameters="1"
+				propety="yes">
+				<comments desc="Scroll to the specified item node. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apNode"
+					type="iWidgetTreeNode *"
+					typec="iWidgetTreeNode*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="saveTreeStates" name="SaveTreeStates" num_parameters="1">
+				<comments desc="Save tree states. ">
+					<remark text="Tree states are the expanded status, selected status and scrolling. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStates"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="loadTreeStates" name="LoadTreeStates" num_parameters="2">
+				<comments desc="Load tree states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apStates"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abLoadMatchingNames"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="pushStates" name="PushStates" num_parameters="0">
+				<comments desc="Push the tree&apos;s states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="popStates" name="PopStates" num_parameters="1">
+				<comments desc="Pop the tree&apos;s states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abLoadMatchingNames"
+					type="ni::tBool"
+					typec="ni::tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setNumVisibleAttributes"
+				name="SetNumVisibleAttributes"
+				num_parameters="1"
+				property="set"
+				property_name2="numVisibleAttributes"
+				property_name="num_visible_attributes">
+				<comments desc="Set the number of visible attributes. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumVisibleAttributes"
+				name="GetNumVisibleAttributes"
+				num_parameters="0"
+				property="get"
+				property_name2="numVisibleAttributes"
+				property_name="num_visible_attributes">
+				<comments desc="Get the number of visible attributes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setAttributeIcon"
+				name="SetAttributeIcon"
+				num_parameters="2"
+				property="set"
+				property_name2="attributeIcon"
+				property_name="attribute_icon">
+				<comments desc="Set the specified attribute&apos;s icon. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apIcon"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAttributeIcon"
+				name="GetAttributeIcon"
+				num_parameters="1"
+				property="get"
+				property_name2="attributeIcon"
+				property_name="attribute_icon">
+				<comments desc="Get the specified attribute&apos;s icon. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setAttributeName"
+				name="SetAttributeName"
+				num_parameters="2"
+				property="set"
+				property_name2="attributeName"
+				property_name="attribute_name">
+				<comments desc="Set the specified attribute&apos;s name. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspName"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAttributeName"
+				name="GetAttributeName"
+				num_parameters="1"
+				property="get"
+				property_name2="attributeName"
+				property_name="attribute_name">
+				<comments desc="Get the specified attribute&apos;s name. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setHoverNode"
+				name="SetHoverNode"
+				num_parameters="1"
+				property="set"
+				property_name2="hoverNode"
+				property_name="hover_node">
+				<comments desc="Set the hover node. ">
+					<remark text="The id should be the node&apos;s tree index. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anNodeTreeIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHoverNode"
+				name="GetHoverNode"
+				num_parameters="0"
+				property="get"
+				property_name2="hoverNode"
+				property_name="hover_node">
+				<comments desc="Get the hover node. ">
+					<remark text="The id is the node&apos;s tree index. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

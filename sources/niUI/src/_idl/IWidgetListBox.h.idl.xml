@@ -1,0 +1,725 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetListBoxCmd">
+			<comments desc="Listbox notification messages "/>
+			<value name="eWidgetListBoxCmd_SelectionChanged" value="0 ">
+				<comments desc="Sent when the selection has changed "/>
+			</value>
+		</enum>
+		<enum name="eWidgetListBoxStyle">
+			<comments desc="Listbox style "/>
+			<value name="eWidgetListBoxStyle_HasHeader" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Has header. "/>
+			</value>
+			<value name="eWidgetListBoxStyle_HeaderSort" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Clicking the Header will sort the items Ascendant/Descendant. "/>
+			</value>
+			<value name="eWidgetListBoxStyle_Multiselect" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Allow multiple selection. "/>
+			</value>
+			<value name="eWidgetListBoxStyle_SelectOnMove" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="Select when mouse moves. "/>
+			</value>
+			<value name="eWidgetListBoxStyle_ClickAddSelection" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="Click down add selection, Ctrl+Click set selection. (This is the opposite of the default) "/>
+			</value>
+		</enum>
+		<interface name="iWidgetListBox" uuid1="72906A6E-E5D6-4A1C-B0D9-AC687986BFF6" uuid2="0x72906a6e,0xe5d6,0x4a1c,0xb0,0xd9,0xac,0x68,0x79,0x86,0xbf,0xf6">
+			<comments desc="Listbox widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="addColumn" name="AddColumn" num_parameters="2">
+				<comments desc="Add a column with the specified name and size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="removeColumn" name="RemoveColumn" num_parameters="1">
+				<comments desc="Remove the specified columns. ">
+					<remark text="The listbox must have at least one column, so deleting the last column will always fail. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumColumns"
+				name="GetNumColumns"
+				num_parameters="0"
+				property="get"
+				property_name2="numColumns"
+				property_name="num_columns">
+				<comments desc="Get the number of columns in the list box. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setColumnName"
+				name="SetColumnName"
+				num_parameters="2"
+				property="set"
+				property_name2="columnName"
+				property_name="column_name">
+				<comments desc="Set the name/header of the column. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColumnName"
+				name="GetColumnName"
+				num_parameters="1"
+				property="get"
+				property_name2="columnName"
+				property_name="column_name">
+				<comments desc="Get the name/header of the column. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setColumnWidth"
+				name="SetColumnWidth"
+				num_parameters="2"
+				property="set"
+				property_name2="columnWidth"
+				property_name="column_width">
+				<comments desc="Set the width of the specified column. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColumnWidth"
+				name="GetColumnWidth"
+				num_parameters="1"
+				property="get"
+				property_name2="columnWidth"
+				property_name="column_width">
+				<comments desc="Get the width of the specified column. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setColumn" name="SetColumn" num_parameters="3">
+				<comments desc="Set a column name and width. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumItems"
+				name="GetNumItems"
+				num_parameters="0"
+				property="get"
+				property_name2="numItems"
+				property_name="num_items">
+				<comments desc="Get the number of items in the listbox. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearItems" name="ClearItems" num_parameters="0">
+				<comments desc="Remove all items in the list box. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addItem" name="AddItem" num_parameters="1">
+				<comments desc="Add an item. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeItem" name="RemoveItem" num_parameters="1">
+				<comments desc="Remove an item. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setItemText" name="SetItemText" num_parameters="3">
+				<comments desc="Set the text of an item element. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemText"
+				name="GetItemText"
+				num_parameters="2">
+				<comments desc="Get the text of an item element. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setItemWidget" name="SetItemWidget" num_parameters="3">
+				<comments desc="Set the widget of an item element. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemWidget"
+				name="GetItemWidget"
+				num_parameters="2">
+				<comments desc="Get the widget of an item element. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setItemIcon"
+				name="SetItemIcon"
+				num_parameters="2"
+				property="set"
+				property_name2="itemIcon"
+				property_name="item_icon">
+				<comments desc="Set the icon of an item. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apIcon"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemIcon"
+				name="GetItemIcon"
+				num_parameters="1"
+				property="get"
+				property_name2="itemIcon"
+				property_name="item_icon">
+				<comments desc="Get the icon of an item. "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setItemData"
+				name="SetItemData"
+				num_parameters="2"
+				property="set"
+				property_name2="itemData"
+				property_name="item_data">
+				<comments desc="Set the data of an item. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apData"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemData"
+				name="GetItemData"
+				num_parameters="1"
+				property="get"
+				property_name2="itemData"
+				property_name="item_data">
+				<comments desc="Get the data of an item. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSortKey"
+				name="SetSortKey"
+				num_parameters="1"
+				property="set"
+				property_name2="sortKey"
+				property_name="sort_key">
+				<comments desc="Set the sorting key column. " return="If the key index is invalid sorting is disabled, and false is returned. ">
+					<params text="anKeyColumn is the column to use as key for sorting. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anKeyColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSortKey"
+				name="GetSortKey"
+				num_parameters="0"
+				property="get"
+				property_name2="sortKey"
+				property_name="sort_key">
+				<comments desc="Get the sorting key column. " return="The current sort key column index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSortAscendant"
+				name="SetSortAscendant"
+				num_parameters="1"
+				property="set"
+				property_name2="sortAscendant"
+				property_name="sort_ascendant">
+				<comments desc="Set whether to use ascendant or descendant sorting. ">
+					<params text="abAscendant decide the sorting Mode. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abAscendant"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSortAscendant"
+				name="GetSortAscendant"
+				num_parameters="0"
+				property="get"
+				property_name2="sortAscendant"
+				property_name="sort_ascendant">
+				<comments desc="Get whether to use ascendant or descendant sorting. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemFromText"
+				name="GetItemFromText"
+				num_parameters="2">
+				<comments desc="Get the index of the first item that has the specified text in the specified column. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearSelection" name="ClearSelection" num_parameters="0">
+				<comments desc="Clear the selection. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addSelection" name="AddSelection" num_parameters="1">
+				<comments desc="Add a selection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="removeSelection" name="RemoveSelection" num_parameters="1">
+				<comments desc="Remove a selection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSelections"
+				name="GetNumSelections"
+				num_parameters="0"
+				property="get"
+				property_name2="numSelections"
+				property_name="num_selections">
+				<comments desc="Get the number of selections. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelection"
+				name="GetSelection"
+				num_parameters="1"
+				property="get"
+				property_name2="selection"
+				property_name="selection">
+				<comments desc="Get the active selection at the specified index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSelected"
+				name="SetSelected"
+				num_parameters="1"
+				property="set"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Set all selections to the selection specified. ">
+					<remark text="This will set one active selection. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anSelection"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelected"
+				name="GetSelected"
+				num_parameters="0"
+				property="get"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Get the first selection. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsItemSelected"
+				name="GetIsItemSelected"
+				num_parameters="1"
+				property="get"
+				property_name2="isItemSelected"
+				property_name="is_item_selected">
+				<comments desc="Check if the specified item is selected. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addSelectedItem" name="AddSelectedItem" num_parameters="2">
+				<comments desc="Get the first item with the selected text in the specified column and add it to the selection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectedItemText"
+				name="GetSelectedItemText"
+				num_parameters="2">
+				<comments desc="Get the text in the column of the selection at the specified index. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectedItemWidget"
+				name="GetSelectedItemWidget"
+				num_parameters="2">
+				<comments desc="Get the widget in the column of the selection at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSelectedItem"
+				name="SetSelectedItem"
+				num_parameters="2"
+				property="set"
+				property_name2="selectedItem"
+				property_name="selected_item">
+				<comments desc="Get the first item with the selected text in the specified column and set it as the selection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelectedItem"
+				name="GetSelectedItem"
+				num_parameters="1"
+				property="get"
+				property_name2="selectedItem"
+				property_name="selected_item">
+				<comments desc="Get the text in the specified column of the first selection. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anCol"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setItemHeight"
+				name="SetItemHeight"
+				num_parameters="1"
+				property="set"
+				property_name2="itemHeight"
+				property_name="item_height">
+				<comments desc="Set the height of an item. ">
+					<remark text="This is meant to be used to define the maximum size of controls embedded in the listbox. "/>
+					<remark text="The height will always be &gt;= than the font height no matter what this value is. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afHeight"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemHeight"
+				name="GetItemHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="itemHeight"
+				property_name="item_height">
+				<comments desc="Get the height of an item. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="autoScroll" name="AutoScroll" num_parameters="0">
+				<comments desc="Auto scroll to the selection or last item if no item is selected. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="setItemTextColor" name="SetItemTextColor" num_parameters="3">
+				<comments desc="Set the color of the text of the specified column/item. Set anColumn to eInvalidHandle to set all the columns at once. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anTextColor"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemTextColor"
+				name="GetItemTextColor"
+				num_parameters="2">
+				<comments desc="Set the color of the text of the specified column/item. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="anColumn"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anItem"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setMaxNumItems"
+				name="SetMaxNumItems"
+				num_parameters="1"
+				property="set"
+				property_name2="maxNumItems"
+				property_name="max_num_items">
+				<comments desc="Set the maximum number of items. ">
+					<remark text="When the maximum number of items the items at the top of the list are removed, this is meant to be used for a log window or similar. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anMaxItems"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaxNumItems"
+				name="GetMaxNumItems"
+				num_parameters="0"
+				property="get"
+				property_name2="maxNumItems"
+				property_name="max_num_items">
+				<comments desc="Get the maximum number of items. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

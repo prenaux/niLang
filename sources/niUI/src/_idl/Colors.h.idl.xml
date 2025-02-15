@@ -1,0 +1,526 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eColorSpace">
+			<comments desc="Color spaces "/>
+			<value name="eColorSpace_RGB" value="0 ">
+				<comments desc="RGB color space "/>
+			</value>
+			<value name="eColorSpace_CMY" value="1 ">
+				<comments desc="CMY color space "/>
+			</value>
+			<value name="eColorSpace_CMYK" value="2 ">
+				<comments desc="CMYK color space "/>
+			</value>
+			<value name="eColorSpace_HSV" value="3 ">
+				<comments desc="HSV color space "/>
+			</value>
+			<value name="eColorSpace_HSL" value="4 ">
+				<comments desc="HSL color space "/>
+			</value>
+			<value name="eColorSpace_XYZ" value="5 ">
+				<comments desc="XYZ color space "/>
+			</value>
+			<value name="eColorSpace_Yxy" value="6 ">
+				<comments desc="Yxy color space "/>
+			</value>
+			<value name="eColorSpace_HunterLab" value="7 ">
+				<comments desc="Hunter lab color space "/>
+			</value>
+			<value name="eColorSpace_CIELab" value="8 ">
+				<comments desc="CIE Lab color space "/>
+			</value>
+			<value name="eColorSpace_CIELCH" value="9 ">
+				<comments desc="CIE LCH color space "/>
+			</value>
+			<value name="eColorSpace_CIELuv" value="10 ">
+				<comments desc="CIE Luv color space "/>
+			</value>
+			<value name="eColorSpace_YIQ" value="11 ">
+				<comments desc="YIQ color space (NTSC/USA TV). "/>
+			</value>
+			<value name="eColorSpace_YUV" value="12 ">
+				<comments desc="YUV color space (PAL/Europe TV). "/>
+			</value>
+			<value name="eColorSpace_YCbCr" value="13 ">
+				<comments desc="YCbCr color space. "/>
+			</value>
+			<value name="eColorSpace_YPbPr" value="14 ">
+				<comments desc="YPbPr color space (HDTV). "/>
+			</value>
+			<value name="eColorSpace_YCoCg" value="15 ">
+				<comments desc="YCoCg color space (H264 &amp; AVT). "/>
+			</value>
+			<value name="eColorSpace_Last" value="16 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<enum name="eColor">
+			<comments desc=""/>
+			<value name="eColor_aliceblue" value="niBuildColor ( 240 , 248 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_antiquewhite" value="niBuildColor ( 250 , 235 , 215 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_aqua" value="niBuildColor ( 0 , 255 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_aquamarine" value="niBuildColor ( 127 , 255 , 212 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_azure" value="niBuildColor ( 240 , 255 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_beige" value="niBuildColor ( 245 , 245 , 220 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_bisque" value="niBuildColor ( 255 , 228 , 196 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_black" value="niBuildColor ( 0 , 0 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_blanchedalmond" value="niBuildColor ( 255 , 235 , 205 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_blue" value="niBuildColor ( 0 , 0 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_blueviolet" value="niBuildColor ( 138 , 43 , 226 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_brown" value="niBuildColor ( 165 , 42 , 42 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_burlywood" value="niBuildColor ( 222 , 184 , 135 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_cadetblue" value="niBuildColor ( 95 , 158 , 160 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_chartreuse" value="niBuildColor ( 127 , 255 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_chocolate" value="niBuildColor ( 210 , 105 , 30 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_coral" value="niBuildColor ( 255 , 127 , 80 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_cornflowerblue" value="niBuildColor ( 100 , 149 , 237 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_cornsilk" value="niBuildColor ( 255 , 248 , 220 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_crimson" value="niBuildColor ( 220 , 20 , 60 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_cyan" value="niBuildColor ( 0 , 255 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkblue" value="niBuildColor ( 0 , 0 , 139 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkcyan" value="niBuildColor ( 0 , 139 , 139 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkgoldenrod" value="niBuildColor ( 184 , 134 , 11 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkgray" value="niBuildColor ( 169 , 169 , 169 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkgreen" value="niBuildColor ( 0 , 100 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkgrey" value="niBuildColor ( 169 , 169 , 169 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkkhaki" value="niBuildColor ( 189 , 183 , 107 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkmagenta" value="niBuildColor ( 139 , 0 , 139 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkolivegreen" value="niBuildColor ( 85 , 107 , 47 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkorange" value="niBuildColor ( 255 , 140 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkorchid" value="niBuildColor ( 153 , 50 , 204 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkred" value="niBuildColor ( 139 , 0 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darksalmon" value="niBuildColor ( 233 , 150 , 122 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkseagreen" value="niBuildColor ( 143 , 188 , 143 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkslateblue" value="niBuildColor ( 72 , 61 , 139 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkslategray" value="niBuildColor ( 47 , 79 , 79 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkslategrey" value="niBuildColor ( 47 , 79 , 79 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkturquoise" value="niBuildColor ( 0 , 206 , 209 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_darkviolet" value="niBuildColor ( 148 , 0 , 211 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_deeppink" value="niBuildColor ( 255 , 20 , 147 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_deepskyblue" value="niBuildColor ( 0 , 191 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_dimgray" value="niBuildColor ( 105 , 105 , 105 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_dimgrey" value="niBuildColor ( 105 , 105 , 105 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_dodgerblue" value="niBuildColor ( 30 , 144 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_firebrick" value="niBuildColor ( 178 , 34 , 34 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_floralwhite" value="niBuildColor ( 255 , 250 , 240 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_forestgreen" value="niBuildColor ( 34 , 139 , 34 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_fuchsia" value="niBuildColor ( 255 , 0 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_gainsboro" value="niBuildColor ( 220 , 220 , 220 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_ghostwhite" value="niBuildColor ( 248 , 248 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_gold" value="niBuildColor ( 255 , 215 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_goldenrod" value="niBuildColor ( 218 , 165 , 32 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_gray" value="niBuildColor ( 128 , 128 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_green" value="niBuildColor ( 0 , 128 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_greenyellow" value="niBuildColor ( 173 , 255 , 47 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_grey" value="niBuildColor ( 128 , 128 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_honeydew" value="niBuildColor ( 240 , 255 , 240 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_hotpink" value="niBuildColor ( 255 , 105 , 180 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_indianred" value="niBuildColor ( 205 , 92 , 92 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_indigo" value="niBuildColor ( 75 , 0 , 130 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_ivory" value="niBuildColor ( 255 , 255 , 240 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_khaki" value="niBuildColor ( 240 , 230 , 140 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lavender" value="niBuildColor ( 230 , 230 , 250 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lavenderblush" value="niBuildColor ( 255 , 240 , 245 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lawngreen" value="niBuildColor ( 124 , 252 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lemonchiffon" value="niBuildColor ( 255 , 250 , 205 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightblue" value="niBuildColor ( 173 , 216 , 230 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightcoral" value="niBuildColor ( 240 , 128 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightcyan" value="niBuildColor ( 224 , 255 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightgoldenrodyellow" value="niBuildColor ( 250 , 250 , 210 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightgray" value="niBuildColor ( 211 , 211 , 211 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightgreen" value="niBuildColor ( 144 , 238 , 144 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightgrey" value="niBuildColor ( 211 , 211 , 211 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightpink" value="niBuildColor ( 255 , 182 , 193 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightsalmon" value="niBuildColor ( 255 , 160 , 122 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightseagreen" value="niBuildColor ( 32 , 178 , 170 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightskyblue" value="niBuildColor ( 135 , 206 , 250 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightslategray" value="niBuildColor ( 119 , 136 , 153 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightslategrey" value="niBuildColor ( 119 , 136 , 153 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightsteelblue" value="niBuildColor ( 176 , 196 , 222 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lightyellow" value="niBuildColor ( 255 , 255 , 224 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_lime" value="niBuildColor ( 0 , 255 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_limegreen" value="niBuildColor ( 50 , 205 , 50 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_linen" value="niBuildColor ( 250 , 240 , 230 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_magenta" value="niBuildColor ( 255 , 0 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_maroon" value="niBuildColor ( 128 , 0 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumaquamarine" value="niBuildColor ( 102 , 205 , 170 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumblue" value="niBuildColor ( 0 , 0 , 205 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumorchid" value="niBuildColor ( 186 , 85 , 211 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumpurple" value="niBuildColor ( 147 , 112 , 219 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumseagreen" value="niBuildColor ( 60 , 179 , 113 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumslateblue" value="niBuildColor ( 123 , 104 , 238 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumspringgreen" value="niBuildColor ( 0 , 250 , 154 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumturquoise" value="niBuildColor ( 72 , 209 , 204 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mediumvioletred" value="niBuildColor ( 199 , 21 , 133 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_midnightblue" value="niBuildColor ( 25 , 25 , 112 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mintcream" value="niBuildColor ( 245 , 255 , 250 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_mistyrose" value="niBuildColor ( 255 , 228 , 225 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_moccasin" value="niBuildColor ( 255 , 228 , 181 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_navajowhite" value="niBuildColor ( 255 , 222 , 173 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_navy" value="niBuildColor ( 0 , 0 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_oldlace" value="niBuildColor ( 253 , 245 , 230 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_olive" value="niBuildColor ( 128 , 128 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_olivedrab" value="niBuildColor ( 107 , 142 , 35 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_orange" value="niBuildColor ( 255 , 165 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_orangered" value="niBuildColor ( 255 , 69 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_orchid" value="niBuildColor ( 218 , 112 , 214 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_palegoldenrod" value="niBuildColor ( 238 , 232 , 170 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_palegreen" value="niBuildColor ( 152 , 251 , 152 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_paleturquoise" value="niBuildColor ( 175 , 238 , 238 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_palevioletred" value="niBuildColor ( 219 , 112 , 147 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_papayawhip" value="niBuildColor ( 255 , 239 , 213 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_peachpuff" value="niBuildColor ( 255 , 218 , 185 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_peru" value="niBuildColor ( 205 , 133 , 63 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_pink" value="niBuildColor ( 255 , 192 , 203 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_plum" value="niBuildColor ( 221 , 160 , 221 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_powderblue" value="niBuildColor ( 176 , 224 , 230 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_purple" value="niBuildColor ( 128 , 0 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_red" value="niBuildColor ( 255 , 0 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_rosybrown" value="niBuildColor ( 188 , 143 , 143 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_royalblue" value="niBuildColor ( 65 , 105 , 225 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_saddlebrown" value="niBuildColor ( 139 , 69 , 19 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_salmon" value="niBuildColor ( 250 , 128 , 114 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_sandybrown" value="niBuildColor ( 244 , 164 , 96 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_seagreen" value="niBuildColor ( 46 , 139 , 87 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_seashell" value="niBuildColor ( 255 , 245 , 238 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_sienna" value="niBuildColor ( 160 , 82 , 45 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_silver" value="niBuildColor ( 192 , 192 , 192 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_skyblue" value="niBuildColor ( 135 , 206 , 235 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_slateblue" value="niBuildColor ( 106 , 90 , 205 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_slategray" value="niBuildColor ( 112 , 128 , 144 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_slategrey" value="niBuildColor ( 112 , 128 , 144 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_snow" value="niBuildColor ( 255 , 250 , 250 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_springgreen" value="niBuildColor ( 0 , 255 , 127 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_steelblue" value="niBuildColor ( 70 , 130 , 180 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_tan" value="niBuildColor ( 210 , 180 , 140 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_teal" value="niBuildColor ( 0 , 128 , 128 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_thistle" value="niBuildColor ( 216 , 191 , 216 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_tomato" value="niBuildColor ( 255 , 99 , 71 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_turquoise" value="niBuildColor ( 64 , 224 , 208 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_violet" value="niBuildColor ( 238 , 130 , 238 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_wheat" value="niBuildColor ( 245 , 222 , 179 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_white" value="niBuildColor ( 255 , 255 , 255 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_whitesmoke" value="niBuildColor ( 245 , 245 , 245 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_yellow" value="niBuildColor ( 255 , 255 , 0 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_yellowgreen" value="niBuildColor ( 154 , 205 , 50 , 255 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_zzzzzzzzzzz" value="niBuildColor ( 0 , 0 , 0 , 0 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eColor_zzzz" value="niBuildColor ( 0 , 0 , 0 , 0 ) ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<variable
+			name="kcolXYZRef2D65"
+			type="const sVec4f"
+			typec="const sVec4f"
+			typei="ni::eTypeFlags_Constant|ni::eType_Vec4f"
+			value="{95.047f,100.0f,108.883f,0.0f}"/>
+		<variable
+			name="kvColorLuminanceR21G71B07"
+			type="const sVec3f"
+			typec="const sVec3f"
+			typei="ni::eTypeFlags_Constant|ni::eType_Vec3f"
+			value="{0.2125f,0.7154f,0.0721f}"/>
+		<variable
+			name="kvColorLuminanceR27G67B06"
+			type="const sVec3f"
+			typec="const sVec3f"
+			typei="ni::eTypeFlags_Constant|ni::eType_Vec3f"
+			value="{0.27f,0.67f,0.06f}"/>
+	</namespace>
+</niIDL>

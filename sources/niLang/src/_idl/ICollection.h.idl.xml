@@ -1,0 +1,348 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iIterator" uuid1="B33C7B41-8EDD-4699-9538-0E2F9CF4E543" uuid2="0xb33c7b41,0x8edd,0x4699,0x95,0x38,0x0e,0x2f,0x9c,0xf4,0xe5,0x43">
+			<comments desc="Collection iterator interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getCollection"
+				name="GetCollection"
+				num_parameters="0"
+				property="get"
+				property_name2="collection"
+				property_name="collection">
+				<comments desc="Get the collection in which the iterator operates. "/>
+				<return type="iCollection *" typec="iCollection*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasNext"
+				name="HasNext"
+				num_parameters="0">
+				<comments desc="Check whether their is more elements to iterate. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="next" name="Next" num_parameters="0">
+				<comments desc="Get the next value. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="key"
+				name="Key"
+				num_parameters="0">
+				<comments desc="Get the current key. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="value"
+				name="Value"
+				num_parameters="0">
+				<comments desc="Get the current value. "/>
+				<return type="const Var &amp;" typec="const Var&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iCollection" uuid1="9917D8A6-A85F-4F30-B668-E3176E334BF2" uuid2="0x9917d8a6,0xa85f,0x4f30,0xb6,0x68,0xe3,0x17,0x6e,0x33,0x4b,0xf2">
+			<comments desc="Immutable Collection interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getKeyType"
+				name="GetKeyType"
+				num_parameters="0"
+				property="get"
+				property_name2="keyType"
+				property_name="key_type">
+				<comments desc="Get the collection&apos;s key type. ">
+					<remark text="Only Associative collections return a valid type here. Although Vector collections can use Put/Get with an index, it is not considered a &quot;key&quot; type. "/>
+				</comments>
+				<return type="tType" typec="tType" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getValueType"
+				name="GetValueType"
+				num_parameters="0"
+				property="get"
+				property_name2="valueType"
+				property_name="value_type">
+				<comments desc="Get the collection&apos;s value type. "/>
+				<return type="tType" typec="tType" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="isEmpty"
+				name="IsEmpty"
+				num_parameters="0">
+				<comments desc="Returns true if this collection contains no elements. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0">
+				<comments desc="Returns the number of elements in this collection. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="contains"
+				name="Contains"
+				num_parameters="1">
+				<comments desc="Returns true if this collection contains the specified key. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="containsAll"
+				name="ContainsAll"
+				num_parameters="1">
+				<comments desc="Returns true if this collection contains all of the elements in the specified collection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apCollection"
+					type="const iCollection *"
+					typec="const iCollection*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="iterator"
+				name="Iterator"
+				num_parameters="0">
+				<comments desc="Returns an iterator over the elements in this collection. "/>
+				<return type="iIterator *" typec="iIterator*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="find"
+				name="Find"
+				num_parameters="1">
+				<comments desc="Returns an iterator over starting at the specified elements in this collection. "/>
+				<return type="iIterator *" typec="iIterator*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="get"
+				name="Get"
+				num_parameters="1">
+				<comments desc="Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="aKey"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFirst"
+				name="GetFirst"
+				num_parameters="0"
+				property="get"
+				property_name2="first"
+				property_name="first">
+				<comments desc="Returns the first value in the container. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLast"
+				name="GetLast"
+				num_parameters="0"
+				property="get"
+				property_name2="last"
+				property_name="last">
+				<comments desc="Returns the last value in the container. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+			</method>
+		</interface>
+		<interface name="iMutableCollection" uuid1="F88402A3-D533-426E-BE12-E69FDFEA0A66" uuid2="0xf88402a3,0xd533,0x426e,0xbe,0x12,0xe6,0x9f,0xdf,0xea,0x0a,0x66">
+			<comments desc="Mutable Collection interface. "/>
+			<parents>
+				<parent name="iCollection"/>
+			</parents>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Removes all of the elements from this collection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy a collection of the same type in this collection. " return="eFalse if the specified collection cannot be copied in this collection. ">
+					<remark text="Invalidates all the iterators. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apCollection"
+					type="const iCollection *"
+					typec="const iCollection*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="reserve" name="Reserve" num_parameters="1">
+				<comments desc="Reserve memory for the specified number of elements. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="resize" name="Resize" num_parameters="1">
+				<comments desc="Resize the collection to the specified number of elements. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="add" name="Add" num_parameters="1">
+				<comments desc="Ensures that this collection contains the specified key. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addAll" name="AddAll" num_parameters="1">
+				<comments desc="Adds all of the elements in the specified collection to this collection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apCollection"
+					type="const iCollection *"
+					typec="const iCollection*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="remove" name="Remove" num_parameters="1">
+				<comments desc="Removes a single instance of the specified key from this collection, if it is present (optional operation). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVar"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeIterator" name="RemoveIterator" num_parameters="1">
+				<comments desc="Removes the element pointed by the specified iterator. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apIterator"
+					type="iIterator *"
+					typec="iIterator*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeAll" name="RemoveAll" num_parameters="1">
+				<comments desc="Removes all of this collection&apos;s elements that are also contained in the specified collection. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apCollection"
+					type="const iCollection *"
+					typec="const iCollection*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeFirst" name="RemoveFirst" num_parameters="0">
+				<comments desc="Retrieve and remove the first element of the container. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="removeLast" name="RemoveLast" num_parameters="0">
+				<comments desc="Retrieve and remove the last element of the container. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="put" name="Put" num_parameters="2">
+				<comments desc="Associates the specified value with the specified key. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aKey"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFirst"
+				name="SetFirst"
+				num_parameters="1"
+				property="set"
+				property_name2="first"
+				property_name="first">
+				<comments desc="Sets the first value in the container. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setLast"
+				name="SetLast"
+				num_parameters="1"
+				property="set"
+				property_name2="last"
+				property_name="last">
+				<comments desc="Sets the last value in the container. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDataPtr"
+				name="GetDataPtr"
+				num_parameters="0">
+				<comments desc="Get a pointer to continous memory that can be read/written directly. ">
+					<remark text="Optional "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDataSize"
+				name="GetDataSize"
+				num_parameters="0">
+				<comments desc="Get the size in bytes of the memory pointed by the data pointer. ">
+					<remark text="Optional "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

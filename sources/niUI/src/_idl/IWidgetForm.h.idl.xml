@@ -1,0 +1,236 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetFormStyle">
+			<comments desc="Widget form flags. "/>
+			<value name="eWidgetFormStyle_Dock" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Allow the form to dock by a parent docking manager. "/>
+			</value>
+			<value name="eWidgetFormStyle_Move" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Allow the form to be moved. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeTopLeftCorner" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="The form can be resized using the top left corner. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeTopRightCorner" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="The form can be resized using the top right corner. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeBottomLeftCorner" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="The form can be resized using the bottom left corner. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeBottomRightCorner" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+				<comments desc="The form can be resized using the bottom right corner. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeAnyCorner" value="eWidgetFormStyle_ResizeTopLeftCorner|eWidgetFormStyle_ResizeTopRightCorner|eWidgetFormStyle_ResizeBottomLeftCorner|eWidgetFormStyle_ResizeBottomRightCorner ">
+				<comments desc="The form can be resized from any corner. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeLeftEdge" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+				<comments desc="The form can be resized using the left edge. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeRightEdge" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+				<comments desc="The form can be resized using the right edge. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeTopEdge" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+				<comments desc="The form can be resized using the top edge. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeBottomEdge" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+				<comments desc="The form can be resized using the bottom edge. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeAnyEdge" value="eWidgetFormStyle_ResizeLeftEdge|eWidgetFormStyle_ResizeRightEdge|eWidgetFormStyle_ResizeTopEdge|eWidgetFormStyle_ResizeBottomEdge ">
+				<comments desc="The form can be resized from any edge. "/>
+			</value>
+			<value name="eWidgetFormStyle_ResizeAny" value="eWidgetFormStyle_ResizeAnyCorner|eWidgetFormStyle_ResizeAnyEdge ">
+				<comments desc="The form can be resized using any of the edges and corners. "/>
+			</value>
+			<value name="eWidgetFormStyle_CloseButton" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+				<comments desc="The form has a close button. (ID_Close) ">
+					<remark text="The default handler will destroy the form. "/>
+				</comments>
+			</value>
+			<value name="eWidgetFormStyle_FormManagerButtons" value="niBit ( eWidgetStyle_MaxBit+11 ) ">
+				<comments desc="The form has the form manager buttons, these are the minimize, maximize and restore buttons. (ID_Minimize, ID_Maximize, ID_Restore) ">
+					<remark text="The default handler will call the parent form manager with the command corresponding to the pressed button. "/>
+				</comments>
+			</value>
+			<value name="eWidgetFormStyle_DockNoInputModifier" value="niBit ( eWidgetStyle_MaxBit+12 ) ">
+				<comments desc="The docking overlays are always displayed when moving. The default behavior is that the &apos;Control&apos; input modifier needs to be pressed while moving the form to display the docking overlays. "/>
+			</value>
+			<value name="eWidgetFormStyle_Default" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move ">
+				<comments desc="Default form flags. "/>
+			</value>
+			<value name="eWidgetFormStyle_DefaultButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move|eWidgetFormStyle_CloseButton|eWidgetFormStyle_FormManagerButtons ">
+				<comments desc="Default form flags with close button. "/>
+			</value>
+			<value name="eWidgetFormStyle_DefaultManagerButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move ">
+				<comments desc="Default form flags with close and form manager buttons. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetForm" uuid1="3B96EE80-4AE2-4AED-851C-7FBFD5FD3AFB" uuid2="0x3b96ee80,0x4ae2,0x4aed,0x85,0x1c,0x7f,0xbf,0xd5,0xfd,0x3a,0xfb">
+			<comments desc="Form widget interface. ">
+				<remark text="Form widgets implements iWidgetDockable. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setTitle"
+				name="SetTitle"
+				num_parameters="1"
+				property="set"
+				property_name2="title"
+				property_name="title">
+				<comments desc="Set the form&apos;s title. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTitle"
+				name="GetTitle"
+				num_parameters="0"
+				property="get"
+				property_name2="title"
+				property_name="title">
+				<comments desc="Get the form&apos;s title. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setResizeBorderArea"
+				name="SetResizeBorderArea"
+				num_parameters="1"
+				property="set"
+				property_name2="resizeBorderArea"
+				property_name="resize_border_area">
+				<comments desc="Set the size/area of the resize border. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getResizeBorderArea"
+				name="GetResizeBorderArea"
+				num_parameters="0"
+				property="get"
+				property_name2="resizeBorderArea"
+				property_name="resize_border_area">
+				<comments desc="Get the size/area of the resize border. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumTitleWidgets"
+				name="GetNumTitleWidgets"
+				num_parameters="0"
+				property="get"
+				property_name2="numTitleWidgets"
+				property_name="num_title_widgets">
+				<comments desc="Get the number of widgets in the title bar. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTitleWidget"
+				name="GetTitleWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="titleWidget"
+				property_name="title_widget">
+				<comments desc="Get the title bar widget at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTitleWidgetIndex"
+				name="GetTitleWidgetIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="titleWidgetIndex"
+				property_name="title_widget_index">
+				<comments desc="Get the index of the specified title bar widget. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTitleWidgetFromID"
+				name="GetTitleWidgetFromID"
+				num_parameters="1"
+				property="get"
+				property_name2="titleWidgetFromID"
+				property_name="title_widget_from_id">
+				<comments desc="Get the title bar widget with the specified ID. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addTitleWidget" name="AddTitleWidget" num_parameters="2">
+				<comments desc="Add a title bar widget. ">
+					<remark text="The widget&apos;s parent is always set to the form&apos;s &apos;title dock area&apos;. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afWidth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setFormFrameFlags"
+				name="SetFormFrameFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="formFrameFlags"
+				property_name="form_frame_flags">
+				<comments desc="Set the border frame flags. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tRectFrameFlags"
+					typec="tRectFrameFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormFrameFlags"
+				name="GetFormFrameFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="formFrameFlags"
+				property_name="form_frame_flags">
+				<comments desc="Get the form frame flags. "/>
+				<return type="tRectFrameFlags" typec="tRectFrameFlags" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

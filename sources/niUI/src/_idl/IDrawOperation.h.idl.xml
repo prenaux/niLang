@@ -1,0 +1,349 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iDrawOperation" uuid1="7F9EAA80-03E5-4514-A162-A35386CF61EA" uuid2="0x7f9eaa80,0x03e5,0x4514,0xa1,0x62,0xa3,0x53,0x86,0xcf,0x61,0xea">
+			<comments desc="Draw operation interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="copy" name="Copy" num_parameters="1">
+				<comments desc="Copy another draw operation. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDO"
+					type="const iDrawOperation *"
+					typec="const iDrawOperation*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this draw operation. "/>
+				<return type="iDrawOperation *" typec="iDrawOperation*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsCompiled"
+				name="GetIsCompiled"
+				num_parameters="0"
+				property="get"
+				property_name2="isCompiled"
+				property_name="is_compiled">
+				<comments desc="Return whether the draw operation is compiled (read-only) "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setPriority"
+				name="SetPriority"
+				num_parameters="1"
+				property="set"
+				property_name2="priority"
+				property_name="priority">
+				<comments desc="Set the priority. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anPriority"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPriority"
+				name="GetPriority"
+				num_parameters="0"
+				property="get"
+				property_name2="priority"
+				property_name="priority">
+				<comments desc="Get the priority. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setVertexArray"
+				name="SetVertexArray"
+				num_parameters="1"
+				property="set"
+				property_name2="vertexArray"
+				property_name="vertex_array">
+				<comments desc="Set the vertex array. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apVertexArray"
+					type="iVertexArray *"
+					typec="iVertexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVertexArray"
+				name="GetVertexArray"
+				num_parameters="0"
+				property="get"
+				property_name2="vertexArray"
+				property_name="vertex_array">
+				<comments desc="Get the vertex array. "/>
+				<return type="iVertexArray *" typec="iVertexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setPrimitiveType"
+				name="SetPrimitiveType"
+				num_parameters="1"
+				property="set"
+				property_name2="primitiveType"
+				property_name="primitive_type">
+				<comments desc="Set the primitive type. ">
+					<remark text="The primtive type is relevant only if no index array has been set. "/>
+					<remark text="If an index array is set the primitive type is read only, tying to set it will have no effect. The primitive type returned will be the one of the index array. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aPrim"
+					type="eGraphicsPrimitiveType"
+					typec="eGraphicsPrimitiveType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPrimitiveType"
+				name="GetPrimitiveType"
+				num_parameters="0"
+				property="get"
+				property_name2="primitiveType"
+				property_name="primitive_type">
+				<comments desc="Get the primitive type. "/>
+				<return type="eGraphicsPrimitiveType" typec="eGraphicsPrimitiveType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setIndexArray"
+				name="SetIndexArray"
+				num_parameters="1"
+				property="set"
+				property_name2="indexArray"
+				property_name="index_array">
+				<comments desc="Set the index array. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apIndexArray"
+					type="iIndexArray *"
+					typec="iIndexArray*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndexArray"
+				name="GetIndexArray"
+				num_parameters="0"
+				property="get"
+				property_name2="indexArray"
+				property_name="index_array">
+				<comments desc="Get the index array. "/>
+				<return type="iIndexArray *" typec="iIndexArray*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFirstIndex"
+				name="SetFirstIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="firstIndex"
+				property_name="first_index">
+				<comments desc="Set the first index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFirstIndex"
+				name="GetFirstIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="firstIndex"
+				property_name="first_index">
+				<comments desc="Get the first index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setNumIndices"
+				name="SetNumIndices"
+				num_parameters="1"
+				property="set"
+				property_name2="numIndices"
+				property_name="num_indices">
+				<comments desc="Set the number of indices. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNumIndices"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumIndices"
+				name="GetNumIndices"
+				num_parameters="0"
+				property="get"
+				property_name2="numIndices"
+				property_name="num_indices">
+				<comments desc="Get the number of indices. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setBaseVertexIndex"
+				name="SetBaseVertexIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="baseVertexIndex"
+				property_name="base_vertex_index">
+				<comments desc="Set the base vertex index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anBaseVertexIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBaseVertexIndex"
+				name="GetBaseVertexIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="baseVertexIndex"
+				property_name="base_vertex_index">
+				<comments desc="Get the base vertex index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setMatrix"
+				name="SetMatrix"
+				num_parameters="1"
+				property="set"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Set the matrix. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apMatrix"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				name="GetMatrix"
+				num_parameters="0"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get the matrix. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+			</method>
+			<method
+				java_name="setMaterial"
+				name="SetMaterial"
+				num_parameters="1"
+				property="set"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Set the material. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apMaterial"
+					type="iMaterial *"
+					typec="iMaterial*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMaterial"
+				name="GetMaterial"
+				num_parameters="0"
+				property="get"
+				property_name2="material"
+				property_name="material">
+				<comments desc="Get the material. "/>
+				<return type="iMaterial *" typec="iMaterial*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setLocalBoundingVolume"
+				name="SetLocalBoundingVolume"
+				num_parameters="1"
+				property="set"
+				property_name2="localBoundingVolume"
+				property_name="local_bounding_volume">
+				<comments desc="Set the bounding volume. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apBV"
+					type="iBoundingVolume *"
+					typec="iBoundingVolume*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLocalBoundingVolume"
+				name="GetLocalBoundingVolume"
+				num_parameters="0"
+				property="get"
+				property_name2="localBoundingVolume"
+				property_name="local_bounding_volume">
+				<comments desc="Get the bounding volume in local space. "/>
+				<return type="iBoundingVolume *" typec="iBoundingVolume*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoundingVolume"
+				name="GetBoundingVolume"
+				num_parameters="0"
+				property="get"
+				property_name2="boundingVolume"
+				property_name="bounding_volume">
+				<comments desc="Get the bounding volume in world space. "/>
+				<return type="iBoundingVolume *" typec="iBoundingVolume*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCenter"
+				name="GetCenter"
+				num_parameters="0"
+				property="get"
+				property_name2="center"
+				property_name="center">
+				<comments desc="Get the center position. ">
+					<remark text="The center position is the center of the bouding volume multiplied by the matrix. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFVF"
+				name="GetFVF"
+				num_parameters="0"
+				property="get"
+				property_name2="fvf"
+				property_name="fvf">
+				<comments desc="Get the FVF of the draw operation. ">
+					<remark text="Try to get the FVF from the material, if zero the FVF of the vertex array is returned. "/>
+				</comments>
+				<return type="tFVF" typec="tFVF" typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,340 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eStrFindFlags">
+			<comments desc="Str find flags "/>
+			<value name="eStrFindFlags_Forward" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value name="eStrFindFlags_Reversed" value="niBit ( 0 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eStrFindFlags_ICmp" value="niBit ( 1 ) ">
+				<comments desc=""/>
+			</value>
+			<value name="eStrFindFlags_ForwardI" value="eStrFindFlags_Forward|eStrFindFlags_ICmp ">
+				<comments desc=""/>
+			</value>
+			<value name="eStrFindFlags_ReversedI" value="eStrFindFlags_Reversed|eStrFindFlags_ICmp ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum min_features="15" name="eUCPCategory">
+			<comments desc="Unicode code point general character categories "/>
+			<value min_features="15" name="eUCPCategory_Other" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Letter" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Mark" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Number" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Punctuation" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Symbol" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPCategory_Separator" value="6">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum min_features="15" name="eUCPCharType">
+			<comments desc="Unicode code point particular character types "/>
+			<value min_features="15" name="eUCPCharType_Cc" value="0 ">
+				<comments desc="Control "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Cf" value="1 ">
+				<comments desc="Format "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Cn" value="2 ">
+				<comments desc="Unassigned "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Co" value="3 ">
+				<comments desc="Private use "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Cs" value="4 ">
+				<comments desc="Surrogate "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Ll" value="5 ">
+				<comments desc="Lower case letter "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Lm" value="6 ">
+				<comments desc="Modifier letter "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Lo" value="7 ">
+				<comments desc="Other letter "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Lt" value="8 ">
+				<comments desc="Title case letter "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Lu" value="9 ">
+				<comments desc="Upper case letter "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Mc" value="10 ">
+				<comments desc="Spacing mark "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Me" value="11 ">
+				<comments desc="Enclosing mark "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Mn" value="12 ">
+				<comments desc="Non-spacing mark "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Nd" value="13 ">
+				<comments desc="Decimal number "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Nl" value="14 ">
+				<comments desc="Letter number "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_No" value="15 ">
+				<comments desc="Other number "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Pc" value="16 ">
+				<comments desc="Connector punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Pd" value="17 ">
+				<comments desc="Dash punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Pe" value="18 ">
+				<comments desc="Close punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Pf" value="19 ">
+				<comments desc="Final punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Pi" value="20 ">
+				<comments desc="Initial punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Po" value="21 ">
+				<comments desc="Other punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Ps" value="22 ">
+				<comments desc="Open punctuation "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Sc" value="23 ">
+				<comments desc="Currency symbol "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Sk" value="24 ">
+				<comments desc="Modifier symbol "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Sm" value="25 ">
+				<comments desc="Mathematical symbol "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_So" value="26 ">
+				<comments desc="Other symbol "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Zl" value="27 ">
+				<comments desc="Line separator "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Zp" value="28 ">
+				<comments desc="Paragraph separator "/>
+			</value>
+			<value min_features="15" name="eUCPCharType_Zs" value="29">
+				<comments desc="Space separator "/>
+			</value>
+		</enum>
+		<enum min_features="15" name="eUCPScript">
+			<comments desc="Unicode code point script identifications "/>
+			<value min_features="15" name="eUCPScript_Arabic" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Armenian" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Bengali" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Bopomofo" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Braille" value="4 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Buginese" value="5 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Buhid" value="6 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Canadian_Aboriginal" value="7 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Cherokee" value="8 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Common" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Coptic" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Cypriot" value="11 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Cyrillic" value="12 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Deseret" value="13 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Devanagari" value="14 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Ethiopic" value="15 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Georgian" value="16 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Glagolitic" value="17 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Gothic" value="18 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Greek" value="19 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Gujarati" value="20 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Gurmukhi" value="21 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Han" value="22 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Hangul" value="23 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Hanunoo" value="24 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Hebrew" value="25 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Hiragana" value="26 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Inherited" value="27 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Kannada" value="28 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Katakana" value="29 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Kharoshthi" value="30 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Khmer" value="31 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Lao" value="32 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Latin" value="33 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Limbu" value="34 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Linear_B" value="35 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Malayalam" value="36 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Mongolian" value="37 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Myanmar" value="38 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_New_Tai_Lue" value="39 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Ogham" value="40 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Old_Italic" value="41 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Old_Persian" value="42 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Oriya" value="43 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Osmanya" value="44 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Runic" value="45 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Shavian" value="46 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Sinhala" value="47 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Syloti_Nagri" value="48 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Syriac" value="49 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tagalog" value="50 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tagbanwa" value="51 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tai_Le" value="52 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tamil" value="53 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Telugu" value="54 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Thaana" value="55 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Thai" value="56 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tibetan" value="57 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Tifinagh" value="58 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Ugaritic" value="59 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Yi" value="60 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Balinese" value="61 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Cuneiform" value="62 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Nko" value="63 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Phags_Pa" value="64 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="15" name="eUCPScript_Phoenicia" value="65">
+				<comments desc=""/>
+			</value>
+		</enum>
+	</namespace>
+</niIDL>

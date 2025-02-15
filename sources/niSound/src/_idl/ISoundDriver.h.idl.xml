@@ -1,0 +1,197 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eSoundDriverCapFlags">
+			<comments desc="Sound driver caps. "/>
+			<value name="eSoundDriverCapFlags_Buffer" value="niBit ( 0 ) ">
+				<comments desc="Access directly the primary sound buffer. "/>
+			</value>
+			<value name="eSoundDriverCapFlags_Mixer" value="niBit ( 1 ) ">
+				<comments desc="Own 2d sound mixer. "/>
+			</value>
+			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit ( 2 ) ">
+				<comments desc="Own 3d sound mixer. "/>
+			</value>
+		</enum>
+		<interface name="iSoundDriverBufferDataSink" uuid1="17F3F5D0-A4FE-4E30-BB8C-9B7BCD759185" uuid2="0x17f3f5d0,0xa4fe,0x4e30,0xbb,0x8c,0x9b,0x7b,0xcd,0x75,0x91,0x85">
+			<comments desc="Sound driver data callback. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="onSoundDriverBufferDataSink" name="OnSoundDriverBufferDataSink" num_parameters="2">
+				<comments desc="Called when data needs to be written to the buffer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="ptr"
+					type="void *"
+					typec="void*"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="size"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iSoundDriverBuffer" uuid1="FE0E1AFA-668C-43BC-9003-50FA775941A3" uuid2="0xfe0e1afa,0x668c,0x43bc,0x90,0x03,0x50,0xfa,0x77,0x59,0x41,0xa3">
+			<comments desc="Sound driver buffer. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="Switch in the application. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="Switch out of the applicatio. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="play" name="Play" num_parameters="2">
+				<comments desc="Play the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFormat"
+					type="eSoundFormat"
+					typec="eSoundFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anFreq"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="stop" name="Stop" num_parameters="0">
+				<comments desc="Stop the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0">
+				<comments desc="Get the size of the sound buffer. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method java_name="setSink" name="SetSink" num_parameters="1">
+				<comments desc="Set the get sound data sink. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSink"
+					type="iSoundDriverBufferDataSink *"
+					typec="iSoundDriverBufferDataSink*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSink"
+				name="GetSink"
+				num_parameters="0">
+				<comments desc="Get the sound data sink. "/>
+				<return type="iSoundDriverBufferDataSink *" typec="iSoundDriverBufferDataSink*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="updateBuffer" name="UpdateBuffer" num_parameters="0">
+				<comments desc="Update the sound buffer. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+		<interface name="iSoundDriver" uuid1="9B0219CB-3F6B-4C8B-9100-E31DB7724169" uuid2="0x9b0219cb,0x3f6b,0x4c8b,0x91,0x00,0xe3,0x1d,0xb7,0x72,0x41,0x69">
+			<comments desc="Sound driver interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the driver&apos;s name. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCaps"
+				name="GetCaps"
+				num_parameters="0"
+				property="get"
+				property_name2="caps"
+				property_name="caps">
+				<comments desc="Get the driver&apos;s caps. "/>
+				<return type="tSoundDriverCapFlags" typec="tSoundDriverCapFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="startup" name="Startup" num_parameters="3">
+				<comments desc="Startup the sound driver. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aFormat"
+					type="eSoundFormat"
+					typec="eSoundFormat"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="anFrequency"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aWindowHandle"
+					type="tIntPtr"
+					typec="tIntPtr"
+					typei="ni::eType_IntPtr"/>
+			</method>
+			<method java_name="shutdown" name="Shutdown" num_parameters="0">
+				<comments desc="Shutdown the sound driver. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchIn" name="SwitchIn" num_parameters="0">
+				<comments desc="To call when the application is activated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="switchOut" name="SwitchOut" num_parameters="0">
+				<comments desc="To call when the application is deactivated. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBuffer"
+				name="GetBuffer"
+				num_parameters="0"
+				property="get"
+				property_name2="buffer"
+				property_name="buffer">
+				<comments desc="Get the driver&apos;s sound buffer. "/>
+				<return type="iSoundDriverBuffer *" typec="iSoundDriverBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer"
+				name="GetMixer"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer"
+				property_name="mixer">
+				<comments desc="Get the driver&apos;s mixer. "/>
+				<return type="iSoundMixer *" typec="iSoundMixer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMixer3D"
+				name="GetMixer3D"
+				num_parameters="0"
+				property="get"
+				property_name2="mixer3D"
+				property_name="mixer3d">
+				<comments desc="Get the driver&apos;s 3d mixer. "/>
+				<return type="iSoundMixer3D *" typec="iSoundMixer3D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="update" name="Update" num_parameters="0">
+				<comments desc="Update the driver&apos;s computations. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

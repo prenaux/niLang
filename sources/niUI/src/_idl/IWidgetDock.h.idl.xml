@@ -1,0 +1,298 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetDockingManagerMessage">
+			<comments desc="Docking manager messages "/>
+			<value name="eWidgetDockingManagerMessage_BeginMove" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;M&apos; , &apos;b&apos; ) ">
+				<comments desc="The widget is beginning to be moved/dragged. "/>
+			</value>
+			<value name="eWidgetDockingManagerMessage_EndMove" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;M&apos; , &apos;e&apos; ) ">
+				<comments desc="The widget is finished to be moved/dragged. "/>
+			</value>
+			<value name="eWidgetDockingManagerMessage_Move" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;N&apos; , &apos;m&apos; ) ">
+				<comments desc="The widget is moved. ">
+					<params text="A is the absolute cursor position. "/>
+				</comments>
+			</value>
+		</enum>
+		<interface name="iWidgetDockable" uuid1="74AD7011-E5FB-47D8-8AAD-4B2C65C50D35" uuid2="0x74ad7011,0xe5fb,0x47d8,0x8a,0xad,0x4b,0x2c,0x65,0xc5,0x0d,0x35">
+			<comments desc="Dockable widget interface. ">
+				<remark text="This is the interface that widgets needs to implement to be dockable. "/>
+				<remark text="Dockable widgets needs to call their parent widget&apos;s docking manager to handle their docking. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getDockName"
+				name="GetDockName"
+				num_parameters="0"
+				property="get"
+				property_name2="dockName"
+				property_name="dock_name">
+				<comments desc="Get the dock&apos;s name. ">
+					<remark text="The dock name will be used as tab page name when docked. "/>
+				</comments>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsDocked"
+				name="GetIsDocked"
+				num_parameters="0"
+				property="get"
+				property_name2="isDocked"
+				property_name="is_docked">
+				<comments desc="Get the docking status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+		<enum name="eWidgetDockingManagerFlags">
+			<comments desc="Docking manager flags. "/>
+			<value name="eWidgetDockingManagerFlags_Navigator" value="niBit ( 0 ) ">
+				<comments desc="Show a navigator if the Navigator action is triggered. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_HideTabIfOnePage" value="niBit ( 1 ) ">
+				<comments desc="Hide the tab name if only one page is in the tab widget. ">
+					<remark text="This can be set per tab page if necessary, this is the default value. "/>
+				</comments>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockLeft" value="niBit ( 2 ) ">
+				<comments desc="Docking on the left is allowed. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockRight" value="niBit ( 3 ) ">
+				<comments desc="Docking on the right is allowed. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockTop" value="niBit ( 4 ) ">
+				<comments desc="Docking on the top is allowed. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockBottom" value="niBit ( 5 ) ">
+				<comments desc="Docking on the bottom is allowed. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockHorizontal" value="eWidgetDockingManagerFlags_DockLeft|eWidgetDockingManagerFlags_DockRight ">
+				<comments desc="Horizontal docking. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockVertical" value="eWidgetDockingManagerFlags_DockTop|eWidgetDockingManagerFlags_DockBottom ">
+				<comments desc="Vertical docking. "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_DockAll" value="eWidgetDockingManagerFlags_DockHorizontal|eWidgetDockingManagerFlags_DockVertical ">
+				<comments desc="All docking "/>
+			</value>
+			<value name="eWidgetDockingManagerFlags_Default" value="eWidgetDockingManagerFlags_DockAll|eWidgetDockingManagerFlags_Navigator ">
+				<comments desc="Default manager flags. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetDockingManager" uuid1="3ECF2B94-14CF-4E24-B5A9-C2F0BFB8F501" uuid2="0x3ecf2b94,0x14cf,0x4e24,0xb5,0xa9,0xc2,0xf0,0xbf,0xb8,0xf5,0x01">
+			<comments desc="Widget docking manager. ">
+				<remark text="The docking manager is a normal widget that implements iWidgetSink. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Set the docking manager&apos;s flags. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tWidgetDockingManagerFlags"
+					typec="tWidgetDockingManagerFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the docking manager&apos;s flags. "/>
+				<return type="tWidgetDockingManagerFlags" typec="tWidgetDockingManagerFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockAreaFromPageName"
+				name="GetDockAreaFromPageName"
+				num_parameters="1"
+				property="get"
+				property_name2="dockAreaFromPageName"
+				property_name="dock_area_from_page_name">
+				<comments desc="Get the first dock area that contains a tab page with the specified name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockAreaHovered"
+				name="GetDockAreaHovered"
+				num_parameters="1"
+				property="get"
+				property_name2="dockAreaHovered"
+				property_name="dock_area_hovered">
+				<comments desc="Get the dock area that is hovered by the specified absolute cursor position. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avPos"
+					type="sVec2f"
+					typec="sVec2f"
+					typei="ni::eType_Vec2f"/>
+			</method>
+			<method java_name="dockWidget" name="DockWidget" num_parameters="2">
+				<comments desc="Dock the specified widget inside the specified dock area. ">
+					<remark text="If anDock == eInvalidHandle the widget will be docked inside the dock area created by eWidgetDockingManagerMessage_CreateHoveredDockArea, if none has been created the method will return eFalse. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anDock"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="undockWidget" name="UndockWidget" num_parameters="1">
+				<comments desc="Undock the specified widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumDockedWidgets"
+				name="GetNumDockedWidgets"
+				num_parameters="0"
+				property="get"
+				property_name2="numDockedWidgets"
+				property_name="num_docked_widgets">
+				<comments desc="Get the number of widgets docked. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockedWidget"
+				name="GetDockedWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="dockedWidget"
+				property_name="docked_widget">
+				<comments desc="Get the docked widget at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumDockAreas"
+				name="GetNumDockAreas"
+				num_parameters="0"
+				property="get"
+				property_name2="numDockAreas"
+				property_name="num_dock_areas">
+				<comments desc="Get the number of dock area. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockArea"
+				name="GetDockArea"
+				num_parameters="1"
+				property="get"
+				property_name2="dockArea"
+				property_name="dock_area">
+				<comments desc="Get the dock area at the specified index. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDockAreaTabContextMenu"
+				name="SetDockAreaTabContextMenu"
+				num_parameters="1"
+				property="set"
+				property_name2="dockAreaTabContextMenu"
+				property_name="dock_area_tab_context_menu">
+				<comments desc="Set the context menu of the dock areas tabs. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apMenu"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDockAreaTabContextMenu"
+				name="GetDockAreaTabContextMenu"
+				num_parameters="0"
+				property="get"
+				property_name2="dockAreaTabContextMenu"
+				property_name="dock_area_tab_context_menu">
+				<comments desc="Get the context menu of the dock areas tabs. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="addDockArea" name="AddDockArea" num_parameters="4">
+				<comments desc="Add a new empty dock area. " return="The index of the new dock area. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="anParent"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aPos"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="aRect"
+					type="sRectf"
+					typec="sRectf"
+					typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="abLocal"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="clearDockAreas" name="ClearDockAreas" num_parameters="0">
+				<comments desc="Remove all dock areas. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="cleanDockAreas" name="CleanDockAreas" num_parameters="0">
+				<comments desc="Clean all invalid/empty dock areas. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

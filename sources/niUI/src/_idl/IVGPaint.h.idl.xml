@@ -1,0 +1,632 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eVGPaintType">
+			<comments desc="VG paint type. "/>
+			<value min_features="20" name="eVGPaintType_Solid" value="0 ">
+				<comments desc="Solid paint type. "/>
+			</value>
+			<value min_features="20" name="eVGPaintType_Image" value="1 ">
+				<comments desc="Image paint type. "/>
+			</value>
+			<value min_features="20" name="eVGPaintType_Gradient" value="2 ">
+				<comments desc="Gradient paint type. "/>
+			</value>
+		</enum>
+		<enum min_features="20" name="eVGPaintUnits">
+			<comments desc="VG paint units. "/>
+			<value min_features="20" name="eVGPaintUnits_Absolute" value="0 ">
+				<comments desc="Units are absolute (default). "/>
+			</value>
+			<value min_features="20" name="eVGPaintUnits_ObjectBoundingBox" value="1 ">
+				<comments desc="Units relative to the element&apos;s bounding box. "/>
+			</value>
+			<value min_features="20" name="eVGPaintUnits_UserSpaceOnUse" value="2 ">
+				<comments desc="Units relative to the current coordinate system. "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iVGPaint"
+			uuid1="70ADF57B-20E2-4734-903C-DE24E702EFA9"
+			uuid2="0x70adf57b,0x20e2,0x4734,0x90,0x3c,0xde,0x24,0xe7,0x02,0xef,0xa9">
+			<comments desc="VG paint interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="copy"
+				min_features="20"
+				name="Copy"
+				num_parameters="1">
+				<comments desc="Copy another paint of the same type. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="const iVGPaint *"
+					typec="const iVGPaint*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="20"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this paint. "/>
+				<return type="iVGPaint *" typec="iVGPaint*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				min_features="20"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the paint type. "/>
+				<return type="eVGPaintType" typec="eVGPaintType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setColor"
+				min_features="20"
+				name="SetColor"
+				num_parameters="1"
+				property="set"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Set the paint color. ">
+					<remark text="The paint color is the default color that should be used if the rendering context can&apos;t draw this paint type. "/>
+					<remark text="The color is the modulation color if the paint type is more complex than a solid color. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getColor"
+				min_features="20"
+				name="GetColor"
+				num_parameters="0"
+				property="get"
+				property_name2="color"
+				property_name="color">
+				<comments desc="Get the paint color. ">
+					<remark text="The paint color is the default color that should be used if the rendering context can&apos;t draw this paint type. "/>
+				</comments>
+				<return type="const sColor4f &amp;" typec="const sColor4f&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iVGPaintImage"
+			uuid1="83454203-03D3-43DF-9FC6-06E9E70A782F"
+			uuid2="0x83454203,0x03d3,0x43df,0x9f,0xc6,0x06,0xe9,0xe7,0x0a,0x78,0x2f">
+			<comments desc="VG paint image interface. "/>
+			<parents>
+				<parent name="iVGPaint"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getImage"
+				min_features="20"
+				name="GetImage"
+				num_parameters="0"
+				property="get"
+				property_name2="image"
+				property_name="image">
+				<comments desc="Get the painted image. "/>
+				<return type="iVGImage *" typec="iVGImage*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFilterType"
+				min_features="20"
+				name="SetFilterType"
+				num_parameters="1"
+				property="set"
+				property_name2="filterType"
+				property_name="filter_type">
+				<comments desc="Set the image filter type. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eVGImageFilter"
+					typec="eVGImageFilter"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFilterType"
+				min_features="20"
+				name="GetFilterType"
+				num_parameters="0"
+				property="get"
+				property_name2="filterType"
+				property_name="filter_type">
+				<comments desc="Get the image filter type. "/>
+				<return type="eVGImageFilter" typec="eVGImageFilter" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setFilterRadius"
+				min_features="20"
+				name="SetFilterRadius"
+				num_parameters="1"
+				property="set"
+				property_name2="filterRadius"
+				property_name="filter_radius">
+				<comments desc="Set the image filter radius. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFilterRadius"
+				min_features="20"
+				name="GetFilterRadius"
+				num_parameters="0"
+				property="get"
+				property_name2="filterRadius"
+				property_name="filter_radius">
+				<comments desc="Get the image filter radius. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setFilterNormalize"
+				min_features="20"
+				name="SetFilterNormalize"
+				num_parameters="1"
+				property="set"
+				property_name2="filterNormalize"
+				property_name="filter_normalize">
+				<comments desc="Set the image filter normalization flag. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abNormalize"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFilterNormalize"
+				min_features="20"
+				name="GetFilterNormalize"
+				num_parameters="0"
+				property="get"
+				property_name2="filterNormalize"
+				property_name="filter_normalize">
+				<comments desc="Get the image filter normalization flag. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setWrapType"
+				min_features="20"
+				name="SetWrapType"
+				num_parameters="1"
+				property="set"
+				property_name2="wrapType"
+				property_name="wrap_type">
+				<comments desc="Set the paint wrap type. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aWrapType"
+					type="eVGWrapType"
+					typec="eVGWrapType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWrapType"
+				min_features="20"
+				name="GetWrapType"
+				num_parameters="0"
+				property="get"
+				property_name2="wrapType"
+				property_name="wrap_type">
+				<comments desc="Get the paint wrap type. "/>
+				<return type="eVGWrapType" typec="eVGWrapType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setRectangle"
+				min_features="20"
+				name="SetRectangle"
+				num_parameters="1"
+				property="set"
+				property_name2="rectangle"
+				property_name="rectangle">
+				<comments desc="Set the image&apos;s display rectangle. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aRect"
+					type="const sRectf &amp;"
+					typec="const sRectf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRectangle"
+				min_features="20"
+				name="GetRectangle"
+				num_parameters="0"
+				property="get"
+				property_name2="rectangle"
+				property_name="rectangle">
+				<comments desc="Get the image&apos;s display rectangle. "/>
+				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setUnits"
+				min_features="20"
+				name="SetUnits"
+				num_parameters="1"
+				property="set"
+				property_name2="units"
+				property_name="units">
+				<comments desc="Set the paint units. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aUnits"
+					type="eVGPaintUnits"
+					typec="eVGPaintUnits"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUnits"
+				min_features="20"
+				name="GetUnits"
+				num_parameters="0"
+				property="get"
+				property_name2="units"
+				property_name="units">
+				<comments desc="Get the paint units. "/>
+				<return type="eVGPaintUnits" typec="eVGPaintUnits" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setSource"
+				min_features="20"
+				name="SetSource"
+				num_parameters="1"
+				property="set"
+				property_name2="source"
+				property_name="source">
+				<comments desc="Set the source user pointer to be used to generate the image&apos;s content. ">
+					<remark text="User side parameter, the user should update the fill/stroke image transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apSource"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSource"
+				min_features="20"
+				name="GetSource"
+				num_parameters="0"
+				property="get"
+				property_name2="source"
+				property_name="source">
+				<comments desc="Get the source user pointer to be used to generate the image&apos;s content. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSourceUnits"
+				min_features="20"
+				name="SetSourceUnits"
+				num_parameters="1"
+				property="set"
+				property_name2="sourceUnits"
+				property_name="source_units">
+				<comments desc="Set the content units. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+					<remark text="Valid only if generated from a source. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aUnits"
+					type="eVGPaintUnits"
+					typec="eVGPaintUnits"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSourceUnits"
+				min_features="20"
+				name="GetSourceUnits"
+				num_parameters="0"
+				property="get"
+				property_name2="sourceUnits"
+				property_name="source_units">
+				<comments desc="Get the content units. "/>
+				<return type="eVGPaintUnits" typec="eVGPaintUnits" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			min_features="20"
+			name="iVGPaintGradient"
+			uuid1="2DA65D45-7B4B-4885-9B68-09E586DEF11B"
+			uuid2="0x2da65d45,0x7b4b,0x4885,0x9b,0x68,0x09,0xe5,0x86,0xde,0xf1,0x1b">
+			<comments desc="VG paint gradient interface. "/>
+			<parents>
+				<parent name="iVGPaint"/>
+			</parents>
+			<method
+				java_name="setGradientType"
+				min_features="20"
+				name="SetGradientType"
+				num_parameters="1"
+				property="set"
+				property_name2="gradientType"
+				property_name="gradient_type">
+				<comments desc="Set the type of gradient. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eVGGradientType"
+					typec="eVGGradientType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGradientType"
+				min_features="20"
+				name="GetGradientType"
+				num_parameters="0"
+				property="get"
+				property_name2="gradientType"
+				property_name="gradient_type">
+				<comments desc="Get the type of gradient. "/>
+				<return type="eVGGradientType" typec="eVGGradientType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setD1"
+				min_features="20"
+				name="SetD1"
+				num_parameters="1"
+				property="set"
+				property_name2="d1"
+				property_name="d1">
+				<comments desc="Set the D1 parameter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anD1"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getD1"
+				min_features="20"
+				name="GetD1"
+				num_parameters="0"
+				property="get"
+				property_name2="d1"
+				property_name="d1">
+				<comments desc="Get the D1 parameter. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setD2"
+				min_features="20"
+				name="SetD2"
+				num_parameters="1"
+				property="set"
+				property_name2="d2"
+				property_name="d2">
+				<comments desc="Set the D2 parameter. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anD2"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getD2"
+				min_features="20"
+				name="GetD2"
+				num_parameters="0"
+				property="get"
+				property_name2="d2"
+				property_name="d2">
+				<comments desc="Get the D2 parameter. "/>
+				<return type="tI32" typec="tI32" typei="ni::eType_I32"/>
+			</method>
+			<method
+				java_name="setWrapType"
+				min_features="20"
+				name="SetWrapType"
+				num_parameters="1"
+				property="set"
+				property_name2="wrapType"
+				property_name="wrap_type">
+				<comments desc="Set the paint wrap type. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aWrapType"
+					type="eVGWrapType"
+					typec="eVGWrapType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getWrapType"
+				min_features="20"
+				name="GetWrapType"
+				num_parameters="0"
+				property="get"
+				property_name2="wrapType"
+				property_name="wrap_type">
+				<comments desc="Get the paint wrap type. "/>
+				<return type="eVGWrapType" typec="eVGWrapType" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setA"
+				min_features="20"
+				name="SetA"
+				num_parameters="1"
+				property="set"
+				property_name2="a"
+				property_name="a">
+				<comments desc="Set the direction start for linear gradient, or center for radial gradients. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getA"
+				min_features="20"
+				name="GetA"
+				num_parameters="0"
+				property="get"
+				property_name2="a"
+				property_name="a">
+				<comments desc="Get the direction start for linear gradient, or center for radial gradients. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setB"
+				min_features="20"
+				name="SetB"
+				num_parameters="1"
+				property="set"
+				property_name2="b"
+				property_name="b">
+				<comments desc="Set the direction end for linear gradient, or focal for radial gradients. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getB"
+				min_features="20"
+				name="GetB"
+				num_parameters="0"
+				property="get"
+				property_name2="b"
+				property_name="b">
+				<comments desc="Get the direction end for linear gradient, or focal for radial gradients. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setR"
+				min_features="20"
+				name="SetR"
+				num_parameters="1"
+				property="set"
+				property_name2="r"
+				property_name="r">
+				<comments desc="Set the distance scale for linear gradient, or radius for radial gradients. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getR"
+				min_features="20"
+				name="GetR"
+				num_parameters="0"
+				property="get"
+				property_name2="r"
+				property_name="r">
+				<comments desc="Get the distance scale for linear gradient, or radius for radial gradients. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setUnits"
+				min_features="20"
+				name="SetUnits"
+				num_parameters="1"
+				property="set"
+				property_name2="units"
+				property_name="units">
+				<comments desc="Set the paint units. ">
+					<remark text="User side parameter, the user should setup the fill/stroke paint transform according to this parameter before rendering. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aUnits"
+					type="eVGPaintUnits"
+					typec="eVGPaintUnits"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUnits"
+				min_features="20"
+				name="GetUnits"
+				num_parameters="0"
+				property="get"
+				property_name2="units"
+				property_name="units">
+				<comments desc="Get the paint units. "/>
+				<return type="eVGPaintUnits" typec="eVGPaintUnits" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGradientTable"
+				min_features="20"
+				name="GetGradientTable"
+				num_parameters="0"
+				property="get"
+				property_name2="gradientTable"
+				property_name="gradient_table">
+				<comments desc="Get the gradient table. "/>
+				<return type="iVGGradientTable *" typec="iVGGradientTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

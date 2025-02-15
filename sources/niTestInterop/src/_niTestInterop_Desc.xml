@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<module name='niTestInterop'
+        version='1,0,0' 
+        desc='TestInterop module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+  <objecttype  name='TestInterop' desc='TestInterop Object' class='cTestInterop' type='ni::iTestInterop'  />
+  <include>niTestInterop/src/_idl/ITestInterop.h.idl.xml</include>
+</module>

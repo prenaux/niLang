@@ -1,0 +1,167 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetCanvasStyle">
+			<comments desc="Canvas widget styles "/>
+			<value name="eWidgetCanvasStyle_ScrollH" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="A horizontal scroll bar will be shown if the canvas client size is bigger than the canvas&apos;s rectangle. ">
+					<remark text="The width of the client rectangle wont be adjusted to the canvas rectangle. "/>
+				</comments>
+			</value>
+			<value name="eWidgetCanvasStyle_ScrollV" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="A vertical scroll bar will be shown if the canvas client size is bigger than the canvas&apos;s rectangle. ">
+					<remark text="The height of the client rectangle wont be adjusted to the canvas rectangle. "/>
+				</comments>
+			</value>
+			<value name="eWidgetCanvasStyle_HideScrollH" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="The horizontal scroll bar will never be set visible. "/>
+			</value>
+			<value name="eWidgetCanvasStyle_HideScrollV" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="The vertical scroll bar will never be set visible. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetCanvas" uuid1="CD67D2FC-71DA-4054-AE79-BF6DD22744D6" uuid2="0xcd67d2fc,0x71da,0x4054,0xae,0x79,0xbf,0x6d,0xd2,0x27,0x44,0xd6">
+			<comments desc="Canvas widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getScrollV"
+				name="GetScrollV"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollV"
+				property_name="scroll_v">
+				<comments desc="Get the vertical scroll bar. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setScrollStepV"
+				name="SetScrollStepV"
+				num_parameters="1"
+				property="set"
+				property_name2="scrollStepV"
+				property_name="scroll_step_v">
+				<comments desc="Set the scroll bar vertical step size. ">
+					<remark text="The default is 20 "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollStepV"
+				name="GetScrollStepV"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollStepV"
+				property_name="scroll_step_v">
+				<comments desc="Get the scroll bar vertical step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setScrollMarginV"
+				name="SetScrollMarginV"
+				num_parameters="1"
+				property="set"
+				property_name2="scrollMarginV"
+				property_name="scroll_margin_v">
+				<comments desc="Set the scroll bar vertical range margin. ">
+					<remark text="The default is zero "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollMarginV"
+				name="GetScrollMarginV"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollMarginV"
+				property_name="scroll_margin_v">
+				<comments desc="Get the scroll bar vertical range margin. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollH"
+				name="GetScrollH"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollH"
+				property_name="scroll_h">
+				<comments desc="Get the horizontal scroll bar. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setScrollStepH"
+				name="SetScrollStepH"
+				num_parameters="1"
+				property="set"
+				property_name2="scrollStepH"
+				property_name="scroll_step_h">
+				<comments desc="Set the scroll bar horizontal step size. ">
+					<remark text="The default is 20 "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollStepH"
+				name="GetScrollStepH"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollStepH"
+				property_name="scroll_step_h">
+				<comments desc="Get the scroll bar horizontal step size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setScrollMarginH"
+				name="SetScrollMarginH"
+				num_parameters="1"
+				property="set"
+				property_name2="scrollMarginH"
+				property_name="scroll_margin_h">
+				<comments desc="Set the scroll bar horizontal range margin. ">
+					<remark text="The default is zero "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afV"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getScrollMarginH"
+				name="GetScrollMarginH"
+				num_parameters="0"
+				property="get"
+				property_name2="scrollMarginH"
+				property_name="scroll_margin_h">
+				<comments desc="Get the scroll bar horizontal range margin. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

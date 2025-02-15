@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<module name='niSound'
+        version='1,0,0' 
+        desc='Sound module'
+        author='niLang Authors'
+        copyright='(c) 2022 The niLang Authors'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+  <objecttype  name='SoundFactory' desc='Sound Factory Object' class='cSoundFactory' type='ni::iSoundFactory'  />
+  <include>niSound/src/_idl/ISoundBuffer.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundData.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundDriver.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundFactory.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundFormat.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundMixer.h.idl.xml</include>
+  <include>niSound/src/_idl/ISoundSource.h.idl.xml</include>
+</module>

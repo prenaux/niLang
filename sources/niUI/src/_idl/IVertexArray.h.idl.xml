@@ -1,0 +1,85 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iVertexArray" uuid1="1C847F71-312F-41EA-97B9-AB29B0C38121" uuid2="0x1c847f71,0x312f,0x41ea,0x97,0xb9,0xab,0x29,0xb0,0xc3,0x81,0x21">
+			<comments desc="Vertex Array interface. ">
+				<remark text="Bindable "/>
+			</comments>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getFVF"
+				name="GetFVF"
+				num_parameters="0"
+				property="get"
+				property_name2="fvf"
+				property_name="fvf">
+				<comments desc="Get the FVF of the vertex array. "/>
+				<return type="tFVF" typec="tFVF" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumVertices"
+				name="GetNumVertices"
+				num_parameters="0"
+				property="get"
+				property_name2="numVertices"
+				property_name="num_vertices">
+				<comments desc="Get the number of vertices in the vertex array. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getUsage"
+				name="GetUsage"
+				num_parameters="0"
+				property="get"
+				property_name2="usage"
+				property_name="usage">
+				<comments desc="Get the usage of the given vertex array. "/>
+				<return type="eArrayUsage" typec="eArrayUsage" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="lock" name="Lock" num_parameters="3">
+				<comments desc="Lock vertex array memory to enable writting and reading in it. " return="a pointer to the vertex data. ">
+					<remark text="pass 0 for ulFirstVertex and ulNumVertex to lock the entire array. "/>
+					<params text="ulFirstVertex is the offset in the vertex data to lock. "/>
+					<params text="ulNumVertex is the number of vertex to lock. "/>
+					<params text="aLock specify to locking mode. "/>
+				</comments>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+				<parameter
+					name="ulFirstVertex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="ulNumVertex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aLock"
+					type="eLock"
+					typec="eLock"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="unlock" name="Unlock" num_parameters="0">
+				<comments desc="Unlock vertex array memory. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsLocked"
+				name="GetIsLocked"
+				num_parameters="0"
+				property="get"
+				property_name2="isLocked"
+				property_name="is_locked">
+				<comments desc="Return true if the array is locked. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

@@ -1,0 +1,600 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iBitmap2D" uuid1="30011CCB-E4B7-45F9-95BC-7C365A522795" uuid2="0x30011ccb,0xe4b7,0x45f9,0x95,0xbc,0x7c,0x36,0x5a,0x52,0x27,0x95">
+			<comments desc="2D Bitmap interface. "/>
+			<parents>
+				<parent name="iBitmapBase"/>
+			</parents>
+			<method
+				java_name="setMemoryAddress"
+				name="SetMemoryAddress"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Set the memory address. " return="eFalse if apAddre is NULL, else eTrue. ">
+					<remark text="If abFreeData the memory must have been allocated with niNew or niMalloc. "/>
+					<params text="apAddr is the address of the bitmap&apos;s data. "/>
+					<params text="abFreeData: if eTrue the data will be freed automatically when the bitmap is released. "/>
+					<params text="anPitch: if != eInvalidHandle will adjust the bitmap&apos;s pitch. "/>
+				</comments>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="apAddr" type="tPtr" typec="tPtr"/>
+				<parameter name="abFreeData" type="tBool" typec="tBool"/>
+				<parameter
+					default="eInvalidHandle "
+					last="1"
+					name="anPitch"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPitch"
+				name="GetPitch"
+				num_parameters="0"
+				property="get"
+				property_name2="pitch"
+				property_name="pitch">
+				<comments desc="Get the number of bytes per line. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getData"
+				name="GetData"
+				num_parameters="0"
+				property="get"
+				property_name2="data"
+				property_name="data">
+				<comments desc="Get the data pointer. "/>
+				<return type="tPtr" typec="tPtr" typei="ni::eType_Ptr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSize"
+				name="GetSize"
+				num_parameters="0"
+				property="get"
+				property_name2="size"
+				property_name="size">
+				<comments desc="Get the size in bytes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createResized"
+				name="CreateResized"
+				num_parameters="2">
+				<comments desc="Create a resized copy of this bitmap. "/>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="nH"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createResizedEx"
+				name="CreateResizedEx"
+				num_parameters="3">
+				<comments desc="Create a resized copy of this bitmap. ">
+					<remark text="This variant of CreateResized as an additional parameter that allows to specify whether the mipmaps should be resized as-well or just dropped in the resized version. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="nW"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="nH"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="abPreserveMipMaps"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createCubeBitmap"
+				name="CreateCubeBitmap"
+				num_parameters="13">
+				<comments desc="Create a cube bitmap from the specified 6 rectangles. "/>
+				<return type="iBitmapCube *" typec="iBitmapCube*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anWidth"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="avPX"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aBlitPX"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avNX"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aBlitNX"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avPY"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aBlitPY"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avNY"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aBlitNY"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avPZ"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aBlitPZ"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="avNZ"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBlitNZ"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="createCubeBitmapCross"
+				name="CreateCubeBitmapCross"
+				num_parameters="0">
+				<comments desc="Create a cube bitmap from a vertical or horizontal cross unfolded cube. ">
+					<remark text="Wheter a vertical or horizontal cross is contained in the bitmap is determined from the ratio between the width and height of the bitmap. If the width is greater an horizontal cross is assumed, else if the height is greater then a vertical cross is assumed. "/>
+					<remark text="The cross is assumed to be on the &apos;top&apos;/&apos;left&apos; of the bitmap. "/>
+					<remark text="Horizontal cross : &#xA;&lt;pre&gt;&#xA;     |------------------------&#xA;     |     | PY  |           |&#xA;     |     |     |           |&#xA;     |------------------------&#xA;     | NX  | PZ  | PX  | NZ  |&#xA;     |     |     |     |     |&#xA;     |------------------------&#xA;     |     | NY  |           |&#xA;     |     |     |           |&#xA;     |------------------------&#xA;&lt;/pre&gt; "/>
+					<remark text="Vertical cross : &#xA;&lt;pre&gt;&#xA;     |-----------------|&#xA;     |     | NX  |     |&#xA;     |     |     |     |&#xA;     |-----|-----|-----|&#xA;     | NY  | PZ  | PY  |&#xA;     |     |     |     |&#xA;     |-----|-----|-----|&#xA;     |     | PX  |     |&#xA;     |     |     |     |&#xA;     |     |-----|     |&#xA;     |     | NZ  |     |&#xA;     |     |     |     |&#xA;     |-----|-----|-----|&#xA;&lt;/pre&gt; "/>
+				</comments>
+				<return type="iBitmapCube *" typec="iBitmapCube*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="beginUnpackPixels" name="BeginUnpackPixels" num_parameters="0">
+				<comments desc="Begin unpacking pixels. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="endUnpackPixels" name="EndUnpackPixels" num_parameters="0">
+				<comments desc="End unpacking pixels. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMipMap"
+				name="GetMipMap"
+				num_parameters="1"
+				property="get"
+				property_name2="mipMap"
+				property_name="mip_map">
+				<comments desc="Get the mipmap at the specified index. ">
+					<remark text="Mip map zero is not the main surface but the first mip map. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ulIdx"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLevel"
+				name="GetLevel"
+				num_parameters="1"
+				property="get"
+				property_name2="level"
+				property_name="level">
+				<comments desc="Get the bitmap at the specified level. ">
+					<remark text="0 is the main surface, 1 is the first mip map, and so on. "/>
+				</comments>
+				<return type="iBitmap2D *" typec="iBitmap2D*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="blit" name="Blit" num_parameters="8">
+				<comments desc="Blit a bitmap in this bitmap. ">
+					<remark text="Clipping and pixel format conversion are automatically performed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="src"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="xs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ys"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="xd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="yd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="w"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="h"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					default="ePixelFormatBlit_Normal "
+					last="1"
+					name="eBlit"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitStretch" name="BlitStretch" num_parameters="9">
+				<comments desc="Blit stretch a bitmap in this bitmap. ">
+					<remark text="Clipping and pixel format conversion are automatically performed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="src"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="xs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ys"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="xd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="yd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ws"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="hs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="wd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="hd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="blitAlpha" name="BlitAlpha" num_parameters="11">
+				<comments desc="Blit, with alpha blending, a bitmap in this bitmap. ">
+					<remark text="The source and destination color are used to replace missing components in the source/destination format. "/>
+					<remark text="Clipping and pixel format conversion are automatically performed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="src"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="xs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ys"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="xd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="yd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="w"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="h"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="eBlit"
+					type="ePixelFormatBlit"
+					typec="ePixelFormatBlit"
+					typei="ni::eType_Enum"/>
+				<parameter
+					name="acolSource"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="acolDest"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="blitAlphaStretch" name="BlitAlphaStretch" num_parameters="12">
+				<comments desc="Blit stretch, with alpha blending, a bitmap in this bitmap. ">
+					<remark text="The source and destination color are used to replace missing components in the source/destination format. "/>
+					<remark text="Clipping and pixel format conversion are automatically performed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="src"
+					type="const iBitmap2D *"
+					typec="const iBitmap2D*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="xs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ys"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="xd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="yd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="ws"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="hs"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="wd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="hd"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="acolSource"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="acolDest"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aBlendMode"
+					type="eBlendMode"
+					typec="eBlendMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="putPixel"
+				name="PutPixel"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Put a pixel at the specified position. "/>
+				<return type="void" typec="void"/>
+				<parameter name="x" type="tI32" typec="tI32"/>
+				<parameter name="y" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="col"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPixel"
+				name="GetPixel"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Get a pixel at the specified position. "/>
+				<return type="tPtr" typec="tPtr"/>
+				<parameter name="x" type="tI32" typec="tI32"/>
+				<parameter name="y" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="pOut"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				java_name="clear"
+				name="Clear"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc="Clear the bitmap "/>
+				<return type="void" typec="void"/>
+				<parameter
+					default="NULL "
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method
+				java_name="clearRect"
+				name="ClearRect"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Clear the bitmap ">
+					<remark text="The right and bottom edges are not filled. "/>
+				</comments>
+				<return type="void" typec="void"/>
+				<parameter name="aRect" type="const sRecti &amp;" typec="const sRecti&amp;"/>
+				<parameter
+					last="1"
+					name="pColor"
+					type="tPtr"
+					typec="tPtr"/>
+			</method>
+			<method java_name="putPixelf" name="PutPixelf" num_parameters="3">
+				<comments desc="Put a pixel at the specified position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="x"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					name="y"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPixelf"
+				name="GetPixelf"
+				num_parameters="2">
+				<comments desc="Get a pixel at the specified position. "/>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="x"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="clearf" name="Clearf" num_parameters="1">
+				<comments desc="Clear the bitmap. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearRectf" name="ClearRectf" num_parameters="2">
+				<comments desc="Clear the bitmap. ">
+					<remark text="The right and bottom edges are not filled. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aRect"
+					type="const sRecti &amp;"
+					typec="const sRecti&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avCol"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

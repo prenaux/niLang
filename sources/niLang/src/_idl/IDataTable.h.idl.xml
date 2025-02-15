@@ -1,0 +1,3139 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eDataTablePropertyType">
+			<comments desc="Data table property types. "/>
+			<value name="eDataTablePropertyType_Unknown" value="eType_Null ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_String" value="eType_String ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Int" value="eType_I64 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Int32" value="eType_I32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Int64" value="eType_I64 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Bool" value="eType_I8 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Float" value="eType_F64 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Float32" value="eType_F32 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Float64" value="eType_F64 ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Vec2" value="eType_Vec2f ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Vec3" value="eType_Vec3f ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Vec4" value="eType_Vec4f ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_Matrix" value="eType_Matrixf ">
+				<comments desc=""/>
+			</value>
+			<value name="eDataTablePropertyType_IUnknown" value="eType_IUnknown|eTypeFlags_Pointer">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum name="eDataTableCopyFlags">
+			<comments desc="Data table copy mode. "/>
+			<value name="eDataTableCopyFlags_Default" value="0 ">
+				<comments desc="No special flags, will overwrite properties, and wont be recursive. "/>
+			</value>
+			<value name="eDataTableCopyFlags_Skip" value="niBit ( 0 ) ">
+				<comments desc="If a property is already in the destination it&apos;ll be left as is. "/>
+			</value>
+			<value name="eDataTableCopyFlags_Recursive" value="niBit ( 1 ) ">
+				<comments desc="Recursive, children tables will be copied as well (and their own children). "/>
+			</value>
+			<value name="eDataTableCopyFlags_AppendAllChildren" value="niBit ( 2 ) ">
+				<comments desc="All children of the source will be appended. By default children which are in the same sequential order and have the same name as the destination are merged. "/>
+			</value>
+			<value name="eDataTableCopyFlags_UniqueChild" value="niBit ( 3 ) ">
+				<comments desc="Each child data table has a unique name. "/>
+			</value>
+			<value name="eDataTableCopyFlags_Clone" value="niBit ( 4 ) ">
+				<comments desc="Clone all appended children tables. "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iDataTableSink"
+			uuid1="3C187C5E-45D3-42C2-9E59-0E2B3315FC48"
+			uuid2="0x3c187c5e,0x45d3,0x42c2,0x9e,0x59,0x0e,0x2b,0x33,0x15,0xfc,0x48">
+			<comments desc="Data table sink. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onDataTableSink_SetName"
+				name="OnDataTableSink_SetName"
+				num_parameters="1"
+				optional="yes">
+				<comments desc="The name of the data table has been set. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onDataTableSink_AddChild"
+				name="OnDataTableSink_AddChild"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="A child data table has been added. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apChild"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onDataTableSink_RemoveChild"
+				name="OnDataTableSink_RemoveChild"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="A child data table has been removed. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apChild"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onDataTableSink_SetProperty"
+				name="OnDataTableSink_SetProperty"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="A property has been set. ">
+					<remark text="Recall that OnDataTableSink_GetProperty will be called from any iDataTable::Get(Index)Property(Type), so it should probably return niVarNull when SetProperty is entered. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anProperty"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="onDataTableSink_SetMetadata"
+				name="OnDataTableSink_SetMetadata"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="A property&apos;s meta-data has been set. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anProperty"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="onDataTableSink_RemoveProperty"
+				name="OnDataTableSink_RemoveProperty"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="A property is going to be removed. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anProperty"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="onDataTableSink_GetProperty"
+				name="OnDataTableSink_GetProperty"
+				num_parameters="2"
+				optional="yes">
+				<comments desc="Get the value of the specified property. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anProperty"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+		<interface name="iDataTable" uuid1="6A1F95C1-4D23-4C62-9686-561CB92C36D5" uuid2="0x6a1f95c1,0x4d23,0x4c62,0x96,0x86,0x56,0x1c,0xb9,0x2c,0x36,0xd5">
+			<comments desc="Data table. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setName"
+				name="SetName"
+				num_parameters="1"
+				property="set"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Set the table name. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the table name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRoot"
+				name="GetRoot"
+				num_parameters="0"
+				property="get"
+				property_name2="root"
+				property_name="root">
+				<comments desc="Get the root table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getParent"
+				name="GetParent"
+				num_parameters="0"
+				property="get"
+				property_name2="parent"
+				property_name="parent">
+				<comments desc="Get the parent table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPrevSibling"
+				name="GetPrevSibling"
+				num_parameters="0"
+				property="get"
+				property_name2="prevSibling"
+				property_name="prev_sibling">
+				<comments desc="Get the previous sibling of this data table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNextSibling"
+				name="GetNextSibling"
+				num_parameters="0"
+				property="get"
+				property_name2="nextSibling"
+				property_name="next_sibling">
+				<comments desc="Get the next sibling of this data table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIndex"
+				name="GetIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="index"
+				property_name="index">
+				<comments desc="Get the index of this datatable. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone this table. ">
+					<remark text="Shortcut for CloneEx(eDataTableCopyFlags_Clone|eDataTableCopyFlags_Recursive|eDataTableCopyFlags_AppendAllChildren). "/>
+				</comments>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="cloneEx"
+				name="CloneEx"
+				num_parameters="1">
+				<comments desc="Clone this table. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="tDataTableCopyFlags"
+					typec="tDataTableCopyFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="copy" name="Copy" num_parameters="2">
+				<comments desc="Copy the source table inside this table. ">
+					<remark text="Automatically convert to this type if the type is not the same as this table. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apSource"
+					type="const iDataTable *"
+					typec="const iDataTable*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aMode"
+					type="tDataTableCopyFlags"
+					typec="tDataTableCopyFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the children datatables and properties. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHasSink"
+				name="GetHasSink"
+				num_parameters="0"
+				property="get"
+				property_name2="hasSink"
+				property_name="has_sink">
+				<comments desc="Check if any sink is inside the data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSinkList"
+				name="GetSinkList"
+				num_parameters="0"
+				property="get"
+				property_name2="sinkList"
+				property_name="sink_list">
+				<comments desc="Get the data table&apos;s sink list. "/>
+				<return type="tDataTableSinkLst *" typec="tDataTableSinkLst*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="clearChildren" name="ClearChildren" num_parameters="0">
+				<comments desc="Clear the child tables. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChildren"
+				name="GetNumChildren"
+				num_parameters="0"
+				property="get"
+				property_name2="numChildren"
+				property_name="num_children">
+				<comments desc="Get the number of child tables. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildIndex"
+				name="GetChildIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="childIndex"
+				property_name="child_index">
+				<comments desc="Get the index of the first child table with the specified name. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChild"
+				name="GetChild"
+				num_parameters="1"
+				property="get"
+				property_name2="child"
+				property_name="child">
+				<comments desc="Get the child table with the specified name. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getChildFromIndex"
+				name="GetChildFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="childFromIndex"
+				property_name="child_from_index">
+				<comments desc="Get the child table at the specified index. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addChild" name="AddChild" num_parameters="1">
+				<comments desc="Append a child table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apTable"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeChild" name="RemoveChild" num_parameters="1">
+				<comments desc="Remove the child table at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="clearProperties" name="ClearProperties" num_parameters="0">
+				<comments desc="Clear the properties. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="removeProperty" name="RemoveProperty" num_parameters="1">
+				<comments desc="Remove the property with the specified name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removePropertyFromIndex" name="RemovePropertyFromIndex" num_parameters="1">
+				<comments desc="Remove the property at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumProperties"
+				name="GetNumProperties"
+				num_parameters="0"
+				property="get"
+				property_name2="numProperties"
+				property_name="num_properties">
+				<comments desc="Get the number of properties in the table. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPropertyIndex"
+				name="GetPropertyIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="propertyIndex"
+				property_name="property_index">
+				<comments desc="Get the index of the specified property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPropertyName"
+				name="GetPropertyName"
+				num_parameters="1"
+				property="get"
+				property_name2="propertyName"
+				property_name="property_name">
+				<comments desc="Get the name of the property at the specified index. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPropertyType"
+				name="GetPropertyType"
+				num_parameters="1"
+				property="get"
+				property_name2="propertyType"
+				property_name="property_type">
+				<comments desc="Get the type of a property. "/>
+				<return type="eDataTablePropertyType" typec="eDataTablePropertyType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getPropertyTypeFromIndex"
+				name="GetPropertyTypeFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="propertyTypeFromIndex"
+				property_name="property_type_from_index">
+				<comments desc="Get the type of the property at the specified index. "/>
+				<return type="eDataTablePropertyType" typec="eDataTablePropertyType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasProperty"
+				name="HasProperty"
+				num_parameters="1">
+				<comments desc="Check whether the data table has a property with the specified name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMetadata"
+				name="SetMetadata"
+				num_parameters="2"
+				property="set"
+				property_name2="metadata"
+				property_name="metadata">
+				<comments desc="Set a property meta-data. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspData"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMetadata"
+				name="GetMetadata"
+				num_parameters="1"
+				property="get"
+				property_name2="metadata"
+				property_name="metadata">
+				<comments desc="Get a property meta-data. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMetadataFromIndex"
+				name="SetMetadataFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="metadataFromIndex"
+				property_name="metadata_from_index">
+				<comments desc="Set a property meta-data. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="ahspData"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMetadataFromIndex"
+				name="GetMetadataFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="metadataFromIndex"
+				property_name="metadata_from_index">
+				<comments desc="Get a property meta-data. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVar"
+				name="GetVar"
+				num_parameters="1"
+				property="get"
+				property_name2="var"
+				property_name="var">
+				<comments desc="Get a Var property. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVarFromIndex"
+				name="GetVarFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="varFromIndex"
+				property_name="var_from_index">
+				<comments desc="Get a Var property from the specified index. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVarDefault"
+				name="GetVarDefault"
+				num_parameters="2">
+				<comments desc="Get a Var property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				name="GetString"
+				num_parameters="1"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get a String property. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStringFromIndex"
+				name="GetStringFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="stringFromIndex"
+				property_name="string_from_index">
+				<comments desc="Get a String property from the specified index. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStringDefault"
+				name="GetStringDefault"
+				num_parameters="2">
+				<comments desc="Get a String property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHString"
+				name="GetHString"
+				num_parameters="1"
+				property="get"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Get a HString property. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHStringFromIndex"
+				name="GetHStringFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="hstringFromIndex"
+				property_name="hstring_from_index">
+				<comments desc="Get a HString property from the specified index. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHStringDefault"
+				name="GetHStringDefault"
+				num_parameters="2">
+				<comments desc="Get a HString property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInt"
+				name="GetInt"
+				num_parameters="1"
+				property="get"
+				property_name2="int"
+				property_name="int">
+				<comments desc="Get a Int property. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIntFromIndex"
+				name="GetIntFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="intFromIndex"
+				property_name="int_from_index">
+				<comments desc="Get a Int property from the specified index. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIntDefault"
+				name="GetIntDefault"
+				num_parameters="2">
+				<comments desc="Get a Int property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBool"
+				name="GetBool"
+				num_parameters="1"
+				property="get"
+				property_name2="bool"
+				property_name="bool">
+				<comments desc="Get a Bool property. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoolFromIndex"
+				name="GetBoolFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="boolFromIndex"
+				property_name="bool_from_index">
+				<comments desc="Get a Bool property from the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoolDefault"
+				name="GetBoolDefault"
+				num_parameters="2">
+				<comments desc="Get a Bool property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				name="GetFloat"
+				num_parameters="1"
+				property="get"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Get a Float property. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloatFromIndex"
+				name="GetFloatFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="floatFromIndex"
+				property_name="float_from_index">
+				<comments desc="Get a Float property from the specified index. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloatDefault"
+				name="GetFloatDefault"
+				num_parameters="2">
+				<comments desc="Get a Float property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2"
+				name="GetVec2"
+				num_parameters="1"
+				property="get"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Get a Vec2 property. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2FromIndex"
+				name="GetVec2FromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="vec2FromIndex"
+				property_name="vec2from_index">
+				<comments desc="Get a Vec2 property from the specified index. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2Default"
+				name="GetVec2Default"
+				num_parameters="2">
+				<comments desc="Get a Vec2 property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3"
+				name="GetVec3"
+				num_parameters="1"
+				property="get"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get a Vec3 property. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3FromIndex"
+				name="GetVec3FromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="vec3FromIndex"
+				property_name="vec3from_index">
+				<comments desc="Get a Vec3 property from the specified index. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3Default"
+				name="GetVec3Default"
+				num_parameters="2">
+				<comments desc="Get a Vec3 property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4"
+				name="GetVec4"
+				num_parameters="1"
+				property="get"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get a Vec4 property. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4FromIndex"
+				name="GetVec4FromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="vec4FromIndex"
+				property_name="vec4from_index">
+				<comments desc="Get a Vec4 property from the specified index. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4Default"
+				name="GetVec4Default"
+				num_parameters="2">
+				<comments desc="Get a Vec4 property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol3"
+				name="GetCol3"
+				num_parameters="1"
+				property="get"
+				property_name2="col3"
+				property_name="col3">
+				<comments desc="Get a Color3 property. ">
+					<remark text="Returns sVec3f::One() if the property cannot found. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol3FromIndex"
+				name="GetCol3FromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="col3FromIndex"
+				property_name="col3from_index">
+				<comments desc="Get a Color3 property from the specified index. ">
+					<remark text="Returns sVec3f::One() if the property cannot found. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol4"
+				name="GetCol4"
+				num_parameters="1"
+				property="get"
+				property_name2="col4"
+				property_name="col4">
+				<comments desc="Get a Color4 property. ">
+					<remark text="Returns sVec4f::One() if the property cannot found. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol4FromIndex"
+				name="GetCol4FromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="col4FromIndex"
+				property_name="col4from_index">
+				<comments desc="Get a Color4 property from the specified index. ">
+					<remark text="Returns sVec4f::One() if the property cannot found. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				name="GetMatrix"
+				num_parameters="1"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get a Matrix property. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrixFromIndex"
+				name="GetMatrixFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="matrixFromIndex"
+				property_name="matrix_from_index">
+				<comments desc="Get a Matrix property from the specified index. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrixDefault"
+				name="GetMatrixDefault"
+				num_parameters="2">
+				<comments desc="Get a Matrix property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknown"
+				name="GetIUnknown"
+				num_parameters="1"
+				property="get"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Get a IUnknown property. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknownFromIndex"
+				name="GetIUnknownFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="iunknownFromIndex"
+				property_name="iunknown_from_index">
+				<comments desc="Get a IUnknown property from the specified index. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknownDefault"
+				name="GetIUnknownDefault"
+				num_parameters="2">
+				<comments desc="Get a IUnknown property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnum"
+				name="GetEnum"
+				num_parameters="3">
+				<comments desc="Get a Enum property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumFromIndex"
+				name="GetEnumFromIndex"
+				num_parameters="3">
+				<comments desc="Get a Enum property from the specified index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumDefault"
+				name="GetEnumDefault"
+				num_parameters="4">
+				<comments desc="Get a Enum property. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setVar"
+				name="SetVar"
+				num_parameters="2"
+				property="set"
+				property_name2="var"
+				property_name="var">
+				<comments desc="Set a Var property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVarFromIndex"
+				name="SetVarFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="varFromIndex"
+				property_name="var_from_index">
+				<comments desc="Set a Var property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setString"
+				name="SetString"
+				num_parameters="2"
+				property="set"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Set a String property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setStringFromIndex"
+				name="SetStringFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="stringFromIndex"
+				property_name="string_from_index">
+				<comments desc="Set a String property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHString"
+				name="SetHString"
+				num_parameters="2"
+				property="set"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Set a HString property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHStringFromIndex"
+				name="SetHStringFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="hstringFromIndex"
+				property_name="hstring_from_index">
+				<comments desc="Set a HString property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setInt"
+				name="SetInt"
+				num_parameters="2"
+				property="set"
+				property_name2="int"
+				property_name="int">
+				<comments desc="Set a Int property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="setIntFromIndex"
+				name="SetIntFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="intFromIndex"
+				property_name="int_from_index">
+				<comments desc="Set a Int property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="setBool"
+				name="SetBool"
+				num_parameters="2"
+				property="set"
+				property_name2="bool"
+				property_name="bool">
+				<comments desc="Set a Bool property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setBoolFromIndex"
+				name="SetBoolFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="boolFromIndex"
+				property_name="bool_from_index">
+				<comments desc="Set a Bool property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFloat"
+				name="SetFloat"
+				num_parameters="2"
+				property="set"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Set a Float property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setFloatFromIndex"
+				name="SetFloatFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="floatFromIndex"
+				property_name="float_from_index">
+				<comments desc="Set a Float property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setVec2"
+				name="SetVec2"
+				num_parameters="2"
+				property="set"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Set a Vec2 property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec2FromIndex"
+				name="SetVec2FromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="vec2FromIndex"
+				property_name="vec2from_index">
+				<comments desc="Set a Vec2 property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec3"
+				name="SetVec3"
+				num_parameters="2"
+				property="set"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Set a Vec3 property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec3FromIndex"
+				name="SetVec3FromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="vec3FromIndex"
+				property_name="vec3from_index">
+				<comments desc="Set a Vec3 property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec4"
+				name="SetVec4"
+				num_parameters="2"
+				property="set"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Set a Vec4 property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec4FromIndex"
+				name="SetVec4FromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="vec4FromIndex"
+				property_name="vec4from_index">
+				<comments desc="Set a Vec4 property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMatrix"
+				name="SetMatrix"
+				num_parameters="2"
+				property="set"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Set a Matrix property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMatrixFromIndex"
+				name="SetMatrixFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="matrixFromIndex"
+				property_name="matrix_from_index">
+				<comments desc="Set a Matrix property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIUnknown"
+				name="SetIUnknown"
+				num_parameters="2"
+				property="set"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Set a IUnknown property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIUnknownFromIndex"
+				name="SetIUnknownFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="iunknownFromIndex"
+				property_name="iunknown_from_index">
+				<comments desc="Set a IUnknown property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setEnum" name="SetEnum" num_parameters="4">
+				<comments desc="Set an Enum property. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anVal"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="setEnumFromIndex" name="SetEnumFromIndex" num_parameters="4">
+				<comments desc="Set an Enum property from the specified index. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anVal"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setRawVar"
+				name="SetRawVar"
+				num_parameters="2"
+				property="set"
+				property_name2="rawVar"
+				property_name="raw_var">
+				<comments desc="Set a Var property without ever calling the callback sink. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setRawVarFromIndex"
+				name="SetRawVarFromIndex"
+				num_parameters="2"
+				property="set"
+				property_name2="rawVarFromIndex"
+				property_name="raw_var_from_index">
+				<comments desc="Set a Var property from the specified index without ever calling the callback sink. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRawVar"
+				name="GetRawVar"
+				num_parameters="1"
+				property="get"
+				property_name2="rawVar"
+				property_name="raw_var">
+				<comments desc="Get a Var property without ever calling the callback sink. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRawVarFromIndex"
+				name="GetRawVarFromIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="rawVarFromIndex"
+				property_name="raw_var_from_index">
+				<comments desc="Get a Var property from the specified index without ever calling the callback sink.. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRawVarDefault"
+				name="GetRawVarDefault"
+				num_parameters="2">
+				<comments desc="Get a Var property without ever calling the callback sink. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="newVarFromPath" name="NewVarFromPath" num_parameters="2">
+				<comments desc="Set a new variant property. Property name being a path. " return="false if the the path doesnt exist and cant be created. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setVarFromPath" name="SetVarFromPath" num_parameters="2">
+				<comments desc="Set a variant property. Property name being a path. Return false if the path doesnt exist. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVarFromPath"
+				name="GetVarFromPath"
+				num_parameters="2">
+				<comments desc="Get a variant property. Property name being a path. "/>
+				<return type="Var" typec="Var" typei="ni::eType_Variant"/>
+				<parameter
+					name="aPath"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aDefault"
+					type="const Var &amp;"
+					typec="const Var&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDataTableReadStack" uuid1="8FD58593-F9BC-4368-8257-9975CABE193F" uuid2="0x8fd58593,0xf9bc,0x4368,0x82,0x57,0x99,0x75,0xca,0xbe,0x19,0x3f">
+			<comments desc="Data table read stack interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getTop"
+				name="GetTop"
+				num_parameters="0"
+				property="get"
+				property_name2="top"
+				property_name="top">
+				<comments desc="Get the top of the data table stack. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the name of the top data table. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChildren"
+				name="GetNumChildren"
+				num_parameters="0"
+				property="get"
+				property_name2="numChildren"
+				property_name="num_children">
+				<comments desc="Get the number of child data table of the top data table. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="pushChild" name="PushChild" num_parameters="1">
+				<comments desc="Push the specified child data table on top of the stack. Push a NULL data table if it doesn&apos;t exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="pushChildFail" name="PushChildFail" num_parameters="1">
+				<comments desc="Push the specified child data table on top of the stack. Do not push a data table if it doesn&apos;t exists and returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="push" name="Push" num_parameters="1">
+				<comments desc="Push the specified data table on top of the stack. Push a NULL data table if it doesn&apos;t exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushFail" name="PushFail" num_parameters="1">
+				<comments desc="Push the specified data table on top of the stack. Do not push a data table if it doesn&apos;t exists and returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushEx" name="PushEx" num_parameters="3">
+				<comments desc="Push the specified data table on top of the stack. Push a NULL data table if it doesn&apos;t exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushFailEx" name="PushFailEx" num_parameters="3">
+				<comments desc="Push the specified data table on top of the stack. Do not push a data table if it doesn&apos;t exists and returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pop" name="Pop" num_parameters="0">
+				<comments desc="Pop the top data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasProperty"
+				name="HasProperty"
+				num_parameters="1">
+				<comments desc="Check whether the top data table has a property with the specified name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeProperty" name="RemoveProperty" num_parameters="1">
+				<comments desc="Remove a property of the top data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getString"
+				name="GetString"
+				num_parameters="1"
+				property="get"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Get a String of the top data table. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStringDefault"
+				name="GetStringDefault"
+				num_parameters="2">
+				<comments desc="Get a String of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHString"
+				name="GetHString"
+				num_parameters="1"
+				property="get"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Get a HString of the top data table. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getHStringDefault"
+				name="GetHStringDefault"
+				num_parameters="2">
+				<comments desc="Get a HString of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInt"
+				name="GetInt"
+				num_parameters="1"
+				property="get"
+				property_name2="int"
+				property_name="int">
+				<comments desc="Get a Int of the top data table. "/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIntDefault"
+				name="GetIntDefault"
+				num_parameters="2">
+				<comments desc="Get a Int of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBool"
+				name="GetBool"
+				num_parameters="1"
+				property="get"
+				property_name2="bool"
+				property_name="bool">
+				<comments desc="Get a Bool of the top data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBoolDefault"
+				name="GetBoolDefault"
+				num_parameters="2">
+				<comments desc="Get a Bool of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloat"
+				name="GetFloat"
+				num_parameters="1"
+				property="get"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Get a Float of the top data table. "/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFloatDefault"
+				name="GetFloatDefault"
+				num_parameters="2">
+				<comments desc="Get a Float of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2"
+				name="GetVec2"
+				num_parameters="1"
+				property="get"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Get a Vec2 of the top data table. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec2Default"
+				name="GetVec2Default"
+				num_parameters="2">
+				<comments desc="Get a Vec2 of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3"
+				name="GetVec3"
+				num_parameters="1"
+				property="get"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Get a Vec3 of the top data table. "/>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec3Default"
+				name="GetVec3Default"
+				num_parameters="2">
+				<comments desc="Get a Vec3 of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4"
+				name="GetVec4"
+				num_parameters="1"
+				property="get"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Get a Vec4 of the top data table. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getVec4Default"
+				name="GetVec4Default"
+				num_parameters="2">
+				<comments desc="Get a Vec4 of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol3"
+				name="GetCol3"
+				num_parameters="1"
+				property="get"
+				property_name2="col3"
+				property_name="col3">
+				<comments desc="Get a Color3 of the top data table. ">
+					<remark text="This is equivalent to GetVec3Default(name,sVec3f(1,1,1)) "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCol4"
+				name="GetCol4"
+				num_parameters="1"
+				property="get"
+				property_name2="col4"
+				property_name="col4">
+				<comments desc="Get a Color4 of the top data table. ">
+					<remark text="This is equivalent to GetVec3Default(name,sVec3f(1,1,1,1)) "/>
+				</comments>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrix"
+				name="GetMatrix"
+				num_parameters="1"
+				property="get"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Get a Matrix of the top data table. "/>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMatrixDefault"
+				name="GetMatrixDefault"
+				num_parameters="2">
+				<comments desc="Get a Matrix of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="sMatrixf" typec="sMatrixf" typei="ni::eType_Matrixf"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknown"
+				name="GetIUnknown"
+				num_parameters="1"
+				property="get"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Get a IUnknown of the top data table. "/>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIUnknownDefault"
+				name="GetIUnknownDefault"
+				num_parameters="2">
+				<comments desc="Get a IUnknown of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="iUnknown *" typec="iUnknown*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnum"
+				name="GetEnum"
+				num_parameters="3">
+				<comments desc="Get a Enum of the top data table. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getEnumDefault"
+				name="GetEnumDefault"
+				num_parameters="4">
+				<comments desc="Get a Enum of the top data table. ">
+					<remark text="Allow to specify the default value. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMetadata"
+				name="GetMetadata"
+				num_parameters="1"
+				property="get"
+				property_name2="metadata"
+				property_name="metadata">
+				<comments desc="Get a property meta-data. "/>
+				<return type="Ptr&lt;iHString&gt;" typec="Ptr&lt;iHString&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+		<interface name="iDataTableWriteStack" uuid1="3F35C253-8A23-4D2F-9AF9-4715BC807F31" uuid2="0x3f35c253,0x8a23,0x4d2f,0x9a,0xf9,0x47,0x15,0xbc,0x80,0x7f,0x31">
+			<comments desc="Data table write stack interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getTop"
+				name="GetTop"
+				num_parameters="0"
+				property="get"
+				property_name2="top"
+				property_name="top">
+				<comments desc="Get the top of the data table stack. "/>
+				<return type="iDataTable *" typec="iDataTable*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="setName"
+				name="SetName"
+				num_parameters="1"
+				property="set"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Set the name of the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the name of the top data table. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumChildren"
+				name="GetNumChildren"
+				num_parameters="0"
+				property="get"
+				property_name2="numChildren"
+				property_name="num_children">
+				<comments desc="Get the number of child data table of the top data table. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="pushChild" name="PushChild" num_parameters="1">
+				<comments desc="Push the specified child data table on top of the stack. Push a NULL data table if it doesn&apos;t exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="pushChildFail" name="PushChildFail" num_parameters="1">
+				<comments desc="Push the specified child data table on top of the stack. Do not push a data table if it doesn&apos;t exists and returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="push" name="Push" num_parameters="1">
+				<comments desc="Push a data table with the given name on top of the stack. If a child data table with the given name doesn&apos;t exists, creates it. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushFail" name="PushFail" num_parameters="1">
+				<comments desc="Push a data table with the given name on top of the stack. If a child data table with the given name doesn&apos;t exists, return eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushNew" name="PushNew" num_parameters="1">
+				<comments desc="Push a new data table on top of the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushAppend" name="PushAppend" num_parameters="1">
+				<comments desc="Append the given data table, and push it on top of the stack. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushEx" name="PushEx" num_parameters="3">
+				<comments desc="Push the specified data table on top of the stack. Push a NULL data table if it doesn&apos;t exists. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pushFailEx" name="PushFailEx" num_parameters="3">
+				<comments desc="Push the specified data table on top of the stack. Do not push a data table if it doesn&apos;t exists and returns eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="pop" name="Pop" num_parameters="0">
+				<comments desc="Pop the top data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="hasProperty"
+				name="HasProperty"
+				num_parameters="1">
+				<comments desc="Check whether the top data table has a property with the specified name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeProperty" name="RemoveProperty" num_parameters="1">
+				<comments desc="Remove a property of the top data table. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setString"
+				name="SetString"
+				num_parameters="2"
+				property="set"
+				property_name2="string"
+				property_name="string">
+				<comments desc="Set a String in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setHString"
+				name="SetHString"
+				num_parameters="2"
+				property="set"
+				property_name2="hstring"
+				property_name="hstring">
+				<comments desc="Set a HString in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setInt"
+				name="SetInt"
+				num_parameters="2"
+				property="set"
+				property_name2="int"
+				property_name="int">
+				<comments desc="Set a Int in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="setBool"
+				name="SetBool"
+				num_parameters="2"
+				property="set"
+				property_name2="bool"
+				property_name="bool">
+				<comments desc="Set a Bool in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFloat"
+				name="SetFloat"
+				num_parameters="2"
+				property="set"
+				property_name2="float"
+				property_name="float">
+				<comments desc="Set a Float in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="setVec2"
+				name="SetVec2"
+				num_parameters="2"
+				property="set"
+				property_name2="vec2"
+				property_name="vec2">
+				<comments desc="Set a Vec2 in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec3"
+				name="SetVec3"
+				num_parameters="2"
+				property="set"
+				property_name2="vec3"
+				property_name="vec3">
+				<comments desc="Set a Vec3 in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setVec4"
+				name="SetVec4"
+				num_parameters="2"
+				property="set"
+				property_name2="vec4"
+				property_name="vec4">
+				<comments desc="Set a Vec4 in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setMatrix"
+				name="SetMatrix"
+				num_parameters="2"
+				property="set"
+				property_name2="matrix"
+				property_name="matrix">
+				<comments desc="Set a Matrix in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="const sMatrixf &amp;"
+					typec="const sMatrixf&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setIUnknown"
+				name="SetIUnknown"
+				num_parameters="2"
+				property="set"
+				property_name2="iunknown"
+				property_name="iunknown">
+				<comments desc="Set a IUnknown in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="v"
+					type="iUnknown *"
+					typec="iUnknown*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setEnum" name="SetEnum" num_parameters="4">
+				<comments desc="Set a Enum in the top data table. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apEnumDef"
+					type="const sEnumDef *"
+					typec="const sEnumDef*"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aFlags"
+					type="tEnumToStringFlags"
+					typec="tEnumToStringFlags"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="anVal"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setMetadata"
+				name="SetMetadata"
+				num_parameters="2"
+				property="set"
+				property_name2="metadata"
+				property_name="metadata">
+				<comments desc="Set a property meta-data. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszProp"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspData"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

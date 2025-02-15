@@ -1,0 +1,927 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eVGLineCap">
+			<comments desc="VG Line Cap type. "/>
+			<value min_features="20" name="eVGLineCap_Butt" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineCap_Square" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineCap_Round" value="2 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum min_features="20" name="eVGLineJoin">
+			<comments desc="VG Line join. "/>
+			<value min_features="20" name="eVGLineJoin_Miter" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineJoin_MiterRevert" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineJoin_MiterRound" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineJoin_Round" value="3 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGLineJoin_Bevel" value="4 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<enum min_features="20" name="eVGInnerJoin">
+			<comments desc="VG Inner join. "/>
+			<value min_features="20" name="eVGInnerJoin_Bevel" value="0 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGInnerJoin_Miter" value="1 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGInnerJoin_Jag" value="2 ">
+				<comments desc=""/>
+			</value>
+			<value min_features="20" name="eVGInnerJoin_Round" value="3 ">
+				<comments desc=""/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iVGStyle"
+			uuid1="ECC6259B-41CC-4D37-B1FC-55F6485D9573"
+			uuid2="0xecc6259b,0x41cc,0x4d37,0xb1,0xfc,0x55,0xf6,0x48,0x5d,0x95,0x73">
+			<comments desc="VGStyle inteface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="copy"
+				min_features="20"
+				name="Copy"
+				num_parameters="1">
+				<comments desc="Create a copy of the style. ">
+					<remark text="Only the top style will be copied, not the style&apos;s stack. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apStyle"
+					type="const iVGStyle *"
+					typec="const iVGStyle*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="clone"
+				min_features="20"
+				name="Clone"
+				num_parameters="0">
+				<comments desc="Clone the style. "/>
+				<return type="iVGStyle *" typec="iVGStyle*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="push"
+				min_features="20"
+				name="Push"
+				num_parameters="0">
+				<comments desc="Push the style states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="pop"
+				min_features="20"
+				name="Pop"
+				num_parameters="0">
+				<comments desc="Pop the style states. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setDefault"
+				min_features="20"
+				name="SetDefault"
+				num_parameters="0">
+				<comments desc="Set the default states. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="setOpacity"
+				min_features="20"
+				name="SetOpacity"
+				num_parameters="1"
+				property="set"
+				property_name2="opacity"
+				property_name="opacity">
+				<comments desc="Set the global opacity. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afOpacity"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getOpacity"
+				min_features="20"
+				name="GetOpacity"
+				num_parameters="0"
+				property="get"
+				property_name2="opacity"
+				property_name="opacity">
+				<comments desc="Get the global opacity. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setLineCap"
+				min_features="20"
+				name="SetLineCap"
+				num_parameters="1"
+				property="set"
+				property_name2="lineCap"
+				property_name="line_cap">
+				<comments desc="Set the line&apos;s cap. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aCap"
+					type="eVGLineCap"
+					typec="eVGLineCap"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLineCap"
+				min_features="20"
+				name="GetLineCap"
+				num_parameters="0"
+				property="get"
+				property_name2="lineCap"
+				property_name="line_cap">
+				<comments desc="Get the line&apos;s cap "/>
+				<return type="eVGLineCap" typec="eVGLineCap" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setLineJoin"
+				min_features="20"
+				name="SetLineJoin"
+				num_parameters="1"
+				property="set"
+				property_name2="lineJoin"
+				property_name="line_join">
+				<comments desc="Set the line&apos;s join. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aJoin"
+					type="eVGLineJoin"
+					typec="eVGLineJoin"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLineJoin"
+				min_features="20"
+				name="GetLineJoin"
+				num_parameters="0"
+				property="get"
+				property_name2="lineJoin"
+				property_name="line_join">
+				<comments desc="Get the line&apos;s join. "/>
+				<return type="eVGLineJoin" typec="eVGLineJoin" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setInnerJoin"
+				min_features="20"
+				name="SetInnerJoin"
+				num_parameters="1"
+				property="set"
+				property_name2="innerJoin"
+				property_name="inner_join">
+				<comments desc="Set the inner join type. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aInnerJoin"
+					type="eVGInnerJoin"
+					typec="eVGInnerJoin"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getInnerJoin"
+				min_features="20"
+				name="GetInnerJoin"
+				num_parameters="0"
+				property="get"
+				property_name2="innerJoin"
+				property_name="inner_join">
+				<comments desc="Get the inner join type. "/>
+				<return type="eVGInnerJoin" typec="eVGInnerJoin" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setMiterLimit"
+				min_features="20"
+				name="SetMiterLimit"
+				num_parameters="1"
+				property="set"
+				property_name2="miterLimit"
+				property_name="miter_limit">
+				<comments desc="Set the miter limit. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afMiterLimit"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMiterLimit"
+				min_features="20"
+				name="GetMiterLimit"
+				num_parameters="0"
+				property="get"
+				property_name2="miterLimit"
+				property_name="miter_limit">
+				<comments desc="Get the miter limit. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSmooth"
+				min_features="20"
+				name="SetSmooth"
+				num_parameters="1"
+				property="set"
+				property_name2="smooth"
+				property_name="smooth">
+				<comments desc="Set the smoothing. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afSmooth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSmooth"
+				min_features="20"
+				name="GetSmooth"
+				num_parameters="0"
+				property="get"
+				property_name2="smooth"
+				property_name="smooth">
+				<comments desc="Get the smoothing. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setCurrentColor"
+				min_features="20"
+				name="SetCurrentColor"
+				num_parameters="1"
+				property="set"
+				property_name2="currentColor"
+				property_name="current_color">
+				<comments desc="Set the current style color. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCurrentColor"
+				min_features="20"
+				name="GetCurrentColor"
+				num_parameters="0"
+				property="get"
+				property_name2="currentColor"
+				property_name="current_color">
+				<comments desc="Get the current style color. "/>
+				<return type="const sColor4f &amp;" typec="const sColor4f&amp;" typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setAntiAliasing"
+				min_features="20"
+				name="SetAntiAliasing"
+				num_parameters="1"
+				property="set"
+				property_name2="antiAliasing"
+				property_name="anti_aliasing">
+				<comments desc="Set the antialiasing. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abAntiAliasing"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAntiAliasing"
+				min_features="20"
+				name="GetAntiAliasing"
+				num_parameters="0"
+				property="get"
+				property_name2="antiAliasing"
+				property_name="anti_aliasing">
+				<comments desc="Get whether antialiasing is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setRasterizerApproximationScale"
+				min_features="20"
+				name="SetRasterizerApproximationScale"
+				num_parameters="1"
+				property="set"
+				property_name2="rasterizerApproximationScale"
+				property_name="rasterizer_approximation_scale">
+				<comments desc="Set the rasterizer&apos;s approximation scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afRasterizerApproximationScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getRasterizerApproximationScale"
+				min_features="20"
+				name="GetRasterizerApproximationScale"
+				num_parameters="0"
+				property="get"
+				property_name2="rasterizerApproximationScale"
+				property_name="rasterizer_approximation_scale">
+				<comments desc="Get the rasterizer&apos;s approximation scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setTesselatorApproximationScale"
+				min_features="20"
+				name="SetTesselatorApproximationScale"
+				num_parameters="1"
+				property="set"
+				property_name2="tesselatorApproximationScale"
+				property_name="tesselator_approximation_scale">
+				<comments desc="Set the tesselator&apos;s approximation scale. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afTesselatorApproximationScale"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTesselatorApproximationScale"
+				min_features="20"
+				name="GetTesselatorApproximationScale"
+				num_parameters="0"
+				property="get"
+				property_name2="tesselatorApproximationScale"
+				property_name="tesselator_approximation_scale">
+				<comments desc="Get the tesselator&apos;s approximation scale. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStroke"
+				min_features="20"
+				name="SetStroke"
+				num_parameters="1"
+				property="set"
+				property_name2="stroke"
+				property_name="stroke">
+				<comments desc="Set stroke drawing. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abStroke"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStroke"
+				min_features="20"
+				name="GetStroke"
+				num_parameters="0"
+				property="get"
+				property_name2="stroke"
+				property_name="stroke">
+				<comments desc="Get whether stroke drawing is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setStrokeWidth"
+				min_features="20"
+				name="SetStrokeWidth"
+				num_parameters="1"
+				property="set"
+				property_name2="strokeWidth"
+				property_name="stroke_width">
+				<comments desc="Set the stroke&apos;s width. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afWidth"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokeWidth"
+				min_features="20"
+				name="GetStrokeWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="strokeWidth"
+				property_name="stroke_width">
+				<comments desc="Get the stroke&apos;s width. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setStrokeTransformed"
+				min_features="20"
+				name="SetStrokeTransformed"
+				num_parameters="1"
+				property="set"
+				property_name2="strokeTransformed"
+				property_name="stroke_transformed">
+				<comments desc="Set whether the transformed path should be stroked. ">
+					<remark text="If true, the path will be first transformed, and that new transformed path will be stroked. So the size of the stroke (line) will be the same no matter what is the scaling factor of the transform. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abStrokeTransformed"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokeTransformed"
+				min_features="20"
+				name="GetStrokeTransformed"
+				num_parameters="0"
+				property="get"
+				property_name2="strokeTransformed"
+				property_name="stroke_transformed">
+				<comments desc="Get whether the transformed path should be stroked. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setStrokePaint"
+				min_features="20"
+				name="SetStrokePaint"
+				num_parameters="1"
+				property="set"
+				property_name2="strokePaint"
+				property_name="stroke_paint">
+				<comments desc="Set the stroke&apos;s paint. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPaint"
+					type="iVGPaint *"
+					typec="iVGPaint*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokePaint"
+				min_features="20"
+				name="GetStrokePaint"
+				num_parameters="0"
+				property="get"
+				property_name2="strokePaint"
+				property_name="stroke_paint">
+				<comments desc="Get the stroke&apos;s paint. "/>
+				<return type="iVGPaint *" typec="iVGPaint*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setStrokeColor"
+				min_features="20"
+				name="SetStrokeColor"
+				num_parameters="1"
+				property="set"
+				property_name2="strokeColor"
+				property_name="stroke_color">
+				<comments desc="Set the stroke&apos;s paint color. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor3f &amp;"
+					typec="const sColor3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokeColor"
+				min_features="20"
+				name="GetStrokeColor"
+				num_parameters="0"
+				property="get"
+				property_name2="strokeColor"
+				property_name="stroke_color">
+				<comments desc="Get the stroke&apos;s paint color. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="sColor3f" typec="sColor3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setStrokeColor4"
+				min_features="20"
+				name="SetStrokeColor4"
+				num_parameters="1"
+				property="set"
+				property_name2="strokeColor4"
+				property_name="stroke_color4">
+				<comments desc="Set the stroke&apos;s paint color. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokeColor4"
+				min_features="20"
+				name="GetStrokeColor4"
+				num_parameters="0"
+				property="get"
+				property_name2="strokeColor4"
+				property_name="stroke_color4">
+				<comments desc="Get the stroke&apos;s paint color. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setStrokeOpacity"
+				min_features="20"
+				name="SetStrokeOpacity"
+				num_parameters="1"
+				property="set"
+				property_name2="strokeOpacity"
+				property_name="stroke_opacity">
+				<comments desc="Set the stroke opacity. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afOpacity"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStrokeOpacity"
+				min_features="20"
+				name="GetStrokeOpacity"
+				num_parameters="0"
+				property="get"
+				property_name2="strokeOpacity"
+				property_name="stroke_opacity">
+				<comments desc="Get the stroke opacity. ">
+					<remark text="Conveniance for GetStrokePaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumDashes"
+				min_features="20"
+				name="GetNumDashes"
+				num_parameters="0"
+				property="get"
+				property_name2="numDashes"
+				property_name="num_dashes">
+				<comments desc="Get the number of dashes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="clearDashes"
+				min_features="20"
+				name="ClearDashes"
+				num_parameters="0">
+				<comments desc="Remove all dashes. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				java_name="addDash"
+				min_features="20"
+				name="AddDash"
+				num_parameters="1">
+				<comments desc="Add a dash. ">
+					<remark text="Vector2f(Position,Length) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aV"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="removeDash"
+				min_features="20"
+				name="RemoveDash"
+				num_parameters="1">
+				<comments desc="Remove a dash. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDash"
+				min_features="20"
+				name="GetDash"
+				num_parameters="1"
+				property="get"
+				property_name2="dash"
+				property_name="dash">
+				<comments desc="Get the dash at the specified index. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDashStart"
+				min_features="20"
+				name="SetDashStart"
+				num_parameters="1"
+				property="set"
+				property_name2="dashStart"
+				property_name="dash_start">
+				<comments desc="Set the dash start. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afDashStart"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDashStart"
+				min_features="20"
+				name="GetDashStart"
+				num_parameters="0"
+				property="get"
+				property_name2="dashStart"
+				property_name="dash_start">
+				<comments desc="Get the dash start. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setFill"
+				min_features="20"
+				name="SetFill"
+				num_parameters="1"
+				property="set"
+				property_name2="fill"
+				property_name="fill">
+				<comments desc="Set fill drawing. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abFill"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFill"
+				min_features="20"
+				name="GetFill"
+				num_parameters="0"
+				property="get"
+				property_name2="fill"
+				property_name="fill">
+				<comments desc="Get whether fill drawing is enabled. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFillEvenOdd"
+				min_features="20"
+				name="SetFillEvenOdd"
+				num_parameters="1"
+				property="set"
+				property_name2="fillEvenOdd"
+				property_name="fill_even_odd">
+				<comments desc="Set fill odd even. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abFillEvenOdd"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillEvenOdd"
+				min_features="20"
+				name="GetFillEvenOdd"
+				num_parameters="0"
+				property="get"
+				property_name2="fillEvenOdd"
+				property_name="fill_even_odd">
+				<comments desc="Get whether the fill uses the odd even or non zero rules to fill polygons. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setFillExpand"
+				min_features="20"
+				name="SetFillExpand"
+				num_parameters="1"
+				property="set"
+				property_name2="fillExpand"
+				property_name="fill_expand">
+				<comments desc="Set the filling expand. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afExpand"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillExpand"
+				min_features="20"
+				name="GetFillExpand"
+				num_parameters="0"
+				property="get"
+				property_name2="fillExpand"
+				property_name="fill_expand">
+				<comments desc="Get the filling expand. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setFillPaint"
+				min_features="20"
+				name="SetFillPaint"
+				num_parameters="1"
+				property="set"
+				property_name2="fillPaint"
+				property_name="fill_paint">
+				<comments desc="Set the fill paint. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apPaint"
+					type="iVGPaint *"
+					typec="iVGPaint*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillPaint"
+				min_features="20"
+				name="GetFillPaint"
+				num_parameters="0"
+				property="get"
+				property_name2="fillPaint"
+				property_name="fill_paint">
+				<comments desc="Get the fill paint. "/>
+				<return type="iVGPaint *" typec="iVGPaint*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFillColor"
+				min_features="20"
+				name="SetFillColor"
+				num_parameters="1"
+				property="set"
+				property_name2="fillColor"
+				property_name="fill_color">
+				<comments desc="Set the fill color. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor3f &amp;"
+					typec="const sColor3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillColor"
+				min_features="20"
+				name="GetFillColor"
+				num_parameters="0"
+				property="get"
+				property_name2="fillColor"
+				property_name="fill_color">
+				<comments desc="Get the fill color. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="sColor3f" typec="sColor3f" typei="ni::eType_Vec3f"/>
+			</method>
+			<method
+				java_name="setFillColor4"
+				min_features="20"
+				name="SetFillColor4"
+				num_parameters="1"
+				property="set"
+				property_name2="fillColor4"
+				property_name="fill_color4">
+				<comments desc="Set the fill color. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avColor"
+					type="const sColor4f &amp;"
+					typec="const sColor4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillColor4"
+				min_features="20"
+				name="GetFillColor4"
+				num_parameters="0"
+				property="get"
+				property_name2="fillColor4"
+				property_name="fill_color4">
+				<comments desc="Get the fill color. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="sColor4f" typec="sColor4f" typei="ni::eType_Vec4f"/>
+			</method>
+			<method
+				java_name="setFillOpacity"
+				min_features="20"
+				name="SetFillOpacity"
+				num_parameters="1"
+				property="set"
+				property_name2="fillOpacity"
+				property_name="fill_opacity">
+				<comments desc="Set the fill opacity. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;SetColor() "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afOpacity"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFillOpacity"
+				min_features="20"
+				name="GetFillOpacity"
+				num_parameters="0"
+				property="get"
+				property_name2="fillOpacity"
+				property_name="fill_opacity">
+				<comments desc="Get the fill opacity. ">
+					<remark text="Conveniance for GetFillPaint()-&gt;GetColor() "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

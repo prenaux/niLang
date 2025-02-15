@@ -1,0 +1,114 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			min_features="20"
+			name="iVGPolygonTesselator"
+			uuid1="BB3A2EC0-8F76-4888-8F1E-4A4ED0E800EE"
+			uuid2="0xbb3a2ec0,0x8f76,0x4888,0x8f,0x1e,0x4a,0x4e,0xd0,0xe8,0x00,0xee">
+			<comments desc="Polygon tessellator interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="addVertexF32"
+				min_features="20"
+				name="AddVertexF32"
+				num_parameters="2">
+				<comments desc="Add a F32 vertex to the current polygon contour. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="x"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="addVertexF64"
+				min_features="20"
+				name="AddVertexF64"
+				num_parameters="2">
+				<comments desc="Add a F64 vertex to the current polygon contour. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="x"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+				<parameter
+					last="1"
+					name="y"
+					type="tF64"
+					typec="tF64"
+					typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="addVertex"
+				min_features="20"
+				name="AddVertex"
+				num_parameters="1">
+				<comments desc="Add a Vec2f vertex to the current polygon contour. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="vertex"
+					type="const sVec2f &amp;"
+					typec="const sVec2f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumVertices"
+				min_features="20"
+				name="GetNumVertices"
+				num_parameters="0">
+				<comments desc="Get the number of vertices in the current contour. "/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="submitContour"
+				min_features="20"
+				name="SubmitContour"
+				num_parameters="0">
+				<comments desc="Submit the current contour. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="beginPolygon"
+				min_features="20"
+				name="BeginPolygon"
+				num_parameters="1">
+				<comments desc="Begin tesselating a polygon. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="abEvenOdd"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="endPolygon"
+				min_features="20"
+				name="EndPolygon"
+				num_parameters="0">
+				<comments desc="Finish tesselating a polygon. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTesselatedVertices"
+				min_features="20"
+				name="GetTesselatedVertices"
+				num_parameters="0">
+				<comments desc="Get the tesselated polygon&apos;s triangles vertices. "/>
+				<return type="const tVec2fCVec *" typec="const tVec2fCVec*" typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

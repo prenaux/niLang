@@ -1,0 +1,49 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eStringTokenizerCharType">
+			<comments desc="Char type returned by the methods of the tokenizer interface. "/>
+			<value name="eStringTokenizerCharType_Normal" value="0 ">
+				<comments desc="The char is normal and will be added to the current token. "/>
+			</value>
+			<value name="eStringTokenizerCharType_Skip" value="1 ">
+				<comments desc="The char will be skipped. "/>
+			</value>
+			<value name="eStringTokenizerCharType_Splitter" value="2 ">
+				<comments desc="The char mark a split. "/>
+			</value>
+			<value name="eStringTokenizerCharType_SplitterStart" value="3 ">
+				<comments desc="The char mark a split that include this character at the begining of the next token. "/>
+			</value>
+			<value name="eStringTokenizerCharType_SplitterEnd" value="4 ">
+				<comments desc="The char mark a split that include this character at the end of the current token. "/>
+			</value>
+			<value name="eStringTokenizerCharType_SplitterAndToken" value="5 ">
+				<comments desc="The char mark a split and is a token. "/>
+			</value>
+		</enum>
+		<interface
+			dispatchwrapper="yes"
+			name="iStringTokenizer"
+			uuid1="59CD4F04-D5BB-4E1E-BB23-BC1A5BB45BDC"
+			uuid2="0x59cd4f04,0xd5bb,0x4e1e,0xbb,0x23,0xbc,0x1a,0x5b,0xb4,0x5b,0xdc">
+			<comments desc="iStringTokenizer interface "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="getCharType" name="GetCharType" num_parameters="1">
+				<comments desc=""/>
+				<return type="eStringTokenizerCharType" typec="eStringTokenizerCharType" typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="c"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="onNewLine" name="OnNewLine" num_parameters="0">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

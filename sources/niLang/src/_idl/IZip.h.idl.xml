@@ -1,0 +1,1127 @@
+<niIDL>
+	<namespace name="ni"/>
+	<namespace name="ni">
+		<interface name="iZipArchWrite" uuid1="50CF0914-0FFC-4085-BCE0-A361A601745D" uuid2="0x50cf0914,0x0ffc,0x4085,0xbc,0xe0,0xa3,0x61,0xa6,0x01,0x74,0x5d">
+			<comments desc="Zip archive writer "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="addFileBlock" name="AddFileBlock" num_parameters="3">
+				<comments desc="Adds a file block to the archive. " return="eTrue if successfull, else eFalse. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="addRawBlock"
+				name="AddRawBlock"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc="Adds a block of raw data as a file. " return="eTrue if successfull, else eFalse. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="aaszName" type="const achar *" typec="const achar*"/>
+				<parameter name="apData" type="tPtr" typec="tPtr"/>
+				<parameter
+					last="1"
+					name="aSize"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+		</interface>
+		<interface name="iZip" uuid1="6573D955-27B5-4FF0-9EB2-6BF8BF31C6D5" uuid2="0x6573d955,0x27b5,0x4ff0,0x9e,0xb2,0x6b,0xf8,0xbf,0x31,0xc6,0xd5">
+			<comments desc="Zip interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="zipUncompressBuffer" name="ZipUncompressBuffer" num_parameters="4">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anDestSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipUncompressBufferInFile" name="ZipUncompressBufferInFile" num_parameters="4">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipUncompressFile" name="ZipUncompressFile" num_parameters="4">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anDestSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipUncompressFileInBuffer" name="ZipUncompressFileInBuffer" num_parameters="4">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anDestSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipInflateFileInBuffer" name="ZipInflateFileInBuffer" num_parameters="3">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anDestSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="zipCompressBuffer" name="ZipCompressBuffer" num_parameters="4">
+				<comments desc="The destination buffer must be at least 20% bigger than the source. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipCompressBufferInFile" name="ZipCompressBufferInFile" num_parameters="4">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSrc"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="zipCompressFile" name="ZipCompressFile" num_parameters="4">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apSrc"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSrcSize"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="unzOpen"
+				name="UnzOpen"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tHandle" typec="tHandle"/>
+				<parameter
+					last="1"
+					name="apFile"
+					type="ni::iFile *"
+					typec="ni::iFile*"/>
+			</method>
+			<method
+				java_name="unzClose"
+				name="UnzClose"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzGetGlobalInfo"
+				name="UnzGetGlobalInfo"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter
+					last="1"
+					name="pglobal_info"
+					type="unz_global_info *"
+					typec="unz_global_info*"/>
+			</method>
+			<method
+				java_name="unzGetGlobalComment"
+				name="UnzGetGlobalComment"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter
+					last="1"
+					name="strComment"
+					type="cString &amp;"
+					typec="cString&amp;"/>
+			</method>
+			<method
+				java_name="unzGoToFirstFile"
+				name="UnzGoToFirstFile"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzGoToNextFile"
+				name="UnzGoToNextFile"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzLocateFile"
+				name="UnzLocateFile"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter name="szFileName" type="const achar *" typec="const achar*"/>
+				<parameter
+					last="1"
+					name="bCaseSensitivity"
+					type="tBool"
+					typec="tBool"/>
+			</method>
+			<method
+				java_name="unzLocateFileInc"
+				name="UnzLocateFileInc"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter name="num" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="pos"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="unzGetCurrentFileInfo"
+				name="UnzGetCurrentFileInfo"
+				noautomation="yes"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter name="pfile_info" type="unz_file_info *" typec="unz_file_info*"/>
+				<parameter name="strFileName" type="cString &amp;" typec="cString&amp;"/>
+				<parameter name="strExtraField" type="cString &amp;" typec="cString&amp;"/>
+				<parameter
+					last="1"
+					name="strComment"
+					type="cString &amp;"
+					typec="cString&amp;"/>
+			</method>
+			<method
+				java_name="unzOpenCurrentFile"
+				name="UnzOpenCurrentFile"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter
+					last="1"
+					name="pwd"
+					type="const achar *"
+					typec="const achar*"/>
+			</method>
+			<method
+				java_name="unzCloseCurrentFile"
+				name="UnzCloseCurrentFile"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzReadCurrentFile"
+				name="UnzReadCurrentFile"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter name="buf" type="tPtr" typec="tPtr"/>
+				<parameter
+					last="1"
+					name="len"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="unztell"
+				name="Unztell"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzeof"
+				name="Unzeof"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="file"
+					type="tHandle"
+					typec="tHandle"/>
+			</method>
+			<method
+				java_name="unzGetLocalExtrafield"
+				name="UnzGetLocalExtrafield"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="file" type="tHandle" typec="tHandle"/>
+				<parameter name="buf" type="tPtr" typec="tPtr"/>
+				<parameter
+					last="1"
+					name="len"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="zlibVersion"
+				name="ZlibVersion"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*"/>
+			</method>
+			<method
+				java_name="deflate"
+				name="Deflate"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="flush"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="deflateEnd"
+				name="DeflateEnd"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="inflate"
+				name="Inflate"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="flush"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateEnd"
+				name="InflateEnd"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="deflateSetDictionary"
+				name="DeflateSetDictionary"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="dictionary" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="dictLength"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="deflateCopy"
+				name="DeflateCopy"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="dest" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="source"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="deflateReset"
+				name="DeflateReset"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="deflateParams"
+				name="DeflateParams"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="level" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strategy"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="deflateTune"
+				name="DeflateTune"
+				noautomation="yes"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="good_length" type="tI32" typec="tI32"/>
+				<parameter name="max_lazy" type="tI32" typec="tI32"/>
+				<parameter name="nice_length" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="max_chain"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="deflateBound"
+				name="DeflateBound"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="sourceLen"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="deflatePrime"
+				name="DeflatePrime"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="bits" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="value"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="deflateSetHeader"
+				name="DeflateSetHeader"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="head"
+					type="gz_headerp"
+					typec="gz_headerp"/>
+			</method>
+			<method
+				java_name="inflateSetDictionary"
+				name="InflateSetDictionary"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="dictionary" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="dictLength"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateSync"
+				name="InflateSync"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="inflateCopy"
+				name="InflateCopy"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="dest" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="source"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="inflateReset"
+				name="InflateReset"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="inflatePrime"
+				name="InflatePrime"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="bits" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="value"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateGetHeader"
+				name="InflateGetHeader"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="head"
+					type="gz_headerp"
+					typec="gz_headerp"/>
+			</method>
+			<method
+				java_name="inflateBack"
+				name="InflateBack"
+				noautomation="yes"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="aIn" type="zlib_in_func" typec="zlib_in_func"/>
+				<parameter name="in_desc" type="void *" typec="void*"/>
+				<parameter name="aOut" type="zlib_out_func" typec="zlib_out_func"/>
+				<parameter
+					last="1"
+					name="out_desc"
+					type="void *"
+					typec="void*"/>
+			</method>
+			<method
+				java_name="inflateBackEnd"
+				name="InflateBackEnd"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="zlibCompileFlags"
+				name="ZlibCompileFlags"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+			</method>
+			<method
+				java_name="compress"
+				name="Compress"
+				noautomation="yes"
+				num_parameters="4">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="dest" type="tU8 *" typec="tU8*"/>
+				<parameter name="destLen" type="tU32 *" typec="tU32*"/>
+				<parameter name="source" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="sourceLen"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="compress2"
+				name="Compress2"
+				noautomation="yes"
+				num_parameters="5">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="dest" type="tU8 *" typec="tU8*"/>
+				<parameter name="destLen" type="tU32 *" typec="tU32*"/>
+				<parameter name="source" type="const tU8 *" typec="const tU8*"/>
+				<parameter name="sourceLen" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="level"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="compressBound"
+				name="CompressBound"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="sourceLen"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="uncompress"
+				name="Uncompress"
+				noautomation="yes"
+				num_parameters="4">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="dest" type="tU8 *" typec="tU8*"/>
+				<parameter name="destLen" type="tU32 *" typec="tU32*"/>
+				<parameter name="source" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="sourceLen"
+					type="tU32"
+					typec="tU32"/>
+			</method>
+			<method
+				java_name="adler32"
+				name="Adler32"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter name="adler" type="tU32" typec="tU32"/>
+				<parameter name="buf" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="len"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="adler32Combine"
+				name="Adler32Combine"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter name="adler1" type="tU32" typec="tU32"/>
+				<parameter name="adler2" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="len2"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="crc32"
+				name="Crc32"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter name="crc" type="tU32" typec="tU32"/>
+				<parameter name="buf" type="const tU8 *" typec="const tU8*"/>
+				<parameter
+					last="1"
+					name="len"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="crc32Combine"
+				name="Crc32Combine"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tU32" typec="tU32"/>
+				<parameter name="crc1" type="tU32" typec="tU32"/>
+				<parameter name="crc2" type="tU32" typec="tU32"/>
+				<parameter
+					last="1"
+					name="len2"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="deflateInit"
+				name="DeflateInit"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="level"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateInit"
+				name="InflateInit"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strm"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="deflateInit2"
+				name="DeflateInit2"
+				noautomation="yes"
+				num_parameters="6">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="level" type="tI32" typec="tI32"/>
+				<parameter name="method" type="tI32" typec="tI32"/>
+				<parameter name="windowBits" type="tI32" typec="tI32"/>
+				<parameter name="memLevel" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="strategy"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateInit2"
+				name="InflateInit2"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter
+					last="1"
+					name="windowBits"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateBackInit"
+				name="InflateBackInit"
+				noautomation="yes"
+				num_parameters="3">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter name="strm" type="z_streamp" typec="z_streamp"/>
+				<parameter name="windowBits" type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="window"
+					type="tU8 *"
+					typec="tU8*"/>
+			</method>
+			<method
+				java_name="zerror"
+				name="ZError"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="const achar *" typec="const achar*"/>
+				<parameter
+					last="1"
+					name="err"
+					type="tI32"
+					typec="tI32"/>
+			</method>
+			<method
+				java_name="inflateSyncPoint"
+				name="InflateSyncPoint"
+				noautomation="yes"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="tI32" typec="tI32"/>
+				<parameter
+					last="1"
+					name="z"
+					type="z_streamp"
+					typec="z_streamp"/>
+			</method>
+			<method
+				java_name="getCRCTable"
+				name="GetCRCTable"
+				noautomation="yes"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="const tU32 *" typec="const tU32*"/>
+			</method>
+			<method java_name="createZipBufferEncoder" name="CreateZipBufferEncoder" num_parameters="1">
+				<comments desc="Create a Zip buffer encoder. "/>
+				<return type="iBufferEncoder *" typec="iBufferEncoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anCLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createZipBufferDecoder" name="CreateZipBufferDecoder" num_parameters="0">
+				<comments desc="Create a Zip buffer decoder. "/>
+				<return type="iBufferDecoder *" typec="iBufferDecoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileZipBufferEncoder" name="CreateFileZipBufferEncoder" num_parameters="2">
+				<comments desc="Create a Zip buffer encoder file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBaseFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anCLevel"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="createFileZipBufferDecoder" name="CreateFileZipBufferDecoder" num_parameters="2">
+				<comments desc="Create a Zip buffer decoder file. \see iLang::CreateFileBufferDecoder "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBaseFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aDecodedSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method java_name="createRawBufferEncoder" name="CreateRawBufferEncoder" num_parameters="0">
+				<comments desc="Create a Raw buffer encoder. "/>
+				<return type="iBufferEncoder *" typec="iBufferEncoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createRawBufferDecoder" name="CreateRawBufferDecoder" num_parameters="0">
+				<comments desc="Create a Raw buffer decoder. "/>
+				<return type="iBufferDecoder *" typec="iBufferDecoder*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileRawBufferEncoder" name="CreateFileRawBufferEncoder" num_parameters="1">
+				<comments desc="Create a Raw buffer encoder file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apBaseFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="createFileRawBufferDecoder" name="CreateFileRawBufferDecoder" num_parameters="2">
+				<comments desc="Create a Raw buffer decoder file. \see iLang::CreateFileBufferDecoder "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apBaseFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aDecodedSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="createZipArchive"
+				min_features="15"
+				name="CreateZipArchive"
+				num_parameters="3">
+				<comments desc="Create a new zip archive writter. "/>
+				<return type="iZipArchWrite *" typec="iZipArchWrite*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apDest"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszPwd"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="apStoredExtensions"
+					type="const tStringCVec *"
+					typec="const tStringCVec*"
+					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="gzipOpen"
+				min_features="15"
+				name="GZipOpen"
+				num_parameters="2">
+				<comments desc="Open a file which can write or read directly in a zip file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aulCompressionMode"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="zipOpen"
+				min_features="15"
+				name="ZipOpen"
+				num_parameters="2">
+				<comments desc="Open a file which can write or read directly in a zip file. "/>
+				<return type="iFile *" typec="iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apFile"
+					type="iFileBase *"
+					typec="iFileBase*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aulCompressionMode"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

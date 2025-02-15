@@ -1,0 +1,75 @@
+<niIDL>
+	<namespace name="ni">
+		<enum min_features="20" name="eXmlParserNodeType">
+			<comments desc="Xml parser node types. "/>
+			<value min_features="20" name="eXmlParserNodeType_ElementBegin" value="0 ">
+				<comments desc="A xml element, like \&lt;foo&gt; "/>
+			</value>
+			<value min_features="20" name="eXmlParserNodeType_ElementEnd" value="1 ">
+				<comments desc="End of an xml element, like \&lt;/foo&gt; "/>
+			</value>
+			<value min_features="20" name="eXmlParserNodeType_Text" value="2 ">
+				<comments desc="Text within a xml element: \&lt;foo&gt; this is the text. \&lt;/foo&gt; "/>
+			</value>
+			<value min_features="20" name="eXmlParserNodeType_EmptyText" value="3 ">
+				<comments desc="Empty Text within a xml element: \&lt;foo&gt; \&lt;/foo&gt; ">
+					<remark text="Empty is text composed only of non-printable characters. "/>
+				</comments>
+			</value>
+			<value min_features="20" name="eXmlParserNodeType_Comment" value="4 ">
+				<comments desc="An xml comment like &amp;lt;!-- I am a comment --&amp;gt; or a DTD definition. "/>
+			</value>
+			<value min_features="20" name="eXmlParserNodeType_CDATA" value="5 ">
+				<comments desc="An xml cdata section like &amp;lt;![CDATA[ this is some CDATA ]]&amp;gt; "/>
+			</value>
+		</enum>
+		<interface
+			min_features="20"
+			name="iXmlParserSink"
+			uuid1="061D5946-BB2F-4F8C-9B67-A5C342635971"
+			uuid2="0x061d5946,0xbb2f,0x4f8c,0x9b,0x67,0xa5,0xc3,0x42,0x63,0x59,0x71">
+			<comments desc="Xml parser sink interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="onXmlParserSink_Node"
+				min_features="20"
+				name="OnXmlParserSink_Node"
+				num_parameters="2">
+				<comments desc="Xml parser sink interface. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aType"
+					type="eXmlParserNodeType"
+					typec="eXmlParserNodeType"
+					typei="ni::eType_Enum"/>
+				<parameter
+					last="1"
+					name="aNameOrData"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="onXmlParserSink_Attribute"
+				min_features="20"
+				name="OnXmlParserSink_Attribute"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="aName"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aValue"
+					type="const ni::achar *"
+					typec="const ni::achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

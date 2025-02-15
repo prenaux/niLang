@@ -1,0 +1,100 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetComboBoxStyle">
+			<comments desc="Combo box widget style. "/>
+			<value name="eWidgetComboBoxStyle_DropDown" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Drop down combo box, the text cant be edited. "/>
+			</value>
+			<value name="eWidgetComboBoxStyle_Multiselect" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Allow to select multiple items in the combo box. "/>
+			</value>
+			<value name="eWidgetComboBoxStyle_ReadOnly" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Set the combo box&apos;s edity box to be read only. "/>
+			</value>
+			<value name="eWidgetComboBoxStyle_NoDefaultListBox" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="No default list box is created, the next child added will be the dropped widget. "/>
+			</value>
+			<value name="eWidgetComboBoxStyle_ClickAddSelection" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="For defautl dropped list box, click down add selection, ctrl+click set selection. (This is the opposite of the default) "/>
+			</value>
+		</enum>
+		<enum name="eWidgetComboBoxCmd">
+			<comments desc="Combo box widget notify messages. "/>
+			<value name="eWidgetComboBoxCmd_SelectionChanged" value="0 ">
+				<comments desc="The selection changed. "/>
+			</value>
+			<value name="eWidgetComboBoxCmd_Validated" value="1 ">
+				<comments desc="The edit box has been validated. "/>
+			</value>
+			<value name="eWidgetComboBoxCmd_Modified" value="2 ">
+				<comments desc="The edit box has been modified. "/>
+			</value>
+			<value name="eWidgetComboBoxCmd_DropShown" value="3 ">
+				<comments desc="The drop is going to be shown. "/>
+			</value>
+			<value name="eWidgetComboBoxCmd_DropHidden" value="4 ">
+				<comments desc="The drop is going to be hidden. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetComboBox" uuid1="69E43028-C01D-4CB9-B3BA-E3CD0CD4089E" uuid2="0x69e43028,0xc01d,0x4cb9,0xb3,0xba,0xe3,0xcd,0x0c,0xd4,0x08,0x9e">
+			<comments desc="Combo box widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setNumLines"
+				name="SetNumLines"
+				num_parameters="1"
+				property="set"
+				property_name2="numLines"
+				property_name="num_lines">
+				<comments desc="Set the number of lines dropped. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anNum"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumLines"
+				name="GetNumLines"
+				num_parameters="0"
+				property="get"
+				property_name2="numLines"
+				property_name="num_lines">
+				<comments desc="Get the number of lines dropped. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setDroppedWidget"
+				name="SetDroppedWidget"
+				num_parameters="1"
+				property="set"
+				property_name2="droppedWidget"
+				property_name="dropped_widget">
+				<comments desc="Set the &apos;dropped&apos; widget. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDroppedWidget"
+				name="GetDroppedWidget"
+				num_parameters="0"
+				property="get"
+				property_name2="droppedWidget"
+				property_name="dropped_widget">
+				<comments desc="Get the &apos;dropped&apos; widget. "/>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

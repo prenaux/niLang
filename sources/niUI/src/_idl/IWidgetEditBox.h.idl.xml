@@ -1,0 +1,242 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetEditBoxStyle">
+			<comments desc="Simple edit box styles. "/>
+			<value name="eWidgetEditBoxStyle_MultiLine" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Multi-line edit box. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_ReadOnly" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Read-only edit box. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_AutoScroll" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="Auto scroll edit box. Scrolling made in function of the cursor&apos;s position. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_PasteValidate" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+				<comments desc="Validate on paste. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_NoCursor" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+				<comments desc="Dont draw the cursor. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_NoSelect" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+				<comments desc="Dont allow selection. ">
+					<remark text="The clipboard is also disabled in this case. "/>
+				</comments>
+			</value>
+			<value name="eWidgetEditBoxStyle_DontLoseSelection" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+				<comments desc="Dont clear selection when lost focus. "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_ValidateOnLostFocus" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+				<comments desc="Validate when lost focus "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_SelectAllOnSetFocus" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+				<comments desc="Select all when gaining focus "/>
+			</value>
+			<value name="eWidgetEditBoxStyle_CanInsertTabs" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+				<comments desc="Can insert tabs, but capture the MoveFocus message. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetEditBoxCmd">
+			<comments desc="Simple edit box notification messages. "/>
+			<value name="eWidgetEditBoxCmd_Validated" value="0 ">
+				<comments desc="Sent when the edit box has been validated. "/>
+			</value>
+			<value name="eWidgetEditBoxCmd_Modified" value="1 ">
+				<comments desc="Sent when the edit box&apos;s text has been modified. "/>
+			</value>
+			<value name="eWidgetEditBoxCmd_LostFocus" value="2 ">
+				<comments desc="Sent when the edit box has lost focus. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetEditBox" uuid1="E1F70622-8A53-4F98-AB3C-D8E99036A5AB" uuid2="0xe1f70622,0x8a53,0x4f98,0xab,0x3c,0xd8,0xe9,0x90,0x36,0xa5,0xab">
+			<comments desc="Simple editbox widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="addText" name="AddText" num_parameters="1">
+				<comments desc="Add the specified text at the end of the edit box. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aaszText"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setReplaceChar"
+				name="SetReplaceChar"
+				num_parameters="1"
+				property="set"
+				property_name2="replaceChar"
+				property_name="replace_char">
+				<comments desc="Set the replacement character for all text displayed. ">
+					<remark text="0 will disable the feature "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anChar"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getReplaceChar"
+				name="GetReplaceChar"
+				num_parameters="0"
+				property="get"
+				property_name2="replaceChar"
+				property_name="replace_char">
+				<comments desc="Get the replacement character for all text displayed. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="moveCursorHome" name="MoveCursorHome" num_parameters="1">
+				<comments desc="Move the cursor to the begining of the line or the text. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abLine"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="moveCursorEnd" name="MoveCursorEnd" num_parameters="1">
+				<comments desc="Move the cursor at the end of the line or the text. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abLine"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="moveCursor" name="MoveCursor" num_parameters="2">
+				<comments desc="Move the cursor to the specified position (line,column) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="pos"
+					type="const sVec2i &amp;"
+					typec="const sVec2i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="abForceLogicalCol"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method java_name="moveCursorLineDelta" name="MoveCursorLineDelta" num_parameters="1">
+				<comments desc="Move the current cursor line. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="line"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method java_name="moveCursorColumnDelta" name="MoveCursorColumnDelta" num_parameters="1">
+				<comments desc="Move the current cursor column. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="line"
+					type="tI32"
+					typec="tI32"
+					typei="ni::eType_I32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorPosition"
+				name="GetCursorPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorPosition"
+				property_name="cursor_position">
+				<comments desc="Get the cursor&apos;s position. ">
+					<remark text="Vec2(line,column) "/>
+				</comments>
+				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorLine"
+				name="GetCursorLine"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorLine"
+				property_name="cursor_line">
+				<comments desc="Get the cursor&apos;s current line. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getCursorColumn"
+				name="GetCursorColumn"
+				num_parameters="0"
+				property="get"
+				property_name2="cursorColumn"
+				property_name="cursor_column">
+				<comments desc="Get the cursor&apos;s current column. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="autoScroll" name="AutoScroll" num_parameters="0">
+				<comments desc="Scroll to the current cursor position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getTextInRange"
+				name="GetTextInRange"
+				num_parameters="1">
+				<comments desc="Get the text in the specified range, Vec4(startLine,startCol,endLine,endCol). "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aRange"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getAllTextRange"
+				name="GetAllTextRange"
+				num_parameters="0"
+				property="get"
+				property_name2="allTextRange"
+				property_name="all_text_range">
+				<comments desc="Get the text range which includes the whole text. "/>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+			</method>
+			<method
+				java_name="setSelection"
+				name="SetSelection"
+				num_parameters="1"
+				property="set"
+				property_name2="selection"
+				property_name="selection">
+				<comments desc="Set the selection to the specified range, Vec4(startLine,startCol,endLine,endCol) "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aSelection"
+					type="const sVec4i &amp;"
+					typec="const sVec4i&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelection"
+				name="GetSelection"
+				num_parameters="0"
+				property="get"
+				property_name2="selection"
+				property_name="selection">
+				<comments desc="Get the current selection range, Vec4(startLine,startCol,endLine,endCol). "/>
+				<return type="sVec4i" typec="sVec4i" typei="ni::eType_Vec4i"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

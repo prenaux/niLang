@@ -1,0 +1,562 @@
+<niIDL>
+	<namespace name="ni">
+		<interface
+			min_features="15"
+			name="iCryptoRand"
+			uuid1="3215A36E-7A27-4CD2-99E3-FE955F94EA3A"
+			uuid2="0x3215a36e,0x7a27,0x4cd2,0x99,0xe3,0xfe,0x95,0x5f,0x94,0xea,0x3a">
+			<comments desc="Crypto random number generator. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setEntropyLength"
+				min_features="15"
+				name="SetEntropyLength"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anEntropyLen"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="setReseedInterval"
+				min_features="15"
+				name="SetReseedInterval"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anInterval"
+					type="tInt"
+					typec="tInt"
+					typei="ni::eType_Int"/>
+			</method>
+			<method
+				java_name="setPredictionResistance"
+				min_features="15"
+				name="SetPredictionResistance"
+				num_parameters="1">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abPR"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="reseed"
+				min_features="15"
+				name="Reseed"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anAddSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="reseedRaw"
+				min_features="15"
+				name="ReseedRaw"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anAddSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="update"
+				min_features="15"
+				name="Update"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anAddSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="updateRaw"
+				min_features="15"
+				name="UpdateRaw"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apAdd"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anAddSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="randFile"
+				min_features="15"
+				name="RandFile"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anOutLen"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="randRaw"
+				min_features="15"
+				name="RandRaw"
+				num_parameters="2">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anOutLen"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				java_name="randInt"
+				min_features="15"
+				name="RandInt"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="tI64" typec="tI64" typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="randFloat"
+				min_features="15"
+				name="RandFloat"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="tF64" typec="tF64" typei="ni::eType_F64"/>
+			</method>
+			<method
+				java_name="randUUID"
+				min_features="15"
+				name="RandUUID"
+				num_parameters="0">
+				<comments desc=""/>
+				<return type="tUUID" typec="tUUID" typei="ni::eType_UUID"/>
+			</method>
+		</interface>
+		<interface
+			min_features="15"
+			name="iCrypto"
+			uuid1="E3352941-F1E7-4E62-997D-4EBBF7BD477E"
+			uuid2="0xe3352941,0xf1e7,0x4e62,0x99,0x7d,0x4e,0xbb,0xf7,0xbd,0x47,0x7e">
+			<comments desc=""/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="digest"
+				min_features="15"
+				name="Digest"
+				num_parameters="3">
+				<comments desc="Compute the hash of the specified string. Does not include the end zero. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aaszData"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					default="eRawToStringEncoding_Hex "
+					last="1"
+					name="aEncoding"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="digestRaw"
+				min_features="15"
+				name="DigestRaw"
+				num_parameters="4">
+				<comments desc="Compute the hash of the specified data. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="apData"
+					type="const tPtr"
+					typec="const tPtr"
+					typei="ni::eTypeFlags_Constant|ni::eType_Ptr"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="aType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aEncoding"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="digestFile"
+				min_features="15"
+				name="DigestFile"
+				num_parameters="4">
+				<comments desc="Compute the hash of the specified data read from the specified file. "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="aType"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aEncoding"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="createRand"
+				min_features="15"
+				name="CreateRand"
+				num_parameters="0">
+				<comments desc="Create a new random number generator. "/>
+				<return type="iCryptoRand *" typec="iCryptoRand*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="getRand"
+				min_features="15"
+				name="GetRand"
+				num_parameters="0"
+				property="get"
+				property_name2="rand"
+				property_name="rand">
+				<comments desc="Get the default crypto random number generator. "/>
+				<return type="iCryptoRand *" typec="iCryptoRand*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="kdfgenSaltBlowfish"
+				min_features="15"
+				name="KDFGenSaltBlowfish"
+				num_parameters="2">
+				<comments desc="Generate a salt for KDFCrypt. \see CryptoKDFGenSaltBlowfish ">
+					<remark text="If apRand is NULL the default random number generator is used. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="apRand"
+					type="iCryptoRand *"
+					typec="iCryptoRand*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aRounds"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="kdfcrypt"
+				min_features="15"
+				name="KDFCrypt"
+				num_parameters="2">
+				<comments desc="Calculates a crypt(3)-style hash of password. \see CryptoKDFCrypt "/>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					name="aKey"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSalt"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="sigVerify"
+				min_features="15"
+				name="SigVerify"
+				num_parameters="3">
+				<comments desc="Verify a RSA signature for a specified payload. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="signatureHex"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="publicKeyPEM"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="payload"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="hmacSignature"
+				min_features="15"
+				name="HmacSignature"
+				num_parameters="6">
+				<comments desc="Generate a keyed hash value using the HMAC method. "/>
+				<return type="ni::iFile *" typec="ni::iFile*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aAlgo"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apOutput"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="apPayload"
+					type="ni::iFile *"
+					typec="ni::iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aPayloadSize"
+					type="ni::tSize"
+					typec="ni::tSize"
+					typei="ni::eType_Size"/>
+				<parameter
+					name="aSecret"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSecretFormat"
+					type="ni::eRawToStringEncoding"
+					typec="ni::eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface
+			min_features="15"
+			name="iCryptoHash"
+			uuid1="A299806D-929E-40E0-B6B5-E8AF580250AF"
+			uuid2="0xa299806d,0x929e,0x40e0,0xb6,0xb5,0xe8,0xaf,0x58,0x02,0x50,0xaf">
+			<comments desc="Secure hash interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getHashType"
+				min_features="15"
+				name="GetHashType"
+				num_parameters="0"
+				property="get"
+				property_name2="hashType"
+				property_name="hash_type">
+				<comments desc="Get the hash type. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getDigestSize"
+				min_features="15"
+				name="GetDigestSize"
+				num_parameters="0"
+				property="get"
+				property_name2="digestSize"
+				property_name="digest_size">
+				<comments desc="Get the digest size. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="restart"
+				min_features="15"
+				name="Restart"
+				num_parameters="0">
+				<comments desc="Ends the calculation of the current digest and reset the states for a new calculation. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="update"
+				min_features="15"
+				name="Update"
+				num_parameters="2">
+				<comments desc="Adds data to the hash calculation, from the current file position for size bytes. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="updateBlock"
+				min_features="15"
+				name="UpdateBlock"
+				num_parameters="3">
+				<comments desc="Adds data to the hash calculation, specifing a data range. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apFile"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aStart"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+				<parameter
+					last="1"
+					name="aSize"
+					type="tI64"
+					typec="tI64"
+					typei="ni::eType_I64"/>
+			</method>
+			<method
+				java_name="updateRaw"
+				min_features="15"
+				name="UpdateRaw"
+				noautomation="yes"
+				num_parameters="2">
+				<comments desc="Adds raw data to the hash calculation. "/>
+				<return type="tBool" typec="tBool"/>
+				<parameter name="apData" type="tPtr" typec="tPtr"/>
+				<parameter
+					last="1"
+					name="aSize"
+					type="tSize"
+					typec="tSize"/>
+			</method>
+			<method
+				java_name="finalString"
+				min_features="15"
+				name="FinalString"
+				num_parameters="1">
+				<comments desc="Ends the calculation of the current digest, return the digest as a string. ">
+					<remark text="After final is called new calls to Update can be made to compute a new hash. "/>
+				</comments>
+				<return type="cString" typec="cString" typei="ni::eType_String"/>
+				<parameter
+					last="1"
+					name="aEncoding"
+					type="eRawToStringEncoding"
+					typec="eRawToStringEncoding"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="finalFile"
+				min_features="15"
+				name="FinalFile"
+				num_parameters="1">
+				<comments desc="Ends the calculation of the current digest, put the digest in the specified file. ">
+					<remark text="After final is called new calls to Update can be made to compute a new hash. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					last="1"
+					name="apOutput"
+					type="iFile *"
+					typec="iFile*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="finalRaw"
+				min_features="15"
+				name="FinalRaw"
+				num_parameters="2">
+				<comments desc="Ends the calculation of the current digest, put the digest in the specified raw memory. ">
+					<remark text="After final is called new calls to Update can be made to compute a new hash. "/>
+				</comments>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+				<parameter
+					name="apData"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					last="1"
+					name="anSize"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

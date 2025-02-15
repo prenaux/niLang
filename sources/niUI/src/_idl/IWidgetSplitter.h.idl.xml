@@ -1,0 +1,431 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetSplitterStyle">
+			<comments desc="Splitter widget style. "/>
+			<value name="eWidgetSplitterStyle_Horizontal" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="The splitter is horizontal. "/>
+			</value>
+			<value name="eWidgetSplitterStyle_NoCursorResize" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="The splitter cant be resized with the mouse cursor. "/>
+			</value>
+			<value name="eWidgetSplitterStyle_Empty" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="The splitter will start empty. ">
+					<remark text="By default the splitter is created with one splitter. "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eWidgetSplitterFoldMode">
+			<comments desc="Splitter folding mode. "/>
+			<value name="eWidgetSplitterFoldMode_None" value="0 ">
+				<comments desc="No folding. "/>
+			</value>
+			<value name="eWidgetSplitterFoldMode_Auto" value="1 ">
+				<comments desc="Fold left/top or right/bottom based on the resizable borders enabled. (default) "/>
+			</value>
+			<value name="eWidgetSplitterFoldMode_All" value="2 ">
+				<comments desc="Fold left/top &amp; right/bottom regardless of the resizable borders. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetSplitter" uuid1="78BC04F6-9B0C-446C-87A2-46BC8BB6FBA1" uuid2="0x78bc04f6,0x9b0c,0x446c,0x87,0xa2,0x46,0xbc,0x8b,0xb6,0xfb,0xa1">
+			<comments desc="Splitter widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="addSplitterFront" name="AddSplitterFront" num_parameters="1">
+				<comments desc="Add a splitter in the front (top or left). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="addSplitterBack" name="AddSplitterBack" num_parameters="1">
+				<comments desc="Add a splitter in the back (bottom or right). "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="removeSplitter" name="RemoveSplitter" num_parameters="1">
+				<comments desc="Remove the splitter at the specified index. ">
+					<remark text="The widget at the bottom (right if horizontal) will be removed. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSplitters"
+				name="GetNumSplitters"
+				num_parameters="0"
+				property="get"
+				property_name2="numSplitters"
+				property_name="num_splitters">
+				<comments desc="Get the number of splitters. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumSplitterWidgets"
+				name="GetNumSplitterWidgets"
+				num_parameters="0"
+				property="get"
+				property_name2="numSplitterWidgets"
+				property_name="num_splitter_widgets">
+				<comments desc="Get the number of splitter&apos;s widgets. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterWidget"
+				name="GetSplitterWidget"
+				num_parameters="1"
+				property="get"
+				property_name2="splitterWidget"
+				property_name="splitter_widget">
+				<comments desc="Get a splitter&apos;s widget. ">
+					<remark text="Widgets are numbered from top to bottom, and left to right. "/>
+				</comments>
+				<return type="iWidget *" typec="iWidget*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterWidgetIndex"
+				name="GetSplitterWidgetIndex"
+				num_parameters="1"
+				property="get"
+				property_name2="splitterWidgetIndex"
+				property_name="splitter_widget_index">
+				<comments desc="Get a splitter&apos;s widget index. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="apWidget"
+					type="iWidget *"
+					typec="iWidget*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeSplitterWidget" name="RemoveSplitterWidget" num_parameters="1">
+				<comments desc="Remove the specified splitter widget. ">
+					<remark text="At least one widget will always be available, so the last widget cant be removed. "/>
+					<remark text="This will take care of removing the appropriate splitter. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method java_name="addSplitterBefore" name="AddSplitterBefore" num_parameters="2">
+				<comments desc="Add a splitter before the specified widget (top or left). ">
+					<remark text="afPos is relative to the widget used for insertion. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anWidget"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="addSplitterAfter" name="AddSplitterAfter" num_parameters="2">
+				<comments desc="Add a splitter after the specified widget (bottom or right). ">
+					<remark text="afPos is relative to the widget used for insertion. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anWidget"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="afPos"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSplitterPosition"
+				name="SetSplitterPosition"
+				num_parameters="2"
+				property="set"
+				property_name2="splitterPosition"
+				property_name="splitter_position">
+				<comments desc="Set the position of the splitter at the given index. ">
+					<remark text="The position is in percent, relative to the size of the widget. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterPosition"
+				name="GetSplitterPosition"
+				num_parameters="1"
+				property="get"
+				property_name2="splitterPosition"
+				property_name="splitter_position">
+				<comments desc="Get the position of the splitter at the given index ">
+					<remark text="The position is in percent, relative to the size of the widget. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSplitterMinPosition"
+				name="SetSplitterMinPosition"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterMinPosition"
+				property_name="splitter_min_position">
+				<comments desc="Set the splitter&apos;s minimum position. ">
+					<remark text="The minimum position is the minimum distance from the parent&apos;s borders in pixels. "/>
+					<remark text="If the minimum position is &lt; 0 no limit is applied. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterMinPosition"
+				name="GetSplitterMinPosition"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterMinPosition"
+				property_name="splitter_min_position">
+				<comments desc="Get the splitter&apos;s minimum position. ">
+					<remark text="The minimum position is the minimum distance from the parent&apos;s borders in pixels. "/>
+				</comments>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSplitterSize"
+				name="SetSplitterSize"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterSize"
+				property_name="splitter_size">
+				<comments desc="Set the splitter size. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="afSize"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterSize"
+				name="GetSplitterSize"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterSize"
+				property_name="splitter_size">
+				<comments desc="Get the splitter size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method java_name="swapSplitterWidget" name="SwapSplitterWidget" num_parameters="2">
+				<comments desc="Swap two splitter widgets. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anA"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anB"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSplitterBorderSize"
+				name="SetSplitterBorderSize"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterBorderSize"
+				property_name="splitter_border_size">
+				<comments desc="Set the splitter&apos;s border size. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="afSize"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterBorderSize"
+				name="GetSplitterBorderSize"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterBorderSize"
+				property_name="splitter_border_size">
+				<comments desc="Get the splitter&apos;s border size. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="setSplitterResizableBorders"
+				name="SetSplitterResizableBorders"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterResizableBorders"
+				property_name="splitter_resizable_borders">
+				<comments desc="Set the splitter&apos;s resizable borders. ">
+					<params text="aEdges: edges flags. \see eRectEdges "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aEdges"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterResizableBorders"
+				name="GetSplitterResizableBorders"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterResizableBorders"
+				property_name="splitter_resizable_borders">
+				<comments desc="Get the splitter&apos;s resizable borders. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSplitterParentDockRectMinimumSize"
+				name="SetSplitterParentDockRectMinimumSize"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterParentDockRectMinimumSize"
+				property_name="splitter_parent_dock_rect_minimum_size">
+				<comments desc="Set the minimum size that the parent dock rect can have. ">
+					<remark text="This value is used only if a border is resizable, if the min size &gt;= 0 and if the splitter is docked. "/>
+					<remark text="By default the value is (20,20) "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avMinSize"
+					type="sVec2f"
+					typec="sVec2f"
+					typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterParentDockRectMinimumSize"
+				name="GetSplitterParentDockRectMinimumSize"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterParentDockRectMinimumSize"
+				property_name="splitter_parent_dock_rect_minimum_size">
+				<comments desc="Get the minimum size that the parent dock rect can have. "/>
+				<return type="sVec2f" typec="sVec2f" typei="ni::eType_Vec2f"/>
+			</method>
+			<method
+				java_name="setSplitterFillerIndex"
+				name="SetSplitterFillerIndex"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterFillerIndex"
+				property_name="splitter_filler_index">
+				<comments desc="Set the index of the filling splitter. ">
+					<remark text="The filling splitter correspond to the index of the canvas that will fill the whole splitter&apos;s rectangle, so that it&apos;ll be the only widget visible. This is meant to be used as a special mode to allow &apos;fullscreen&apos; widgets with toggle to a splitted/composite view. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="ni::tU32"
+					typec="ni::tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterFillerIndex"
+				name="GetSplitterFillerIndex"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterFillerIndex"
+				property_name="splitter_filler_index">
+				<comments desc="Set the index of the filling splitter. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setSplitterFoldMode"
+				name="SetSplitterFoldMode"
+				num_parameters="1"
+				property="set"
+				property_name2="splitterFoldMode"
+				property_name="splitter_fold_mode">
+				<comments desc="Set the splitter&apos;s fold mode. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="aFoldMode"
+					type="eWidgetSplitterFoldMode"
+					typec="eWidgetSplitterFoldMode"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSplitterFoldMode"
+				name="GetSplitterFoldMode"
+				num_parameters="0"
+				property="get"
+				property_name2="splitterFoldMode"
+				property_name="splitter_fold_mode">
+				<comments desc="Get the splitter&apos;s fold mode. "/>
+				<return type="eWidgetSplitterFoldMode" typec="eWidgetSplitterFoldMode" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

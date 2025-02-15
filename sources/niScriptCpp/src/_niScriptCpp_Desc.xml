@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+<module name='niScriptCpp'
+        version='1,0,0' 
+        moduleinclude=''
+        desc='niScriptCpp module'
+        initfunctions='no'
+>
+  <dependency name='niLang' />
+  <objecttype  name='ScriptingHost'  />
+  <include>niScriptCpp/src/_idl/ScriptCpp.h.idl.xml</include>
+</module>

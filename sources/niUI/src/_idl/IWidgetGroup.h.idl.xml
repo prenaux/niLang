@@ -1,0 +1,43 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetGroupStyle">
+			<comments desc="Group styles. "/>
+			<value name="eWidgetGroupStyle_Fold" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Toggle the folded state when double clicking on the title. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetGroup" uuid1="EE88A289-FBC6-4741-A20E-E500E51D7E50" uuid2="0xee88a289,0xfbc6,0x4741,0xa2,0x0e,0xe5,0x00,0xe5,0x1d,0x7e,0x50">
+			<comments desc="Group widget interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setFolded"
+				name="SetFolded"
+				num_parameters="1"
+				property="set"
+				property_name2="folded"
+				property_name="folded">
+				<comments desc="Set whether the group is folded. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="abFolded"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFolded"
+				name="GetFolded"
+				num_parameters="0"
+				property="get"
+				property_name2="folded"
+				property_name="folded">
+				<comments desc="Get whether the group is folded. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

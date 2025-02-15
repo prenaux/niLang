@@ -1,0 +1,211 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eNUSplineType">
+			<comments desc="Non-uniform spline type. "/>
+			<value name="eNUSplineType_Linear" value="0 ">
+				<comments desc="Linear spline. Not a spline simple linear interpolation. "/>
+			</value>
+			<value name="eNUSplineType_Rounded" value="1 ">
+				<comments desc="Rounded non-uniform spline. "/>
+			</value>
+			<value name="eNUSplineType_Smooth" value="2 ">
+				<comments desc="Smooth non-uniform spline. "/>
+			</value>
+			<value name="eNUSplineType_Timed" value="3 ">
+				<comments desc="Timed non-uniform spline. "/>
+			</value>
+			<value name="eNUSplineType_Last" value="4 ">
+				<comments desc="\internal "/>
+			</value>
+		</enum>
+		<interface name="iNUSpline" uuid1="37096DFE-B7F7-4D34-A5BF-5E2E2A91A84A" uuid2="0x37096dfe,0xb7f7,0x4d34,0xa5,0xbf,0x5e,0x2e,0x2a,0x91,0xa8,0x4a">
+			<comments desc="Non-uniform spline interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				java_name="setType"
+				name="SetType"
+				num_parameters="1"
+				property="set"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Set the spline type. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aType"
+					type="eNUSplineType"
+					typec="eNUSplineType"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getType"
+				name="GetType"
+				num_parameters="0"
+				property="get"
+				property_name2="type"
+				property_name="type">
+				<comments desc="Get the spline type. "/>
+				<return type="eNUSplineType" typec="eNUSplineType" typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="clear" name="Clear" num_parameters="0">
+				<comments desc="Clear the spline, remove all nodes. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="addNode" name="AddNode" num_parameters="1">
+				<comments desc="Add a node. ">
+					<remark text="The node is a 4D vector, with x,y,z as position and w as time interval. "/>
+					<remark text="The time interval is used only by timed non-uniform spline. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="avNode"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="removeNode" name="RemoveNode" num_parameters="1">
+				<comments desc="Remove the node at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumNodes"
+				name="GetNumNodes"
+				num_parameters="0"
+				property="get"
+				property_name2="numNodes"
+				property_name="num_nodes">
+				<comments desc="Get the number of nodes. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				java_name="setNode"
+				name="SetNode"
+				num_parameters="2"
+				property="set"
+				property_name2="node"
+				property_name="node">
+				<comments desc="Set the node at the specified index. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="avNode"
+					type="const sVec4f &amp;"
+					typec="const sVec4f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNode"
+				name="GetNode"
+				num_parameters="1"
+				property="get"
+				property_name2="node"
+				property_name="node">
+				<comments desc="Get the node at the specified index. "/>
+				<return type="sVec4f" typec="sVec4f" typei="ni::eType_Vec4f"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNodeDistance"
+				name="GetNodeDistance"
+				num_parameters="1"
+				property="get"
+				property_name2="nodeDistance"
+				property_name="node_distance">
+				<comments desc="Get the distance of the specified node. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getLength"
+				name="GetLength"
+				num_parameters="0"
+				property="get"
+				property_name2="length"
+				property_name="length">
+				<comments desc="Get the length of the path. "/>
+				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="getPosition"
+				name="GetPosition"
+				num_parameters="1"
+				property="get"
+				property_name2="position"
+				property_name="position">
+				<comments desc="Get the position at the specified time. ">
+					<remark text="The spline must have at least three nodes to return a valid position. If the spline is invalid a 0,0,0 position will be returned. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="afTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method
+				java_name="getRelativePosition"
+				name="GetRelativePosition"
+				num_parameters="1"
+				property="get"
+				property_name2="relativePosition"
+				property_name="relative_position">
+				<comments desc="Get the relative position at the specified time. ">
+					<remark text="The spline must have at least three nodes to return a valid position. If the spline is invalid a 0,0,0 position will be returned. "/>
+					<remark text="The relative position is relative to the first node&apos;s position. "/>
+				</comments>
+				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
+				<parameter
+					last="1"
+					name="afTime"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="serializeDataTable" name="SerializeDataTable" num_parameters="2">
+				<comments desc="Serialize the spline in the specified datatable. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apDT"
+					type="iDataTable *"
+					typec="iDataTable*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tSerializeFlags"
+					typec="tSerializeFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

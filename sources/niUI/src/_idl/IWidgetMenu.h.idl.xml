@@ -1,0 +1,514 @@
+<niIDL>
+	<namespace name="ni">
+		<enum name="eWidgetMenuItemFlags">
+			<comments desc="Menu item flags. "/>
+			<value name="eWidgetMenuItemFlags_None" value="0 ">
+				<comments desc="No flags. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_SubMenu" value="niBit ( 1 ) ">
+				<comments desc="The item will open a submenu. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Separator" value="niBit ( 2 ) ">
+				<comments desc="The item is a separator. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Check" value="niBit ( 3 ) ">
+				<comments desc="The item is a check. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Group" value="niBit ( 4 ) ">
+				<comments desc="The item is in a group. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Dummy" value="niBit ( 5 ) ">
+				<comments desc="The item is a dummy, aka it isnt clickable. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Title" value="niBit ( 6 ) ">
+				<comments desc="The item is a title, will be drawn with a different background color. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_Disabled" value="niBit ( 7 ) ">
+				<comments desc="The item is disabled, text will be drawn in a different color. "/>
+			</value>
+			<value name="eWidgetMenuItemFlags_SortAdd" value="niBit ( 8 ) ">
+				<comments desc="Sort when adding the item. "/>
+			</value>
+		</enum>
+		<enum name="eWidgetMenuCmd">
+			<comments desc="Menu notify message ">
+				<remark text="Sent through eUIMessage_Command to the parent widget, extra1 contains the iWidgetMenuItem of the item concerned. "/>
+				<remark text="Sub menus are considered part of the parent menu, they will send messages as if they were the parent menu. "/>
+			</comments>
+			<value name="eWidgetMenuCmd_Checked" value="0 ">
+				<comments desc="A check menu item has been checked. ">
+					<params text="A: iWidgetMenuItem "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_UnChecked" value="1 ">
+				<comments desc="A check menu item has been unchecked. ">
+					<params text="A: iWidgetMenuItem "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_GroupChanged" value="2 ">
+				<comments desc="A group menu item has been changed. ">
+					<params text="A: iWidgetMenuItem "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_Clicked" value="3 ">
+				<comments desc="A menu item has been clicked. ">
+					<params text="A: iWidgetMenuItem "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_Opened" value="4 ">
+				<comments desc="Menu has just been opened. ">
+					<params text="A: iWidgetMenu opened "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_Closed" value="5 ">
+				<comments desc="Menu has just been closed. ">
+					<params text="A: iWidgetMenu closed "/>
+				</comments>
+			</value>
+			<value name="eWidgetMenuCmd_FocusedItem" value="6 ">
+				<comments desc="The menu item focused has changed. ">
+					<params text="A: newly selected iWidgetMenuItem "/>
+					<params text="B: previously selected iWidgetMenuItem if any "/>
+				</comments>
+			</value>
+		</enum>
+		<enum name="eWidgetMenuStyle">
+			<comments desc="Menu style. ">
+				<remark text="The menu style is used only by the parent menu, sub menus will ignore these flags. "/>
+			</comments>
+			<value name="eWidgetMenuStyle_NoCloseOnGroupChange" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+				<comments desc="Dont close the menu on group change. "/>
+			</value>
+			<value name="eWidgetMenuStyle_NoCloseOnCheckChange" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+				<comments desc="Dont close the menu on check change. "/>
+			</value>
+			<value name="eWidgetMenuStyle_NoCloseOnItemClicked" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+				<comments desc="Dont close the menu on item clicked. "/>
+			</value>
+			<value name="eWidgetMenuStyle_NoCloseOnNCClick" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+				<comments desc="Dont close the menu when clicking outside of the client area. "/>
+			</value>
+			<value name="eWidgetMenuStyle_NoClose" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange|eWidgetMenuStyle_NoCloseOnItemClicked|eWidgetMenuStyle_NoCloseOnNCClick ">
+				<comments desc="Dont close the menu automatically "/>
+			</value>
+			<value name="eWidgetMenuStyle_NoCloseOnGroupOrCheckChange" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange ">
+				<comments desc="Dont close the menu on group or check change. "/>
+			</value>
+		</enum>
+		<interface name="iWidgetMenuItem" uuid1="5C063F02-4C0E-4828-9D0A-ECCAC5F392B0" uuid2="0x5c063f02,0x4c0e,0x4828,0x9d,0x0a,0xec,0xca,0xc5,0xf3,0x92,0xb0">
+			<comments desc="Menu item interface. "/>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method
+				const="yes"
+				java_name="getMenu"
+				name="GetMenu"
+				num_parameters="0"
+				property="get"
+				property_name2="menu"
+				property_name="menu">
+				<comments desc="Get the item&apos;s menu. "/>
+				<return type="iWidgetMenu *" typec="iWidgetMenu*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setName"
+				name="SetName"
+				num_parameters="1"
+				property="set"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Set the item&apos;s name. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getName"
+				name="GetName"
+				num_parameters="0"
+				property="get"
+				property_name2="name"
+				property_name="name">
+				<comments desc="Get the item&apos;s name. "/>
+				<return type="const achar *" typec="const achar*" typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setID"
+				name="SetID"
+				num_parameters="1"
+				property="set"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Set the item&apos;s ID. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getID"
+				name="GetID"
+				num_parameters="0"
+				property="get"
+				property_name2="id"
+				property_name="id">
+				<comments desc="Get the item&apos;s ID. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setFlags"
+				name="SetFlags"
+				num_parameters="1"
+				property="set"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Set the item&apos;s flags. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tWidgetMenuItemFlags"
+					typec="tWidgetMenuItemFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFlags"
+				name="GetFlags"
+				num_parameters="0"
+				property="get"
+				property_name2="flags"
+				property_name="flags">
+				<comments desc="Get the item&apos;s flags. "/>
+				<return type="tWidgetMenuItemFlags" typec="tWidgetMenuItemFlags" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				java_name="setIcon"
+				name="SetIcon"
+				num_parameters="1"
+				property="set"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Set the item&apos;s icon "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iOverlay *"
+					typec="iOverlay*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIcon"
+				name="GetIcon"
+				num_parameters="0"
+				property="get"
+				property_name2="icon"
+				property_name="icon">
+				<comments desc="Get the item&apos;s icon "/>
+				<return type="iOverlay *" typec="iOverlay*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSubmenu"
+				name="SetSubmenu"
+				num_parameters="1"
+				property="set"
+				property_name2="submenu"
+				property_name="submenu">
+				<comments desc="Set the item&apos;s submenu ID. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSubmenu"
+				name="GetSubmenu"
+				num_parameters="0"
+				property="get"
+				property_name2="submenu"
+				property_name="submenu">
+				<comments desc="Get the item&apos;s submenu ID. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setSelected"
+				name="SetSelected"
+				num_parameters="1"
+				property="set"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Set the item&apos;s selected status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getSelected"
+				name="GetSelected"
+				num_parameters="0"
+				property="get"
+				property_name2="selected"
+				property_name="selected">
+				<comments desc="Get the item&apos;s selected status. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				java_name="setGroupID"
+				name="SetGroupID"
+				num_parameters="1"
+				property="set"
+				property_name2="groupID"
+				property_name="group_id">
+				<comments desc="Set the item&apos;s group id. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getGroupID"
+				name="GetGroupID"
+				num_parameters="0"
+				property="get"
+				property_name2="groupID"
+				property_name="group_id">
+				<comments desc="Get the item&apos;s group id. "/>
+				<return type="iHString *" typec="iHString*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				java_name="setKey"
+				name="SetKey"
+				num_parameters="1"
+				property="set"
+				property_name2="key"
+				property_name="key">
+				<comments desc="Set the item&apos;s key shortcut. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="aVal"
+					type="eKey"
+					typec="eKey"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getKey"
+				name="GetKey"
+				num_parameters="0"
+				property="get"
+				property_name2="key"
+				property_name="key">
+				<comments desc="Get the item&apos;s key shortcut. "/>
+				<return type="eKey" typec="eKey" typei="ni::eType_Enum"/>
+			</method>
+		</interface>
+		<interface name="iWidgetMenu" uuid1="1BBB53A4-F078-4D46-87D4-DD86DEAD1B95" uuid2="0x1bbb53a4,0xf078,0x4d46,0x87,0xd4,0xdd,0x86,0xde,0xad,0x1b,0x95">
+			<comments desc="Menu interface. ">
+				<remark text="The keyboard input for the menu is :&lt;br&gt; Escape : Close the current menu.&lt;br&gt; Home/End : Select the first/last menu item.&lt;br&gt; Up/Down : Select the previous/next menu item.&lt;br&gt; Ctrl/Shit+Up/Down or PgUp/PgDn : Select the next menu item before/after a separator.&lt;br&gt; Left : Close the current sub-menu. Wont close the main menu.&lt;br&gt; Right : Open the current sub-menu.&lt;br&gt; Enter/Space : Select/Click the current menu item.&lt;br&gt; "/>
+				<remark text="If the NoCloseOnNCClick style is set the main menu will not close when escape is pressed. "/>
+			</comments>
+			<parents>
+				<parent name="iUnknown"/>
+			</parents>
+			<method java_name="clearItems" name="ClearItems" num_parameters="0">
+				<comments desc="Clear/removes all the items in the menu. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="addItem" name="AddItem" num_parameters="3">
+				<comments desc="Add a menu item. " return="The index of the item, or eInvalidHandle if the item can&apos;t be added. ">
+					<params text="aaszName is the name and text of the item. It can contain a &amp; that will notify the shortcut key to use. "/>
+					<params text="ahspID is the ID of the item. "/>
+					<params text="aFlags are the flags of the item. "/>
+				</comments>
+				<return type="iWidgetMenuItem *" typec="iWidgetMenuItem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+				<parameter
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aFlags"
+					type="tWidgetMenuItemFlags"
+					typec="tWidgetMenuItemFlags"
+					typei="ni::eType_Enum"/>
+			</method>
+			<method java_name="removeItem" name="RemoveItem" num_parameters="1">
+				<comments desc="Remove the item at the specified index. " return="eFalse if the index is invalid, eTrue if the item has been removed. ">
+					<remark text="This function will search the item in the sub menus. "/>
+					<params text="apItem is the item to remove. "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="apItem"
+					type="iWidgetMenuItem *"
+					typec="iWidgetMenuItem*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getNumItems"
+				name="GetNumItems"
+				num_parameters="0"
+				property="get"
+				property_name2="numItems"
+				property_name="num_items">
+				<comments desc="Get the number of items. ">
+					<remark text="This function doesn&apos;t include the sub menus. "/>
+				</comments>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItem"
+				name="GetItem"
+				num_parameters="1"
+				property="get"
+				property_name2="item"
+				property_name="item">
+				<comments desc="Get the item at the specified index. ">
+					<remark text="This function doesn&apos;t include the sub menus. "/>
+				</comments>
+				<return type="iWidgetMenuItem *" typec="iWidgetMenuItem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="anIndex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemFromName"
+				name="GetItemFromName"
+				num_parameters="1"
+				property="get"
+				property_name2="itemFromName"
+				property_name="item_from_name">
+				<comments desc="Get the index of the first item with the specified name. ">
+					<remark text="This function will search the item in the sub menus. "/>
+				</comments>
+				<return type="iWidgetMenuItem *" typec="iWidgetMenuItem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="aaszName"
+					type="const achar *"
+					typec="const achar*"
+					typei="ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemFromID"
+				name="GetItemFromID"
+				num_parameters="1"
+				property="get"
+				property_name2="itemFromID"
+				property_name="item_from_id">
+				<comments desc="Get the index of the first item with the specified id. ">
+					<remark text="This function will search the item in the sub menus. "/>
+				</comments>
+				<return type="iWidgetMenuItem *" typec="iWidgetMenuItem*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="open" name="Open" num_parameters="0">
+				<comments desc="Open the menu. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="close" name="Close" num_parameters="0">
+				<comments desc="Close the menu. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method java_name="sortItems" name="SortItems" num_parameters="0">
+				<comments desc="Sort the items. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMenuWidth"
+				name="GetMenuWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="menuWidth"
+				property_name="menu_width">
+				<comments desc="Get the menu&apos;s width in pixels. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getMenuHeight"
+				name="GetMenuHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="menuHeight"
+				property_name="menu_height">
+				<comments desc="Get the menu&apos;s height in pixels. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemWidth"
+				name="GetItemWidth"
+				num_parameters="0"
+				property="get"
+				property_name2="itemWidth"
+				property_name="item_width">
+				<comments desc="Get the item&apos;s width in pixels. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getItemHeight"
+				name="GetItemHeight"
+				num_parameters="0"
+				property="get"
+				property_name2="itemHeight"
+				property_name="item_height">
+				<comments desc="Get the item&apos;s height in pixels. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method java_name="updateSizes" name="UpdateSizes" num_parameters="0">
+				<comments desc="Update the menu&apos;s sizes. ">
+					<remark text="If the item list changed since the last call this is done automatically when Open, GetMenuWidth/Height or GetItemWidth/Height is called. "/>
+				</comments>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

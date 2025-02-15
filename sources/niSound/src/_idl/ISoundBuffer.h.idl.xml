@@ -1,0 +1,93 @@
+<niIDL>
+	<namespace name="ni">
+		<interface name="iSoundBuffer" uuid1="CA0F6AFF-998C-401F-9AFF-ADAF39BA76B3" uuid2="0xca0f6aff,0x998c,0x401f,0x9a,0xff,0xad,0xaf,0x39,0xba,0x76,0xb3">
+			<comments desc="Sound buffer interface. "/>
+			<parents>
+				<parent name="iDeviceResource"/>
+			</parents>
+			<method java_name="createInstance" name="CreateInstance" num_parameters="0">
+				<comments desc="Create an instance of this sound buffer. "/>
+				<return type="iSoundBuffer *" typec="iSoundBuffer*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsInstance"
+				name="GetIsInstance"
+				num_parameters="0"
+				property="get"
+				property_name2="isInstance"
+				property_name="is_instance">
+				<comments desc="Get whether the sound buffer is an instance. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getIsStreamed"
+				name="GetIsStreamed"
+				num_parameters="0"
+				property="get"
+				property_name2="isStreamed"
+				property_name="is_streamed">
+				<comments desc="Get whether the sound is streamed. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFormat"
+				name="GetFormat"
+				num_parameters="0"
+				property="get"
+				property_name2="format"
+				property_name="format">
+				<comments desc="Get the sound buffer&apos;s format. "/>
+				<return type="eSoundFormat" typec="eSoundFormat" typei="ni::eType_Enum"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getFrequency"
+				name="GetFrequency"
+				num_parameters="0"
+				property="get"
+				property_name2="frequency"
+				property_name="frequency">
+				<comments desc="Get the sound buffer frequency. "/>
+				<return type="tU32" typec="tU32" typei="ni::eType_U32"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStreamSoundData"
+				name="GetStreamSoundData"
+				num_parameters="0"
+				property="get"
+				property_name2="streamSoundData"
+				property_name="stream_sound_data">
+				<comments desc="Get the streamed sound data. "/>
+				<return type="iSoundData *" typec="iSoundData*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="resetPosition" name="ResetPosition" num_parameters="0">
+				<comments desc="Reset the sound buffer position. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+			</method>
+			<method java_name="readRaw" name="ReadRaw" num_parameters="3">
+				<comments desc="Retrieve data in the sound buffer. "/>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					name="apOut"
+					type="tPtr"
+					typec="tPtr"
+					typei="ni::eType_Ptr"/>
+				<parameter
+					name="anBytes"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="abLoop"
+					type="tBool"
+					typec="tBool"
+					typei="ni::eType_I8"/>
+			</method>
+		</interface>
+	</namespace>
+</niIDL>

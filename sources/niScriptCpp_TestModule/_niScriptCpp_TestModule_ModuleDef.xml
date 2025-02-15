@@ -1,0 +1,13 @@
+<niIDL
+	author="niLang Authors"
+	copyright="(c) 2022 The niLang Authors"
+	desc="niScriptCpp_TestModule module"
+	initfunctions="no"
+	name="niScriptCpp_TestModule"
+	version="1,0,0">
+	<dependencies>
+		<dependency name="niLang"/>
+	</dependencies>
+	<objecttypes/>
+	<includes/>
+</niIDL>

@@ -10,6 +10,8 @@
  * @{
  */
 
+#include <niLang/Utils/ObjModelImpl.h>
+
 #ifdef USE_NICRT
 #ifdef niMSVC
 #pragma niNote("## Using ni CRT")

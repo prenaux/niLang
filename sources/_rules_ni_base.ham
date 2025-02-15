@@ -70,8 +70,241 @@ rule niHdrGrist {
 SUBDIRRULES += niHdrGrist ;
 
 #----------------------------------------------------------------------
+#     Modules
+#----------------------------------------------------------------------
+rule niModule_Begin
+{
+  if ! $(MODXML_CREATE) {
+    if ! [ FExists $(MODXML) ] {
+      MODXML_CREATE = 1 ;
+    }
+    else {
+      MODXML_CREATE = ;
+    }
+  }
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "<?xml version='1.0'?>" : create nl ;
+    FEcho $(MODXML) : "<module name='$(PACKAGE)'" : nl ;
+    FEcho $(MODXML) : "        version='$(VERSION)' " : nl ;
+    for _i in $(<) {
+      FEcho $(MODXML) : "        $(_i)" : nl ;
+    }
+    FEcho $(MODXML) : ">" : nl ;
+  }
+}
+
+rule niModule_Includes
+{
+  if $(MODXML_CREATE) {
+    local SORTED = [ SORTI $(<) ] ;
+    for _i in $(SORTED) {
+      FEcho $(MODXML) : "  <include>$(_i)</include>" : nl ;
+    }
+  }
+}
+
+rule niModule_End
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "</module>" : nl ;
+  }
+  MODXML_CREATE = ;
+}
+
+# niModule_NS Namespace
+rule niModule_NS
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <namespace name='$(<)' />" : nl ;
+  }
+}
+
+# niModule_Dep Dependency
+rule niModule_Dep
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <dependency name='$(<)' />" : nl ;
+  }
+}
+
+# niModule_WeakDep Dependency
+rule niModule_WeakDep
+{
+  if $(MODXML_CREATE) {
+    FEcho $(MODXML) : "  <dependency name='$(<)' weak='yes'  />" : nl ;
+  }
+}
+
+# niModule_OT [ PROPERTY=VAL ]
+rule niModule_OT
+{
+  if $(MODXML_CREATE) {
+    local o = "  <objecttype " ;
+    o += $(<) ;
+    o += " />" ;
+    FEcho $(MODXML) : $(o) : nl ;
+  }
+}
+
+#----------------------------------------------------------------------
 #     IDL generation
 #----------------------------------------------------------------------
+
+# niGenIDLs TARGET : $(MODULE) : LOCATE DIR (relative to TK_DIR_INCLUDE) : ADDDIRS : API_BASETARGET ;
+rule niGenIDLs {
+  local t = IDL_$(<) ;
+  local l = ;
+  local IDLS = ;
+
+  # API copy and IDL setups
+  if $(3) {
+    ECHO "W/niGenIDLs: $(<): We do not copy the APIs to TK_DIR_INCLUDE anymore." ;
+  }
+
+  local IDLDIR = [ FDirName $(SUBDIR) _idl ] ;
+
+  local VMCALLS = ;
+  for _i in $(>) {
+    local s = $(_i) ;
+    # ECHO "S: " $(s) ;
+    local f = [ FDirName $(IDLDIR) $(_i:B)$(_i:S) ] ;
+    # ECHO "F: " $(f) ;
+    local d = $(f)".idl.xml" ;
+    local x = $(f)".idl.inl" ;
+    # 	local v = $(f)".idl.inl.prev" ;
+    IDLS += $(d) ;
+    #     IDLS += [ FDirName API $(3) $(_i)".idl.xml" ] ;
+    DEPENDS $(<) : $(d) ;
+    VMCALLS += $(x) ;
+    if ! ( $(NO_MODULEDEF) = 1 ) {
+      niIDL $(d) $(x) : $(s) ;
+      MakeDirForTarget $(d) $(x) : $(IDLDIR) ;
+    }
+  }
+  DEPENDS $(<) : $(VMCALLS) ;
+
+  return $(IDLS) ;
+}
+
+if ! ( $(NO_MODULEDEF) = 1 ) {
+  # niIDL target : source ;
+  # REM: Requires the fully qualified path (absolute path)
+  rule niIDL {
+    DEPENDS $(<) : $(NILANG_BUILD_SCRIPTS)$(SLASH)IDLGen.ni ;
+    DEPENDS $(<) : $(>) ;
+    DEPENDS idls : $(<) ; # idls depends on output
+  }
+  actions niIDL {
+    "$(NI_CMD)" -I "$(NILANG_BUILD_SCRIPTS)$(SLASH)" "$(NILANG_BUILD_SCRIPTS)$(SLASH)niIDLGen.ni" "$(>)" "$(<)"
+  }
+
+  rule niSetRunDirFor {
+    local d = $(>) ;
+    if ! $(d) {
+      d = $(PACKAGE_DIR) ;
+    }
+    RUN_DIR on $(<) = [ FDirName $(d) ] ;
+  }
+
+  # Touch is to update the _Desc.xml file to the latest date so that it isnt
+  # considered necessary to update it next time.
+  rule niMergeXML {
+    DEPENDS $(<) : $(>) ;
+    Touch $(>) ;
+    niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niMergeXML {
+    pushd "$(RUN_DIR)"
+    "$(NI_CMD)" "$(NILANG_BUILD_SCRIPTS)$(SLASH)MergeXML.ni" niIDL "$(>)" "$(<)"
+  }
+
+  rule niXSLGenModuleDefCPP {
+    DEPENDS $(<) : $(>) ;
+    # niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niXSLGenModuleDefCPP {
+    xslt_tools-xslt1 "$(NILANG_BUILD_SCRIPTS)$(SLASH)GenModuleDefCPP.xslt" "$(>)" "$(<)"
+  }
+
+  rule niXSLGenModuleDefH {
+    DEPENDS $(<) : $(>) ;
+    # niSetRunDirFor $(<) : $(3) ;
+  }
+  actions niXSLGenModuleDefH {
+    xslt_tools-xslt1 "$(NILANG_BUILD_SCRIPTS)$(SLASH)GenModuleDefH.xslt" "$(>)" "$(<)"
+  }
+}
+
+# niBuildModuleDef_ PACKAGE : IDLS ;
+rule niBuildModuleDef_
+{
+  local PACKAGE = $(1) ;
+  local t = ModuleDef_$(PACKAGE) ;
+  local tidl = IDL_$(PACKAGE) ;
+
+  NotFile $(t) ;
+  DEPENDS $(t) : $(2) ;
+  DEPENDS $(t) : tkdir ;
+
+  local xslScriptCpp = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefCPP.xslt ] ;
+  local cpp = [ FGristFiles _$(PACKAGE)_ModuleDef.cpp ] ;
+  LOCATE on $(cpp) = $(LOCATE_SOURCE) ;
+
+  local xslScriptH = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefH.xslt ] ;
+  local h = [ FGristFiles [ FDirName API $(PACKAGE)_ModuleDef.h ] ] ;
+  LOCATE on $(h) = $(LOCATE_SOURCE) ;
+
+  local xml = [ FGetAbsolutePath [ FDirName $(SUBDIR) _$(PACKAGE)_ModuleDef.xml ] ] ;
+
+# We dont want that, we need them to build if we cant generate them (bootstrap build)
+#   Clean clean : $(cpp) $(h) $(xml) ;
+
+  if ! ( $(NO_MODULEDEF) = 1 ) {
+    DEPENDS $(MODXML) : $(tidl) ;
+    niMergeXML $(xml) : $(MODXML) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(h) : $(xslScriptH) ;
+    DEPENDS moduledefh : $(h) ;
+    niXSLGenModuleDefH $(h) : $(xml) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(cpp) : $(xslScriptCpp) ;
+    DEPENDS moduledefcpp : $(cpp) ;
+    niXSLGenModuleDefCPP $(cpp) : $(xml) : $(PACKAGE_DIR) ;
+
+    DEPENDS $(t) : $(cpp) $(h) ;
+  }
+
+  DEPENDS $(PACKAGE) : $(t) ;
+
+  # moduledef depends on target
+  DEPENDS moduledef : $(t) ;
+
+  return $(xml) ;
+}
+
+rule niGlobModuleAPI {
+  local allFiles = ;
+  local d = [ FDirName $(SUBDIR) API $(<) ] ;
+  local files = [ GlobSrc $(d) : .h ] ;
+  allFiles += $(d)/$(files) ;
+  local d = [ FDirName $(SUBDIR) API niPlugins ] ;
+  local files = [ GlobSrc $(d) : .h ] ;
+  allFiles += $(d)/$(files) ;
+  return $(allFiles) ;
+}
+
+rule niBuildModuleDef {
+  local API = [ niGlobModuleAPI $(PACKAGE) ] ;
+  # ECHO "... niBuildModuleDef: $(t): API:" $(API) ;
+
+  NotFile IDL_$(PACKAGE) ;
+  local IDLS = [ niGenIDLs IDL_$(PACKAGE) : $(API) ] ;
+  # ECHO "... niBuildModuleDef: $(t): IDLS:" $(IDLS) ;
+
+  niBuildModuleDef_ $(PACKAGE) : $(IDLS) ;
+
+  return $(IDLS) ;
+}
 
 # niImportModuleHdrs MODULENAME : (TOOLKITNAME) : (APIDIRNAME)
 rule niImportModuleHdrs {

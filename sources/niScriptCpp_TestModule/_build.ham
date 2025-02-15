@@ -4,6 +4,20 @@ tkDefModuleLib niScriptCpp_TestModule : 1,0,0 : niScriptCpp_TestModule ;
 niImportModuleHdrs niScriptCpp ;
 niImportModuleDll  niLang ;
 
+### API #################################################################
+IDLS = [ niBuildModuleDef ] ;
+
 ### SOURCES #############################################################
 SRC = [ tkPkgSrc ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : stamp : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
+
+### DEFINITION ##########################################################
+niModule_Begin
+  desc='"niScriptCpp_TestModule module"'
+  author='"niLang Authors"'
+  copyright='"(c) 2022 The niLang Authors"'
+  initfunctions='"no"'
+;
+niModule_Dep "niLang" ;
+niModule_Includes $(IDLS) ;
+niModule_End ;

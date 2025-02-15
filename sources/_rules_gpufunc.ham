@@ -48,7 +48,7 @@ rule nishCompileGlsl {
   for _gpuTarget in $(4) {
     local t = $(1:S=.$(_gpuTarget)) ;
     # logInfoVar t ;
-    GeneratedWith $(t) : $(OUTPUT) : nishCompileGlsl ;
+    OutputWith $(t) : $(OUTPUT) : nishCompileGlsl ;
     langOutputs += $(t) ;
   }
   # logInfoVar langOutputs ;

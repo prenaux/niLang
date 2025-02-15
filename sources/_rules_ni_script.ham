@@ -95,7 +95,7 @@ rule niGeneratorScript {
   local FIRST_OUTPUT = [ ListGetFirst $(OUTPUTS) ] ;
   for _o in $(OUTPUTS) {
     if $(_o) != $(FIRST_OUTPUT) {
-      GeneratedWith $(_o) : $(FIRST_OUTPUT) : niGeneratorScript ;
+      OutputWith $(_o) : $(FIRST_OUTPUT) : niGeneratorScript ;
     }
   }
 

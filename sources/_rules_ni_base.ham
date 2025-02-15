@@ -249,15 +249,15 @@ rule niBuildModuleDef_
   local xslScriptCpp = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefCPP.xslt ] ;
   local cpp = [ FGristFiles _$(PACKAGE)_ModuleDef.cpp ] ;
   LOCATE on $(cpp) = $(LOCATE_SOURCE) ;
+  GENERATED $(cpp) ;
 
   local xslScriptH = [ FDirName $(NILANG_BUILD_SCRIPTS) GenModuleDefH.xslt ] ;
   local h = [ FGristFiles [ FDirName API $(PACKAGE)_ModuleDef.h ] ] ;
   LOCATE on $(h) = $(LOCATE_SOURCE) ;
+  GENERATED $(h) ;
 
   local xml = [ FGetAbsolutePath [ FDirName $(SUBDIR) _$(PACKAGE)_ModuleDef.xml ] ] ;
-
-# We dont want that, we need them to build if we cant generate them (bootstrap build)
-#   Clean clean : $(cpp) $(h) $(xml) ;
+  GENERATED $(xml) ;
 
   if ! ( $(NO_MODULEDEF) = 1 ) {
     DEPENDS $(MODXML) : $(tidl) ;
@@ -275,7 +275,6 @@ rule niBuildModuleDef_
   }
 
   DEPENDS $(PACKAGE) : $(t) ;
-
   # moduledef depends on target
   DEPENDS moduledef : $(t) ;
 

@@ -862,19 +862,12 @@ void CheckEqual(TestResults& results,
                 Expected const expected, Actual const actual,
                 char const* const testName, char const* const filename, int const line)
 {
-#ifdef _MSC_VER
-  // warning C4389: '==' : signed/unsigned mismatch
-#  pragma warning( disable : 4389 )
-#endif
-  if (!(expected == actual))
+  if (!(expected == Expected(actual)))
   {
     ni::cString stream;
     stream << msg << ": Expected [" << expected << "] == [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
-#ifdef _MSC_VER
-#  pragma warning( default : 4389 )
-#endif
 }
 
 template< typename Expected, typename Actual >
@@ -883,19 +876,12 @@ void CheckNotEqual(TestResults& results,
                    Expected const expected, Actual const actual,
                    char const* const testName, char const* const filename, int const line)
 {
-#ifdef _MSC_VER
-  // warning C4389: '==' : signed/unsigned mismatch
-#  pragma warning( disable : 4389 )
-#endif
-  if (!(expected != actual))
+  if (!(expected != Expected(actual)))
   {
     ni::cString stream;
     stream << "Expected [" << expected << "] != [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
-#ifdef _MSC_VER
-#  pragma warning( default : 4389 )
-#endif
 }
 
 void CheckEqual(TestResults& results,

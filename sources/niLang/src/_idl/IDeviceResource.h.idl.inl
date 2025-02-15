@@ -77,9 +77,9 @@ IDLC_METH_END(ni,iDeviceResourceManager,GetFromIndex,1)
 IDLC_METH_BEGIN(ni,iDeviceResourceManager,Register,1)
 	IDLC_DECL_VAR(iDeviceResource*,apRes)
 	IDLC_BUF_TO_INTF(iDeviceResource,apRes)
-	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_DECL_RETVAR(tU32,_Ret)
 	IDLC_METH_CALL(_Ret,ni,iDeviceResourceManager,Register,1,(apRes))
-	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
 IDLC_METH_END(ni,iDeviceResourceManager,Register,1)
 
 /** ni -> iDeviceResourceManager::Unregister/1 **/
@@ -90,6 +90,24 @@ IDLC_METH_BEGIN(ni,iDeviceResourceManager,Unregister,1)
 	IDLC_METH_CALL(_Ret,ni,iDeviceResourceManager,Unregister,1,(apRes))
 	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
 IDLC_METH_END(ni,iDeviceResourceManager,Unregister,1)
+
+/** ni -> iDeviceResourceManager::GetIndexFromName/1 **/
+IDLC_METH_BEGIN(ni,iDeviceResourceManager,GetIndexFromName,1)
+	IDLC_DECL_VAR(iHString*,ahspName)
+	IDLC_BUF_TO_INTF(iHString,ahspName)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDeviceResourceManager,GetIndexFromName,1,(ahspName))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDeviceResourceManager,GetIndexFromName,1)
+
+/** ni -> iDeviceResourceManager::GetIndexFromResource/1 **/
+IDLC_METH_BEGIN(ni,iDeviceResourceManager,GetIndexFromResource,1)
+	IDLC_DECL_VAR(iDeviceResource*,apResource)
+	IDLC_BUF_TO_INTF(iDeviceResource,apResource)
+	IDLC_DECL_RETVAR(tU32,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iDeviceResourceManager,GetIndexFromResource,1,(apResource))
+	IDLC_RET_FROM_BASE(ni::eType_U32,_Ret)
+IDLC_METH_END(ni,iDeviceResourceManager,GetIndexFromResource,1)
 
 IDLC_END_INTF(ni,iDeviceResourceManager)
 

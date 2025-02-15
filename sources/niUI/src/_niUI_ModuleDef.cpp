@@ -110,11 +110,11 @@ namespace ni {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmap2D() {
 
 // Method: SetMemoryAddress
-static const ni::sParameterDef iBitmap2D_SetMemoryAddress_Parameters[3] = {
-  { "apAddr", ni::eType_Ptr, NULL, "tPtr" },
-  { "abFreeData", ni::eType_I8, NULL, "tBool" },
+static const ni::sParameterDef iBitmap2D_SetMemoryAddress_Parameters[3] = { 
+  { "apAddr", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "abFreeData", ni::eType_I8, NULL, "tBool" }, 
   { "anPitch", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_SetMemoryAddress = {
   "SetMemoryAddress",
   0|ni::eType_I8, NULL, "tBool",
@@ -159,10 +159,10 @@ static const ni::sMethodDef iBitmap2D_GetSize = {
 };
 
 // Method: CreateResized
-static const ni::sParameterDef iBitmap2D_CreateResized_Parameters[2] = {
-  { "nW", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_CreateResized_Parameters[2] = { 
+  { "nW", ni::eType_I32, NULL, "tI32" }, 
   { "nH", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_CreateResized = {
   "CreateResized",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -175,11 +175,11 @@ static const ni::sMethodDef iBitmap2D_CreateResized = {
 };
 
 // Method: CreateResizedEx
-static const ni::sParameterDef iBitmap2D_CreateResizedEx_Parameters[3] = {
-  { "nW", ni::eType_I32, NULL, "tI32" },
-  { "nH", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_CreateResizedEx_Parameters[3] = { 
+  { "nW", ni::eType_I32, NULL, "tI32" }, 
+  { "nH", ni::eType_I32, NULL, "tI32" }, 
   { "abPreserveMipMaps", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_CreateResizedEx = {
   "CreateResizedEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -192,21 +192,21 @@ static const ni::sMethodDef iBitmap2D_CreateResizedEx = {
 };
 
 // Method: CreateCubeBitmap
-static const ni::sParameterDef iBitmap2D_CreateCubeBitmap_Parameters[13] = {
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "avPX", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
-  { "aBlitPX", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "avNX", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
-  { "aBlitNX", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "avPY", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
-  { "aBlitPY", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "avNY", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
-  { "aBlitNY", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "avPZ", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
-  { "aBlitPZ", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "avNZ", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
+static const ni::sParameterDef iBitmap2D_CreateCubeBitmap_Parameters[13] = { 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "avPX", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
+  { "aBlitPX", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "avNX", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
+  { "aBlitNX", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "avPY", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
+  { "aBlitPY", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "avNY", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
+  { "aBlitNY", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "avPZ", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
+  { "aBlitPZ", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "avNZ", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
   { "aBlitNZ", ni::eType_Enum, NULL, "ePixelFormatBlit" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_CreateCubeBitmap = {
   "CreateCubeBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapCube), "iBitmapCube*",
@@ -255,9 +255,9 @@ static const ni::sMethodDef iBitmap2D_EndUnpackPixels = {
 };
 
 // Method: GetMipMap
-static const ni::sParameterDef iBitmap2D_GetMipMap_Parameters[1] = {
+static const ni::sParameterDef iBitmap2D_GetMipMap_Parameters[1] = { 
   { "ulIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_GetMipMap = {
   "GetMipMap",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -270,9 +270,9 @@ static const ni::sMethodDef iBitmap2D_GetMipMap = {
 };
 
 // Method: GetLevel
-static const ni::sParameterDef iBitmap2D_GetLevel_Parameters[1] = {
+static const ni::sParameterDef iBitmap2D_GetLevel_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_GetLevel = {
   "GetLevel",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -285,16 +285,16 @@ static const ni::sMethodDef iBitmap2D_GetLevel = {
 };
 
 // Method: Blit
-static const ni::sParameterDef iBitmap2D_Blit_Parameters[8] = {
-  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "xs", ni::eType_I32, NULL, "tI32" },
-  { "ys", ni::eType_I32, NULL, "tI32" },
-  { "xd", ni::eType_I32, NULL, "tI32" },
-  { "yd", ni::eType_I32, NULL, "tI32" },
-  { "w", ni::eType_I32, NULL, "tI32" },
-  { "h", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_Blit_Parameters[8] = { 
+  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "xs", ni::eType_I32, NULL, "tI32" }, 
+  { "ys", ni::eType_I32, NULL, "tI32" }, 
+  { "xd", ni::eType_I32, NULL, "tI32" }, 
+  { "yd", ni::eType_I32, NULL, "tI32" }, 
+  { "w", ni::eType_I32, NULL, "tI32" }, 
+  { "h", ni::eType_I32, NULL, "tI32" }, 
   { "eBlit", ni::eType_Enum, NULL, "ePixelFormatBlit" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_Blit = {
   "Blit",
   0|ni::eType_I8, NULL, "tBool",
@@ -307,17 +307,17 @@ static const ni::sMethodDef iBitmap2D_Blit = {
 };
 
 // Method: BlitStretch
-static const ni::sParameterDef iBitmap2D_BlitStretch_Parameters[9] = {
-  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "xs", ni::eType_I32, NULL, "tI32" },
-  { "ys", ni::eType_I32, NULL, "tI32" },
-  { "xd", ni::eType_I32, NULL, "tI32" },
-  { "yd", ni::eType_I32, NULL, "tI32" },
-  { "ws", ni::eType_I32, NULL, "tI32" },
-  { "hs", ni::eType_I32, NULL, "tI32" },
-  { "wd", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_BlitStretch_Parameters[9] = { 
+  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "xs", ni::eType_I32, NULL, "tI32" }, 
+  { "ys", ni::eType_I32, NULL, "tI32" }, 
+  { "xd", ni::eType_I32, NULL, "tI32" }, 
+  { "yd", ni::eType_I32, NULL, "tI32" }, 
+  { "ws", ni::eType_I32, NULL, "tI32" }, 
+  { "hs", ni::eType_I32, NULL, "tI32" }, 
+  { "wd", ni::eType_I32, NULL, "tI32" }, 
   { "hd", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_BlitStretch = {
   "BlitStretch",
   0|ni::eType_I8, NULL, "tBool",
@@ -330,19 +330,19 @@ static const ni::sMethodDef iBitmap2D_BlitStretch = {
 };
 
 // Method: BlitAlpha
-static const ni::sParameterDef iBitmap2D_BlitAlpha_Parameters[11] = {
-  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "xs", ni::eType_I32, NULL, "tI32" },
-  { "ys", ni::eType_I32, NULL, "tI32" },
-  { "xd", ni::eType_I32, NULL, "tI32" },
-  { "yd", ni::eType_I32, NULL, "tI32" },
-  { "w", ni::eType_I32, NULL, "tI32" },
-  { "h", ni::eType_I32, NULL, "tI32" },
-  { "eBlit", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "acolSource", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "acolDest", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iBitmap2D_BlitAlpha_Parameters[11] = { 
+  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "xs", ni::eType_I32, NULL, "tI32" }, 
+  { "ys", ni::eType_I32, NULL, "tI32" }, 
+  { "xd", ni::eType_I32, NULL, "tI32" }, 
+  { "yd", ni::eType_I32, NULL, "tI32" }, 
+  { "w", ni::eType_I32, NULL, "tI32" }, 
+  { "h", ni::eType_I32, NULL, "tI32" }, 
+  { "eBlit", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "acolSource", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "acolDest", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_BlitAlpha = {
   "BlitAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -355,20 +355,20 @@ static const ni::sMethodDef iBitmap2D_BlitAlpha = {
 };
 
 // Method: BlitAlphaStretch
-static const ni::sParameterDef iBitmap2D_BlitAlphaStretch_Parameters[12] = {
-  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "xs", ni::eType_I32, NULL, "tI32" },
-  { "ys", ni::eType_I32, NULL, "tI32" },
-  { "xd", ni::eType_I32, NULL, "tI32" },
-  { "yd", ni::eType_I32, NULL, "tI32" },
-  { "ws", ni::eType_I32, NULL, "tI32" },
-  { "hs", ni::eType_I32, NULL, "tI32" },
-  { "wd", ni::eType_I32, NULL, "tI32" },
-  { "hd", ni::eType_I32, NULL, "tI32" },
-  { "acolSource", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "acolDest", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iBitmap2D_BlitAlphaStretch_Parameters[12] = { 
+  { "src", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "xs", ni::eType_I32, NULL, "tI32" }, 
+  { "ys", ni::eType_I32, NULL, "tI32" }, 
+  { "xd", ni::eType_I32, NULL, "tI32" }, 
+  { "yd", ni::eType_I32, NULL, "tI32" }, 
+  { "ws", ni::eType_I32, NULL, "tI32" }, 
+  { "hs", ni::eType_I32, NULL, "tI32" }, 
+  { "wd", ni::eType_I32, NULL, "tI32" }, 
+  { "hd", ni::eType_I32, NULL, "tI32" }, 
+  { "acolSource", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "acolDest", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_BlitAlphaStretch = {
   "BlitAlphaStretch",
   0|ni::eType_I8, NULL, "tBool",
@@ -381,11 +381,11 @@ static const ni::sMethodDef iBitmap2D_BlitAlphaStretch = {
 };
 
 // Method: PutPixel
-static const ni::sParameterDef iBitmap2D_PutPixel_Parameters[3] = {
-  { "x", ni::eType_I32, NULL, "tI32" },
-  { "y", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_PutPixel_Parameters[3] = { 
+  { "x", ni::eType_I32, NULL, "tI32" }, 
+  { "y", ni::eType_I32, NULL, "tI32" }, 
   { "col", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_PutPixel = {
   "PutPixel",
   0|ni::eType_Null, NULL, "void",
@@ -394,11 +394,11 @@ NULL
 };
 
 // Method: GetPixel
-static const ni::sParameterDef iBitmap2D_GetPixel_Parameters[3] = {
-  { "x", ni::eType_I32, NULL, "tI32" },
-  { "y", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_GetPixel_Parameters[3] = { 
+  { "x", ni::eType_I32, NULL, "tI32" }, 
+  { "y", ni::eType_I32, NULL, "tI32" }, 
   { "pOut", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_GetPixel = {
   "GetPixel",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -407,9 +407,9 @@ NULL
 };
 
 // Method: Clear
-static const ni::sParameterDef iBitmap2D_Clear_Parameters[1] = {
+static const ni::sParameterDef iBitmap2D_Clear_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_Clear = {
   "Clear",
   0|ni::eType_Null, NULL, "void",
@@ -418,10 +418,10 @@ NULL
 };
 
 // Method: ClearRect
-static const ni::sParameterDef iBitmap2D_ClearRect_Parameters[2] = {
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iBitmap2D_ClearRect_Parameters[2] = { 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_ClearRect = {
   "ClearRect",
   0|ni::eType_Null, NULL, "void",
@@ -430,11 +430,11 @@ NULL
 };
 
 // Method: PutPixelf
-static const ni::sParameterDef iBitmap2D_PutPixelf_Parameters[3] = {
-  { "x", ni::eType_I32, NULL, "tI32" },
-  { "y", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_PutPixelf_Parameters[3] = { 
+  { "x", ni::eType_I32, NULL, "tI32" }, 
+  { "y", ni::eType_I32, NULL, "tI32" }, 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_PutPixelf = {
   "PutPixelf",
   0|ni::eType_Null, NULL, "void",
@@ -447,10 +447,10 @@ static const ni::sMethodDef iBitmap2D_PutPixelf = {
 };
 
 // Method: GetPixelf
-static const ni::sParameterDef iBitmap2D_GetPixelf_Parameters[2] = {
-  { "x", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iBitmap2D_GetPixelf_Parameters[2] = { 
+  { "x", ni::eType_I32, NULL, "tI32" }, 
   { "y", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_GetPixelf = {
   "GetPixelf",
   0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -463,9 +463,9 @@ static const ni::sMethodDef iBitmap2D_GetPixelf = {
 };
 
 // Method: Clearf
-static const ni::sParameterDef iBitmap2D_Clearf_Parameters[1] = {
+static const ni::sParameterDef iBitmap2D_Clearf_Parameters[1] = { 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_Clearf = {
   "Clearf",
   0|ni::eType_Null, NULL, "void",
@@ -478,10 +478,10 @@ static const ni::sMethodDef iBitmap2D_Clearf = {
 };
 
 // Method: ClearRectf
-static const ni::sParameterDef iBitmap2D_ClearRectf_Parameters[2] = {
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iBitmap2D_ClearRectf_Parameters[2] = { 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap2D_ClearRectf = {
   "ClearRectf",
   0|ni::eType_Null, NULL, "void",
@@ -547,12 +547,12 @@ static const ni::sInterfaceDef InterfaceDef_iBitmap2D = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmap3D() {
 
 // Method: SetMemoryAddress
-static const ni::sParameterDef iBitmap3D_SetMemoryAddress_Parameters[4] = {
-  { "apAddr", ni::eType_Ptr, NULL, "tPtr" },
-  { "abFreeData", ni::eType_I8, NULL, "tBool" },
-  { "anRowPitch", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iBitmap3D_SetMemoryAddress_Parameters[4] = { 
+  { "apAddr", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "abFreeData", ni::eType_I8, NULL, "tBool" }, 
+  { "anRowPitch", ni::eType_U32, NULL, "tU32" }, 
   { "anSlicePitch", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_SetMemoryAddress = {
   "SetMemoryAddress",
   0|ni::eType_I8, NULL, "tBool",
@@ -605,9 +605,9 @@ NULL
 };
 
 // Method: GetSlicePtr
-static const ni::sParameterDef iBitmap3D_GetSlicePtr_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_GetSlicePtr_Parameters[1] = { 
   { "anSlice", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_GetSlicePtr = {
   "GetSlicePtr",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Ptr, NULL, "tPtr",
@@ -616,9 +616,9 @@ NULL
 };
 
 // Method: CreateSliceBitmap
-static const ni::sParameterDef iBitmap3D_CreateSliceBitmap_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_CreateSliceBitmap_Parameters[1] = { 
   { "anSlice", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_CreateSliceBitmap = {
   "CreateSliceBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -627,11 +627,11 @@ NULL
 };
 
 // Method: CreateResized
-static const ni::sParameterDef iBitmap3D_CreateResized_Parameters[3] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iBitmap3D_CreateResized_Parameters[3] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
   { "anD", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_CreateResized = {
   "CreateResized",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -644,9 +644,9 @@ static const ni::sMethodDef iBitmap3D_CreateResized = {
 };
 
 // Method: GetMipMap
-static const ni::sParameterDef iBitmap3D_GetMipMap_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_GetMipMap_Parameters[1] = { 
   { "ulIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_GetMipMap = {
   "GetMipMap",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -659,9 +659,9 @@ static const ni::sMethodDef iBitmap3D_GetMipMap = {
 };
 
 // Method: GetLevel
-static const ni::sParameterDef iBitmap3D_GetLevel_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_GetLevel_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_GetLevel = {
   "GetLevel",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -698,12 +698,12 @@ static const ni::sMethodDef iBitmap3D_EndUnpackPixels = {
 };
 
 // Method: Blit
-static const ni::sParameterDef iBitmap3D_Blit_Parameters[4] = {
-  { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "const iBitmap3D*" },
-  { "avSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_Blit_Parameters[4] = { 
+  { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "const iBitmap3D*" }, 
+  { "avSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_Blit = {
   "Blit",
   0|ni::eType_I8, NULL, "tBool",
@@ -716,10 +716,10 @@ static const ni::sMethodDef iBitmap3D_Blit = {
 };
 
 // Method: PutPixel
-static const ni::sParameterDef iBitmap3D_PutPixel_Parameters[2] = {
-  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_PutPixel_Parameters[2] = { 
+  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "col", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_PutPixel = {
   "PutPixel",
   0|ni::eType_Null, NULL, "void",
@@ -728,10 +728,10 @@ NULL
 };
 
 // Method: GetPixel
-static const ni::sParameterDef iBitmap3D_GetPixel_Parameters[2] = {
-  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_GetPixel_Parameters[2] = { 
+  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "pOut", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_GetPixel = {
   "GetPixel",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -740,9 +740,9 @@ NULL
 };
 
 // Method: Clear
-static const ni::sParameterDef iBitmap3D_Clear_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_Clear_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_Clear = {
   "Clear",
   0|ni::eType_Null, NULL, "void",
@@ -751,11 +751,11 @@ NULL
 };
 
 // Method: ClearBox
-static const ni::sParameterDef iBitmap3D_ClearBox_Parameters[3] = {
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_ClearBox_Parameters[3] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_ClearBox = {
   "ClearBox",
   0|ni::eType_Null, NULL, "void",
@@ -764,10 +764,10 @@ NULL
 };
 
 // Method: PutPixelf
-static const ni::sParameterDef iBitmap3D_PutPixelf_Parameters[2] = {
-  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_PutPixelf_Parameters[2] = { 
+  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_PutPixelf = {
   "PutPixelf",
   0|ni::eType_Null, NULL, "void",
@@ -780,9 +780,9 @@ static const ni::sMethodDef iBitmap3D_PutPixelf = {
 };
 
 // Method: GetPixelf
-static const ni::sParameterDef iBitmap3D_GetPixelf_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_GetPixelf_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_GetPixelf = {
   "GetPixelf",
   0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -795,9 +795,9 @@ static const ni::sMethodDef iBitmap3D_GetPixelf = {
 };
 
 // Method: Clearf
-static const ni::sParameterDef iBitmap3D_Clearf_Parameters[1] = {
+static const ni::sParameterDef iBitmap3D_Clearf_Parameters[1] = { 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_Clearf = {
   "Clearf",
   0|ni::eType_Null, NULL, "void",
@@ -810,11 +810,11 @@ static const ni::sMethodDef iBitmap3D_Clearf = {
 };
 
 // Method: ClearBoxf
-static const ni::sParameterDef iBitmap3D_ClearBoxf_Parameters[3] = {
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iBitmap3D_ClearBoxf_Parameters[3] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "avCol", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iBitmap3D_ClearBoxf = {
   "ClearBoxf",
   0|ni::eType_Null, NULL, "void",
@@ -877,9 +877,9 @@ static const ni::sInterfaceDef InterfaceDef_iBitmap3D = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmapFormat() {
 
 // Method: Copy
-static const ni::sParameterDef iBitmapFormat_Copy_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_Copy_Parameters[1] = { 
   { "apFormat", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "const iBitmapFormat*" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -916,9 +916,9 @@ static const ni::sMethodDef iBitmapFormat_Reset = {
 };
 
 // Method: SetType
-static const ni::sParameterDef iBitmapFormat_SetType_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetType_Parameters[1] = { 
   { "aV", ni::eType_Enum, NULL, "eBitmapType" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetType = {
   "SetType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -943,9 +943,9 @@ static const ni::sMethodDef iBitmapFormat_GetType = {
 };
 
 // Method: SetWidth
-static const ni::sParameterDef iBitmapFormat_SetWidth_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetWidth_Parameters[1] = { 
   { "aV", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetWidth = {
   "SetWidth",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -970,9 +970,9 @@ static const ni::sMethodDef iBitmapFormat_GetWidth = {
 };
 
 // Method: SetHeight
-static const ni::sParameterDef iBitmapFormat_SetHeight_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetHeight_Parameters[1] = { 
   { "aV", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetHeight = {
   "SetHeight",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -997,9 +997,9 @@ static const ni::sMethodDef iBitmapFormat_GetHeight = {
 };
 
 // Method: SetDepth
-static const ni::sParameterDef iBitmapFormat_SetDepth_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetDepth_Parameters[1] = { 
   { "aV", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetDepth = {
   "SetDepth",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -1024,9 +1024,9 @@ static const ni::sMethodDef iBitmapFormat_GetDepth = {
 };
 
 // Method: SetNumMipMaps
-static const ni::sParameterDef iBitmapFormat_SetNumMipMaps_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetNumMipMaps_Parameters[1] = { 
   { "aV", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetNumMipMaps = {
   "SetNumMipMaps",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -1051,9 +1051,9 @@ static const ni::sMethodDef iBitmapFormat_GetNumMipMaps = {
 };
 
 // Method: SetPixelFormat
-static const ni::sParameterDef iBitmapFormat_SetPixelFormat_Parameters[1] = {
+static const ni::sParameterDef iBitmapFormat_SetPixelFormat_Parameters[1] = { 
   { "aV", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iBitmapFormat_SetPixelFormat = {
   "SetPixelFormat",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "void",
@@ -1182,10 +1182,10 @@ static const ni::sMethodDef iBitmapBase_GetPixelFormat = {
 };
 
 // Method: CreateMipMaps
-static const ni::sParameterDef iBitmapBase_CreateMipMaps_Parameters[2] = {
-  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iBitmapBase_CreateMipMaps_Parameters[2] = { 
+  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }, 
   { "abCompute", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iBitmapBase_CreateMipMaps = {
   "CreateMipMaps",
   0|ni::eType_I8, NULL, "tBool",
@@ -1222,9 +1222,9 @@ static const ni::sMethodDef iBitmapBase_GetNumMipMaps = {
 };
 
 // Method: Clone
-static const ni::sParameterDef iBitmapBase_Clone_Parameters[1] = {
+static const ni::sParameterDef iBitmapBase_Clone_Parameters[1] = { 
   { "eBlit", ni::eType_Enum, NULL, "ePixelFormatBlit" }
-};
+}; 
 static const ni::sMethodDef iBitmapBase_Clone = {
   "Clone",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -1237,9 +1237,9 @@ static const ni::sMethodDef iBitmapBase_Clone = {
 };
 
 // Method: CreateConvertedFormat
-static const ni::sParameterDef iBitmapBase_CreateConvertedFormat_Parameters[1] = {
+static const ni::sParameterDef iBitmapBase_CreateConvertedFormat_Parameters[1] = { 
   { "pFmt", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "const iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iBitmapBase_CreateConvertedFormat = {
   "CreateConvertedFormat",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -1252,9 +1252,9 @@ static const ni::sMethodDef iBitmapBase_CreateConvertedFormat = {
 };
 
 // Method: CreateGammaCorrected
-static const ni::sParameterDef iBitmapBase_CreateGammaCorrected_Parameters[1] = {
+static const ni::sParameterDef iBitmapBase_CreateGammaCorrected_Parameters[1] = { 
   { "factor", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iBitmapBase_CreateGammaCorrected = {
   "CreateGammaCorrected",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -1267,9 +1267,9 @@ static const ni::sMethodDef iBitmapBase_CreateGammaCorrected = {
 };
 
 // Method: GammaCorrect
-static const ni::sParameterDef iBitmapBase_GammaCorrect_Parameters[1] = {
+static const ni::sParameterDef iBitmapBase_GammaCorrect_Parameters[1] = { 
   { "factor", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iBitmapBase_GammaCorrect = {
   "GammaCorrect",
   0|ni::eType_I8, NULL, "tBool",
@@ -1323,10 +1323,10 @@ static const ni::sInterfaceDef InterfaceDef_iBitmapBase = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmapLoader() {
 
 // Method: LoadBitmap
-static const ni::sParameterDef iBitmapLoader_LoadBitmap_Parameters[2] = {
-  { "apGraphics", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphics), "iGraphics*" },
+static const ni::sParameterDef iBitmapLoader_LoadBitmap_Parameters[2] = { 
+  { "apGraphics", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphics), "iGraphics*" }, 
   { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iBitmapLoader_LoadBitmap = {
   "LoadBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -1413,12 +1413,12 @@ static const ni::sInterfaceDef InterfaceDef_iBitmapLoader = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmapSaver() {
 
 // Method: SaveBitmap
-static const ni::sParameterDef iBitmapSaver_SaveBitmap_Parameters[4] = {
-  { "apGraphics", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphics), "iGraphics*" },
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" },
+static const ni::sParameterDef iBitmapSaver_SaveBitmap_Parameters[4] = { 
+  { "apGraphics", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphics), "iGraphics*" }, 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" }, 
   { "anCompression", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iBitmapSaver_SaveBitmap = {
   "SaveBitmap",
   0|ni::eType_I8, NULL, "tBool",
@@ -1507,9 +1507,9 @@ static const ni::sInterfaceDef InterfaceDef_iBitmapSaver = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBitmapCube() {
 
 // Method: GetFace
-static const ni::sParameterDef iBitmapCube_GetFace_Parameters[1] = {
+static const ni::sParameterDef iBitmapCube_GetFace_Parameters[1] = { 
   { "Face", ni::eType_Enum, NULL, "eBitmapCubeFace" }
-};
+}; 
 static const ni::sMethodDef iBitmapCube_GetFace = {
   "GetFace",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -1522,9 +1522,9 @@ static const ni::sMethodDef iBitmapCube_GetFace = {
 };
 
 // Method: CreateResized
-static const ni::sParameterDef iBitmapCube_CreateResized_Parameters[1] = {
+static const ni::sParameterDef iBitmapCube_CreateResized_Parameters[1] = { 
   { "nW", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iBitmapCube_CreateResized = {
   "CreateResized",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapCube), "iBitmapCube*",
@@ -1568,9 +1568,9 @@ static const ni::sInterfaceDef InterfaceDef_iBitmapCube = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iBoundingVolume() {
 
 // Method: Copy
-static const ni::sParameterDef iBoundingVolume_Copy_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Copy_Parameters[1] = { 
   { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBoundingVolume), "iBoundingVolume*" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -1607,9 +1607,9 @@ static const ni::sMethodDef iBoundingVolume_GetType = {
 };
 
 // Method: Begin
-static const ni::sParameterDef iBoundingVolume_Begin_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Begin_Parameters[1] = { 
   { "abReset", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Begin = {
   "Begin",
   0|ni::eType_I8, NULL, "tBool",
@@ -1634,9 +1634,9 @@ static const ni::sMethodDef iBoundingVolume_End = {
 };
 
 // Method: AddPoint
-static const ni::sParameterDef iBoundingVolume_AddPoint_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_AddPoint_Parameters[1] = { 
   { "avPoint", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_AddPoint = {
   "AddPoint",
   0|ni::eType_I8, NULL, "tBool",
@@ -1649,9 +1649,9 @@ static const ni::sMethodDef iBoundingVolume_AddPoint = {
 };
 
 // Method: SetCenter
-static const ni::sParameterDef iBoundingVolume_SetCenter_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetCenter_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetCenter = {
   "SetCenter",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "tBool",
@@ -1676,9 +1676,9 @@ static const ni::sMethodDef iBoundingVolume_GetCenter = {
 };
 
 // Method: SetRadius
-static const ni::sParameterDef iBoundingVolume_SetRadius_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetRadius_Parameters[1] = { 
   { "afRadius", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetRadius = {
   "SetRadius",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -1703,9 +1703,9 @@ static const ni::sMethodDef iBoundingVolume_GetRadius = {
 };
 
 // Method: SetExtents
-static const ni::sParameterDef iBoundingVolume_SetExtents_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetExtents_Parameters[1] = { 
   { "avExtends", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetExtents = {
   "SetExtents",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -1730,9 +1730,9 @@ static const ni::sMethodDef iBoundingVolume_GetExtents = {
 };
 
 // Method: SetSize
-static const ni::sParameterDef iBoundingVolume_SetSize_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetSize = {
   "SetSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -1757,9 +1757,9 @@ static const ni::sMethodDef iBoundingVolume_GetSize = {
 };
 
 // Method: SetMin
-static const ni::sParameterDef iBoundingVolume_SetMin_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetMin_Parameters[1] = { 
   { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetMin = {
   "SetMin",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -1784,9 +1784,9 @@ static const ni::sMethodDef iBoundingVolume_GetMin = {
 };
 
 // Method: SetMax
-static const ni::sParameterDef iBoundingVolume_SetMax_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_SetMax_Parameters[1] = { 
   { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_SetMax = {
   "SetMax",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -1811,9 +1811,9 @@ static const ni::sMethodDef iBoundingVolume_GetMax = {
 };
 
 // Method: Translate
-static const ni::sParameterDef iBoundingVolume_Translate_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Translate_Parameters[1] = { 
   { "avV", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Translate = {
   "Translate",
   0|ni::eType_I8, NULL, "tBool",
@@ -1826,9 +1826,9 @@ static const ni::sMethodDef iBoundingVolume_Translate = {
 };
 
 // Method: Rotate
-static const ni::sParameterDef iBoundingVolume_Rotate_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Rotate_Parameters[1] = { 
   { "amtxRotation", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Rotate = {
   "Rotate",
   0|ni::eType_I8, NULL, "tBool",
@@ -1841,9 +1841,9 @@ static const ni::sMethodDef iBoundingVolume_Rotate = {
 };
 
 // Method: Transform
-static const ni::sParameterDef iBoundingVolume_Transform_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Transform_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Transform = {
   "Transform",
   0|ni::eType_I8, NULL, "tBool",
@@ -1856,9 +1856,9 @@ static const ni::sMethodDef iBoundingVolume_Transform = {
 };
 
 // Method: Inflate
-static const ni::sParameterDef iBoundingVolume_Inflate_Parameters[1] = {
+static const ni::sParameterDef iBoundingVolume_Inflate_Parameters[1] = { 
   { "afPercent", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_Inflate = {
   "Inflate",
   0|ni::eType_Null, NULL, "void",
@@ -1871,11 +1871,11 @@ static const ni::sMethodDef iBoundingVolume_Inflate = {
 };
 
 // Method: IntersectAABB
-static const ni::sParameterDef iBoundingVolume_IntersectAABB_Parameters[3] = {
-  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" },
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iBoundingVolume_IntersectAABB_Parameters[3] = { 
+  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" }, 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_IntersectAABB = {
   "IntersectAABB",
   0|ni::eType_Enum, NULL, "eIntersectionResult",
@@ -1888,11 +1888,11 @@ static const ni::sMethodDef iBoundingVolume_IntersectAABB = {
 };
 
 // Method: IntersectRay
-static const ni::sParameterDef iBoundingVolume_IntersectRay_Parameters[3] = {
-  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" },
-  { "avOrg", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iBoundingVolume_IntersectRay_Parameters[3] = { 
+  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" }, 
+  { "avOrg", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avDir", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_IntersectRay = {
   "IntersectRay",
   0|ni::eType_Enum, NULL, "eIntersectionResult",
@@ -1905,10 +1905,10 @@ static const ni::sMethodDef iBoundingVolume_IntersectRay = {
 };
 
 // Method: IntersectPoint
-static const ni::sParameterDef iBoundingVolume_IntersectPoint_Parameters[2] = {
-  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" },
+static const ni::sParameterDef iBoundingVolume_IntersectPoint_Parameters[2] = { 
+  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" }, 
   { "aPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_IntersectPoint = {
   "IntersectPoint",
   0|ni::eType_Enum, NULL, "eIntersectionResult",
@@ -1921,10 +1921,10 @@ static const ni::sMethodDef iBoundingVolume_IntersectPoint = {
 };
 
 // Method: IntersectFrustum
-static const ni::sParameterDef iBoundingVolume_IntersectFrustum_Parameters[2] = {
-  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" },
+static const ni::sParameterDef iBoundingVolume_IntersectFrustum_Parameters[2] = { 
+  { "apResult", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIntersection), "iIntersection*" }, 
   { "apFrustum", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFrustum), "const iFrustum*" }
-};
+}; 
 static const ni::sMethodDef iBoundingVolume_IntersectFrustum = {
   "IntersectFrustum",
   0|ni::eType_Enum, NULL, "eIntersectionResult",
@@ -1992,9 +1992,9 @@ static const ni::sInterfaceDef InterfaceDef_iBoundingVolume = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iCamera() {
 
 // Method: Copy
-static const ni::sParameterDef iCamera_Copy_Parameters[1] = {
+static const ni::sParameterDef iCamera_Copy_Parameters[1] = { 
   { "pSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCamera), "const iCamera*" }
-};
+}; 
 static const ni::sMethodDef iCamera_Copy = {
   "Copy",
   0|ni::eType_Null, NULL, "void",
@@ -2067,11 +2067,11 @@ static const ni::sMethodDef iCamera_GetFrustum = {
 };
 
 // Method: GetRay
-static const ni::sParameterDef iCamera_GetRay_Parameters[3] = {
-  { "afX", ni::eType_F32, NULL, "ni::tF32" },
-  { "afY", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iCamera_GetRay_Parameters[3] = { 
+  { "afX", ni::eType_F32, NULL, "ni::tF32" }, 
+  { "afY", ni::eType_F32, NULL, "ni::tF32" }, 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const ni::sRectf&" }
-};
+}; 
 static const ni::sMethodDef iCamera_GetRay = {
   "GetRay",
   0|ni::eType_Vec3f, NULL, "ni::sVec3f",
@@ -2096,10 +2096,10 @@ static const ni::sMethodDef iCamera_GetRayStart = {
 };
 
 // Method: GetScreenPosition
-static const ni::sParameterDef iCamera_GetScreenPosition_Parameters[2] = {
-  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" },
+static const ni::sParameterDef iCamera_GetScreenPosition_Parameters[2] = { 
+  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }, 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const ni::sRectf&" }
-};
+}; 
 static const ni::sMethodDef iCamera_GetScreenPosition = {
   "GetScreenPosition",
   0|ni::eType_Vec3f, NULL, "ni::sVec3f",
@@ -2112,9 +2112,9 @@ static const ni::sMethodDef iCamera_GetScreenPosition = {
 };
 
 // Method: SetViewMatrix
-static const ni::sParameterDef iCamera_SetViewMatrix_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetViewMatrix_Parameters[1] = { 
   { "aViewMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetViewMatrix = {
   "SetViewMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2127,9 +2127,9 @@ static const ni::sMethodDef iCamera_SetViewMatrix = {
 };
 
 // Method: SetProjectionMatrix
-static const ni::sParameterDef iCamera_SetProjectionMatrix_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetProjectionMatrix_Parameters[1] = { 
   { "aProjMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetProjectionMatrix = {
   "SetProjectionMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2142,10 +2142,10 @@ static const ni::sMethodDef iCamera_SetProjectionMatrix = {
 };
 
 // Method: SetFromWorldMatrix
-static const ni::sParameterDef iCamera_SetFromWorldMatrix_Parameters[2] = {
-  { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const ni::sMatrixf&" },
+static const ni::sParameterDef iCamera_SetFromWorldMatrix_Parameters[2] = { 
+  { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const ni::sMatrixf&" }, 
   { "abSetUp", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetFromWorldMatrix = {
   "SetFromWorldMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -2158,9 +2158,9 @@ static const ni::sMethodDef iCamera_SetFromWorldMatrix = {
 };
 
 // Method: SetProjection
-static const ni::sParameterDef iCamera_SetProjection_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetProjection_Parameters[1] = { 
   { "aProjectionType", ni::eType_Enum, NULL, "eCameraProjectionType" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetProjection = {
   "SetProjection",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -2185,9 +2185,9 @@ static const ni::sMethodDef iCamera_GetProjection = {
 };
 
 // Method: SetViewport
-static const ni::sParameterDef iCamera_SetViewport_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetViewport_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const ni::sRectf&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetViewport = {
   "SetViewport",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2212,9 +2212,9 @@ static const ni::sMethodDef iCamera_GetViewport = {
 };
 
 // Method: SetFov
-static const ni::sParameterDef iCamera_SetFov_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetFov_Parameters[1] = { 
   { "fFOV", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetFov = {
   "SetFov",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2239,9 +2239,9 @@ static const ni::sMethodDef iCamera_GetFov = {
 };
 
 // Method: SetAspect
-static const ni::sParameterDef iCamera_SetAspect_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetAspect_Parameters[1] = { 
   { "fAspect", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetAspect = {
   "SetAspect",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2278,9 +2278,9 @@ static const ni::sMethodDef iCamera_GetAbsoluteAspect = {
 };
 
 // Method: SetNearClipPlane
-static const ni::sParameterDef iCamera_SetNearClipPlane_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetNearClipPlane_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetNearClipPlane = {
   "SetNearClipPlane",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2305,9 +2305,9 @@ static const ni::sMethodDef iCamera_GetNearClipPlane = {
 };
 
 // Method: SetFarClipPlane
-static const ni::sParameterDef iCamera_SetFarClipPlane_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetFarClipPlane_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetFarClipPlane = {
   "SetFarClipPlane",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2332,9 +2332,9 @@ static const ni::sMethodDef iCamera_GetFarClipPlane = {
 };
 
 // Method: SetOrthoSize
-static const ni::sParameterDef iCamera_SetOrthoSize_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetOrthoSize_Parameters[1] = { 
   { "afSize", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetOrthoSize = {
   "SetOrthoSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2359,9 +2359,9 @@ static const ni::sMethodDef iCamera_GetOrthoSize = {
 };
 
 // Method: SetPosition
-static const ni::sParameterDef iCamera_SetPosition_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetPosition_Parameters[1] = { 
   { "vPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetPosition = {
   "SetPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2386,9 +2386,9 @@ static const ni::sMethodDef iCamera_GetPosition = {
 };
 
 // Method: SetTarget
-static const ni::sParameterDef iCamera_SetTarget_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetTarget_Parameters[1] = { 
   { "avTarget", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetTarget = {
   "SetTarget",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2413,9 +2413,9 @@ static const ni::sMethodDef iCamera_GetTarget = {
 };
 
 // Method: SetTargetUp
-static const ni::sParameterDef iCamera_SetTargetUp_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetTargetUp_Parameters[1] = { 
   { "avUp", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetTargetUp = {
   "SetTargetUp",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2440,9 +2440,9 @@ static const ni::sMethodDef iCamera_GetTargetUp = {
 };
 
 // Method: SetTargetDistance
-static const ni::sParameterDef iCamera_SetTargetDistance_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetTargetDistance_Parameters[1] = { 
   { "afDist", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetTargetDistance = {
   "SetTargetDistance",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2467,9 +2467,9 @@ static const ni::sMethodDef iCamera_GetTargetDistance = {
 };
 
 // Method: SetPositionDistance
-static const ni::sParameterDef iCamera_SetPositionDistance_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetPositionDistance_Parameters[1] = { 
   { "afDist", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetPositionDistance = {
   "SetPositionDistance",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2494,9 +2494,9 @@ static const ni::sMethodDef iCamera_GetPositionDistance = {
 };
 
 // Method: SetTargetDirection
-static const ni::sParameterDef iCamera_SetTargetDirection_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetTargetDirection_Parameters[1] = { 
   { "avDir", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetTargetDirection = {
   "SetTargetDirection",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2521,9 +2521,9 @@ static const ni::sMethodDef iCamera_GetTargetDirection = {
 };
 
 // Method: SetMoveType
-static const ni::sParameterDef iCamera_SetMoveType_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetMoveType_Parameters[1] = { 
   { "aMode", ni::eType_Enum, NULL, "eCameraMoveType" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetMoveType = {
   "SetMoveType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -2548,9 +2548,9 @@ static const ni::sMethodDef iCamera_GetMoveType = {
 };
 
 // Method: MoveSidewards
-static const ni::sParameterDef iCamera_MoveSidewards_Parameters[1] = {
+static const ni::sParameterDef iCamera_MoveSidewards_Parameters[1] = { 
   { "delta", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_MoveSidewards = {
   "MoveSidewards",
   0|ni::eType_Null, NULL, "void",
@@ -2563,9 +2563,9 @@ static const ni::sMethodDef iCamera_MoveSidewards = {
 };
 
 // Method: MoveUp
-static const ni::sParameterDef iCamera_MoveUp_Parameters[1] = {
+static const ni::sParameterDef iCamera_MoveUp_Parameters[1] = { 
   { "delta", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_MoveUp = {
   "MoveUp",
   0|ni::eType_Null, NULL, "void",
@@ -2578,9 +2578,9 @@ static const ni::sMethodDef iCamera_MoveUp = {
 };
 
 // Method: MoveForward
-static const ni::sParameterDef iCamera_MoveForward_Parameters[1] = {
+static const ni::sParameterDef iCamera_MoveForward_Parameters[1] = { 
   { "delta", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_MoveForward = {
   "MoveForward",
   0|ni::eType_Null, NULL, "void",
@@ -2593,9 +2593,9 @@ static const ni::sMethodDef iCamera_MoveForward = {
 };
 
 // Method: SetMove
-static const ni::sParameterDef iCamera_SetMove_Parameters[1] = {
+static const ni::sParameterDef iCamera_SetMove_Parameters[1] = { 
   { "avMove", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCamera_SetMove = {
   "SetMove",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -2620,10 +2620,10 @@ static const ni::sMethodDef iCamera_GetMove = {
 };
 
 // Method: RotateTarget
-static const ni::sParameterDef iCamera_RotateTarget_Parameters[2] = {
-  { "avAxis", ni::eType_Vec3f, NULL, "ni::sVec3f" },
+static const ni::sParameterDef iCamera_RotateTarget_Parameters[2] = { 
+  { "avAxis", ni::eType_Vec3f, NULL, "ni::sVec3f" }, 
   { "afAngle", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_RotateTarget = {
   "RotateTarget",
   0|ni::eType_Null, NULL, "void",
@@ -2636,10 +2636,10 @@ static const ni::sMethodDef iCamera_RotateTarget = {
 };
 
 // Method: RotateTargetUp
-static const ni::sParameterDef iCamera_RotateTargetUp_Parameters[2] = {
-  { "avAxis", ni::eType_Vec3f, NULL, "ni::sVec3f" },
+static const ni::sParameterDef iCamera_RotateTargetUp_Parameters[2] = { 
+  { "avAxis", ni::eType_Vec3f, NULL, "ni::sVec3f" }, 
   { "afAngle", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_RotateTargetUp = {
   "RotateTargetUp",
   0|ni::eType_Null, NULL, "void",
@@ -2652,9 +2652,9 @@ static const ni::sMethodDef iCamera_RotateTargetUp = {
 };
 
 // Method: AddYaw
-static const ni::sParameterDef iCamera_AddYaw_Parameters[1] = {
+static const ni::sParameterDef iCamera_AddYaw_Parameters[1] = { 
   { "a", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_AddYaw = {
   "AddYaw",
   0|ni::eType_Null, NULL, "void",
@@ -2667,9 +2667,9 @@ static const ni::sMethodDef iCamera_AddYaw = {
 };
 
 // Method: AddPitch
-static const ni::sParameterDef iCamera_AddPitch_Parameters[1] = {
+static const ni::sParameterDef iCamera_AddPitch_Parameters[1] = { 
   { "a", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_AddPitch = {
   "AddPitch",
   0|ni::eType_Null, NULL, "void",
@@ -2682,9 +2682,9 @@ static const ni::sMethodDef iCamera_AddPitch = {
 };
 
 // Method: AddRoll
-static const ni::sParameterDef iCamera_AddRoll_Parameters[1] = {
+static const ni::sParameterDef iCamera_AddRoll_Parameters[1] = { 
   { "a", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_AddRoll = {
   "AddRoll",
   0|ni::eType_Null, NULL, "void",
@@ -2697,9 +2697,9 @@ static const ni::sMethodDef iCamera_AddRoll = {
 };
 
 // Method: OrbitUp
-static const ni::sParameterDef iCamera_OrbitUp_Parameters[1] = {
+static const ni::sParameterDef iCamera_OrbitUp_Parameters[1] = { 
   { "afA", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_OrbitUp = {
   "OrbitUp",
   0|ni::eType_Null, NULL, "void",
@@ -2712,9 +2712,9 @@ static const ni::sMethodDef iCamera_OrbitUp = {
 };
 
 // Method: OrbitSidewards
-static const ni::sParameterDef iCamera_OrbitSidewards_Parameters[1] = {
+static const ni::sParameterDef iCamera_OrbitSidewards_Parameters[1] = { 
   { "afA", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iCamera_OrbitSidewards = {
   "OrbitSidewards",
   0|ni::eType_Null, NULL, "void",
@@ -2860,9 +2860,9 @@ static const ni::sMethodDef iCanvas_GetGraphicsContext = {
 };
 
 // Method: SetContentsScale
-static const ni::sParameterDef iCanvas_SetContentsScale_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetContentsScale_Parameters[1] = { 
   { "afContentsScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetContentsScale = {
   "SetContentsScale",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -2911,10 +2911,10 @@ static const ni::sMethodDef iCanvas_Flush = {
 };
 
 // Method: BlitFill
-static const ni::sParameterDef iCanvas_BlitFill_Parameters[2] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitFill_Parameters[2] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitFill = {
   "BlitFill",
   0|ni::eType_I8, NULL, "tBool",
@@ -2927,10 +2927,10 @@ static const ni::sMethodDef iCanvas_BlitFill = {
 };
 
 // Method: BlitFillAlpha
-static const ni::sParameterDef iCanvas_BlitFillAlpha_Parameters[2] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitFillAlpha_Parameters[2] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitFillAlpha = {
   "BlitFillAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -2943,11 +2943,11 @@ static const ni::sMethodDef iCanvas_BlitFillAlpha = {
 };
 
 // Method: BlitStretch
-static const ni::sParameterDef iCanvas_BlitStretch_Parameters[3] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iCanvas_BlitStretch_Parameters[3] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitStretch = {
   "BlitStretch",
   0|ni::eType_I8, NULL, "tBool",
@@ -2960,11 +2960,11 @@ static const ni::sMethodDef iCanvas_BlitStretch = {
 };
 
 // Method: BlitStretchAlpha
-static const ni::sParameterDef iCanvas_BlitStretchAlpha_Parameters[3] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iCanvas_BlitStretchAlpha_Parameters[3] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitStretchAlpha = {
   "BlitStretchAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -2977,12 +2977,12 @@ static const ni::sMethodDef iCanvas_BlitStretchAlpha = {
 };
 
 // Method: BlitStretchAlpha1
-static const ni::sParameterDef iCanvas_BlitStretchAlpha1_Parameters[4] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitStretchAlpha1_Parameters[4] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "afAlpha", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitStretchAlpha1 = {
   "BlitStretchAlpha1",
   0|ni::eType_I8, NULL, "tBool",
@@ -2995,10 +2995,10 @@ static const ni::sMethodDef iCanvas_BlitStretchAlpha1 = {
 };
 
 // Method: BlitOverlay
-static const ni::sParameterDef iCanvas_BlitOverlay_Parameters[2] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitOverlay_Parameters[2] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "apOverlay", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitOverlay = {
   "BlitOverlay",
   0|ni::eType_I8, NULL, "tBool",
@@ -3011,11 +3011,11 @@ static const ni::sMethodDef iCanvas_BlitOverlay = {
 };
 
 // Method: BlitOverlayFrame
-static const ni::sParameterDef iCanvas_BlitOverlayFrame_Parameters[3] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "apOverlay", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" },
+static const ni::sParameterDef iCanvas_BlitOverlayFrame_Parameters[3] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "apOverlay", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }, 
   { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitOverlayFrame = {
   "BlitOverlayFrame",
   0|ni::eType_I8, NULL, "tBool",
@@ -3028,11 +3028,11 @@ static const ni::sMethodDef iCanvas_BlitOverlayFrame = {
 };
 
 // Method: BlitLine
-static const ni::sParameterDef iCanvas_BlitLine_Parameters[3] = {
-  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_BlitLine_Parameters[3] = { 
+  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitLine = {
   "BlitLine",
   0|ni::eType_I8, NULL, "tBool",
@@ -3045,11 +3045,11 @@ static const ni::sMethodDef iCanvas_BlitLine = {
 };
 
 // Method: BlitLineAlpha
-static const ni::sParameterDef iCanvas_BlitLineAlpha_Parameters[3] = {
-  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_BlitLineAlpha_Parameters[3] = { 
+  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitLineAlpha = {
   "BlitLineAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -3062,10 +3062,10 @@ static const ni::sMethodDef iCanvas_BlitLineAlpha = {
 };
 
 // Method: BlitRect
-static const ni::sParameterDef iCanvas_BlitRect_Parameters[2] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitRect_Parameters[2] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitRect = {
   "BlitRect",
   0|ni::eType_I8, NULL, "tBool",
@@ -3078,10 +3078,10 @@ static const ni::sMethodDef iCanvas_BlitRect = {
 };
 
 // Method: BlitRectAlpha
-static const ni::sParameterDef iCanvas_BlitRectAlpha_Parameters[2] = {
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iCanvas_BlitRectAlpha_Parameters[2] = { 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "aColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitRectAlpha = {
   "BlitRectAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -3094,12 +3094,12 @@ static const ni::sMethodDef iCanvas_BlitRectAlpha = {
 };
 
 // Method: BlitText
-static const ni::sParameterDef iCanvas_BlitText_Parameters[4] = {
-  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" },
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "aFormatFlags", ni::eType_Enum, NULL, "tFontFormatFlags" },
+static const ni::sParameterDef iCanvas_BlitText_Parameters[4] = { 
+  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }, 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "aFormatFlags", ni::eType_Enum, NULL, "tFontFormatFlags" }, 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iCanvas_BlitText = {
   "BlitText",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -3136,9 +3136,9 @@ static const ni::sMethodDef iCanvas_GetHasVertices = {
 };
 
 // Method: SetColorA
-static const ni::sParameterDef iCanvas_SetColorA_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetColorA_Parameters[1] = { 
   { "anColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetColorA = {
   "SetColorA",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -3163,9 +3163,9 @@ static const ni::sMethodDef iCanvas_GetColorA = {
 };
 
 // Method: SetNormal
-static const ni::sParameterDef iCanvas_SetNormal_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetNormal_Parameters[1] = { 
   { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetNormal = {
   "SetNormal",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -3190,9 +3190,9 @@ static const ni::sMethodDef iCanvas_GetNormal = {
 };
 
 // Method: SetLineConstantScreenSize
-static const ni::sParameterDef iCanvas_SetLineConstantScreenSize_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetLineConstantScreenSize_Parameters[1] = { 
   { "abConstSize", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetLineConstantScreenSize = {
   "SetLineConstantScreenSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -3217,9 +3217,9 @@ static const ni::sMethodDef iCanvas_GetLineConstantScreenSize = {
 };
 
 // Method: SetLineSize
-static const ni::sParameterDef iCanvas_SetLineSize_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetLineSize_Parameters[1] = { 
   { "afSize", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetLineSize = {
   "SetLineSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -3244,9 +3244,9 @@ static const ni::sMethodDef iCanvas_GetLineSize = {
 };
 
 // Method: SetMaterial
-static const ni::sParameterDef iCanvas_SetMaterial_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetMaterial_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetMaterial = {
   "SetMaterial",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "void",
@@ -3271,11 +3271,11 @@ static const ni::sMethodDef iCanvas_GetMaterial = {
 };
 
 // Method: SetDefaultMaterial
-static const ni::sParameterDef iCanvas_SetDefaultMaterial_Parameters[3] = {
-  { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" },
+static const ni::sParameterDef iCanvas_SetDefaultMaterial_Parameters[3] = { 
+  { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }, 
   { "aSamplerStates", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetDefaultMaterial = {
   "SetDefaultMaterial",
   0|ni::eType_Null, NULL, "void",
@@ -3288,9 +3288,9 @@ static const ni::sMethodDef iCanvas_SetDefaultMaterial = {
 };
 
 // Method: SetMatrix
-static const ni::sParameterDef iCanvas_SetMatrix_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetMatrix = {
   "SetMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -3315,9 +3315,9 @@ static const ni::sMethodDef iCanvas_GetMatrix = {
 };
 
 // Method: SetBillboard
-static const ni::sParameterDef iCanvas_SetBillboard_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetBillboard_Parameters[1] = { 
   { "aMode", ni::eType_Enum, NULL, "tBillboardModeFlags" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetBillboard = {
   "SetBillboard",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -3342,9 +3342,9 @@ static const ni::sMethodDef iCanvas_GetBillboard = {
 };
 
 // Method: SetBillboardRight
-static const ni::sParameterDef iCanvas_SetBillboardRight_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetBillboardRight_Parameters[1] = { 
   { "avRight", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetBillboardRight = {
   "SetBillboardRight",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -3369,9 +3369,9 @@ static const ni::sMethodDef iCanvas_GetBillboardRight = {
 };
 
 // Method: SetBillboardUp
-static const ni::sParameterDef iCanvas_SetBillboardUp_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetBillboardUp_Parameters[1] = { 
   { "avUp", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetBillboardUp = {
   "SetBillboardUp",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -3396,9 +3396,9 @@ static const ni::sMethodDef iCanvas_GetBillboardUp = {
 };
 
 // Method: SetBillboardCenter
-static const ni::sParameterDef iCanvas_SetBillboardCenter_Parameters[1] = {
+static const ni::sParameterDef iCanvas_SetBillboardCenter_Parameters[1] = { 
   { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_SetBillboardCenter = {
   "SetBillboardCenter",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -3423,11 +3423,11 @@ static const ni::sMethodDef iCanvas_GetBillboardCenter = {
 };
 
 // Method: Rect
-static const ni::sParameterDef iCanvas_Rect_Parameters[3] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_Rect_Parameters[3] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afZ", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_Rect = {
   "Rect",
   0|ni::eType_I8, NULL, "tBool",
@@ -3440,13 +3440,13 @@ static const ni::sMethodDef iCanvas_Rect = {
 };
 
 // Method: RectT
-static const ni::sParameterDef iCanvas_RectT_Parameters[5] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_RectT_Parameters[5] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afZ", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_RectT = {
   "RectT",
   0|ni::eType_I8, NULL, "tBool",
@@ -3459,12 +3459,12 @@ static const ni::sMethodDef iCanvas_RectT = {
 };
 
 // Method: RectA
-static const ni::sParameterDef iCanvas_RectA_Parameters[4] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_RectA_Parameters[4] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
   { "anColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_RectA = {
   "RectA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3477,14 +3477,14 @@ static const ni::sMethodDef iCanvas_RectA = {
 };
 
 // Method: RectTA
-static const ni::sParameterDef iCanvas_RectTA_Parameters[6] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_RectTA_Parameters[6] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
   { "anColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_RectTA = {
   "RectTA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3497,17 +3497,17 @@ static const ni::sMethodDef iCanvas_RectTA = {
 };
 
 // Method: RectTA2
-static const ni::sParameterDef iCanvas_RectTA2_Parameters[9] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
-  { "anTLColA", ni::eType_U32, NULL, "tU32" },
-  { "anTRColA", ni::eType_U32, NULL, "tU32" },
-  { "anBRColA", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_RectTA2_Parameters[9] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
+  { "anTLColA", ni::eType_U32, NULL, "tU32" }, 
+  { "anTRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "anBRColA", ni::eType_U32, NULL, "tU32" }, 
   { "anBLColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_RectTA2 = {
   "RectTA2",
   0|ni::eType_I8, NULL, "tBool",
@@ -3520,24 +3520,24 @@ static const ni::sMethodDef iCanvas_RectTA2 = {
 };
 
 // Method: QuadEx
-static const ni::sParameterDef iCanvas_QuadEx_Parameters[16] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTLN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anTLA", ni::eType_U32, NULL, "tU32" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTRN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anTRA", ni::eType_U32, NULL, "tU32" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBRN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anBRA", ni::eType_U32, NULL, "tU32" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBLN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_QuadEx_Parameters[16] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTLN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anTLA", ni::eType_U32, NULL, "tU32" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTRN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anTRA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBRN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anBRA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBLN", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "anBLA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadEx = {
   "QuadEx",
   0|ni::eType_I8, NULL, "tBool",
@@ -3550,12 +3550,12 @@ static const ni::sMethodDef iCanvas_QuadEx = {
 };
 
 // Method: Quad
-static const ni::sParameterDef iCanvas_Quad_Parameters[4] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_Quad_Parameters[4] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_Quad = {
   "Quad",
   0|ni::eType_I8, NULL, "tBool",
@@ -3568,13 +3568,13 @@ static const ni::sMethodDef iCanvas_Quad = {
 };
 
 // Method: QuadA
-static const ni::sParameterDef iCanvas_QuadA_Parameters[5] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_QuadA_Parameters[5] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "anColorA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadA = {
   "QuadA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3587,16 +3587,16 @@ static const ni::sMethodDef iCanvas_QuadA = {
 };
 
 // Method: QuadA2
-static const ni::sParameterDef iCanvas_QuadA2_Parameters[8] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "anTLColA", ni::eType_U32, NULL, "tU32" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "anTRColA", ni::eType_U32, NULL, "tU32" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "anBRColA", ni::eType_U32, NULL, "tU32" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_QuadA2_Parameters[8] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "anTLColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "anTRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "anBRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "anBLColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadA2 = {
   "QuadA2",
   0|ni::eType_I8, NULL, "tBool",
@@ -3609,16 +3609,16 @@ static const ni::sMethodDef iCanvas_QuadA2 = {
 };
 
 // Method: QuadT
-static const ni::sParameterDef iCanvas_QuadT_Parameters[8] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_QuadT_Parameters[8] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadT = {
   "QuadT",
   0|ni::eType_I8, NULL, "tBool",
@@ -3631,17 +3631,17 @@ static const ni::sMethodDef iCanvas_QuadT = {
 };
 
 // Method: QuadTA
-static const ni::sParameterDef iCanvas_QuadTA_Parameters[9] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_QuadTA_Parameters[9] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "anColorA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadTA = {
   "QuadTA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3654,20 +3654,20 @@ static const ni::sMethodDef iCanvas_QuadTA = {
 };
 
 // Method: QuadTA2
-static const ni::sParameterDef iCanvas_QuadTA2_Parameters[12] = {
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anTLColA", ni::eType_U32, NULL, "tU32" },
-  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anTRColA", ni::eType_U32, NULL, "tU32" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anBRColA", ni::eType_U32, NULL, "tU32" },
-  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_QuadTA2_Parameters[12] = { 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anTLColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avTR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anTRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anBRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "avBL", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avBLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "anBLColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_QuadTA2 = {
   "QuadTA2",
   0|ni::eType_I8, NULL, "tBool",
@@ -3680,13 +3680,13 @@ static const ni::sMethodDef iCanvas_QuadTA2 = {
 };
 
 // Method: Frame
-static const ni::sParameterDef iCanvas_Frame_Parameters[5] = {
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_Frame_Parameters[5] = { 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afZ", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_Frame = {
   "Frame",
   0|ni::eType_I8, NULL, "tBool",
@@ -3699,14 +3699,14 @@ static const ni::sMethodDef iCanvas_Frame = {
 };
 
 // Method: FrameA
-static const ni::sParameterDef iCanvas_FrameA_Parameters[6] = {
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_FrameA_Parameters[6] = { 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
   { "anColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_FrameA = {
   "FrameA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3719,15 +3719,15 @@ static const ni::sMethodDef iCanvas_FrameA = {
 };
 
 // Method: FrameT
-static const ni::sParameterDef iCanvas_FrameT_Parameters[7] = {
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_FrameT_Parameters[7] = { 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afZ", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_FrameT = {
   "FrameT",
   0|ni::eType_I8, NULL, "tBool",
@@ -3740,16 +3740,16 @@ static const ni::sMethodDef iCanvas_FrameT = {
 };
 
 // Method: FrameTA
-static const ni::sParameterDef iCanvas_FrameTA_Parameters[8] = {
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_FrameTA_Parameters[8] = { 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
   { "anColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_FrameTA = {
   "FrameTA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3762,19 +3762,19 @@ static const ni::sMethodDef iCanvas_FrameTA = {
 };
 
 // Method: FrameTA2
-static const ni::sParameterDef iCanvas_FrameTA2_Parameters[11] = {
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
-  { "anTLColA", ni::eType_U32, NULL, "tU32" },
-  { "anTRColA", ni::eType_U32, NULL, "tU32" },
-  { "anBRColA", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_FrameTA2_Parameters[11] = { 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "avTL", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBR", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avTLTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "avBRTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
+  { "anTLColA", ni::eType_U32, NULL, "tU32" }, 
+  { "anTRColA", ni::eType_U32, NULL, "tU32" }, 
+  { "anBRColA", ni::eType_U32, NULL, "tU32" }, 
   { "anBLColA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_FrameTA2 = {
   "FrameTA2",
   0|ni::eType_I8, NULL, "tBool",
@@ -3787,10 +3787,10 @@ static const ni::sMethodDef iCanvas_FrameTA2 = {
 };
 
 // Method: Line
-static const ni::sParameterDef iCanvas_Line_Parameters[2] = {
-  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_Line_Parameters[2] = { 
+  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avEnd", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_Line = {
   "Line",
   0|ni::eType_I8, NULL, "tBool",
@@ -3803,11 +3803,11 @@ static const ni::sMethodDef iCanvas_Line = {
 };
 
 // Method: LineA
-static const ni::sParameterDef iCanvas_LineA_Parameters[3] = {
-  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avEnd", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_LineA_Parameters[3] = { 
+  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avEnd", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "anCol", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_LineA = {
   "LineA",
   0|ni::eType_I8, NULL, "tBool",
@@ -3820,16 +3820,16 @@ static const ni::sMethodDef iCanvas_LineA = {
 };
 
 // Method: LineEx
-static const ni::sParameterDef iCanvas_LineEx_Parameters[8] = {
-  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avStartTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afStartSize", ni::eType_F32, NULL, "tF32" },
-  { "anStartCol", ni::eType_U32, NULL, "tU32" },
-  { "avEnd", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avEndTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "afEndSize", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_LineEx_Parameters[8] = { 
+  { "avStart", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avStartTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afStartSize", ni::eType_F32, NULL, "tF32" }, 
+  { "anStartCol", ni::eType_U32, NULL, "tU32" }, 
+  { "avEnd", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avEndTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "afEndSize", ni::eType_F32, NULL, "tF32" }, 
   { "anEndCol", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_LineEx = {
   "LineEx",
   0|ni::eType_I8, NULL, "tBool",
@@ -3842,12 +3842,12 @@ static const ni::sMethodDef iCanvas_LineEx = {
 };
 
 // Method: LineGridXY
-static const ni::sParameterDef iCanvas_LineGridXY_Parameters[4] = {
-  { "aX", ni::eType_F32, NULL, "ni::tF32" },
-  { "aY", ni::eType_F32, NULL, "ni::tF32" },
-  { "anNumColumns", ni::eType_U32, NULL, "ni::tU32" },
+static const ni::sParameterDef iCanvas_LineGridXY_Parameters[4] = { 
+  { "aX", ni::eType_F32, NULL, "ni::tF32" }, 
+  { "aY", ni::eType_F32, NULL, "ni::tF32" }, 
+  { "anNumColumns", ni::eType_U32, NULL, "ni::tU32" }, 
   { "anNumRows", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_LineGridXY = {
   "LineGridXY",
   0|ni::eType_Null, NULL, "void",
@@ -3860,12 +3860,12 @@ static const ni::sMethodDef iCanvas_LineGridXY = {
 };
 
 // Method: LineGridXZ
-static const ni::sParameterDef iCanvas_LineGridXZ_Parameters[4] = {
-  { "aX", ni::eType_F32, NULL, "ni::tF32" },
-  { "aZ", ni::eType_F32, NULL, "ni::tF32" },
-  { "anNumColumns", ni::eType_U32, NULL, "ni::tU32" },
+static const ni::sParameterDef iCanvas_LineGridXZ_Parameters[4] = { 
+  { "aX", ni::eType_F32, NULL, "ni::tF32" }, 
+  { "aZ", ni::eType_F32, NULL, "ni::tF32" }, 
+  { "anNumColumns", ni::eType_U32, NULL, "ni::tU32" }, 
   { "anNumRows", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_LineGridXZ = {
   "LineGridXZ",
   0|ni::eType_Null, NULL, "void",
@@ -3878,12 +3878,12 @@ static const ni::sMethodDef iCanvas_LineGridXZ = {
 };
 
 // Method: WireframeCircle
-static const ni::sParameterDef iCanvas_WireframeCircle_Parameters[4] = {
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afRadius", ni::eType_F32, NULL, "tF32" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_WireframeCircle_Parameters[4] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
   { "aPlane", ni::eType_Enum, NULL, "ePlaneType" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeCircle = {
   "WireframeCircle",
   0|ni::eType_I8, NULL, "tBool",
@@ -3896,12 +3896,12 @@ static const ni::sMethodDef iCanvas_WireframeCircle = {
 };
 
 // Method: WireframeEllipse
-static const ni::sParameterDef iCanvas_WireframeEllipse_Parameters[4] = {
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_WireframeEllipse_Parameters[4] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
   { "aPlane", ni::eType_Enum, NULL, "ePlaneType" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeEllipse = {
   "WireframeEllipse",
   0|ni::eType_I8, NULL, "tBool",
@@ -3914,10 +3914,10 @@ static const ni::sMethodDef iCanvas_WireframeEllipse = {
 };
 
 // Method: WireframeAABB
-static const ni::sParameterDef iCanvas_WireframeAABB_Parameters[2] = {
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_WireframeAABB_Parameters[2] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeAABB = {
   "WireframeAABB",
   0|ni::eType_I8, NULL, "tBool",
@@ -3930,11 +3930,11 @@ static const ni::sMethodDef iCanvas_WireframeAABB = {
 };
 
 // Method: WireframeSphere
-static const ni::sParameterDef iCanvas_WireframeSphere_Parameters[3] = {
-  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afRadius", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iCanvas_WireframeSphere_Parameters[3] = { 
+  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afRadius", ni::eType_F32, NULL, "tF32" }, 
   { "aulNumDiv", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeSphere = {
   "WireframeSphere",
   0|ni::eType_I8, NULL, "tBool",
@@ -3947,14 +3947,14 @@ static const ni::sMethodDef iCanvas_WireframeSphere = {
 };
 
 // Method: WireframeSphereEx
-static const ni::sParameterDef iCanvas_WireframeSphereEx_Parameters[6] = {
-  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afRadius", ni::eType_F32, NULL, "tF32" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
-  { "aulColorX", ni::eType_U32, NULL, "tU32" },
-  { "aulColorY", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_WireframeSphereEx_Parameters[6] = { 
+  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
+  { "aulColorX", ni::eType_U32, NULL, "tU32" }, 
+  { "aulColorY", ni::eType_U32, NULL, "tU32" }, 
   { "aulColorZ", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeSphereEx = {
   "WireframeSphereEx",
   0|ni::eType_I8, NULL, "tBool",
@@ -3967,11 +3967,11 @@ static const ni::sMethodDef iCanvas_WireframeSphereEx = {
 };
 
 // Method: WireframeEllipsoid
-static const ni::sParameterDef iCanvas_WireframeEllipsoid_Parameters[3] = {
-  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_WireframeEllipsoid_Parameters[3] = { 
+  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "aulNumDiv", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeEllipsoid = {
   "WireframeEllipsoid",
   0|ni::eType_I8, NULL, "tBool",
@@ -3984,14 +3984,14 @@ static const ni::sMethodDef iCanvas_WireframeEllipsoid = {
 };
 
 // Method: WireframeEllipsoidEx
-static const ni::sParameterDef iCanvas_WireframeEllipsoidEx_Parameters[6] = {
-  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
-  { "aulColorX", ni::eType_U32, NULL, "tU32" },
-  { "aulColorY", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_WireframeEllipsoidEx_Parameters[6] = { 
+  { "aCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avRadius", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
+  { "aulColorX", ni::eType_U32, NULL, "tU32" }, 
+  { "aulColorY", ni::eType_U32, NULL, "tU32" }, 
   { "aulColorZ", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeEllipsoidEx = {
   "WireframeEllipsoidEx",
   0|ni::eType_I8, NULL, "tBool",
@@ -4004,13 +4004,13 @@ static const ni::sMethodDef iCanvas_WireframeEllipsoidEx = {
 };
 
 // Method: WireframeCone
-static const ni::sParameterDef iCanvas_WireframeCone_Parameters[5] = {
-  { "avBaseCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afBaseRadius", ni::eType_F32, NULL, "tF32" },
-  { "afHeight", ni::eType_F32, NULL, "tF32" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iCanvas_WireframeCone_Parameters[5] = { 
+  { "avBaseCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afBaseRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "afHeight", ni::eType_F32, NULL, "tF32" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
   { "aPlane", ni::eType_Enum, NULL, "ePlaneType" }
-};
+}; 
 static const ni::sMethodDef iCanvas_WireframeCone = {
   "WireframeCone",
   0|ni::eType_I8, NULL, "tBool",
@@ -4023,9 +4023,9 @@ static const ni::sMethodDef iCanvas_WireframeCone = {
 };
 
 // Method: VertexP
-static const ni::sParameterDef iCanvas_VertexP_Parameters[1] = {
+static const ni::sParameterDef iCanvas_VertexP_Parameters[1] = { 
   { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexP = {
   "VertexP",
   0|ni::eType_I8, NULL, "tBool",
@@ -4038,10 +4038,10 @@ static const ni::sMethodDef iCanvas_VertexP = {
 };
 
 // Method: VertexPN
-static const ni::sParameterDef iCanvas_VertexPN_Parameters[2] = {
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_VertexPN_Parameters[2] = { 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexPN = {
   "VertexPN",
   0|ni::eType_I8, NULL, "tBool",
@@ -4054,10 +4054,10 @@ static const ni::sMethodDef iCanvas_VertexPN = {
 };
 
 // Method: VertexPT
-static const ni::sParameterDef iCanvas_VertexPT_Parameters[2] = {
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_VertexPT_Parameters[2] = { 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexPT = {
   "VertexPT",
   0|ni::eType_I8, NULL, "tBool",
@@ -4070,11 +4070,11 @@ static const ni::sMethodDef iCanvas_VertexPT = {
 };
 
 // Method: VertexPTA
-static const ni::sParameterDef iCanvas_VertexPTA_Parameters[3] = {
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_VertexPTA_Parameters[3] = { 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "anColorA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexPTA = {
   "VertexPTA",
   0|ni::eType_I8, NULL, "tBool",
@@ -4087,11 +4087,11 @@ static const ni::sMethodDef iCanvas_VertexPTA = {
 };
 
 // Method: VertexPNT
-static const ni::sParameterDef iCanvas_VertexPNT_Parameters[3] = {
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iCanvas_VertexPNT_Parameters[3] = { 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexPNT = {
   "VertexPNT",
   0|ni::eType_I8, NULL, "tBool",
@@ -4104,12 +4104,12 @@ static const ni::sMethodDef iCanvas_VertexPNT = {
 };
 
 // Method: VertexPNTA
-static const ni::sParameterDef iCanvas_VertexPNTA_Parameters[4] = {
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iCanvas_VertexPNTA_Parameters[4] = { 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avNormal", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avTex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "anColorA", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iCanvas_VertexPNTA = {
   "VertexPNTA",
   0|ni::eType_I8, NULL, "tBool",
@@ -4146,9 +4146,9 @@ static const ni::sMethodDef iCanvas_GetVGStyle = {
 };
 
 // Method: GetVGTransform
-static const ni::sParameterDef iCanvas_GetVGTransform_Parameters[1] = {
+static const ni::sParameterDef iCanvas_GetVGTransform_Parameters[1] = { 
   { "aTransform", ni::eType_Enum, NULL, "eVGTransform" }
-};
+}; 
 static const ni::sMethodDef iCanvas_GetVGTransform = {
   "GetVGTransform",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "iVGTransform*",
@@ -4161,9 +4161,9 @@ static const ni::sMethodDef iCanvas_GetVGTransform = {
 };
 
 // Method: DrawPath
-static const ni::sParameterDef iCanvas_DrawPath_Parameters[1] = {
+static const ni::sParameterDef iCanvas_DrawPath_Parameters[1] = { 
   { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }
-};
+}; 
 static const ni::sMethodDef iCanvas_DrawPath = {
   "DrawPath",
   0|ni::eType_Null, NULL, "void",
@@ -4285,9 +4285,9 @@ static const ni::sInterfaceDef InterfaceDef_iCanvas = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpring1() {
 
 // Method: SetKd
-static const ni::sParameterDef iDampedSpring1_SetKd_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring1_SetKd_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_SetKd = {
   "SetKd",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4312,9 +4312,9 @@ static const ni::sMethodDef iDampedSpring1_GetKd = {
 };
 
 // Method: SetKs
-static const ni::sParameterDef iDampedSpring1_SetKs_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring1_SetKs_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_SetKs = {
   "SetKs",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4339,10 +4339,10 @@ static const ni::sMethodDef iDampedSpring1_GetKs = {
 };
 
 // Method: SetStiffnessAndDampingRatio
-static const ni::sParameterDef iDampedSpring1_SetStiffnessAndDampingRatio_Parameters[2] = {
-  { "afKs", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iDampedSpring1_SetStiffnessAndDampingRatio_Parameters[2] = { 
+  { "afKs", ni::eType_F32, NULL, "tF32" }, 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_SetStiffnessAndDampingRatio = {
   "SetStiffnessAndDampingRatio",
   0|ni::eType_Null, NULL, "void",
@@ -4355,9 +4355,9 @@ static const ni::sMethodDef iDampedSpring1_SetStiffnessAndDampingRatio = {
 };
 
 // Method: SetDampingRatio
-static const ni::sParameterDef iDampedSpring1_SetDampingRatio_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring1_SetDampingRatio_Parameters[1] = { 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_SetDampingRatio = {
   "SetDampingRatio",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4382,9 +4382,9 @@ static const ni::sMethodDef iDampedSpring1_GetDampingRatio = {
 };
 
 // Method: SetVelocity
-static const ni::sParameterDef iDampedSpring1_SetVelocity_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring1_SetVelocity_Parameters[1] = { 
   { "avVel", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_SetVelocity = {
   "SetVelocity",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4409,9 +4409,9 @@ static const ni::sMethodDef iDampedSpring1_GetVelocity = {
 };
 
 // Method: ComputeAcceleration
-static const ni::sParameterDef iDampedSpring1_ComputeAcceleration_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring1_ComputeAcceleration_Parameters[1] = { 
   { "avD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_ComputeAcceleration = {
   "ComputeAcceleration",
   0|ni::eType_F32, NULL, "tF32",
@@ -4424,10 +4424,10 @@ static const ni::sMethodDef iDampedSpring1_ComputeAcceleration = {
 };
 
 // Method: UpdateVelocity
-static const ni::sParameterDef iDampedSpring1_UpdateVelocity_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring1_UpdateVelocity_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_UpdateVelocity = {
   "UpdateVelocity",
   0|ni::eType_Null, NULL, "void",
@@ -4440,10 +4440,10 @@ static const ni::sMethodDef iDampedSpring1_UpdateVelocity = {
 };
 
 // Method: UpdateVelocityWithAcceleration
-static const ni::sParameterDef iDampedSpring1_UpdateVelocityWithAcceleration_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring1_UpdateVelocityWithAcceleration_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avAcc", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring1_UpdateVelocityWithAcceleration = {
   "UpdateVelocityWithAcceleration",
   0|ni::eType_Null, NULL, "void",
@@ -4497,9 +4497,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpring1 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpring2() {
 
 // Method: SetKd
-static const ni::sParameterDef iDampedSpring2_SetKd_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring2_SetKd_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_SetKd = {
   "SetKd",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4524,9 +4524,9 @@ static const ni::sMethodDef iDampedSpring2_GetKd = {
 };
 
 // Method: SetKs
-static const ni::sParameterDef iDampedSpring2_SetKs_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring2_SetKs_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_SetKs = {
   "SetKs",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4551,10 +4551,10 @@ static const ni::sMethodDef iDampedSpring2_GetKs = {
 };
 
 // Method: SetStiffnessAndDampingRatio
-static const ni::sParameterDef iDampedSpring2_SetStiffnessAndDampingRatio_Parameters[2] = {
-  { "afKs", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iDampedSpring2_SetStiffnessAndDampingRatio_Parameters[2] = { 
+  { "afKs", ni::eType_F32, NULL, "tF32" }, 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_SetStiffnessAndDampingRatio = {
   "SetStiffnessAndDampingRatio",
   0|ni::eType_Null, NULL, "void",
@@ -4567,9 +4567,9 @@ static const ni::sMethodDef iDampedSpring2_SetStiffnessAndDampingRatio = {
 };
 
 // Method: SetDampingRatio
-static const ni::sParameterDef iDampedSpring2_SetDampingRatio_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring2_SetDampingRatio_Parameters[1] = { 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_SetDampingRatio = {
   "SetDampingRatio",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4594,9 +4594,9 @@ static const ni::sMethodDef iDampedSpring2_GetDampingRatio = {
 };
 
 // Method: SetVelocity
-static const ni::sParameterDef iDampedSpring2_SetVelocity_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring2_SetVelocity_Parameters[1] = { 
   { "avVel", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_SetVelocity = {
   "SetVelocity",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -4621,9 +4621,9 @@ static const ni::sMethodDef iDampedSpring2_GetVelocity = {
 };
 
 // Method: ComputeAcceleration
-static const ni::sParameterDef iDampedSpring2_ComputeAcceleration_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring2_ComputeAcceleration_Parameters[1] = { 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_ComputeAcceleration = {
   "ComputeAcceleration",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -4636,10 +4636,10 @@ static const ni::sMethodDef iDampedSpring2_ComputeAcceleration = {
 };
 
 // Method: UpdateVelocity
-static const ni::sParameterDef iDampedSpring2_UpdateVelocity_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring2_UpdateVelocity_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_UpdateVelocity = {
   "UpdateVelocity",
   0|ni::eType_Null, NULL, "void",
@@ -4652,10 +4652,10 @@ static const ni::sMethodDef iDampedSpring2_UpdateVelocity = {
 };
 
 // Method: UpdateVelocityWithAcceleration
-static const ni::sParameterDef iDampedSpring2_UpdateVelocityWithAcceleration_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring2_UpdateVelocityWithAcceleration_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avAcc", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring2_UpdateVelocityWithAcceleration = {
   "UpdateVelocityWithAcceleration",
   0|ni::eType_Null, NULL, "void",
@@ -4709,9 +4709,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpring2 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpring3() {
 
 // Method: SetKd
-static const ni::sParameterDef iDampedSpring3_SetKd_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring3_SetKd_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_SetKd = {
   "SetKd",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4736,9 +4736,9 @@ static const ni::sMethodDef iDampedSpring3_GetKd = {
 };
 
 // Method: SetKs
-static const ni::sParameterDef iDampedSpring3_SetKs_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring3_SetKs_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_SetKs = {
   "SetKs",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4763,10 +4763,10 @@ static const ni::sMethodDef iDampedSpring3_GetKs = {
 };
 
 // Method: SetStiffnessAndDampingRatio
-static const ni::sParameterDef iDampedSpring3_SetStiffnessAndDampingRatio_Parameters[2] = {
-  { "afKs", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iDampedSpring3_SetStiffnessAndDampingRatio_Parameters[2] = { 
+  { "afKs", ni::eType_F32, NULL, "tF32" }, 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_SetStiffnessAndDampingRatio = {
   "SetStiffnessAndDampingRatio",
   0|ni::eType_Null, NULL, "void",
@@ -4779,9 +4779,9 @@ static const ni::sMethodDef iDampedSpring3_SetStiffnessAndDampingRatio = {
 };
 
 // Method: SetDampingRatio
-static const ni::sParameterDef iDampedSpring3_SetDampingRatio_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring3_SetDampingRatio_Parameters[1] = { 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_SetDampingRatio = {
   "SetDampingRatio",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4806,9 +4806,9 @@ static const ni::sMethodDef iDampedSpring3_GetDampingRatio = {
 };
 
 // Method: SetVelocity
-static const ni::sParameterDef iDampedSpring3_SetVelocity_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring3_SetVelocity_Parameters[1] = { 
   { "avVel", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_SetVelocity = {
   "SetVelocity",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -4833,9 +4833,9 @@ static const ni::sMethodDef iDampedSpring3_GetVelocity = {
 };
 
 // Method: ComputeAcceleration
-static const ni::sParameterDef iDampedSpring3_ComputeAcceleration_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring3_ComputeAcceleration_Parameters[1] = { 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_ComputeAcceleration = {
   "ComputeAcceleration",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -4848,10 +4848,10 @@ static const ni::sMethodDef iDampedSpring3_ComputeAcceleration = {
 };
 
 // Method: UpdateVelocity
-static const ni::sParameterDef iDampedSpring3_UpdateVelocity_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring3_UpdateVelocity_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_UpdateVelocity = {
   "UpdateVelocity",
   0|ni::eType_Null, NULL, "void",
@@ -4864,10 +4864,10 @@ static const ni::sMethodDef iDampedSpring3_UpdateVelocity = {
 };
 
 // Method: UpdateVelocityWithAcceleration
-static const ni::sParameterDef iDampedSpring3_UpdateVelocityWithAcceleration_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring3_UpdateVelocityWithAcceleration_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avAcc", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring3_UpdateVelocityWithAcceleration = {
   "UpdateVelocityWithAcceleration",
   0|ni::eType_Null, NULL, "void",
@@ -4921,9 +4921,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpring3 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpring4() {
 
 // Method: SetKd
-static const ni::sParameterDef iDampedSpring4_SetKd_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring4_SetKd_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_SetKd = {
   "SetKd",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4948,9 +4948,9 @@ static const ni::sMethodDef iDampedSpring4_GetKd = {
 };
 
 // Method: SetKs
-static const ni::sParameterDef iDampedSpring4_SetKs_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring4_SetKs_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_SetKs = {
   "SetKs",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -4975,10 +4975,10 @@ static const ni::sMethodDef iDampedSpring4_GetKs = {
 };
 
 // Method: SetStiffnessAndDampingRatio
-static const ni::sParameterDef iDampedSpring4_SetStiffnessAndDampingRatio_Parameters[2] = {
-  { "afKs", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iDampedSpring4_SetStiffnessAndDampingRatio_Parameters[2] = { 
+  { "afKs", ni::eType_F32, NULL, "tF32" }, 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_SetStiffnessAndDampingRatio = {
   "SetStiffnessAndDampingRatio",
   0|ni::eType_Null, NULL, "void",
@@ -4991,9 +4991,9 @@ static const ni::sMethodDef iDampedSpring4_SetStiffnessAndDampingRatio = {
 };
 
 // Method: SetDampingRatio
-static const ni::sParameterDef iDampedSpring4_SetDampingRatio_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring4_SetDampingRatio_Parameters[1] = { 
   { "afE", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_SetDampingRatio = {
   "SetDampingRatio",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5018,9 +5018,9 @@ static const ni::sMethodDef iDampedSpring4_GetDampingRatio = {
 };
 
 // Method: SetVelocity
-static const ni::sParameterDef iDampedSpring4_SetVelocity_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring4_SetVelocity_Parameters[1] = { 
   { "avVel", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_SetVelocity = {
   "SetVelocity",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5045,9 +5045,9 @@ static const ni::sMethodDef iDampedSpring4_GetVelocity = {
 };
 
 // Method: ComputeAcceleration
-static const ni::sParameterDef iDampedSpring4_ComputeAcceleration_Parameters[1] = {
+static const ni::sParameterDef iDampedSpring4_ComputeAcceleration_Parameters[1] = { 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_ComputeAcceleration = {
   "ComputeAcceleration",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -5060,10 +5060,10 @@ static const ni::sMethodDef iDampedSpring4_ComputeAcceleration = {
 };
 
 // Method: UpdateVelocity
-static const ni::sParameterDef iDampedSpring4_UpdateVelocity_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring4_UpdateVelocity_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avD", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_UpdateVelocity = {
   "UpdateVelocity",
   0|ni::eType_Null, NULL, "void",
@@ -5076,10 +5076,10 @@ static const ni::sMethodDef iDampedSpring4_UpdateVelocity = {
 };
 
 // Method: UpdateVelocityWithAcceleration
-static const ni::sParameterDef iDampedSpring4_UpdateVelocityWithAcceleration_Parameters[2] = {
-  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" },
+static const ni::sParameterDef iDampedSpring4_UpdateVelocityWithAcceleration_Parameters[2] = { 
+  { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }, 
   { "avAcc", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpring4_UpdateVelocityWithAcceleration = {
   "UpdateVelocityWithAcceleration",
   0|ni::eType_Null, NULL, "void",
@@ -5133,9 +5133,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpring4 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpringPosition1() {
 
 // Method: SetIdealPosition
-static const ni::sParameterDef iDampedSpringPosition1_SetIdealPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_SetIdealPosition_Parameters[1] = { 
   { "avPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_SetIdealPosition = {
   "SetIdealPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5160,9 +5160,9 @@ static const ni::sMethodDef iDampedSpringPosition1_GetIdealPosition = {
 };
 
 // Method: SetCurrentPosition
-static const ni::sParameterDef iDampedSpringPosition1_SetCurrentPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_SetCurrentPosition_Parameters[1] = { 
   { "avPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_SetCurrentPosition = {
   "SetCurrentPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5187,9 +5187,9 @@ static const ni::sMethodDef iDampedSpringPosition1_GetCurrentPosition = {
 };
 
 // Method: UpdatePosition
-static const ni::sParameterDef iDampedSpringPosition1_UpdatePosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_UpdatePosition_Parameters[1] = { 
   { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_UpdatePosition = {
   "UpdatePosition",
   0|ni::eType_F32, NULL, "tF32",
@@ -5202,9 +5202,9 @@ static const ni::sMethodDef iDampedSpringPosition1_UpdatePosition = {
 };
 
 // Method: SetStep
-static const ni::sParameterDef iDampedSpringPosition1_SetStep_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_SetStep_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_SetStep = {
   "SetStep",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5229,9 +5229,9 @@ static const ni::sMethodDef iDampedSpringPosition1_GetStep = {
 };
 
 // Method: SetSpeed
-static const ni::sParameterDef iDampedSpringPosition1_SetSpeed_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_SetSpeed_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_SetSpeed = {
   "SetSpeed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5256,9 +5256,9 @@ static const ni::sMethodDef iDampedSpringPosition1_GetSpeed = {
 };
 
 // Method: SetEndThreshold
-static const ni::sParameterDef iDampedSpringPosition1_SetEndThreshold_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition1_SetEndThreshold_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition1_SetEndThreshold = {
   "SetEndThreshold",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5336,9 +5336,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpringPosition1 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpringPosition2() {
 
 // Method: SetIdealPosition
-static const ni::sParameterDef iDampedSpringPosition2_SetIdealPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_SetIdealPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_SetIdealPosition = {
   "SetIdealPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5363,9 +5363,9 @@ static const ni::sMethodDef iDampedSpringPosition2_GetIdealPosition = {
 };
 
 // Method: SetCurrentPosition
-static const ni::sParameterDef iDampedSpringPosition2_SetCurrentPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_SetCurrentPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_SetCurrentPosition = {
   "SetCurrentPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5390,9 +5390,9 @@ static const ni::sMethodDef iDampedSpringPosition2_GetCurrentPosition = {
 };
 
 // Method: UpdatePosition
-static const ni::sParameterDef iDampedSpringPosition2_UpdatePosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_UpdatePosition_Parameters[1] = { 
   { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_UpdatePosition = {
   "UpdatePosition",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -5405,9 +5405,9 @@ static const ni::sMethodDef iDampedSpringPosition2_UpdatePosition = {
 };
 
 // Method: SetStep
-static const ni::sParameterDef iDampedSpringPosition2_SetStep_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_SetStep_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_SetStep = {
   "SetStep",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5432,9 +5432,9 @@ static const ni::sMethodDef iDampedSpringPosition2_GetStep = {
 };
 
 // Method: SetSpeed
-static const ni::sParameterDef iDampedSpringPosition2_SetSpeed_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_SetSpeed_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_SetSpeed = {
   "SetSpeed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5459,9 +5459,9 @@ static const ni::sMethodDef iDampedSpringPosition2_GetSpeed = {
 };
 
 // Method: SetEndThreshold
-static const ni::sParameterDef iDampedSpringPosition2_SetEndThreshold_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition2_SetEndThreshold_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition2_SetEndThreshold = {
   "SetEndThreshold",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5539,9 +5539,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpringPosition2 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpringPosition3() {
 
 // Method: SetIdealPosition
-static const ni::sParameterDef iDampedSpringPosition3_SetIdealPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_SetIdealPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_SetIdealPosition = {
   "SetIdealPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5566,9 +5566,9 @@ static const ni::sMethodDef iDampedSpringPosition3_GetIdealPosition = {
 };
 
 // Method: SetCurrentPosition
-static const ni::sParameterDef iDampedSpringPosition3_SetCurrentPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_SetCurrentPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_SetCurrentPosition = {
   "SetCurrentPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5593,9 +5593,9 @@ static const ni::sMethodDef iDampedSpringPosition3_GetCurrentPosition = {
 };
 
 // Method: UpdatePosition
-static const ni::sParameterDef iDampedSpringPosition3_UpdatePosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_UpdatePosition_Parameters[1] = { 
   { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_UpdatePosition = {
   "UpdatePosition",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -5608,9 +5608,9 @@ static const ni::sMethodDef iDampedSpringPosition3_UpdatePosition = {
 };
 
 // Method: SetStep
-static const ni::sParameterDef iDampedSpringPosition3_SetStep_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_SetStep_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_SetStep = {
   "SetStep",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5635,9 +5635,9 @@ static const ni::sMethodDef iDampedSpringPosition3_GetStep = {
 };
 
 // Method: SetSpeed
-static const ni::sParameterDef iDampedSpringPosition3_SetSpeed_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_SetSpeed_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_SetSpeed = {
   "SetSpeed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5662,9 +5662,9 @@ static const ni::sMethodDef iDampedSpringPosition3_GetSpeed = {
 };
 
 // Method: SetEndThreshold
-static const ni::sParameterDef iDampedSpringPosition3_SetEndThreshold_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition3_SetEndThreshold_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition3_SetEndThreshold = {
   "SetEndThreshold",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5742,9 +5742,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpringPosition3 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDampedSpringPosition4() {
 
 // Method: SetIdealPosition
-static const ni::sParameterDef iDampedSpringPosition4_SetIdealPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_SetIdealPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_SetIdealPosition = {
   "SetIdealPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5769,9 +5769,9 @@ static const ni::sMethodDef iDampedSpringPosition4_GetIdealPosition = {
 };
 
 // Method: SetCurrentPosition
-static const ni::sParameterDef iDampedSpringPosition4_SetCurrentPosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_SetCurrentPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_SetCurrentPosition = {
   "SetCurrentPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -5796,9 +5796,9 @@ static const ni::sMethodDef iDampedSpringPosition4_GetCurrentPosition = {
 };
 
 // Method: UpdatePosition
-static const ni::sParameterDef iDampedSpringPosition4_UpdatePosition_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_UpdatePosition_Parameters[1] = { 
   { "afDeltaTime", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_UpdatePosition = {
   "UpdatePosition",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -5811,9 +5811,9 @@ static const ni::sMethodDef iDampedSpringPosition4_UpdatePosition = {
 };
 
 // Method: SetStep
-static const ni::sParameterDef iDampedSpringPosition4_SetStep_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_SetStep_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_SetStep = {
   "SetStep",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5838,9 +5838,9 @@ static const ni::sMethodDef iDampedSpringPosition4_GetStep = {
 };
 
 // Method: SetSpeed
-static const ni::sParameterDef iDampedSpringPosition4_SetSpeed_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_SetSpeed_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_SetSpeed = {
   "SetSpeed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5865,9 +5865,9 @@ static const ni::sMethodDef iDampedSpringPosition4_GetSpeed = {
 };
 
 // Method: SetEndThreshold
-static const ni::sParameterDef iDampedSpringPosition4_SetEndThreshold_Parameters[1] = {
+static const ni::sParameterDef iDampedSpringPosition4_SetEndThreshold_Parameters[1] = { 
   { "afD", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iDampedSpringPosition4_SetEndThreshold = {
   "SetEndThreshold",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -5945,9 +5945,9 @@ static const ni::sInterfaceDef InterfaceDef_iDampedSpringPosition4 = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDrawOperation() {
 
 // Method: Copy
-static const ni::sParameterDef iDrawOperation_Copy_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_Copy_Parameters[1] = { 
   { "apDO", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "const iDrawOperation*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -5984,9 +5984,9 @@ static const ni::sMethodDef iDrawOperation_GetIsCompiled = {
 };
 
 // Method: SetPriority
-static const ni::sParameterDef iDrawOperation_SetPriority_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetPriority_Parameters[1] = { 
   { "anPriority", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetPriority = {
   "SetPriority",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6011,9 +6011,9 @@ static const ni::sMethodDef iDrawOperation_GetPriority = {
 };
 
 // Method: SetVertexArray
-static const ni::sParameterDef iDrawOperation_SetVertexArray_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetVertexArray_Parameters[1] = { 
   { "apVertexArray", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetVertexArray = {
   "SetVertexArray",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "void",
@@ -6038,9 +6038,9 @@ static const ni::sMethodDef iDrawOperation_GetVertexArray = {
 };
 
 // Method: SetPrimitiveType
-static const ni::sParameterDef iDrawOperation_SetPrimitiveType_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetPrimitiveType_Parameters[1] = { 
   { "aPrim", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetPrimitiveType = {
   "SetPrimitiveType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -6065,9 +6065,9 @@ static const ni::sMethodDef iDrawOperation_GetPrimitiveType = {
 };
 
 // Method: SetIndexArray
-static const ni::sParameterDef iDrawOperation_SetIndexArray_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetIndexArray_Parameters[1] = { 
   { "apIndexArray", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetIndexArray = {
   "SetIndexArray",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "void",
@@ -6092,9 +6092,9 @@ static const ni::sMethodDef iDrawOperation_GetIndexArray = {
 };
 
 // Method: SetFirstIndex
-static const ni::sParameterDef iDrawOperation_SetFirstIndex_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetFirstIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetFirstIndex = {
   "SetFirstIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6119,9 +6119,9 @@ static const ni::sMethodDef iDrawOperation_GetFirstIndex = {
 };
 
 // Method: SetNumIndices
-static const ni::sParameterDef iDrawOperation_SetNumIndices_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetNumIndices_Parameters[1] = { 
   { "anNumIndices", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetNumIndices = {
   "SetNumIndices",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6146,9 +6146,9 @@ static const ni::sMethodDef iDrawOperation_GetNumIndices = {
 };
 
 // Method: SetBaseVertexIndex
-static const ni::sParameterDef iDrawOperation_SetBaseVertexIndex_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetBaseVertexIndex_Parameters[1] = { 
   { "anBaseVertexIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetBaseVertexIndex = {
   "SetBaseVertexIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6173,9 +6173,9 @@ static const ni::sMethodDef iDrawOperation_GetBaseVertexIndex = {
 };
 
 // Method: SetMatrix
-static const ni::sParameterDef iDrawOperation_SetMatrix_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetMatrix_Parameters[1] = { 
   { "apMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetMatrix = {
   "SetMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -6200,9 +6200,9 @@ static const ni::sMethodDef iDrawOperation_GetMatrix = {
 };
 
 // Method: SetMaterial
-static const ni::sParameterDef iDrawOperation_SetMaterial_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetMaterial_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetMaterial = {
   "SetMaterial",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "void",
@@ -6227,9 +6227,9 @@ static const ni::sMethodDef iDrawOperation_GetMaterial = {
 };
 
 // Method: SetLocalBoundingVolume
-static const ni::sParameterDef iDrawOperation_SetLocalBoundingVolume_Parameters[1] = {
+static const ni::sParameterDef iDrawOperation_SetLocalBoundingVolume_Parameters[1] = { 
   { "apBV", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBoundingVolume), "iBoundingVolume*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperation_SetLocalBoundingVolume = {
   "SetLocalBoundingVolume",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBoundingVolume), "void",
@@ -6357,9 +6357,9 @@ static const ni::sMethodDef iDrawOperationSet_Clear = {
 };
 
 // Method: Insert
-static const ni::sParameterDef iDrawOperationSet_Insert_Parameters[1] = {
+static const ni::sParameterDef iDrawOperationSet_Insert_Parameters[1] = { 
   { "apDO", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperationSet_Insert = {
   "Insert",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*",
@@ -6372,9 +6372,9 @@ static const ni::sMethodDef iDrawOperationSet_Insert = {
 };
 
 // Method: InsertSet
-static const ni::sParameterDef iDrawOperationSet_InsertSet_Parameters[1] = {
+static const ni::sParameterDef iDrawOperationSet_InsertSet_Parameters[1] = { 
   { "apSet", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperationSet), "const iDrawOperationSet*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperationSet_InsertSet = {
   "InsertSet",
   0|ni::eType_I8, NULL, "tBool",
@@ -6459,10 +6459,10 @@ static const ni::sMethodDef iDrawOperationSet_GetIsEmpty = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iDrawOperationSet_Draw_Parameters[2] = {
-  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" },
+static const ni::sParameterDef iDrawOperationSet_Draw_Parameters[2] = { 
+  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" }, 
   { "apFrustum", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFrustum), "iFrustum*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperationSet_Draw = {
   "Draw",
   0|ni::eType_U32, NULL, "tU32",
@@ -6475,11 +6475,11 @@ static const ni::sMethodDef iDrawOperationSet_Draw = {
 };
 
 // Method: XDraw
-static const ni::sParameterDef iDrawOperationSet_XDraw_Parameters[3] = {
-  { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" },
+static const ni::sParameterDef iDrawOperationSet_XDraw_Parameters[3] = { 
+  { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" }, 
   { "apFrustum", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFrustum), "iFrustum*" }
-};
+}; 
 static const ni::sMethodDef iDrawOperationSet_XDraw = {
   "XDraw",
   0|ni::eType_U32, NULL, "tU32",
@@ -6628,9 +6628,9 @@ static const ni::sMethodDef iFont_GetIsInstance = {
 };
 
 // Method: CreateFontInstance
-static const ni::sParameterDef iFont_CreateFontInstance_Parameters[1] = {
+static const ni::sParameterDef iFont_CreateFontInstance_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iFont_CreateFontInstance = {
   "CreateFontInstance",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -6643,9 +6643,9 @@ static const ni::sMethodDef iFont_CreateFontInstance = {
 };
 
 // Method: SetTabSize
-static const ni::sParameterDef iFont_SetTabSize_Parameters[1] = {
+static const ni::sParameterDef iFont_SetTabSize_Parameters[1] = { 
   { "ulNumChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_SetTabSize = {
   "SetTabSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6670,9 +6670,9 @@ static const ni::sMethodDef iFont_GetTabSize = {
 };
 
 // Method: SetFiltering
-static const ni::sParameterDef iFont_SetFiltering_Parameters[1] = {
+static const ni::sParameterDef iFont_SetFiltering_Parameters[1] = { 
   { "abLinear", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iFont_SetFiltering = {
   "SetFiltering",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -6697,9 +6697,9 @@ static const ni::sMethodDef iFont_GetFiltering = {
 };
 
 // Method: SetColor
-static const ni::sParameterDef iFont_SetColor_Parameters[1] = {
+static const ni::sParameterDef iFont_SetColor_Parameters[1] = { 
   { "anColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_SetColor = {
   "SetColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -6724,9 +6724,9 @@ static const ni::sMethodDef iFont_GetColor = {
 };
 
 // Method: SetBlendMode
-static const ni::sParameterDef iFont_SetBlendMode_Parameters[1] = {
+static const ni::sParameterDef iFont_SetBlendMode_Parameters[1] = { 
   { "aMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iFont_SetBlendMode = {
   "SetBlendMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -6751,11 +6751,11 @@ static const ni::sMethodDef iFont_GetBlendMode = {
 };
 
 // Method: SetSizeAndResolution
-static const ni::sParameterDef iFont_SetSizeAndResolution_Parameters[3] = {
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "anResolution", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" },
+static const ni::sParameterDef iFont_SetSizeAndResolution_Parameters[3] = { 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "anResolution", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" }, 
   { "afContentsScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iFont_SetSizeAndResolution = {
   "SetSizeAndResolution",
   0|ni::eType_Null, NULL, "void",
@@ -6792,9 +6792,9 @@ static const ni::sMethodDef iFont_GetSize = {
 };
 
 // Method: SetDistanceField
-static const ni::sParameterDef iFont_SetDistanceField_Parameters[1] = {
+static const ni::sParameterDef iFont_SetDistanceField_Parameters[1] = { 
   { "abDistanceField", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iFont_SetDistanceField = {
   "SetDistanceField",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -6819,9 +6819,9 @@ static const ni::sMethodDef iFont_GetDistanceField = {
 };
 
 // Method: GetCharWidth
-static const ni::sParameterDef iFont_GetCharWidth_Parameters[1] = {
+static const ni::sParameterDef iFont_GetCharWidth_Parameters[1] = { 
   { "c", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetCharWidth = {
   "GetCharWidth",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -6834,9 +6834,9 @@ static const ni::sMethodDef iFont_GetCharWidth = {
 };
 
 // Method: GetCharHeight
-static const ni::sParameterDef iFont_GetCharHeight_Parameters[1] = {
+static const ni::sParameterDef iFont_GetCharHeight_Parameters[1] = { 
   { "c", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetCharHeight = {
   "GetCharHeight",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -6957,9 +6957,9 @@ static const ni::sMethodDef iFont_GetLastChar = {
 };
 
 // Method: GetAdvance
-static const ni::sParameterDef iFont_GetAdvance_Parameters[1] = {
+static const ni::sParameterDef iFont_GetAdvance_Parameters[1] = { 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetAdvance = {
   "GetAdvance",
   0|ni::eType_F32, NULL, "tF32",
@@ -6972,10 +6972,10 @@ static const ni::sMethodDef iFont_GetAdvance = {
 };
 
 // Method: GetKerning
-static const ni::sParameterDef iFont_GetKerning_Parameters[2] = {
-  { "anPrevChar", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFont_GetKerning_Parameters[2] = { 
+  { "anPrevChar", ni::eType_U32, NULL, "tU32" }, 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetKerning = {
   "GetKerning",
   0|ni::eType_F32, NULL, "tF32",
@@ -6988,9 +6988,9 @@ static const ni::sMethodDef iFont_GetKerning = {
 };
 
 // Method: SetLineSpacing
-static const ni::sParameterDef iFont_SetLineSpacing_Parameters[1] = {
+static const ni::sParameterDef iFont_SetLineSpacing_Parameters[1] = { 
   { "afSpacing", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iFont_SetLineSpacing = {
   "SetLineSpacing",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_F32, NULL, "void",
@@ -7027,9 +7027,9 @@ static const ni::sMethodDef iFont_GetLineHeight = {
 };
 
 // Method: CacheText
-static const ni::sParameterDef iFont_CacheText_Parameters[1] = {
+static const ni::sParameterDef iFont_CacheText_Parameters[1] = { 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iFont_CacheText = {
   "CacheText",
   0|ni::eType_I8, NULL, "tBool",
@@ -7042,10 +7042,10 @@ static const ni::sMethodDef iFont_CacheText = {
 };
 
 // Method: CacheRange
-static const ni::sParameterDef iFont_CacheRange_Parameters[2] = {
-  { "anFirst", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFont_CacheRange_Parameters[2] = { 
+  { "anFirst", ni::eType_U32, NULL, "tU32" }, 
   { "anLast", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_CacheRange = {
   "CacheRange",
   0|ni::eType_I8, NULL, "tBool",
@@ -7094,9 +7094,9 @@ static const ni::sMethodDef iFont_GetMaterial = {
 };
 
 // Method: GetCharTexCoo
-static const ni::sParameterDef iFont_GetCharTexCoo_Parameters[1] = {
+static const ni::sParameterDef iFont_GetCharTexCoo_Parameters[1] = { 
   { "c", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetCharTexCoo = {
   "GetCharTexCoo",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sRectf",
@@ -7109,9 +7109,9 @@ static const ni::sMethodDef iFont_GetCharTexCoo = {
 };
 
 // Method: GetCharTexture
-static const ni::sParameterDef iFont_GetCharTexture_Parameters[1] = {
+static const ni::sParameterDef iFont_GetCharTexture_Parameters[1] = { 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetCharTexture = {
   "GetCharTexture",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -7124,9 +7124,9 @@ static const ni::sMethodDef iFont_GetCharTexture = {
 };
 
 // Method: GetCharBitmap
-static const ni::sParameterDef iFont_GetCharBitmap_Parameters[1] = {
+static const ni::sParameterDef iFont_GetCharBitmap_Parameters[1] = { 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetCharBitmap = {
   "GetCharBitmap",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -7139,12 +7139,12 @@ static const ni::sMethodDef iFont_GetCharBitmap = {
 };
 
 // Method: BlitChar
-static const ni::sParameterDef iFont_BlitChar_Parameters[4] = {
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "anX", ni::eType_I32, NULL, "tI32" },
-  { "anY", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iFont_BlitChar_Parameters[4] = { 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "anX", ni::eType_I32, NULL, "tI32" }, 
+  { "anY", ni::eType_I32, NULL, "tI32" }, 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_BlitChar = {
   "BlitChar",
   0|ni::eType_Vec2i, NULL, "sVec2i",
@@ -7157,12 +7157,12 @@ static const ni::sMethodDef iFont_BlitChar = {
 };
 
 // Method: BlitCharStretch
-static const ni::sParameterDef iFont_BlitCharStretch_Parameters[4] = {
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "anX", ni::eType_I32, NULL, "tI32" },
-  { "anY", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iFont_BlitCharStretch_Parameters[4] = { 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "anX", ni::eType_I32, NULL, "tI32" }, 
+  { "anY", ni::eType_I32, NULL, "tI32" }, 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_BlitCharStretch = {
   "BlitCharStretch",
   0|ni::eType_Vec2i, NULL, "sVec2i",
@@ -7175,15 +7175,15 @@ static const ni::sMethodDef iFont_BlitCharStretch = {
 };
 
 // Method: BlitCharEx
-static const ni::sParameterDef iFont_BlitCharEx_Parameters[7] = {
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "anX", ni::eType_I32, NULL, "tI32" },
-  { "anY", ni::eType_I32, NULL, "tI32" },
-  { "anW", ni::eType_I32, NULL, "tI32" },
-  { "anH", ni::eType_I32, NULL, "tI32" },
-  { "anChar", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFont_BlitCharEx_Parameters[7] = { 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "anX", ni::eType_I32, NULL, "tI32" }, 
+  { "anY", ni::eType_I32, NULL, "tI32" }, 
+  { "anW", ni::eType_I32, NULL, "tI32" }, 
+  { "anH", ni::eType_I32, NULL, "tI32" }, 
+  { "anChar", ni::eType_U32, NULL, "tU32" }, 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iFont_BlitCharEx = {
   "BlitCharEx",
   0|ni::eType_Vec2i, NULL, "sVec2i",
@@ -7196,11 +7196,11 @@ static const ni::sMethodDef iFont_BlitCharEx = {
 };
 
 // Method: ComputeTextSize
-static const ni::sParameterDef iFont_ComputeTextSize_Parameters[3] = {
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iFont_ComputeTextSize_Parameters[3] = { 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aFormat", ni::eType_Enum, NULL, "tFontFormatFlags" }
-};
+}; 
 static const ni::sMethodDef iFont_ComputeTextSize = {
   "ComputeTextSize",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -7213,13 +7213,13 @@ static const ni::sMethodDef iFont_ComputeTextSize = {
 };
 
 // Method: DrawText
-static const ni::sParameterDef iFont_DrawText_Parameters[5] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCanvas), "ni::iCanvas*" },
-  { "aposRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "afZ", ni::eType_F32, NULL, "tF32" },
-  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iFont_DrawText_Parameters[5] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCanvas), "ni::iCanvas*" }, 
+  { "aposRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "afZ", ni::eType_F32, NULL, "tF32" }, 
+  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aFormat", ni::eType_Enum, NULL, "tFontFormatFlags" }
-};
+}; 
 static const ni::sMethodDef iFont_DrawText = {
   "DrawText",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -7232,9 +7232,9 @@ static const ni::sMethodDef iFont_DrawText = {
 };
 
 // Method: GetGlyphIndexFromName
-static const ni::sParameterDef iFont_GetGlyphIndexFromName_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphIndexFromName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphIndexFromName = {
   "GetGlyphIndexFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -7247,9 +7247,9 @@ static const ni::sMethodDef iFont_GetGlyphIndexFromName = {
 };
 
 // Method: GetGlyphIndexFromCodepoint
-static const ni::sParameterDef iFont_GetGlyphIndexFromCodepoint_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphIndexFromCodepoint_Parameters[1] = { 
   { "anCodepoint", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphIndexFromCodepoint = {
   "GetGlyphIndexFromCodepoint",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -7262,9 +7262,9 @@ static const ni::sMethodDef iFont_GetGlyphIndexFromCodepoint = {
 };
 
 // Method: GetGlyphName
-static const ni::sParameterDef iFont_GetGlyphName_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphName_Parameters[1] = { 
   { "anGlyphIndex", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphName = {
   "GetGlyphName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_String, NULL, "cString",
@@ -7289,9 +7289,9 @@ static const ni::sMethodDef iFont_EnumGlyphs = {
 };
 
 // Method: GetGlyphCodePointFromName
-static const ni::sParameterDef iFont_GetGlyphCodePointFromName_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphCodePointFromName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphCodePointFromName = {
   "GetGlyphCodePointFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -7304,12 +7304,12 @@ static const ni::sMethodDef iFont_GetGlyphCodePointFromName = {
 };
 
 // Method: GetGlyphPath
-static const ni::sParameterDef iFont_GetGlyphPath_Parameters[4] = {
-  { "apPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "iVGPath*" },
-  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" },
-  { "avOffset", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iFont_GetGlyphPath_Parameters[4] = { 
+  { "apPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "iVGPath*" }, 
+  { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "avOffset", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphPath = {
   "GetGlyphPath",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -7322,9 +7322,9 @@ static const ni::sMethodDef iFont_GetGlyphPath = {
 };
 
 // Method: GetGlyphTexCoo
-static const ni::sParameterDef iFont_GetGlyphTexCoo_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphTexCoo_Parameters[1] = { 
   { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphTexCoo = {
   "GetGlyphTexCoo",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sRectf",
@@ -7337,9 +7337,9 @@ static const ni::sMethodDef iFont_GetGlyphTexCoo = {
 };
 
 // Method: GetGlyphTexture
-static const ni::sParameterDef iFont_GetGlyphTexture_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphTexture_Parameters[1] = { 
   { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphTexture = {
   "GetGlyphTexture",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -7352,9 +7352,9 @@ static const ni::sMethodDef iFont_GetGlyphTexture = {
 };
 
 // Method: GetGlyphBitmap
-static const ni::sParameterDef iFont_GetGlyphBitmap_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphBitmap_Parameters[1] = { 
   { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphBitmap = {
   "GetGlyphBitmap",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -7367,9 +7367,9 @@ static const ni::sMethodDef iFont_GetGlyphBitmap = {
 };
 
 // Method: GetGlyphOverlay
-static const ni::sParameterDef iFont_GetGlyphOverlay_Parameters[1] = {
+static const ni::sParameterDef iFont_GetGlyphOverlay_Parameters[1] = { 
   { "anGlyphIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFont_GetGlyphOverlay = {
   "GetGlyphOverlay",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -7484,9 +7484,9 @@ static const ni::sMethodDef iFrustum_Clone = {
 };
 
 // Method: Copy
-static const ni::sParameterDef iFrustum_Copy_Parameters[1] = {
+static const ni::sParameterDef iFrustum_Copy_Parameters[1] = { 
   { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFrustum), "const iFrustum*" }
-};
+}; 
 static const ni::sMethodDef iFrustum_Copy = {
   "Copy",
   0|ni::eType_Null, NULL, "void",
@@ -7535,9 +7535,9 @@ static const ni::sMethodDef iFrustum_GetRight = {
 };
 
 // Method: ExtractPlanes
-static const ni::sParameterDef iFrustum_ExtractPlanes_Parameters[1] = {
+static const ni::sParameterDef iFrustum_ExtractPlanes_Parameters[1] = { 
   { "mtxVP", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_ExtractPlanes = {
   "ExtractPlanes",
   0|ni::eType_Null, NULL, "void",
@@ -7550,9 +7550,9 @@ static const ni::sMethodDef iFrustum_ExtractPlanes = {
 };
 
 // Method: SetNumPlanes
-static const ni::sParameterDef iFrustum_SetNumPlanes_Parameters[1] = {
+static const ni::sParameterDef iFrustum_SetNumPlanes_Parameters[1] = { 
   { "ulNumPlane", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFrustum_SetNumPlanes = {
   "SetNumPlanes",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -7577,10 +7577,10 @@ static const ni::sMethodDef iFrustum_GetNumPlanes = {
 };
 
 // Method: AddPlanes
-static const ni::sParameterDef iFrustum_AddPlanes_Parameters[2] = {
-  { "aulNumPlane", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFrustum_AddPlanes_Parameters[2] = { 
+  { "aulNumPlane", ni::eType_U32, NULL, "tU32" }, 
   { "apPlanes", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sPlanef*" }
-};
+}; 
 static const ni::sMethodDef iFrustum_AddPlanes = {
   "AddPlanes",
   0|ni::eType_Null, NULL, "void",
@@ -7589,9 +7589,9 @@ NULL
 };
 
 // Method: AddPlane
-static const ni::sParameterDef iFrustum_AddPlane_Parameters[1] = {
+static const ni::sParameterDef iFrustum_AddPlane_Parameters[1] = { 
   { "aPlane", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sPlanef&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_AddPlane = {
   "AddPlane",
   0|ni::eType_Null, NULL, "void",
@@ -7604,10 +7604,10 @@ static const ni::sMethodDef iFrustum_AddPlane = {
 };
 
 // Method: SetPlanes
-static const ni::sParameterDef iFrustum_SetPlanes_Parameters[2] = {
-  { "aulNumPlane", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFrustum_SetPlanes_Parameters[2] = { 
+  { "aulNumPlane", ni::eType_U32, NULL, "tU32" }, 
   { "apPlanes", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sPlanef*" }
-};
+}; 
 static const ni::sMethodDef iFrustum_SetPlanes = {
   "SetPlanes",
   0|ni::eType_Null, NULL, "void",
@@ -7616,10 +7616,10 @@ NULL
 };
 
 // Method: SetPlane
-static const ni::sParameterDef iFrustum_SetPlane_Parameters[2] = {
-  { "ulIdx", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iFrustum_SetPlane_Parameters[2] = { 
+  { "ulIdx", ni::eType_U32, NULL, "tU32" }, 
   { "Plane", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sPlanef&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_SetPlane = {
   "SetPlane",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -7632,9 +7632,9 @@ static const ni::sMethodDef iFrustum_SetPlane = {
 };
 
 // Method: GetPlane
-static const ni::sParameterDef iFrustum_GetPlane_Parameters[1] = {
+static const ni::sParameterDef iFrustum_GetPlane_Parameters[1] = { 
   { "ulIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iFrustum_GetPlane = {
   "GetPlane",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sPlanef",
@@ -7655,10 +7655,10 @@ NULL
 };
 
 // Method: CullAABB
-static const ni::sParameterDef iFrustum_CullAABB_Parameters[2] = {
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iFrustum_CullAABB_Parameters[2] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_CullAABB = {
   "CullAABB",
   0|ni::eType_Enum, NULL, "eCullCode",
@@ -7671,10 +7671,10 @@ static const ni::sMethodDef iFrustum_CullAABB = {
 };
 
 // Method: IntersectAABB
-static const ni::sParameterDef iFrustum_IntersectAABB_Parameters[2] = {
-  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iFrustum_IntersectAABB_Parameters[2] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_IntersectAABB = {
   "IntersectAABB",
   0|ni::eType_I8, NULL, "tBool",
@@ -7687,10 +7687,10 @@ static const ni::sMethodDef iFrustum_IntersectAABB = {
 };
 
 // Method: CullSphere
-static const ni::sParameterDef iFrustum_CullSphere_Parameters[2] = {
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iFrustum_CullSphere_Parameters[2] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "afRadius", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iFrustum_CullSphere = {
   "CullSphere",
   0|ni::eType_Enum, NULL, "eCullCode",
@@ -7703,10 +7703,10 @@ static const ni::sMethodDef iFrustum_CullSphere = {
 };
 
 // Method: IntersectSphere
-static const ni::sParameterDef iFrustum_IntersectSphere_Parameters[2] = {
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iFrustum_IntersectSphere_Parameters[2] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "afRadius", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iFrustum_IntersectSphere = {
   "IntersectSphere",
   0|ni::eType_I8, NULL, "tBool",
@@ -7719,9 +7719,9 @@ static const ni::sMethodDef iFrustum_IntersectSphere = {
 };
 
 // Method: Transform
-static const ni::sParameterDef iFrustum_Transform_Parameters[1] = {
+static const ni::sParameterDef iFrustum_Transform_Parameters[1] = { 
   { "M", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_Transform = {
   "Transform",
   0|ni::eType_I8, NULL, "tBool",
@@ -7734,10 +7734,10 @@ static const ni::sMethodDef iFrustum_Transform = {
 };
 
 // Method: ComputeScreenBoundingBox
-static const ni::sParameterDef iFrustum_ComputeScreenBoundingBox_Parameters[2] = {
-  { "amtxWVP", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
+static const ni::sParameterDef iFrustum_ComputeScreenBoundingBox_Parameters[2] = { 
+  { "amtxWVP", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
   { "aViewport", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iFrustum_ComputeScreenBoundingBox = {
   "ComputeScreenBoundingBox",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -7750,9 +7750,9 @@ static const ni::sMethodDef iFrustum_ComputeScreenBoundingBox = {
 };
 
 // Method: SetBoundingVolume
-static const ni::sParameterDef iFrustum_SetBoundingVolume_Parameters[1] = {
+static const ni::sParameterDef iFrustum_SetBoundingVolume_Parameters[1] = { 
   { "apBV", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBoundingVolume), "iBoundingVolume*" }
-};
+}; 
 static const ni::sMethodDef iFrustum_SetBoundingVolume = {
   "SetBoundingVolume",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBoundingVolume), "tBool",
@@ -7828,9 +7828,9 @@ static const ni::sInterfaceDef InterfaceDef_iFrustum = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGeometrySubset() {
 
 // Method: SetID
-static const ni::sParameterDef iGeometrySubset_SetID_Parameters[1] = {
+static const ni::sParameterDef iGeometrySubset_SetID_Parameters[1] = { 
   { "anID", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometrySubset_SetID = {
   "SetID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -7855,9 +7855,9 @@ static const ni::sMethodDef iGeometrySubset_GetID = {
 };
 
 // Method: SetFirstIndex
-static const ni::sParameterDef iGeometrySubset_SetFirstIndex_Parameters[1] = {
+static const ni::sParameterDef iGeometrySubset_SetFirstIndex_Parameters[1] = { 
   { "anFirstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometrySubset_SetFirstIndex = {
   "SetFirstIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -7882,9 +7882,9 @@ static const ni::sMethodDef iGeometrySubset_GetFirstIndex = {
 };
 
 // Method: SetNumIndices
-static const ni::sParameterDef iGeometrySubset_SetNumIndices_Parameters[1] = {
+static const ni::sParameterDef iGeometrySubset_SetNumIndices_Parameters[1] = { 
   { "anNumIndices", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometrySubset_SetNumIndices = {
   "SetNumIndices",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -7909,9 +7909,9 @@ static const ni::sMethodDef iGeometrySubset_GetNumIndices = {
 };
 
 // Method: SetMaterial
-static const ni::sParameterDef iGeometrySubset_SetMaterial_Parameters[1] = {
+static const ni::sParameterDef iGeometrySubset_SetMaterial_Parameters[1] = { 
   { "anMaterial", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometrySubset_SetMaterial = {
   "SetMaterial",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -8009,10 +8009,10 @@ static const ni::sMethodDef iGeometry_GetIndexArray = {
 };
 
 // Method: Generate
-static const ni::sParameterDef iGeometry_Generate_Parameters[2] = {
-  { "aGenerate", ni::eType_Enum, NULL, "eGeometryGenerate" },
+static const ni::sParameterDef iGeometry_Generate_Parameters[2] = { 
+  { "aGenerate", ni::eType_Enum, NULL, "eGeometryGenerate" }, 
   { "fEpsilon", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_Generate = {
   "Generate",
   0|ni::eType_I8, NULL, "tBool",
@@ -8037,9 +8037,9 @@ static const ni::sMethodDef iGeometry_GetNumFaces = {
 };
 
 // Method: SetFacesSubsetsIDs
-static const ni::sParameterDef iGeometry_SetFacesSubsetsIDs_Parameters[1] = {
+static const ni::sParameterDef iGeometry_SetFacesSubsetsIDs_Parameters[1] = { 
   { "apIDs", ni::eTypeFlags_Constant|ni::eType_U32|ni::eTypeFlags_Pointer, NULL, "const tU32*" }
-};
+}; 
 static const ni::sMethodDef iGeometry_SetFacesSubsetsIDs = {
   "SetFacesSubsetsIDs",
   0|ni::eType_Null, NULL, "void",
@@ -8080,9 +8080,9 @@ static const ni::sMethodDef iGeometry_GetNumSubsets = {
 };
 
 // Method: GetSubset
-static const ni::sParameterDef iGeometry_GetSubset_Parameters[1] = {
+static const ni::sParameterDef iGeometry_GetSubset_Parameters[1] = { 
   { "aulIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_GetSubset = {
   "GetSubset",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometrySubset), "iGeometrySubset*",
@@ -8095,9 +8095,9 @@ static const ni::sMethodDef iGeometry_GetSubset = {
 };
 
 // Method: GetSubsetIndex
-static const ni::sParameterDef iGeometry_GetSubsetIndex_Parameters[1] = {
+static const ni::sParameterDef iGeometry_GetSubsetIndex_Parameters[1] = { 
   { "aulID", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_GetSubsetIndex = {
   "GetSubsetIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -8110,12 +8110,12 @@ static const ni::sMethodDef iGeometry_GetSubsetIndex = {
 };
 
 // Method: AddSubset
-static const ni::sParameterDef iGeometry_AddSubset_Parameters[4] = {
-  { "anID", ni::eType_U32, NULL, "tU32" },
-  { "anFirstIndex", ni::eType_U32, NULL, "tU32" },
-  { "anNumIndices", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGeometry_AddSubset_Parameters[4] = { 
+  { "anID", ni::eType_U32, NULL, "tU32" }, 
+  { "anFirstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "anNumIndices", ni::eType_U32, NULL, "tU32" }, 
   { "anMaterial", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_AddSubset = {
   "AddSubset",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometrySubset), "iGeometrySubset*",
@@ -8128,9 +8128,9 @@ static const ni::sMethodDef iGeometry_AddSubset = {
 };
 
 // Method: RemoveSubset
-static const ni::sParameterDef iGeometry_RemoveSubset_Parameters[1] = {
+static const ni::sParameterDef iGeometry_RemoveSubset_Parameters[1] = { 
   { "aulIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_RemoveSubset = {
   "RemoveSubset",
   0|ni::eType_I8, NULL, "tBool",
@@ -8143,10 +8143,10 @@ static const ni::sMethodDef iGeometry_RemoveSubset = {
 };
 
 // Method: Clone
-static const ni::sParameterDef iGeometry_Clone_Parameters[2] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
+static const ni::sParameterDef iGeometry_Clone_Parameters[2] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
   { "aFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGeometry_Clone = {
   "Clone",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -8159,10 +8159,10 @@ static const ni::sMethodDef iGeometry_Clone = {
 };
 
 // Method: SetDrawOp
-static const ni::sParameterDef iGeometry_SetDrawOp_Parameters[2] = {
-  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" },
+static const ni::sParameterDef iGeometry_SetDrawOp_Parameters[2] = { 
+  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" }, 
   { "aulSubsetIdx", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGeometry_SetDrawOp = {
   "SetDrawOp",
   0|ni::eType_I8, NULL, "tBool",
@@ -8175,9 +8175,9 @@ static const ni::sMethodDef iGeometry_SetDrawOp = {
 };
 
 // Method: Optimize
-static const ni::sParameterDef iGeometry_Optimize_Parameters[1] = {
+static const ni::sParameterDef iGeometry_Optimize_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tGeometryOptimizeFlags" }
-};
+}; 
 static const ni::sMethodDef iGeometry_Optimize = {
   "Optimize",
   0|ni::eType_I8, NULL, "tBool",
@@ -8235,9 +8235,9 @@ static const ni::sInterfaceDef InterfaceDef_iGeometry = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGeometryModifier() {
 
 // Method: SetGeometry
-static const ni::sParameterDef iGeometryModifier_SetGeometry_Parameters[1] = {
+static const ni::sParameterDef iGeometryModifier_SetGeometry_Parameters[1] = { 
   { "pGeometry", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*" }
-};
+}; 
 static const ni::sMethodDef iGeometryModifier_SetGeometry = {
   "SetGeometry",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "tBool",
@@ -8355,11 +8355,11 @@ static const ni::sMethodDef iGpuBuffer_GetUsageFlags = {
 };
 
 // Method: Lock
-static const ni::sParameterDef iGpuBuffer_Lock_Parameters[3] = {
-  { "anOffset", ni::eType_U32, NULL, "tU32" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuBuffer_Lock_Parameters[3] = { 
+  { "anOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "aLock", ni::eType_Enum, NULL, "eLock" }
-};
+}; 
 static const ni::sMethodDef iGpuBuffer_Lock = {
   "Lock",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -8512,9 +8512,9 @@ static const ni::sInterfaceDef InterfaceDef_iGpuFunction = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGpuBlendMode() {
 
 // Method: Copy
-static const ni::sParameterDef iGpuBlendMode_Copy_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_Copy_Parameters[1] = { 
   { "apBlend", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBlendMode), "const iGpuBlendMode*" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -8539,9 +8539,9 @@ static const ni::sMethodDef iGpuBlendMode_Clone = {
 };
 
 // Method: SetOp
-static const ni::sParameterDef iGpuBlendMode_SetOp_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_SetOp_Parameters[1] = { 
   { "aOp", ni::eType_Enum, NULL, "eGpuBlendOp" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_SetOp = {
   "SetOp",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8566,9 +8566,9 @@ static const ni::sMethodDef iGpuBlendMode_GetOp = {
 };
 
 // Method: SetSrcRGB
-static const ni::sParameterDef iGpuBlendMode_SetSrcRGB_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_SetSrcRGB_Parameters[1] = { 
   { "aFactor", ni::eType_Enum, NULL, "eGpuBlendFactor" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_SetSrcRGB = {
   "SetSrcRGB",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8593,9 +8593,9 @@ static const ni::sMethodDef iGpuBlendMode_GetSrcRGB = {
 };
 
 // Method: SetSrcAlpha
-static const ni::sParameterDef iGpuBlendMode_SetSrcAlpha_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_SetSrcAlpha_Parameters[1] = { 
   { "aFactor", ni::eType_Enum, NULL, "eGpuBlendFactor" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_SetSrcAlpha = {
   "SetSrcAlpha",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8620,9 +8620,9 @@ static const ni::sMethodDef iGpuBlendMode_GetSrcAlpha = {
 };
 
 // Method: SetDstRGB
-static const ni::sParameterDef iGpuBlendMode_SetDstRGB_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_SetDstRGB_Parameters[1] = { 
   { "aFactor", ni::eType_Enum, NULL, "eGpuBlendFactor" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_SetDstRGB = {
   "SetDstRGB",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8647,9 +8647,9 @@ static const ni::sMethodDef iGpuBlendMode_GetDstRGB = {
 };
 
 // Method: SetDstAlpha
-static const ni::sParameterDef iGpuBlendMode_SetDstAlpha_Parameters[1] = {
+static const ni::sParameterDef iGpuBlendMode_SetDstAlpha_Parameters[1] = { 
   { "aFactor", ni::eType_Enum, NULL, "eGpuBlendFactor" }
-};
+}; 
 static const ni::sMethodDef iGpuBlendMode_SetDstAlpha = {
   "SetDstAlpha",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8728,9 +8728,9 @@ static const ni::sInterfaceDef InterfaceDef_iGpuBlendMode = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGpuPipelineDesc() {
 
 // Method: Copy
-static const ni::sParameterDef iGpuPipelineDesc_Copy_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_Copy_Parameters[1] = { 
   { "apPipe", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipelineDesc), "const iGpuPipelineDesc*" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -8755,10 +8755,10 @@ static const ni::sMethodDef iGpuPipelineDesc_Clone = {
 };
 
 // Method: SetColorFormat
-static const ni::sParameterDef iGpuPipelineDesc_SetColorFormat_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuPipelineDesc_SetColorFormat_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aFormat", ni::eType_Enum, NULL, "eGpuPixelFormat" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetColorFormat = {
   "SetColorFormat",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -8771,9 +8771,9 @@ static const ni::sMethodDef iGpuPipelineDesc_SetColorFormat = {
 };
 
 // Method: GetColorFormat
-static const ni::sParameterDef iGpuPipelineDesc_GetColorFormat_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_GetColorFormat_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_GetColorFormat = {
   "GetColorFormat",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eGpuPixelFormat",
@@ -8786,9 +8786,9 @@ static const ni::sMethodDef iGpuPipelineDesc_GetColorFormat = {
 };
 
 // Method: SetDepthFormat
-static const ni::sParameterDef iGpuPipelineDesc_SetDepthFormat_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_SetDepthFormat_Parameters[1] = { 
   { "aFormat", ni::eType_Enum, NULL, "eGpuPixelFormat" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetDepthFormat = {
   "SetDepthFormat",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -8813,9 +8813,9 @@ static const ni::sMethodDef iGpuPipelineDesc_GetDepthFormat = {
 };
 
 // Method: SetFVF
-static const ni::sParameterDef iGpuPipelineDesc_SetFVF_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_SetFVF_Parameters[1] = { 
   { "aFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetFVF = {
   "SetFVF",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -8840,9 +8840,9 @@ static const ni::sMethodDef iGpuPipelineDesc_GetFVF = {
 };
 
 // Method: SetRasterizerStates
-static const ni::sParameterDef iGpuPipelineDesc_SetRasterizerStates_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_SetRasterizerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetRasterizerStates = {
   "SetRasterizerStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IntPtr, NULL, "tBool",
@@ -8867,9 +8867,9 @@ static const ni::sMethodDef iGpuPipelineDesc_GetRasterizerStates = {
 };
 
 // Method: SetDepthStencilStates
-static const ni::sParameterDef iGpuPipelineDesc_SetDepthStencilStates_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_SetDepthStencilStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetDepthStencilStates = {
   "SetDepthStencilStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IntPtr, NULL, "tBool",
@@ -8894,10 +8894,10 @@ static const ni::sMethodDef iGpuPipelineDesc_GetDepthStencilStates = {
 };
 
 // Method: SetFunction
-static const ni::sParameterDef iGpuPipelineDesc_SetFunction_Parameters[2] = {
-  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" },
+static const ni::sParameterDef iGpuPipelineDesc_SetFunction_Parameters[2] = { 
+  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }, 
   { "apFunc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetFunction = {
   "SetFunction",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -8910,9 +8910,9 @@ static const ni::sMethodDef iGpuPipelineDesc_SetFunction = {
 };
 
 // Method: GetFunction
-static const ni::sParameterDef iGpuPipelineDesc_GetFunction_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_GetFunction_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_GetFunction = {
   "GetFunction",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*",
@@ -8925,9 +8925,9 @@ static const ni::sMethodDef iGpuPipelineDesc_GetFunction = {
 };
 
 // Method: SetBlendMode
-static const ni::sParameterDef iGpuPipelineDesc_SetBlendMode_Parameters[1] = {
+static const ni::sParameterDef iGpuPipelineDesc_SetBlendMode_Parameters[1] = { 
   { "apBlendMode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBlendMode), "iGpuBlendMode*" }
-};
+}; 
 static const ni::sMethodDef iGpuPipelineDesc_SetBlendMode = {
   "SetBlendMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBlendMode), "tBool",
@@ -9052,9 +9052,9 @@ static const ni::sInterfaceDef InterfaceDef_iGpuPipeline = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGpuCommandEncoder() {
 
 // Method: SetPipeline
-static const ni::sParameterDef iGpuCommandEncoder_SetPipeline_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetPipeline_Parameters[1] = { 
   { "apPipeline", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipeline), "iGpuPipeline*" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetPipeline = {
   "SetPipeline",
   0|ni::eType_Null, NULL, "void",
@@ -9067,11 +9067,11 @@ static const ni::sMethodDef iGpuCommandEncoder_SetPipeline = {
 };
 
 // Method: SetVertexBuffer
-static const ni::sParameterDef iGpuCommandEncoder_SetVertexBuffer_Parameters[3] = {
-  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anOffset", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_SetVertexBuffer_Parameters[3] = { 
+  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anOffset", ni::eType_U32, NULL, "tU32" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetVertexBuffer = {
   "SetVertexBuffer",
   0|ni::eType_Null, NULL, "void",
@@ -9084,11 +9084,11 @@ static const ni::sMethodDef iGpuCommandEncoder_SetVertexBuffer = {
 };
 
 // Method: SetIndexBuffer
-static const ni::sParameterDef iGpuCommandEncoder_SetIndexBuffer_Parameters[3] = {
-  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anOffset", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_SetIndexBuffer_Parameters[3] = { 
+  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anOffset", ni::eType_U32, NULL, "tU32" }, 
   { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetIndexBuffer = {
   "SetIndexBuffer",
   0|ni::eType_Null, NULL, "void",
@@ -9101,11 +9101,11 @@ static const ni::sMethodDef iGpuCommandEncoder_SetIndexBuffer = {
 };
 
 // Method: SetUniformBuffer
-static const ni::sParameterDef iGpuCommandEncoder_SetUniformBuffer_Parameters[3] = {
-  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anOffset", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_SetUniformBuffer_Parameters[3] = { 
+  { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anOffset", ni::eType_U32, NULL, "tU32" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetUniformBuffer = {
   "SetUniformBuffer",
   0|ni::eType_Null, NULL, "void",
@@ -9118,10 +9118,10 @@ static const ni::sMethodDef iGpuCommandEncoder_SetUniformBuffer = {
 };
 
 // Method: SetTexture
-static const ni::sParameterDef iGpuCommandEncoder_SetTexture_Parameters[2] = {
-  { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iGpuCommandEncoder_SetTexture_Parameters[2] = { 
+  { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetTexture = {
   "SetTexture",
   0|ni::eType_Null, NULL, "void",
@@ -9134,10 +9134,10 @@ static const ni::sMethodDef iGpuCommandEncoder_SetTexture = {
 };
 
 // Method: SetSamplerState
-static const ni::sParameterDef iGpuCommandEncoder_SetSamplerState_Parameters[2] = {
-  { "ahSS", ni::eType_IntPtr, NULL, "tIntPtr" },
+static const ni::sParameterDef iGpuCommandEncoder_SetSamplerState_Parameters[2] = { 
+  { "ahSS", ni::eType_IntPtr, NULL, "tIntPtr" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetSamplerState = {
   "SetSamplerState",
   0|ni::eType_Null, NULL, "void",
@@ -9150,11 +9150,11 @@ static const ni::sMethodDef iGpuCommandEncoder_SetSamplerState = {
 };
 
 // Method: StreamVertexBuffer
-static const ni::sParameterDef iGpuCommandEncoder_StreamVertexBuffer_Parameters[3] = {
-  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_StreamVertexBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_StreamVertexBuffer = {
   "StreamVertexBuffer",
   0|ni::eType_I8, NULL, "tBool",
@@ -9167,11 +9167,11 @@ static const ni::sMethodDef iGpuCommandEncoder_StreamVertexBuffer = {
 };
 
 // Method: StreamIndexBuffer
-static const ni::sParameterDef iGpuCommandEncoder_StreamIndexBuffer_Parameters[3] = {
-  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_StreamIndexBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "aIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_StreamIndexBuffer = {
   "StreamIndexBuffer",
   0|ni::eType_I8, NULL, "tBool",
@@ -9184,11 +9184,11 @@ static const ni::sMethodDef iGpuCommandEncoder_StreamIndexBuffer = {
 };
 
 // Method: StreamUniformBuffer
-static const ni::sParameterDef iGpuCommandEncoder_StreamUniformBuffer_Parameters[3] = {
-  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_StreamUniformBuffer_Parameters[3] = { 
+  { "apData", ni::eTypeFlags_Constant|ni::eType_Ptr, NULL, "const tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
   { "anBinding", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_StreamUniformBuffer = {
   "StreamUniformBuffer",
   0|ni::eType_I8, NULL, "tBool",
@@ -9201,9 +9201,9 @@ static const ni::sMethodDef iGpuCommandEncoder_StreamUniformBuffer = {
 };
 
 // Method: SetPolygonOffset
-static const ni::sParameterDef iGpuCommandEncoder_SetPolygonOffset_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetPolygonOffset_Parameters[1] = { 
   { "avOffset", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetPolygonOffset = {
   "SetPolygonOffset",
   0|ni::eType_Null, NULL, "void",
@@ -9216,9 +9216,9 @@ static const ni::sMethodDef iGpuCommandEncoder_SetPolygonOffset = {
 };
 
 // Method: SetScissorRect
-static const ni::sParameterDef iGpuCommandEncoder_SetScissorRect_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetScissorRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetScissorRect = {
   "SetScissorRect",
   0|ni::eType_Null, NULL, "void",
@@ -9231,9 +9231,9 @@ static const ni::sMethodDef iGpuCommandEncoder_SetScissorRect = {
 };
 
 // Method: SetViewport
-static const ni::sParameterDef iGpuCommandEncoder_SetViewport_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetViewport_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetViewport = {
   "SetViewport",
   0|ni::eType_Null, NULL, "void",
@@ -9246,9 +9246,9 @@ static const ni::sMethodDef iGpuCommandEncoder_SetViewport = {
 };
 
 // Method: SetStencilReference
-static const ni::sParameterDef iGpuCommandEncoder_SetStencilReference_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetStencilReference_Parameters[1] = { 
   { "aRef", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetStencilReference = {
   "SetStencilReference",
   0|ni::eType_Null, NULL, "void",
@@ -9261,9 +9261,9 @@ static const ni::sMethodDef iGpuCommandEncoder_SetStencilReference = {
 };
 
 // Method: SetStencilMask
-static const ni::sParameterDef iGpuCommandEncoder_SetStencilMask_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetStencilMask_Parameters[1] = { 
   { "aMask", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetStencilMask = {
   "SetStencilMask",
   0|ni::eType_Null, NULL, "void",
@@ -9276,9 +9276,9 @@ static const ni::sMethodDef iGpuCommandEncoder_SetStencilMask = {
 };
 
 // Method: SetBlendColorConstant
-static const ni::sParameterDef iGpuCommandEncoder_SetBlendColorConstant_Parameters[1] = {
+static const ni::sParameterDef iGpuCommandEncoder_SetBlendColorConstant_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_SetBlendColorConstant = {
   "SetBlendColorConstant",
   0|ni::eType_Null, NULL, "void",
@@ -9291,11 +9291,11 @@ static const ni::sMethodDef iGpuCommandEncoder_SetBlendColorConstant = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[3] = {
-  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" },
-  { "anVertexCount", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[3] = { 
+  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
   { "anFirstVertex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_Draw = {
   "Draw",
   0|ni::eType_I8, NULL, "tBool",
@@ -9308,11 +9308,11 @@ static const ni::sMethodDef iGpuCommandEncoder_Draw = {
 };
 
 // Method: DrawIndexed
-static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[3] = {
-  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" },
-  { "anNumIndices", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[3] = { 
+  { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
+  { "anNumIndices", ni::eType_U32, NULL, "tU32" }, 
   { "anFirstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGpuCommandEncoder_DrawIndexed = {
   "DrawIndexed",
   0|ni::eType_I8, NULL, "tBool",
@@ -9383,12 +9383,12 @@ static const ni::sMethodDef iGraphicsContextGpu_GetCommandEncoder = {
 };
 
 // Method: ClearBuffersRect
-static const ni::sParameterDef iGraphicsContextGpu_ClearBuffersRect_Parameters[4] = {
-  { "aFlags", ni::eType_Enum, NULL, "tClearBuffersFlags" },
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "anColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphicsContextGpu_ClearBuffersRect_Parameters[4] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tClearBuffersFlags" }, 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "anColor", ni::eType_U32, NULL, "tU32" }, 
   { "afZ", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContextGpu_ClearBuffersRect = {
   "ClearBuffersRect",
   0|ni::eType_I8, NULL, "tBool",
@@ -9432,12 +9432,12 @@ static const ni::sInterfaceDef InterfaceDef_iGraphicsContextGpu = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphicsDriverGpu() {
 
 // Method: CreateGpuBuffer
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBuffer_Parameters[4] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
-  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" },
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBuffer_Parameters[4] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
   { "aUsage", ni::eType_Enum, NULL, "tGpuBufferUsageFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBuffer = {
   "CreateGpuBuffer",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
@@ -9450,13 +9450,13 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBuffer = {
 };
 
 // Method: CreateGpuBufferFromData
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters[5] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
-  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" },
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromData_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
   { "aUsage", ni::eType_Enum, NULL, "tGpuBufferUsageFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromData = {
   "CreateGpuBufferFromData",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
@@ -9469,13 +9469,13 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromData = {
 };
 
 // Method: CreateGpuBufferFromDataRaw
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters[5] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "apData", ni::eType_Ptr, NULL, "tPtr" },
-  { "anSize", ni::eType_U32, NULL, "tU32" },
-  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" },
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apData", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "anSize", ni::eType_U32, NULL, "tU32" }, 
+  { "aMemMode", ni::eType_Enum, NULL, "eGpuBufferMemoryMode" }, 
   { "aUsage", ni::eType_Enum, NULL, "tGpuBufferUsageFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBufferFromDataRaw = {
   "CreateGpuBufferFromDataRaw",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "Ptr<iGpuBuffer>",
@@ -9496,10 +9496,10 @@ static const ni::sMethodDef iGraphicsDriverGpu_GetGpuFunctionTarget = {
 };
 
 // Method: CreateGpuFunction
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuFunction_Parameters[2] = {
-  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" },
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuFunction_Parameters[2] = { 
+  { "aType", ni::eType_Enum, NULL, "eGpuFunctionType" }, 
   { "ahspPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuFunction = {
   "CreateGpuFunction",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "Ptr<iGpuFunction>",
@@ -9536,10 +9536,10 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuBlendMode = {
 };
 
 // Method: CreateGpuPipeline
-static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuPipeline_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphicsDriverGpu_CreateGpuPipeline_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apDesc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipelineDesc), "const iGpuPipelineDesc*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuPipeline = {
   "CreateGpuPipeline",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuPipeline), "Ptr<iGpuPipeline>",
@@ -9589,10 +9589,10 @@ static const ni::sInterfaceDef InterfaceDef_iGraphicsDriverGpu = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphics() {
 
 // Method: FVFGetTexCooDim
-static const ni::sParameterDef iGraphics_FVFGetTexCooDim_Parameters[2] = {
-  { "anFVF", ni::eType_U32, NULL, "tFVF" },
+static const ni::sParameterDef iGraphics_FVFGetTexCooDim_Parameters[2] = { 
+  { "anFVF", ni::eType_U32, NULL, "tFVF" }, 
   { "anTexCooIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFGetTexCooDim = {
   "FVFGetTexCooDim",
   0|ni::eType_U32, NULL, "tU32",
@@ -9605,9 +9605,9 @@ static const ni::sMethodDef iGraphics_FVFGetTexCooDim = {
 };
 
 // Method: FVFGetNumTexCoos
-static const ni::sParameterDef iGraphics_FVFGetNumTexCoos_Parameters[1] = {
+static const ni::sParameterDef iGraphics_FVFGetNumTexCoos_Parameters[1] = { 
   { "anFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFGetNumTexCoos = {
   "FVFGetNumTexCoos",
   0|ni::eType_U32, NULL, "tU32",
@@ -9620,9 +9620,9 @@ static const ni::sMethodDef iGraphics_FVFGetNumTexCoos = {
 };
 
 // Method: FVFToString
-static const ni::sParameterDef iGraphics_FVFToString_Parameters[1] = {
+static const ni::sParameterDef iGraphics_FVFToString_Parameters[1] = { 
   { "aFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFToString = {
   "FVFToString",
   0|ni::eType_String, NULL, "cString",
@@ -9635,9 +9635,9 @@ static const ni::sMethodDef iGraphics_FVFToString = {
 };
 
 // Method: FVFFromString
-static const ni::sParameterDef iGraphics_FVFFromString_Parameters[1] = {
+static const ni::sParameterDef iGraphics_FVFFromString_Parameters[1] = { 
   { "aaszString", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFFromString = {
   "FVFFromString",
   0|ni::eType_U32, NULL, "tFVF",
@@ -9650,10 +9650,10 @@ static const ni::sMethodDef iGraphics_FVFFromString = {
 };
 
 // Method: FVFGetComponentOffset
-static const ni::sParameterDef iGraphics_FVFGetComponentOffset_Parameters[2] = {
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
+static const ni::sParameterDef iGraphics_FVFGetComponentOffset_Parameters[2] = { 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
   { "C", ni::eType_Enum, NULL, "eFVF" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFGetComponentOffset = {
   "FVFGetComponentOffset",
   0|ni::eType_U32, NULL, "tU32",
@@ -9666,9 +9666,9 @@ static const ni::sMethodDef iGraphics_FVFGetComponentOffset = {
 };
 
 // Method: FVFGetStride
-static const ni::sParameterDef iGraphics_FVFGetStride_Parameters[1] = {
+static const ni::sParameterDef iGraphics_FVFGetStride_Parameters[1] = { 
   { "aFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FVFGetStride = {
   "FVFGetStride",
   0|ni::eType_U32, NULL, "tU32",
@@ -9681,9 +9681,9 @@ static const ni::sMethodDef iGraphics_FVFGetStride = {
 };
 
 // Method: CreatePixelFormat
-static const ni::sParameterDef iGraphics_CreatePixelFormat_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreatePixelFormat_Parameters[1] = { 
   { "aszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreatePixelFormat = {
   "CreatePixelFormat",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*",
@@ -9696,14 +9696,14 @@ static const ni::sMethodDef iGraphics_CreatePixelFormat = {
 };
 
 // Method: CreateBitmapFormat
-static const ni::sParameterDef iGraphics_CreateBitmapFormat_Parameters[6] = {
-  { "aType", ni::eType_Enum, NULL, "eBitmapType" },
-  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmapFormat_Parameters[6] = { 
+  { "aType", ni::eType_Enum, NULL, "eBitmapType" }, 
+  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
   { "anDepth", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmapFormat = {
   "CreateBitmapFormat",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*",
@@ -9716,14 +9716,14 @@ static const ni::sMethodDef iGraphics_CreateBitmapFormat = {
 };
 
 // Method: CreateBitmapFormatEx
-static const ni::sParameterDef iGraphics_CreateBitmapFormatEx_Parameters[6] = {
-  { "aType", ni::eType_Enum, NULL, "eBitmapType" },
-  { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmapFormatEx_Parameters[6] = { 
+  { "aType", ni::eType_Enum, NULL, "eBitmapType" }, 
+  { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
   { "anDepth", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmapFormatEx = {
   "CreateBitmapFormatEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*",
@@ -9748,11 +9748,11 @@ static const ni::sMethodDef iGraphics_CreateBitmapFormatEmpty = {
 };
 
 // Method: CreateBitmap2DEx
-static const ni::sParameterDef iGraphics_CreateBitmap2DEx_Parameters[3] = {
-  { "nW", ni::eType_U32, NULL, "tU32" },
-  { "nH", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmap2DEx_Parameters[3] = { 
+  { "nW", ni::eType_U32, NULL, "tU32" }, 
+  { "nH", ni::eType_U32, NULL, "tU32" }, 
   { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap2DEx = {
   "CreateBitmap2DEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -9765,11 +9765,11 @@ static const ni::sMethodDef iGraphics_CreateBitmap2DEx = {
 };
 
 // Method: CreateBitmap2D
-static const ni::sParameterDef iGraphics_CreateBitmap2D_Parameters[3] = {
-  { "nW", ni::eType_U32, NULL, "tU32" },
-  { "nH", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmap2D_Parameters[3] = { 
+  { "nW", ni::eType_U32, NULL, "tU32" }, 
+  { "nH", ni::eType_U32, NULL, "tU32" }, 
   { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap2D = {
   "CreateBitmap2D",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -9782,14 +9782,14 @@ static const ni::sMethodDef iGraphics_CreateBitmap2D = {
 };
 
 // Method: CreateBitmap2DMemoryEx
-static const ni::sParameterDef iGraphics_CreateBitmap2DMemoryEx_Parameters[6] = {
-  { "nW", ni::eType_U32, NULL, "tU32" },
-  { "nH", ni::eType_U32, NULL, "tU32" },
-  { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "anPitch", ni::eType_U32, NULL, "tU32" },
-  { "ptrAddr", ni::eType_Ptr, NULL, "tPtr" },
+static const ni::sParameterDef iGraphics_CreateBitmap2DMemoryEx_Parameters[6] = { 
+  { "nW", ni::eType_U32, NULL, "tU32" }, 
+  { "nH", ni::eType_U32, NULL, "tU32" }, 
+  { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "anPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "ptrAddr", ni::eType_Ptr, NULL, "tPtr" }, 
   { "bFreeAddr", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap2DMemoryEx = {
   "CreateBitmap2DMemoryEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -9802,14 +9802,14 @@ static const ni::sMethodDef iGraphics_CreateBitmap2DMemoryEx = {
 };
 
 // Method: CreateBitmap2DMemory
-static const ni::sParameterDef iGraphics_CreateBitmap2DMemory_Parameters[6] = {
-  { "nW", ni::eType_U32, NULL, "tU32" },
-  { "nH", ni::eType_U32, NULL, "tU32" },
-  { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anPitch", ni::eType_U32, NULL, "tU32" },
-  { "ptrAddr", ni::eType_Ptr, NULL, "tPtr" },
+static const ni::sParameterDef iGraphics_CreateBitmap2DMemory_Parameters[6] = { 
+  { "nW", ni::eType_U32, NULL, "tU32" }, 
+  { "nH", ni::eType_U32, NULL, "tU32" }, 
+  { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "ptrAddr", ni::eType_Ptr, NULL, "tPtr" }, 
   { "bFreeAddr", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap2DMemory = {
   "CreateBitmap2DMemory",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -9822,10 +9822,10 @@ static const ni::sMethodDef iGraphics_CreateBitmap2DMemory = {
 };
 
 // Method: CreateBitmapCubeEx
-static const ni::sParameterDef iGraphics_CreateBitmapCubeEx_Parameters[2] = {
-  { "ulSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmapCubeEx_Parameters[2] = { 
+  { "ulSize", ni::eType_U32, NULL, "tU32" }, 
   { "pFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmapCubeEx = {
   "CreateBitmapCubeEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapCube), "iBitmapCube*",
@@ -9838,10 +9838,10 @@ static const ni::sMethodDef iGraphics_CreateBitmapCubeEx = {
 };
 
 // Method: CreateBitmapCube
-static const ni::sParameterDef iGraphics_CreateBitmapCube_Parameters[2] = {
-  { "ulSize", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmapCube_Parameters[2] = { 
+  { "ulSize", ni::eType_U32, NULL, "tU32" }, 
   { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmapCube = {
   "CreateBitmapCube",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapCube), "iBitmapCube*",
@@ -9854,12 +9854,12 @@ static const ni::sMethodDef iGraphics_CreateBitmapCube = {
 };
 
 // Method: CreateBitmap3DEx
-static const ni::sParameterDef iGraphics_CreateBitmap3DEx_Parameters[4] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
-  { "anD", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmap3DEx_Parameters[4] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
+  { "anD", ni::eType_U32, NULL, "tU32" }, 
   { "apFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap3DEx = {
   "CreateBitmap3DEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -9872,12 +9872,12 @@ static const ni::sMethodDef iGraphics_CreateBitmap3DEx = {
 };
 
 // Method: CreateBitmap3D
-static const ni::sParameterDef iGraphics_CreateBitmap3D_Parameters[4] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
-  { "anD", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateBitmap3D_Parameters[4] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
+  { "anD", ni::eType_U32, NULL, "tU32" }, 
   { "aaszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap3D = {
   "CreateBitmap3D",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -9890,16 +9890,16 @@ static const ni::sMethodDef iGraphics_CreateBitmap3D = {
 };
 
 // Method: CreateBitmap3DMemoryEx
-static const ni::sParameterDef iGraphics_CreateBitmap3DMemoryEx_Parameters[8] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
-  { "anD", ni::eType_U32, NULL, "tU32" },
-  { "apFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "anRowPitch", ni::eType_U32, NULL, "tU32" },
-  { "anSlicePitch", ni::eType_U32, NULL, "tU32" },
-  { "aptrAddr", ni::eType_Ptr, NULL, "tPtr" },
+static const ni::sParameterDef iGraphics_CreateBitmap3DMemoryEx_Parameters[8] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
+  { "anD", ni::eType_U32, NULL, "tU32" }, 
+  { "apFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "anRowPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "anSlicePitch", ni::eType_U32, NULL, "tU32" }, 
+  { "aptrAddr", ni::eType_Ptr, NULL, "tPtr" }, 
   { "abFreeAddr", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap3DMemoryEx = {
   "CreateBitmap3DMemoryEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -9912,16 +9912,16 @@ static const ni::sMethodDef iGraphics_CreateBitmap3DMemoryEx = {
 };
 
 // Method: CreateBitmap3DMemory
-static const ni::sParameterDef iGraphics_CreateBitmap3DMemory_Parameters[8] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
-  { "anD", ni::eType_U32, NULL, "tU32" },
-  { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anRowPitch", ni::eType_U32, NULL, "tU32" },
-  { "anSlicePitch", ni::eType_U32, NULL, "tU32" },
-  { "aptrAddr", ni::eType_Ptr, NULL, "tPtr" },
+static const ni::sParameterDef iGraphics_CreateBitmap3DMemory_Parameters[8] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
+  { "anD", ni::eType_U32, NULL, "tU32" }, 
+  { "aszPixFmt", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anRowPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "anSlicePitch", ni::eType_U32, NULL, "tU32" }, 
+  { "aptrAddr", ni::eType_Ptr, NULL, "tPtr" }, 
   { "abFreeAddr", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmap3DMemory = {
   "CreateBitmap3DMemory",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*",
@@ -9934,9 +9934,9 @@ static const ni::sMethodDef iGraphics_CreateBitmap3DMemory = {
 };
 
 // Method: LoadBitmap
-static const ni::sParameterDef iGraphics_LoadBitmap_Parameters[1] = {
+static const ni::sParameterDef iGraphics_LoadBitmap_Parameters[1] = { 
   { "pFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_LoadBitmap = {
   "LoadBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -9949,10 +9949,10 @@ static const ni::sMethodDef iGraphics_LoadBitmap = {
 };
 
 // Method: LoadBitmapFromRes
-static const ni::sParameterDef iGraphics_LoadBitmapFromRes_Parameters[2] = {
-  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_LoadBitmapFromRes_Parameters[2] = { 
+  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspBasePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_LoadBitmapFromRes = {
   "LoadBitmapFromRes",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -9965,10 +9965,10 @@ static const ni::sMethodDef iGraphics_LoadBitmapFromRes = {
 };
 
 // Method: LoadBitmapEx
-static const ni::sParameterDef iGraphics_LoadBitmapEx_Parameters[2] = {
-  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iGraphics_LoadBitmapEx_Parameters[2] = { 
+  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "pFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_LoadBitmapEx = {
   "LoadBitmapEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -9981,11 +9981,11 @@ static const ni::sMethodDef iGraphics_LoadBitmapEx = {
 };
 
 // Method: SaveBitmap
-static const ni::sParameterDef iGraphics_SaveBitmap_Parameters[3] = {
-  { "aszFile", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "pBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" },
+static const ni::sParameterDef iGraphics_SaveBitmap_Parameters[3] = { 
+  { "aszFile", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "pBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" }, 
   { "ulCompression", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SaveBitmap = {
   "SaveBitmap",
   0|ni::eType_I8, NULL, "tBool",
@@ -9998,12 +9998,12 @@ static const ni::sMethodDef iGraphics_SaveBitmap = {
 };
 
 // Method: SaveBitmapEx
-static const ni::sParameterDef iGraphics_SaveBitmapEx_Parameters[4] = {
-  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" },
+static const ni::sParameterDef iGraphics_SaveBitmapEx_Parameters[4] = { 
+  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" }, 
   { "anCompression", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SaveBitmapEx = {
   "SaveBitmapEx",
   0|ni::eType_I8, NULL, "tBool",
@@ -10016,10 +10016,10 @@ static const ni::sMethodDef iGraphics_SaveBitmapEx = {
 };
 
 // Method: URLFindBitmapFilePath
-static const ni::sParameterDef iGraphics_URLFindBitmapFilePath_Parameters[2] = {
-  { "aszRes", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iGraphics_URLFindBitmapFilePath_Parameters[2] = { 
+  { "aszRes", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aszBasePath", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_URLFindBitmapFilePath = {
   "URLFindBitmapFilePath",
   0|ni::eType_String, NULL, "cString",
@@ -10032,10 +10032,10 @@ static const ni::sMethodDef iGraphics_URLFindBitmapFilePath = {
 };
 
 // Method: OpenBitmapFile
-static const ni::sParameterDef iGraphics_OpenBitmapFile_Parameters[2] = {
-  { "aszRes", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iGraphics_OpenBitmapFile_Parameters[2] = { 
+  { "aszRes", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aszBasePath", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_OpenBitmapFile = {
   "OpenBitmapFile",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*",
@@ -10048,13 +10048,13 @@ static const ni::sMethodDef iGraphics_OpenBitmapFile = {
 };
 
 // Method: ComputeBitmapDiff
-static const ni::sParameterDef iGraphics_ComputeBitmapDiff_Parameters[5] = {
-  { "apImgA", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "apImgB", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "apOutput", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "afThreshold", ni::eType_F64, NULL, "tF64" },
+static const ni::sParameterDef iGraphics_ComputeBitmapDiff_Parameters[5] = { 
+  { "apImgA", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "apImgB", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "apOutput", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "afThreshold", ni::eType_F64, NULL, "tF64" }, 
   { "abIgnoreAA", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ComputeBitmapDiff = {
   "ComputeBitmapDiff",
   0|ni::eType_I64, NULL, "tI64",
@@ -10067,12 +10067,12 @@ static const ni::sMethodDef iGraphics_ComputeBitmapDiff = {
 };
 
 // Method: CreateGeometryPolygonal
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonal_Parameters[4] = {
-  { "aulNumVertices", ni::eType_U32, NULL, "tU32" },
-  { "aulNumIndices", ni::eType_U32, NULL, "tU32" },
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonal_Parameters[4] = { 
+  { "aulNumVertices", ni::eType_U32, NULL, "tU32" }, 
+  { "aulNumIndices", ni::eType_U32, NULL, "tU32" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
   { "aFVF", ni::eType_U32, NULL, "tFVF" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonal = {
   "CreateGeometryPolygonal",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10085,10 +10085,10 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonal = {
 };
 
 // Method: CreateGeometryPolygonalEx
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalEx_Parameters[2] = {
-  { "apVA", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalEx_Parameters[2] = { 
+  { "apVA", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*" }, 
   { "apIA", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalEx = {
   "CreateGeometryPolygonalEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10101,11 +10101,11 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalEx = {
 };
 
 // Method: CreateGeometryModifier
-static const ni::sParameterDef iGraphics_CreateGeometryModifier_Parameters[3] = {
-  { "aszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apGeometry", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*" },
+static const ni::sParameterDef iGraphics_CreateGeometryModifier_Parameters[3] = { 
+  { "aszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apGeometry", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*" }, 
   { "apInitData", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryModifier = {
   "CreateGeometryModifier",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometryModifier), "iGeometryModifier*",
@@ -10118,15 +10118,15 @@ static const ni::sMethodDef iGraphics_CreateGeometryModifier = {
 };
 
 // Method: CreateGeometryPolygonalCube
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalCube_Parameters[7] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afWidth", ni::eType_F32, NULL, "tF32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalCube_Parameters[7] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afWidth", ni::eType_F32, NULL, "tF32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalCube = {
   "CreateGeometryPolygonalCube",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10139,18 +10139,18 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalCube = {
 };
 
 // Method: CreateGeometryPolygonalPlane
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalPlane_Parameters[10] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "aPlaneType", ni::eType_Enum, NULL, "ePlaneType" },
-  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afWidth", ni::eType_F32, NULL, "tF32" },
-  { "afHeight", ni::eType_F32, NULL, "tF32" },
-  { "aulNumDiv", ni::eType_U32, NULL, "tU32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalPlane_Parameters[10] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "aPlaneType", ni::eType_Enum, NULL, "ePlaneType" }, 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afWidth", ni::eType_F32, NULL, "tF32" }, 
+  { "afHeight", ni::eType_F32, NULL, "tF32" }, 
+  { "aulNumDiv", ni::eType_U32, NULL, "tU32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalPlane = {
   "CreateGeometryPolygonalPlane",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10163,20 +10163,20 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalPlane = {
 };
 
 // Method: CreateGeometryPolygonalCylinder
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalCylinder_Parameters[12] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "baseRadius", ni::eType_F32, NULL, "tF32" },
-  { "topRadius", ni::eType_F32, NULL, "tF32" },
-  { "height", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "stacks", ni::eType_I32, NULL, "tI32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
-  { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "abCap", ni::eType_I8, NULL, "tBool" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalCylinder_Parameters[12] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "baseRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "topRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "height", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "stacks", ni::eType_I32, NULL, "tI32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
+  { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "abCap", ni::eType_I8, NULL, "tBool" }, 
   { "abCentered", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalCylinder = {
   "CreateGeometryPolygonalCylinder",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10189,16 +10189,16 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalCylinder = {
 };
 
 // Method: CreateGeometryPolygonalSphere
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalSphere_Parameters[8] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "radius", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "stacks", ni::eType_I32, NULL, "tI32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalSphere_Parameters[8] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "radius", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "stacks", ni::eType_I32, NULL, "tI32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalSphere = {
   "CreateGeometryPolygonalSphere",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10211,15 +10211,15 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalSphere = {
 };
 
 // Method: CreateGeometryPolygonalGeosphere
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalGeosphere_Parameters[7] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "radius", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalGeosphere_Parameters[7] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "radius", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalGeosphere = {
   "CreateGeometryPolygonalGeosphere",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10232,19 +10232,19 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalGeosphere = {
 };
 
 // Method: CreateGeometryPolygonalDiskSweep
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalDiskSweep_Parameters[11] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "innerRadius", ni::eType_F32, NULL, "tF32" },
-  { "outerRadius", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "stacks", ni::eType_I32, NULL, "tI32" },
-  { "startAngle", ni::eType_F32, NULL, "tF32" },
-  { "sweepAngle", ni::eType_F32, NULL, "tF32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalDiskSweep_Parameters[11] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "innerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "outerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "stacks", ni::eType_I32, NULL, "tI32" }, 
+  { "startAngle", ni::eType_F32, NULL, "tF32" }, 
+  { "sweepAngle", ni::eType_F32, NULL, "tF32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalDiskSweep = {
   "CreateGeometryPolygonalDiskSweep",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10257,18 +10257,18 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalDiskSweep = {
 };
 
 // Method: UpdateGeometryPolygonalDiskSweep
-static const ni::sParameterDef iGraphics_UpdateGeometryPolygonalDiskSweep_Parameters[10] = {
-  { "apGeom", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*" },
-  { "innerRadius", ni::eType_F32, NULL, "tF32" },
-  { "outerRadius", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "stacks", ni::eType_I32, NULL, "tI32" },
-  { "startAngle", ni::eType_F32, NULL, "tF32" },
-  { "sweepAngle", ni::eType_F32, NULL, "tF32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_UpdateGeometryPolygonalDiskSweep_Parameters[10] = { 
+  { "apGeom", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*" }, 
+  { "innerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "outerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "stacks", ni::eType_I32, NULL, "tI32" }, 
+  { "startAngle", ni::eType_F32, NULL, "tF32" }, 
+  { "sweepAngle", ni::eType_F32, NULL, "tF32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UpdateGeometryPolygonalDiskSweep = {
   "UpdateGeometryPolygonalDiskSweep",
   0|ni::eType_I8, NULL, "tBool",
@@ -10281,17 +10281,17 @@ static const ni::sMethodDef iGraphics_UpdateGeometryPolygonalDiskSweep = {
 };
 
 // Method: CreateGeometryPolygonalDisk
-static const ni::sParameterDef iGraphics_CreateGeometryPolygonalDisk_Parameters[9] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" },
-  { "aFVF", ni::eType_U32, NULL, "tFVF" },
-  { "innerRadius", ni::eType_F32, NULL, "tF32" },
-  { "outerRadius", ni::eType_F32, NULL, "tF32" },
-  { "slices", ni::eType_I32, NULL, "tI32" },
-  { "stacks", ni::eType_I32, NULL, "tI32" },
-  { "abCW", ni::eType_I8, NULL, "tBool" },
-  { "aulColor", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateGeometryPolygonalDisk_Parameters[9] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGeometryCreateFlags" }, 
+  { "aFVF", ni::eType_U32, NULL, "tFVF" }, 
+  { "innerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "outerRadius", ni::eType_F32, NULL, "tF32" }, 
+  { "slices", ni::eType_I32, NULL, "tI32" }, 
+  { "stacks", ni::eType_I32, NULL, "tI32" }, 
+  { "abCW", ni::eType_I8, NULL, "tBool" }, 
+  { "aulColor", ni::eType_U32, NULL, "tU32" }, 
   { "amtxUV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateGeometryPolygonalDisk = {
   "CreateGeometryPolygonalDisk",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGeometry), "iGeometry*",
@@ -10304,9 +10304,9 @@ static const ni::sMethodDef iGraphics_CreateGeometryPolygonalDisk = {
 };
 
 // Method: InitializeDriver
-static const ni::sParameterDef iGraphics_InitializeDriver_Parameters[1] = {
+static const ni::sParameterDef iGraphics_InitializeDriver_Parameters[1] = { 
   { "ahspDriverName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_InitializeDriver = {
   "InitializeDriver",
   0|ni::eType_I8, NULL, "tBool",
@@ -10343,9 +10343,9 @@ static const ni::sMethodDef iGraphics_GetDriver = {
 };
 
 // Method: GetDriverCaps
-static const ni::sParameterDef iGraphics_GetDriverCaps_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetDriverCaps_Parameters[1] = { 
   { "aCaps", ni::eType_Enum, NULL, "eGraphicsCaps" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetDriverCaps = {
   "GetDriverCaps",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Int, NULL, "tInt",
@@ -10358,13 +10358,13 @@ static const ni::sMethodDef iGraphics_GetDriverCaps = {
 };
 
 // Method: CreateContextForWindow
-static const ni::sParameterDef iGraphics_CreateContextForWindow_Parameters[5] = {
-  { "apWindow", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOSWindow), "iOSWindow*" },
-  { "aaszBBFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "aaszDSFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anSwapInterval", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateContextForWindow_Parameters[5] = { 
+  { "apWindow", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOSWindow), "iOSWindow*" }, 
+  { "aaszBBFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "aaszDSFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anSwapInterval", ni::eType_U32, NULL, "tU32" }, 
   { "aBackBufferFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateContextForWindow = {
   "CreateContextForWindow",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*",
@@ -10377,13 +10377,13 @@ static const ni::sMethodDef iGraphics_CreateContextForWindow = {
 };
 
 // Method: CreateContextForRenderTargets
-static const ni::sParameterDef iGraphics_CreateContextForRenderTargets_Parameters[5] = {
-  { "apRT0", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT1", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT2", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT3", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iGraphics_CreateContextForRenderTargets_Parameters[5] = { 
+  { "apRT0", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT1", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT2", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT3", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "apDS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateContextForRenderTargets = {
   "CreateContextForRenderTargets",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContextRT), "iGraphicsContextRT*",
@@ -10456,10 +10456,10 @@ static const ni::sMethodDef iGraphics_CreateFixedStates = {
 };
 
 // Method: CheckTextureFormat
-static const ni::sParameterDef iGraphics_CheckTextureFormat_Parameters[2] = {
-  { "apFormat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*" },
+static const ni::sParameterDef iGraphics_CheckTextureFormat_Parameters[2] = { 
+  { "apFormat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CheckTextureFormat = {
   "CheckTextureFormat",
   0|ni::eType_I8, NULL, "tBool",
@@ -10496,9 +10496,9 @@ static const ni::sMethodDef iGraphics_GetNumTextures = {
 };
 
 // Method: GetTextureFromName
-static const ni::sParameterDef iGraphics_GetTextureFromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetTextureFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetTextureFromName = {
   "GetTextureFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -10511,9 +10511,9 @@ static const ni::sMethodDef iGraphics_GetTextureFromName = {
 };
 
 // Method: GetTextureFromIndex
-static const ni::sParameterDef iGraphics_GetTextureFromIndex_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetTextureFromIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetTextureFromIndex = {
   "GetTextureFromIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -10526,16 +10526,16 @@ static const ni::sMethodDef iGraphics_GetTextureFromIndex = {
 };
 
 // Method: CreateTexture
-static const ni::sParameterDef iGraphics_CreateTexture_Parameters[8] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "aType", ni::eType_Enum, NULL, "eBitmapType" },
-  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
-  { "anDepth", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateTexture_Parameters[8] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eBitmapType" }, 
+  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "anDepth", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateTexture = {
   "CreateTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -10548,11 +10548,11 @@ static const ni::sMethodDef iGraphics_CreateTexture = {
 };
 
 // Method: CreateTextureFromBitmap
-static const ni::sParameterDef iGraphics_CreateTextureFromBitmap_Parameters[3] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" },
+static const ni::sParameterDef iGraphics_CreateTextureFromBitmap_Parameters[3] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateTextureFromBitmap = {
   "CreateTextureFromBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -10565,11 +10565,11 @@ static const ni::sMethodDef iGraphics_CreateTextureFromBitmap = {
 };
 
 // Method: CreateTextureFromRes
-static const ni::sParameterDef iGraphics_CreateTextureFromRes_Parameters[3] = {
-  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspBasePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_CreateTextureFromRes_Parameters[3] = { 
+  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspBasePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateTextureFromRes = {
   "CreateTextureFromRes",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -10582,9 +10582,9 @@ static const ni::sMethodDef iGraphics_CreateTextureFromRes = {
 };
 
 // Method: SetRecreateTextureWhenChanged
-static const ni::sParameterDef iGraphics_SetRecreateTextureWhenChanged_Parameters[1] = {
+static const ni::sParameterDef iGraphics_SetRecreateTextureWhenChanged_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SetRecreateTextureWhenChanged = {
   "SetRecreateTextureWhenChanged",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -10609,14 +10609,14 @@ static const ni::sMethodDef iGraphics_GetRecreateTextureWhenChanged = {
 };
 
 // Method: BlitBitmapToTexture
-static const ni::sParameterDef iGraphics_BlitBitmapToTexture_Parameters[6] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphics_BlitBitmapToTexture_Parameters[6] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_BlitBitmapToTexture = {
   "BlitBitmapToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -10629,14 +10629,14 @@ static const ni::sMethodDef iGraphics_BlitBitmapToTexture = {
 };
 
 // Method: BlitTextureToBitmap
-static const ni::sParameterDef iGraphics_BlitTextureToBitmap_Parameters[6] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphics_BlitTextureToBitmap_Parameters[6] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_BlitTextureToBitmap = {
   "BlitTextureToBitmap",
   0|ni::eType_I8, NULL, "tBool",
@@ -10649,15 +10649,15 @@ static const ni::sMethodDef iGraphics_BlitTextureToBitmap = {
 };
 
 // Method: BlitTextureToTexture
-static const ni::sParameterDef iGraphics_BlitTextureToTexture_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphics_BlitTextureToTexture_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_BlitTextureToTexture = {
   "BlitTextureToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -10670,15 +10670,15 @@ static const ni::sMethodDef iGraphics_BlitTextureToTexture = {
 };
 
 // Method: BlitBitmap3DToTexture
-static const ni::sParameterDef iGraphics_BlitBitmap3DToTexture_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iGraphics_BlitBitmap3DToTexture_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_BlitBitmap3DToTexture = {
   "BlitBitmap3DToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -10691,15 +10691,15 @@ static const ni::sMethodDef iGraphics_BlitBitmap3DToTexture = {
 };
 
 // Method: BlitTextureToBitmap3D
-static const ni::sParameterDef iGraphics_BlitTextureToBitmap3D_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" },
-  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iGraphics_BlitTextureToBitmap3D_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" }, 
+  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_BlitTextureToBitmap3D = {
   "BlitTextureToBitmap3D",
   0|ni::eType_I8, NULL, "tBool",
@@ -10712,9 +10712,9 @@ static const ni::sMethodDef iGraphics_BlitTextureToBitmap3D = {
 };
 
 // Method: CreateBitmapFromTexture
-static const ni::sParameterDef iGraphics_CreateBitmapFromTexture_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateBitmapFromTexture_Parameters[1] = { 
   { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateBitmapFromTexture = {
   "CreateBitmapFromTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapBase), "iBitmapBase*",
@@ -10727,9 +10727,9 @@ static const ni::sMethodDef iGraphics_CreateBitmapFromTexture = {
 };
 
 // Method: GetNumShaderProfile
-static const ni::sParameterDef iGraphics_GetNumShaderProfile_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetNumShaderProfile_Parameters[1] = { 
   { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetNumShaderProfile = {
   "GetNumShaderProfile",
   0|ni::eType_U32, NULL, "tU32",
@@ -10742,10 +10742,10 @@ static const ni::sMethodDef iGraphics_GetNumShaderProfile = {
 };
 
 // Method: GetShaderProfile
-static const ni::sParameterDef iGraphics_GetShaderProfile_Parameters[2] = {
-  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" },
+static const ni::sParameterDef iGraphics_GetShaderProfile_Parameters[2] = { 
+  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetShaderProfile = {
   "GetShaderProfile",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -10758,9 +10758,9 @@ static const ni::sMethodDef iGraphics_GetShaderProfile = {
 };
 
 // Method: CreateShaderConstants
-static const ni::sParameterDef iGraphics_CreateShaderConstants_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateShaderConstants_Parameters[1] = { 
   { "anMaxRegisters", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateShaderConstants = {
   "CreateShaderConstants",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "iShaderConstants*",
@@ -10773,11 +10773,11 @@ static const ni::sMethodDef iGraphics_CreateShaderConstants = {
 };
 
 // Method: SerializeShaderConstants
-static const ni::sParameterDef iGraphics_SerializeShaderConstants_Parameters[3] = {
-  { "apConsts", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "iShaderConstants*" },
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iGraphics_SerializeShaderConstants_Parameters[3] = { 
+  { "apConsts", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "iShaderConstants*" }, 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SerializeShaderConstants = {
   "SerializeShaderConstants",
   0|ni::eType_I8, NULL, "tBool",
@@ -10814,9 +10814,9 @@ static const ni::sMethodDef iGraphics_GetNumShaders = {
 };
 
 // Method: GetShaderFromName
-static const ni::sParameterDef iGraphics_GetShaderFromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetShaderFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetShaderFromName = {
   "GetShaderFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -10829,9 +10829,9 @@ static const ni::sMethodDef iGraphics_GetShaderFromName = {
 };
 
 // Method: GetShaderFromIndex
-static const ni::sParameterDef iGraphics_GetShaderFromIndex_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetShaderFromIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetShaderFromIndex = {
   "GetShaderFromIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -10844,10 +10844,10 @@ static const ni::sMethodDef iGraphics_GetShaderFromIndex = {
 };
 
 // Method: CreateShader
-static const ni::sParameterDef iGraphics_CreateShader_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_CreateShader_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apByteCode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateShader = {
   "CreateShader",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -10860,9 +10860,9 @@ static const ni::sMethodDef iGraphics_CreateShader = {
 };
 
 // Method: CreateShaderFromRes
-static const ni::sParameterDef iGraphics_CreateShaderFromRes_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateShaderFromRes_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateShaderFromRes = {
   "CreateShaderFromRes",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -10875,9 +10875,9 @@ static const ni::sMethodDef iGraphics_CreateShaderFromRes = {
 };
 
 // Method: SetRecreateShaderWhenChanged
-static const ni::sParameterDef iGraphics_SetRecreateShaderWhenChanged_Parameters[1] = {
+static const ni::sParameterDef iGraphics_SetRecreateShaderWhenChanged_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SetRecreateShaderWhenChanged = {
   "SetRecreateShaderWhenChanged",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -10902,11 +10902,11 @@ static const ni::sMethodDef iGraphics_GetRecreateShaderWhenChanged = {
 };
 
 // Method: CreateVertexArray
-static const ni::sParameterDef iGraphics_CreateVertexArray_Parameters[3] = {
-  { "anNumVertices", ni::eType_U32, NULL, "tU32" },
-  { "anFVF", ni::eType_U32, NULL, "tFVF" },
+static const ni::sParameterDef iGraphics_CreateVertexArray_Parameters[3] = { 
+  { "anNumVertices", ni::eType_U32, NULL, "tU32" }, 
+  { "anFVF", ni::eType_U32, NULL, "tFVF" }, 
   { "aUsage", ni::eType_Enum, NULL, "eArrayUsage" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVertexArray = {
   "CreateVertexArray",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*",
@@ -10919,12 +10919,12 @@ static const ni::sMethodDef iGraphics_CreateVertexArray = {
 };
 
 // Method: CreateIndexArray
-static const ni::sParameterDef iGraphics_CreateIndexArray_Parameters[4] = {
-  { "aPrimitiveType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" },
-  { "anNumIndex", ni::eType_U32, NULL, "tU32" },
-  { "anMaxVertexIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateIndexArray_Parameters[4] = { 
+  { "aPrimitiveType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
+  { "anNumIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "anMaxVertexIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aUsage", ni::eType_Enum, NULL, "eArrayUsage" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateIndexArray = {
   "CreateIndexArray",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*",
@@ -10973,9 +10973,9 @@ static const ni::sMethodDef iGraphics_CreateOcclusionQuery = {
 };
 
 // Method: GetCompiledSamplerStates
-static const ni::sParameterDef iGraphics_GetCompiledSamplerStates_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetCompiledSamplerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCompiledSamplerStates = {
   "GetCompiledSamplerStates",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSamplerStates), "iSamplerStates*",
@@ -10988,9 +10988,9 @@ static const ni::sMethodDef iGraphics_GetCompiledSamplerStates = {
 };
 
 // Method: GetCompiledRasterizerStates
-static const ni::sParameterDef iGraphics_GetCompiledRasterizerStates_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetCompiledRasterizerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCompiledRasterizerStates = {
   "GetCompiledRasterizerStates",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRasterizerStates), "iRasterizerStates*",
@@ -11003,9 +11003,9 @@ static const ni::sMethodDef iGraphics_GetCompiledRasterizerStates = {
 };
 
 // Method: GetCompiledDepthStencilStates
-static const ni::sParameterDef iGraphics_GetCompiledDepthStencilStates_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetCompiledDepthStencilStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCompiledDepthStencilStates = {
   "GetCompiledDepthStencilStates",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDepthStencilStates), "iDepthStencilStates*",
@@ -11054,9 +11054,9 @@ static const ni::sMethodDef iGraphics_CreateDrawOpCapture = {
 };
 
 // Method: SetDrawOpCapture
-static const ni::sParameterDef iGraphics_SetDrawOpCapture_Parameters[1] = {
+static const ni::sParameterDef iGraphics_SetDrawOpCapture_Parameters[1] = { 
   { "apCapture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsDrawOpCapture), "iGraphicsDrawOpCapture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_SetDrawOpCapture = {
   "SetDrawOpCapture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsDrawOpCapture), "void",
@@ -11082,9 +11082,9 @@ static const ni::sMethodDef iGraphics_GetDrawOpCapture = {
 
 #if niMinFeatures(15)
 // Method: ColorLuminance
-static const ni::sParameterDef iGraphics_ColorLuminance_Parameters[1] = {
+static const ni::sParameterDef iGraphics_ColorLuminance_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorLuminance = {
   "ColorLuminance",
   0|ni::eType_F32, NULL, "tF32",
@@ -11099,10 +11099,10 @@ static const ni::sMethodDef iGraphics_ColorLuminance = {
 
 #if niMinFeatures(15)
 // Method: ColorLuminanceEx
-static const ni::sParameterDef iGraphics_ColorLuminanceEx_Parameters[2] = {
-  { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iGraphics_ColorLuminanceEx_Parameters[2] = { 
+  { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avLuminanceDistribution", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorLuminanceEx = {
   "ColorLuminanceEx",
   0|ni::eType_F32, NULL, "tF32",
@@ -11117,10 +11117,10 @@ static const ni::sMethodDef iGraphics_ColorLuminanceEx = {
 
 #if niMinFeatures(15)
 // Method: ColorGammaCorrect
-static const ni::sParameterDef iGraphics_ColorGammaCorrect_Parameters[2] = {
-  { "aC", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iGraphics_ColorGammaCorrect_Parameters[2] = { 
+  { "aC", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "afFactor", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorGammaCorrect = {
   "ColorGammaCorrect",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11135,10 +11135,10 @@ static const ni::sMethodDef iGraphics_ColorGammaCorrect = {
 
 #if niMinFeatures(15)
 // Method: ColorAdjustContrast
-static const ni::sParameterDef iGraphics_ColorAdjustContrast_Parameters[2] = {
-  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iGraphics_ColorAdjustContrast_Parameters[2] = { 
+  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "c", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorAdjustContrast = {
   "ColorAdjustContrast",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11153,10 +11153,10 @@ static const ni::sMethodDef iGraphics_ColorAdjustContrast = {
 
 #if niMinFeatures(15)
 // Method: ColorAdjustSaturation
-static const ni::sParameterDef iGraphics_ColorAdjustSaturation_Parameters[2] = {
-  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iGraphics_ColorAdjustSaturation_Parameters[2] = { 
+  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "s", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorAdjustSaturation = {
   "ColorAdjustSaturation",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11171,9 +11171,9 @@ static const ni::sMethodDef iGraphics_ColorAdjustSaturation = {
 
 #if niMinFeatures(15)
 // Method: ColorNegative
-static const ni::sParameterDef iGraphics_ColorNegative_Parameters[1] = {
+static const ni::sParameterDef iGraphics_ColorNegative_Parameters[1] = { 
   { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorNegative = {
   "ColorNegative",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11188,9 +11188,9 @@ static const ni::sMethodDef iGraphics_ColorNegative = {
 
 #if niMinFeatures(15)
 // Method: ColorGrey
-static const ni::sParameterDef iGraphics_ColorGrey_Parameters[1] = {
+static const ni::sParameterDef iGraphics_ColorGrey_Parameters[1] = { 
   { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorGrey = {
   "ColorGrey",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11205,10 +11205,10 @@ static const ni::sMethodDef iGraphics_ColorGrey = {
 
 #if niMinFeatures(15)
 // Method: ColorBlackWhite
-static const ni::sParameterDef iGraphics_ColorBlackWhite_Parameters[2] = {
-  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iGraphics_ColorBlackWhite_Parameters[2] = { 
+  { "C", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "s", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorBlackWhite = {
   "ColorBlackWhite",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11223,11 +11223,11 @@ static const ni::sMethodDef iGraphics_ColorBlackWhite = {
 
 #if niMinFeatures(15)
 // Method: ColorConvert
-static const ni::sParameterDef iGraphics_ColorConvert_Parameters[3] = {
-  { "aSource", ni::eType_Enum, NULL, "eColorSpace" },
-  { "aDest", ni::eType_Enum, NULL, "eColorSpace" },
+static const ni::sParameterDef iGraphics_ColorConvert_Parameters[3] = { 
+  { "aSource", ni::eType_Enum, NULL, "eColorSpace" }, 
+  { "aDest", ni::eType_Enum, NULL, "eColorSpace" }, 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorConvert = {
   "ColorConvert",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11242,12 +11242,12 @@ static const ni::sMethodDef iGraphics_ColorConvert = {
 
 #if niMinFeatures(15)
 // Method: ColorConvertEx
-static const ni::sParameterDef iGraphics_ColorConvertEx_Parameters[4] = {
-  { "aSource", ni::eType_Enum, NULL, "eColorSpace" },
-  { "aDest", ni::eType_Enum, NULL, "eColorSpace" },
-  { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
+static const ni::sParameterDef iGraphics_ColorConvertEx_Parameters[4] = { 
+  { "aSource", ni::eType_Enum, NULL, "eColorSpace" }, 
+  { "aDest", ni::eType_Enum, NULL, "eColorSpace" }, 
+  { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
   { "aXYZRef", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_ColorConvertEx = {
   "ColorConvertEx",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11273,9 +11273,9 @@ static const ni::sMethodDef iGraphics_GetNumNamedColors = {
 };
 
 // Method: GetColorName
-static const ni::sParameterDef iGraphics_GetColorName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetColorName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColorName = {
   "GetColorName",
   ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -11288,9 +11288,9 @@ static const ni::sMethodDef iGraphics_GetColorName = {
 };
 
 // Method: GetColorIndex
-static const ni::sParameterDef iGraphics_GetColorIndex_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetColorIndex_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColorIndex = {
   "GetColorIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -11303,9 +11303,9 @@ static const ni::sMethodDef iGraphics_GetColorIndex = {
 };
 
 // Method: GetColorValue
-static const ni::sParameterDef iGraphics_GetColorValue_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetColorValue_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColorValue = {
   "GetColorValue",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -11318,9 +11318,9 @@ static const ni::sMethodDef iGraphics_GetColorValue = {
 };
 
 // Method: FindColorName
-static const ni::sParameterDef iGraphics_FindColorName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_FindColorName_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FindColorName = {
   "FindColorName",
   0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -11333,9 +11333,9 @@ static const ni::sMethodDef iGraphics_FindColorName = {
 };
 
 // Method: GetColor3FromName
-static const ni::sParameterDef iGraphics_GetColor3FromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetColor3FromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColor3FromName = {
   "GetColor3FromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11348,9 +11348,9 @@ static const ni::sMethodDef iGraphics_GetColor3FromName = {
 };
 
 // Method: GetColor4FromName
-static const ni::sParameterDef iGraphics_GetColor4FromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetColor4FromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColor4FromName = {
   "GetColor4FromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11363,10 +11363,10 @@ static const ni::sMethodDef iGraphics_GetColor4FromName = {
 };
 
 // Method: GetColor4FromNameA
-static const ni::sParameterDef iGraphics_GetColor4FromNameA_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_GetColor4FromNameA_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "afAlpha", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetColor4FromNameA = {
   "GetColor4FromNameA",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11379,9 +11379,9 @@ static const ni::sMethodDef iGraphics_GetColor4FromNameA = {
 };
 
 // Method: GetCssColor3FromName
-static const ni::sParameterDef iGraphics_GetCssColor3FromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetCssColor3FromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCssColor3FromName = {
   "GetCssColor3FromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11394,9 +11394,9 @@ static const ni::sMethodDef iGraphics_GetCssColor3FromName = {
 };
 
 // Method: GetCssColor4FromName
-static const ni::sParameterDef iGraphics_GetCssColor4FromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetCssColor4FromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCssColor4FromName = {
   "GetCssColor4FromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11409,10 +11409,10 @@ static const ni::sMethodDef iGraphics_GetCssColor4FromName = {
 };
 
 // Method: GetCssColor4FromNameA
-static const ni::sParameterDef iGraphics_GetCssColor4FromNameA_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_GetCssColor4FromNameA_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "afAlpha", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetCssColor4FromNameA = {
   "GetCssColor4FromNameA",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11425,9 +11425,9 @@ static const ni::sMethodDef iGraphics_GetCssColor4FromNameA = {
 };
 
 // Method: UDPointsSphereRandom
-static const ni::sParameterDef iGraphics_UDPointsSphereRandom_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsSphereRandom_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsSphereRandom = {
   "UDPointsSphereRandom",
   0|ni::eType_Null, NULL, "void",
@@ -11440,9 +11440,9 @@ static const ni::sMethodDef iGraphics_UDPointsSphereRandom = {
 };
 
 // Method: UDPointsSphereHammersley
-static const ni::sParameterDef iGraphics_UDPointsSphereHammersley_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsSphereHammersley_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsSphereHammersley = {
   "UDPointsSphereHammersley",
   0|ni::eType_Null, NULL, "void",
@@ -11455,10 +11455,10 @@ static const ni::sMethodDef iGraphics_UDPointsSphereHammersley = {
 };
 
 // Method: UDPointsSphereHammersleyEx
-static const ni::sParameterDef iGraphics_UDPointsSphereHammersleyEx_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsSphereHammersleyEx_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
   { "p1", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsSphereHammersleyEx = {
   "UDPointsSphereHammersleyEx",
   0|ni::eType_Null, NULL, "void",
@@ -11471,10 +11471,10 @@ static const ni::sMethodDef iGraphics_UDPointsSphereHammersleyEx = {
 };
 
 // Method: UDPointsSphereHalton
-static const ni::sParameterDef iGraphics_UDPointsSphereHalton_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsSphereHalton_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsSphereHalton = {
   "UDPointsSphereHalton",
   0|ni::eType_Null, NULL, "void",
@@ -11487,11 +11487,11 @@ static const ni::sMethodDef iGraphics_UDPointsSphereHalton = {
 };
 
 // Method: UDPointsSphereHaltonEx
-static const ni::sParameterDef iGraphics_UDPointsSphereHaltonEx_Parameters[3] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
-  { "p1", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iGraphics_UDPointsSphereHaltonEx_Parameters[3] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
+  { "p1", ni::eType_I32, NULL, "tI32" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsSphereHaltonEx = {
   "UDPointsSphereHaltonEx",
   0|ni::eType_Null, NULL, "void",
@@ -11504,9 +11504,9 @@ static const ni::sMethodDef iGraphics_UDPointsSphereHaltonEx = {
 };
 
 // Method: UDPointsHemisphereRandom
-static const ni::sParameterDef iGraphics_UDPointsHemisphereRandom_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsHemisphereRandom_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsHemisphereRandom = {
   "UDPointsHemisphereRandom",
   0|ni::eType_Null, NULL, "void",
@@ -11519,9 +11519,9 @@ static const ni::sMethodDef iGraphics_UDPointsHemisphereRandom = {
 };
 
 // Method: UDPointsHemisphereHammersley
-static const ni::sParameterDef iGraphics_UDPointsHemisphereHammersley_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsHemisphereHammersley_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsHemisphereHammersley = {
   "UDPointsHemisphereHammersley",
   0|ni::eType_Null, NULL, "void",
@@ -11534,10 +11534,10 @@ static const ni::sMethodDef iGraphics_UDPointsHemisphereHammersley = {
 };
 
 // Method: UDPointsHemisphereHammersleyEx
-static const ni::sParameterDef iGraphics_UDPointsHemisphereHammersleyEx_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsHemisphereHammersleyEx_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
   { "p1", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsHemisphereHammersleyEx = {
   "UDPointsHemisphereHammersleyEx",
   0|ni::eType_Null, NULL, "void",
@@ -11550,10 +11550,10 @@ static const ni::sMethodDef iGraphics_UDPointsHemisphereHammersleyEx = {
 };
 
 // Method: UDPointsHemisphereHalton
-static const ni::sParameterDef iGraphics_UDPointsHemisphereHalton_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsHemisphereHalton_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsHemisphereHalton = {
   "UDPointsHemisphereHalton",
   0|ni::eType_Null, NULL, "void",
@@ -11566,11 +11566,11 @@ static const ni::sMethodDef iGraphics_UDPointsHemisphereHalton = {
 };
 
 // Method: UDPointsHemisphereHaltonEx
-static const ni::sParameterDef iGraphics_UDPointsHemisphereHaltonEx_Parameters[3] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" },
-  { "p1", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iGraphics_UDPointsHemisphereHaltonEx_Parameters[3] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec3fCVec*" }, 
+  { "p1", ni::eType_I32, NULL, "tI32" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsHemisphereHaltonEx = {
   "UDPointsHemisphereHaltonEx",
   0|ni::eType_Null, NULL, "void",
@@ -11583,9 +11583,9 @@ static const ni::sMethodDef iGraphics_UDPointsHemisphereHaltonEx = {
 };
 
 // Method: UDPointsPlaneRandom
-static const ni::sParameterDef iGraphics_UDPointsPlaneRandom_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsPlaneRandom_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsPlaneRandom = {
   "UDPointsPlaneRandom",
   0|ni::eType_Null, NULL, "void",
@@ -11598,9 +11598,9 @@ static const ni::sMethodDef iGraphics_UDPointsPlaneRandom = {
 };
 
 // Method: UDPointsPlaneHammersley
-static const ni::sParameterDef iGraphics_UDPointsPlaneHammersley_Parameters[1] = {
+static const ni::sParameterDef iGraphics_UDPointsPlaneHammersley_Parameters[1] = { 
   { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsPlaneHammersley = {
   "UDPointsPlaneHammersley",
   0|ni::eType_Null, NULL, "void",
@@ -11613,10 +11613,10 @@ static const ni::sMethodDef iGraphics_UDPointsPlaneHammersley = {
 };
 
 // Method: UDPointsPlaneHammersleyEx
-static const ni::sParameterDef iGraphics_UDPointsPlaneHammersleyEx_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsPlaneHammersleyEx_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" }, 
   { "p1", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsPlaneHammersleyEx = {
   "UDPointsPlaneHammersleyEx",
   0|ni::eType_Null, NULL, "void",
@@ -11629,10 +11629,10 @@ static const ni::sMethodDef iGraphics_UDPointsPlaneHammersleyEx = {
 };
 
 // Method: UDPointsPlaneHalton
-static const ni::sParameterDef iGraphics_UDPointsPlaneHalton_Parameters[2] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" },
+static const ni::sParameterDef iGraphics_UDPointsPlaneHalton_Parameters[2] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsPlaneHalton = {
   "UDPointsPlaneHalton",
   0|ni::eType_Null, NULL, "void",
@@ -11645,11 +11645,11 @@ static const ni::sMethodDef iGraphics_UDPointsPlaneHalton = {
 };
 
 // Method: UDPointsPlaneHaltonEx
-static const ni::sParameterDef iGraphics_UDPointsPlaneHaltonEx_Parameters[3] = {
-  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" },
-  { "p1", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iGraphics_UDPointsPlaneHaltonEx_Parameters[3] = { 
+  { "apResults", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "tVec2fCVec*" }, 
+  { "p1", ni::eType_I32, NULL, "tI32" }, 
   { "p2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_UDPointsPlaneHaltonEx = {
   "UDPointsPlaneHaltonEx",
   0|ni::eType_Null, NULL, "void",
@@ -11663,10 +11663,10 @@ static const ni::sMethodDef iGraphics_UDPointsPlaneHaltonEx = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringGetDampingRatio
-static const ni::sParameterDef iGraphics_DampedSpringGetDampingRatio_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringGetDampingRatio_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringGetDampingRatio = {
   "DampedSpringGetDampingRatio",
   0|ni::eType_F32, NULL, "tF32",
@@ -11681,10 +11681,10 @@ static const ni::sMethodDef iGraphics_DampedSpringGetDampingRatio = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringComputeKdFromDampingRatio
-static const ni::sParameterDef iGraphics_DampedSpringComputeKdFromDampingRatio_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringComputeKdFromDampingRatio_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "E", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringComputeKdFromDampingRatio = {
   "DampedSpringComputeKdFromDampingRatio",
   0|ni::eType_F32, NULL, "tF32",
@@ -11699,12 +11699,12 @@ static const ni::sMethodDef iGraphics_DampedSpringComputeKdFromDampingRatio = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringAcceleration1
-static const ni::sParameterDef iGraphics_DampedSpringAcceleration1_Parameters[4] = {
-  { "D", ni::eType_F32, NULL, "tF32" },
-  { "V", ni::eType_F32, NULL, "tF32" },
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringAcceleration1_Parameters[4] = { 
+  { "D", ni::eType_F32, NULL, "tF32" }, 
+  { "V", ni::eType_F32, NULL, "tF32" }, 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringAcceleration1 = {
   "DampedSpringAcceleration1",
   0|ni::eType_F32, NULL, "tF32",
@@ -11719,12 +11719,12 @@ static const ni::sMethodDef iGraphics_DampedSpringAcceleration1 = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringAcceleration2
-static const ni::sParameterDef iGraphics_DampedSpringAcceleration2_Parameters[4] = {
-  { "D", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "V", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringAcceleration2_Parameters[4] = { 
+  { "D", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "V", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringAcceleration2 = {
   "DampedSpringAcceleration2",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -11739,12 +11739,12 @@ static const ni::sMethodDef iGraphics_DampedSpringAcceleration2 = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringAcceleration3
-static const ni::sParameterDef iGraphics_DampedSpringAcceleration3_Parameters[4] = {
-  { "D", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "V", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringAcceleration3_Parameters[4] = { 
+  { "D", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "V", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringAcceleration3 = {
   "DampedSpringAcceleration3",
   0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -11759,12 +11759,12 @@ static const ni::sMethodDef iGraphics_DampedSpringAcceleration3 = {
 
 #if niMinFeatures(15)
 // Method: DampedSpringAcceleration4
-static const ni::sParameterDef iGraphics_DampedSpringAcceleration4_Parameters[4] = {
-  { "D", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "V", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" },
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_DampedSpringAcceleration4_Parameters[4] = { 
+  { "D", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "V", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }, 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_DampedSpringAcceleration4 = {
   "DampedSpringAcceleration4",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -11779,10 +11779,10 @@ static const ni::sMethodDef iGraphics_DampedSpringAcceleration4 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpring1
-static const ni::sParameterDef iGraphics_CreateDampedSpring1_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpring1_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpring1 = {
   "CreateDampedSpring1",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpring1), "ni::iDampedSpring1*",
@@ -11797,10 +11797,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpring1 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpring2
-static const ni::sParameterDef iGraphics_CreateDampedSpring2_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpring2_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpring2 = {
   "CreateDampedSpring2",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpring2), "ni::iDampedSpring2*",
@@ -11815,10 +11815,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpring2 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpring3
-static const ni::sParameterDef iGraphics_CreateDampedSpring3_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpring3_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpring3 = {
   "CreateDampedSpring3",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpring3), "ni::iDampedSpring3*",
@@ -11833,10 +11833,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpring3 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpring4
-static const ni::sParameterDef iGraphics_CreateDampedSpring4_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpring4_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpring4 = {
   "CreateDampedSpring4",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpring4), "ni::iDampedSpring4*",
@@ -11851,10 +11851,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpring4 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpringPosition1
-static const ni::sParameterDef iGraphics_CreateDampedSpringPosition1_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpringPosition1_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpringPosition1 = {
   "CreateDampedSpringPosition1",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpringPosition1), "ni::iDampedSpringPosition1*",
@@ -11869,10 +11869,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpringPosition1 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpringPosition2
-static const ni::sParameterDef iGraphics_CreateDampedSpringPosition2_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpringPosition2_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpringPosition2 = {
   "CreateDampedSpringPosition2",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpringPosition2), "ni::iDampedSpringPosition2*",
@@ -11887,10 +11887,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpringPosition2 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpringPosition3
-static const ni::sParameterDef iGraphics_CreateDampedSpringPosition3_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpringPosition3_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpringPosition3 = {
   "CreateDampedSpringPosition3",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpringPosition3), "ni::iDampedSpringPosition3*",
@@ -11905,10 +11905,10 @@ static const ni::sMethodDef iGraphics_CreateDampedSpringPosition3 = {
 
 #if niMinFeatures(15)
 // Method: CreateDampedSpringPosition4
-static const ni::sParameterDef iGraphics_CreateDampedSpringPosition4_Parameters[2] = {
-  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iGraphics_CreateDampedSpringPosition4_Parameters[2] = { 
+  { "Ks", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "Kd", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateDampedSpringPosition4 = {
   "CreateDampedSpringPosition4",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDampedSpringPosition4), "ni::iDampedSpringPosition4*",
@@ -11982,9 +11982,9 @@ static const ni::sMethodDef iGraphics_CreateCamera = {
 };
 
 // Method: CreateNUSpline
-static const ni::sParameterDef iGraphics_CreateNUSpline_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateNUSpline_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eNUSplineType" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateNUSpline = {
   "CreateNUSpline",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iNUSpline), "iNUSpline*",
@@ -11997,9 +11997,9 @@ static const ni::sMethodDef iGraphics_CreateNUSpline = {
 };
 
 // Method: CreateOverlayColor
-static const ni::sParameterDef iGraphics_CreateOverlayColor_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateOverlayColor_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateOverlayColor = {
   "CreateOverlayColor",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -12012,9 +12012,9 @@ static const ni::sMethodDef iGraphics_CreateOverlayColor = {
 };
 
 // Method: CreateOverlayResource
-static const ni::sParameterDef iGraphics_CreateOverlayResource_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateOverlayResource_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateOverlayResource = {
   "CreateOverlayResource",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -12027,9 +12027,9 @@ static const ni::sMethodDef iGraphics_CreateOverlayResource = {
 };
 
 // Method: CreateOverlayTexture
-static const ni::sParameterDef iGraphics_CreateOverlayTexture_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateOverlayTexture_Parameters[1] = { 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateOverlayTexture = {
   "CreateOverlayTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -12042,9 +12042,9 @@ static const ni::sMethodDef iGraphics_CreateOverlayTexture = {
 };
 
 // Method: CreateOverlayImage
-static const ni::sParameterDef iGraphics_CreateOverlayImage_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateOverlayImage_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateOverlayImage = {
   "CreateOverlayImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -12057,9 +12057,9 @@ static const ni::sMethodDef iGraphics_CreateOverlayImage = {
 };
 
 // Method: CreateOverlayMaterial
-static const ni::sParameterDef iGraphics_CreateOverlayMaterial_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateOverlayMaterial_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateOverlayMaterial = {
   "CreateOverlayMaterial",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -12072,9 +12072,9 @@ static const ni::sMethodDef iGraphics_CreateOverlayMaterial = {
 };
 
 // Method: LoadFont
-static const ni::sParameterDef iGraphics_LoadFont_Parameters[1] = {
+static const ni::sParameterDef iGraphics_LoadFont_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_LoadFont = {
   "LoadFont",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12087,10 +12087,10 @@ static const ni::sMethodDef iGraphics_LoadFont = {
 };
 
 // Method: LoadFontEx
-static const ni::sParameterDef iGraphics_LoadFontEx_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_LoadFontEx_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tFontLoadFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_LoadFontEx = {
   "LoadFontEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12103,10 +12103,10 @@ static const ni::sMethodDef iGraphics_LoadFontEx = {
 };
 
 // Method: CreateFont
-static const ni::sParameterDef iGraphics_CreateFont_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_CreateFont_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "pFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateFont = {
   "CreateFont",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12119,10 +12119,10 @@ static const ni::sMethodDef iGraphics_CreateFont = {
 };
 
 // Method: CreateFontFromBitmap
-static const ni::sParameterDef iGraphics_CreateFontFromBitmap_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_CreateFontFromBitmap_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "pBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateFontFromBitmap = {
   "CreateFontFromBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12135,9 +12135,9 @@ static const ni::sMethodDef iGraphics_CreateFontFromBitmap = {
 };
 
 // Method: CreateFont8x8
-static const ni::sParameterDef iGraphics_CreateFont8x8_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateFont8x8_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateFont8x8 = {
   "CreateFont8x8",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12174,11 +12174,11 @@ static const ni::sMethodDef iGraphics_RegisterSystemFonts = {
 };
 
 // Method: RegisterSystemFont
-static const ni::sParameterDef iGraphics_RegisterSystemFont_Parameters[3] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspFilePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_RegisterSystemFont_Parameters[3] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspFilePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_RegisterSystemFont = {
   "RegisterSystemFont",
   0|ni::eType_I8, NULL, "tBool",
@@ -12203,9 +12203,9 @@ static const ni::sMethodDef iGraphics_GetNumSystemFonts = {
 };
 
 // Method: GetSystemFontName
-static const ni::sParameterDef iGraphics_GetSystemFontName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetSystemFontName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetSystemFontName = {
   "GetSystemFontName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -12218,9 +12218,9 @@ static const ni::sMethodDef iGraphics_GetSystemFontName = {
 };
 
 // Method: GetSystemFontFilePath
-static const ni::sParameterDef iGraphics_GetSystemFontFilePath_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetSystemFontFilePath_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetSystemFontFilePath = {
   "GetSystemFontFilePath",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -12233,9 +12233,9 @@ static const ni::sMethodDef iGraphics_GetSystemFontFilePath = {
 };
 
 // Method: GetSystemFontFileName
-static const ni::sParameterDef iGraphics_GetSystemFontFileName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetSystemFontFileName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetSystemFontFileName = {
   "GetSystemFontFileName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -12260,9 +12260,9 @@ static const ni::sMethodDef iGraphics_GetNumFonts = {
 };
 
 // Method: GetFontFromIndex
-static const ni::sParameterDef iGraphics_GetFontFromIndex_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetFontFromIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetFontFromIndex = {
   "GetFontFromIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12275,9 +12275,9 @@ static const ni::sMethodDef iGraphics_GetFontFromIndex = {
 };
 
 // Method: GetFontFromName
-static const ni::sParameterDef iGraphics_GetFontFromName_Parameters[1] = {
+static const ni::sParameterDef iGraphics_GetFontFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_GetFontFromName = {
   "GetFontFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12290,10 +12290,10 @@ static const ni::sMethodDef iGraphics_GetFontFromName = {
 };
 
 // Method: FindFont
-static const ni::sParameterDef iGraphics_FindFont_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphics_FindFont_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "mode", ni::eType_Enum, NULL, "tFontLoadFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphics_FindFont = {
   "FindFont",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -12330,10 +12330,10 @@ static const ni::sMethodDef iGraphics_GetFontCacheID = {
 };
 
 // Method: CreateImage
-static const ni::sParameterDef iGraphics_CreateImage_Parameters[2] = {
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateImage_Parameters[2] = { 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
   { "anHeight", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImage = {
   "CreateImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12346,9 +12346,9 @@ static const ni::sMethodDef iGraphics_CreateImage = {
 };
 
 // Method: CreateImageFromFile
-static const ni::sParameterDef iGraphics_CreateImageFromFile_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateImageFromFile_Parameters[1] = { 
   { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageFromFile = {
   "CreateImageFromFile",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12361,9 +12361,9 @@ static const ni::sMethodDef iGraphics_CreateImageFromFile = {
 };
 
 // Method: CreateImageFromResource
-static const ni::sParameterDef iGraphics_CreateImageFromResource_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateImageFromResource_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageFromResource = {
   "CreateImageFromResource",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12376,9 +12376,9 @@ static const ni::sMethodDef iGraphics_CreateImageFromResource = {
 };
 
 // Method: CreateImageFromBitmap
-static const ni::sParameterDef iGraphics_CreateImageFromBitmap_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateImageFromBitmap_Parameters[1] = { 
   { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageFromBitmap = {
   "CreateImageFromBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12391,9 +12391,9 @@ static const ni::sMethodDef iGraphics_CreateImageFromBitmap = {
 };
 
 // Method: CreateImageFromTexture
-static const ni::sParameterDef iGraphics_CreateImageFromTexture_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateImageFromTexture_Parameters[1] = { 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageFromTexture = {
   "CreateImageFromTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12406,10 +12406,10 @@ static const ni::sMethodDef iGraphics_CreateImageFromTexture = {
 };
 
 // Method: CreateImageFromBitmapAndTexture
-static const ni::sParameterDef iGraphics_CreateImageFromBitmapAndTexture_Parameters[2] = {
-  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
+static const ni::sParameterDef iGraphics_CreateImageFromBitmapAndTexture_Parameters[2] = { 
+  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageFromBitmapAndTexture = {
   "CreateImageFromBitmapAndTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12422,13 +12422,13 @@ static const ni::sMethodDef iGraphics_CreateImageFromBitmapAndTexture = {
 };
 
 // Method: CreateImageEx
-static const ni::sParameterDef iGraphics_CreateImageEx_Parameters[5] = {
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
-  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "apTex", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iGraphics_CreateImageEx_Parameters[5] = { 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "apBmp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "apTex", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "apDepthStencil", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageEx = {
   "CreateImageEx",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*",
@@ -12441,10 +12441,10 @@ static const ni::sMethodDef iGraphics_CreateImageEx = {
 };
 
 // Method: CreateImageMap
-static const ni::sParameterDef iGraphics_CreateImageMap_Parameters[2] = {
-  { "aaszBaseName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iGraphics_CreateImageMap_Parameters[2] = { 
+  { "aaszBaseName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "aaszPxf", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageMap = {
   "CreateImageMap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "iImageMap*",
@@ -12457,9 +12457,9 @@ static const ni::sMethodDef iGraphics_CreateImageMap = {
 };
 
 // Method: CreateImageGraphicsContext
-static const ni::sParameterDef iGraphics_CreateImageGraphicsContext_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateImageGraphicsContext_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateImageGraphicsContext = {
   "CreateImageGraphicsContext",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*",
@@ -12472,10 +12472,10 @@ static const ni::sMethodDef iGraphics_CreateImageGraphicsContext = {
 };
 
 // Method: CreateCanvas
-static const ni::sParameterDef iGraphics_CreateCanvas_Parameters[2] = {
-  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" },
+static const ni::sParameterDef iGraphics_CreateCanvas_Parameters[2] = { 
+  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" }, 
   { "apResetMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateCanvas = {
   "CreateCanvas",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*",
@@ -12488,11 +12488,11 @@ static const ni::sMethodDef iGraphics_CreateCanvas = {
 };
 
 // Method: CreateTextObject
-static const ni::sParameterDef iGraphics_CreateTextObject_Parameters[3] = {
-  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iGraphics_CreateTextObject_Parameters[3] = { 
+  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afContentsScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateTextObject = {
   "CreateTextObject",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTextObject), "Ptr<iTextObject>",
@@ -12505,9 +12505,9 @@ static const ni::sMethodDef iGraphics_CreateTextObject = {
 };
 
 // Method: IsVideoFile
-static const ni::sParameterDef iGraphics_IsVideoFile_Parameters[1] = {
+static const ni::sParameterDef iGraphics_IsVideoFile_Parameters[1] = { 
   { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_IsVideoFile = {
   "IsVideoFile",
   0|ni::eType_I8, NULL, "tBool",
@@ -12520,11 +12520,11 @@ static const ni::sMethodDef iGraphics_IsVideoFile = {
 };
 
 // Method: CreateVideoDecoder
-static const ni::sParameterDef iGraphics_CreateVideoDecoder_Parameters[3] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
+static const ni::sParameterDef iGraphics_CreateVideoDecoder_Parameters[3] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
   { "aFlags", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVideoDecoder = {
   "CreateVideoDecoder",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVideoDecoder), "iVideoDecoder*",
@@ -12585,10 +12585,10 @@ static const ni::sMethodDef iGraphics_CreateVGPolygonTesselator = {
 };
 
 // Method: CreateVGImage
-static const ni::sParameterDef iGraphics_CreateVGImage_Parameters[2] = {
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphics_CreateVGImage_Parameters[2] = { 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
   { "anHeight", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImage = {
   "CreateVGImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12601,9 +12601,9 @@ static const ni::sMethodDef iGraphics_CreateVGImage = {
 };
 
 // Method: CreateVGImageFromBitmap
-static const ni::sParameterDef iGraphics_CreateVGImageFromBitmap_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGImageFromBitmap_Parameters[1] = { 
   { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImageFromBitmap = {
   "CreateVGImageFromBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12616,9 +12616,9 @@ static const ni::sMethodDef iGraphics_CreateVGImageFromBitmap = {
 };
 
 // Method: CreateVGImageFromTexture
-static const ni::sParameterDef iGraphics_CreateVGImageFromTexture_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGImageFromTexture_Parameters[1] = { 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImageFromTexture = {
   "CreateVGImageFromTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12631,10 +12631,10 @@ static const ni::sMethodDef iGraphics_CreateVGImageFromTexture = {
 };
 
 // Method: CreateVGImageFromBitmapAndTexture
-static const ni::sParameterDef iGraphics_CreateVGImageFromBitmapAndTexture_Parameters[2] = {
-  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
+static const ni::sParameterDef iGraphics_CreateVGImageFromBitmapAndTexture_Parameters[2] = { 
+  { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImageFromBitmapAndTexture = {
   "CreateVGImageFromBitmapAndTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12647,9 +12647,9 @@ static const ni::sMethodDef iGraphics_CreateVGImageFromBitmapAndTexture = {
 };
 
 // Method: CreateVGImageFromFile
-static const ni::sParameterDef iGraphics_CreateVGImageFromFile_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGImageFromFile_Parameters[1] = { 
   { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImageFromFile = {
   "CreateVGImageFromFile",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12662,9 +12662,9 @@ static const ni::sMethodDef iGraphics_CreateVGImageFromFile = {
 };
 
 // Method: CreateVGImageFromResource
-static const ni::sParameterDef iGraphics_CreateVGImageFromResource_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGImageFromResource_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGImageFromResource = {
   "CreateVGImageFromResource",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "Ptr<iVGImage>",
@@ -12677,9 +12677,9 @@ static const ni::sMethodDef iGraphics_CreateVGImageFromResource = {
 };
 
 // Method: CreateVGGradientTable
-static const ni::sParameterDef iGraphics_CreateVGGradientTable_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGGradientTable_Parameters[1] = { 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGGradientTable = {
   "CreateVGGradientTable",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGGradientTable), "Ptr<iVGGradientTable>",
@@ -12692,10 +12692,10 @@ static const ni::sMethodDef iGraphics_CreateVGGradientTable = {
 };
 
 // Method: CreateVGGradientTableTwoColors
-static const ni::sParameterDef iGraphics_CreateVGGradientTableTwoColors_Parameters[2] = {
-  { "acolStart", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iGraphics_CreateVGGradientTableTwoColors_Parameters[2] = { 
+  { "acolStart", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "acolEnd", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGGradientTableTwoColors = {
   "CreateVGGradientTableTwoColors",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGGradientTable), "Ptr<iVGGradientTable>",
@@ -12708,10 +12708,10 @@ static const ni::sMethodDef iGraphics_CreateVGGradientTableTwoColors = {
 };
 
 // Method: CreateVGGradientTableStops
-static const ni::sParameterDef iGraphics_CreateVGGradientTableStops_Parameters[2] = {
-  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" },
+static const ni::sParameterDef iGraphics_CreateVGGradientTableStops_Parameters[2] = { 
+  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" }, 
   { "apColors", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGGradientTableStops = {
   "CreateVGGradientTableStops",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGGradientTable), "Ptr<iVGGradientTable>",
@@ -12724,9 +12724,9 @@ static const ni::sMethodDef iGraphics_CreateVGGradientTableStops = {
 };
 
 // Method: CreateVGPaint
-static const ni::sParameterDef iGraphics_CreateVGPaint_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGPaint_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eVGPaintType" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaint = {
   "CreateVGPaint",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "Ptr<iVGPaint>",
@@ -12739,9 +12739,9 @@ static const ni::sMethodDef iGraphics_CreateVGPaint = {
 };
 
 // Method: CreateVGPaintSolid
-static const ni::sParameterDef iGraphics_CreateVGPaintSolid_Parameters[1] = {
+static const ni::sParameterDef iGraphics_CreateVGPaintSolid_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaintSolid = {
   "CreateVGPaintSolid",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "Ptr<iVGPaint>",
@@ -12754,11 +12754,11 @@ static const ni::sMethodDef iGraphics_CreateVGPaintSolid = {
 };
 
 // Method: CreateVGPaintImage
-static const ni::sParameterDef iGraphics_CreateVGPaintImage_Parameters[3] = {
-  { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "iVGImage*" },
-  { "aFilter", ni::eType_Enum, NULL, "eVGImageFilter" },
+static const ni::sParameterDef iGraphics_CreateVGPaintImage_Parameters[3] = { 
+  { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "iVGImage*" }, 
+  { "aFilter", ni::eType_Enum, NULL, "eVGImageFilter" }, 
   { "aWrap", ni::eType_Enum, NULL, "eVGWrapType" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaintImage = {
   "CreateVGPaintImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaintImage), "Ptr<iVGPaintImage>",
@@ -12771,10 +12771,10 @@ static const ni::sMethodDef iGraphics_CreateVGPaintImage = {
 };
 
 // Method: CreateVGPaintGradient
-static const ni::sParameterDef iGraphics_CreateVGPaintGradient_Parameters[2] = {
-  { "aType", ni::eType_Enum, NULL, "eVGGradientType" },
+static const ni::sParameterDef iGraphics_CreateVGPaintGradient_Parameters[2] = { 
+  { "aType", ni::eType_Enum, NULL, "eVGGradientType" }, 
   { "apGradientTable", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGGradientTable), "iVGGradientTable*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaintGradient = {
   "CreateVGPaintGradient",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaintGradient), "Ptr<iVGPaintGradient>",
@@ -12787,11 +12787,11 @@ static const ni::sMethodDef iGraphics_CreateVGPaintGradient = {
 };
 
 // Method: CreateVGPaintGradientTwoColors
-static const ni::sParameterDef iGraphics_CreateVGPaintGradientTwoColors_Parameters[3] = {
-  { "aType", ni::eType_Enum, NULL, "eVGGradientType" },
-  { "acolStart", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iGraphics_CreateVGPaintGradientTwoColors_Parameters[3] = { 
+  { "aType", ni::eType_Enum, NULL, "eVGGradientType" }, 
+  { "acolStart", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "acolEnd", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaintGradientTwoColors = {
   "CreateVGPaintGradientTwoColors",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaintGradient), "Ptr<iVGPaintGradient>",
@@ -12804,11 +12804,11 @@ static const ni::sMethodDef iGraphics_CreateVGPaintGradientTwoColors = {
 };
 
 // Method: CreateVGPaintGradientStops
-static const ni::sParameterDef iGraphics_CreateVGPaintGradientStops_Parameters[3] = {
-  { "aType", ni::eType_Enum, NULL, "eVGGradientType" },
-  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" },
+static const ni::sParameterDef iGraphics_CreateVGPaintGradientStops_Parameters[3] = { 
+  { "aType", ni::eType_Enum, NULL, "eVGGradientType" }, 
+  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" }, 
   { "apColors", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4fCVec*" }
-};
+}; 
 static const ni::sMethodDef iGraphics_CreateVGPaintGradientStops = {
   "CreateVGPaintGradientStops",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaintGradient), "Ptr<iVGPaintGradient>",
@@ -13148,12 +13148,12 @@ static const ni::sMethodDef iGraphicsContext_GetHeight = {
 };
 
 // Method: ClearBuffers
-static const ni::sParameterDef iGraphicsContext_ClearBuffers_Parameters[4] = {
-  { "clearBuffer", ni::eType_Enum, NULL, "tClearBuffersFlags" },
-  { "anColor", ni::eType_U32, NULL, "tU32" },
-  { "afDepth", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iGraphicsContext_ClearBuffers_Parameters[4] = { 
+  { "clearBuffer", ni::eType_Enum, NULL, "tClearBuffersFlags" }, 
+  { "anColor", ni::eType_U32, NULL, "tU32" }, 
+  { "afDepth", ni::eType_F32, NULL, "tF32" }, 
   { "anStencil", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_ClearBuffers = {
   "ClearBuffers",
   0|ni::eType_Null, NULL, "void",
@@ -13166,9 +13166,9 @@ static const ni::sMethodDef iGraphicsContext_ClearBuffers = {
 };
 
 // Method: GetRenderTarget
-static const ni::sParameterDef iGraphicsContext_GetRenderTarget_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_GetRenderTarget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_GetRenderTarget = {
   "GetRenderTarget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -13193,10 +13193,10 @@ static const ni::sMethodDef iGraphicsContext_GetDepthStencil = {
 };
 
 // Method: Display
-static const ni::sParameterDef iGraphicsContext_Display_Parameters[2] = {
-  { "aFlags", ni::eType_Enum, NULL, "tGraphicsDisplayFlags" },
+static const ni::sParameterDef iGraphicsContext_Display_Parameters[2] = { 
+  { "aFlags", ni::eType_Enum, NULL, "tGraphicsDisplayFlags" }, 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_Display = {
   "Display",
   0|ni::eType_I8, NULL, "tBool",
@@ -13209,9 +13209,9 @@ static const ni::sMethodDef iGraphicsContext_Display = {
 };
 
 // Method: DrawOperation
-static const ni::sParameterDef iGraphicsContext_DrawOperation_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_DrawOperation_Parameters[1] = { 
   { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_DrawOperation = {
   "DrawOperation",
   0|ni::eType_I8, NULL, "tBool",
@@ -13236,9 +13236,9 @@ static const ni::sMethodDef iGraphicsContext_CaptureFrontBuffer = {
 };
 
 // Method: SetViewport
-static const ni::sParameterDef iGraphicsContext_SetViewport_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_SetViewport_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_SetViewport = {
   "SetViewport",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "void",
@@ -13263,9 +13263,9 @@ static const ni::sMethodDef iGraphicsContext_GetViewport = {
 };
 
 // Method: SetScissorRect
-static const ni::sParameterDef iGraphicsContext_SetScissorRect_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_SetScissorRect_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_SetScissorRect = {
   "SetScissorRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "void",
@@ -13290,9 +13290,9 @@ static const ni::sMethodDef iGraphicsContext_GetScissorRect = {
 };
 
 // Method: SetFixedStates
-static const ni::sParameterDef iGraphicsContext_SetFixedStates_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_SetFixedStates_Parameters[1] = { 
   { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFixedStates), "iFixedStates*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_SetFixedStates = {
   "SetFixedStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFixedStates), "tBool",
@@ -13317,9 +13317,9 @@ static const ni::sMethodDef iGraphicsContext_GetFixedStates = {
 };
 
 // Method: SetMaterial
-static const ni::sParameterDef iGraphicsContext_SetMaterial_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContext_SetMaterial_Parameters[1] = { 
   { "apMat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContext_SetMaterial = {
   "SetMaterial",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "tBool",
@@ -13391,10 +13391,10 @@ static const ni::sInterfaceDef InterfaceDef_iGraphicsContext = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphicsContextRT() {
 
 // Method: ChangeRenderTarget
-static const ni::sParameterDef iGraphicsContextRT_ChangeRenderTarget_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphicsContextRT_ChangeRenderTarget_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "apRT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContextRT_ChangeRenderTarget = {
   "ChangeRenderTarget",
   0|ni::eType_I8, NULL, "tBool",
@@ -13407,9 +13407,9 @@ static const ni::sMethodDef iGraphicsContextRT_ChangeRenderTarget = {
 };
 
 // Method: ChangeDepthStencil
-static const ni::sParameterDef iGraphicsContextRT_ChangeDepthStencil_Parameters[1] = {
+static const ni::sParameterDef iGraphicsContextRT_ChangeDepthStencil_Parameters[1] = { 
   { "apDS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsContextRT_ChangeDepthStencil = {
   "ChangeDepthStencil",
   0|ni::eType_I8, NULL, "tBool",
@@ -13501,9 +13501,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_ClearCapture = {
 };
 
 // Method: SetCaptureFlags
-static const ni::sParameterDef iGraphicsDrawOpCapture_SetCaptureFlags_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_SetCaptureFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tGraphicsCaptureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_SetCaptureFlags = {
   "SetCaptureFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -13528,9 +13528,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetCaptureFlags = {
 };
 
 // Method: SetCaptureStopAt
-static const ni::sParameterDef iGraphicsDrawOpCapture_SetCaptureStopAt_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_SetCaptureStopAt_Parameters[1] = { 
   { "anStopAt", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_SetCaptureStopAt = {
   "SetCaptureStopAt",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -13567,9 +13567,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetNumCaptured = {
 };
 
 // Method: GetCapturedClear
-static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedClear_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedClear_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedClear = {
   "GetCapturedClear",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4i, NULL, "sVec4i",
@@ -13582,9 +13582,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedClear = {
 };
 
 // Method: GetCapturedDrawOp
-static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOp_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOp_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOp = {
   "GetCapturedDrawOp",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*",
@@ -13597,9 +13597,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOp = {
 };
 
 // Method: GetCapturedDrawOpTime
-static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOpTime_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOpTime_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOpTime = {
   "GetCapturedDrawOpTime",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -13612,9 +13612,9 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOpTime = {
 };
 
 // Method: GetCapturedDrawOpContext
-static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOpContext_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDrawOpCapture_GetCapturedDrawOpContext_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOpContext = {
   "GetCapturedDrawOpContext",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*",
@@ -13627,11 +13627,11 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_GetCapturedDrawOpContext = {
 };
 
 // Method: BeginCaptureDrawOp
-static const ni::sParameterDef iGraphicsDrawOpCapture_BeginCaptureDrawOp_Parameters[3] = {
-  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" },
-  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" },
+static const ni::sParameterDef iGraphicsDrawOpCapture_BeginCaptureDrawOp_Parameters[3] = { 
+  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" }, 
+  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" }, 
   { "aClearParams", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i&" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_BeginCaptureDrawOp = {
   "BeginCaptureDrawOp",
   0|ni::eType_I8, NULL, "tBool",
@@ -13644,11 +13644,11 @@ static const ni::sMethodDef iGraphicsDrawOpCapture_BeginCaptureDrawOp = {
 };
 
 // Method: EndCaptureDrawOp
-static const ni::sParameterDef iGraphicsDrawOpCapture_EndCaptureDrawOp_Parameters[3] = {
-  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" },
-  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" },
+static const ni::sParameterDef iGraphicsDrawOpCapture_EndCaptureDrawOp_Parameters[3] = { 
+  { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*" }, 
+  { "apDrawOp", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDrawOperation), "iDrawOperation*" }, 
   { "aClearParams", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i&" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDrawOpCapture_EndCaptureDrawOp = {
   "EndCaptureDrawOp",
   0|ni::eType_Null, NULL, "void",
@@ -13753,9 +13753,9 @@ static const ni::sMethodDef iGraphicsDriver_GetDeviceName = {
 };
 
 // Method: GetCaps
-static const ni::sParameterDef iGraphicsDriver_GetCaps_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriver_GetCaps_Parameters[1] = { 
   { "aCaps", ni::eType_Enum, NULL, "eGraphicsCaps" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_GetCaps = {
   "GetCaps",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Int, NULL, "tInt",
@@ -13780,9 +13780,9 @@ static const ni::sMethodDef iGraphicsDriver_GetGraphicsDriverImplFlags = {
 };
 
 // Method: SetDrawOpCapture
-static const ni::sParameterDef iGraphicsDriver_SetDrawOpCapture_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriver_SetDrawOpCapture_Parameters[1] = { 
   { "apCapture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsDrawOpCapture), "iGraphicsDrawOpCapture*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_SetDrawOpCapture = {
   "SetDrawOpCapture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsDrawOpCapture), "void",
@@ -13807,13 +13807,13 @@ static const ni::sMethodDef iGraphicsDriver_GetDrawOpCapture = {
 };
 
 // Method: CreateContextForWindow
-static const ni::sParameterDef iGraphicsDriver_CreateContextForWindow_Parameters[5] = {
-  { "apWindow", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOSWindow), "iOSWindow*" },
-  { "aaszBBFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "aaszDSFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anSwapInterval", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphicsDriver_CreateContextForWindow_Parameters[5] = { 
+  { "apWindow", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOSWindow), "iOSWindow*" }, 
+  { "aaszBBFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "aaszDSFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anSwapInterval", ni::eType_U32, NULL, "tU32" }, 
   { "aBackBufferFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateContextForWindow = {
   "CreateContextForWindow",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContext), "iGraphicsContext*",
@@ -13826,13 +13826,13 @@ static const ni::sMethodDef iGraphicsDriver_CreateContextForWindow = {
 };
 
 // Method: CreateContextForRenderTargets
-static const ni::sParameterDef iGraphicsDriver_CreateContextForRenderTargets_Parameters[5] = {
-  { "apRT0", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT1", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT2", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "apRT3", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
+static const ni::sParameterDef iGraphicsDriver_CreateContextForRenderTargets_Parameters[5] = { 
+  { "apRT0", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT1", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT2", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "apRT3", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
   { "apDS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateContextForRenderTargets = {
   "CreateContextForRenderTargets",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphicsContextRT), "iGraphicsContextRT*",
@@ -13857,10 +13857,10 @@ static const ni::sMethodDef iGraphicsDriver_ResetAllCaches = {
 };
 
 // Method: CheckTextureFormat
-static const ni::sParameterDef iGraphicsDriver_CheckTextureFormat_Parameters[2] = {
-  { "apFormat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*" },
+static const ni::sParameterDef iGraphicsDriver_CheckTextureFormat_Parameters[2] = { 
+  { "apFormat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmapFormat), "iBitmapFormat*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CheckTextureFormat = {
   "CheckTextureFormat",
   0|ni::eType_I8, NULL, "tBool",
@@ -13873,16 +13873,16 @@ static const ni::sMethodDef iGraphicsDriver_CheckTextureFormat = {
 };
 
 // Method: CreateTexture
-static const ni::sParameterDef iGraphicsDriver_CreateTexture_Parameters[8] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "aType", ni::eType_Enum, NULL, "eBitmapType" },
-  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
-  { "anDepth", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphicsDriver_CreateTexture_Parameters[8] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eBitmapType" }, 
+  { "aaszFormat", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "anDepth", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tTextureFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateTexture = {
   "CreateTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -13895,14 +13895,14 @@ static const ni::sMethodDef iGraphicsDriver_CreateTexture = {
 };
 
 // Method: BlitBitmapToTexture
-static const ni::sParameterDef iGraphicsDriver_BlitBitmapToTexture_Parameters[6] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphicsDriver_BlitBitmapToTexture_Parameters[6] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_BlitBitmapToTexture = {
   "BlitBitmapToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -13915,14 +13915,14 @@ static const ni::sMethodDef iGraphicsDriver_BlitBitmapToTexture = {
 };
 
 // Method: BlitTextureToBitmap
-static const ni::sParameterDef iGraphicsDriver_BlitTextureToBitmap_Parameters[6] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphicsDriver_BlitTextureToBitmap_Parameters[6] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_BlitTextureToBitmap = {
   "BlitTextureToBitmap",
   0|ni::eType_I8, NULL, "tBool",
@@ -13935,15 +13935,15 @@ static const ni::sMethodDef iGraphicsDriver_BlitTextureToBitmap = {
 };
 
 // Method: BlitTextureToTexture
-static const ni::sParameterDef iGraphicsDriver_BlitTextureToTexture_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
-  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" },
+static const ni::sParameterDef iGraphicsDriver_BlitTextureToTexture_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
+  { "aDestRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_BlitTextureToTexture = {
   "BlitTextureToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -13956,15 +13956,15 @@ static const ni::sMethodDef iGraphicsDriver_BlitTextureToTexture = {
 };
 
 // Method: BlitBitmap3DToTexture
-static const ni::sParameterDef iGraphicsDriver_BlitBitmap3DToTexture_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anDestLevel", ni::eType_U32, NULL, "tU32" },
-  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iGraphicsDriver_BlitBitmap3DToTexture_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anDestLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_BlitBitmap3DToTexture = {
   "BlitBitmap3DToTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -13977,15 +13977,15 @@ static const ni::sMethodDef iGraphicsDriver_BlitBitmap3DToTexture = {
 };
 
 // Method: BlitTextureToBitmap3D
-static const ni::sParameterDef iGraphicsDriver_BlitTextureToBitmap3D_Parameters[7] = {
-  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" },
-  { "anSrcLevel", ni::eType_U32, NULL, "tU32" },
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" },
-  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
-  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" },
+static const ni::sParameterDef iGraphicsDriver_BlitTextureToBitmap3D_Parameters[7] = { 
+  { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }, 
+  { "anSrcLevel", ni::eType_U32, NULL, "tU32" }, 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap3D), "iBitmap3D*" }, 
+  { "aSrcMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "aDestMin", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3i|ni::eTypeFlags_Pointer, NULL, "const sVec3i&" }, 
   { "aFlags", ni::eType_Enum, NULL, "eTextureBlitFlags" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_BlitTextureToBitmap3D = {
   "BlitTextureToBitmap3D",
   0|ni::eType_I8, NULL, "tBool",
@@ -13998,9 +13998,9 @@ static const ni::sMethodDef iGraphicsDriver_BlitTextureToBitmap3D = {
 };
 
 // Method: GetNumShaderProfile
-static const ni::sParameterDef iGraphicsDriver_GetNumShaderProfile_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriver_GetNumShaderProfile_Parameters[1] = { 
   { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_GetNumShaderProfile = {
   "GetNumShaderProfile",
   0|ni::eType_U32, NULL, "tU32",
@@ -14013,10 +14013,10 @@ static const ni::sMethodDef iGraphicsDriver_GetNumShaderProfile = {
 };
 
 // Method: GetShaderProfile
-static const ni::sParameterDef iGraphicsDriver_GetShaderProfile_Parameters[2] = {
-  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" },
+static const ni::sParameterDef iGraphicsDriver_GetShaderProfile_Parameters[2] = { 
+  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_GetShaderProfile = {
   "GetShaderProfile",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -14029,10 +14029,10 @@ static const ni::sMethodDef iGraphicsDriver_GetShaderProfile = {
 };
 
 // Method: CreateShader
-static const ni::sParameterDef iGraphicsDriver_CreateShader_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphicsDriver_CreateShader_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apByteCode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateShader = {
   "CreateShader",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -14057,11 +14057,11 @@ static const ni::sMethodDef iGraphicsDriver_CreateOcclusionQuery = {
 };
 
 // Method: CreateVertexArray
-static const ni::sParameterDef iGraphicsDriver_CreateVertexArray_Parameters[3] = {
-  { "anNumVertices", ni::eType_U32, NULL, "tU32" },
-  { "anFVF", ni::eType_U32, NULL, "tFVF" },
+static const ni::sParameterDef iGraphicsDriver_CreateVertexArray_Parameters[3] = { 
+  { "anNumVertices", ni::eType_U32, NULL, "tU32" }, 
+  { "anFVF", ni::eType_U32, NULL, "tFVF" }, 
   { "aUsage", ni::eType_Enum, NULL, "eArrayUsage" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateVertexArray = {
   "CreateVertexArray",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVertexArray), "iVertexArray*",
@@ -14074,12 +14074,12 @@ static const ni::sMethodDef iGraphicsDriver_CreateVertexArray = {
 };
 
 // Method: CreateIndexArray
-static const ni::sParameterDef iGraphicsDriver_CreateIndexArray_Parameters[4] = {
-  { "aPrimitiveType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" },
-  { "anNumIndex", ni::eType_U32, NULL, "tU32" },
-  { "anMaxVertexIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iGraphicsDriver_CreateIndexArray_Parameters[4] = { 
+  { "aPrimitiveType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
+  { "anNumIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "anMaxVertexIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aUsage", ni::eType_Enum, NULL, "eArrayUsage" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriver_CreateIndexArray = {
   "CreateIndexArray",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iIndexArray), "iIndexArray*",
@@ -14145,9 +14145,9 @@ static const ni::sInterfaceDef InterfaceDef_iGraphicsDriver = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iSamplerStates() {
 
 // Method: Copy
-static const ni::sParameterDef iSamplerStates_Copy_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_Copy_Parameters[1] = { 
   { "apStates", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSamplerStates), "const iSamplerStates*" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -14184,9 +14184,9 @@ static const ni::sMethodDef iSamplerStates_GetIsCompiled = {
 };
 
 // Method: SetFilter
-static const ni::sParameterDef iSamplerStates_SetFilter_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_SetFilter_Parameters[1] = { 
   { "aFilter", ni::eType_Enum, NULL, "eSamplerFilter" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SetFilter = {
   "SetFilter",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14211,9 +14211,9 @@ static const ni::sMethodDef iSamplerStates_GetFilter = {
 };
 
 // Method: SetWrapS
-static const ni::sParameterDef iSamplerStates_SetWrapS_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_SetWrapS_Parameters[1] = { 
   { "aWrap", ni::eType_Enum, NULL, "eSamplerWrap" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SetWrapS = {
   "SetWrapS",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14238,9 +14238,9 @@ static const ni::sMethodDef iSamplerStates_GetWrapS = {
 };
 
 // Method: SetWrapT
-static const ni::sParameterDef iSamplerStates_SetWrapT_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_SetWrapT_Parameters[1] = { 
   { "aWrap", ni::eType_Enum, NULL, "eSamplerWrap" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SetWrapT = {
   "SetWrapT",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14265,9 +14265,9 @@ static const ni::sMethodDef iSamplerStates_GetWrapT = {
 };
 
 // Method: SetWrapR
-static const ni::sParameterDef iSamplerStates_SetWrapR_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_SetWrapR_Parameters[1] = { 
   { "aWrap", ni::eType_Enum, NULL, "eSamplerWrap" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SetWrapR = {
   "SetWrapR",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14292,9 +14292,9 @@ static const ni::sMethodDef iSamplerStates_GetWrapR = {
 };
 
 // Method: SetBorderColor
-static const ni::sParameterDef iSamplerStates_SetBorderColor_Parameters[1] = {
+static const ni::sParameterDef iSamplerStates_SetBorderColor_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SetBorderColor = {
   "SetBorderColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "tBool",
@@ -14331,10 +14331,10 @@ static const ni::sMethodDef iSamplerStates_GetDescStructPtr = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iSamplerStates_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" },
+static const ni::sParameterDef iSamplerStates_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iSamplerStates_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -14391,9 +14391,9 @@ static const ni::sInterfaceDef InterfaceDef_iSamplerStates = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iDepthStencilStates() {
 
 // Method: Copy
-static const ni::sParameterDef iDepthStencilStates_Copy_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_Copy_Parameters[1] = { 
   { "apStates", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDepthStencilStates), "const iDepthStencilStates*" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -14430,9 +14430,9 @@ static const ni::sMethodDef iDepthStencilStates_GetIsCompiled = {
 };
 
 // Method: SetDepthTest
-static const ni::sParameterDef iDepthStencilStates_SetDepthTest_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetDepthTest_Parameters[1] = { 
   { "aVal", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetDepthTest = {
   "SetDepthTest",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -14457,9 +14457,9 @@ static const ni::sMethodDef iDepthStencilStates_GetDepthTest = {
 };
 
 // Method: SetDepthTestWrite
-static const ni::sParameterDef iDepthStencilStates_SetDepthTestWrite_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetDepthTestWrite_Parameters[1] = { 
   { "aVal", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetDepthTestWrite = {
   "SetDepthTestWrite",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -14484,9 +14484,9 @@ static const ni::sMethodDef iDepthStencilStates_GetDepthTestWrite = {
 };
 
 // Method: SetDepthTestCompare
-static const ni::sParameterDef iDepthStencilStates_SetDepthTestCompare_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetDepthTestCompare_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eGraphicsCompare" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetDepthTestCompare = {
   "SetDepthTestCompare",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14511,9 +14511,9 @@ static const ni::sMethodDef iDepthStencilStates_GetDepthTestCompare = {
 };
 
 // Method: SetStencilMode
-static const ni::sParameterDef iDepthStencilStates_SetStencilMode_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilMode_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilMode" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilMode = {
   "SetStencilMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14538,9 +14538,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilMode = {
 };
 
 // Method: SetStencilRef
-static const ni::sParameterDef iDepthStencilStates_SetStencilRef_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilRef_Parameters[1] = { 
   { "aVal", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilRef = {
   "SetStencilRef",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I32, NULL, "tBool",
@@ -14565,9 +14565,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilRef = {
 };
 
 // Method: SetStencilMask
-static const ni::sParameterDef iDepthStencilStates_SetStencilMask_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilMask_Parameters[1] = { 
   { "aVal", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilMask = {
   "SetStencilMask",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -14592,9 +14592,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilMask = {
 };
 
 // Method: SetStencilFrontCompare
-static const ni::sParameterDef iDepthStencilStates_SetStencilFrontCompare_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilFrontCompare_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eGraphicsCompare" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilFrontCompare = {
   "SetStencilFrontCompare",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14619,9 +14619,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilFrontCompare = {
 };
 
 // Method: SetStencilFrontFail
-static const ni::sParameterDef iDepthStencilStates_SetStencilFrontFail_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilFrontFail_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilFrontFail = {
   "SetStencilFrontFail",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14646,9 +14646,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilFrontFail = {
 };
 
 // Method: SetStencilFrontPassDepthFail
-static const ni::sParameterDef iDepthStencilStates_SetStencilFrontPassDepthFail_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilFrontPassDepthFail_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilFrontPassDepthFail = {
   "SetStencilFrontPassDepthFail",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14673,9 +14673,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilFrontPassDepthFail = {
 };
 
 // Method: SetStencilFrontPassDepthPass
-static const ni::sParameterDef iDepthStencilStates_SetStencilFrontPassDepthPass_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilFrontPassDepthPass_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilFrontPassDepthPass = {
   "SetStencilFrontPassDepthPass",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14700,9 +14700,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilFrontPassDepthPass = {
 };
 
 // Method: SetStencilBackCompare
-static const ni::sParameterDef iDepthStencilStates_SetStencilBackCompare_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilBackCompare_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eGraphicsCompare" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilBackCompare = {
   "SetStencilBackCompare",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14727,9 +14727,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilBackCompare = {
 };
 
 // Method: SetStencilBackFail
-static const ni::sParameterDef iDepthStencilStates_SetStencilBackFail_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilBackFail_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilBackFail = {
   "SetStencilBackFail",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14754,9 +14754,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilBackFail = {
 };
 
 // Method: SetStencilBackPassDepthFail
-static const ni::sParameterDef iDepthStencilStates_SetStencilBackPassDepthFail_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilBackPassDepthFail_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilBackPassDepthFail = {
   "SetStencilBackPassDepthFail",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14781,9 +14781,9 @@ static const ni::sMethodDef iDepthStencilStates_GetStencilBackPassDepthFail = {
 };
 
 // Method: SetStencilBackPassDepthPass
-static const ni::sParameterDef iDepthStencilStates_SetStencilBackPassDepthPass_Parameters[1] = {
+static const ni::sParameterDef iDepthStencilStates_SetStencilBackPassDepthPass_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eStencilOp" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SetStencilBackPassDepthPass = {
   "SetStencilBackPassDepthPass",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14820,10 +14820,10 @@ static const ni::sMethodDef iDepthStencilStates_GetDescStructPtr = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iDepthStencilStates_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" },
+static const ni::sParameterDef iDepthStencilStates_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iDepthStencilStates_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -14898,9 +14898,9 @@ static const ni::sInterfaceDef InterfaceDef_iDepthStencilStates = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRasterizerStates() {
 
 // Method: Copy
-static const ni::sParameterDef iRasterizerStates_Copy_Parameters[1] = {
+static const ni::sParameterDef iRasterizerStates_Copy_Parameters[1] = { 
   { "apStates", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRasterizerStates), "const iRasterizerStates*" }
-};
+}; 
 static const ni::sMethodDef iRasterizerStates_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -14937,9 +14937,9 @@ static const ni::sMethodDef iRasterizerStates_GetIsCompiled = {
 };
 
 // Method: SetWireframe
-static const ni::sParameterDef iRasterizerStates_SetWireframe_Parameters[1] = {
+static const ni::sParameterDef iRasterizerStates_SetWireframe_Parameters[1] = { 
   { "abWireframe", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iRasterizerStates_SetWireframe = {
   "SetWireframe",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -14964,9 +14964,9 @@ static const ni::sMethodDef iRasterizerStates_GetWireframe = {
 };
 
 // Method: SetCullingMode
-static const ni::sParameterDef iRasterizerStates_SetCullingMode_Parameters[1] = {
+static const ni::sParameterDef iRasterizerStates_SetCullingMode_Parameters[1] = { 
   { "aMode", ni::eType_Enum, NULL, "eCullingMode" }
-};
+}; 
 static const ni::sMethodDef iRasterizerStates_SetCullingMode = {
   "SetCullingMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -14991,9 +14991,9 @@ static const ni::sMethodDef iRasterizerStates_GetCullingMode = {
 };
 
 // Method: SetColorWriteMask
-static const ni::sParameterDef iRasterizerStates_SetColorWriteMask_Parameters[1] = {
+static const ni::sParameterDef iRasterizerStates_SetColorWriteMask_Parameters[1] = { 
   { "aMask", ni::eType_Enum, NULL, "eColorWriteMask" }
-};
+}; 
 static const ni::sMethodDef iRasterizerStates_SetColorWriteMask = {
   "SetColorWriteMask",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -15030,10 +15030,10 @@ static const ni::sMethodDef iRasterizerStates_GetDescStructPtr = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iRasterizerStates_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" },
+static const ni::sParameterDef iRasterizerStates_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iRasterizerStates_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -15086,9 +15086,9 @@ static const ni::sInterfaceDef InterfaceDef_iRasterizerStates = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iFixedStates() {
 
 // Method: Copy
-static const ni::sParameterDef iFixedStates_Copy_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_Copy_Parameters[1] = { 
   { "apStates", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFixedStates), "const iFixedStates*" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -15113,9 +15113,9 @@ static const ni::sMethodDef iFixedStates_Clone = {
 };
 
 // Method: SetCameraViewMatrix
-static const ni::sParameterDef iFixedStates_SetCameraViewMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetCameraViewMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetCameraViewMatrix = {
   "SetCameraViewMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15128,9 +15128,9 @@ static const ni::sMethodDef iFixedStates_SetCameraViewMatrix = {
 };
 
 // Method: SetOnlyCameraViewMatrix
-static const ni::sParameterDef iFixedStates_SetOnlyCameraViewMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetOnlyCameraViewMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetOnlyCameraViewMatrix = {
   "SetOnlyCameraViewMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15167,9 +15167,9 @@ static const ni::sMethodDef iFixedStates_GetCameraInvViewMatrix = {
 };
 
 // Method: SetCameraProjectionMatrix
-static const ni::sParameterDef iFixedStates_SetCameraProjectionMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetCameraProjectionMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetCameraProjectionMatrix = {
   "SetCameraProjectionMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15182,9 +15182,9 @@ static const ni::sMethodDef iFixedStates_SetCameraProjectionMatrix = {
 };
 
 // Method: SetOnlyCameraProjectionMatrix
-static const ni::sParameterDef iFixedStates_SetOnlyCameraProjectionMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetOnlyCameraProjectionMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetOnlyCameraProjectionMatrix = {
   "SetOnlyCameraProjectionMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15245,9 +15245,9 @@ static const ni::sMethodDef iFixedStates_GetCameraInvViewProjectionMatrix = {
 };
 
 // Method: SetViewMatrix
-static const ni::sParameterDef iFixedStates_SetViewMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetViewMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetViewMatrix = {
   "SetViewMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15272,9 +15272,9 @@ static const ni::sMethodDef iFixedStates_GetViewMatrix = {
 };
 
 // Method: SetProjectionMatrix
-static const ni::sParameterDef iFixedStates_SetProjectionMatrix_Parameters[1] = {
+static const ni::sParameterDef iFixedStates_SetProjectionMatrix_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetProjectionMatrix = {
   "SetProjectionMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -15347,16 +15347,16 @@ static const ni::sMethodDef iFixedStates_GetInvProjectionMatrix = {
 };
 
 // Method: SetLookAtMatrices
-static const ni::sParameterDef iFixedStates_SetLookAtMatrices_Parameters[8] = {
-  { "abSetCameraMatrices", ni::eType_I8, NULL, "tBool" },
-  { "avEye", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avAt", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "avUp", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
-  { "afFovY", ni::eType_F32, NULL, "tF32" },
-  { "afAspect", ni::eType_F32, NULL, "tF32" },
-  { "afNear", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iFixedStates_SetLookAtMatrices_Parameters[8] = { 
+  { "abSetCameraMatrices", ni::eType_I8, NULL, "tBool" }, 
+  { "avEye", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avAt", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avUp", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afFovY", ni::eType_F32, NULL, "tF32" }, 
+  { "afAspect", ni::eType_F32, NULL, "tF32" }, 
+  { "afNear", ni::eType_F32, NULL, "tF32" }, 
   { "afFar", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetLookAtMatrices = {
   "SetLookAtMatrices",
   0|ni::eType_Null, NULL, "void",
@@ -15369,12 +15369,12 @@ static const ni::sMethodDef iFixedStates_SetLookAtMatrices = {
 };
 
 // Method: SetOrthoMatrices
-static const ni::sParameterDef iFixedStates_SetOrthoMatrices_Parameters[4] = {
-  { "abSetCameraMatrices", ni::eType_I8, NULL, "tBool" },
-  { "arectViewport", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "afNear", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iFixedStates_SetOrthoMatrices_Parameters[4] = { 
+  { "abSetCameraMatrices", ni::eType_I8, NULL, "tBool" }, 
+  { "arectViewport", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "afNear", ni::eType_F32, NULL, "tF32" }, 
   { "afFar", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SetOrthoMatrices = {
   "SetOrthoMatrices",
   0|ni::eType_Null, NULL, "void",
@@ -15399,10 +15399,10 @@ static const ni::sMethodDef iFixedStates_GetDescStructPtr = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iFixedStates_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" },
+static const ni::sParameterDef iFixedStates_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iFixedStates_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -15468,9 +15468,9 @@ static const ni::sInterfaceDef InterfaceDef_iFixedStates = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iImage() {
 
 // Method: Copy
-static const ni::sParameterDef iImage_Copy_Parameters[1] = {
+static const ni::sParameterDef iImage_Copy_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImage), "iImage*" }
-};
+}; 
 static const ni::sMethodDef iImage_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -15507,10 +15507,10 @@ static const ni::sMethodDef iImage_GetHasBitmap = {
 };
 
 // Method: GrabBitmap
-static const ni::sParameterDef iImage_GrabBitmap_Parameters[2] = {
-  { "aLock", ni::eType_Enum, NULL, "eImageUsage" },
+static const ni::sParameterDef iImage_GrabBitmap_Parameters[2] = { 
+  { "aLock", ni::eType_Enum, NULL, "eImageUsage" }, 
   { "aDirtyRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iImage_GrabBitmap = {
   "GrabBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -15547,10 +15547,10 @@ static const ni::sMethodDef iImage_GetHasDepthStencil = {
 };
 
 // Method: GrabTexture
-static const ni::sParameterDef iImage_GrabTexture_Parameters[2] = {
-  { "aLock", ni::eType_Enum, NULL, "eImageUsage" },
+static const ni::sParameterDef iImage_GrabTexture_Parameters[2] = { 
+  { "aLock", ni::eType_Enum, NULL, "eImageUsage" }, 
   { "aDirtyRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iImage_GrabTexture = {
   "GrabTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -15651,9 +15651,9 @@ static const ni::sInterfaceDef InterfaceDef_iImage = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iImageMap() {
 
 // Method: SetMaxNumPages
-static const ni::sParameterDef iImageMap_SetMaxNumPages_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetMaxNumPages_Parameters[1] = { 
   { "anMax", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetMaxNumPages = {
   "SetMaxNumPages",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -15678,9 +15678,9 @@ static const ni::sMethodDef iImageMap_GetMaxNumPages = {
 };
 
 // Method: SetPageSize
-static const ni::sParameterDef iImageMap_SetPageSize_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetPageSize_Parameters[1] = { 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetPageSize = {
   "SetPageSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -15705,9 +15705,9 @@ static const ni::sMethodDef iImageMap_GetPageSize = {
 };
 
 // Method: SetPageMipMaps
-static const ni::sParameterDef iImageMap_SetPageMipMaps_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetPageMipMaps_Parameters[1] = { 
   { "anNumMipMaps", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetPageMipMaps = {
   "SetPageMipMaps",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -15732,9 +15732,9 @@ static const ni::sMethodDef iImageMap_GetPageMipMaps = {
 };
 
 // Method: SetComputeMipMapsPerPage
-static const ni::sParameterDef iImageMap_SetComputeMipMapsPerPage_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetComputeMipMapsPerPage_Parameters[1] = { 
   { "abComputeMipMapsPerPage", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetComputeMipMapsPerPage = {
   "SetComputeMipMapsPerPage",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -15759,9 +15759,9 @@ static const ni::sMethodDef iImageMap_GetComputeMipMapsPerPage = {
 };
 
 // Method: SetPageFormat
-static const ni::sParameterDef iImageMap_SetPageFormat_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetPageFormat_Parameters[1] = { 
   { "ahspFormat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetPageFormat = {
   "SetPageFormat",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -15798,9 +15798,9 @@ static const ni::sMethodDef iImageMap_GetNumPages = {
 };
 
 // Method: GetPage
-static const ni::sParameterDef iImageMap_GetPage_Parameters[1] = {
+static const ni::sParameterDef iImageMap_GetPage_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_GetPage = {
   "GetPage",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -15825,9 +15825,9 @@ static const ni::sMethodDef iImageMap_Clear = {
 };
 
 // Method: SetDefaultImageBlendMode
-static const ni::sParameterDef iImageMap_SetDefaultImageBlendMode_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetDefaultImageBlendMode_Parameters[1] = { 
   { "aMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetDefaultImageBlendMode = {
   "SetDefaultImageBlendMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -15852,9 +15852,9 @@ static const ni::sMethodDef iImageMap_GetDefaultImageBlendMode = {
 };
 
 // Method: SetDefaultImageFilter
-static const ni::sParameterDef iImageMap_SetDefaultImageFilter_Parameters[1] = {
+static const ni::sParameterDef iImageMap_SetDefaultImageFilter_Parameters[1] = { 
   { "abFiltering", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iImageMap_SetDefaultImageFilter = {
   "SetDefaultImageFilter",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -15891,9 +15891,9 @@ static const ni::sMethodDef iImageMap_GetNumImages = {
 };
 
 // Method: GetImage
-static const ni::sParameterDef iImageMap_GetImage_Parameters[1] = {
+static const ni::sParameterDef iImageMap_GetImage_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_GetImage = {
   "GetImage",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -15906,9 +15906,9 @@ static const ni::sMethodDef iImageMap_GetImage = {
 };
 
 // Method: GetImageIndex
-static const ni::sParameterDef iImageMap_GetImageIndex_Parameters[1] = {
+static const ni::sParameterDef iImageMap_GetImageIndex_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_GetImageIndex = {
   "GetImageIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -15921,9 +15921,9 @@ static const ni::sMethodDef iImageMap_GetImageIndex = {
 };
 
 // Method: GetImageFromName
-static const ni::sParameterDef iImageMap_GetImageFromName_Parameters[1] = {
+static const ni::sParameterDef iImageMap_GetImageFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_GetImageFromName = {
   "GetImageFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -15936,10 +15936,10 @@ static const ni::sMethodDef iImageMap_GetImageFromName = {
 };
 
 // Method: AddImage
-static const ni::sParameterDef iImageMap_AddImage_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iImageMap_AddImage_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apBitmap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_AddImage = {
   "AddImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -15952,10 +15952,10 @@ static const ni::sMethodDef iImageMap_AddImage = {
 };
 
 // Method: AddImageFromResource
-static const ni::sParameterDef iImageMap_AddImageFromResource_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iImageMap_AddImageFromResource_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_AddImageFromResource = {
   "AddImageFromResource",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -15968,13 +15968,13 @@ static const ni::sMethodDef iImageMap_AddImageFromResource = {
 };
 
 // Method: AddImageFromIconSet
-static const ni::sParameterDef iImageMap_AddImageFromIconSet_Parameters[5] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspFolder", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "anMaxRes", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iImageMap_AddImageFromIconSet_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspFolder", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "anMaxRes", ni::eType_U32, NULL, "tU32" }, 
   { "anMinRes", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iImageMap_AddImageFromIconSet = {
   "AddImageFromIconSet",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -15987,9 +15987,9 @@ static const ni::sMethodDef iImageMap_AddImageFromIconSet = {
 };
 
 // Method: RemoveImage
-static const ni::sParameterDef iImageMap_RemoveImage_Parameters[1] = {
+static const ni::sParameterDef iImageMap_RemoveImage_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iImageMap_RemoveImage = {
   "RemoveImage",
   0|ni::eType_I8, NULL, "tBool",
@@ -16014,10 +16014,10 @@ static const ni::sMethodDef iImageMap_GetShouldSerialize = {
 };
 
 // Method: Serialize
-static const ni::sParameterDef iImageMap_Serialize_Parameters[2] = {
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iFile), "ni::iFile*" },
+static const ni::sParameterDef iImageMap_Serialize_Parameters[2] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iFile), "ni::iFile*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tImageMapSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iImageMap_Serialize = {
   "Serialize",
   0|ni::eType_I8, NULL, "tBool",
@@ -16134,11 +16134,11 @@ static const ni::sMethodDef iIndexArray_GetUsage = {
 };
 
 // Method: Lock
-static const ni::sParameterDef iIndexArray_Lock_Parameters[3] = {
-  { "ulFirstIndex", ni::eType_U32, NULL, "tU32" },
-  { "ulNumIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iIndexArray_Lock_Parameters[3] = { 
+  { "ulFirstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "ulNumIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aLock", ni::eType_Enum, NULL, "eLock" }
-};
+}; 
 static const ni::sMethodDef iIndexArray_Lock = {
   "Lock",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -16211,9 +16211,9 @@ static const ni::sInterfaceDef InterfaceDef_iIndexArray = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iIntersection() {
 
 // Method: SetResult
-static const ni::sParameterDef iIntersection_SetResult_Parameters[1] = {
+static const ni::sParameterDef iIntersection_SetResult_Parameters[1] = { 
   { "aResult", ni::eType_Enum, NULL, "eIntersectionResult" }
-};
+}; 
 static const ni::sMethodDef iIntersection_SetResult = {
   "SetResult",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -16238,9 +16238,9 @@ static const ni::sMethodDef iIntersection_GetResult = {
 };
 
 // Method: SetPosition
-static const ni::sParameterDef iIntersection_SetPosition_Parameters[1] = {
+static const ni::sParameterDef iIntersection_SetPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iIntersection_SetPosition = {
   "SetPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -16265,9 +16265,9 @@ static const ni::sMethodDef iIntersection_GetPosition = {
 };
 
 // Method: SetBaryCentric
-static const ni::sParameterDef iIntersection_SetBaryCentric_Parameters[1] = {
+static const ni::sParameterDef iIntersection_SetBaryCentric_Parameters[1] = { 
   { "avBC", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iIntersection_SetBaryCentric = {
   "SetBaryCentric",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -16292,9 +16292,9 @@ static const ni::sMethodDef iIntersection_GetBaryCentric = {
 };
 
 // Method: SetPolygonIndex
-static const ni::sParameterDef iIntersection_SetPolygonIndex_Parameters[1] = {
+static const ni::sParameterDef iIntersection_SetPolygonIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iIntersection_SetPolygonIndex = {
   "SetPolygonIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -16464,9 +16464,9 @@ static const ni::sMethodDef iJpegReader_GetColorSpace = {
 };
 
 // Method: ReadScanline
-static const ni::sParameterDef iJpegReader_ReadScanline_Parameters[1] = {
+static const ni::sParameterDef iJpegReader_ReadScanline_Parameters[1] = { 
   { "apOut", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iJpegReader_ReadScanline = {
   "ReadScanline",
   0|ni::eType_I8, NULL, "tBool",
@@ -16479,9 +16479,9 @@ static const ni::sMethodDef iJpegReader_ReadScanline = {
 };
 
 // Method: ReadBitmap
-static const ni::sParameterDef iJpegReader_ReadBitmap_Parameters[1] = {
+static const ni::sParameterDef iJpegReader_ReadBitmap_Parameters[1] = { 
   { "apGraphics", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGraphics), "iGraphics*" }
-};
+}; 
 static const ni::sMethodDef iJpegReader_ReadBitmap = {
   "ReadBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -16534,15 +16534,15 @@ static const ni::sInterfaceDef InterfaceDef_iJpegReader = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iJpegWriter() {
 
 // Method: BeginWrite
-static const ni::sParameterDef iJpegWriter_BeginWrite_Parameters[7] = {
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
-  { "aInCS", ni::eType_Enum, NULL, "eColorSpace" },
-  { "anC", ni::eType_U32, NULL, "tU32" },
-  { "anQuality", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iJpegWriter_BeginWrite_Parameters[7] = { 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "aInCS", ni::eType_Enum, NULL, "eColorSpace" }, 
+  { "anC", ni::eType_U32, NULL, "tU32" }, 
+  { "anQuality", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tJpegWriteFlags" }
-};
+}; 
 static const ni::sMethodDef iJpegWriter_BeginWrite = {
   "BeginWrite",
   0|ni::eType_I8, NULL, "tBool",
@@ -16567,9 +16567,9 @@ static const ni::sMethodDef iJpegWriter_EndWrite = {
 };
 
 // Method: WriteScanline
-static const ni::sParameterDef iJpegWriter_WriteScanline_Parameters[1] = {
+static const ni::sParameterDef iJpegWriter_WriteScanline_Parameters[1] = { 
   { "apSrc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }
-};
+}; 
 static const ni::sMethodDef iJpegWriter_WriteScanline = {
   "WriteScanline",
   0|ni::eType_I8, NULL, "tBool",
@@ -16582,12 +16582,12 @@ static const ni::sMethodDef iJpegWriter_WriteScanline = {
 };
 
 // Method: WriteBitmap
-static const ni::sParameterDef iJpegWriter_WriteBitmap_Parameters[4] = {
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" },
-  { "apBmp", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" },
-  { "anQuality", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iJpegWriter_WriteBitmap_Parameters[4] = { 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFile), "iFile*" }, 
+  { "apBmp", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "const iBitmap2D*" }, 
+  { "anQuality", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tJpegWriteFlags" }
-};
+}; 
 static const ni::sMethodDef iJpegWriter_WriteBitmap = {
   "WriteBitmap",
   0|ni::eType_I8, NULL, "tBool",
@@ -16645,9 +16645,9 @@ static const ni::sMethodDef iMaterial_GetGraphics = {
 };
 
 // Method: SetName
-static const ni::sParameterDef iMaterial_SetName_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetName = {
   "SetName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -16672,9 +16672,9 @@ static const ni::sMethodDef iMaterial_GetName = {
 };
 
 // Method: SetClass
-static const ni::sParameterDef iMaterial_SetClass_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetClass_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetClass = {
   "SetClass",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -16735,9 +16735,9 @@ static const ni::sMethodDef iMaterial_GetDepth = {
 };
 
 // Method: SetFlags
-static const ni::sParameterDef iMaterial_SetFlags_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tMaterialFlags" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetFlags = {
   "SetFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -16762,9 +16762,9 @@ static const ni::sMethodDef iMaterial_GetFlags = {
 };
 
 // Method: SetBlendMode
-static const ni::sParameterDef iMaterial_SetBlendMode_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetBlendMode_Parameters[1] = { 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetBlendMode = {
   "SetBlendMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -16789,9 +16789,9 @@ static const ni::sMethodDef iMaterial_GetBlendMode = {
 };
 
 // Method: SetRasterizerStates
-static const ni::sParameterDef iMaterial_SetRasterizerStates_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetRasterizerStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetRasterizerStates = {
   "SetRasterizerStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IntPtr, NULL, "tBool",
@@ -16816,9 +16816,9 @@ static const ni::sMethodDef iMaterial_GetRasterizerStates = {
 };
 
 // Method: SetDepthStencilStates
-static const ni::sParameterDef iMaterial_SetDepthStencilStates_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetDepthStencilStates_Parameters[1] = { 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetDepthStencilStates = {
   "SetDepthStencilStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IntPtr, NULL, "tBool",
@@ -16843,9 +16843,9 @@ static const ni::sMethodDef iMaterial_GetDepthStencilStates = {
 };
 
 // Method: SetPolygonOffset
-static const ni::sParameterDef iMaterial_SetPolygonOffset_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetPolygonOffset_Parameters[1] = { 
   { "avOffset", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const ni::sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetPolygonOffset = {
   "SetPolygonOffset",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -16882,10 +16882,10 @@ static const ni::sMethodDef iMaterial_GetHasShader = {
 };
 
 // Method: SetShader
-static const ni::sParameterDef iMaterial_SetShader_Parameters[2] = {
-  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" },
+static const ni::sParameterDef iMaterial_SetShader_Parameters[2] = { 
+  { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }, 
   { "apProgram", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetShader = {
   "SetShader",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -16898,9 +16898,9 @@ static const ni::sMethodDef iMaterial_SetShader = {
 };
 
 // Method: GetShader
-static const ni::sParameterDef iMaterial_GetShader_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetShader_Parameters[1] = { 
   { "aUnit", ni::eType_Enum, NULL, "eShaderUnit" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetShader = {
   "GetShader",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShader), "iShader*",
@@ -16913,9 +16913,9 @@ static const ni::sMethodDef iMaterial_GetShader = {
 };
 
 // Method: SetShaderConstants
-static const ni::sParameterDef iMaterial_SetShaderConstants_Parameters[1] = {
+static const ni::sParameterDef iMaterial_SetShaderConstants_Parameters[1] = { 
   { "apBuffer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "iShaderConstants*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetShaderConstants = {
   "SetShaderConstants",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iShaderConstants), "tBool",
@@ -16940,9 +16940,9 @@ static const ni::sMethodDef iMaterial_GetShaderConstants = {
 };
 
 // Method: HasChannelTexture
-static const ni::sParameterDef iMaterial_HasChannelTexture_Parameters[1] = {
+static const ni::sParameterDef iMaterial_HasChannelTexture_Parameters[1] = { 
   { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }
-};
+}; 
 static const ni::sMethodDef iMaterial_HasChannelTexture = {
   "HasChannelTexture",
   0|ni::eType_I8, NULL, "tBool",
@@ -16955,10 +16955,10 @@ static const ni::sMethodDef iMaterial_HasChannelTexture = {
 };
 
 // Method: SetChannelTexture
-static const ni::sParameterDef iMaterial_SetChannelTexture_Parameters[2] = {
-  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" },
+static const ni::sParameterDef iMaterial_SetChannelTexture_Parameters[2] = { 
+  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }, 
   { "apTexture", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetChannelTexture = {
   "SetChannelTexture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -16971,9 +16971,9 @@ static const ni::sMethodDef iMaterial_SetChannelTexture = {
 };
 
 // Method: GetChannelTexture
-static const ni::sParameterDef iMaterial_GetChannelTexture_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetChannelTexture_Parameters[1] = { 
   { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetChannelTexture = {
   "GetChannelTexture",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -16986,10 +16986,10 @@ static const ni::sMethodDef iMaterial_GetChannelTexture = {
 };
 
 // Method: SetChannelColor
-static const ni::sParameterDef iMaterial_SetChannelColor_Parameters[2] = {
-  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" },
+static const ni::sParameterDef iMaterial_SetChannelColor_Parameters[2] = { 
+  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }, 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetChannelColor = {
   "SetChannelColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -17002,9 +17002,9 @@ static const ni::sMethodDef iMaterial_SetChannelColor = {
 };
 
 // Method: GetChannelColor
-static const ni::sParameterDef iMaterial_GetChannelColor_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetChannelColor_Parameters[1] = { 
   { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetChannelColor = {
   "GetChannelColor",
   ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&",
@@ -17017,10 +17017,10 @@ static const ni::sMethodDef iMaterial_GetChannelColor = {
 };
 
 // Method: SetChannelSamplerStates
-static const ni::sParameterDef iMaterial_SetChannelSamplerStates_Parameters[2] = {
-  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" },
+static const ni::sParameterDef iMaterial_SetChannelSamplerStates_Parameters[2] = { 
+  { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }, 
   { "aHandle", ni::eType_IntPtr, NULL, "tIntPtr" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetChannelSamplerStates = {
   "SetChannelSamplerStates",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -17033,9 +17033,9 @@ static const ni::sMethodDef iMaterial_SetChannelSamplerStates = {
 };
 
 // Method: GetChannelSamplerStates
-static const ni::sParameterDef iMaterial_GetChannelSamplerStates_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetChannelSamplerStates_Parameters[1] = { 
   { "aChannel", ni::eType_Enum, NULL, "eMaterialChannel" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetChannelSamplerStates = {
   "GetChannelSamplerStates",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IntPtr, NULL, "tIntPtr",
@@ -17048,11 +17048,11 @@ static const ni::sMethodDef iMaterial_GetChannelSamplerStates = {
 };
 
 // Method: CopyChannel
-static const ni::sParameterDef iMaterial_CopyChannel_Parameters[3] = {
-  { "aDestChannel", ni::eType_Enum, NULL, "eMaterialChannel" },
-  { "apSource", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "const iMaterial*" },
+static const ni::sParameterDef iMaterial_CopyChannel_Parameters[3] = { 
+  { "aDestChannel", ni::eType_Enum, NULL, "eMaterialChannel" }, 
+  { "apSource", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "const iMaterial*" }, 
   { "aSrcChannel", ni::eType_Enum, NULL, "eMaterialChannel" }
-};
+}; 
 static const ni::sMethodDef iMaterial_CopyChannel = {
   "CopyChannel",
   0|ni::eType_I8, NULL, "tBool",
@@ -17065,9 +17065,9 @@ static const ni::sMethodDef iMaterial_CopyChannel = {
 };
 
 // Method: Copy
-static const ni::sParameterDef iMaterial_Copy_Parameters[1] = {
+static const ni::sParameterDef iMaterial_Copy_Parameters[1] = { 
   { "apMat", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "const iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -17092,11 +17092,11 @@ static const ni::sMethodDef iMaterial_Clone = {
 };
 
 // Method: Serialize
-static const ni::sParameterDef iMaterial_Serialize_Parameters[3] = {
-  { "aMode", ni::eType_Enum, NULL, "eSerializeMode" },
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iMaterial_Serialize_Parameters[3] = { 
+  { "aMode", ni::eType_Enum, NULL, "eSerializeMode" }, 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "ahspBasePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_Serialize = {
   "Serialize",
   0|ni::eType_I8, NULL, "tBool",
@@ -17121,10 +17121,10 @@ static const ni::sMethodDef iMaterial_GetDescStructPtr = {
 };
 
 // Method: SetExpression
-static const ni::sParameterDef iMaterial_SetExpression_Parameters[2] = {
-  { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" },
+static const ni::sParameterDef iMaterial_SetExpression_Parameters[2] = { 
+  { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }, 
   { "ahspExpr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetExpression = {
   "SetExpression",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -17137,9 +17137,9 @@ static const ni::sMethodDef iMaterial_SetExpression = {
 };
 
 // Method: GetExpression
-static const ni::sParameterDef iMaterial_GetExpression_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetExpression_Parameters[1] = { 
   { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetExpression = {
   "GetExpression",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -17152,9 +17152,9 @@ static const ni::sMethodDef iMaterial_GetExpression = {
 };
 
 // Method: GetExpressionValueMatrix
-static const ni::sParameterDef iMaterial_GetExpressionValueMatrix_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetExpressionValueMatrix_Parameters[1] = { 
   { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetExpressionValueMatrix = {
   "GetExpressionValueMatrix",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Matrixf, NULL, "sMatrixf",
@@ -17167,9 +17167,9 @@ static const ni::sMethodDef iMaterial_GetExpressionValueMatrix = {
 };
 
 // Method: GetExpressionValueVector
-static const ni::sParameterDef iMaterial_GetExpressionValueVector_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetExpressionValueVector_Parameters[1] = { 
   { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetExpressionValueVector = {
   "GetExpressionValueVector",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -17182,11 +17182,11 @@ static const ni::sMethodDef iMaterial_GetExpressionValueVector = {
 };
 
 // Method: SetExpressionObject
-static const ni::sParameterDef iMaterial_SetExpressionObject_Parameters[3] = {
-  { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" },
-  { "ahspExpr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iMaterial_SetExpressionObject_Parameters[3] = { 
+  { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }, 
+  { "ahspExpr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apExpr", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpression), "iExpression*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetExpressionObject = {
   "SetExpressionObject",
   0|ni::eType_Null, NULL, "void",
@@ -17199,9 +17199,9 @@ static const ni::sMethodDef iMaterial_SetExpressionObject = {
 };
 
 // Method: GetExpressionObject
-static const ni::sParameterDef iMaterial_GetExpressionObject_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetExpressionObject_Parameters[1] = { 
   { "aExpr", ni::eType_Enum, NULL, "eMaterialExpression" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetExpressionObject = {
   "GetExpressionObject",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpression), "iExpression*",
@@ -17214,10 +17214,10 @@ static const ni::sMethodDef iMaterial_GetExpressionObject = {
 };
 
 // Method: SetUserdata
-static const ni::sParameterDef iMaterial_SetUserdata_Parameters[2] = {
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iMaterial_SetUserdata_Parameters[2] = { 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apUserdata", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_SetUserdata = {
   "SetUserdata",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -17230,9 +17230,9 @@ static const ni::sMethodDef iMaterial_SetUserdata = {
 };
 
 // Method: GetUserdata
-static const ni::sParameterDef iMaterial_GetUserdata_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetUserdata_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetUserdata = {
   "GetUserdata",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*",
@@ -17257,9 +17257,9 @@ static const ni::sMethodDef iMaterial_GetNumUserdata = {
 };
 
 // Method: GetUserdataName
-static const ni::sParameterDef iMaterial_GetUserdataName_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetUserdataName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetUserdataName = {
   "GetUserdataName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -17272,9 +17272,9 @@ static const ni::sMethodDef iMaterial_GetUserdataName = {
 };
 
 // Method: GetUserdataFromIndex
-static const ni::sParameterDef iMaterial_GetUserdataFromIndex_Parameters[1] = {
+static const ni::sParameterDef iMaterial_GetUserdataFromIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iMaterial_GetUserdataFromIndex = {
   "GetUserdataFromIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*",
@@ -17362,10 +17362,10 @@ static const ni::sInterfaceDef InterfaceDef_iMaterial = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iMaterialLibrarySink() {
 
 // Method: OnMaterialLibrarySink_MaterialAdded
-static const ni::sParameterDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialAdded_Parameters[2] = {
-  { "apLib", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "iMaterialLibrary*" },
+static const ni::sParameterDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialAdded_Parameters[2] = { 
+  { "apLib", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "iMaterialLibrary*" }, 
   { "apMat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialAdded = {
   "OnMaterialLibrarySink_MaterialAdded",
   ni::eTypeFlags_MethodOptional|0|ni::eType_Null, NULL, "void",
@@ -17378,10 +17378,10 @@ static const ni::sMethodDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialA
 };
 
 // Method: OnMaterialLibrarySink_MaterialRemoved
-static const ni::sParameterDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialRemoved_Parameters[2] = {
-  { "apLib", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "iMaterialLibrary*" },
+static const ni::sParameterDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialRemoved_Parameters[2] = { 
+  { "apLib", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "iMaterialLibrary*" }, 
   { "apMat", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterial), "iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrarySink_OnMaterialLibrarySink_MaterialRemoved = {
   "OnMaterialLibrarySink_MaterialRemoved",
   ni::eTypeFlags_MethodOptional|0|ni::eType_Null, NULL, "void",
@@ -17483,10 +17483,10 @@ static const ni::sMethodDef iMaterialLibrary_GetSinkList = {
 };
 
 // Method: Copy
-static const ni::sParameterDef iMaterialLibrary_Copy_Parameters[2] = {
-  { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "const iMaterialLibrary*" },
+static const ni::sParameterDef iMaterialLibrary_Copy_Parameters[2] = { 
+  { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "const iMaterialLibrary*" }, 
   { "abCloneMats", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -17499,9 +17499,9 @@ static const ni::sMethodDef iMaterialLibrary_Copy = {
 };
 
 // Method: Clone
-static const ni::sParameterDef iMaterialLibrary_Clone_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_Clone_Parameters[1] = { 
   { "abCloneMats", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_Clone = {
   "Clone",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMaterialLibrary), "iMaterialLibrary*",
@@ -17526,9 +17526,9 @@ static const ni::sMethodDef iMaterialLibrary_ClearMaterials = {
 };
 
 // Method: AddMaterial
-static const ni::sParameterDef iMaterialLibrary_AddMaterial_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_AddMaterial_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iMaterial), "ni::iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_AddMaterial = {
   "AddMaterial",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -17541,9 +17541,9 @@ static const ni::sMethodDef iMaterialLibrary_AddMaterial = {
 };
 
 // Method: RemoveMaterial
-static const ni::sParameterDef iMaterialLibrary_RemoveMaterial_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_RemoveMaterial_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iMaterial), "ni::iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_RemoveMaterial = {
   "RemoveMaterial",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -17568,9 +17568,9 @@ static const ni::sMethodDef iMaterialLibrary_GetNumMaterials = {
 };
 
 // Method: GetMaterial
-static const ni::sParameterDef iMaterialLibrary_GetMaterial_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_GetMaterial_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_GetMaterial = {
   "GetMaterial",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iMaterial), "ni::iMaterial*",
@@ -17583,9 +17583,9 @@ static const ni::sMethodDef iMaterialLibrary_GetMaterial = {
 };
 
 // Method: GetMaterialFromName
-static const ni::sParameterDef iMaterialLibrary_GetMaterialFromName_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_GetMaterialFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_GetMaterialFromName = {
   "GetMaterialFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iMaterial), "ni::iMaterial*",
@@ -17598,9 +17598,9 @@ static const ni::sMethodDef iMaterialLibrary_GetMaterialFromName = {
 };
 
 // Method: GetMaterialIndex
-static const ni::sParameterDef iMaterialLibrary_GetMaterialIndex_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_GetMaterialIndex_Parameters[1] = { 
   { "apMaterial", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iMaterial), "ni::iMaterial*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_GetMaterialIndex = {
   "GetMaterialIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "ni::tU32",
@@ -17613,10 +17613,10 @@ static const ni::sMethodDef iMaterialLibrary_GetMaterialIndex = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iMaterialLibrary_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" },
+static const ni::sParameterDef iMaterialLibrary_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iDataTable), "ni::iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tMaterialSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -17629,10 +17629,10 @@ static const ni::sMethodDef iMaterialLibrary_SerializeDataTable = {
 };
 
 // Method: SerializeFile
-static const ni::sParameterDef iMaterialLibrary_SerializeFile_Parameters[2] = {
-  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iFile), "ni::iFile*" },
+static const ni::sParameterDef iMaterialLibrary_SerializeFile_Parameters[2] = { 
+  { "apFile", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iFile), "ni::iFile*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tMaterialSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_SerializeFile = {
   "SerializeFile",
   0|ni::eType_I8, NULL, "ni::tBool",
@@ -17645,9 +17645,9 @@ static const ni::sMethodDef iMaterialLibrary_SerializeFile = {
 };
 
 // Method: SetBasePath
-static const ni::sParameterDef iMaterialLibrary_SetBasePath_Parameters[1] = {
+static const ni::sParameterDef iMaterialLibrary_SetBasePath_Parameters[1] = { 
   { "ahspBasePath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iMaterialLibrary_SetBasePath = {
   "SetBasePath",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -17715,9 +17715,9 @@ static const ni::sInterfaceDef InterfaceDef_iMaterialLibrary = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iNUSpline() {
 
 // Method: SetType
-static const ni::sParameterDef iNUSpline_SetType_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_SetType_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eNUSplineType" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_SetType = {
   "SetType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -17754,9 +17754,9 @@ static const ni::sMethodDef iNUSpline_Clear = {
 };
 
 // Method: AddNode
-static const ni::sParameterDef iNUSpline_AddNode_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_AddNode_Parameters[1] = { 
   { "avNode", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_AddNode = {
   "AddNode",
   0|ni::eType_Null, NULL, "void",
@@ -17769,9 +17769,9 @@ static const ni::sMethodDef iNUSpline_AddNode = {
 };
 
 // Method: RemoveNode
-static const ni::sParameterDef iNUSpline_RemoveNode_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_RemoveNode_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_RemoveNode = {
   "RemoveNode",
   0|ni::eType_I8, NULL, "tBool",
@@ -17796,10 +17796,10 @@ static const ni::sMethodDef iNUSpline_GetNumNodes = {
 };
 
 // Method: SetNode
-static const ni::sParameterDef iNUSpline_SetNode_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iNUSpline_SetNode_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "avNode", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_SetNode = {
   "SetNode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -17812,9 +17812,9 @@ static const ni::sMethodDef iNUSpline_SetNode = {
 };
 
 // Method: GetNode
-static const ni::sParameterDef iNUSpline_GetNode_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_GetNode_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_GetNode = {
   "GetNode",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -17827,9 +17827,9 @@ static const ni::sMethodDef iNUSpline_GetNode = {
 };
 
 // Method: GetNodeDistance
-static const ni::sParameterDef iNUSpline_GetNodeDistance_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_GetNodeDistance_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_GetNodeDistance = {
   "GetNodeDistance",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -17854,9 +17854,9 @@ static const ni::sMethodDef iNUSpline_GetLength = {
 };
 
 // Method: GetPosition
-static const ni::sParameterDef iNUSpline_GetPosition_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_GetPosition_Parameters[1] = { 
   { "afTime", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_GetPosition = {
   "GetPosition",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -17869,9 +17869,9 @@ static const ni::sMethodDef iNUSpline_GetPosition = {
 };
 
 // Method: GetRelativePosition
-static const ni::sParameterDef iNUSpline_GetRelativePosition_Parameters[1] = {
+static const ni::sParameterDef iNUSpline_GetRelativePosition_Parameters[1] = { 
   { "afTime", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_GetRelativePosition = {
   "GetRelativePosition",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -17884,10 +17884,10 @@ static const ni::sMethodDef iNUSpline_GetRelativePosition = {
 };
 
 // Method: SerializeDataTable
-static const ni::sParameterDef iNUSpline_SerializeDataTable_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iNUSpline_SerializeDataTable_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iNUSpline_SerializeDataTable = {
   "SerializeDataTable",
   0|ni::eType_I8, NULL, "tBool",
@@ -17966,9 +17966,9 @@ static const ni::sMethodDef iOcclusionQuery_End = {
 };
 
 // Method: GetStatus
-static const ni::sParameterDef iOcclusionQuery_GetStatus_Parameters[1] = {
+static const ni::sParameterDef iOcclusionQuery_GetStatus_Parameters[1] = { 
   { "abWait", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iOcclusionQuery_GetStatus = {
   "GetStatus",
   0|ni::eType_Enum, NULL, "eOcclusionQueryStatus",
@@ -18074,9 +18074,9 @@ static const ni::sMethodDef iOverlay_GetBaseSize = {
 };
 
 // Method: SetPivot
-static const ni::sParameterDef iOverlay_SetPivot_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetPivot_Parameters[1] = { 
   { "avPivot", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetPivot = {
   "SetPivot",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -18101,9 +18101,9 @@ static const ni::sMethodDef iOverlay_GetPivot = {
 };
 
 // Method: SetSize
-static const ni::sParameterDef iOverlay_SetSize_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetSize_Parameters[1] = { 
   { "avSize", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetSize = {
   "SetSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Vec2f, NULL, "void",
@@ -18128,9 +18128,9 @@ static const ni::sMethodDef iOverlay_GetSize = {
 };
 
 // Method: SetBlendMode
-static const ni::sParameterDef iOverlay_SetBlendMode_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetBlendMode_Parameters[1] = { 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetBlendMode = {
   "SetBlendMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -18155,9 +18155,9 @@ static const ni::sMethodDef iOverlay_GetBlendMode = {
 };
 
 // Method: SetFiltering
-static const ni::sParameterDef iOverlay_SetFiltering_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetFiltering_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetFiltering = {
   "SetFiltering",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -18182,9 +18182,9 @@ static const ni::sMethodDef iOverlay_GetFiltering = {
 };
 
 // Method: SetColor
-static const ni::sParameterDef iOverlay_SetColor_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetColor_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetColor = {
   "SetColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -18209,10 +18209,10 @@ static const ni::sMethodDef iOverlay_GetColor = {
 };
 
 // Method: SetCornerColor
-static const ni::sParameterDef iOverlay_SetCornerColor_Parameters[2] = {
-  { "aCorner", ni::eType_Enum, NULL, "eRectCorners" },
+static const ni::sParameterDef iOverlay_SetCornerColor_Parameters[2] = { 
+  { "aCorner", ni::eType_Enum, NULL, "eRectCorners" }, 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetCornerColor = {
   "SetCornerColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -18225,9 +18225,9 @@ static const ni::sMethodDef iOverlay_SetCornerColor = {
 };
 
 // Method: GetCornerColor
-static const ni::sParameterDef iOverlay_GetCornerColor_Parameters[1] = {
+static const ni::sParameterDef iOverlay_GetCornerColor_Parameters[1] = { 
   { "aCorner", ni::eType_Enum, NULL, "eRectCorners" }
-};
+}; 
 static const ni::sMethodDef iOverlay_GetCornerColor = {
   "GetCornerColor",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -18240,9 +18240,9 @@ static const ni::sMethodDef iOverlay_GetCornerColor = {
 };
 
 // Method: SetMapping
-static const ni::sParameterDef iOverlay_SetMapping_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetMapping_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetMapping = {
   "SetMapping",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -18267,9 +18267,9 @@ static const ni::sMethodDef iOverlay_GetMapping = {
 };
 
 // Method: SetFrame
-static const ni::sParameterDef iOverlay_SetFrame_Parameters[1] = {
+static const ni::sParameterDef iOverlay_SetFrame_Parameters[1] = { 
   { "aFrameBorder", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_SetFrame = {
   "SetFrame",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -18306,9 +18306,9 @@ static const ni::sMethodDef iOverlay_GetIsFrame = {
 };
 
 // Method: ComputeFrameCenter
-static const ni::sParameterDef iOverlay_ComputeFrameCenter_Parameters[1] = {
+static const ni::sParameterDef iOverlay_ComputeFrameCenter_Parameters[1] = { 
   { "aDest", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_ComputeFrameCenter = {
   "ComputeFrameCenter",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -18321,11 +18321,11 @@ static const ni::sMethodDef iOverlay_ComputeFrameCenter = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iOverlay_Draw_Parameters[3] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
-  { "aPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iOverlay_Draw_Parameters[3] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
+  { "aPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_Draw = {
   "Draw",
   0|ni::eType_I8, NULL, "tBool",
@@ -18338,12 +18338,12 @@ static const ni::sMethodDef iOverlay_Draw = {
 };
 
 // Method: DrawFrame
-static const ni::sParameterDef iOverlay_DrawFrame_Parameters[4] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
-  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" },
-  { "aPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iOverlay_DrawFrame_Parameters[4] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
+  { "aFrame", ni::eType_Enum, NULL, "tRectFrameFlags" }, 
+  { "aPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iOverlay_DrawFrame = {
   "DrawFrame",
   0|ni::eType_I8, NULL, "tBool",
@@ -18409,9 +18409,9 @@ static const ni::sInterfaceDef InterfaceDef_iOverlay = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iPixelFormat() {
 
 // Method: IsSamePixelFormat
-static const ni::sParameterDef iPixelFormat_IsSamePixelFormat_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_IsSamePixelFormat_Parameters[1] = { 
   { "pPixFmt", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "const iPixelFormat*" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_IsSamePixelFormat = {
   "IsSamePixelFormat",
   0|ni::eType_I8, NULL, "tBool",
@@ -18436,10 +18436,10 @@ static const ni::sMethodDef iPixelFormat_GetNumParameters = {
 };
 
 // Method: SetParameter
-static const ni::sParameterDef iPixelFormat_SetParameter_Parameters[2] = {
-  { "ulParameter", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_SetParameter_Parameters[2] = { 
+  { "ulParameter", ni::eType_U32, NULL, "tU32" }, 
   { "ulValue", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_SetParameter = {
   "SetParameter",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -18452,9 +18452,9 @@ static const ni::sMethodDef iPixelFormat_SetParameter = {
 };
 
 // Method: GetParameter
-static const ni::sParameterDef iPixelFormat_GetParameter_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_GetParameter_Parameters[1] = { 
   { "ulParameter", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_GetParameter = {
   "GetParameter",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -18527,11 +18527,11 @@ static const ni::sMethodDef iPixelFormat_GetBytesPerPixel = {
 };
 
 // Method: GetSize
-static const ni::sParameterDef iPixelFormat_GetSize_Parameters[3] = {
-  { "ulW", ni::eType_U32, NULL, "tU32" },
-  { "ulH", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_GetSize_Parameters[3] = { 
+  { "ulW", ni::eType_U32, NULL, "tU32" }, 
+  { "ulH", ni::eType_U32, NULL, "tU32" }, 
   { "ulD", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_GetSize = {
   "GetSize",
   0|ni::eType_U32, NULL, "tU32",
@@ -18604,13 +18604,13 @@ static const ni::sMethodDef iPixelFormat_GetNumABits = {
 };
 
 // Method: BuildPixelub
-static const ni::sParameterDef iPixelFormat_BuildPixelub_Parameters[5] = {
-  { "pOut", ni::eType_Ptr, NULL, "tPtr" },
-  { "r", ni::eType_U8, NULL, "tU8" },
-  { "g", ni::eType_U8, NULL, "tU8" },
-  { "b", ni::eType_U8, NULL, "tU8" },
+static const ni::sParameterDef iPixelFormat_BuildPixelub_Parameters[5] = { 
+  { "pOut", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "r", ni::eType_U8, NULL, "tU8" }, 
+  { "g", ni::eType_U8, NULL, "tU8" }, 
+  { "b", ni::eType_U8, NULL, "tU8" }, 
   { "a", ni::eType_U8, NULL, "tU8" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BuildPixelub = {
   "BuildPixelub",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -18623,13 +18623,13 @@ static const ni::sMethodDef iPixelFormat_BuildPixelub = {
 };
 
 // Method: BuildPixelus
-static const ni::sParameterDef iPixelFormat_BuildPixelus_Parameters[5] = {
-  { "pOut", ni::eType_Ptr, NULL, "tPtr" },
-  { "r", ni::eType_U16, NULL, "tU16" },
-  { "g", ni::eType_U16, NULL, "tU16" },
-  { "b", ni::eType_U16, NULL, "tU16" },
+static const ni::sParameterDef iPixelFormat_BuildPixelus_Parameters[5] = { 
+  { "pOut", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "r", ni::eType_U16, NULL, "tU16" }, 
+  { "g", ni::eType_U16, NULL, "tU16" }, 
+  { "b", ni::eType_U16, NULL, "tU16" }, 
   { "a", ni::eType_U16, NULL, "tU16" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BuildPixelus = {
   "BuildPixelus",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -18642,13 +18642,13 @@ static const ni::sMethodDef iPixelFormat_BuildPixelus = {
 };
 
 // Method: BuildPixelul
-static const ni::sParameterDef iPixelFormat_BuildPixelul_Parameters[5] = {
-  { "pOut", ni::eType_Ptr, NULL, "tPtr" },
-  { "r", ni::eType_U32, NULL, "tU32" },
-  { "g", ni::eType_U32, NULL, "tU32" },
-  { "b", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_BuildPixelul_Parameters[5] = { 
+  { "pOut", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "r", ni::eType_U32, NULL, "tU32" }, 
+  { "g", ni::eType_U32, NULL, "tU32" }, 
+  { "b", ni::eType_U32, NULL, "tU32" }, 
   { "a", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BuildPixelul = {
   "BuildPixelul",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -18661,13 +18661,13 @@ static const ni::sMethodDef iPixelFormat_BuildPixelul = {
 };
 
 // Method: BuildPixelf
-static const ni::sParameterDef iPixelFormat_BuildPixelf_Parameters[5] = {
-  { "pOut", ni::eType_Ptr, NULL, "tPtr" },
-  { "r", ni::eType_F32, NULL, "tF32" },
-  { "g", ni::eType_F32, NULL, "tF32" },
-  { "b", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iPixelFormat_BuildPixelf_Parameters[5] = { 
+  { "pOut", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "r", ni::eType_F32, NULL, "tF32" }, 
+  { "g", ni::eType_F32, NULL, "tF32" }, 
+  { "b", ni::eType_F32, NULL, "tF32" }, 
   { "a", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BuildPixelf = {
   "BuildPixelf",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -18680,14 +18680,14 @@ static const ni::sMethodDef iPixelFormat_BuildPixelf = {
 };
 
 // Method: BeginUnpackPixels
-static const ni::sParameterDef iPixelFormat_BeginUnpackPixels_Parameters[6] = {
-  { "pSurface", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulPitch", ni::eType_U32, NULL, "tU32" },
-  { "ulX", ni::eType_U32, NULL, "tU32" },
-  { "ulY", ni::eType_U32, NULL, "tU32" },
-  { "ulW", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_BeginUnpackPixels_Parameters[6] = { 
+  { "pSurface", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "ulX", ni::eType_U32, NULL, "tU32" }, 
+  { "ulY", ni::eType_U32, NULL, "tU32" }, 
+  { "ulW", ni::eType_U32, NULL, "tU32" }, 
   { "ulH", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BeginUnpackPixels = {
   "BeginUnpackPixels",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -18712,9 +18712,9 @@ static const ni::sMethodDef iPixelFormat_EndUnpackPixels = {
 };
 
 // Method: UnpackPixelub
-static const ni::sParameterDef iPixelFormat_UnpackPixelub_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_UnpackPixelub_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_UnpackPixelub = {
   "UnpackPixelub",
   0|ni::eType_U32, NULL, "sColor4ub",
@@ -18727,9 +18727,9 @@ static const ni::sMethodDef iPixelFormat_UnpackPixelub = {
 };
 
 // Method: UnpackPixelus
-static const ni::sParameterDef iPixelFormat_UnpackPixelus_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_UnpackPixelus_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_UnpackPixelus = {
   "UnpackPixelus",
   0|ni::eType_Vec4i, NULL, "sVec4i",
@@ -18742,9 +18742,9 @@ static const ni::sMethodDef iPixelFormat_UnpackPixelus = {
 };
 
 // Method: UnpackPixelul
-static const ni::sParameterDef iPixelFormat_UnpackPixelul_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_UnpackPixelul_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_UnpackPixelul = {
   "UnpackPixelul",
   0|ni::eType_Vec4i, NULL, "sVec4i",
@@ -18757,9 +18757,9 @@ static const ni::sMethodDef iPixelFormat_UnpackPixelul = {
 };
 
 // Method: UnpackPixelf
-static const ni::sParameterDef iPixelFormat_UnpackPixelf_Parameters[1] = {
+static const ni::sParameterDef iPixelFormat_UnpackPixelf_Parameters[1] = { 
   { "pColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_UnpackPixelf = {
   "UnpackPixelf",
   0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -18772,15 +18772,15 @@ static const ni::sMethodDef iPixelFormat_UnpackPixelf = {
 };
 
 // Method: Clear
-static const ni::sParameterDef iPixelFormat_Clear_Parameters[7] = {
-  { "pDst", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulDestPitch", ni::eType_U32, NULL, "tU32" },
-  { "dx", ni::eType_U32, NULL, "tU32" },
-  { "dy", ni::eType_U32, NULL, "tU32" },
-  { "w", ni::eType_U32, NULL, "tU32" },
-  { "h", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_Clear_Parameters[7] = { 
+  { "pDst", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulDestPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "dx", ni::eType_U32, NULL, "tU32" }, 
+  { "dy", ni::eType_U32, NULL, "tU32" }, 
+  { "w", ni::eType_U32, NULL, "tU32" }, 
+  { "h", ni::eType_U32, NULL, "tU32" }, 
   { "apClearColor", ni::eType_Ptr, NULL, "tPtr" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_Clear = {
   "Clear",
   0|ni::eType_I8, NULL, "tBool",
@@ -18793,20 +18793,20 @@ static const ni::sMethodDef iPixelFormat_Clear = {
 };
 
 // Method: Blit
-static const ni::sParameterDef iPixelFormat_Blit_Parameters[12] = {
-  { "pDst", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulDestPitch", ni::eType_U32, NULL, "tU32" },
-  { "dx", ni::eType_U32, NULL, "tU32" },
-  { "dy", ni::eType_U32, NULL, "tU32" },
-  { "pSrc", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" },
-  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "sx", ni::eType_U32, NULL, "tU32" },
-  { "sy", ni::eType_U32, NULL, "tU32" },
-  { "w", ni::eType_U32, NULL, "tU32" },
-  { "h", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_Blit_Parameters[12] = { 
+  { "pDst", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulDestPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "dx", ni::eType_U32, NULL, "tU32" }, 
+  { "dy", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrc", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "sx", ni::eType_U32, NULL, "tU32" }, 
+  { "sy", ni::eType_U32, NULL, "tU32" }, 
+  { "w", ni::eType_U32, NULL, "tU32" }, 
+  { "h", ni::eType_U32, NULL, "tU32" }, 
   { "blitFlags", ni::eType_Enum, NULL, "ePixelFormatBlit" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_Blit = {
   "Blit",
   0|ni::eType_I8, NULL, "tBool",
@@ -18819,23 +18819,23 @@ static const ni::sMethodDef iPixelFormat_Blit = {
 };
 
 // Method: BlitStretch
-static const ni::sParameterDef iPixelFormat_BlitStretch_Parameters[15] = {
-  { "pDst", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulDestPitch", ni::eType_U32, NULL, "tU32" },
-  { "ulDestWidth", ni::eType_U32, NULL, "tU32" },
-  { "ulDestHeight", ni::eType_U32, NULL, "tU32" },
-  { "dx", ni::eType_U32, NULL, "tU32" },
-  { "dy", ni::eType_U32, NULL, "tU32" },
-  { "dw", ni::eType_U32, NULL, "tU32" },
-  { "dh", ni::eType_U32, NULL, "tU32" },
-  { "pSrc", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" },
-  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "sx", ni::eType_U32, NULL, "tU32" },
-  { "sy", ni::eType_U32, NULL, "tU32" },
-  { "sw", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iPixelFormat_BlitStretch_Parameters[15] = { 
+  { "pDst", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulDestPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "ulDestWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "ulDestHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "dx", ni::eType_U32, NULL, "tU32" }, 
+  { "dy", ni::eType_U32, NULL, "tU32" }, 
+  { "dw", ni::eType_U32, NULL, "tU32" }, 
+  { "dh", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrc", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "sx", ni::eType_U32, NULL, "tU32" }, 
+  { "sy", ni::eType_U32, NULL, "tU32" }, 
+  { "sw", ni::eType_U32, NULL, "tU32" }, 
   { "sh", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BlitStretch = {
   "BlitStretch",
   0|ni::eType_I8, NULL, "tBool",
@@ -18848,23 +18848,23 @@ static const ni::sMethodDef iPixelFormat_BlitStretch = {
 };
 
 // Method: BlitAlpha
-static const ni::sParameterDef iPixelFormat_BlitAlpha_Parameters[15] = {
-  { "pDst", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulDestPitch", ni::eType_U32, NULL, "tU32" },
-  { "dx", ni::eType_U32, NULL, "tU32" },
-  { "dy", ni::eType_U32, NULL, "tU32" },
-  { "pSrc", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" },
-  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "sx", ni::eType_U32, NULL, "tU32" },
-  { "sy", ni::eType_U32, NULL, "tU32" },
-  { "w", ni::eType_U32, NULL, "tU32" },
-  { "h", ni::eType_U32, NULL, "tU32" },
-  { "blitFlags", ni::eType_Enum, NULL, "ePixelFormatBlit" },
-  { "aSourceColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "aDestColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iPixelFormat_BlitAlpha_Parameters[15] = { 
+  { "pDst", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulDestPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "dx", ni::eType_U32, NULL, "tU32" }, 
+  { "dy", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrc", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "sx", ni::eType_U32, NULL, "tU32" }, 
+  { "sy", ni::eType_U32, NULL, "tU32" }, 
+  { "w", ni::eType_U32, NULL, "tU32" }, 
+  { "h", ni::eType_U32, NULL, "tU32" }, 
+  { "blitFlags", ni::eType_Enum, NULL, "ePixelFormatBlit" }, 
+  { "aSourceColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "aDestColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BlitAlpha = {
   "BlitAlpha",
   0|ni::eType_I8, NULL, "tBool",
@@ -18877,26 +18877,26 @@ static const ni::sMethodDef iPixelFormat_BlitAlpha = {
 };
 
 // Method: BlitAlphaStretch
-static const ni::sParameterDef iPixelFormat_BlitAlphaStretch_Parameters[18] = {
-  { "pDst", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulDestPitch", ni::eType_U32, NULL, "tU32" },
-  { "ulDestWidth", ni::eType_U32, NULL, "tU32" },
-  { "ulDestHeight", ni::eType_U32, NULL, "tU32" },
-  { "dx", ni::eType_U32, NULL, "tU32" },
-  { "dy", ni::eType_U32, NULL, "tU32" },
-  { "dw", ni::eType_U32, NULL, "tU32" },
-  { "dh", ni::eType_U32, NULL, "tU32" },
-  { "pSrc", ni::eType_Ptr, NULL, "tPtr" },
-  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" },
-  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" },
-  { "sx", ni::eType_U32, NULL, "tU32" },
-  { "sy", ni::eType_U32, NULL, "tU32" },
-  { "sw", ni::eType_U32, NULL, "tU32" },
-  { "sh", ni::eType_U32, NULL, "tU32" },
-  { "aSourceColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "aDestColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iPixelFormat_BlitAlphaStretch_Parameters[18] = { 
+  { "pDst", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulDestPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "ulDestWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "ulDestHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "dx", ni::eType_U32, NULL, "tU32" }, 
+  { "dy", ni::eType_U32, NULL, "tU32" }, 
+  { "dw", ni::eType_U32, NULL, "tU32" }, 
+  { "dh", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrc", ni::eType_Ptr, NULL, "tPtr" }, 
+  { "ulSrcPitch", ni::eType_U32, NULL, "tU32" }, 
+  { "pSrcFmt", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iPixelFormat), "iPixelFormat*" }, 
+  { "sx", ni::eType_U32, NULL, "tU32" }, 
+  { "sy", ni::eType_U32, NULL, "tU32" }, 
+  { "sw", ni::eType_U32, NULL, "tU32" }, 
+  { "sh", ni::eType_U32, NULL, "tU32" }, 
+  { "aSourceColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "aDestColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "aBlendMode", ni::eType_Enum, NULL, "eBlendMode" }
-};
+}; 
 static const ni::sMethodDef iPixelFormat_BlitAlphaStretch = {
   "BlitAlphaStretch",
   0|ni::eType_I8, NULL, "tBool",
@@ -18980,15 +18980,15 @@ static const ni::sMethodDef iRayTrianglePrimitivesDesc_GetNumPrimitives = {
 };
 
 // Method: AddTriangles
-static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTriangles_Parameters[7] = {
-  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anVertexOffset", ni::eType_U32, NULL, "tU32" },
-  { "anVertexStride", ni::eType_U32, NULL, "tU32" },
-  { "anVertexCount", ni::eType_U32, NULL, "tU32" },
-  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" },
+static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTriangles_Parameters[7] = { 
+  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iRayTrianglePrimitivesDesc_AddTriangles = {
   "AddTriangles",
   0|ni::eType_I8, NULL, "tBool",
@@ -19001,19 +19001,19 @@ static const ni::sMethodDef iRayTrianglePrimitivesDesc_AddTriangles = {
 };
 
 // Method: AddTrianglesIndexed
-static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTrianglesIndexed_Parameters[11] = {
-  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anVertexOffset", ni::eType_U32, NULL, "tU32" },
-  { "anVertexStride", ni::eType_U32, NULL, "tU32" },
-  { "anVertexCount", ni::eType_U32, NULL, "tU32" },
-  { "apIndices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anIndexOffset", ni::eType_U32, NULL, "tU32" },
-  { "anIndexType", ni::eType_Enum, NULL, "eGpuIndexType" },
-  { "anIndexCount", ni::eType_U32, NULL, "tU32" },
-  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" },
+static const ni::sParameterDef iRayTrianglePrimitivesDesc_AddTrianglesIndexed_Parameters[11] = { 
+  { "apVertices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anVertexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
+  { "apIndices", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anIndexOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anIndexType", ni::eType_Enum, NULL, "eGpuIndexType" }, 
+  { "anIndexCount", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iRayTrianglePrimitivesDesc_AddTrianglesIndexed = {
   "AddTrianglesIndexed",
   0|ni::eType_I8, NULL, "tBool",
@@ -19070,15 +19070,15 @@ static const ni::sMethodDef iRayProceduralPrimitivesDesc_GetNumPrimitives = {
 };
 
 // Method: AddAABBs
-static const ni::sParameterDef iRayProceduralPrimitivesDesc_AddAABBs_Parameters[7] = {
-  { "apAABBs", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" },
-  { "anAABBOffset", ni::eType_U32, NULL, "tU32" },
-  { "anAABBStride", ni::eType_U32, NULL, "tU32" },
-  { "anAABBCount", ni::eType_U32, NULL, "tU32" },
-  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" },
+static const ni::sParameterDef iRayProceduralPrimitivesDesc_AddAABBs_Parameters[7] = { 
+  { "apAABBs", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuBuffer), "iGpuBuffer*" }, 
+  { "anAABBOffset", ni::eType_U32, NULL, "tU32" }, 
+  { "anAABBStride", ni::eType_U32, NULL, "tU32" }, 
+  { "anAABBCount", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "aFlags", ni::eType_Enum, NULL, "tRayPrimitiveFlags" }, 
   { "anHitGroup", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iRayProceduralPrimitivesDesc_AddAABBs = {
   "AddAABBs",
   0|ni::eType_I8, NULL, "tBool",
@@ -19160,14 +19160,14 @@ static const ni::sMethodDef iRayInstancesDesc_GetNumInstances = {
 };
 
 // Method: AddInstance
-static const ni::sParameterDef iRayInstancesDesc_AddInstance_Parameters[6] = {
-  { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "iRayPrimitives*" },
-  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" },
-  { "anMask", ni::eType_U8, NULL, "tU8" },
-  { "anHitGroup", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iRayInstancesDesc_AddInstance_Parameters[6] = { 
+  { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "iRayPrimitives*" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anMask", ni::eType_U8, NULL, "tU8" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tRayInstanceFlags" }
-};
+}; 
 static const ni::sMethodDef iRayInstancesDesc_AddInstance = {
   "AddInstance",
   0|ni::eType_I8, NULL, "tBool",
@@ -19180,14 +19180,14 @@ static const ni::sMethodDef iRayInstancesDesc_AddInstance = {
 };
 
 // Method: UpdateInstance
-static const ni::sParameterDef iRayInstancesDesc_UpdateInstance_Parameters[6] = {
-  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" },
-  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" },
-  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" },
-  { "anMask", ni::eType_U8, NULL, "tU8" },
-  { "anHitGroup", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iRayInstancesDesc_UpdateInstance_Parameters[6] = { 
+  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }, 
+  { "anCustomInstanceId", ni::eType_U32, NULL, "tU32" }, 
+  { "anMask", ni::eType_U8, NULL, "tU8" }, 
+  { "anHitGroup", ni::eType_U32, NULL, "tU32" }, 
   { "aFlags", ni::eType_Enum, NULL, "tRayInstanceFlags" }
-};
+}; 
 static const ni::sMethodDef iRayInstancesDesc_UpdateInstance = {
   "UpdateInstance",
   0|ni::eType_I8, NULL, "tBool",
@@ -19200,10 +19200,10 @@ static const ni::sMethodDef iRayInstancesDesc_UpdateInstance = {
 };
 
 // Method: UpdateInstanceTransform
-static const ni::sParameterDef iRayInstancesDesc_UpdateInstanceTransform_Parameters[2] = {
-  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iRayInstancesDesc_UpdateInstanceTransform_Parameters[2] = { 
+  { "anInstanceIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aTransform", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iRayInstancesDesc_UpdateInstanceTransform = {
   "UpdateInstanceTransform",
   0|ni::eType_I8, NULL, "tBool",
@@ -19275,9 +19275,9 @@ static const ni::sInterfaceDef InterfaceDef_iRayInstances = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayFunctionTable() {
 
 // Method: SetRayGenFunction
-static const ni::sParameterDef iRayFunctionTable_SetRayGenFunction_Parameters[1] = {
+static const ni::sParameterDef iRayFunctionTable_SetRayGenFunction_Parameters[1] = { 
   { "apFunction", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
-};
+}; 
 static const ni::sMethodDef iRayFunctionTable_SetRayGenFunction = {
   "SetRayGenFunction",
   0|ni::eType_I8, NULL, "tBool",
@@ -19290,9 +19290,9 @@ static const ni::sMethodDef iRayFunctionTable_SetRayGenFunction = {
 };
 
 // Method: SetMissFunction
-static const ni::sParameterDef iRayFunctionTable_SetMissFunction_Parameters[1] = {
+static const ni::sParameterDef iRayFunctionTable_SetMissFunction_Parameters[1] = { 
   { "apFunction", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
-};
+}; 
 static const ni::sMethodDef iRayFunctionTable_SetMissFunction = {
   "SetMissFunction",
   0|ni::eType_I8, NULL, "tBool",
@@ -19305,13 +19305,13 @@ static const ni::sMethodDef iRayFunctionTable_SetMissFunction = {
 };
 
 // Method: AddHitGroup
-static const ni::sParameterDef iRayFunctionTable_AddHitGroup_Parameters[5] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "aType", ni::eType_Enum, NULL, "eRayFunctionGroupType" },
-  { "apClosestHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" },
-  { "apAnyHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" },
+static const ni::sParameterDef iRayFunctionTable_AddHitGroup_Parameters[5] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eRayFunctionGroupType" }, 
+  { "apClosestHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }, 
+  { "apAnyHit", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }, 
   { "apIntersection", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGpuFunction), "iGpuFunction*" }
-};
+}; 
 static const ni::sMethodDef iRayFunctionTable_AddHitGroup = {
   "AddHitGroup",
   0|ni::eType_U32, NULL, "tU32",
@@ -19424,10 +19424,10 @@ static const ni::sInterfaceDef InterfaceDef_iRayPipeline = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayBuildEncoder() {
 
 // Method: BuildRayTrianglePrimitives
-static const ni::sParameterDef iRayBuildEncoder_BuildRayTrianglePrimitives_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iRayBuildEncoder_BuildRayTrianglePrimitives_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apPrimitivesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayTrianglePrimitivesDesc), "iRayTrianglePrimitivesDesc*" }
-};
+}; 
 static const ni::sMethodDef iRayBuildEncoder_BuildRayTrianglePrimitives = {
   "BuildRayTrianglePrimitives",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "Ptr<iRayPrimitives>",
@@ -19440,10 +19440,10 @@ static const ni::sMethodDef iRayBuildEncoder_BuildRayTrianglePrimitives = {
 };
 
 // Method: BuildRayProceduralPrimitives
-static const ni::sParameterDef iRayBuildEncoder_BuildRayProceduralPrimitives_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iRayBuildEncoder_BuildRayProceduralPrimitives_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apPrimitivesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayProceduralPrimitivesDesc), "iRayProceduralPrimitivesDesc*" }
-};
+}; 
 static const ni::sMethodDef iRayBuildEncoder_BuildRayProceduralPrimitives = {
   "BuildRayProceduralPrimitives",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPrimitives), "Ptr<iRayPrimitives>",
@@ -19456,10 +19456,10 @@ static const ni::sMethodDef iRayBuildEncoder_BuildRayProceduralPrimitives = {
 };
 
 // Method: BuildRayInstances
-static const ni::sParameterDef iRayBuildEncoder_BuildRayInstances_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iRayBuildEncoder_BuildRayInstances_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apInstancesDesc", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayInstancesDesc), "iRayInstancesDesc*" }
-};
+}; 
 static const ni::sMethodDef iRayBuildEncoder_BuildRayInstances = {
   "BuildRayInstances",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayInstances), "Ptr<iRayInstances>",
@@ -19504,9 +19504,9 @@ static const ni::sInterfaceDef InterfaceDef_iRayBuildEncoder = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iRayCommandEncoder() {
 
 // Method: SetRayInstances
-static const ni::sParameterDef iRayCommandEncoder_SetRayInstances_Parameters[1] = {
+static const ni::sParameterDef iRayCommandEncoder_SetRayInstances_Parameters[1] = { 
   { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayInstances), "iRayInstances*" }
-};
+}; 
 static const ni::sMethodDef iRayCommandEncoder_SetRayInstances = {
   "SetRayInstances",
   0|ni::eType_I8, NULL, "tBool",
@@ -19519,9 +19519,9 @@ static const ni::sMethodDef iRayCommandEncoder_SetRayInstances = {
 };
 
 // Method: SetRayPipeline
-static const ni::sParameterDef iRayCommandEncoder_SetRayPipeline_Parameters[1] = {
+static const ni::sParameterDef iRayCommandEncoder_SetRayPipeline_Parameters[1] = { 
   { "apAS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPipeline), "iRayPipeline*" }
-};
+}; 
 static const ni::sMethodDef iRayCommandEncoder_SetRayPipeline = {
   "SetRayPipeline",
   0|ni::eType_I8, NULL, "tBool",
@@ -19534,9 +19534,9 @@ static const ni::sMethodDef iRayCommandEncoder_SetRayPipeline = {
 };
 
 // Method: SetRayOutputImage
-static const ni::sParameterDef iRayCommandEncoder_SetRayOutputImage_Parameters[1] = {
+static const ni::sParameterDef iRayCommandEncoder_SetRayOutputImage_Parameters[1] = { 
   { "apOutputImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*" }
-};
+}; 
 static const ni::sMethodDef iRayCommandEncoder_SetRayOutputImage = {
   "SetRayOutputImage",
   0|ni::eType_I8, NULL, "tBool",
@@ -19549,11 +19549,11 @@ static const ni::sMethodDef iRayCommandEncoder_SetRayOutputImage = {
 };
 
 // Method: DispatchRays
-static const ni::sParameterDef iRayCommandEncoder_DispatchRays_Parameters[3] = {
-  { "anW", ni::eType_U32, NULL, "tU32" },
-  { "anH", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iRayCommandEncoder_DispatchRays_Parameters[3] = { 
+  { "anW", ni::eType_U32, NULL, "tU32" }, 
+  { "anH", ni::eType_U32, NULL, "tU32" }, 
   { "anD", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iRayCommandEncoder_DispatchRays = {
   "DispatchRays",
   0|ni::eType_I8, NULL, "tBool",
@@ -19599,10 +19599,10 @@ static const ni::sInterfaceDef InterfaceDef_iRayCommandEncoder = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iGraphicsDriverRay() {
 
 // Method: CreateRayPipeline
-static const ni::sParameterDef iGraphicsDriverRay_CreateRayPipeline_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayPipeline_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apFunctionTable", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayFunctionTable), "iRayFunctionTable*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverRay_CreateRayPipeline = {
   "CreateRayPipeline",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayPipeline), "Ptr<iRayPipeline>",
@@ -19627,9 +19627,9 @@ static const ni::sMethodDef iGraphicsDriverRay_CreateRayFunctionTable = {
 };
 
 // Method: CreateRayTrianglePrimitivesDesc
-static const ni::sParameterDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc = {
   "CreateRayTrianglePrimitivesDesc",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayTrianglePrimitivesDesc), "Ptr<iRayTrianglePrimitivesDesc>",
@@ -19642,9 +19642,9 @@ static const ni::sMethodDef iGraphicsDriverRay_CreateRayTrianglePrimitivesDesc =
 };
 
 // Method: CreateRayProceduralPrimitivesDesc
-static const ni::sParameterDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc = {
   "CreateRayProceduralPrimitivesDesc",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayProceduralPrimitivesDesc), "Ptr<iRayProceduralPrimitivesDesc>",
@@ -19657,9 +19657,9 @@ static const ni::sMethodDef iGraphicsDriverRay_CreateRayProceduralPrimitivesDesc
 };
 
 // Method: CreateRayInstancesDesc
-static const ni::sParameterDef iGraphicsDriverRay_CreateRayInstancesDesc_Parameters[1] = {
+static const ni::sParameterDef iGraphicsDriverRay_CreateRayInstancesDesc_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iGraphicsDriverRay_CreateRayInstancesDesc = {
   "CreateRayInstancesDesc",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRayInstancesDesc), "Ptr<iRayInstancesDesc>",
@@ -19743,11 +19743,11 @@ static const ni::sMethodDef iShaderConstants_GetMaxNumRegisters = {
 };
 
 // Method: AddConstant
-static const ni::sParameterDef iShaderConstants_AddConstant_Parameters[3] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "aType", ni::eType_Enum, NULL, "eShaderRegisterType" },
+static const ni::sParameterDef iShaderConstants_AddConstant_Parameters[3] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "aType", ni::eType_Enum, NULL, "eShaderRegisterType" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_AddConstant = {
   "AddConstant",
   0|ni::eType_U32, NULL, "tU32",
@@ -19772,9 +19772,9 @@ static const ni::sMethodDef iShaderConstants_GetNumConstants = {
 };
 
 // Method: GetConstantIndex
-static const ni::sParameterDef iShaderConstants_GetConstantIndex_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetConstantIndex_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetConstantIndex = {
   "GetConstantIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -19787,9 +19787,9 @@ static const ni::sMethodDef iShaderConstants_GetConstantIndex = {
 };
 
 // Method: GetConstantName
-static const ni::sParameterDef iShaderConstants_GetConstantName_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetConstantName_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetConstantName = {
   "GetConstantName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -19802,9 +19802,9 @@ static const ni::sMethodDef iShaderConstants_GetConstantName = {
 };
 
 // Method: GetConstantSize
-static const ni::sParameterDef iShaderConstants_GetConstantSize_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetConstantSize_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetConstantSize = {
   "GetConstantSize",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -19817,9 +19817,9 @@ static const ni::sMethodDef iShaderConstants_GetConstantSize = {
 };
 
 // Method: GetConstantType
-static const ni::sParameterDef iShaderConstants_GetConstantType_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetConstantType_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetConstantType = {
   "GetConstantType",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eShaderRegisterType",
@@ -19832,10 +19832,10 @@ static const ni::sMethodDef iShaderConstants_GetConstantType = {
 };
 
 // Method: SetHwIndex
-static const ni::sParameterDef iShaderConstants_SetHwIndex_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_SetHwIndex_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "anRegisterIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetHwIndex = {
   "SetHwIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -19848,9 +19848,9 @@ static const ni::sMethodDef iShaderConstants_SetHwIndex = {
 };
 
 // Method: GetHwIndex
-static const ni::sParameterDef iShaderConstants_GetHwIndex_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetHwIndex_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetHwIndex = {
   "GetHwIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -19863,11 +19863,11 @@ static const ni::sMethodDef iShaderConstants_GetHwIndex = {
 };
 
 // Method: SetFloatArray
-static const ni::sParameterDef iShaderConstants_SetFloatArray_Parameters[3] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
-  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4fCVec*" },
+static const ni::sParameterDef iShaderConstants_SetFloatArray_Parameters[3] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4fCVec*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetFloatArray = {
   "SetFloatArray",
   0|ni::eType_I8, NULL, "tBool",
@@ -19880,11 +19880,11 @@ static const ni::sMethodDef iShaderConstants_SetFloatArray = {
 };
 
 // Method: SetFloatPointer
-static const ni::sParameterDef iShaderConstants_SetFloatPointer_Parameters[3] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
-  { "apV", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f*" },
+static const ni::sParameterDef iShaderConstants_SetFloatPointer_Parameters[3] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "apV", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetFloatPointer = {
   "SetFloatPointer",
   0|ni::eType_I8, NULL, "tBool",
@@ -19893,10 +19893,10 @@ NULL
 };
 
 // Method: SetFloat
-static const ni::sParameterDef iShaderConstants_SetFloat_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_SetFloat_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetFloat = {
   "SetFloat",
   0|ni::eType_I8, NULL, "tBool",
@@ -19909,11 +19909,11 @@ static const ni::sMethodDef iShaderConstants_SetFloat = {
 };
 
 // Method: SetFloatMatrixArray
-static const ni::sParameterDef iShaderConstants_SetFloatMatrixArray_Parameters[3] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
-  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tMatrixfCVec*" },
+static const ni::sParameterDef iShaderConstants_SetFloatMatrixArray_Parameters[3] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tMatrixfCVec*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetFloatMatrixArray = {
   "SetFloatMatrixArray",
   0|ni::eType_I8, NULL, "tBool",
@@ -19926,10 +19926,10 @@ static const ni::sMethodDef iShaderConstants_SetFloatMatrixArray = {
 };
 
 // Method: SetFloatMatrix
-static const ni::sParameterDef iShaderConstants_SetFloatMatrix_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_SetFloatMatrix_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetFloatMatrix = {
   "SetFloatMatrix",
   0|ni::eType_I8, NULL, "tBool",
@@ -19942,11 +19942,11 @@ static const ni::sMethodDef iShaderConstants_SetFloatMatrix = {
 };
 
 // Method: SetIntArray
-static const ni::sParameterDef iShaderConstants_SetIntArray_Parameters[3] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
-  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4iCVec*" },
+static const ni::sParameterDef iShaderConstants_SetIntArray_Parameters[3] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "apV", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4iCVec*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetIntArray = {
   "SetIntArray",
   0|ni::eType_I8, NULL, "tBool",
@@ -19959,11 +19959,11 @@ static const ni::sMethodDef iShaderConstants_SetIntArray = {
 };
 
 // Method: SetIntPointer
-static const ni::sParameterDef iShaderConstants_SetIntPointer_Parameters[3] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
-  { "apV", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i*" },
+static const ni::sParameterDef iShaderConstants_SetIntPointer_Parameters[3] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "apV", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetIntPointer = {
   "SetIntPointer",
   0|ni::eType_I8, NULL, "tBool",
@@ -19972,10 +19972,10 @@ NULL
 };
 
 // Method: SetInt
-static const ni::sParameterDef iShaderConstants_SetInt_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_SetInt_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i&" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetInt = {
   "SetInt",
   0|ni::eType_I8, NULL, "tBool",
@@ -19988,10 +19988,10 @@ static const ni::sMethodDef iShaderConstants_SetInt = {
 };
 
 // Method: GetFloat
-static const ni::sParameterDef iShaderConstants_GetFloat_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_GetFloat_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "anOffset", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetFloat = {
   "GetFloat",
   0|ni::eType_Vec4f, NULL, "sVec4f",
@@ -20004,9 +20004,9 @@ static const ni::sMethodDef iShaderConstants_GetFloat = {
 };
 
 // Method: GetFloatMatrix
-static const ni::sParameterDef iShaderConstants_GetFloatMatrix_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetFloatMatrix_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetFloatMatrix = {
   "GetFloatMatrix",
   0|ni::eType_Matrixf, NULL, "sMatrixf",
@@ -20019,9 +20019,9 @@ static const ni::sMethodDef iShaderConstants_GetFloatMatrix = {
 };
 
 // Method: GetFloatPointer
-static const ni::sParameterDef iShaderConstants_GetFloatPointer_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetFloatPointer_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetFloatPointer = {
   "GetFloatPointer",
   0|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "sVec4f*",
@@ -20030,10 +20030,10 @@ NULL
 };
 
 // Method: GetInt
-static const ni::sParameterDef iShaderConstants_GetInt_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_GetInt_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "anOffset", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetInt = {
   "GetInt",
   0|ni::eType_Vec4i, NULL, "sVec4i",
@@ -20046,9 +20046,9 @@ static const ni::sMethodDef iShaderConstants_GetInt = {
 };
 
 // Method: GetIntPointer
-static const ni::sParameterDef iShaderConstants_GetIntPointer_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetIntPointer_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetIntPointer = {
   "GetIntPointer",
   0|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "sVec4i*",
@@ -20069,10 +20069,10 @@ static const ni::sMethodDef iShaderConstants_GetDescStructPtr = {
 };
 
 // Method: SetConstantMetadata
-static const ni::sParameterDef iShaderConstants_SetConstantMetadata_Parameters[2] = {
-  { "anConstIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iShaderConstants_SetConstantMetadata_Parameters[2] = { 
+  { "anConstIndex", ni::eType_U32, NULL, "tU32" }, 
   { "ahspMetadata", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_SetConstantMetadata = {
   "SetConstantMetadata",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -20085,9 +20085,9 @@ static const ni::sMethodDef iShaderConstants_SetConstantMetadata = {
 };
 
 // Method: GetConstantMetadata
-static const ni::sParameterDef iShaderConstants_GetConstantMetadata_Parameters[1] = {
+static const ni::sParameterDef iShaderConstants_GetConstantMetadata_Parameters[1] = { 
   { "anConstIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iShaderConstants_GetConstantMetadata = {
   "GetConstantMetadata",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -20325,9 +20325,9 @@ static const ni::sMethodDef iTextOccluder_GetTextObject = {
 };
 
 // Method: SetRect
-static const ni::sParameterDef iTextOccluder_SetRect_Parameters[1] = {
+static const ni::sParameterDef iTextOccluder_SetRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iTextOccluder_SetRect = {
   "SetRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -20352,9 +20352,9 @@ static const ni::sMethodDef iTextOccluder_GetRect = {
 };
 
 // Method: SetUserData
-static const ni::sParameterDef iTextOccluder_SetUserData_Parameters[1] = {
+static const ni::sParameterDef iTextOccluder_SetUserData_Parameters[1] = { 
   { "aUserData", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iTextOccluder_SetUserData = {
   "SetUserData",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "void",
@@ -20425,9 +20425,9 @@ static const ni::sMethodDef iTextObject_GetGraphics = {
 };
 
 // Method: SetContentsScale
-static const ni::sParameterDef iTextObject_SetContentsScale_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetContentsScale_Parameters[1] = { 
   { "afContentsScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetContentsScale = {
   "SetContentsScale",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_F32, NULL, "void",
@@ -20452,9 +20452,9 @@ static const ni::sMethodDef iTextObject_GetContentsScale = {
 };
 
 // Method: SetDefaultFont
-static const ni::sParameterDef iTextObject_SetDefaultFont_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetDefaultFont_Parameters[1] = { 
   { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetDefaultFont = {
   "SetDefaultFont",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "void",
@@ -20479,9 +20479,9 @@ static const ni::sMethodDef iTextObject_GetDefaultFont = {
 };
 
 // Method: SetLoadFontCallback
-static const ni::sParameterDef iTextObject_SetLoadFontCallback_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetLoadFontCallback_Parameters[1] = { 
   { "apLoadFontCallback", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCallback), "iCallback*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetLoadFontCallback = {
   "SetLoadFontCallback",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCallback), "void",
@@ -20506,9 +20506,9 @@ static const ni::sMethodDef iTextObject_GetLoadFontCallback = {
 };
 
 // Method: SetSize
-static const ni::sParameterDef iTextObject_SetSize_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetSize = {
   "SetSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -20533,9 +20533,9 @@ static const ni::sMethodDef iTextObject_GetSize = {
 };
 
 // Method: SetTruncation
-static const ni::sParameterDef iTextObject_SetTruncation_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetTruncation_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eTextTruncation" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetTruncation = {
   "SetTruncation",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -20560,9 +20560,9 @@ static const ni::sMethodDef iTextObject_GetTruncation = {
 };
 
 // Method: SetTruncationText
-static const ni::sParameterDef iTextObject_SetTruncationText_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetTruncationText_Parameters[1] = { 
   { "aaszString", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetTruncationText = {
   "SetTruncationText",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "void",
@@ -20587,9 +20587,9 @@ static const ni::sMethodDef iTextObject_GetTruncationText = {
 };
 
 // Method: SetTrimLeadingSpaces
-static const ni::sParameterDef iTextObject_SetTrimLeadingSpaces_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetTrimLeadingSpaces_Parameters[1] = { 
   { "abTrimLeadingSpaces", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetTrimLeadingSpaces = {
   "SetTrimLeadingSpaces",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -20614,9 +20614,9 @@ static const ni::sMethodDef iTextObject_GetTrimLeadingSpaces = {
 };
 
 // Method: SetKerning
-static const ni::sParameterDef iTextObject_SetKerning_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetKerning_Parameters[1] = { 
   { "abKerning", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetKerning = {
   "SetKerning",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -20653,9 +20653,9 @@ static const ni::sMethodDef iTextObject_GetTextSize = {
 };
 
 // Method: SetExpressionContext
-static const ni::sParameterDef iTextObject_SetExpressionContext_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetExpressionContext_Parameters[1] = { 
   { "apContext", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionContext), "iExpressionContext*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetExpressionContext = {
   "SetExpressionContext",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iExpressionContext), "void",
@@ -20692,11 +20692,11 @@ static const ni::sMethodDef iTextObject_Update = {
 };
 
 // Method: DrawAt
-static const ni::sParameterDef iTextObject_DrawAt_Parameters[3] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
-  { "aClippingRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iTextObject_DrawAt_Parameters[3] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
+  { "aClippingRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTextObject_DrawAt = {
   "DrawAt",
   0|ni::eType_I8, NULL, "tBool",
@@ -20709,10 +20709,10 @@ static const ni::sMethodDef iTextObject_DrawAt = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iTextObject_Draw_Parameters[2] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
+static const ni::sParameterDef iTextObject_Draw_Parameters[2] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
   { "aClippingRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iTextObject_Draw = {
   "Draw",
   0|ni::eType_I8, NULL, "tBool",
@@ -20725,10 +20725,10 @@ static const ni::sMethodDef iTextObject_Draw = {
 };
 
 // Method: AddOccluder
-static const ni::sParameterDef iTextObject_AddOccluder_Parameters[2] = {
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iTextObject_AddOccluder_Parameters[2] = { 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "aUserData", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iTextObject_AddOccluder = {
   "AddOccluder",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTextOccluder), "iTextOccluder*",
@@ -20741,9 +20741,9 @@ static const ni::sMethodDef iTextObject_AddOccluder = {
 };
 
 // Method: RemoveOccluder
-static const ni::sParameterDef iTextObject_RemoveOccluder_Parameters[1] = {
+static const ni::sParameterDef iTextObject_RemoveOccluder_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iTextObject_RemoveOccluder = {
   "RemoveOccluder",
   0|ni::eType_I8, NULL, "tBool",
@@ -20780,9 +20780,9 @@ static const ni::sMethodDef iTextObject_GetNumOccluders = {
 };
 
 // Method: GetOccluder
-static const ni::sParameterDef iTextObject_GetOccluder_Parameters[1] = {
+static const ni::sParameterDef iTextObject_GetOccluder_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iTextObject_GetOccluder = {
   "GetOccluder",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTextOccluder), "iTextOccluder*",
@@ -20795,9 +20795,9 @@ static const ni::sMethodDef iTextObject_GetOccluder = {
 };
 
 // Method: SetText
-static const ni::sParameterDef iTextObject_SetText_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetText_Parameters[1] = { 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetText = {
   "SetText",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "void",
@@ -20822,9 +20822,9 @@ static const ni::sMethodDef iTextObject_GetText = {
 };
 
 // Method: AddText
-static const ni::sParameterDef iTextObject_AddText_Parameters[1] = {
+static const ni::sParameterDef iTextObject_AddText_Parameters[1] = { 
   { "aaszString", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iTextObject_AddText = {
   "AddText",
   0|ni::eType_Null, NULL, "void",
@@ -20837,9 +20837,9 @@ static const ni::sMethodDef iTextObject_AddText = {
 };
 
 // Method: SetSelectionColor
-static const ni::sParameterDef iTextObject_SetSelectionColor_Parameters[1] = {
+static const ni::sParameterDef iTextObject_SetSelectionColor_Parameters[1] = { 
   { "avColor", ni::eType_Vec4f, NULL, "sVec4f" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SetSelectionColor = {
   "SetSelectionColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Vec4f, NULL, "void",
@@ -20888,10 +20888,10 @@ static const ni::sMethodDef iTextObject_ClearSelection = {
 };
 
 // Method: SelectRange
-static const ni::sParameterDef iTextObject_SelectRange_Parameters[2] = {
-  { "anBegin", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iTextObject_SelectRange_Parameters[2] = { 
+  { "anBegin", ni::eType_U32, NULL, "tU32" }, 
   { "anEnd", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iTextObject_SelectRange = {
   "SelectRange",
   0|ni::eType_Null, NULL, "void",
@@ -20904,9 +20904,9 @@ static const ni::sMethodDef iTextObject_SelectRange = {
 };
 
 // Method: FindWordIndexFromPosition
-static const ni::sParameterDef iTextObject_FindWordIndexFromPosition_Parameters[1] = {
+static const ni::sParameterDef iTextObject_FindWordIndexFromPosition_Parameters[1] = { 
   { "avPosition", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iTextObject_FindWordIndexFromPosition = {
   "FindWordIndexFromPosition",
   0|ni::eType_U32, NULL, "tU32",
@@ -21069,9 +21069,9 @@ static const ni::sMethodDef iTexture_GetFlags = {
 };
 
 // Method: GetSubTexture
-static const ni::sParameterDef iTexture_GetSubTexture_Parameters[1] = {
+static const ni::sParameterDef iTexture_GetSubTexture_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iTexture_GetSubTexture = {
   "GetSubTexture",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -21200,9 +21200,9 @@ static const ni::sMethodDef iTransform_Clone = {
 };
 
 // Method: Copy
-static const ni::sParameterDef iTransform_Copy_Parameters[1] = {
+static const ni::sParameterDef iTransform_Copy_Parameters[1] = { 
   { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTransform), "const iTransform*" }
-};
+}; 
 static const ni::sMethodDef iTransform_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -21227,9 +21227,9 @@ static const ni::sMethodDef iTransform_SetDirty = {
 };
 
 // Method: SetFlags
-static const ni::sParameterDef iTransform_SetFlags_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetFlags_Parameters[1] = { 
   { "anFlags", ni::eType_U16, NULL, "tU16" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetFlags = {
   "SetFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U16, NULL, "void",
@@ -21254,9 +21254,9 @@ static const ni::sMethodDef iTransform_GetFlags = {
 };
 
 // Method: SetSyncCounter
-static const ni::sParameterDef iTransform_SetSyncCounter_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetSyncCounter_Parameters[1] = { 
   { "anFlags", ni::eType_U16, NULL, "tU16" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetSyncCounter = {
   "SetSyncCounter",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U16, NULL, "void",
@@ -21281,9 +21281,9 @@ static const ni::sMethodDef iTransform_GetSyncCounter = {
 };
 
 // Method: SetParent
-static const ni::sParameterDef iTransform_SetParent_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetParent_Parameters[1] = { 
   { "apParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTransform), "iTransform*" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetParent = {
   "SetParent",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTransform), "void",
@@ -21320,9 +21320,9 @@ static const ni::sMethodDef iTransform_Identity = {
 };
 
 // Method: SetWorldMatrix
-static const ni::sParameterDef iTransform_SetWorldMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetWorldMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetWorldMatrix = {
   "SetWorldMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21347,9 +21347,9 @@ static const ni::sMethodDef iTransform_GetWorldMatrix = {
 };
 
 // Method: SetLocalMatrix
-static const ni::sParameterDef iTransform_SetLocalMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetLocalMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetLocalMatrix = {
   "SetLocalMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21374,9 +21374,9 @@ static const ni::sMethodDef iTransform_GetLocalMatrix = {
 };
 
 // Method: MultiplyWorldMatrix
-static const ni::sParameterDef iTransform_MultiplyWorldMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_MultiplyWorldMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_MultiplyWorldMatrix = {
   "MultiplyWorldMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -21389,9 +21389,9 @@ static const ni::sMethodDef iTransform_MultiplyWorldMatrix = {
 };
 
 // Method: PreMultiplyWorldMatrix
-static const ni::sParameterDef iTransform_PreMultiplyWorldMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_PreMultiplyWorldMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_PreMultiplyWorldMatrix = {
   "PreMultiplyWorldMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -21404,9 +21404,9 @@ static const ni::sMethodDef iTransform_PreMultiplyWorldMatrix = {
 };
 
 // Method: MultiplyLocalMatrix
-static const ni::sParameterDef iTransform_MultiplyLocalMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_MultiplyLocalMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_MultiplyLocalMatrix = {
   "MultiplyLocalMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -21419,9 +21419,9 @@ static const ni::sMethodDef iTransform_MultiplyLocalMatrix = {
 };
 
 // Method: PreMultiplyLocalMatrix
-static const ni::sParameterDef iTransform_PreMultiplyLocalMatrix_Parameters[1] = {
+static const ni::sParameterDef iTransform_PreMultiplyLocalMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_PreMultiplyLocalMatrix = {
   "PreMultiplyLocalMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -21434,10 +21434,10 @@ static const ni::sMethodDef iTransform_PreMultiplyLocalMatrix = {
 };
 
 // Method: LookAt
-static const ni::sParameterDef iTransform_LookAt_Parameters[2] = {
-  { "avLookAt", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iTransform_LookAt_Parameters[2] = { 
+  { "avLookAt", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "avUp", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_LookAt = {
   "LookAt",
   0|ni::eType_Null, NULL, "void",
@@ -21450,9 +21450,9 @@ static const ni::sMethodDef iTransform_LookAt = {
 };
 
 // Method: SetWorldPosition
-static const ni::sParameterDef iTransform_SetWorldPosition_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetWorldPosition_Parameters[1] = { 
   { "v", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetWorldPosition = {
   "SetWorldPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21477,9 +21477,9 @@ static const ni::sMethodDef iTransform_GetWorldPosition = {
 };
 
 // Method: SetLocalPosition
-static const ni::sParameterDef iTransform_SetLocalPosition_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetLocalPosition_Parameters[1] = { 
   { "v", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetLocalPosition = {
   "SetLocalPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21504,9 +21504,9 @@ static const ni::sMethodDef iTransform_GetLocalPosition = {
 };
 
 // Method: Translate
-static const ni::sParameterDef iTransform_Translate_Parameters[1] = {
+static const ni::sParameterDef iTransform_Translate_Parameters[1] = { 
   { "v", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_Translate = {
   "Translate",
   0|ni::eType_Null, NULL, "void",
@@ -21519,9 +21519,9 @@ static const ni::sMethodDef iTransform_Translate = {
 };
 
 // Method: PreTranslate
-static const ni::sParameterDef iTransform_PreTranslate_Parameters[1] = {
+static const ni::sParameterDef iTransform_PreTranslate_Parameters[1] = { 
   { "v", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_PreTranslate = {
   "PreTranslate",
   0|ni::eType_Null, NULL, "void",
@@ -21534,9 +21534,9 @@ static const ni::sMethodDef iTransform_PreTranslate = {
 };
 
 // Method: SetWorldRotation
-static const ni::sParameterDef iTransform_SetWorldRotation_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetWorldRotation_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetWorldRotation = {
   "SetWorldRotation",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21549,9 +21549,9 @@ static const ni::sMethodDef iTransform_SetWorldRotation = {
 };
 
 // Method: SetLocalRotation
-static const ni::sParameterDef iTransform_SetLocalRotation_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetLocalRotation_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetLocalRotation = {
   "SetLocalRotation",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21564,9 +21564,9 @@ static const ni::sMethodDef iTransform_SetLocalRotation = {
 };
 
 // Method: Rotate
-static const ni::sParameterDef iTransform_Rotate_Parameters[1] = {
+static const ni::sParameterDef iTransform_Rotate_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_Rotate = {
   "Rotate",
   0|ni::eType_Null, NULL, "void",
@@ -21579,9 +21579,9 @@ static const ni::sMethodDef iTransform_Rotate = {
 };
 
 // Method: PreRotate
-static const ni::sParameterDef iTransform_PreRotate_Parameters[1] = {
+static const ni::sParameterDef iTransform_PreRotate_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iTransform_PreRotate = {
   "PreRotate",
   0|ni::eType_Null, NULL, "void",
@@ -21594,9 +21594,9 @@ static const ni::sMethodDef iTransform_PreRotate = {
 };
 
 // Method: SetScale
-static const ni::sParameterDef iTransform_SetScale_Parameters[1] = {
+static const ni::sParameterDef iTransform_SetScale_Parameters[1] = { 
   { "aScale", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iTransform_SetScale = {
   "SetScale",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -21810,11 +21810,11 @@ static const ni::sMethodDef iUIContext_GetGraphicsContext = {
 };
 
 // Method: SendWindowMessage
-static const ni::sParameterDef iUIContext_SendWindowMessage_Parameters[3] = {
-  { "aMsg", ni::eType_Enum, NULL, "eOSWindowMessage" },
-  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" },
+static const ni::sParameterDef iUIContext_SendWindowMessage_Parameters[3] = { 
+  { "aMsg", ni::eType_Enum, NULL, "eOSWindowMessage" }, 
+  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }, 
   { "avarB", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SendWindowMessage = {
   "SendWindowMessage",
   0|ni::eType_Null, NULL, "void",
@@ -21827,9 +21827,9 @@ static const ni::sMethodDef iUIContext_SendWindowMessage = {
 };
 
 // Method: SetInputModifiers
-static const ni::sParameterDef iUIContext_SetInputModifiers_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetInputModifiers_Parameters[1] = { 
   { "anInputModifier", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetInputModifiers = {
   "SetInputModifiers",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -21854,9 +21854,9 @@ static const ni::sMethodDef iUIContext_GetInputModifiers = {
 };
 
 // Method: SetDefaultInputSubmitFlags
-static const ni::sParameterDef iUIContext_SetDefaultInputSubmitFlags_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetDefaultInputSubmitFlags_Parameters[1] = { 
   { "aSubmitFlags", ni::eType_Enum, NULL, "tUIInputSubmitFlags" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDefaultInputSubmitFlags = {
   "SetDefaultInputSubmitFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -21881,9 +21881,9 @@ static const ni::sMethodDef iUIContext_GetDefaultInputSubmitFlags = {
 };
 
 // Method: SetHoverDelay
-static const ni::sParameterDef iUIContext_SetHoverDelay_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetHoverDelay_Parameters[1] = { 
   { "afDelay", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetHoverDelay = {
   "SetHoverDelay",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -21908,9 +21908,9 @@ static const ni::sMethodDef iUIContext_GetHoverDelay = {
 };
 
 // Method: SetHoverInputModifiers
-static const ni::sParameterDef iUIContext_SetHoverInputModifiers_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetHoverInputModifiers_Parameters[1] = { 
   { "anInputModifiers", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetHoverInputModifiers = {
   "SetHoverInputModifiers",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -21935,9 +21935,9 @@ static const ni::sMethodDef iUIContext_GetHoverInputModifiers = {
 };
 
 // Method: SetImageMap
-static const ni::sParameterDef iUIContext_SetImageMap_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetImageMap_Parameters[1] = { 
   { "apImageMap", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "iImageMap*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetImageMap = {
   "SetImageMap",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iImageMap), "void",
@@ -21962,9 +21962,9 @@ static const ni::sMethodDef iUIContext_GetImageMap = {
 };
 
 // Method: SetErrorOverlay
-static const ni::sParameterDef iUIContext_SetErrorOverlay_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetErrorOverlay_Parameters[1] = { 
   { "apOverlay", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetErrorOverlay = {
   "SetErrorOverlay",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "tBool",
@@ -22001,9 +22001,9 @@ static const ni::sMethodDef iUIContext_ClearSkins = {
 };
 
 // Method: AddSkin
-static const ni::sParameterDef iUIContext_AddSkin_Parameters[1] = {
+static const ni::sParameterDef iUIContext_AddSkin_Parameters[1] = { 
   { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_AddSkin = {
   "AddSkin",
   0|ni::eType_I8, NULL, "tBool",
@@ -22016,9 +22016,9 @@ static const ni::sMethodDef iUIContext_AddSkin = {
 };
 
 // Method: AddSkinFromRes
-static const ni::sParameterDef iUIContext_AddSkinFromRes_Parameters[1] = {
+static const ni::sParameterDef iUIContext_AddSkinFromRes_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_AddSkinFromRes = {
   "AddSkinFromRes",
   0|ni::eType_I8, NULL, "tBool",
@@ -22031,9 +22031,9 @@ static const ni::sMethodDef iUIContext_AddSkinFromRes = {
 };
 
 // Method: RemoveSkin
-static const ni::sParameterDef iUIContext_RemoveSkin_Parameters[1] = {
+static const ni::sParameterDef iUIContext_RemoveSkin_Parameters[1] = { 
   { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_RemoveSkin = {
   "RemoveSkin",
   0|ni::eType_I8, NULL, "tBool",
@@ -22046,9 +22046,9 @@ static const ni::sMethodDef iUIContext_RemoveSkin = {
 };
 
 // Method: SetDefaultSkin
-static const ni::sParameterDef iUIContext_SetDefaultSkin_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetDefaultSkin_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDefaultSkin = {
   "SetDefaultSkin",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -22085,9 +22085,9 @@ static const ni::sMethodDef iUIContext_GetNumSkins = {
 };
 
 // Method: GetSkinName
-static const ni::sParameterDef iUIContext_GetSkinName_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetSkinName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetSkinName = {
   "GetSkinName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -22100,9 +22100,9 @@ static const ni::sMethodDef iUIContext_GetSkinName = {
 };
 
 // Method: GetSkinIndex
-static const ni::sParameterDef iUIContext_GetSkinIndex_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetSkinIndex_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetSkinIndex = {
   "GetSkinIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -22115,9 +22115,9 @@ static const ni::sMethodDef iUIContext_GetSkinIndex = {
 };
 
 // Method: GetSkinDataTable
-static const ni::sParameterDef iUIContext_GetSkinDataTable_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetSkinDataTable_Parameters[1] = { 
   { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetSkinDataTable = {
   "GetSkinDataTable",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*",
@@ -22130,10 +22130,10 @@ static const ni::sMethodDef iUIContext_GetSkinDataTable = {
 };
 
 // Method: ApplySkin
-static const ni::sParameterDef iUIContext_ApplySkin_Parameters[2] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iUIContext_ApplySkin_Parameters[2] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_ApplySkin = {
   "ApplySkin",
   0|ni::eType_I8, NULL, "tBool",
@@ -22146,12 +22146,12 @@ static const ni::sMethodDef iUIContext_ApplySkin = {
 };
 
 // Method: FindSkinFont
-static const ni::sParameterDef iUIContext_FindSkinFont_Parameters[4] = {
-  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_FindSkinFont_Parameters[4] = { 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_FindSkinFont = {
   "FindSkinFont",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -22164,12 +22164,12 @@ static const ni::sMethodDef iUIContext_FindSkinFont = {
 };
 
 // Method: FindSkinCursor
-static const ni::sParameterDef iUIContext_FindSkinCursor_Parameters[4] = {
-  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_FindSkinCursor_Parameters[4] = { 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_FindSkinCursor = {
   "FindSkinCursor",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -22182,12 +22182,12 @@ static const ni::sMethodDef iUIContext_FindSkinCursor = {
 };
 
 // Method: FindSkinElement
-static const ni::sParameterDef iUIContext_FindSkinElement_Parameters[4] = {
-  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_FindSkinElement_Parameters[4] = { 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_FindSkinElement = {
   "FindSkinElement",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -22200,13 +22200,13 @@ static const ni::sMethodDef iUIContext_FindSkinElement = {
 };
 
 // Method: FindSkinColor
-static const ni::sParameterDef iUIContext_FindSkinColor_Parameters[5] = {
-  { "aDefault", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_FindSkinColor_Parameters[5] = { 
+  { "aDefault", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_FindSkinColor = {
   "FindSkinColor",
   0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -22219,9 +22219,9 @@ static const ni::sMethodDef iUIContext_FindSkinColor = {
 };
 
 // Method: HasWidgetSinkClass
-static const ni::sParameterDef iUIContext_HasWidgetSinkClass_Parameters[1] = {
+static const ni::sParameterDef iUIContext_HasWidgetSinkClass_Parameters[1] = { 
   { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_HasWidgetSinkClass = {
   "HasWidgetSinkClass",
   0|ni::eType_I8, NULL, "tBool",
@@ -22234,10 +22234,10 @@ static const ni::sMethodDef iUIContext_HasWidgetSinkClass = {
 };
 
 // Method: CreateWidgetSink
-static const ni::sParameterDef iUIContext_CreateWidgetSink_Parameters[2] = {
-  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iUIContext_CreateWidgetSink_Parameters[2] = { 
+  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidgetSink = {
   "CreateWidgetSink",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*",
@@ -22251,9 +22251,9 @@ static const ni::sMethodDef iUIContext_CreateWidgetSink = {
 
 #if niMinFeatures(15)
 // Method: CreateWidgetSinkFromScript
-static const ni::sParameterDef iUIContext_CreateWidgetSinkFromScript_Parameters[1] = {
+static const ni::sParameterDef iUIContext_CreateWidgetSinkFromScript_Parameters[1] = { 
   { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidgetSinkFromScript = {
   "CreateWidgetSinkFromScript",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*",
@@ -22267,13 +22267,13 @@ static const ni::sMethodDef iUIContext_CreateWidgetSinkFromScript = {
 #endif // niMinFeatures(15)
 
 // Method: CreateWidget
-static const ni::sParameterDef iUIContext_CreateWidget_Parameters[5] = {
-  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "arectPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "anStyle", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_CreateWidget_Parameters[5] = { 
+  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "arectPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "anStyle", ni::eType_U32, NULL, "tU32" }, 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidget = {
   "CreateWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -22286,13 +22286,13 @@ static const ni::sMethodDef iUIContext_CreateWidget = {
 };
 
 // Method: CreateWidgetRaw
-static const ni::sParameterDef iUIContext_CreateWidgetRaw_Parameters[5] = {
-  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "arectPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "anStyle", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_CreateWidgetRaw_Parameters[5] = { 
+  { "aszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "arectPos", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "anStyle", ni::eType_U32, NULL, "tU32" }, 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidgetRaw = {
   "CreateWidgetRaw",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -22305,12 +22305,12 @@ static const ni::sMethodDef iUIContext_CreateWidgetRaw = {
 };
 
 // Method: CreateWidgetFromDataTable
-static const ni::sParameterDef iUIContext_CreateWidgetFromDataTable_Parameters[4] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
-  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_CreateWidgetFromDataTable_Parameters[4] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
+  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspTitle", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidgetFromDataTable = {
   "CreateWidgetFromDataTable",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -22323,12 +22323,12 @@ static const ni::sMethodDef iUIContext_CreateWidgetFromDataTable = {
 };
 
 // Method: CreateWidgetFromResource
-static const ni::sParameterDef iUIContext_CreateWidgetFromResource_Parameters[4] = {
-  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iUIContext_CreateWidgetFromResource_Parameters[4] = { 
+  { "ahspRes", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "apwParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspTitle", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateWidgetFromResource = {
   "CreateWidgetFromResource",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -22353,9 +22353,9 @@ static const ni::sMethodDef iUIContext_GetRootWidget = {
 };
 
 // Method: SetActiveWidget
-static const ni::sParameterDef iUIContext_SetActiveWidget_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetActiveWidget_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetActiveWidget = {
   "SetActiveWidget",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -22392,9 +22392,9 @@ static const ni::sMethodDef iUIContext_GetNumWidgets = {
 };
 
 // Method: GetWidget
-static const ni::sParameterDef iUIContext_GetWidget_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetWidget = {
   "GetWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -22407,12 +22407,12 @@ static const ni::sMethodDef iUIContext_GetWidget = {
 };
 
 // Method: SerializeWidget
-static const ni::sParameterDef iUIContext_SerializeWidget_Parameters[4] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
-  { "anFlags", ni::eType_Enum, NULL, "tWidgetSerializeFlags" },
+static const ni::sParameterDef iUIContext_SerializeWidget_Parameters[4] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
+  { "anFlags", ni::eType_Enum, NULL, "tWidgetSerializeFlags" }, 
   { "apFilter", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iRegex), "iRegex*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SerializeWidget = {
   "SerializeWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -22437,10 +22437,10 @@ static const ni::sMethodDef iUIContext_CreateWidgetCommand = {
 };
 
 // Method: SendCommand
-static const ni::sParameterDef iUIContext_SendCommand_Parameters[2] = {
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iUIContext_SendCommand_Parameters[2] = { 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "apCmd", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetCommand), "iWidgetCommand*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SendCommand = {
   "SendCommand",
   0|ni::eType_I8, NULL, "tBool",
@@ -22465,9 +22465,9 @@ static const ni::sMethodDef iUIContext_Draw = {
 };
 
 // Method: DrawCursor
-static const ni::sParameterDef iUIContext_DrawCursor_Parameters[1] = {
+static const ni::sParameterDef iUIContext_DrawCursor_Parameters[1] = { 
   { "apWindow", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOSWindow), "iOSWindow*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_DrawCursor = {
   "DrawCursor",
   0|ni::eType_Null, NULL, "void",
@@ -22480,9 +22480,9 @@ static const ni::sMethodDef iUIContext_DrawCursor = {
 };
 
 // Method: Update
-static const ni::sParameterDef iUIContext_Update_Parameters[1] = {
+static const ni::sParameterDef iUIContext_Update_Parameters[1] = { 
   { "fTime", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_Update = {
   "Update",
   0|ni::eType_I8, NULL, "tBool",
@@ -22495,10 +22495,10 @@ static const ni::sMethodDef iUIContext_Update = {
 };
 
 // Method: Resize
-static const ni::sParameterDef iUIContext_Resize_Parameters[2] = {
-  { "aRootRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
+static const ni::sParameterDef iUIContext_Resize_Parameters[2] = { 
+  { "aRootRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
   { "afContentsScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_Resize = {
   "Resize",
   0|ni::eType_I8, NULL, "tBool",
@@ -22523,9 +22523,9 @@ static const ni::sMethodDef iUIContext_GetContentsScale = {
 };
 
 // Method: SetDebugDraw
-static const ni::sParameterDef iUIContext_SetDebugDraw_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetDebugDraw_Parameters[1] = { 
   { "abDebug", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDebugDraw = {
   "SetDebugDraw",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -22550,9 +22550,9 @@ static const ni::sMethodDef iUIContext_GetDebugDraw = {
 };
 
 // Method: SetCursor
-static const ni::sParameterDef iUIContext_SetCursor_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetCursor_Parameters[1] = { 
   { "pCursor", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetCursor = {
   "SetCursor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "tBool",
@@ -22604,9 +22604,9 @@ static const ni::sMethodDef iUIContext_InitializeDefaultToolbar = {
 
 #if niMinFeatures(20)
 // Method: SetToolbar
-static const ni::sParameterDef iUIContext_SetToolbar_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetToolbar_Parameters[1] = { 
   { "apToolbar", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetToolbar = {
   "SetToolbar",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "ni::tBool",
@@ -22634,9 +22634,9 @@ static const ni::sMethodDef iUIContext_GetToolbar = {
 #endif // niMinFeatures(20)
 
 // Method: SetDrawOpCapture
-static const ni::sParameterDef iUIContext_SetDrawOpCapture_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetDrawOpCapture_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDrawOpCapture = {
   "SetDrawOpCapture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -22661,10 +22661,10 @@ static const ni::sMethodDef iUIContext_GetDrawOpCapture = {
 };
 
 // Method: DrawWidget
-static const ni::sParameterDef iUIContext_DrawWidget_Parameters[2] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iUIContext_DrawWidget_Parameters[2] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_DrawWidget = {
   "DrawWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -22677,11 +22677,11 @@ static const ni::sMethodDef iUIContext_DrawWidget = {
 };
 
 // Method: DrawTransformedWidget
-static const ni::sParameterDef iUIContext_DrawTransformedWidget_Parameters[3] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
+static const ni::sParameterDef iUIContext_DrawTransformedWidget_Parameters[3] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
   { "aBaseMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iUIContext_DrawTransformedWidget = {
   "DrawTransformedWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -22694,9 +22694,9 @@ static const ni::sMethodDef iUIContext_DrawTransformedWidget = {
 };
 
 // Method: SetDragStartDistance
-static const ni::sParameterDef iUIContext_SetDragStartDistance_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetDragStartDistance_Parameters[1] = { 
   { "anPixelDistance", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDragStartDistance = {
   "SetDragStartDistance",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -22721,10 +22721,10 @@ static const ni::sMethodDef iUIContext_GetDragStartDistance = {
 };
 
 // Method: SetDragFingerStartDistance
-static const ni::sParameterDef iUIContext_SetDragFingerStartDistance_Parameters[2] = {
-  { "anFinger", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_SetDragFingerStartDistance_Parameters[2] = { 
+  { "anFinger", ni::eType_U32, NULL, "tU32" }, 
   { "anPixelDistance", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetDragFingerStartDistance = {
   "SetDragFingerStartDistance",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -22737,9 +22737,9 @@ static const ni::sMethodDef iUIContext_SetDragFingerStartDistance = {
 };
 
 // Method: GetDragFingerStartDistance
-static const ni::sParameterDef iUIContext_GetDragFingerStartDistance_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetDragFingerStartDistance_Parameters[1] = { 
   { "anFinger", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetDragFingerStartDistance = {
   "GetDragFingerStartDistance",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -22752,9 +22752,9 @@ static const ni::sMethodDef iUIContext_GetDragFingerStartDistance = {
 };
 
 // Method: GetFingerPosition
-static const ni::sParameterDef iUIContext_GetFingerPosition_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetFingerPosition_Parameters[1] = { 
   { "anFinger", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetFingerPosition = {
   "GetFingerPosition",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec3f, NULL, "sVec3f",
@@ -22767,9 +22767,9 @@ static const ni::sMethodDef iUIContext_GetFingerPosition = {
 };
 
 // Method: GetFingerDown
-static const ni::sParameterDef iUIContext_GetFingerDown_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetFingerDown_Parameters[1] = { 
   { "anFinger", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetFingerDown = {
   "GetFingerDown",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
@@ -22794,10 +22794,10 @@ static const ni::sMethodDef iUIContext_ClearShortcuts = {
 };
 
 // Method: AddShortcut
-static const ni::sParameterDef iUIContext_AddShortcut_Parameters[2] = {
-  { "anKey", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_AddShortcut_Parameters[2] = { 
+  { "anKey", ni::eType_U32, NULL, "tU32" }, 
   { "ahspCmd", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_AddShortcut = {
   "AddShortcut",
   0|ni::eType_Null, NULL, "void",
@@ -22810,9 +22810,9 @@ static const ni::sMethodDef iUIContext_AddShortcut = {
 };
 
 // Method: RemoveShortcut
-static const ni::sParameterDef iUIContext_RemoveShortcut_Parameters[1] = {
+static const ni::sParameterDef iUIContext_RemoveShortcut_Parameters[1] = { 
   { "anKey", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_RemoveShortcut = {
   "RemoveShortcut",
   0|ni::eType_Null, NULL, "void",
@@ -22825,9 +22825,9 @@ static const ni::sMethodDef iUIContext_RemoveShortcut = {
 };
 
 // Method: GetShortcutCommand
-static const ni::sParameterDef iUIContext_GetShortcutCommand_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetShortcutCommand_Parameters[1] = { 
   { "anKey", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetShortcutCommand = {
   "GetShortcutCommand",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -22840,9 +22840,9 @@ static const ni::sMethodDef iUIContext_GetShortcutCommand = {
 };
 
 // Method: GetKeyDown
-static const ni::sParameterDef iUIContext_GetKeyDown_Parameters[1] = {
+static const ni::sParameterDef iUIContext_GetKeyDown_Parameters[1] = { 
   { "aKey", ni::eType_U8, NULL, "tU8" }
-};
+}; 
 static const ni::sMethodDef iUIContext_GetKeyDown = {
   "GetKeyDown",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
@@ -22855,10 +22855,10 @@ static const ni::sMethodDef iUIContext_GetKeyDown = {
 };
 
 // Method: InputFingerMove
-static const ni::sParameterDef iUIContext_InputFingerMove_Parameters[2] = {
-  { "anFinger", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_InputFingerMove_Parameters[2] = { 
+  { "anFinger", ni::eType_U32, NULL, "tU32" }, 
   { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputFingerMove = {
   "InputFingerMove",
   0|ni::eType_Null, NULL, "void",
@@ -22871,10 +22871,10 @@ static const ni::sMethodDef iUIContext_InputFingerMove = {
 };
 
 // Method: InputFingerRelativeMove
-static const ni::sParameterDef iUIContext_InputFingerRelativeMove_Parameters[2] = {
-  { "anFinger", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_InputFingerRelativeMove_Parameters[2] = { 
+  { "anFinger", ni::eType_U32, NULL, "tU32" }, 
   { "avRelMove", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputFingerRelativeMove = {
   "InputFingerRelativeMove",
   0|ni::eType_Null, NULL, "void",
@@ -22887,11 +22887,11 @@ static const ni::sMethodDef iUIContext_InputFingerRelativeMove = {
 };
 
 // Method: InputFingerPress
-static const ni::sParameterDef iUIContext_InputFingerPress_Parameters[3] = {
-  { "anFinger", ni::eType_U32, NULL, "tU32" },
-  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" },
+static const ni::sParameterDef iUIContext_InputFingerPress_Parameters[3] = { 
+  { "anFinger", ni::eType_U32, NULL, "tU32" }, 
+  { "avPosition", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
   { "abDown", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputFingerPress = {
   "InputFingerPress",
   0|ni::eType_Null, NULL, "void",
@@ -22904,10 +22904,10 @@ static const ni::sMethodDef iUIContext_InputFingerPress = {
 };
 
 // Method: InputKeyPress
-static const ni::sParameterDef iUIContext_InputKeyPress_Parameters[2] = {
-  { "aKey", ni::eType_Enum, NULL, "eKey" },
+static const ni::sParameterDef iUIContext_InputKeyPress_Parameters[2] = { 
+  { "aKey", ni::eType_Enum, NULL, "eKey" }, 
   { "abDown", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputKeyPress = {
   "InputKeyPress",
   0|ni::eType_Null, NULL, "void",
@@ -22920,10 +22920,10 @@ static const ni::sMethodDef iUIContext_InputKeyPress = {
 };
 
 // Method: InputKeyChar
-static const ni::sParameterDef iUIContext_InputKeyChar_Parameters[2] = {
-  { "aCharCodePoint", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iUIContext_InputKeyChar_Parameters[2] = { 
+  { "aCharCodePoint", ni::eType_U32, NULL, "tU32" }, 
   { "aKeyLeadingToKeyChar", ni::eType_Enum, NULL, "eKey" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputKeyChar = {
   "InputKeyChar",
   0|ni::eType_Null, NULL, "void",
@@ -22936,9 +22936,9 @@ static const ni::sMethodDef iUIContext_InputKeyChar = {
 };
 
 // Method: InputMouseWheel
-static const ni::sParameterDef iUIContext_InputMouseWheel_Parameters[1] = {
+static const ni::sParameterDef iUIContext_InputMouseWheel_Parameters[1] = { 
   { "afDelta", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputMouseWheel = {
   "InputMouseWheel",
   0|ni::eType_Null, NULL, "void",
@@ -22951,9 +22951,9 @@ static const ni::sMethodDef iUIContext_InputMouseWheel = {
 };
 
 // Method: InputDoubleClick
-static const ni::sParameterDef iUIContext_InputDoubleClick_Parameters[1] = {
+static const ni::sParameterDef iUIContext_InputDoubleClick_Parameters[1] = { 
   { "aPointer", ni::eType_Enum, NULL, "ePointerButton" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputDoubleClick = {
   "InputDoubleClick",
   0|ni::eType_Null, NULL, "void",
@@ -22966,9 +22966,9 @@ static const ni::sMethodDef iUIContext_InputDoubleClick = {
 };
 
 // Method: InputRelativeMouseMove
-static const ni::sParameterDef iUIContext_InputRelativeMouseMove_Parameters[1] = {
+static const ni::sParameterDef iUIContext_InputRelativeMouseMove_Parameters[1] = { 
   { "avRelMove", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputRelativeMouseMove = {
   "InputRelativeMouseMove",
   0|ni::eType_Null, NULL, "void",
@@ -22981,9 +22981,9 @@ static const ni::sMethodDef iUIContext_InputRelativeMouseMove = {
 };
 
 // Method: InputGameCtrl
-static const ni::sParameterDef iUIContext_InputGameCtrl_Parameters[1] = {
+static const ni::sParameterDef iUIContext_InputGameCtrl_Parameters[1] = { 
   { "apGameController", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iGameCtrl), "iGameCtrl*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputGameCtrl = {
   "InputGameCtrl",
   0|ni::eType_Null, NULL, "void",
@@ -22996,10 +22996,10 @@ static const ni::sMethodDef iUIContext_InputGameCtrl = {
 };
 
 // Method: InputPinch
-static const ni::sParameterDef iUIContext_InputPinch_Parameters[2] = {
-  { "afScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iUIContext_InputPinch_Parameters[2] = { 
+  { "afScale", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "aState", ni::eTypeFlags_Constant|ni::eType_Enum, NULL, "const eGestureState" }
-};
+}; 
 static const ni::sMethodDef iUIContext_InputPinch = {
   "InputPinch",
   0|ni::eType_Null, NULL, "void",
@@ -23024,10 +23024,10 @@ static const ni::sMethodDef iUIContext_GetFocusedWidget = {
 };
 
 // Method: CreateProfDraw
-static const ni::sParameterDef iUIContext_CreateProfDraw_Parameters[2] = {
-  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" },
+static const ni::sParameterDef iUIContext_CreateProfDraw_Parameters[2] = { 
+  { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }, 
   { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }
-};
+}; 
 static const ni::sMethodDef iUIContext_CreateProfDraw = {
   "CreateProfDraw",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iProfDraw), "iProfDraw*",
@@ -23040,9 +23040,9 @@ static const ni::sMethodDef iUIContext_CreateProfDraw = {
 };
 
 // Method: SetShowTerminal
-static const ni::sParameterDef iUIContext_SetShowTerminal_Parameters[1] = {
+static const ni::sParameterDef iUIContext_SetShowTerminal_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iUIContext_SetShowTerminal = {
   "SetShowTerminal",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -23227,11 +23227,11 @@ static const ni::sMethodDef iVertexArray_GetUsage = {
 };
 
 // Method: Lock
-static const ni::sParameterDef iVertexArray_Lock_Parameters[3] = {
-  { "ulFirstVertex", ni::eType_U32, NULL, "tU32" },
-  { "ulNumVertex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVertexArray_Lock_Parameters[3] = { 
+  { "ulFirstVertex", ni::eType_U32, NULL, "tU32" }, 
+  { "ulNumVertex", ni::eType_U32, NULL, "tU32" }, 
   { "aLock", ni::eType_Enum, NULL, "eLock" }
-};
+}; 
 static const ni::sMethodDef iVertexArray_Lock = {
   "Lock",
   0|ni::eType_Ptr, NULL, "tPtr",
@@ -23305,9 +23305,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGGradientTable() {
 
 #if niMinFeatures(20)
 // Method: Copy
-static const ni::sParameterDef iVGGradientTable_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGGradientTable_Copy_Parameters[1] = { 
   { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGGradientTable), "const iVGGradientTable*" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -23350,10 +23350,10 @@ static const ni::sMethodDef iVGGradientTable_GetSize = {
 
 #if niMinFeatures(20)
 // Method: SetColor
-static const ni::sParameterDef iVGGradientTable_SetColor_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGGradientTable_SetColor_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_SetColor = {
   "SetColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -23368,9 +23368,9 @@ static const ni::sMethodDef iVGGradientTable_SetColor = {
 
 #if niMinFeatures(20)
 // Method: GetColor
-static const ni::sParameterDef iVGGradientTable_GetColor_Parameters[1] = {
+static const ni::sParameterDef iVGGradientTable_GetColor_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_GetColor = {
   "GetColor",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -23385,11 +23385,11 @@ static const ni::sMethodDef iVGGradientTable_GetColor = {
 
 #if niMinFeatures(20)
 // Method: SetColorRange
-static const ni::sParameterDef iVGGradientTable_SetColorRange_Parameters[3] = {
-  { "anStart", ni::eType_U32, NULL, "tU32" },
-  { "anEnd", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGGradientTable_SetColorRange_Parameters[3] = { 
+  { "anStart", ni::eType_U32, NULL, "tU32" }, 
+  { "anEnd", ni::eType_U32, NULL, "tU32" }, 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_SetColorRange = {
   "SetColorRange",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -23404,10 +23404,10 @@ static const ni::sMethodDef iVGGradientTable_SetColorRange = {
 
 #if niMinFeatures(20)
 // Method: GenerateTwoColors
-static const ni::sParameterDef iVGGradientTable_GenerateTwoColors_Parameters[2] = {
-  { "aStartColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
+static const ni::sParameterDef iVGGradientTable_GenerateTwoColors_Parameters[2] = { 
+  { "aStartColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
   { "aEndColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_GenerateTwoColors = {
   "GenerateTwoColors",
   0|ni::eType_Null, NULL, "void",
@@ -23422,10 +23422,10 @@ static const ni::sMethodDef iVGGradientTable_GenerateTwoColors = {
 
 #if niMinFeatures(20)
 // Method: GenerateStops
-static const ni::sParameterDef iVGGradientTable_GenerateStops_Parameters[2] = {
-  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" },
+static const ni::sParameterDef iVGGradientTable_GenerateStops_Parameters[2] = { 
+  { "apOffsets", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tF32CVec*" }, 
   { "apColors", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec4fCVec*" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_GenerateStops = {
   "GenerateStops",
   0|ni::eType_I8, NULL, "tBool",
@@ -23440,15 +23440,15 @@ static const ni::sMethodDef iVGGradientTable_GenerateStops = {
 
 #if niMinFeatures(20)
 // Method: CreateImage
-static const ni::sParameterDef iVGGradientTable_CreateImage_Parameters[7] = {
-  { "aType", ni::eType_Enum, NULL, "eVGGradientType" },
-  { "aWrapType", ni::eType_Enum, NULL, "eVGWrapType" },
-  { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" },
-  { "anWidth", ni::eType_U32, NULL, "tU32" },
-  { "anHeight", ni::eType_U32, NULL, "tU32" },
-  { "anD1", ni::eType_I32, NULL, "tI32" },
+static const ni::sParameterDef iVGGradientTable_CreateImage_Parameters[7] = { 
+  { "aType", ni::eType_Enum, NULL, "eVGGradientType" }, 
+  { "aWrapType", ni::eType_Enum, NULL, "eVGWrapType" }, 
+  { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }, 
+  { "anWidth", ni::eType_U32, NULL, "tU32" }, 
+  { "anHeight", ni::eType_U32, NULL, "tU32" }, 
+  { "anD1", ni::eType_I32, NULL, "tI32" }, 
   { "anD2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iVGGradientTable_CreateImage = {
   "CreateImage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "iVGImage*",
@@ -23519,9 +23519,9 @@ static const ni::sInterfaceDef InterfaceDef_iVGGradientTable = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGImage() {
 
 // Method: Copy
-static const ni::sParameterDef iVGImage_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGImage_Copy_Parameters[1] = { 
   { "apImage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGImage), "iVGImage*" }
-};
+}; 
 static const ni::sMethodDef iVGImage_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -23558,10 +23558,10 @@ static const ni::sMethodDef iVGImage_GetHasBitmap = {
 };
 
 // Method: GrabBitmap
-static const ni::sParameterDef iVGImage_GrabBitmap_Parameters[2] = {
-  { "aLock", ni::eType_Enum, NULL, "eVGImageUsage" },
+static const ni::sParameterDef iVGImage_GrabBitmap_Parameters[2] = { 
+  { "aLock", ni::eType_Enum, NULL, "eVGImageUsage" }, 
   { "aDirtyRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iVGImage_GrabBitmap = {
   "GrabBitmap",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iBitmap2D), "iBitmap2D*",
@@ -23598,10 +23598,10 @@ static const ni::sMethodDef iVGImage_GetHasDepthStencil = {
 };
 
 // Method: GrabTexture
-static const ni::sParameterDef iVGImage_GrabTexture_Parameters[2] = {
-  { "aLock", ni::eType_Enum, NULL, "eVGImageUsage" },
+static const ni::sParameterDef iVGImage_GrabTexture_Parameters[2] = { 
+  { "aLock", ni::eType_Enum, NULL, "eVGImageUsage" }, 
   { "aDirtyRect", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sRecti&" }
-};
+}; 
 static const ni::sMethodDef iVGImage_GrabTexture = {
   "GrabTexture",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iTexture), "iTexture*",
@@ -23650,10 +23650,10 @@ static const ni::sMethodDef iVGImage_GetSize = {
 };
 
 // Method: Resize
-static const ni::sParameterDef iVGImage_Resize_Parameters[2] = {
-  { "anNewWidth", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGImage_Resize_Parameters[2] = { 
+  { "anNewWidth", ni::eType_U32, NULL, "tU32" }, 
   { "anNewHeight", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGImage_Resize = {
   "Resize",
   0|ni::eType_I8, NULL, "tBool",
@@ -23708,9 +23708,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGPaint() {
 
 #if niMinFeatures(20)
 // Method: Copy
-static const ni::sParameterDef iVGPaint_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGPaint_Copy_Parameters[1] = { 
   { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "const iVGPaint*" }
-};
+}; 
 static const ni::sMethodDef iVGPaint_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -23753,9 +23753,9 @@ static const ni::sMethodDef iVGPaint_GetType = {
 
 #if niMinFeatures(20)
 // Method: SetColor
-static const ni::sParameterDef iVGPaint_SetColor_Parameters[1] = {
+static const ni::sParameterDef iVGPaint_SetColor_Parameters[1] = { 
   { "aColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGPaint_SetColor = {
   "SetColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -23844,9 +23844,9 @@ static const ni::sMethodDef iVGPaintImage_GetImage = {
 
 #if niMinFeatures(20)
 // Method: SetFilterType
-static const ni::sParameterDef iVGPaintImage_SetFilterType_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetFilterType_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eVGImageFilter" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetFilterType = {
   "SetFilterType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -23875,9 +23875,9 @@ static const ni::sMethodDef iVGPaintImage_GetFilterType = {
 
 #if niMinFeatures(20)
 // Method: SetFilterRadius
-static const ni::sParameterDef iVGPaintImage_SetFilterRadius_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetFilterRadius_Parameters[1] = { 
   { "afRadius", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetFilterRadius = {
   "SetFilterRadius",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -23906,9 +23906,9 @@ static const ni::sMethodDef iVGPaintImage_GetFilterRadius = {
 
 #if niMinFeatures(20)
 // Method: SetFilterNormalize
-static const ni::sParameterDef iVGPaintImage_SetFilterNormalize_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetFilterNormalize_Parameters[1] = { 
   { "abNormalize", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetFilterNormalize = {
   "SetFilterNormalize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -23937,9 +23937,9 @@ static const ni::sMethodDef iVGPaintImage_GetFilterNormalize = {
 
 #if niMinFeatures(20)
 // Method: SetWrapType
-static const ni::sParameterDef iVGPaintImage_SetWrapType_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetWrapType_Parameters[1] = { 
   { "aWrapType", ni::eType_Enum, NULL, "eVGWrapType" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetWrapType = {
   "SetWrapType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -23968,9 +23968,9 @@ static const ni::sMethodDef iVGPaintImage_GetWrapType = {
 
 #if niMinFeatures(20)
 // Method: SetRectangle
-static const ni::sParameterDef iVGPaintImage_SetRectangle_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetRectangle_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetRectangle = {
   "SetRectangle",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -23999,9 +23999,9 @@ static const ni::sMethodDef iVGPaintImage_GetRectangle = {
 
 #if niMinFeatures(20)
 // Method: SetUnits
-static const ni::sParameterDef iVGPaintImage_SetUnits_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetUnits_Parameters[1] = { 
   { "aUnits", ni::eType_Enum, NULL, "eVGPaintUnits" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetUnits = {
   "SetUnits",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -24030,9 +24030,9 @@ static const ni::sMethodDef iVGPaintImage_GetUnits = {
 
 #if niMinFeatures(20)
 // Method: SetSource
-static const ni::sParameterDef iVGPaintImage_SetSource_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetSource_Parameters[1] = { 
   { "apSource", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetSource = {
   "SetSource",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "void",
@@ -24061,9 +24061,9 @@ static const ni::sMethodDef iVGPaintImage_GetSource = {
 
 #if niMinFeatures(20)
 // Method: SetSourceUnits
-static const ni::sParameterDef iVGPaintImage_SetSourceUnits_Parameters[1] = {
+static const ni::sParameterDef iVGPaintImage_SetSourceUnits_Parameters[1] = { 
   { "aUnits", ni::eType_Enum, NULL, "eVGPaintUnits" }
-};
+}; 
 static const ni::sMethodDef iVGPaintImage_SetSourceUnits = {
   "SetSourceUnits",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -24174,9 +24174,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGPaintGradient() {
 
 #if niMinFeatures(20)
 // Method: SetGradientType
-static const ni::sParameterDef iVGPaintGradient_SetGradientType_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetGradientType_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eVGGradientType" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetGradientType = {
   "SetGradientType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -24205,9 +24205,9 @@ static const ni::sMethodDef iVGPaintGradient_GetGradientType = {
 
 #if niMinFeatures(20)
 // Method: SetD1
-static const ni::sParameterDef iVGPaintGradient_SetD1_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetD1_Parameters[1] = { 
   { "anD1", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetD1 = {
   "SetD1",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I32, NULL, "void",
@@ -24236,9 +24236,9 @@ static const ni::sMethodDef iVGPaintGradient_GetD1 = {
 
 #if niMinFeatures(20)
 // Method: SetD2
-static const ni::sParameterDef iVGPaintGradient_SetD2_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetD2_Parameters[1] = { 
   { "anD2", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetD2 = {
   "SetD2",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I32, NULL, "void",
@@ -24267,9 +24267,9 @@ static const ni::sMethodDef iVGPaintGradient_GetD2 = {
 
 #if niMinFeatures(20)
 // Method: SetWrapType
-static const ni::sParameterDef iVGPaintGradient_SetWrapType_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetWrapType_Parameters[1] = { 
   { "aWrapType", ni::eType_Enum, NULL, "eVGWrapType" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetWrapType = {
   "SetWrapType",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -24298,9 +24298,9 @@ static const ni::sMethodDef iVGPaintGradient_GetWrapType = {
 
 #if niMinFeatures(20)
 // Method: SetA
-static const ni::sParameterDef iVGPaintGradient_SetA_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetA_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetA = {
   "SetA",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -24329,9 +24329,9 @@ static const ni::sMethodDef iVGPaintGradient_GetA = {
 
 #if niMinFeatures(20)
 // Method: SetB
-static const ni::sParameterDef iVGPaintGradient_SetB_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetB_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetB = {
   "SetB",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -24360,9 +24360,9 @@ static const ni::sMethodDef iVGPaintGradient_GetB = {
 
 #if niMinFeatures(20)
 // Method: SetR
-static const ni::sParameterDef iVGPaintGradient_SetR_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetR_Parameters[1] = { 
   { "afV", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetR = {
   "SetR",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -24391,9 +24391,9 @@ static const ni::sMethodDef iVGPaintGradient_GetR = {
 
 #if niMinFeatures(20)
 // Method: SetUnits
-static const ni::sParameterDef iVGPaintGradient_SetUnits_Parameters[1] = {
+static const ni::sParameterDef iVGPaintGradient_SetUnits_Parameters[1] = { 
   { "aUnits", ni::eType_Enum, NULL, "eVGPaintUnits" }
-};
+}; 
 static const ni::sMethodDef iVGPaintGradient_SetUnits = {
   "SetUnits",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -24518,10 +24518,10 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGPathTesselatedRenderer
 
 #if niMinFeatures(20)
 // Method: BeginAddPath
-static const ni::sParameterDef iVGPathTesselatedRenderer_BeginAddPath_Parameters[2] = {
-  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" },
+static const ni::sParameterDef iVGPathTesselatedRenderer_BeginAddPath_Parameters[2] = { 
+  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }, 
   { "abStroke", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPathTesselatedRenderer_BeginAddPath = {
   "BeginAddPath",
   0|ni::eType_Null, NULL, "void",
@@ -24536,10 +24536,10 @@ static const ni::sMethodDef iVGPathTesselatedRenderer_BeginAddPath = {
 
 #if niMinFeatures(20)
 // Method: EndAddPath
-static const ni::sParameterDef iVGPathTesselatedRenderer_EndAddPath_Parameters[2] = {
-  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" },
+static const ni::sParameterDef iVGPathTesselatedRenderer_EndAddPath_Parameters[2] = { 
+  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }, 
   { "abStroke", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPathTesselatedRenderer_EndAddPath = {
   "EndAddPath",
   0|ni::eType_Null, NULL, "void",
@@ -24554,9 +24554,9 @@ static const ni::sMethodDef iVGPathTesselatedRenderer_EndAddPath = {
 
 #if niMinFeatures(20)
 // Method: GetPathApproximationScale
-static const ni::sParameterDef iVGPathTesselatedRenderer_GetPathApproximationScale_Parameters[1] = {
+static const ni::sParameterDef iVGPathTesselatedRenderer_GetPathApproximationScale_Parameters[1] = { 
   { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }
-};
+}; 
 static const ni::sMethodDef iVGPathTesselatedRenderer_GetPathApproximationScale = {
   "GetPathApproximationScale",
   0|ni::eType_F32, NULL, "tF32",
@@ -24571,11 +24571,11 @@ static const ni::sMethodDef iVGPathTesselatedRenderer_GetPathApproximationScale 
 
 #if niMinFeatures(20)
 // Method: AddPathPolygons
-static const ni::sParameterDef iVGPathTesselatedRenderer_AddPathPolygons_Parameters[3] = {
-  { "apTess", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPolygonTesselator), "iVGPolygonTesselator*" },
-  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" },
+static const ni::sParameterDef iVGPathTesselatedRenderer_AddPathPolygons_Parameters[3] = { 
+  { "apTess", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPolygonTesselator), "iVGPolygonTesselator*" }, 
+  { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }, 
   { "abStroke", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPathTesselatedRenderer_AddPathPolygons = {
   "AddPathPolygons",
   0|ni::eType_Null, NULL, "void",
@@ -24701,9 +24701,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGPath() {
 
 #if niMinFeatures(20)
 // Method: Copy
-static const ni::sParameterDef iVGPath_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Copy_Parameters[1] = { 
   { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -24746,10 +24746,10 @@ static const ni::sMethodDef iVGPath_Clear = {
 
 #if niMinFeatures(20)
 // Method: AddVertex
-static const ni::sParameterDef iVGPath_AddVertex_Parameters[2] = {
-  { "avVertex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGPath_AddVertex_Parameters[2] = { 
+  { "avVertex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aCommand", ni::eType_Enum, NULL, "eVGPathCommand" }
-};
+}; 
 static const ni::sMethodDef iVGPath_AddVertex = {
   "AddVertex",
   0|ni::eType_I8, NULL, "tBool",
@@ -24764,9 +24764,9 @@ static const ni::sMethodDef iVGPath_AddVertex = {
 
 #if niMinFeatures(20)
 // Method: AddPath
-static const ni::sParameterDef iVGPath_AddPath_Parameters[1] = {
+static const ni::sParameterDef iVGPath_AddPath_Parameters[1] = { 
   { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_AddPath = {
   "AddPath",
   0|ni::eType_I8, NULL, "tBool",
@@ -24795,10 +24795,10 @@ static const ni::sMethodDef iVGPath_GetNumVertices = {
 
 #if niMinFeatures(20)
 // Method: SetVertex
-static const ni::sParameterDef iVGPath_SetVertex_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGPath_SetVertex_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "avVertex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPath_SetVertex = {
   "SetVertex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -24813,9 +24813,9 @@ static const ni::sMethodDef iVGPath_SetVertex = {
 
 #if niMinFeatures(20)
 // Method: GetVertex
-static const ni::sParameterDef iVGPath_GetVertex_Parameters[1] = {
+static const ni::sParameterDef iVGPath_GetVertex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_GetVertex = {
   "GetVertex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -24830,10 +24830,10 @@ static const ni::sMethodDef iVGPath_GetVertex = {
 
 #if niMinFeatures(20)
 // Method: SetCommand
-static const ni::sParameterDef iVGPath_SetCommand_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGPath_SetCommand_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aCmd", ni::eType_Enum, NULL, "eVGPathCommand" }
-};
+}; 
 static const ni::sMethodDef iVGPath_SetCommand = {
   "SetCommand",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -24848,9 +24848,9 @@ static const ni::sMethodDef iVGPath_SetCommand = {
 
 #if niMinFeatures(20)
 // Method: GetCommand
-static const ni::sParameterDef iVGPath_GetCommand_Parameters[1] = {
+static const ni::sParameterDef iVGPath_GetCommand_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_GetCommand = {
   "GetCommand",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Enum, NULL, "eVGPathCommand",
@@ -24907,10 +24907,10 @@ static const ni::sMethodDef iVGPath_GetVertexIterator = {
 
 #if niMinFeatures(20)
 // Method: FlipX
-static const ni::sParameterDef iVGPath_FlipX_Parameters[2] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_FlipX_Parameters[2] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
   { "x2", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_FlipX = {
   "FlipX",
   0|ni::eType_Null, NULL, "void",
@@ -24925,10 +24925,10 @@ static const ni::sMethodDef iVGPath_FlipX = {
 
 #if niMinFeatures(20)
 // Method: FlipY
-static const ni::sParameterDef iVGPath_FlipY_Parameters[2] = {
-  { "y1", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_FlipY_Parameters[2] = { 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
   { "y2", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_FlipY = {
   "FlipY",
   0|ni::eType_Null, NULL, "void",
@@ -24943,10 +24943,10 @@ static const ni::sMethodDef iVGPath_FlipY = {
 
 #if niMinFeatures(20)
 // Method: MoveTo
-static const ni::sParameterDef iVGPath_MoveTo_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_MoveTo_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_MoveTo = {
   "MoveTo",
   0|ni::eType_Null, NULL, "void",
@@ -24961,10 +24961,10 @@ static const ni::sMethodDef iVGPath_MoveTo = {
 
 #if niMinFeatures(20)
 // Method: MoveToRel
-static const ni::sParameterDef iVGPath_MoveToRel_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_MoveToRel_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_MoveToRel = {
   "MoveToRel",
   0|ni::eType_Null, NULL, "void",
@@ -24979,10 +24979,10 @@ static const ni::sMethodDef iVGPath_MoveToRel = {
 
 #if niMinFeatures(20)
 // Method: LineTo
-static const ni::sParameterDef iVGPath_LineTo_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_LineTo_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_LineTo = {
   "LineTo",
   0|ni::eType_Null, NULL, "void",
@@ -24997,10 +24997,10 @@ static const ni::sMethodDef iVGPath_LineTo = {
 
 #if niMinFeatures(20)
 // Method: LineToRel
-static const ni::sParameterDef iVGPath_LineToRel_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_LineToRel_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_LineToRel = {
   "LineToRel",
   0|ni::eType_Null, NULL, "void",
@@ -25015,9 +25015,9 @@ static const ni::sMethodDef iVGPath_LineToRel = {
 
 #if niMinFeatures(20)
 // Method: HLineTo
-static const ni::sParameterDef iVGPath_HLineTo_Parameters[1] = {
+static const ni::sParameterDef iVGPath_HLineTo_Parameters[1] = { 
   { "x", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_HLineTo = {
   "HLineTo",
   0|ni::eType_Null, NULL, "void",
@@ -25032,9 +25032,9 @@ static const ni::sMethodDef iVGPath_HLineTo = {
 
 #if niMinFeatures(20)
 // Method: HLineToRel
-static const ni::sParameterDef iVGPath_HLineToRel_Parameters[1] = {
+static const ni::sParameterDef iVGPath_HLineToRel_Parameters[1] = { 
   { "x", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_HLineToRel = {
   "HLineToRel",
   0|ni::eType_Null, NULL, "void",
@@ -25049,9 +25049,9 @@ static const ni::sMethodDef iVGPath_HLineToRel = {
 
 #if niMinFeatures(20)
 // Method: VLineTo
-static const ni::sParameterDef iVGPath_VLineTo_Parameters[1] = {
+static const ni::sParameterDef iVGPath_VLineTo_Parameters[1] = { 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_VLineTo = {
   "VLineTo",
   0|ni::eType_Null, NULL, "void",
@@ -25066,9 +25066,9 @@ static const ni::sMethodDef iVGPath_VLineTo = {
 
 #if niMinFeatures(20)
 // Method: VLineToRel
-static const ni::sParameterDef iVGPath_VLineToRel_Parameters[1] = {
+static const ni::sParameterDef iVGPath_VLineToRel_Parameters[1] = { 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_VLineToRel = {
   "VLineToRel",
   0|ni::eType_Null, NULL, "void",
@@ -25083,12 +25083,12 @@ static const ni::sMethodDef iVGPath_VLineToRel = {
 
 #if niMinFeatures(20)
 // Method: Curve3
-static const ni::sParameterDef iVGPath_Curve3_Parameters[4] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
-  { "y1", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve3_Parameters[4] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve3 = {
   "Curve3",
   0|ni::eType_Null, NULL, "void",
@@ -25103,12 +25103,12 @@ static const ni::sMethodDef iVGPath_Curve3 = {
 
 #if niMinFeatures(20)
 // Method: Curve3Rel
-static const ni::sParameterDef iVGPath_Curve3Rel_Parameters[4] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
-  { "y1", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve3Rel_Parameters[4] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve3Rel = {
   "Curve3Rel",
   0|ni::eType_Null, NULL, "void",
@@ -25123,10 +25123,10 @@ static const ni::sMethodDef iVGPath_Curve3Rel = {
 
 #if niMinFeatures(20)
 // Method: Curve3Prev
-static const ni::sParameterDef iVGPath_Curve3Prev_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve3Prev_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve3Prev = {
   "Curve3Prev",
   0|ni::eType_Null, NULL, "void",
@@ -25141,10 +25141,10 @@ static const ni::sMethodDef iVGPath_Curve3Prev = {
 
 #if niMinFeatures(20)
 // Method: Curve3PrevRel
-static const ni::sParameterDef iVGPath_Curve3PrevRel_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve3PrevRel_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve3PrevRel = {
   "Curve3PrevRel",
   0|ni::eType_Null, NULL, "void",
@@ -25159,14 +25159,14 @@ static const ni::sMethodDef iVGPath_Curve3PrevRel = {
 
 #if niMinFeatures(20)
 // Method: Curve4
-static const ni::sParameterDef iVGPath_Curve4_Parameters[6] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
-  { "y1", ni::eType_F32, NULL, "tF32" },
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4_Parameters[6] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4 = {
   "Curve4",
   0|ni::eType_Null, NULL, "void",
@@ -25181,14 +25181,14 @@ static const ni::sMethodDef iVGPath_Curve4 = {
 
 #if niMinFeatures(20)
 // Method: Curve4Rel
-static const ni::sParameterDef iVGPath_Curve4Rel_Parameters[6] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
-  { "y1", ni::eType_F32, NULL, "tF32" },
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4Rel_Parameters[6] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4Rel = {
   "Curve4Rel",
   0|ni::eType_Null, NULL, "void",
@@ -25203,12 +25203,12 @@ static const ni::sMethodDef iVGPath_Curve4Rel = {
 
 #if niMinFeatures(20)
 // Method: Curve4Prev
-static const ni::sParameterDef iVGPath_Curve4Prev_Parameters[4] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4Prev_Parameters[4] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4Prev = {
   "Curve4Prev",
   0|ni::eType_Null, NULL, "void",
@@ -25223,12 +25223,12 @@ static const ni::sMethodDef iVGPath_Curve4Prev = {
 
 #if niMinFeatures(20)
 // Method: Curve4PrevRel
-static const ni::sParameterDef iVGPath_Curve4PrevRel_Parameters[4] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4PrevRel_Parameters[4] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4PrevRel = {
   "Curve4PrevRel",
   0|ni::eType_Null, NULL, "void",
@@ -25243,11 +25243,11 @@ static const ni::sMethodDef iVGPath_Curve4PrevRel = {
 
 #if niMinFeatures(20)
 // Method: Curve4K
-static const ni::sParameterDef iVGPath_Curve4K_Parameters[3] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4K_Parameters[3] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
   { "k", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4K = {
   "Curve4K",
   0|ni::eType_Null, NULL, "void",
@@ -25262,11 +25262,11 @@ static const ni::sMethodDef iVGPath_Curve4K = {
 
 #if niMinFeatures(20)
 // Method: Curve4KRel
-static const ni::sParameterDef iVGPath_Curve4KRel_Parameters[3] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Curve4KRel_Parameters[3] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
   { "k", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Curve4KRel = {
   "Curve4KRel",
   0|ni::eType_Null, NULL, "void",
@@ -25281,14 +25281,14 @@ static const ni::sMethodDef iVGPath_Curve4KRel = {
 
 #if niMinFeatures(20)
 // Method: Hermite
-static const ni::sParameterDef iVGPath_Hermite_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Hermite_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Hermite = {
   "Hermite",
   0|ni::eType_Null, NULL, "void",
@@ -25303,14 +25303,14 @@ static const ni::sMethodDef iVGPath_Hermite = {
 
 #if niMinFeatures(20)
 // Method: HermiteRel
-static const ni::sParameterDef iVGPath_HermiteRel_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_HermiteRel_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_HermiteRel = {
   "HermiteRel",
   0|ni::eType_Null, NULL, "void",
@@ -25325,14 +25325,14 @@ static const ni::sMethodDef iVGPath_HermiteRel = {
 
 #if niMinFeatures(20)
 // Method: UBSpline
-static const ni::sParameterDef iVGPath_UBSpline_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_UBSpline_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_UBSpline = {
   "UBSpline",
   0|ni::eType_Null, NULL, "void",
@@ -25347,14 +25347,14 @@ static const ni::sMethodDef iVGPath_UBSpline = {
 
 #if niMinFeatures(20)
 // Method: UBSplineRel
-static const ni::sParameterDef iVGPath_UBSplineRel_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_UBSplineRel_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_UBSplineRel = {
   "UBSplineRel",
   0|ni::eType_Null, NULL, "void",
@@ -25369,14 +25369,14 @@ static const ni::sMethodDef iVGPath_UBSplineRel = {
 
 #if niMinFeatures(20)
 // Method: Catrom
-static const ni::sParameterDef iVGPath_Catrom_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Catrom_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Catrom = {
   "Catrom",
   0|ni::eType_Null, NULL, "void",
@@ -25391,14 +25391,14 @@ static const ni::sMethodDef iVGPath_Catrom = {
 
 #if niMinFeatures(20)
 // Method: CatromRel
-static const ni::sParameterDef iVGPath_CatromRel_Parameters[6] = {
-  { "x2", ni::eType_F32, NULL, "tF32" },
-  { "y2", ni::eType_F32, NULL, "tF32" },
-  { "x3", ni::eType_F32, NULL, "tF32" },
-  { "y3", ni::eType_F32, NULL, "tF32" },
-  { "x4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_CatromRel_Parameters[6] = { 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
+  { "y2", ni::eType_F32, NULL, "tF32" }, 
+  { "x3", ni::eType_F32, NULL, "tF32" }, 
+  { "y3", ni::eType_F32, NULL, "tF32" }, 
+  { "x4", ni::eType_F32, NULL, "tF32" }, 
   { "y4", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_CatromRel = {
   "CatromRel",
   0|ni::eType_Null, NULL, "void",
@@ -25413,15 +25413,15 @@ static const ni::sMethodDef iVGPath_CatromRel = {
 
 #if niMinFeatures(20)
 // Method: ArcTo
-static const ni::sParameterDef iVGPath_ArcTo_Parameters[7] = {
-  { "rx", ni::eType_F32, NULL, "tF32" },
-  { "ry", ni::eType_F32, NULL, "tF32" },
-  { "angle", ni::eType_F32, NULL, "tF32" },
-  { "large_arc_flag", ni::eType_I8, NULL, "tBool" },
-  { "sweep_flag", ni::eType_I8, NULL, "tBool" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_ArcTo_Parameters[7] = { 
+  { "rx", ni::eType_F32, NULL, "tF32" }, 
+  { "ry", ni::eType_F32, NULL, "tF32" }, 
+  { "angle", ni::eType_F32, NULL, "tF32" }, 
+  { "large_arc_flag", ni::eType_I8, NULL, "tBool" }, 
+  { "sweep_flag", ni::eType_I8, NULL, "tBool" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_ArcTo = {
   "ArcTo",
   0|ni::eType_Null, NULL, "void",
@@ -25436,15 +25436,15 @@ static const ni::sMethodDef iVGPath_ArcTo = {
 
 #if niMinFeatures(20)
 // Method: ArcToRel
-static const ni::sParameterDef iVGPath_ArcToRel_Parameters[7] = {
-  { "rx", ni::eType_F32, NULL, "tF32" },
-  { "ry", ni::eType_F32, NULL, "tF32" },
-  { "angle", ni::eType_F32, NULL, "tF32" },
-  { "large_arc_flag", ni::eType_I8, NULL, "tBool" },
-  { "sweep_flag", ni::eType_I8, NULL, "tBool" },
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_ArcToRel_Parameters[7] = { 
+  { "rx", ni::eType_F32, NULL, "tF32" }, 
+  { "ry", ni::eType_F32, NULL, "tF32" }, 
+  { "angle", ni::eType_F32, NULL, "tF32" }, 
+  { "large_arc_flag", ni::eType_I8, NULL, "tBool" }, 
+  { "sweep_flag", ni::eType_I8, NULL, "tBool" }, 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_ArcToRel = {
   "ArcToRel",
   0|ni::eType_Null, NULL, "void",
@@ -25473,12 +25473,12 @@ static const ni::sMethodDef iVGPath_ClosePolygon = {
 
 #if niMinFeatures(20)
 // Method: Rect
-static const ni::sParameterDef iVGPath_Rect_Parameters[4] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
-  { "y", ni::eType_F32, NULL, "tF32" },
-  { "width", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Rect_Parameters[4] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
+  { "y", ni::eType_F32, NULL, "tF32" }, 
+  { "width", ni::eType_F32, NULL, "tF32" }, 
   { "height", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Rect = {
   "Rect",
   0|ni::eType_Null, NULL, "void",
@@ -25493,14 +25493,14 @@ static const ni::sMethodDef iVGPath_Rect = {
 
 #if niMinFeatures(20)
 // Method: RoundedRect
-static const ni::sParameterDef iVGPath_RoundedRect_Parameters[6] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
-  { "y", ni::eType_F32, NULL, "tF32" },
-  { "width", ni::eType_F32, NULL, "tF32" },
-  { "height", ni::eType_F32, NULL, "tF32" },
-  { "rx", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_RoundedRect_Parameters[6] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
+  { "y", ni::eType_F32, NULL, "tF32" }, 
+  { "width", ni::eType_F32, NULL, "tF32" }, 
+  { "height", ni::eType_F32, NULL, "tF32" }, 
+  { "rx", ni::eType_F32, NULL, "tF32" }, 
   { "ry", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_RoundedRect = {
   "RoundedRect",
   0|ni::eType_Null, NULL, "void",
@@ -25515,12 +25515,12 @@ static const ni::sMethodDef iVGPath_RoundedRect = {
 
 #if niMinFeatures(20)
 // Method: RectCentered
-static const ni::sParameterDef iVGPath_RectCentered_Parameters[4] = {
-  { "cx", ni::eType_F32, NULL, "tF32" },
-  { "cy", ni::eType_F32, NULL, "tF32" },
-  { "width", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_RectCentered_Parameters[4] = { 
+  { "cx", ni::eType_F32, NULL, "tF32" }, 
+  { "cy", ni::eType_F32, NULL, "tF32" }, 
+  { "width", ni::eType_F32, NULL, "tF32" }, 
   { "height", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_RectCentered = {
   "RectCentered",
   0|ni::eType_Null, NULL, "void",
@@ -25535,14 +25535,14 @@ static const ni::sMethodDef iVGPath_RectCentered = {
 
 #if niMinFeatures(20)
 // Method: RoundedRectCentered
-static const ni::sParameterDef iVGPath_RoundedRectCentered_Parameters[6] = {
-  { "cx", ni::eType_F32, NULL, "tF32" },
-  { "cy", ni::eType_F32, NULL, "tF32" },
-  { "width", ni::eType_F32, NULL, "tF32" },
-  { "height", ni::eType_F32, NULL, "tF32" },
-  { "rx", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_RoundedRectCentered_Parameters[6] = { 
+  { "cx", ni::eType_F32, NULL, "tF32" }, 
+  { "cy", ni::eType_F32, NULL, "tF32" }, 
+  { "width", ni::eType_F32, NULL, "tF32" }, 
+  { "height", ni::eType_F32, NULL, "tF32" }, 
+  { "rx", ni::eType_F32, NULL, "tF32" }, 
   { "ry", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_RoundedRectCentered = {
   "RoundedRectCentered",
   0|ni::eType_Null, NULL, "void",
@@ -25557,18 +25557,18 @@ static const ni::sMethodDef iVGPath_RoundedRectCentered = {
 
 #if niMinFeatures(20)
 // Method: SpeechBubbleRect
-static const ni::sParameterDef iVGPath_SpeechBubbleRect_Parameters[10] = {
-  { "x", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "y", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "w", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "h", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "rx", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "ry", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "tx", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "ty", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
-  { "arrowGap", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" },
+static const ni::sParameterDef iVGPath_SpeechBubbleRect_Parameters[10] = { 
+  { "x", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "y", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "w", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "h", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "rx", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "ry", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "tx", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "ty", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
+  { "arrowGap", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }, 
   { "arrowLen", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_SpeechBubbleRect = {
   "SpeechBubbleRect",
   0|ni::eType_Null, NULL, "void",
@@ -25583,11 +25583,11 @@ static const ni::sMethodDef iVGPath_SpeechBubbleRect = {
 
 #if niMinFeatures(20)
 // Method: Circle
-static const ni::sParameterDef iVGPath_Circle_Parameters[3] = {
-  { "cx", ni::eType_F32, NULL, "tF32" },
-  { "cy", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Circle_Parameters[3] = { 
+  { "cx", ni::eType_F32, NULL, "tF32" }, 
+  { "cy", ni::eType_F32, NULL, "tF32" }, 
   { "radius", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Circle = {
   "Circle",
   0|ni::eType_Null, NULL, "void",
@@ -25602,12 +25602,12 @@ static const ni::sMethodDef iVGPath_Circle = {
 
 #if niMinFeatures(20)
 // Method: Ellipse
-static const ni::sParameterDef iVGPath_Ellipse_Parameters[4] = {
-  { "cx", ni::eType_F32, NULL, "tF32" },
-  { "cy", ni::eType_F32, NULL, "tF32" },
-  { "rx", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Ellipse_Parameters[4] = { 
+  { "cx", ni::eType_F32, NULL, "tF32" }, 
+  { "cy", ni::eType_F32, NULL, "tF32" }, 
+  { "rx", ni::eType_F32, NULL, "tF32" }, 
   { "ry", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Ellipse = {
   "Ellipse",
   0|ni::eType_Null, NULL, "void",
@@ -25622,12 +25622,12 @@ static const ni::sMethodDef iVGPath_Ellipse = {
 
 #if niMinFeatures(20)
 // Method: Line
-static const ni::sParameterDef iVGPath_Line_Parameters[4] = {
-  { "x1", ni::eType_F32, NULL, "tF32" },
-  { "y1", ni::eType_F32, NULL, "tF32" },
-  { "x2", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_Line_Parameters[4] = { 
+  { "x1", ni::eType_F32, NULL, "tF32" }, 
+  { "y1", ni::eType_F32, NULL, "tF32" }, 
+  { "x2", ni::eType_F32, NULL, "tF32" }, 
   { "y2", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Line = {
   "Line",
   0|ni::eType_I8, NULL, "tBool",
@@ -25642,9 +25642,9 @@ static const ni::sMethodDef iVGPath_Line = {
 
 #if niMinFeatures(20)
 // Method: Polyline
-static const ni::sParameterDef iVGPath_Polyline_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Polyline_Parameters[1] = { 
   { "apVerts", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec2fCVec*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Polyline = {
   "Polyline",
   0|ni::eType_I8, NULL, "tBool",
@@ -25659,9 +25659,9 @@ static const ni::sMethodDef iVGPath_Polyline = {
 
 #if niMinFeatures(20)
 // Method: Polygon
-static const ni::sParameterDef iVGPath_Polygon_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Polygon_Parameters[1] = { 
   { "apVerts", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iCollection), "const tVec2fCVec*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Polygon = {
   "Polygon",
   0|ni::eType_I8, NULL, "tBool",
@@ -25676,14 +25676,14 @@ static const ni::sMethodDef iVGPath_Polygon = {
 
 #if niMinFeatures(20)
 // Method: Star
-static const ni::sParameterDef iVGPath_Star_Parameters[6] = {
-  { "xc", ni::eType_F32, NULL, "tF32" },
-  { "yc", ni::eType_F32, NULL, "tF32" },
-  { "r1", ni::eType_F32, NULL, "tF32" },
-  { "r2", ni::eType_F32, NULL, "tF32" },
-  { "n", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iVGPath_Star_Parameters[6] = { 
+  { "xc", ni::eType_F32, NULL, "tF32" }, 
+  { "yc", ni::eType_F32, NULL, "tF32" }, 
+  { "r1", ni::eType_F32, NULL, "tF32" }, 
+  { "r2", ni::eType_F32, NULL, "tF32" }, 
+  { "n", ni::eType_U32, NULL, "tU32" }, 
   { "start_angle", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Star = {
   "Star",
   0|ni::eType_Null, NULL, "void",
@@ -25698,11 +25698,11 @@ static const ni::sMethodDef iVGPath_Star = {
 
 #if niMinFeatures(20)
 // Method: Text
-static const ni::sParameterDef iVGPath_Text_Parameters[3] = {
-  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" },
-  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGPath_Text_Parameters[3] = { 
+  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }, 
+  { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Text = {
   "Text",
   0|ni::eType_I8, NULL, "tBool",
@@ -25717,15 +25717,15 @@ static const ni::sMethodDef iVGPath_Text = {
 
 #if niMinFeatures(20)
 // Method: TextAlongOnePath
-static const ni::sParameterDef iVGPath_TextAlongOnePath_Parameters[7] = {
-  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" },
-  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" },
-  { "afBaseLength", ni::eType_F32, NULL, "tF32" },
-  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_TextAlongOnePath_Parameters[7] = { 
+  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }, 
+  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" }, 
+  { "afBaseLength", ni::eType_F32, NULL, "tF32" }, 
+  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" }, 
   { "afCurvesApproxScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_TextAlongOnePath = {
   "TextAlongOnePath",
   0|ni::eType_I8, NULL, "tBool",
@@ -25740,17 +25740,17 @@ static const ni::sMethodDef iVGPath_TextAlongOnePath = {
 
 #if niMinFeatures(20)
 // Method: TextAlongTwoPaths
-static const ni::sParameterDef iVGPath_TextAlongTwoPaths_Parameters[9] = {
-  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" },
-  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "apPath1", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "apPath2", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" },
-  { "afBaseHeight", ni::eType_F32, NULL, "tF32" },
-  { "afBaseLength", ni::eType_F32, NULL, "tF32" },
-  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_TextAlongTwoPaths_Parameters[9] = { 
+  { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }, 
+  { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "apPath1", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "apPath2", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" }, 
+  { "afBaseHeight", ni::eType_F32, NULL, "tF32" }, 
+  { "afBaseLength", ni::eType_F32, NULL, "tF32" }, 
+  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" }, 
   { "afCurvesApproxScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_TextAlongTwoPaths = {
   "TextAlongTwoPaths",
   0|ni::eType_I8, NULL, "tBool",
@@ -25765,9 +25765,9 @@ static const ni::sMethodDef iVGPath_TextAlongTwoPaths = {
 
 #if niMinFeatures(20)
 // Method: ToBSpline
-static const ni::sParameterDef iVGPath_ToBSpline_Parameters[1] = {
+static const ni::sParameterDef iVGPath_ToBSpline_Parameters[1] = { 
   { "afInterpolationStep", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_ToBSpline = {
   "ToBSpline",
   0|ni::eType_Null, NULL, "void",
@@ -25782,9 +25782,9 @@ static const ni::sMethodDef iVGPath_ToBSpline = {
 
 #if niMinFeatures(20)
 // Method: Translate
-static const ni::sParameterDef iVGPath_Translate_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Translate_Parameters[1] = { 
   { "avTranslate", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Translate = {
   "Translate",
   0|ni::eType_I8, NULL, "tBool",
@@ -25799,9 +25799,9 @@ static const ni::sMethodDef iVGPath_Translate = {
 
 #if niMinFeatures(20)
 // Method: Rotate
-static const ni::sParameterDef iVGPath_Rotate_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Rotate_Parameters[1] = { 
   { "afRadians", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Rotate = {
   "Rotate",
   0|ni::eType_I8, NULL, "tBool",
@@ -25816,9 +25816,9 @@ static const ni::sMethodDef iVGPath_Rotate = {
 
 #if niMinFeatures(20)
 // Method: Scale
-static const ni::sParameterDef iVGPath_Scale_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Scale_Parameters[1] = { 
   { "avScale", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Scale = {
   "Scale",
   0|ni::eType_I8, NULL, "tBool",
@@ -25833,9 +25833,9 @@ static const ni::sMethodDef iVGPath_Scale = {
 
 #if niMinFeatures(20)
 // Method: Transform
-static const ni::sParameterDef iVGPath_Transform_Parameters[1] = {
+static const ni::sParameterDef iVGPath_Transform_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_Transform = {
   "Transform",
   0|ni::eType_I8, NULL, "tBool",
@@ -25850,13 +25850,13 @@ static const ni::sMethodDef iVGPath_Transform = {
 
 #if niMinFeatures(20)
 // Method: TransformAlongOnePath
-static const ni::sParameterDef iVGPath_TransformAlongOnePath_Parameters[5] = {
-  { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" },
-  { "afBaseLength", ni::eType_F32, NULL, "tF32" },
-  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_TransformAlongOnePath_Parameters[5] = { 
+  { "apPath", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" }, 
+  { "afBaseLength", ni::eType_F32, NULL, "tF32" }, 
+  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" }, 
   { "afCurvesApproxScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_TransformAlongOnePath = {
   "TransformAlongOnePath",
   0|ni::eType_I8, NULL, "tBool",
@@ -25871,15 +25871,15 @@ static const ni::sMethodDef iVGPath_TransformAlongOnePath = {
 
 #if niMinFeatures(20)
 // Method: TransformAlongTwoPaths
-static const ni::sParameterDef iVGPath_TransformAlongTwoPaths_Parameters[7] = {
-  { "apPath1", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "apPath2", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" },
-  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" },
-  { "afBaseHeight", ni::eType_F32, NULL, "tF32" },
-  { "afBaseLength", ni::eType_F32, NULL, "tF32" },
-  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPath_TransformAlongTwoPaths_Parameters[7] = { 
+  { "apPath1", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "apPath2", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPath), "const iVGPath*" }, 
+  { "abPreserveXScale", ni::eType_I8, NULL, "tBool" }, 
+  { "afBaseHeight", ni::eType_F32, NULL, "tF32" }, 
+  { "afBaseLength", ni::eType_F32, NULL, "tF32" }, 
+  { "afSegmentApproxScale", ni::eType_F32, NULL, "tF32" }, 
   { "afCurvesApproxScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPath_TransformAlongTwoPaths = {
   "TransformAlongTwoPaths",
   0|ni::eType_I8, NULL, "tBool",
@@ -25894,9 +25894,9 @@ static const ni::sMethodDef iVGPath_TransformAlongTwoPaths = {
 
 #if niMinFeatures(20)
 // Method: ArrangeOrientations
-static const ni::sParameterDef iVGPath_ArrangeOrientations_Parameters[1] = {
+static const ni::sParameterDef iVGPath_ArrangeOrientations_Parameters[1] = { 
   { "abCW", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPath_ArrangeOrientations = {
   "ArrangeOrientations",
   0|ni::eType_Null, NULL, "void",
@@ -25911,9 +25911,9 @@ static const ni::sMethodDef iVGPath_ArrangeOrientations = {
 
 #if niMinFeatures(20)
 // Method: GetBoundingRect
-static const ni::sParameterDef iVGPath_GetBoundingRect_Parameters[1] = {
+static const ni::sParameterDef iVGPath_GetBoundingRect_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_GetBoundingRect = {
   "GetBoundingRect",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -25928,11 +25928,11 @@ static const ni::sMethodDef iVGPath_GetBoundingRect = {
 
 #if niMinFeatures(20)
 // Method: RenderTesselated
-static const ni::sParameterDef iVGPath_RenderTesselated_Parameters[3] = {
-  { "apPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPathTesselatedRenderer), "iVGPathTesselatedRenderer*" },
-  { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" },
+static const ni::sParameterDef iVGPath_RenderTesselated_Parameters[3] = { 
+  { "apPath", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPathTesselatedRenderer), "iVGPathTesselatedRenderer*" }, 
+  { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }, 
   { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_RenderTesselated = {
   "RenderTesselated",
   0|ni::eType_I8, NULL, "tBool",
@@ -25947,9 +25947,9 @@ static const ni::sMethodDef iVGPath_RenderTesselated = {
 
 #if niMinFeatures(20)
 // Method: AddSVGPath
-static const ni::sParameterDef iVGPath_AddSVGPath_Parameters[1] = {
+static const ni::sParameterDef iVGPath_AddSVGPath_Parameters[1] = { 
   { "aaszPath", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_AddSVGPath = {
   "AddSVGPath",
   0|ni::eType_I8, NULL, "tBool",
@@ -25964,9 +25964,9 @@ static const ni::sMethodDef iVGPath_AddSVGPath = {
 
 #if niMinFeatures(20)
 // Method: AddPolylinePath
-static const ni::sParameterDef iVGPath_AddPolylinePath_Parameters[1] = {
+static const ni::sParameterDef iVGPath_AddPolylinePath_Parameters[1] = { 
   { "aaszPath", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_AddPolylinePath = {
   "AddPolylinePath",
   0|ni::eType_I8, NULL, "tBool",
@@ -25981,9 +25981,9 @@ static const ni::sMethodDef iVGPath_AddPolylinePath = {
 
 #if niMinFeatures(20)
 // Method: AddPolygonPath
-static const ni::sParameterDef iVGPath_AddPolygonPath_Parameters[1] = {
+static const ni::sParameterDef iVGPath_AddPolygonPath_Parameters[1] = { 
   { "aaszPath", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iVGPath_AddPolygonPath = {
   "AddPolygonPath",
   0|ni::eType_I8, NULL, "tBool",
@@ -26253,10 +26253,10 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGPolygonTesselator() {
 
 #if niMinFeatures(20)
 // Method: AddVertexF32
-static const ni::sParameterDef iVGPolygonTesselator_AddVertexF32_Parameters[2] = {
-  { "x", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGPolygonTesselator_AddVertexF32_Parameters[2] = { 
+  { "x", ni::eType_F32, NULL, "tF32" }, 
   { "y", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGPolygonTesselator_AddVertexF32 = {
   "AddVertexF32",
   0|ni::eType_I8, NULL, "tBool",
@@ -26271,10 +26271,10 @@ static const ni::sMethodDef iVGPolygonTesselator_AddVertexF32 = {
 
 #if niMinFeatures(20)
 // Method: AddVertexF64
-static const ni::sParameterDef iVGPolygonTesselator_AddVertexF64_Parameters[2] = {
-  { "x", ni::eType_F64, NULL, "tF64" },
+static const ni::sParameterDef iVGPolygonTesselator_AddVertexF64_Parameters[2] = { 
+  { "x", ni::eType_F64, NULL, "tF64" }, 
   { "y", ni::eType_F64, NULL, "tF64" }
-};
+}; 
 static const ni::sMethodDef iVGPolygonTesselator_AddVertexF64 = {
   "AddVertexF64",
   0|ni::eType_I8, NULL, "tBool",
@@ -26289,9 +26289,9 @@ static const ni::sMethodDef iVGPolygonTesselator_AddVertexF64 = {
 
 #if niMinFeatures(20)
 // Method: AddVertex
-static const ni::sParameterDef iVGPolygonTesselator_AddVertex_Parameters[1] = {
+static const ni::sParameterDef iVGPolygonTesselator_AddVertex_Parameters[1] = { 
   { "vertex", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGPolygonTesselator_AddVertex = {
   "AddVertex",
   0|ni::eType_I8, NULL, "tBool",
@@ -26334,9 +26334,9 @@ static const ni::sMethodDef iVGPolygonTesselator_SubmitContour = {
 
 #if niMinFeatures(20)
 // Method: BeginPolygon
-static const ni::sParameterDef iVGPolygonTesselator_BeginPolygon_Parameters[1] = {
+static const ni::sParameterDef iVGPolygonTesselator_BeginPolygon_Parameters[1] = { 
   { "abEvenOdd", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGPolygonTesselator_BeginPolygon = {
   "BeginPolygon",
   0|ni::eType_I8, NULL, "tBool",
@@ -26434,9 +26434,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGStyle() {
 
 #if niMinFeatures(20)
 // Method: Copy
-static const ni::sParameterDef iVGStyle_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_Copy_Parameters[1] = { 
   { "apStyle", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGStyle), "const iVGStyle*" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -26507,9 +26507,9 @@ static const ni::sMethodDef iVGStyle_SetDefault = {
 
 #if niMinFeatures(20)
 // Method: SetOpacity
-static const ni::sParameterDef iVGStyle_SetOpacity_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetOpacity_Parameters[1] = { 
   { "afOpacity", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetOpacity = {
   "SetOpacity",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26538,9 +26538,9 @@ static const ni::sMethodDef iVGStyle_GetOpacity = {
 
 #if niMinFeatures(20)
 // Method: SetLineCap
-static const ni::sParameterDef iVGStyle_SetLineCap_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetLineCap_Parameters[1] = { 
   { "aCap", ni::eType_Enum, NULL, "eVGLineCap" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetLineCap = {
   "SetLineCap",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -26569,9 +26569,9 @@ static const ni::sMethodDef iVGStyle_GetLineCap = {
 
 #if niMinFeatures(20)
 // Method: SetLineJoin
-static const ni::sParameterDef iVGStyle_SetLineJoin_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetLineJoin_Parameters[1] = { 
   { "aJoin", ni::eType_Enum, NULL, "eVGLineJoin" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetLineJoin = {
   "SetLineJoin",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -26600,9 +26600,9 @@ static const ni::sMethodDef iVGStyle_GetLineJoin = {
 
 #if niMinFeatures(20)
 // Method: SetInnerJoin
-static const ni::sParameterDef iVGStyle_SetInnerJoin_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetInnerJoin_Parameters[1] = { 
   { "aInnerJoin", ni::eType_Enum, NULL, "eVGInnerJoin" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetInnerJoin = {
   "SetInnerJoin",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -26631,9 +26631,9 @@ static const ni::sMethodDef iVGStyle_GetInnerJoin = {
 
 #if niMinFeatures(20)
 // Method: SetMiterLimit
-static const ni::sParameterDef iVGStyle_SetMiterLimit_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetMiterLimit_Parameters[1] = { 
   { "afMiterLimit", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetMiterLimit = {
   "SetMiterLimit",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26662,9 +26662,9 @@ static const ni::sMethodDef iVGStyle_GetMiterLimit = {
 
 #if niMinFeatures(20)
 // Method: SetSmooth
-static const ni::sParameterDef iVGStyle_SetSmooth_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetSmooth_Parameters[1] = { 
   { "afSmooth", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetSmooth = {
   "SetSmooth",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26693,9 +26693,9 @@ static const ni::sMethodDef iVGStyle_GetSmooth = {
 
 #if niMinFeatures(20)
 // Method: SetCurrentColor
-static const ni::sParameterDef iVGStyle_SetCurrentColor_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetCurrentColor_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetCurrentColor = {
   "SetCurrentColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -26724,9 +26724,9 @@ static const ni::sMethodDef iVGStyle_GetCurrentColor = {
 
 #if niMinFeatures(20)
 // Method: SetAntiAliasing
-static const ni::sParameterDef iVGStyle_SetAntiAliasing_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetAntiAliasing_Parameters[1] = { 
   { "abAntiAliasing", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetAntiAliasing = {
   "SetAntiAliasing",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -26755,9 +26755,9 @@ static const ni::sMethodDef iVGStyle_GetAntiAliasing = {
 
 #if niMinFeatures(20)
 // Method: SetRasterizerApproximationScale
-static const ni::sParameterDef iVGStyle_SetRasterizerApproximationScale_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetRasterizerApproximationScale_Parameters[1] = { 
   { "afRasterizerApproximationScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetRasterizerApproximationScale = {
   "SetRasterizerApproximationScale",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26786,9 +26786,9 @@ static const ni::sMethodDef iVGStyle_GetRasterizerApproximationScale = {
 
 #if niMinFeatures(20)
 // Method: SetTesselatorApproximationScale
-static const ni::sParameterDef iVGStyle_SetTesselatorApproximationScale_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetTesselatorApproximationScale_Parameters[1] = { 
   { "afTesselatorApproximationScale", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetTesselatorApproximationScale = {
   "SetTesselatorApproximationScale",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26817,9 +26817,9 @@ static const ni::sMethodDef iVGStyle_GetTesselatorApproximationScale = {
 
 #if niMinFeatures(20)
 // Method: SetStroke
-static const ni::sParameterDef iVGStyle_SetStroke_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStroke_Parameters[1] = { 
   { "abStroke", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStroke = {
   "SetStroke",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -26848,9 +26848,9 @@ static const ni::sMethodDef iVGStyle_GetStroke = {
 
 #if niMinFeatures(20)
 // Method: SetStrokeWidth
-static const ni::sParameterDef iVGStyle_SetStrokeWidth_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokeWidth_Parameters[1] = { 
   { "afWidth", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokeWidth = {
   "SetStrokeWidth",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -26879,9 +26879,9 @@ static const ni::sMethodDef iVGStyle_GetStrokeWidth = {
 
 #if niMinFeatures(20)
 // Method: SetStrokeTransformed
-static const ni::sParameterDef iVGStyle_SetStrokeTransformed_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokeTransformed_Parameters[1] = { 
   { "abStrokeTransformed", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokeTransformed = {
   "SetStrokeTransformed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -26910,9 +26910,9 @@ static const ni::sMethodDef iVGStyle_GetStrokeTransformed = {
 
 #if niMinFeatures(20)
 // Method: SetStrokePaint
-static const ni::sParameterDef iVGStyle_SetStrokePaint_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokePaint_Parameters[1] = { 
   { "apPaint", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "iVGPaint*" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokePaint = {
   "SetStrokePaint",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "tBool",
@@ -26941,9 +26941,9 @@ static const ni::sMethodDef iVGStyle_GetStrokePaint = {
 
 #if niMinFeatures(20)
 // Method: SetStrokeColor
-static const ni::sParameterDef iVGStyle_SetStrokeColor_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokeColor_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sColor3f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokeColor = {
   "SetStrokeColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -26972,9 +26972,9 @@ static const ni::sMethodDef iVGStyle_GetStrokeColor = {
 
 #if niMinFeatures(20)
 // Method: SetStrokeColor4
-static const ni::sParameterDef iVGStyle_SetStrokeColor4_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokeColor4_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokeColor4 = {
   "SetStrokeColor4",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -27003,9 +27003,9 @@ static const ni::sMethodDef iVGStyle_GetStrokeColor4 = {
 
 #if niMinFeatures(20)
 // Method: SetStrokeOpacity
-static const ni::sParameterDef iVGStyle_SetStrokeOpacity_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetStrokeOpacity_Parameters[1] = { 
   { "afOpacity", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetStrokeOpacity = {
   "SetStrokeOpacity",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -27062,9 +27062,9 @@ static const ni::sMethodDef iVGStyle_ClearDashes = {
 
 #if niMinFeatures(20)
 // Method: AddDash
-static const ni::sParameterDef iVGStyle_AddDash_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_AddDash_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_AddDash = {
   "AddDash",
   0|ni::eType_Null, NULL, "void",
@@ -27079,9 +27079,9 @@ static const ni::sMethodDef iVGStyle_AddDash = {
 
 #if niMinFeatures(20)
 // Method: RemoveDash
-static const ni::sParameterDef iVGStyle_RemoveDash_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_RemoveDash_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_RemoveDash = {
   "RemoveDash",
   0|ni::eType_I8, NULL, "tBool",
@@ -27096,9 +27096,9 @@ static const ni::sMethodDef iVGStyle_RemoveDash = {
 
 #if niMinFeatures(20)
 // Method: GetDash
-static const ni::sParameterDef iVGStyle_GetDash_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_GetDash_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_GetDash = {
   "GetDash",
   ni::eTypeFlags_MethodGetter|0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -27113,9 +27113,9 @@ static const ni::sMethodDef iVGStyle_GetDash = {
 
 #if niMinFeatures(20)
 // Method: SetDashStart
-static const ni::sParameterDef iVGStyle_SetDashStart_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetDashStart_Parameters[1] = { 
   { "afDashStart", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetDashStart = {
   "SetDashStart",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -27144,9 +27144,9 @@ static const ni::sMethodDef iVGStyle_GetDashStart = {
 
 #if niMinFeatures(20)
 // Method: SetFill
-static const ni::sParameterDef iVGStyle_SetFill_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFill_Parameters[1] = { 
   { "abFill", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFill = {
   "SetFill",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -27175,9 +27175,9 @@ static const ni::sMethodDef iVGStyle_GetFill = {
 
 #if niMinFeatures(20)
 // Method: SetFillEvenOdd
-static const ni::sParameterDef iVGStyle_SetFillEvenOdd_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillEvenOdd_Parameters[1] = { 
   { "abFillEvenOdd", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillEvenOdd = {
   "SetFillEvenOdd",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -27206,9 +27206,9 @@ static const ni::sMethodDef iVGStyle_GetFillEvenOdd = {
 
 #if niMinFeatures(20)
 // Method: SetFillExpand
-static const ni::sParameterDef iVGStyle_SetFillExpand_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillExpand_Parameters[1] = { 
   { "afExpand", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillExpand = {
   "SetFillExpand",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -27237,9 +27237,9 @@ static const ni::sMethodDef iVGStyle_GetFillExpand = {
 
 #if niMinFeatures(20)
 // Method: SetFillPaint
-static const ni::sParameterDef iVGStyle_SetFillPaint_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillPaint_Parameters[1] = { 
   { "apPaint", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "iVGPaint*" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillPaint = {
   "SetFillPaint",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGPaint), "tBool",
@@ -27268,9 +27268,9 @@ static const ni::sMethodDef iVGStyle_GetFillPaint = {
 
 #if niMinFeatures(20)
 // Method: SetFillColor
-static const ni::sParameterDef iVGStyle_SetFillColor_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillColor_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sColor3f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillColor = {
   "SetFillColor",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -27299,9 +27299,9 @@ static const ni::sMethodDef iVGStyle_GetFillColor = {
 
 #if niMinFeatures(20)
 // Method: SetFillColor4
-static const ni::sParameterDef iVGStyle_SetFillColor4_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillColor4_Parameters[1] = { 
   { "avColor", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillColor4 = {
   "SetFillColor4",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -27330,9 +27330,9 @@ static const ni::sMethodDef iVGStyle_GetFillColor4 = {
 
 #if niMinFeatures(20)
 // Method: SetFillOpacity
-static const ni::sParameterDef iVGStyle_SetFillOpacity_Parameters[1] = {
+static const ni::sParameterDef iVGStyle_SetFillOpacity_Parameters[1] = { 
   { "afOpacity", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGStyle_SetFillOpacity = {
   "SetFillOpacity",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -27572,9 +27572,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iVGTransform() {
 
 #if niMinFeatures(20)
 // Method: Copy
-static const ni::sParameterDef iVGTransform_Copy_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Copy_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -27631,9 +27631,9 @@ static const ni::sMethodDef iVGTransform_Pop = {
 
 #if niMinFeatures(20)
 // Method: SetMatrix
-static const ni::sParameterDef iVGTransform_SetMatrix_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_SetMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_SetMatrix = {
   "SetMatrix",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "void",
@@ -27662,10 +27662,10 @@ static const ni::sMethodDef iVGTransform_GetMatrix = {
 
 #if niMinFeatures(20)
 // Method: SetValue
-static const ni::sParameterDef iVGTransform_SetValue_Parameters[2] = {
-  { "aType", ni::eType_Enum, NULL, "eVGTransformValue" },
+static const ni::sParameterDef iVGTransform_SetValue_Parameters[2] = { 
+  { "aType", ni::eType_Enum, NULL, "eVGTransformValue" }, 
   { "afValue", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_SetValue = {
   "SetValue",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -27680,9 +27680,9 @@ static const ni::sMethodDef iVGTransform_SetValue = {
 
 #if niMinFeatures(20)
 // Method: GetValue
-static const ni::sParameterDef iVGTransform_GetValue_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_GetValue_Parameters[1] = { 
   { "aType", ni::eType_Enum, NULL, "eVGTransformValue" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_GetValue = {
   "GetValue",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -27697,14 +27697,14 @@ static const ni::sMethodDef iVGTransform_GetValue = {
 
 #if niMinFeatures(20)
 // Method: SetValues
-static const ni::sParameterDef iVGTransform_SetValues_Parameters[6] = {
-  { "m0", ni::eType_F32, NULL, "tF32" },
-  { "m1", ni::eType_F32, NULL, "tF32" },
-  { "m2", ni::eType_F32, NULL, "tF32" },
-  { "m3", ni::eType_F32, NULL, "tF32" },
-  { "m4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGTransform_SetValues_Parameters[6] = { 
+  { "m0", ni::eType_F32, NULL, "tF32" }, 
+  { "m1", ni::eType_F32, NULL, "tF32" }, 
+  { "m2", ni::eType_F32, NULL, "tF32" }, 
+  { "m3", ni::eType_F32, NULL, "tF32" }, 
+  { "m4", ni::eType_F32, NULL, "tF32" }, 
   { "m5", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_SetValues = {
   "SetValues",
   0|ni::eType_Null, NULL, "void",
@@ -27761,9 +27761,9 @@ static const ni::sMethodDef iVGTransform_GetIsIdentity = {
 
 #if niMinFeatures(20)
 // Method: IsEqual
-static const ni::sParameterDef iVGTransform_IsEqual_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_IsEqual_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_IsEqual = {
   "IsEqual",
   0|ni::eType_I8, NULL, "tBool",
@@ -27820,9 +27820,9 @@ static const ni::sMethodDef iVGTransform_FlipY = {
 
 #if niMinFeatures(20)
 // Method: Transform
-static const ni::sParameterDef iVGTransform_Transform_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Transform_Parameters[1] = { 
   { "avV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Transform = {
   "Transform",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -27837,9 +27837,9 @@ static const ni::sMethodDef iVGTransform_Transform = {
 
 #if niMinFeatures(20)
 // Method: TransformRotate
-static const ni::sParameterDef iVGTransform_TransformRotate_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_TransformRotate_Parameters[1] = { 
   { "avV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_TransformRotate = {
   "TransformRotate",
   0|ni::eType_Vec2f, NULL, "sVec2f",
@@ -27854,9 +27854,9 @@ static const ni::sMethodDef iVGTransform_TransformRotate = {
 
 #if niMinFeatures(20)
 // Method: Multiply
-static const ni::sParameterDef iVGTransform_Multiply_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Multiply_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Multiply = {
   "Multiply",
   0|ni::eType_Null, NULL, "void",
@@ -27871,9 +27871,9 @@ static const ni::sMethodDef iVGTransform_Multiply = {
 
 #if niMinFeatures(20)
 // Method: PreMultiply
-static const ni::sParameterDef iVGTransform_PreMultiply_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreMultiply_Parameters[1] = { 
   { "apTransform", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iVGTransform), "const iVGTransform*" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreMultiply = {
   "PreMultiply",
   0|ni::eType_Null, NULL, "void",
@@ -27888,9 +27888,9 @@ static const ni::sMethodDef iVGTransform_PreMultiply = {
 
 #if niMinFeatures(20)
 // Method: MultiplyMatrix
-static const ni::sParameterDef iVGTransform_MultiplyMatrix_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_MultiplyMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_MultiplyMatrix = {
   "MultiplyMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -27905,9 +27905,9 @@ static const ni::sMethodDef iVGTransform_MultiplyMatrix = {
 
 #if niMinFeatures(20)
 // Method: PreMultiplyMatrix
-static const ni::sParameterDef iVGTransform_PreMultiplyMatrix_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreMultiplyMatrix_Parameters[1] = { 
   { "aMatrix", ni::eTypeFlags_Constant|ni::eType_Matrixf|ni::eTypeFlags_Pointer, NULL, "const sMatrixf&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreMultiplyMatrix = {
   "PreMultiplyMatrix",
   0|ni::eType_Null, NULL, "void",
@@ -27922,14 +27922,14 @@ static const ni::sMethodDef iVGTransform_PreMultiplyMatrix = {
 
 #if niMinFeatures(20)
 // Method: MultiplyValues
-static const ni::sParameterDef iVGTransform_MultiplyValues_Parameters[6] = {
-  { "m0", ni::eType_F32, NULL, "tF32" },
-  { "m1", ni::eType_F32, NULL, "tF32" },
-  { "m2", ni::eType_F32, NULL, "tF32" },
-  { "m3", ni::eType_F32, NULL, "tF32" },
-  { "m4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGTransform_MultiplyValues_Parameters[6] = { 
+  { "m0", ni::eType_F32, NULL, "tF32" }, 
+  { "m1", ni::eType_F32, NULL, "tF32" }, 
+  { "m2", ni::eType_F32, NULL, "tF32" }, 
+  { "m3", ni::eType_F32, NULL, "tF32" }, 
+  { "m4", ni::eType_F32, NULL, "tF32" }, 
   { "m5", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_MultiplyValues = {
   "MultiplyValues",
   0|ni::eType_Null, NULL, "void",
@@ -27944,14 +27944,14 @@ static const ni::sMethodDef iVGTransform_MultiplyValues = {
 
 #if niMinFeatures(20)
 // Method: PreMultiplyValues
-static const ni::sParameterDef iVGTransform_PreMultiplyValues_Parameters[6] = {
-  { "m0", ni::eType_F32, NULL, "tF32" },
-  { "m1", ni::eType_F32, NULL, "tF32" },
-  { "m2", ni::eType_F32, NULL, "tF32" },
-  { "m3", ni::eType_F32, NULL, "tF32" },
-  { "m4", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iVGTransform_PreMultiplyValues_Parameters[6] = { 
+  { "m0", ni::eType_F32, NULL, "tF32" }, 
+  { "m1", ni::eType_F32, NULL, "tF32" }, 
+  { "m2", ni::eType_F32, NULL, "tF32" }, 
+  { "m3", ni::eType_F32, NULL, "tF32" }, 
+  { "m4", ni::eType_F32, NULL, "tF32" }, 
   { "m5", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreMultiplyValues = {
   "PreMultiplyValues",
   0|ni::eType_Null, NULL, "void",
@@ -27966,9 +27966,9 @@ static const ni::sMethodDef iVGTransform_PreMultiplyValues = {
 
 #if niMinFeatures(20)
 // Method: Rotate
-static const ni::sParameterDef iVGTransform_Rotate_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Rotate_Parameters[1] = { 
   { "afRadians", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Rotate = {
   "Rotate",
   0|ni::eType_Null, NULL, "void",
@@ -27983,9 +27983,9 @@ static const ni::sMethodDef iVGTransform_Rotate = {
 
 #if niMinFeatures(20)
 // Method: PreRotate
-static const ni::sParameterDef iVGTransform_PreRotate_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreRotate_Parameters[1] = { 
   { "afRadians", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreRotate = {
   "PreRotate",
   0|ni::eType_Null, NULL, "void",
@@ -28000,10 +28000,10 @@ static const ni::sMethodDef iVGTransform_PreRotate = {
 
 #if niMinFeatures(20)
 // Method: RotateAround
-static const ni::sParameterDef iVGTransform_RotateAround_Parameters[2] = {
-  { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGTransform_RotateAround_Parameters[2] = { 
+  { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afRadians", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_RotateAround = {
   "RotateAround",
   0|ni::eType_Null, NULL, "void",
@@ -28018,10 +28018,10 @@ static const ni::sMethodDef iVGTransform_RotateAround = {
 
 #if niMinFeatures(20)
 // Method: PreRotateAround
-static const ni::sParameterDef iVGTransform_PreRotateAround_Parameters[2] = {
-  { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGTransform_PreRotateAround_Parameters[2] = { 
+  { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afRadians", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreRotateAround = {
   "PreRotateAround",
   0|ni::eType_Null, NULL, "void",
@@ -28036,9 +28036,9 @@ static const ni::sMethodDef iVGTransform_PreRotateAround = {
 
 #if niMinFeatures(20)
 // Method: Translate
-static const ni::sParameterDef iVGTransform_Translate_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Translate_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Translate = {
   "Translate",
   0|ni::eType_Null, NULL, "void",
@@ -28053,9 +28053,9 @@ static const ni::sMethodDef iVGTransform_Translate = {
 
 #if niMinFeatures(20)
 // Method: PreTranslate
-static const ni::sParameterDef iVGTransform_PreTranslate_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreTranslate_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreTranslate = {
   "PreTranslate",
   0|ni::eType_Null, NULL, "void",
@@ -28070,9 +28070,9 @@ static const ni::sMethodDef iVGTransform_PreTranslate = {
 
 #if niMinFeatures(20)
 // Method: Scaling
-static const ni::sParameterDef iVGTransform_Scaling_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Scaling_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Scaling = {
   "Scaling",
   0|ni::eType_Null, NULL, "void",
@@ -28087,9 +28087,9 @@ static const ni::sMethodDef iVGTransform_Scaling = {
 
 #if niMinFeatures(20)
 // Method: PreScaling
-static const ni::sParameterDef iVGTransform_PreScaling_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreScaling_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreScaling = {
   "PreScaling",
   0|ni::eType_Null, NULL, "void",
@@ -28104,9 +28104,9 @@ static const ni::sMethodDef iVGTransform_PreScaling = {
 
 #if niMinFeatures(20)
 // Method: Skew
-static const ni::sParameterDef iVGTransform_Skew_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_Skew_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_Skew = {
   "Skew",
   0|ni::eType_Null, NULL, "void",
@@ -28121,9 +28121,9 @@ static const ni::sMethodDef iVGTransform_Skew = {
 
 #if niMinFeatures(20)
 // Method: PreSkew
-static const ni::sParameterDef iVGTransform_PreSkew_Parameters[1] = {
+static const ni::sParameterDef iVGTransform_PreSkew_Parameters[1] = { 
   { "aV", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreSkew = {
   "PreSkew",
   0|ni::eType_Null, NULL, "void",
@@ -28138,11 +28138,11 @@ static const ni::sMethodDef iVGTransform_PreSkew = {
 
 #if niMinFeatures(20)
 // Method: LineSegment
-static const ni::sParameterDef iVGTransform_LineSegment_Parameters[3] = {
-  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGTransform_LineSegment_Parameters[3] = { 
+  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afDist", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_LineSegment = {
   "LineSegment",
   0|ni::eType_Null, NULL, "void",
@@ -28157,11 +28157,11 @@ static const ni::sMethodDef iVGTransform_LineSegment = {
 
 #if niMinFeatures(20)
 // Method: PreLineSegment
-static const ni::sParameterDef iVGTransform_PreLineSegment_Parameters[3] = {
-  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
-  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iVGTransform_PreLineSegment_Parameters[3] = { 
+  { "aStart", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
+  { "aEnd", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afDist", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVGTransform_PreLineSegment = {
   "PreLineSegment",
   0|ni::eType_Null, NULL, "void",
@@ -28429,9 +28429,9 @@ static const ni::sMethodDef iVideoDecoder_GetLength = {
 };
 
 // Method: SetTime
-static const ni::sParameterDef iVideoDecoder_SetTime_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_SetTime_Parameters[1] = { 
   { "afTime", ni::eType_F64, NULL, "tF64" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_SetTime = {
   "SetTime",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F64, NULL, "void",
@@ -28456,9 +28456,9 @@ static const ni::sMethodDef iVideoDecoder_GetTime = {
 };
 
 // Method: SetPause
-static const ni::sParameterDef iVideoDecoder_SetPause_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_SetPause_Parameters[1] = { 
   { "abPause", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_SetPause = {
   "SetPause",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -28483,9 +28483,9 @@ static const ni::sMethodDef iVideoDecoder_GetPause = {
 };
 
 // Method: SetSpeed
-static const ni::sParameterDef iVideoDecoder_SetSpeed_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_SetSpeed_Parameters[1] = { 
   { "afSpeed", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_SetSpeed = {
   "SetSpeed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -28510,9 +28510,9 @@ static const ni::sMethodDef iVideoDecoder_GetSpeed = {
 };
 
 // Method: SetNumLoops
-static const ni::sParameterDef iVideoDecoder_SetNumLoops_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_SetNumLoops_Parameters[1] = { 
   { "anLoop", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_SetNumLoops = {
   "SetNumLoops",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -28537,10 +28537,10 @@ static const ni::sMethodDef iVideoDecoder_GetNumLoops = {
 };
 
 // Method: Update
-static const ni::sParameterDef iVideoDecoder_Update_Parameters[2] = {
-  { "abUpdateTarget", ni::eType_I8, NULL, "tBool" },
+static const ni::sParameterDef iVideoDecoder_Update_Parameters[2] = { 
+  { "abUpdateTarget", ni::eType_I8, NULL, "tBool" }, 
   { "afFrameTime", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_Update = {
   "Update",
   0|ni::eType_I8, NULL, "tBool",
@@ -28589,9 +28589,9 @@ static const ni::sMethodDef iVideoDecoder_GetNumSoundTracks = {
 };
 
 // Method: GetSoundTrackData
-static const ni::sParameterDef iVideoDecoder_GetSoundTrackData_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_GetSoundTrackData_Parameters[1] = { 
   { "anNumTrack", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_GetSoundTrackData = {
   "GetSoundTrackData",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*",
@@ -28604,9 +28604,9 @@ static const ni::sMethodDef iVideoDecoder_GetSoundTrackData = {
 };
 
 // Method: SetUpdateOnBind
-static const ni::sParameterDef iVideoDecoder_SetUpdateOnBind_Parameters[1] = {
+static const ni::sParameterDef iVideoDecoder_SetUpdateOnBind_Parameters[1] = { 
   { "abUpdateOnBind", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iVideoDecoder_SetUpdateOnBind = {
   "SetUpdateOnBind",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -28679,12 +28679,12 @@ static const ni::sInterfaceDef InterfaceDef_iVideoDecoder = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetSink() {
 
 // Method: OnWidgetSink
-static const ni::sParameterDef iWidgetSink_OnWidgetSink_Parameters[4] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "nMsg", ni::eType_U32, NULL, "tU32" },
-  { "varParam0", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const ni::Var&" },
+static const ni::sParameterDef iWidgetSink_OnWidgetSink_Parameters[4] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "nMsg", ni::eType_U32, NULL, "tU32" }, 
+  { "varParam0", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const ni::Var&" }, 
   { "varParam1", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const ni::Var&" }
-};
+}; 
 static const ni::sMethodDef iWidgetSink_OnWidgetSink = {
   "OnWidgetSink",
   0|ni::eType_I8, NULL, "tBool",
@@ -28773,9 +28773,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetSink = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetCommand() {
 
 // Method: Copy
-static const ni::sParameterDef iWidgetCommand_Copy_Parameters[1] = {
+static const ni::sParameterDef iWidgetCommand_Copy_Parameters[1] = { 
   { "apSrc", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetCommand), "const iWidgetCommand*" }
-};
+}; 
 static const ni::sMethodDef iWidgetCommand_Copy = {
   "Copy",
   0|ni::eType_I8, NULL, "tBool",
@@ -28800,9 +28800,9 @@ static const ni::sMethodDef iWidgetCommand_Clone = {
 };
 
 // Method: SetSender
-static const ni::sParameterDef iWidgetCommand_SetSender_Parameters[1] = {
+static const ni::sParameterDef iWidgetCommand_SetSender_Parameters[1] = { 
   { "apSender", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetCommand_SetSender = {
   "SetSender",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -28827,9 +28827,9 @@ static const ni::sMethodDef iWidgetCommand_GetSender = {
 };
 
 // Method: SetID
-static const ni::sParameterDef iWidgetCommand_SetID_Parameters[1] = {
+static const ni::sParameterDef iWidgetCommand_SetID_Parameters[1] = { 
   { "anID", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetCommand_SetID = {
   "SetID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -28854,9 +28854,9 @@ static const ni::sMethodDef iWidgetCommand_GetID = {
 };
 
 // Method: SetExtra1
-static const ni::sParameterDef iWidgetCommand_SetExtra1_Parameters[1] = {
+static const ni::sParameterDef iWidgetCommand_SetExtra1_Parameters[1] = { 
   { "aVar", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iWidgetCommand_SetExtra1 = {
   "SetExtra1",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "void",
@@ -28881,9 +28881,9 @@ static const ni::sMethodDef iWidgetCommand_GetExtra1 = {
 };
 
 // Method: SetExtra2
-static const ni::sParameterDef iWidgetCommand_SetExtra2_Parameters[1] = {
+static const ni::sParameterDef iWidgetCommand_SetExtra2_Parameters[1] = { 
   { "aVar", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iWidgetCommand_SetExtra2 = {
   "SetExtra2",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29007,9 +29007,9 @@ static const ni::sMethodDef iWidget_GetClassName = {
 };
 
 // Method: SetID
-static const ni::sParameterDef iWidget_SetID_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetID = {
   "SetID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -29034,9 +29034,9 @@ static const ni::sMethodDef iWidget_GetID = {
 };
 
 // Method: SetStyle
-static const ni::sParameterDef iWidget_SetStyle_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetStyle_Parameters[1] = { 
   { "anStyle", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetStyle = {
   "SetStyle",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -29061,9 +29061,9 @@ static const ni::sMethodDef iWidget_GetStyle = {
 };
 
 // Method: SetParent
-static const ni::sParameterDef iWidget_SetParent_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetParent_Parameters[1] = { 
   { "apParent", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetParent = {
   "SetParent",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "void",
@@ -29088,9 +29088,9 @@ static const ni::sMethodDef iWidget_GetParent = {
 };
 
 // Method: SetZOrder
-static const ni::sParameterDef iWidget_SetZOrder_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetZOrder_Parameters[1] = { 
   { "aZOrder", ni::eType_Enum, NULL, "eWidgetZOrder" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetZOrder = {
   "SetZOrder",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -29115,9 +29115,9 @@ static const ni::sMethodDef iWidget_GetZOrder = {
 };
 
 // Method: SetZOrderAbove
-static const ni::sParameterDef iWidget_SetZOrderAbove_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetZOrderAbove_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetZOrderAbove = {
   "SetZOrderAbove",
   0|ni::eType_Null, NULL, "void",
@@ -29142,9 +29142,9 @@ static const ni::sMethodDef iWidget_GetDrawOrder = {
 };
 
 // Method: SetAutoLayout
-static const ni::sParameterDef iWidget_SetAutoLayout_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetAutoLayout_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tWidgetAutoLayoutFlags" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetAutoLayout = {
   "SetAutoLayout",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -29169,9 +29169,9 @@ static const ni::sMethodDef iWidget_GetAutoLayout = {
 };
 
 // Method: ComputeAutoLayout
-static const ni::sParameterDef iWidget_ComputeAutoLayout_Parameters[1] = {
+static const ni::sParameterDef iWidget_ComputeAutoLayout_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tWidgetAutoLayoutFlags" }
-};
+}; 
 static const ni::sMethodDef iWidget_ComputeAutoLayout = {
   "ComputeAutoLayout",
   0|ni::eType_Null, NULL, "void",
@@ -29184,9 +29184,9 @@ static const ni::sMethodDef iWidget_ComputeAutoLayout = {
 };
 
 // Method: SetPosition
-static const ni::sParameterDef iWidget_SetPosition_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetPosition = {
   "SetPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29211,9 +29211,9 @@ static const ni::sMethodDef iWidget_GetPosition = {
 };
 
 // Method: SetSize
-static const ni::sParameterDef iWidget_SetSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetSize = {
   "SetSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29238,9 +29238,9 @@ static const ni::sMethodDef iWidget_GetSize = {
 };
 
 // Method: SetMinimumSize
-static const ni::sParameterDef iWidget_SetMinimumSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetMinimumSize_Parameters[1] = { 
   { "avMinSize", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetMinimumSize = {
   "SetMinimumSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Vec2f, NULL, "void",
@@ -29265,9 +29265,9 @@ static const ni::sMethodDef iWidget_GetMinimumSize = {
 };
 
 // Method: SetMaximumSize
-static const ni::sParameterDef iWidget_SetMaximumSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetMaximumSize_Parameters[1] = { 
   { "avMaxSize", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetMaximumSize = {
   "SetMaximumSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Vec2f, NULL, "void",
@@ -29292,9 +29292,9 @@ static const ni::sMethodDef iWidget_GetMaximumSize = {
 };
 
 // Method: SetRect
-static const ni::sParameterDef iWidget_SetRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetRect = {
   "SetRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29343,9 +29343,9 @@ static const ni::sMethodDef iWidget_GetDockFillRect = {
 };
 
 // Method: SetClientPosition
-static const ni::sParameterDef iWidget_SetClientPosition_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetClientPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetClientPosition = {
   "SetClientPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29370,9 +29370,9 @@ static const ni::sMethodDef iWidget_GetClientPosition = {
 };
 
 // Method: SetClientSize
-static const ni::sParameterDef iWidget_SetClientSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetClientSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetClientSize = {
   "SetClientSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29397,9 +29397,9 @@ static const ni::sMethodDef iWidget_GetClientSize = {
 };
 
 // Method: SetClientRect
-static const ni::sParameterDef iWidget_SetClientRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetClientRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetClientRect = {
   "SetClientRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29424,9 +29424,9 @@ static const ni::sMethodDef iWidget_GetClientRect = {
 };
 
 // Method: ComputeFitRect
-static const ni::sParameterDef iWidget_ComputeFitRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_ComputeFitRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_ComputeFitRect = {
   "ComputeFitRect",
   0|ni::eType_Vec4f, NULL, "sRectf",
@@ -29439,9 +29439,9 @@ static const ni::sMethodDef iWidget_ComputeFitRect = {
 };
 
 // Method: SetFitRect
-static const ni::sParameterDef iWidget_SetFitRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetFitRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetFitRect = {
   "SetFitRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29454,9 +29454,9 @@ static const ni::sMethodDef iWidget_SetFitRect = {
 };
 
 // Method: SetFitSize
-static const ni::sParameterDef iWidget_SetFitSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetFitSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f, NULL, "const sVec2f" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetFitSize = {
   "SetFitSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f, NULL, "void",
@@ -29469,9 +29469,9 @@ static const ni::sMethodDef iWidget_SetFitSize = {
 };
 
 // Method: SetAbsolutePosition
-static const ni::sParameterDef iWidget_SetAbsolutePosition_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetAbsolutePosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetAbsolutePosition = {
   "SetAbsolutePosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29496,9 +29496,9 @@ static const ni::sMethodDef iWidget_GetAbsolutePosition = {
 };
 
 // Method: SetAbsoluteRect
-static const ni::sParameterDef iWidget_SetAbsoluteRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetAbsoluteRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetAbsoluteRect = {
   "SetAbsoluteRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29571,9 +29571,9 @@ static const ni::sMethodDef iWidget_GetAbsoluteClippedClientRect = {
 };
 
 // Method: SetRelativePosition
-static const ni::sParameterDef iWidget_SetRelativePosition_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetRelativePosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetRelativePosition = {
   "SetRelativePosition",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29598,9 +29598,9 @@ static const ni::sMethodDef iWidget_GetRelativePosition = {
 };
 
 // Method: SetRelativeSize
-static const ni::sParameterDef iWidget_SetRelativeSize_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetRelativeSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetRelativeSize = {
   "SetRelativeSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29625,9 +29625,9 @@ static const ni::sMethodDef iWidget_GetRelativeSize = {
 };
 
 // Method: SetRelativeRect
-static const ni::sParameterDef iWidget_SetRelativeRect_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetRelativeRect_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetRelativeRect = {
   "SetRelativeRect",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29652,9 +29652,9 @@ static const ni::sMethodDef iWidget_GetRelativeRect = {
 };
 
 // Method: SetPadding
-static const ni::sParameterDef iWidget_SetPadding_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetPadding_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetPadding = {
   "SetPadding",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29691,9 +29691,9 @@ static const ni::sMethodDef iWidget_GetHasPadding = {
 };
 
 // Method: SetMargin
-static const ni::sParameterDef iWidget_SetMargin_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetMargin_Parameters[1] = { 
   { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetMargin = {
   "SetMargin",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -29742,9 +29742,9 @@ static const ni::sMethodDef iWidget_SetFocus = {
 };
 
 // Method: MoveFocus
-static const ni::sParameterDef iWidget_MoveFocus_Parameters[1] = {
+static const ni::sParameterDef iWidget_MoveFocus_Parameters[1] = { 
   { "abToPrevious", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_MoveFocus = {
   "MoveFocus",
   0|ni::eType_I8, NULL, "tBool",
@@ -29757,9 +29757,9 @@ static const ni::sMethodDef iWidget_MoveFocus = {
 };
 
 // Method: SetCapture
-static const ni::sParameterDef iWidget_SetCapture_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetCapture_Parameters[1] = { 
   { "abEnable", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetCapture = {
   "SetCapture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -29784,9 +29784,9 @@ static const ni::sMethodDef iWidget_GetCapture = {
 };
 
 // Method: SetExclusive
-static const ni::sParameterDef iWidget_SetExclusive_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetExclusive_Parameters[1] = { 
   { "abEnable", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetExclusive = {
   "SetExclusive",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -29811,9 +29811,9 @@ static const ni::sMethodDef iWidget_GetExclusive = {
 };
 
 // Method: SetInputSubmitFlags
-static const ni::sParameterDef iWidget_SetInputSubmitFlags_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetInputSubmitFlags_Parameters[1] = { 
   { "aSubmitFlags", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetInputSubmitFlags = {
   "SetInputSubmitFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -29838,9 +29838,9 @@ static const ni::sMethodDef iWidget_GetInputSubmitFlags = {
 };
 
 // Method: SetVisible
-static const ni::sParameterDef iWidget_SetVisible_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetVisible_Parameters[1] = { 
   { "abVisible", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetVisible = {
   "SetVisible",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -29865,9 +29865,9 @@ static const ni::sMethodDef iWidget_GetVisible = {
 };
 
 // Method: SetEnabled
-static const ni::sParameterDef iWidget_SetEnabled_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetEnabled_Parameters[1] = { 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetEnabled = {
   "SetEnabled",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -29892,9 +29892,9 @@ static const ni::sMethodDef iWidget_GetEnabled = {
 };
 
 // Method: SetIgnoreInput
-static const ni::sParameterDef iWidget_SetIgnoreInput_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetIgnoreInput_Parameters[1] = { 
   { "abIgnoreInput", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetIgnoreInput = {
   "SetIgnoreInput",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -29919,11 +29919,11 @@ static const ni::sMethodDef iWidget_GetIgnoreInput = {
 };
 
 // Method: SetStatus
-static const ni::sParameterDef iWidget_SetStatus_Parameters[3] = {
-  { "abVisible", ni::eType_I8, NULL, "tBool" },
-  { "abEnabled", ni::eType_I8, NULL, "tBool" },
+static const ni::sParameterDef iWidget_SetStatus_Parameters[3] = { 
+  { "abVisible", ni::eType_I8, NULL, "tBool" }, 
+  { "abEnabled", ni::eType_I8, NULL, "tBool" }, 
   { "abIgnoreInput", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetStatus = {
   "SetStatus",
   0|ni::eType_Null, NULL, "void",
@@ -29936,9 +29936,9 @@ static const ni::sMethodDef iWidget_SetStatus = {
 };
 
 // Method: SetHideChildren
-static const ni::sParameterDef iWidget_SetHideChildren_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetHideChildren_Parameters[1] = { 
   { "abHideChildren", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetHideChildren = {
   "SetHideChildren",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -30059,10 +30059,10 @@ static const ni::sMethodDef iWidget_Redraw = {
 };
 
 // Method: SetTimer
-static const ni::sParameterDef iWidget_SetTimer_Parameters[2] = {
-  { "anID", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidget_SetTimer_Parameters[2] = { 
+  { "anID", ni::eType_U32, NULL, "tU32" }, 
   { "afTime", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetTimer = {
   "SetTimer",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -30075,9 +30075,9 @@ static const ni::sMethodDef iWidget_SetTimer = {
 };
 
 // Method: GetTimer
-static const ni::sParameterDef iWidget_GetTimer_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetTimer_Parameters[1] = { 
   { "anID", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetTimer = {
   "GetTimer",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -30090,9 +30090,9 @@ static const ni::sMethodDef iWidget_GetTimer = {
 };
 
 // Method: AddSink
-static const ni::sParameterDef iWidget_AddSink_Parameters[1] = {
+static const ni::sParameterDef iWidget_AddSink_Parameters[1] = { 
   { "apSink", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*" }
-};
+}; 
 static const ni::sMethodDef iWidget_AddSink = {
   "AddSink",
   0|ni::eType_I8, NULL, "tBool",
@@ -30105,9 +30105,9 @@ static const ni::sMethodDef iWidget_AddSink = {
 };
 
 // Method: AddPostSink
-static const ni::sParameterDef iWidget_AddPostSink_Parameters[1] = {
+static const ni::sParameterDef iWidget_AddPostSink_Parameters[1] = { 
   { "apSink", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*" }
-};
+}; 
 static const ni::sMethodDef iWidget_AddPostSink = {
   "AddPostSink",
   0|ni::eType_I8, NULL, "tBool",
@@ -30120,9 +30120,9 @@ static const ni::sMethodDef iWidget_AddPostSink = {
 };
 
 // Method: AddClassSink
-static const ni::sParameterDef iWidget_AddClassSink_Parameters[1] = {
+static const ni::sParameterDef iWidget_AddClassSink_Parameters[1] = { 
   { "aaszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidget_AddClassSink = {
   "AddClassSink",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*",
@@ -30135,9 +30135,9 @@ static const ni::sMethodDef iWidget_AddClassSink = {
 };
 
 // Method: AddClassPostSink
-static const ni::sParameterDef iWidget_AddClassPostSink_Parameters[1] = {
+static const ni::sParameterDef iWidget_AddClassPostSink_Parameters[1] = { 
   { "aaszClassName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidget_AddClassPostSink = {
   "AddClassPostSink",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*",
@@ -30150,9 +30150,9 @@ static const ni::sMethodDef iWidget_AddClassPostSink = {
 };
 
 // Method: RemoveSink
-static const ni::sParameterDef iWidget_RemoveSink_Parameters[1] = {
+static const ni::sParameterDef iWidget_RemoveSink_Parameters[1] = { 
   { "apSink", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetSink), "iWidgetSink*" }
-};
+}; 
 static const ni::sMethodDef iWidget_RemoveSink = {
   "RemoveSink",
   0|ni::eType_Null, NULL, "void",
@@ -30189,9 +30189,9 @@ static const ni::sMethodDef iWidget_GetNumChildren = {
 };
 
 // Method: GetChildIndex
-static const ni::sParameterDef iWidget_GetChildIndex_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetChildIndex_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetChildIndex = {
   "GetChildIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -30204,9 +30204,9 @@ static const ni::sMethodDef iWidget_GetChildIndex = {
 };
 
 // Method: GetChildFromIndex
-static const ni::sParameterDef iWidget_GetChildFromIndex_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetChildFromIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetChildFromIndex = {
   "GetChildFromIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -30219,9 +30219,9 @@ static const ni::sMethodDef iWidget_GetChildFromIndex = {
 };
 
 // Method: GetChildFromID
-static const ni::sParameterDef iWidget_GetChildFromID_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetChildFromID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetChildFromID = {
   "GetChildFromID",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -30234,9 +30234,9 @@ static const ni::sMethodDef iWidget_GetChildFromID = {
 };
 
 // Method: GetChildFromDrawOrder
-static const ni::sParameterDef iWidget_GetChildFromDrawOrder_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetChildFromDrawOrder_Parameters[1] = { 
   { "anDrawOrder", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetChildFromDrawOrder = {
   "GetChildFromDrawOrder",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -30249,9 +30249,9 @@ static const ni::sMethodDef iWidget_GetChildFromDrawOrder = {
 };
 
 // Method: FindWidget
-static const ni::sParameterDef iWidget_FindWidget_Parameters[1] = {
+static const ni::sParameterDef iWidget_FindWidget_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindWidget = {
   "FindWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -30264,9 +30264,9 @@ static const ni::sMethodDef iWidget_FindWidget = {
 };
 
 // Method: FindWidgetByPos
-static const ni::sParameterDef iWidget_FindWidgetByPos_Parameters[1] = {
+static const ni::sParameterDef iWidget_FindWidgetByPos_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindWidgetByPos = {
   "FindWidgetByPos",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -30279,10 +30279,10 @@ static const ni::sMethodDef iWidget_FindWidgetByPos = {
 };
 
 // Method: HasChild
-static const ni::sParameterDef iWidget_HasChild_Parameters[2] = {
-  { "apW", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "const iWidget*" },
+static const ni::sParameterDef iWidget_HasChild_Parameters[2] = { 
+  { "apW", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "const iWidget*" }, 
   { "abRecursive", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_HasChild = {
   "HasChild",
   0|ni::eType_I8, NULL, "tBool",
@@ -30295,9 +30295,9 @@ static const ni::sMethodDef iWidget_HasChild = {
 };
 
 // Method: HasParent
-static const ni::sParameterDef iWidget_HasParent_Parameters[1] = {
+static const ni::sParameterDef iWidget_HasParent_Parameters[1] = { 
   { "apW", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "const iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidget_HasParent = {
   "HasParent",
   0|ni::eType_I8, NULL, "tBool",
@@ -30310,9 +30310,9 @@ static const ni::sMethodDef iWidget_HasParent = {
 };
 
 // Method: SetText
-static const ni::sParameterDef iWidget_SetText_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetText_Parameters[1] = { 
   { "ahspText", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetText = {
   "SetText",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -30349,9 +30349,9 @@ static const ni::sMethodDef iWidget_GetLocalizedText = {
 };
 
 // Method: SetHoverText
-static const ni::sParameterDef iWidget_SetHoverText_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetHoverText_Parameters[1] = { 
   { "ahspText", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetHoverText = {
   "SetHoverText",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -30376,9 +30376,9 @@ static const ni::sMethodDef iWidget_GetHoverText = {
 };
 
 // Method: CreateDefaultHoverWidget
-static const ni::sParameterDef iWidget_CreateDefaultHoverWidget_Parameters[1] = {
+static const ni::sParameterDef iWidget_CreateDefaultHoverWidget_Parameters[1] = { 
   { "ahspHoverText", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_CreateDefaultHoverWidget = {
   "CreateDefaultHoverWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iWidget), "ni::iWidget*",
@@ -30391,10 +30391,10 @@ static const ni::sMethodDef iWidget_CreateDefaultHoverWidget = {
 };
 
 // Method: ShowHoverWidget
-static const ni::sParameterDef iWidget_ShowHoverWidget_Parameters[2] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iWidget), "ni::iWidget*" },
+static const ni::sParameterDef iWidget_ShowHoverWidget_Parameters[2] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iWidget), "ni::iWidget*" }, 
   { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_ShowHoverWidget = {
   "ShowHoverWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -30407,9 +30407,9 @@ static const ni::sMethodDef iWidget_ShowHoverWidget = {
 };
 
 // Method: ResetHoverWidget
-static const ni::sParameterDef iWidget_ResetHoverWidget_Parameters[1] = {
+static const ni::sParameterDef iWidget_ResetHoverWidget_Parameters[1] = { 
   { "abRestart", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_ResetHoverWidget = {
   "ResetHoverWidget",
   0|ni::eType_Null, NULL, "void",
@@ -30434,9 +30434,9 @@ static const ni::sMethodDef iWidget_GetHoverWidget = {
 };
 
 // Method: SetFont
-static const ni::sParameterDef iWidget_SetFont_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetFont_Parameters[1] = { 
   { "apFont", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetFont = {
   "SetFont",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "tBool",
@@ -30461,9 +30461,9 @@ static const ni::sMethodDef iWidget_GetFont = {
 };
 
 // Method: SetDockStyle
-static const ni::sParameterDef iWidget_SetDockStyle_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetDockStyle_Parameters[1] = { 
   { "aStyle", ni::eType_Enum, NULL, "eWidgetDockStyle" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetDockStyle = {
   "SetDockStyle",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -30488,9 +30488,9 @@ static const ni::sMethodDef iWidget_GetDockStyle = {
 };
 
 // Method: SetSkin
-static const ni::sParameterDef iWidget_SetSkin_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetSkin_Parameters[1] = { 
   { "ahspSkin", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetSkin = {
   "SetSkin",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -30515,9 +30515,9 @@ static const ni::sMethodDef iWidget_GetSkin = {
 };
 
 // Method: SetSkinClass
-static const ni::sParameterDef iWidget_SetSkinClass_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetSkinClass_Parameters[1] = { 
   { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetSkinClass = {
   "SetSkinClass",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -30542,9 +30542,9 @@ static const ni::sMethodDef iWidget_GetSkinClass = {
 };
 
 // Method: SetLocale
-static const ni::sParameterDef iWidget_SetLocale_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetLocale_Parameters[1] = { 
   { "ahspLocale", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetLocale = {
   "SetLocale",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "void",
@@ -30581,11 +30581,11 @@ static const ni::sMethodDef iWidget_GetActiveLocale = {
 };
 
 // Method: FindSkinFont
-static const ni::sParameterDef iWidget_FindSkinFont_Parameters[3] = {
-  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidget_FindSkinFont_Parameters[3] = { 
+  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindSkinFont = {
   "FindSkinFont",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iFont), "iFont*",
@@ -30598,11 +30598,11 @@ static const ni::sMethodDef iWidget_FindSkinFont = {
 };
 
 // Method: FindSkinCursor
-static const ni::sParameterDef iWidget_FindSkinCursor_Parameters[3] = {
-  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidget_FindSkinCursor_Parameters[3] = { 
+  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindSkinCursor = {
   "FindSkinCursor",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -30615,11 +30615,11 @@ static const ni::sMethodDef iWidget_FindSkinCursor = {
 };
 
 // Method: FindSkinElement
-static const ni::sParameterDef iWidget_FindSkinElement_Parameters[3] = {
-  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidget_FindSkinElement_Parameters[3] = { 
+  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindSkinElement = {
   "FindSkinElement",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -30632,12 +30632,12 @@ static const ni::sMethodDef iWidget_FindSkinElement = {
 };
 
 // Method: FindSkinColor
-static const ni::sParameterDef iWidget_FindSkinColor_Parameters[4] = {
-  { "aDefault", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" },
-  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidget_FindSkinColor_Parameters[4] = { 
+  { "aDefault", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }, 
+  { "ahspSkinClass", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspState", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindSkinColor = {
   "FindSkinColor",
   0|ni::eType_Vec4f, NULL, "sColor4f",
@@ -30650,9 +30650,9 @@ static const ni::sMethodDef iWidget_FindSkinColor = {
 };
 
 // Method: FindLocalized
-static const ni::sParameterDef iWidget_FindLocalized_Parameters[1] = {
+static const ni::sParameterDef iWidget_FindLocalized_Parameters[1] = { 
   { "ahspText", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidget_FindLocalized = {
   "FindLocalized",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -30665,9 +30665,9 @@ static const ni::sMethodDef iWidget_FindLocalized = {
 };
 
 // Method: SetContextMenu
-static const ni::sParameterDef iWidget_SetContextMenu_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetContextMenu_Parameters[1] = { 
   { "apMenu", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetContextMenu = {
   "SetContextMenu",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -30692,11 +30692,11 @@ static const ni::sMethodDef iWidget_GetContextMenu = {
 };
 
 // Method: SendMessage
-static const ni::sParameterDef iWidget_SendMessage_Parameters[3] = {
-  { "anMsg", ni::eType_U32, NULL, "tU32" },
-  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" },
+static const ni::sParameterDef iWidget_SendMessage_Parameters[3] = { 
+  { "anMsg", ni::eType_U32, NULL, "tU32" }, 
+  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }, 
   { "avarB", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SendMessage = {
   "SendMessage",
   0|ni::eType_I8, NULL, "tBool",
@@ -30709,12 +30709,12 @@ static const ni::sMethodDef iWidget_SendMessage = {
 };
 
 // Method: SendCommand
-static const ni::sParameterDef iWidget_SendCommand_Parameters[4] = {
-  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "anCommand", ni::eType_U32, NULL, "tU32" },
-  { "avarExtra1", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" },
+static const ni::sParameterDef iWidget_SendCommand_Parameters[4] = { 
+  { "apDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "anCommand", ni::eType_U32, NULL, "tU32" }, 
+  { "avarExtra1", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }, 
   { "avarExtra2", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iWidget_SendCommand = {
   "SendCommand",
   0|ni::eType_I8, NULL, "tBool",
@@ -30727,11 +30727,11 @@ static const ni::sMethodDef iWidget_SendCommand = {
 };
 
 // Method: BroadcastMessage
-static const ni::sParameterDef iWidget_BroadcastMessage_Parameters[3] = {
-  { "anMsg", ni::eType_U32, NULL, "tU32" },
-  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" },
+static const ni::sParameterDef iWidget_BroadcastMessage_Parameters[3] = { 
+  { "anMsg", ni::eType_U32, NULL, "tU32" }, 
+  { "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }, 
   { "avarB", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
-};
+}; 
 static const ni::sMethodDef iWidget_BroadcastMessage = {
   "BroadcastMessage",
   0|ni::eType_I8, NULL, "tBool",
@@ -30744,9 +30744,9 @@ static const ni::sMethodDef iWidget_BroadcastMessage = {
 };
 
 // Method: SetCanvas
-static const ni::sParameterDef iWidget_SetCanvas_Parameters[1] = {
+static const ni::sParameterDef iWidget_SetCanvas_Parameters[1] = { 
   { "apCanvas", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "iCanvas*" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetCanvas = {
   "SetCanvas",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iCanvas), "void",
@@ -30771,10 +30771,10 @@ static const ni::sMethodDef iWidget_GetCanvas = {
 };
 
 // Method: SerializeLayout
-static const ni::sParameterDef iWidget_SerializeLayout_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iWidget_SerializeLayout_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "anFlags", ni::eType_Enum, NULL, "tWidgetSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iWidget_SerializeLayout = {
   "SerializeLayout",
   0|ni::eType_I8, NULL, "tBool",
@@ -30787,10 +30787,10 @@ static const ni::sMethodDef iWidget_SerializeLayout = {
 };
 
 // Method: SerializeChildren
-static const ni::sParameterDef iWidget_SerializeChildren_Parameters[2] = {
-  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iWidget_SerializeChildren_Parameters[2] = { 
+  { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "anFlags", ni::eType_Enum, NULL, "tWidgetSerializeFlags" }
-};
+}; 
 static const ni::sMethodDef iWidget_SerializeChildren = {
   "SerializeChildren",
   0|ni::eType_I8, NULL, "tBool",
@@ -30803,9 +30803,9 @@ static const ni::sMethodDef iWidget_SerializeChildren = {
 };
 
 // Method: ApplyDockStyle
-static const ni::sParameterDef iWidget_ApplyDockStyle_Parameters[1] = {
+static const ni::sParameterDef iWidget_ApplyDockStyle_Parameters[1] = { 
   { "aStyle", ni::eType_Enum, NULL, "eWidgetDockStyle" }
-};
+}; 
 static const ni::sMethodDef iWidget_ApplyDockStyle = {
   "ApplyDockStyle",
   0|ni::eType_I8, NULL, "tBool",
@@ -30818,11 +30818,11 @@ static const ni::sMethodDef iWidget_ApplyDockStyle = {
 };
 
 // Method: Place
-static const ni::sParameterDef iWidget_Place_Parameters[3] = {
-  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" },
-  { "aStyle", ni::eType_Enum, NULL, "eWidgetDockStyle" },
+static const ni::sParameterDef iWidget_Place_Parameters[3] = { 
+  { "aRect", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sRectf&" }, 
+  { "aStyle", ni::eType_Enum, NULL, "eWidgetDockStyle" }, 
   { "avMargin", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iWidget_Place = {
   "Place",
   0|ni::eType_I8, NULL, "tBool",
@@ -30835,10 +30835,10 @@ static const ni::sMethodDef iWidget_Place = {
 };
 
 // Method: SnapInside
-static const ni::sParameterDef iWidget_SnapInside_Parameters[2] = {
-  { "apContainer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidget_SnapInside_Parameters[2] = { 
+  { "apContainer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "afSnapMargin", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidget_SnapInside = {
   "SnapInside",
   0|ni::eType_I8, NULL, "tBool",
@@ -30851,11 +30851,11 @@ static const ni::sMethodDef iWidget_SnapInside = {
 };
 
 // Method: PopAt
-static const ni::sParameterDef iWidget_PopAt_Parameters[3] = {
-  { "apContainer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" },
+static const ni::sParameterDef iWidget_PopAt_Parameters[3] = { 
+  { "apContainer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }, 
   { "afSnapMargin", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidget_PopAt = {
   "PopAt",
   0|ni::eType_I8, NULL, "tBool",
@@ -30868,9 +30868,9 @@ static const ni::sMethodDef iWidget_PopAt = {
 };
 
 // Method: Layout
-static const ni::sParameterDef iWidget_Layout_Parameters[1] = {
+static const ni::sParameterDef iWidget_Layout_Parameters[1] = { 
   { "abChildren", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_Layout = {
   "Layout",
   0|ni::eType_Null, NULL, "void",
@@ -30883,10 +30883,10 @@ static const ni::sMethodDef iWidget_Layout = {
 };
 
 // Method: SetFingerCapture
-static const ni::sParameterDef iWidget_SetFingerCapture_Parameters[2] = {
-  { "anFinger", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidget_SetFingerCapture_Parameters[2] = { 
+  { "anFinger", ni::eType_U32, NULL, "tU32" }, 
   { "abEnable", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidget_SetFingerCapture = {
   "SetFingerCapture",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -30899,9 +30899,9 @@ static const ni::sMethodDef iWidget_SetFingerCapture = {
 };
 
 // Method: GetFingerCapture
-static const ni::sParameterDef iWidget_GetFingerCapture_Parameters[1] = {
+static const ni::sParameterDef iWidget_GetFingerCapture_Parameters[1] = { 
   { "anFinger", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidget_GetFingerCapture = {
   "GetFingerCapture",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
@@ -31085,9 +31085,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidget = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetButton() {
 
 // Method: SetIcon
-static const ni::sParameterDef iWidgetButton_SetIcon_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetIcon_Parameters[1] = { 
   { "apIcon", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetIcon = {
   "SetIcon",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "void",
@@ -31112,9 +31112,9 @@ static const ni::sMethodDef iWidgetButton_GetIcon = {
 };
 
 // Method: SetIconPressed
-static const ni::sParameterDef iWidgetButton_SetIconPressed_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetIconPressed_Parameters[1] = { 
   { "apIcon", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetIconPressed = {
   "SetIconPressed",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "void",
@@ -31139,9 +31139,9 @@ static const ni::sMethodDef iWidgetButton_GetIconPressed = {
 };
 
 // Method: SetIconHover
-static const ni::sParameterDef iWidgetButton_SetIconHover_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetIconHover_Parameters[1] = { 
   { "apIcon", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetIconHover = {
   "SetIconHover",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "void",
@@ -31166,9 +31166,9 @@ static const ni::sMethodDef iWidgetButton_GetIconHover = {
 };
 
 // Method: SetIconSize
-static const ni::sParameterDef iWidgetButton_SetIconSize_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetIconSize_Parameters[1] = { 
   { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetIconSize = {
   "SetIconSize",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -31193,9 +31193,9 @@ static const ni::sMethodDef iWidgetButton_GetIconSize = {
 };
 
 // Method: SetCheck
-static const ni::sParameterDef iWidgetButton_SetCheck_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetCheck_Parameters[1] = { 
   { "abCkecked", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetCheck = {
   "SetCheck",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -31220,9 +31220,9 @@ static const ni::sMethodDef iWidgetButton_GetCheck = {
 };
 
 // Method: SetGroupID
-static const ni::sParameterDef iWidgetButton_SetGroupID_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetGroupID_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetGroupID = {
   "SetGroupID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -31247,9 +31247,9 @@ static const ni::sMethodDef iWidgetButton_GetGroupID = {
 };
 
 // Method: SetIconMargin
-static const ni::sParameterDef iWidgetButton_SetIconMargin_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetIconMargin_Parameters[1] = { 
   { "avMargin", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sVec4f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetIconMargin = {
   "SetIconMargin",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -31286,9 +31286,9 @@ static const ni::sMethodDef iWidgetButton_GetIconDrawRect = {
 };
 
 // Method: SetDrawFrameFlags
-static const ni::sParameterDef iWidgetButton_SetDrawFrameFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetButton_SetDrawFrameFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tRectFrameFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetButton_SetDrawFrameFlags = {
   "SetDrawFrameFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -31371,9 +31371,9 @@ static const ni::sMethodDef iWidgetCanvas_GetScrollV = {
 };
 
 // Method: SetScrollStepV
-static const ni::sParameterDef iWidgetCanvas_SetScrollStepV_Parameters[1] = {
+static const ni::sParameterDef iWidgetCanvas_SetScrollStepV_Parameters[1] = { 
   { "afV", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetCanvas_SetScrollStepV = {
   "SetScrollStepV",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -31398,9 +31398,9 @@ static const ni::sMethodDef iWidgetCanvas_GetScrollStepV = {
 };
 
 // Method: SetScrollMarginV
-static const ni::sParameterDef iWidgetCanvas_SetScrollMarginV_Parameters[1] = {
+static const ni::sParameterDef iWidgetCanvas_SetScrollMarginV_Parameters[1] = { 
   { "afV", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetCanvas_SetScrollMarginV = {
   "SetScrollMarginV",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -31437,9 +31437,9 @@ static const ni::sMethodDef iWidgetCanvas_GetScrollH = {
 };
 
 // Method: SetScrollStepH
-static const ni::sParameterDef iWidgetCanvas_SetScrollStepH_Parameters[1] = {
+static const ni::sParameterDef iWidgetCanvas_SetScrollStepH_Parameters[1] = { 
   { "afV", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetCanvas_SetScrollStepH = {
   "SetScrollStepH",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -31464,9 +31464,9 @@ static const ni::sMethodDef iWidgetCanvas_GetScrollStepH = {
 };
 
 // Method: SetScrollMarginH
-static const ni::sParameterDef iWidgetCanvas_SetScrollMarginH_Parameters[1] = {
+static const ni::sParameterDef iWidgetCanvas_SetScrollMarginH_Parameters[1] = { 
   { "afV", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetCanvas_SetScrollMarginH = {
   "SetScrollMarginH",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -31530,9 +31530,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetCanvas = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetColorPicker() {
 
 // Method: SetHSV
-static const ni::sParameterDef iWidgetColorPicker_SetHSV_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetHSV_Parameters[1] = { 
   { "avHSV", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sColor3f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetHSV = {
   "SetHSV",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -31557,9 +31557,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetHSV = {
 };
 
 // Method: SetRGBA
-static const ni::sParameterDef iWidgetColorPicker_SetRGBA_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetRGBA_Parameters[1] = { 
   { "avRGBA", ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "const sColor4f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetRGBA = {
   "SetRGBA",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -31584,9 +31584,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetRGBA = {
 };
 
 // Method: SetRGB
-static const ni::sParameterDef iWidgetColorPicker_SetRGB_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetRGB_Parameters[1] = { 
   { "avRGB", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sColor3f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetRGB = {
   "SetRGB",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -31611,9 +31611,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetRGB = {
 };
 
 // Method: SetAlpha
-static const ni::sParameterDef iWidgetColorPicker_SetAlpha_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetAlpha_Parameters[1] = { 
   { "afAlpha", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetAlpha = {
   "SetAlpha",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -31638,9 +31638,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetAlpha = {
 };
 
 // Method: SetBrightness
-static const ni::sParameterDef iWidgetColorPicker_SetBrightness_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetBrightness_Parameters[1] = { 
   { "afBrightness", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetBrightness = {
   "SetBrightness",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_F32, NULL, "void",
@@ -31665,9 +31665,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetBrightness = {
 };
 
 // Method: SetMaxBrightness
-static const ni::sParameterDef iWidgetColorPicker_SetMaxBrightness_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetMaxBrightness_Parameters[1] = { 
   { "afMaxBrightness", ni::eTypeFlags_Constant|ni::eType_F32, NULL, "const tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetMaxBrightness = {
   "SetMaxBrightness",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_F32, NULL, "void",
@@ -31692,9 +31692,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetMaxBrightness = {
 };
 
 // Method: SetColorName
-static const ni::sParameterDef iWidgetColorPicker_SetColorName_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetColorName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetColorName = {
   "SetColorName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -31719,9 +31719,9 @@ static const ni::sMethodDef iWidgetColorPicker_GetColorName = {
 };
 
 // Method: SetExpression
-static const ni::sParameterDef iWidgetColorPicker_SetExpression_Parameters[1] = {
+static const ni::sParameterDef iWidgetColorPicker_SetExpression_Parameters[1] = { 
   { "ahspExpression", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetColorPicker_SetExpression = {
   "SetExpression",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -31791,9 +31791,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetColorPicker = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetComboBox() {
 
 // Method: SetNumLines
-static const ni::sParameterDef iWidgetComboBox_SetNumLines_Parameters[1] = {
+static const ni::sParameterDef iWidgetComboBox_SetNumLines_Parameters[1] = { 
   { "anNum", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetComboBox_SetNumLines = {
   "SetNumLines",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -31818,9 +31818,9 @@ static const ni::sMethodDef iWidgetComboBox_GetNumLines = {
 };
 
 // Method: SetDroppedWidget
-static const ni::sParameterDef iWidgetComboBox_SetDroppedWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetComboBox_SetDroppedWidget_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetComboBox_SetDroppedWidget = {
   "SetDroppedWidget",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -31933,9 +31933,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetDockable = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetDockingManager() {
 
 // Method: SetFlags
-static const ni::sParameterDef iWidgetDockingManager_SetFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_SetFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tWidgetDockingManagerFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_SetFlags = {
   "SetFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -31960,9 +31960,9 @@ static const ni::sMethodDef iWidgetDockingManager_GetFlags = {
 };
 
 // Method: GetDockAreaFromPageName
-static const ni::sParameterDef iWidgetDockingManager_GetDockAreaFromPageName_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_GetDockAreaFromPageName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_GetDockAreaFromPageName = {
   "GetDockAreaFromPageName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -31975,9 +31975,9 @@ static const ni::sMethodDef iWidgetDockingManager_GetDockAreaFromPageName = {
 };
 
 // Method: GetDockAreaHovered
-static const ni::sParameterDef iWidgetDockingManager_GetDockAreaHovered_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_GetDockAreaHovered_Parameters[1] = { 
   { "avPos", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_GetDockAreaHovered = {
   "GetDockAreaHovered",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -31990,10 +31990,10 @@ static const ni::sMethodDef iWidgetDockingManager_GetDockAreaHovered = {
 };
 
 // Method: DockWidget
-static const ni::sParameterDef iWidgetDockingManager_DockWidget_Parameters[2] = {
-  { "anDock", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetDockingManager_DockWidget_Parameters[2] = { 
+  { "anDock", ni::eType_U32, NULL, "tU32" }, 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_DockWidget = {
   "DockWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -32006,9 +32006,9 @@ static const ni::sMethodDef iWidgetDockingManager_DockWidget = {
 };
 
 // Method: UndockWidget
-static const ni::sParameterDef iWidgetDockingManager_UndockWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_UndockWidget_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_UndockWidget = {
   "UndockWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -32033,9 +32033,9 @@ static const ni::sMethodDef iWidgetDockingManager_GetNumDockedWidgets = {
 };
 
 // Method: GetDockedWidget
-static const ni::sParameterDef iWidgetDockingManager_GetDockedWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_GetDockedWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_GetDockedWidget = {
   "GetDockedWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -32060,9 +32060,9 @@ static const ni::sMethodDef iWidgetDockingManager_GetNumDockAreas = {
 };
 
 // Method: GetDockArea
-static const ni::sParameterDef iWidgetDockingManager_GetDockArea_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_GetDockArea_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_GetDockArea = {
   "GetDockArea",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -32075,9 +32075,9 @@ static const ni::sMethodDef iWidgetDockingManager_GetDockArea = {
 };
 
 // Method: SetDockAreaTabContextMenu
-static const ni::sParameterDef iWidgetDockingManager_SetDockAreaTabContextMenu_Parameters[1] = {
+static const ni::sParameterDef iWidgetDockingManager_SetDockAreaTabContextMenu_Parameters[1] = { 
   { "apMenu", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_SetDockAreaTabContextMenu = {
   "SetDockAreaTabContextMenu",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -32102,12 +32102,12 @@ static const ni::sMethodDef iWidgetDockingManager_GetDockAreaTabContextMenu = {
 };
 
 // Method: AddDockArea
-static const ni::sParameterDef iWidgetDockingManager_AddDockArea_Parameters[4] = {
-  { "anParent", ni::eType_U32, NULL, "tU32" },
-  { "aPos", ni::eType_U32, NULL, "tU32" },
-  { "aRect", ni::eType_Vec4f, NULL, "sRectf" },
+static const ni::sParameterDef iWidgetDockingManager_AddDockArea_Parameters[4] = { 
+  { "anParent", ni::eType_U32, NULL, "tU32" }, 
+  { "aPos", ni::eType_U32, NULL, "tU32" }, 
+  { "aRect", ni::eType_Vec4f, NULL, "sRectf" }, 
   { "abLocal", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetDockingManager_AddDockArea = {
   "AddDockArea",
   0|ni::eType_U32, NULL, "tU32",
@@ -32188,9 +32188,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetDockingManager = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetEditBox() {
 
 // Method: AddText
-static const ni::sParameterDef iWidgetEditBox_AddText_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_AddText_Parameters[1] = { 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_AddText = {
   "AddText",
   0|ni::eType_Null, NULL, "void",
@@ -32203,9 +32203,9 @@ static const ni::sMethodDef iWidgetEditBox_AddText = {
 };
 
 // Method: SetReplaceChar
-static const ni::sParameterDef iWidgetEditBox_SetReplaceChar_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_SetReplaceChar_Parameters[1] = { 
   { "anChar", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_SetReplaceChar = {
   "SetReplaceChar",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -32230,9 +32230,9 @@ static const ni::sMethodDef iWidgetEditBox_GetReplaceChar = {
 };
 
 // Method: MoveCursorHome
-static const ni::sParameterDef iWidgetEditBox_MoveCursorHome_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_MoveCursorHome_Parameters[1] = { 
   { "abLine", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_MoveCursorHome = {
   "MoveCursorHome",
   0|ni::eType_Null, NULL, "void",
@@ -32245,9 +32245,9 @@ static const ni::sMethodDef iWidgetEditBox_MoveCursorHome = {
 };
 
 // Method: MoveCursorEnd
-static const ni::sParameterDef iWidgetEditBox_MoveCursorEnd_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_MoveCursorEnd_Parameters[1] = { 
   { "abLine", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_MoveCursorEnd = {
   "MoveCursorEnd",
   0|ni::eType_Null, NULL, "void",
@@ -32260,10 +32260,10 @@ static const ni::sMethodDef iWidgetEditBox_MoveCursorEnd = {
 };
 
 // Method: MoveCursor
-static const ni::sParameterDef iWidgetEditBox_MoveCursor_Parameters[2] = {
-  { "pos", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" },
+static const ni::sParameterDef iWidgetEditBox_MoveCursor_Parameters[2] = { 
+  { "pos", ni::eTypeFlags_Constant|ni::eType_Vec2i|ni::eTypeFlags_Pointer, NULL, "const sVec2i&" }, 
   { "abForceLogicalCol", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_MoveCursor = {
   "MoveCursor",
   0|ni::eType_Null, NULL, "void",
@@ -32276,9 +32276,9 @@ static const ni::sMethodDef iWidgetEditBox_MoveCursor = {
 };
 
 // Method: MoveCursorLineDelta
-static const ni::sParameterDef iWidgetEditBox_MoveCursorLineDelta_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_MoveCursorLineDelta_Parameters[1] = { 
   { "line", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_MoveCursorLineDelta = {
   "MoveCursorLineDelta",
   0|ni::eType_Null, NULL, "void",
@@ -32291,9 +32291,9 @@ static const ni::sMethodDef iWidgetEditBox_MoveCursorLineDelta = {
 };
 
 // Method: MoveCursorColumnDelta
-static const ni::sParameterDef iWidgetEditBox_MoveCursorColumnDelta_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_MoveCursorColumnDelta_Parameters[1] = { 
   { "line", ni::eType_I32, NULL, "tI32" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_MoveCursorColumnDelta = {
   "MoveCursorColumnDelta",
   0|ni::eType_Null, NULL, "void",
@@ -32354,9 +32354,9 @@ static const ni::sMethodDef iWidgetEditBox_AutoScroll = {
 };
 
 // Method: GetTextInRange
-static const ni::sParameterDef iWidgetEditBox_GetTextInRange_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_GetTextInRange_Parameters[1] = { 
   { "aRange", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i&" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_GetTextInRange = {
   "GetTextInRange",
   0|ni::eType_String, NULL, "cString",
@@ -32381,9 +32381,9 @@ static const ni::sMethodDef iWidgetEditBox_GetAllTextRange = {
 };
 
 // Method: SetSelection
-static const ni::sParameterDef iWidgetEditBox_SetSelection_Parameters[1] = {
+static const ni::sParameterDef iWidgetEditBox_SetSelection_Parameters[1] = { 
   { "aSelection", ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "const sVec4i&" }
-};
+}; 
 static const ni::sMethodDef iWidgetEditBox_SetSelection = {
   "SetSelection",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec4i|ni::eTypeFlags_Pointer, NULL, "void",
@@ -32453,9 +32453,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetEditBox = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetForm() {
 
 // Method: SetTitle
-static const ni::sParameterDef iWidgetForm_SetTitle_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_SetTitle_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_SetTitle = {
   "SetTitle",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "tBool",
@@ -32480,9 +32480,9 @@ static const ni::sMethodDef iWidgetForm_GetTitle = {
 };
 
 // Method: SetResizeBorderArea
-static const ni::sParameterDef iWidgetForm_SetResizeBorderArea_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_SetResizeBorderArea_Parameters[1] = { 
   { "aVal", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_SetResizeBorderArea = {
   "SetResizeBorderArea",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
@@ -32519,9 +32519,9 @@ static const ni::sMethodDef iWidgetForm_GetNumTitleWidgets = {
 };
 
 // Method: GetTitleWidget
-static const ni::sParameterDef iWidgetForm_GetTitleWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_GetTitleWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_GetTitleWidget = {
   "GetTitleWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -32534,9 +32534,9 @@ static const ni::sMethodDef iWidgetForm_GetTitleWidget = {
 };
 
 // Method: GetTitleWidgetIndex
-static const ni::sParameterDef iWidgetForm_GetTitleWidgetIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_GetTitleWidgetIndex_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_GetTitleWidgetIndex = {
   "GetTitleWidgetIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -32549,9 +32549,9 @@ static const ni::sMethodDef iWidgetForm_GetTitleWidgetIndex = {
 };
 
 // Method: GetTitleWidgetFromID
-static const ni::sParameterDef iWidgetForm_GetTitleWidgetFromID_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_GetTitleWidgetFromID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_GetTitleWidgetFromID = {
   "GetTitleWidgetFromID",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -32564,10 +32564,10 @@ static const ni::sMethodDef iWidgetForm_GetTitleWidgetFromID = {
 };
 
 // Method: AddTitleWidget
-static const ni::sParameterDef iWidgetForm_AddTitleWidget_Parameters[2] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidgetForm_AddTitleWidget_Parameters[2] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "afWidth", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_AddTitleWidget = {
   "AddTitleWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -32580,9 +32580,9 @@ static const ni::sMethodDef iWidgetForm_AddTitleWidget = {
 };
 
 // Method: SetFormFrameFlags
-static const ni::sParameterDef iWidgetForm_SetFormFrameFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetForm_SetFormFrameFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tRectFrameFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetForm_SetFormFrameFlags = {
   "SetFormFrameFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -32647,9 +32647,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetForm = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetGroup() {
 
 // Method: SetFolded
-static const ni::sParameterDef iWidgetGroup_SetFolded_Parameters[1] = {
+static const ni::sParameterDef iWidgetGroup_SetFolded_Parameters[1] = { 
   { "abFolded", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetGroup_SetFolded = {
   "SetFolded",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -32705,9 +32705,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetGroup = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetLabel() {
 
 // Method: SetFontFormatFlags
-static const ni::sParameterDef iWidgetLabel_SetFontFormatFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetLabel_SetFontFormatFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tFontFormatFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetLabel_SetFontFormatFlags = {
   "SetFontFormatFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -32763,10 +32763,10 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetLabel = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetListBox() {
 
 // Method: AddColumn
-static const ni::sParameterDef iWidgetListBox_AddColumn_Parameters[2] = {
-  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iWidgetListBox_AddColumn_Parameters[2] = { 
+  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_AddColumn = {
   "AddColumn",
   0|ni::eType_Null, NULL, "void",
@@ -32779,9 +32779,9 @@ static const ni::sMethodDef iWidgetListBox_AddColumn = {
 };
 
 // Method: RemoveColumn
-static const ni::sParameterDef iWidgetListBox_RemoveColumn_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_RemoveColumn_Parameters[1] = { 
   { "anColumn", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_RemoveColumn = {
   "RemoveColumn",
   0|ni::eType_I8, NULL, "tBool",
@@ -32806,10 +32806,10 @@ static const ni::sMethodDef iWidgetListBox_GetNumColumns = {
 };
 
 // Method: SetColumnName
-static const ni::sParameterDef iWidgetListBox_SetColumnName_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetColumnName_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetColumnName = {
   "SetColumnName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -32822,9 +32822,9 @@ static const ni::sMethodDef iWidgetListBox_SetColumnName = {
 };
 
 // Method: GetColumnName
-static const ni::sParameterDef iWidgetListBox_GetColumnName_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetColumnName_Parameters[1] = { 
   { "anColumn", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetColumnName = {
   "GetColumnName",
   ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -32837,10 +32837,10 @@ static const ni::sMethodDef iWidgetListBox_GetColumnName = {
 };
 
 // Method: SetColumnWidth
-static const ni::sParameterDef iWidgetListBox_SetColumnWidth_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetColumnWidth_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "anWidth", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetColumnWidth = {
   "SetColumnWidth",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -32853,9 +32853,9 @@ static const ni::sMethodDef iWidgetListBox_SetColumnWidth = {
 };
 
 // Method: GetColumnWidth
-static const ni::sParameterDef iWidgetListBox_GetColumnWidth_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetColumnWidth_Parameters[1] = { 
   { "anColumn", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetColumnWidth = {
   "GetColumnWidth",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -32868,11 +32868,11 @@ static const ni::sMethodDef iWidgetListBox_GetColumnWidth = {
 };
 
 // Method: SetColumn
-static const ni::sParameterDef iWidgetListBox_SetColumn_Parameters[3] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
-  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iWidgetListBox_SetColumn_Parameters[3] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
+  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "anSize", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetColumn = {
   "SetColumn",
   0|ni::eType_I8, NULL, "tBool",
@@ -32909,9 +32909,9 @@ static const ni::sMethodDef iWidgetListBox_ClearItems = {
 };
 
 // Method: AddItem
-static const ni::sParameterDef iWidgetListBox_AddItem_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_AddItem_Parameters[1] = { 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_AddItem = {
   "AddItem",
   0|ni::eType_U32, NULL, "tU32",
@@ -32924,9 +32924,9 @@ static const ni::sMethodDef iWidgetListBox_AddItem = {
 };
 
 // Method: RemoveItem
-static const ni::sParameterDef iWidgetListBox_RemoveItem_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_RemoveItem_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_RemoveItem = {
   "RemoveItem",
   0|ni::eType_I8, NULL, "tBool",
@@ -32939,11 +32939,11 @@ static const ni::sMethodDef iWidgetListBox_RemoveItem = {
 };
 
 // Method: SetItemText
-static const ni::sParameterDef iWidgetListBox_SetItemText_Parameters[3] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
-  { "anItem", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetItemText_Parameters[3] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
+  { "anItem", ni::eType_U32, NULL, "tU32" }, 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemText = {
   "SetItemText",
   0|ni::eType_I8, NULL, "tBool",
@@ -32956,10 +32956,10 @@ static const ni::sMethodDef iWidgetListBox_SetItemText = {
 };
 
 // Method: GetItemText
-static const ni::sParameterDef iWidgetListBox_GetItemText_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetItemText_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemText = {
   "GetItemText",
   0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -32972,11 +32972,11 @@ static const ni::sMethodDef iWidgetListBox_GetItemText = {
 };
 
 // Method: SetItemWidget
-static const ni::sParameterDef iWidgetListBox_SetItemWidget_Parameters[3] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
-  { "anItem", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetItemWidget_Parameters[3] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
+  { "anItem", ni::eType_U32, NULL, "tU32" }, 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemWidget = {
   "SetItemWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -32989,10 +32989,10 @@ static const ni::sMethodDef iWidgetListBox_SetItemWidget = {
 };
 
 // Method: GetItemWidget
-static const ni::sParameterDef iWidgetListBox_GetItemWidget_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetItemWidget_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemWidget = {
   "GetItemWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -33005,10 +33005,10 @@ static const ni::sMethodDef iWidgetListBox_GetItemWidget = {
 };
 
 // Method: SetItemIcon
-static const ni::sParameterDef iWidgetListBox_SetItemIcon_Parameters[2] = {
-  { "anItem", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetItemIcon_Parameters[2] = { 
+  { "anItem", ni::eType_U32, NULL, "tU32" }, 
   { "apIcon", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemIcon = {
   "SetItemIcon",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -33021,9 +33021,9 @@ static const ni::sMethodDef iWidgetListBox_SetItemIcon = {
 };
 
 // Method: GetItemIcon
-static const ni::sParameterDef iWidgetListBox_GetItemIcon_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetItemIcon_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemIcon = {
   "GetItemIcon",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -33036,10 +33036,10 @@ static const ni::sMethodDef iWidgetListBox_GetItemIcon = {
 };
 
 // Method: SetItemData
-static const ni::sParameterDef iWidgetListBox_SetItemData_Parameters[2] = {
-  { "anItem", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetItemData_Parameters[2] = { 
+  { "anItem", ni::eType_U32, NULL, "tU32" }, 
   { "apData", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemData = {
   "SetItemData",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -33052,9 +33052,9 @@ static const ni::sMethodDef iWidgetListBox_SetItemData = {
 };
 
 // Method: GetItemData
-static const ni::sParameterDef iWidgetListBox_GetItemData_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetItemData_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemData = {
   "GetItemData",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*",
@@ -33067,9 +33067,9 @@ static const ni::sMethodDef iWidgetListBox_GetItemData = {
 };
 
 // Method: SetSortKey
-static const ni::sParameterDef iWidgetListBox_SetSortKey_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_SetSortKey_Parameters[1] = { 
   { "anKeyColumn", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetSortKey = {
   "SetSortKey",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -33094,9 +33094,9 @@ static const ni::sMethodDef iWidgetListBox_GetSortKey = {
 };
 
 // Method: SetSortAscendant
-static const ni::sParameterDef iWidgetListBox_SetSortAscendant_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_SetSortAscendant_Parameters[1] = { 
   { "abAscendant", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetSortAscendant = {
   "SetSortAscendant",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -33121,10 +33121,10 @@ static const ni::sMethodDef iWidgetListBox_GetSortAscendant = {
 };
 
 // Method: GetItemFromText
-static const ni::sParameterDef iWidgetListBox_GetItemFromText_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetItemFromText_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemFromText = {
   "GetItemFromText",
   0|ni::eType_U32, NULL, "tU32",
@@ -33149,9 +33149,9 @@ static const ni::sMethodDef iWidgetListBox_ClearSelection = {
 };
 
 // Method: AddSelection
-static const ni::sParameterDef iWidgetListBox_AddSelection_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_AddSelection_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_AddSelection = {
   "AddSelection",
   0|ni::eType_I8, NULL, "tBool",
@@ -33164,9 +33164,9 @@ static const ni::sMethodDef iWidgetListBox_AddSelection = {
 };
 
 // Method: RemoveSelection
-static const ni::sParameterDef iWidgetListBox_RemoveSelection_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_RemoveSelection_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_RemoveSelection = {
   "RemoveSelection",
   0|ni::eType_I8, NULL, "tBool",
@@ -33191,9 +33191,9 @@ static const ni::sMethodDef iWidgetListBox_GetNumSelections = {
 };
 
 // Method: GetSelection
-static const ni::sParameterDef iWidgetListBox_GetSelection_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetSelection_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetSelection = {
   "GetSelection",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -33206,9 +33206,9 @@ static const ni::sMethodDef iWidgetListBox_GetSelection = {
 };
 
 // Method: SetSelected
-static const ni::sParameterDef iWidgetListBox_SetSelected_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_SetSelected_Parameters[1] = { 
   { "anSelection", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetSelected = {
   "SetSelected",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -33233,9 +33233,9 @@ static const ni::sMethodDef iWidgetListBox_GetSelected = {
 };
 
 // Method: GetIsItemSelected
-static const ni::sParameterDef iWidgetListBox_GetIsItemSelected_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetIsItemSelected_Parameters[1] = { 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetIsItemSelected = {
   "GetIsItemSelected",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
@@ -33248,10 +33248,10 @@ static const ni::sMethodDef iWidgetListBox_GetIsItemSelected = {
 };
 
 // Method: AddSelectedItem
-static const ni::sParameterDef iWidgetListBox_AddSelectedItem_Parameters[2] = {
-  { "anCol", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_AddSelectedItem_Parameters[2] = { 
+  { "anCol", ni::eType_U32, NULL, "tU32" }, 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_AddSelectedItem = {
   "AddSelectedItem",
   0|ni::eType_I8, NULL, "tBool",
@@ -33264,10 +33264,10 @@ static const ni::sMethodDef iWidgetListBox_AddSelectedItem = {
 };
 
 // Method: GetSelectedItemText
-static const ni::sParameterDef iWidgetListBox_GetSelectedItemText_Parameters[2] = {
-  { "anCol", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetSelectedItemText_Parameters[2] = { 
+  { "anCol", ni::eType_U32, NULL, "tU32" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetSelectedItemText = {
   "GetSelectedItemText",
   0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -33280,10 +33280,10 @@ static const ni::sMethodDef iWidgetListBox_GetSelectedItemText = {
 };
 
 // Method: GetSelectedItemWidget
-static const ni::sParameterDef iWidgetListBox_GetSelectedItemWidget_Parameters[2] = {
-  { "anCol", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetSelectedItemWidget_Parameters[2] = { 
+  { "anCol", ni::eType_U32, NULL, "tU32" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetSelectedItemWidget = {
   "GetSelectedItemWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -33296,10 +33296,10 @@ static const ni::sMethodDef iWidgetListBox_GetSelectedItemWidget = {
 };
 
 // Method: SetSelectedItem
-static const ni::sParameterDef iWidgetListBox_SetSelectedItem_Parameters[2] = {
-  { "anCol", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetSelectedItem_Parameters[2] = { 
+  { "anCol", ni::eType_U32, NULL, "tU32" }, 
   { "aaszText", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetSelectedItem = {
   "SetSelectedItem",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -33312,9 +33312,9 @@ static const ni::sMethodDef iWidgetListBox_SetSelectedItem = {
 };
 
 // Method: GetSelectedItem
-static const ni::sParameterDef iWidgetListBox_GetSelectedItem_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_GetSelectedItem_Parameters[1] = { 
   { "anCol", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetSelectedItem = {
   "GetSelectedItem",
   ni::eTypeFlags_MethodGetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*",
@@ -33327,9 +33327,9 @@ static const ni::sMethodDef iWidgetListBox_GetSelectedItem = {
 };
 
 // Method: SetItemHeight
-static const ni::sParameterDef iWidgetListBox_SetItemHeight_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_SetItemHeight_Parameters[1] = { 
   { "afHeight", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemHeight = {
   "SetItemHeight",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
@@ -33366,11 +33366,11 @@ static const ni::sMethodDef iWidgetListBox_AutoScroll = {
 };
 
 // Method: SetItemTextColor
-static const ni::sParameterDef iWidgetListBox_SetItemTextColor_Parameters[3] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
-  { "anItem", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_SetItemTextColor_Parameters[3] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
+  { "anItem", ni::eType_U32, NULL, "tU32" }, 
   { "anTextColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetItemTextColor = {
   "SetItemTextColor",
   0|ni::eType_I8, NULL, "tBool",
@@ -33383,10 +33383,10 @@ static const ni::sMethodDef iWidgetListBox_SetItemTextColor = {
 };
 
 // Method: GetItemTextColor
-static const ni::sParameterDef iWidgetListBox_GetItemTextColor_Parameters[2] = {
-  { "anColumn", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetListBox_GetItemTextColor_Parameters[2] = { 
+  { "anColumn", ni::eType_U32, NULL, "tU32" }, 
   { "anItem", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_GetItemTextColor = {
   "GetItemTextColor",
   0|ni::eType_U32, NULL, "tU32",
@@ -33399,9 +33399,9 @@ static const ni::sMethodDef iWidgetListBox_GetItemTextColor = {
 };
 
 // Method: SetMaxNumItems
-static const ni::sParameterDef iWidgetListBox_SetMaxNumItems_Parameters[1] = {
+static const ni::sParameterDef iWidgetListBox_SetMaxNumItems_Parameters[1] = { 
   { "anMaxItems", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetListBox_SetMaxNumItems = {
   "SetMaxNumItems",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -33512,9 +33512,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetMenu = {
 };
 
 // Method: SetName
-static const ni::sParameterDef iWidgetMenuItem_SetName_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetName_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetName = {
   "SetName",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "tBool",
@@ -33539,9 +33539,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetName = {
 };
 
 // Method: SetID
-static const ni::sParameterDef iWidgetMenuItem_SetID_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetID_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetID = {
   "SetID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -33566,9 +33566,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetID = {
 };
 
 // Method: SetFlags
-static const ni::sParameterDef iWidgetMenuItem_SetFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetFlags_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "tWidgetMenuItemFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetFlags = {
   "SetFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -33593,9 +33593,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetFlags = {
 };
 
 // Method: SetIcon
-static const ni::sParameterDef iWidgetMenuItem_SetIcon_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetIcon_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetIcon = {
   "SetIcon",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "tBool",
@@ -33620,9 +33620,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetIcon = {
 };
 
 // Method: SetSubmenu
-static const ni::sParameterDef iWidgetMenuItem_SetSubmenu_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetSubmenu_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetSubmenu = {
   "SetSubmenu",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -33647,9 +33647,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetSubmenu = {
 };
 
 // Method: SetSelected
-static const ni::sParameterDef iWidgetMenuItem_SetSelected_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetSelected_Parameters[1] = { 
   { "aVal", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetSelected = {
   "SetSelected",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -33674,9 +33674,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetSelected = {
 };
 
 // Method: SetGroupID
-static const ni::sParameterDef iWidgetMenuItem_SetGroupID_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetGroupID_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetGroupID = {
   "SetGroupID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -33701,9 +33701,9 @@ static const ni::sMethodDef iWidgetMenuItem_GetGroupID = {
 };
 
 // Method: SetKey
-static const ni::sParameterDef iWidgetMenuItem_SetKey_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenuItem_SetKey_Parameters[1] = { 
   { "aVal", ni::eType_Enum, NULL, "eKey" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenuItem_SetKey = {
   "SetKey",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -33786,11 +33786,11 @@ static const ni::sMethodDef iWidgetMenu_ClearItems = {
 };
 
 // Method: AddItem
-static const ni::sParameterDef iWidgetMenu_AddItem_Parameters[3] = {
-  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetMenu_AddItem_Parameters[3] = { 
+  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "aFlags", ni::eType_Enum, NULL, "tWidgetMenuItemFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenu_AddItem = {
   "AddItem",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetMenuItem), "iWidgetMenuItem*",
@@ -33803,9 +33803,9 @@ static const ni::sMethodDef iWidgetMenu_AddItem = {
 };
 
 // Method: RemoveItem
-static const ni::sParameterDef iWidgetMenu_RemoveItem_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenu_RemoveItem_Parameters[1] = { 
   { "apItem", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetMenuItem), "iWidgetMenuItem*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenu_RemoveItem = {
   "RemoveItem",
   0|ni::eType_I8, NULL, "tBool",
@@ -33830,9 +33830,9 @@ static const ni::sMethodDef iWidgetMenu_GetNumItems = {
 };
 
 // Method: GetItem
-static const ni::sParameterDef iWidgetMenu_GetItem_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenu_GetItem_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenu_GetItem = {
   "GetItem",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetMenuItem), "iWidgetMenuItem*",
@@ -33845,9 +33845,9 @@ static const ni::sMethodDef iWidgetMenu_GetItem = {
 };
 
 // Method: GetItemFromName
-static const ni::sParameterDef iWidgetMenu_GetItemFromName_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenu_GetItemFromName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenu_GetItemFromName = {
   "GetItemFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetMenuItem), "iWidgetMenuItem*",
@@ -33860,9 +33860,9 @@ static const ni::sMethodDef iWidgetMenu_GetItemFromName = {
 };
 
 // Method: GetItemFromID
-static const ni::sParameterDef iWidgetMenu_GetItemFromID_Parameters[1] = {
+static const ni::sParameterDef iWidgetMenu_GetItemFromID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetMenu_GetItemFromID = {
   "GetItemFromID",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetMenuItem), "iWidgetMenuItem*",
@@ -34015,10 +34015,10 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetMenu = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetProgressBar() {
 
 // Method: SetRange
-static const ni::sParameterDef iWidgetProgressBar_SetRange_Parameters[2] = {
-  { "afMin", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iWidgetProgressBar_SetRange_Parameters[2] = { 
+  { "afMin", ni::eType_F32, NULL, "tF32" }, 
   { "afMax", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetProgressBar_SetRange = {
   "SetRange",
   0|ni::eType_Null, NULL, "void",
@@ -34031,9 +34031,9 @@ static const ni::sMethodDef iWidgetProgressBar_SetRange = {
 };
 
 // Method: SetProgress
-static const ni::sParameterDef iWidgetProgressBar_SetProgress_Parameters[1] = {
+static const ni::sParameterDef iWidgetProgressBar_SetProgress_Parameters[1] = { 
   { "afPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetProgressBar_SetProgress = {
   "SetProgress",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -34092,9 +34092,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetPropertyBox() {
 
 #if niMinFeatures(20)
 // Method: SetDataTable
-static const ni::sParameterDef iWidgetPropertyBox_SetDataTable_Parameters[1] = {
+static const ni::sParameterDef iWidgetPropertyBox_SetDataTable_Parameters[1] = { 
   { "apDT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
-};
+}; 
 static const ni::sMethodDef iWidgetPropertyBox_SetDataTable = {
   "SetDataTable",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "void",
@@ -34206,9 +34206,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetPropertyBox = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetScrollBar() {
 
 // Method: SetScrollRange
-static const ni::sParameterDef iWidgetScrollBar_SetScrollRange_Parameters[1] = {
+static const ni::sParameterDef iWidgetScrollBar_SetScrollRange_Parameters[1] = { 
   { "avRange", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetScrollBar_SetScrollRange = {
   "SetScrollRange",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "void",
@@ -34233,9 +34233,9 @@ static const ni::sMethodDef iWidgetScrollBar_GetScrollRange = {
 };
 
 // Method: SetScrollPosition
-static const ni::sParameterDef iWidgetScrollBar_SetScrollPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetScrollBar_SetScrollPosition_Parameters[1] = { 
   { "afScrollPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetScrollBar_SetScrollPosition = {
   "SetScrollPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -34260,9 +34260,9 @@ static const ni::sMethodDef iWidgetScrollBar_GetScrollPosition = {
 };
 
 // Method: SetNormalizedScrollPosition
-static const ni::sParameterDef iWidgetScrollBar_SetNormalizedScrollPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetScrollBar_SetNormalizedScrollPosition_Parameters[1] = { 
   { "afScrollPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetScrollBar_SetNormalizedScrollPosition = {
   "SetNormalizedScrollPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -34287,9 +34287,9 @@ static const ni::sMethodDef iWidgetScrollBar_GetNormalizedScrollPosition = {
 };
 
 // Method: SetPageSize
-static const ni::sParameterDef iWidgetScrollBar_SetPageSize_Parameters[1] = {
+static const ni::sParameterDef iWidgetScrollBar_SetPageSize_Parameters[1] = { 
   { "afPageSize", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetScrollBar_SetPageSize = {
   "SetPageSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -34314,9 +34314,9 @@ static const ni::sMethodDef iWidgetScrollBar_GetPageSize = {
 };
 
 // Method: ComputeRoundedPosition
-static const ni::sParameterDef iWidgetScrollBar_ComputeRoundedPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetScrollBar_ComputeRoundedPosition_Parameters[1] = { 
   { "afNewPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetScrollBar_ComputeRoundedPosition = {
   "ComputeRoundedPosition",
   0|ni::eType_F32, NULL, "tF32",
@@ -34369,10 +34369,10 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iSearchContainer() {
 
 #if niMinFeatures(20)
 // Method: AddResult
-static const ni::sParameterDef iSearchContainer_AddResult_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iSearchContainer_AddResult_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aaszValue", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iSearchContainer_AddResult = {
   "AddResult",
   0|ni::eType_Null, NULL, "void",
@@ -34421,9 +34421,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iSearchable() {
 
 #if niMinFeatures(20)
 // Method: OnSelect
-static const ni::sParameterDef iSearchable_OnSelect_Parameters[1] = {
+static const ni::sParameterDef iSearchable_OnSelect_Parameters[1] = { 
   { "nIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iSearchable_OnSelect = {
   "OnSelect",
   0|ni::eType_Null, NULL, "void",
@@ -34438,9 +34438,9 @@ static const ni::sMethodDef iSearchable_OnSelect = {
 
 #if niMinFeatures(20)
 // Method: GetCorpus
-static const ni::sParameterDef iSearchable_GetCorpus_Parameters[1] = {
+static const ni::sParameterDef iSearchable_GetCorpus_Parameters[1] = { 
   { "apContainer", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSearchContainer), "iSearchContainer*" }
-};
+}; 
 static const ni::sMethodDef iSearchable_GetCorpus = {
   "GetCorpus",
   0|ni::eType_Null, NULL, "void",
@@ -34536,9 +34536,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetSearchBar() {
 
 #if niMinFeatures(20)
 // Method: SetSearchable
-static const ni::sParameterDef iWidgetSearchBar_SetSearchable_Parameters[1] = {
+static const ni::sParameterDef iWidgetSearchBar_SetSearchable_Parameters[1] = { 
   { "aS", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSearchable), "iSearchable*" }
-};
+}; 
 static const ni::sMethodDef iWidgetSearchBar_SetSearchable = {
   "SetSearchable",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iSearchable), "void",
@@ -34602,9 +34602,9 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetSearchBar = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetSplitter() {
 
 // Method: AddSplitterFront
-static const ni::sParameterDef iWidgetSplitter_AddSplitterFront_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_AddSplitterFront_Parameters[1] = { 
   { "afPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_AddSplitterFront = {
   "AddSplitterFront",
   0|ni::eType_I8, NULL, "tBool",
@@ -34617,9 +34617,9 @@ static const ni::sMethodDef iWidgetSplitter_AddSplitterFront = {
 };
 
 // Method: AddSplitterBack
-static const ni::sParameterDef iWidgetSplitter_AddSplitterBack_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_AddSplitterBack_Parameters[1] = { 
   { "afPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_AddSplitterBack = {
   "AddSplitterBack",
   0|ni::eType_I8, NULL, "tBool",
@@ -34632,9 +34632,9 @@ static const ni::sMethodDef iWidgetSplitter_AddSplitterBack = {
 };
 
 // Method: RemoveSplitter
-static const ni::sParameterDef iWidgetSplitter_RemoveSplitter_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_RemoveSplitter_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_RemoveSplitter = {
   "RemoveSplitter",
   0|ni::eType_I8, NULL, "tBool",
@@ -34671,9 +34671,9 @@ static const ni::sMethodDef iWidgetSplitter_GetNumSplitterWidgets = {
 };
 
 // Method: GetSplitterWidget
-static const ni::sParameterDef iWidgetSplitter_GetSplitterWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_GetSplitterWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_GetSplitterWidget = {
   "GetSplitterWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -34686,9 +34686,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterWidget = {
 };
 
 // Method: GetSplitterWidgetIndex
-static const ni::sParameterDef iWidgetSplitter_GetSplitterWidgetIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_GetSplitterWidgetIndex_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_GetSplitterWidgetIndex = {
   "GetSplitterWidgetIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -34701,9 +34701,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterWidgetIndex = {
 };
 
 // Method: RemoveSplitterWidget
-static const ni::sParameterDef iWidgetSplitter_RemoveSplitterWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_RemoveSplitterWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_RemoveSplitterWidget = {
   "RemoveSplitterWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -34716,10 +34716,10 @@ static const ni::sMethodDef iWidgetSplitter_RemoveSplitterWidget = {
 };
 
 // Method: AddSplitterBefore
-static const ni::sParameterDef iWidgetSplitter_AddSplitterBefore_Parameters[2] = {
-  { "anWidget", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetSplitter_AddSplitterBefore_Parameters[2] = { 
+  { "anWidget", ni::eType_U32, NULL, "tU32" }, 
   { "afPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_AddSplitterBefore = {
   "AddSplitterBefore",
   0|ni::eType_I8, NULL, "tBool",
@@ -34732,10 +34732,10 @@ static const ni::sMethodDef iWidgetSplitter_AddSplitterBefore = {
 };
 
 // Method: AddSplitterAfter
-static const ni::sParameterDef iWidgetSplitter_AddSplitterAfter_Parameters[2] = {
-  { "anWidget", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetSplitter_AddSplitterAfter_Parameters[2] = { 
+  { "anWidget", ni::eType_U32, NULL, "tU32" }, 
   { "afPos", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_AddSplitterAfter = {
   "AddSplitterAfter",
   0|ni::eType_I8, NULL, "tBool",
@@ -34748,10 +34748,10 @@ static const ni::sMethodDef iWidgetSplitter_AddSplitterAfter = {
 };
 
 // Method: SetSplitterPosition
-static const ni::sParameterDef iWidgetSplitter_SetSplitterPosition_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetSplitter_SetSplitterPosition_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "aVal", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterPosition = {
   "SetSplitterPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -34764,9 +34764,9 @@ static const ni::sMethodDef iWidgetSplitter_SetSplitterPosition = {
 };
 
 // Method: GetSplitterPosition
-static const ni::sParameterDef iWidgetSplitter_GetSplitterPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_GetSplitterPosition_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_GetSplitterPosition = {
   "GetSplitterPosition",
   ni::eTypeFlags_MethodGetter|0|ni::eType_F32, NULL, "tF32",
@@ -34779,9 +34779,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterPosition = {
 };
 
 // Method: SetSplitterMinPosition
-static const ni::sParameterDef iWidgetSplitter_SetSplitterMinPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterMinPosition_Parameters[1] = { 
   { "aVal", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterMinPosition = {
   "SetSplitterMinPosition",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
@@ -34806,9 +34806,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterMinPosition = {
 };
 
 // Method: SetSplitterSize
-static const ni::sParameterDef iWidgetSplitter_SetSplitterSize_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterSize_Parameters[1] = { 
   { "afSize", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterSize = {
   "SetSplitterSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "tBool",
@@ -34833,10 +34833,10 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterSize = {
 };
 
 // Method: SwapSplitterWidget
-static const ni::sParameterDef iWidgetSplitter_SwapSplitterWidget_Parameters[2] = {
-  { "anA", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetSplitter_SwapSplitterWidget_Parameters[2] = { 
+  { "anA", ni::eType_U32, NULL, "tU32" }, 
   { "anB", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SwapSplitterWidget = {
   "SwapSplitterWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -34849,9 +34849,9 @@ static const ni::sMethodDef iWidgetSplitter_SwapSplitterWidget = {
 };
 
 // Method: SetSplitterBorderSize
-static const ni::sParameterDef iWidgetSplitter_SetSplitterBorderSize_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterBorderSize_Parameters[1] = { 
   { "afSize", ni::eType_F32, NULL, "tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterBorderSize = {
   "SetSplitterBorderSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -34876,9 +34876,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterBorderSize = {
 };
 
 // Method: SetSplitterResizableBorders
-static const ni::sParameterDef iWidgetSplitter_SetSplitterResizableBorders_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterResizableBorders_Parameters[1] = { 
   { "aEdges", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterResizableBorders = {
   "SetSplitterResizableBorders",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -34903,9 +34903,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterResizableBorders = {
 };
 
 // Method: SetSplitterParentDockRectMinimumSize
-static const ni::sParameterDef iWidgetSplitter_SetSplitterParentDockRectMinimumSize_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterParentDockRectMinimumSize_Parameters[1] = { 
   { "avMinSize", ni::eType_Vec2f, NULL, "sVec2f" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterParentDockRectMinimumSize = {
   "SetSplitterParentDockRectMinimumSize",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Vec2f, NULL, "void",
@@ -34930,9 +34930,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterParentDockRectMinimumSize
 };
 
 // Method: SetSplitterFillerIndex
-static const ni::sParameterDef iWidgetSplitter_SetSplitterFillerIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterFillerIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterFillerIndex = {
   "SetSplitterFillerIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -34957,9 +34957,9 @@ static const ni::sMethodDef iWidgetSplitter_GetSplitterFillerIndex = {
 };
 
 // Method: SetSplitterFoldMode
-static const ni::sParameterDef iWidgetSplitter_SetSplitterFoldMode_Parameters[1] = {
+static const ni::sParameterDef iWidgetSplitter_SetSplitterFoldMode_Parameters[1] = { 
   { "aFoldMode", ni::eType_Enum, NULL, "eWidgetSplitterFoldMode" }
-};
+}; 
 static const ni::sMethodDef iWidgetSplitter_SetSplitterFoldMode = {
   "SetSplitterFoldMode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "void",
@@ -35040,10 +35040,10 @@ static const ni::sInterfaceDef InterfaceDef_iWidgetSplitter = {
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetTab() {
 
 // Method: AddPage
-static const ni::sParameterDef iWidgetTab_AddPage_Parameters[2] = {
-  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetTab_AddPage_Parameters[2] = { 
+  { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_AddPage = {
   "AddPage",
   0|ni::eType_Null, NULL, "void",
@@ -35056,9 +35056,9 @@ static const ni::sMethodDef iWidgetTab_AddPage = {
 };
 
 // Method: RemovePage
-static const ni::sParameterDef iWidgetTab_RemovePage_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_RemovePage_Parameters[1] = { 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_RemovePage = {
   "RemovePage",
   0|ni::eType_I8, NULL, "tBool",
@@ -35071,9 +35071,9 @@ static const ni::sMethodDef iWidgetTab_RemovePage = {
 };
 
 // Method: HasPage
-static const ni::sParameterDef iWidgetTab_HasPage_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_HasPage_Parameters[1] = { 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_HasPage = {
   "HasPage",
   0|ni::eType_I8, NULL, "tBool",
@@ -35098,9 +35098,9 @@ static const ni::sMethodDef iWidgetTab_GetNumPages = {
 };
 
 // Method: GetPage
-static const ni::sParameterDef iWidgetTab_GetPage_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPage_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPage = {
   "GetPage",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -35113,9 +35113,9 @@ static const ni::sMethodDef iWidgetTab_GetPage = {
 };
 
 // Method: GetPageButton
-static const ni::sParameterDef iWidgetTab_GetPageButton_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPageButton_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPageButton = {
   "GetPageButton",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -35128,9 +35128,9 @@ static const ni::sMethodDef iWidgetTab_GetPageButton = {
 };
 
 // Method: GetPageFromName
-static const ni::sParameterDef iWidgetTab_GetPageFromName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPageFromName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPageFromName = {
   "GetPageFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -35143,9 +35143,9 @@ static const ni::sMethodDef iWidgetTab_GetPageFromName = {
 };
 
 // Method: GetPageFromID
-static const ni::sParameterDef iWidgetTab_GetPageFromID_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPageFromID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPageFromID = {
   "GetPageFromID",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -35158,10 +35158,10 @@ static const ni::sMethodDef iWidgetTab_GetPageFromID = {
 };
 
 // Method: SetPageName
-static const ni::sParameterDef iWidgetTab_SetPageName_Parameters[2] = {
-  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidgetTab_SetPageName_Parameters[2] = { 
+  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetPageName = {
   "SetPageName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -35174,9 +35174,9 @@ static const ni::sMethodDef iWidgetTab_SetPageName = {
 };
 
 // Method: GetPageName
-static const ni::sParameterDef iWidgetTab_GetPageName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPageName_Parameters[1] = { 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPageName = {
   "GetPageName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -35189,10 +35189,10 @@ static const ni::sMethodDef iWidgetTab_GetPageName = {
 };
 
 // Method: SetPageIndex
-static const ni::sParameterDef iWidgetTab_SetPageIndex_Parameters[2] = {
-  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidgetTab_SetPageIndex_Parameters[2] = { 
+  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetPageIndex = {
   "SetPageIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -35205,9 +35205,9 @@ static const ni::sMethodDef iWidgetTab_SetPageIndex = {
 };
 
 // Method: GetPageIndex
-static const ni::sParameterDef iWidgetTab_GetPageIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetPageIndex_Parameters[1] = { 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetPageIndex = {
   "GetPageIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -35220,10 +35220,10 @@ static const ni::sMethodDef iWidgetTab_GetPageIndex = {
 };
 
 // Method: MovePageLeft
-static const ni::sParameterDef iWidgetTab_MovePageLeft_Parameters[2] = {
-  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidgetTab_MovePageLeft_Parameters[2] = { 
+  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "anLeft", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_MovePageLeft = {
   "MovePageLeft",
   0|ni::eType_I8, NULL, "tBool",
@@ -35236,10 +35236,10 @@ static const ni::sMethodDef iWidgetTab_MovePageLeft = {
 };
 
 // Method: MovePageRight
-static const ni::sParameterDef iWidgetTab_MovePageRight_Parameters[2] = {
-  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
+static const ni::sParameterDef iWidgetTab_MovePageRight_Parameters[2] = { 
+  { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
   { "anCount", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_MovePageRight = {
   "MovePageRight",
   0|ni::eType_I8, NULL, "tBool",
@@ -35252,9 +35252,9 @@ static const ni::sMethodDef iWidgetTab_MovePageRight = {
 };
 
 // Method: SetMinNumPagesToShowTabs
-static const ni::sParameterDef iWidgetTab_SetMinNumPagesToShowTabs_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetMinNumPagesToShowTabs_Parameters[1] = { 
   { "anMinNumPages", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetMinNumPagesToShowTabs = {
   "SetMinNumPagesToShowTabs",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -35279,9 +35279,9 @@ static const ni::sMethodDef iWidgetTab_GetMinNumPagesToShowTabs = {
 };
 
 // Method: SetActivePage
-static const ni::sParameterDef iWidgetTab_SetActivePage_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetActivePage_Parameters[1] = { 
   { "apPage", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetActivePage = {
   "SetActivePage",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -35306,9 +35306,9 @@ static const ni::sMethodDef iWidgetTab_GetActivePage = {
 };
 
 // Method: SetActivePageName
-static const ni::sParameterDef iWidgetTab_SetActivePageName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetActivePageName_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetActivePageName = {
   "SetActivePageName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -35333,9 +35333,9 @@ static const ni::sMethodDef iWidgetTab_GetActivePageName = {
 };
 
 // Method: SetActivePageIndex
-static const ni::sParameterDef iWidgetTab_SetActivePageIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetActivePageIndex_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetActivePageIndex = {
   "SetActivePageIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",
@@ -35360,9 +35360,9 @@ static const ni::sMethodDef iWidgetTab_GetActivePageIndex = {
 };
 
 // Method: SetActivePageID
-static const ni::sParameterDef iWidgetTab_SetActivePageID_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetActivePageID_Parameters[1] = { 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetActivePageID = {
   "SetActivePageID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "tBool",
@@ -35387,9 +35387,9 @@ static const ni::sMethodDef iWidgetTab_GetActivePageID = {
 };
 
 // Method: SetForceActivated
-static const ni::sParameterDef iWidgetTab_SetForceActivated_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_SetForceActivated_Parameters[1] = { 
   { "abForce", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_SetForceActivated = {
   "SetForceActivated",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -35402,9 +35402,9 @@ static const ni::sMethodDef iWidgetTab_SetForceActivated = {
 };
 
 // Method: GetForceActivated
-static const ni::sParameterDef iWidgetTab_GetForceActivated_Parameters[1] = {
+static const ni::sParameterDef iWidgetTab_GetForceActivated_Parameters[1] = { 
   { "abForce", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTab_GetForceActivated = {
   "GetForceActivated",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "tBool",
@@ -35536,9 +35536,9 @@ static const ni::sMethodDef iWidgetToolbarGroup_SetWidthFromChildren = {
 
 #if niMinFeatures(20)
 // Method: SetCommandDestination
-static const ni::sParameterDef iWidgetToolbarGroup_SetCommandDestination_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbarGroup_SetCommandDestination_Parameters[1] = { 
   { "apMT", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbarGroup_SetCommandDestination = {
   "SetCommandDestination",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "void",
@@ -35607,9 +35607,9 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iWidgetToolbar() {
 
 #if niMinFeatures(20)
 // Method: SetHeight
-static const ni::sParameterDef iWidgetToolbar_SetHeight_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetHeight_Parameters[1] = { 
   { "afHeight", ni::eType_F32, NULL, "ni::tF32" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetHeight = {
   "SetHeight",
   ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
@@ -35638,9 +35638,9 @@ static const ni::sMethodDef iWidgetToolbar_GetHeight = {
 
 #if niMinFeatures(20)
 // Method: SetAutoHide
-static const ni::sParameterDef iWidgetToolbar_SetAutoHide_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetAutoHide_Parameters[1] = { 
   { "abAutoHide", ni::eType_I8, NULL, "ni::tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetAutoHide = {
   "SetAutoHide",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -35669,9 +35669,9 @@ static const ni::sMethodDef iWidgetToolbar_GetAutoHide = {
 
 #if niMinFeatures(20)
 // Method: SetAutoHideBackground
-static const ni::sParameterDef iWidgetToolbar_SetAutoHideBackground_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetAutoHideBackground_Parameters[1] = { 
   { "abAutoHide", ni::eType_I8, NULL, "ni::tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetAutoHideBackground = {
   "SetAutoHideBackground",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -35700,9 +35700,9 @@ static const ni::sMethodDef iWidgetToolbar_GetAutoHideBackground = {
 
 #if niMinFeatures(20)
 // Method: SetShowPage
-static const ni::sParameterDef iWidgetToolbar_SetShowPage_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetShowPage_Parameters[1] = { 
   { "abShowPage", ni::eType_I8, NULL, "ni::tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetShowPage = {
   "SetShowPage",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "void",
@@ -35759,9 +35759,9 @@ static const ni::sMethodDef iWidgetToolbar_GetBottomBar = {
 
 #if niMinFeatures(20)
 // Method: SetCommandDestination
-static const ni::sParameterDef iWidgetToolbar_SetCommandDestination_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetCommandDestination_Parameters[1] = { 
   { "apMH", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetCommandDestination = {
   "SetCommandDestination",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "void",
@@ -35832,9 +35832,9 @@ static const ni::sMethodDef iWidgetToolbar_GetNumPages = {
 
 #if niMinFeatures(20)
 // Method: GetPageWidget
-static const ni::sParameterDef iWidgetToolbar_GetPageWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetPageWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetPageWidget = {
   "GetPageWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iWidget), "ni::iWidget*",
@@ -35849,9 +35849,9 @@ static const ni::sMethodDef iWidgetToolbar_GetPageWidget = {
 
 #if niMinFeatures(20)
 // Method: GetPageIndex
-static const ni::sParameterDef iWidgetToolbar_GetPageIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetPageIndex_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetPageIndex = {
   "GetPageIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "ni::tU32",
@@ -35866,10 +35866,10 @@ static const ni::sMethodDef iWidgetToolbar_GetPageIndex = {
 
 #if niMinFeatures(20)
 // Method: InitPage
-static const ni::sParameterDef iWidgetToolbar_InitPage_Parameters[2] = {
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetToolbar_InitPage_Parameters[2] = { 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_InitPage = {
   "InitPage",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -35884,10 +35884,10 @@ static const ni::sMethodDef iWidgetToolbar_InitPage = {
 
 #if niMinFeatures(20)
 // Method: SetPageName
-static const ni::sParameterDef iWidgetToolbar_SetPageName_Parameters[2] = {
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetToolbar_SetPageName_Parameters[2] = { 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetPageName = {
   "SetPageName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "ni::tBool",
@@ -35902,9 +35902,9 @@ static const ni::sMethodDef iWidgetToolbar_SetPageName = {
 
 #if niMinFeatures(20)
 // Method: GetPageName
-static const ni::sParameterDef iWidgetToolbar_GetPageName_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetPageName_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetPageName = {
   "GetPageName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -35919,10 +35919,10 @@ static const ni::sMethodDef iWidgetToolbar_GetPageName = {
 
 #if niMinFeatures(20)
 // Method: SetPageEnabled
-static const ni::sParameterDef iWidgetToolbar_SetPageEnabled_Parameters[2] = {
-  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetToolbar_SetPageEnabled_Parameters[2] = { 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "abEnabled", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetPageEnabled = {
   "SetPageEnabled",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "ni::tBool",
@@ -35937,9 +35937,9 @@ static const ni::sMethodDef iWidgetToolbar_SetPageEnabled = {
 
 #if niMinFeatures(20)
 // Method: GetPageEnabled
-static const ni::sParameterDef iWidgetToolbar_GetPageEnabled_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetPageEnabled_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetPageEnabled = {
   "GetPageEnabled",
   ni::eTypeFlags_MethodGetter|0|ni::eType_I8, NULL, "ni::tBool",
@@ -35954,9 +35954,9 @@ static const ni::sMethodDef iWidgetToolbar_GetPageEnabled = {
 
 #if niMinFeatures(20)
 // Method: SetActivePageIndex
-static const ni::sParameterDef iWidgetToolbar_SetActivePageIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetActivePageIndex_Parameters[1] = { 
   { "anActivePage", ni::eType_U32, NULL, "ni::tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetActivePageIndex = {
   "SetActivePageIndex",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "ni::tBool",
@@ -35985,9 +35985,9 @@ static const ni::sMethodDef iWidgetToolbar_GetActivePageIndex = {
 
 #if niMinFeatures(20)
 // Method: SetActivePageID
-static const ni::sParameterDef iWidgetToolbar_SetActivePageID_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_SetActivePageID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetActivePageID = {
   "SetActivePageID",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::tBool",
@@ -36030,9 +36030,9 @@ static const ni::sMethodDef iWidgetToolbar_GetNumTopWidgets = {
 
 #if niMinFeatures(20)
 // Method: GetTopWidget
-static const ni::sParameterDef iWidgetToolbar_GetTopWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetTopWidget_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetTopWidget = {
   "GetTopWidget",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -36047,9 +36047,9 @@ static const ni::sMethodDef iWidgetToolbar_GetTopWidget = {
 
 #if niMinFeatures(20)
 // Method: GetTopWidgetIndex
-static const ni::sParameterDef iWidgetToolbar_GetTopWidgetIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetTopWidgetIndex_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetTopWidgetIndex = {
   "GetTopWidgetIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -36064,9 +36064,9 @@ static const ni::sMethodDef iWidgetToolbar_GetTopWidgetIndex = {
 
 #if niMinFeatures(20)
 // Method: GetTopWidgetFromID
-static const ni::sParameterDef iWidgetToolbar_GetTopWidgetFromID_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetTopWidgetFromID_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetTopWidgetFromID = {
   "GetTopWidgetFromID",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -36081,10 +36081,10 @@ static const ni::sMethodDef iWidgetToolbar_GetTopWidgetFromID = {
 
 #if niMinFeatures(20)
 // Method: SetTopWidgetCommandDestination
-static const ni::sParameterDef iWidgetToolbar_SetTopWidgetCommandDestination_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetToolbar_SetTopWidgetCommandDestination_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "apCmdDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_SetTopWidgetCommandDestination = {
   "SetTopWidgetCommandDestination",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -36099,9 +36099,9 @@ static const ni::sMethodDef iWidgetToolbar_SetTopWidgetCommandDestination = {
 
 #if niMinFeatures(20)
 // Method: GetTopWidgetCommandDestination
-static const ni::sParameterDef iWidgetToolbar_GetTopWidgetCommandDestination_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetTopWidgetCommandDestination_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetTopWidgetCommandDestination = {
   "GetTopWidgetCommandDestination",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*",
@@ -36116,11 +36116,11 @@ static const ni::sMethodDef iWidgetToolbar_GetTopWidgetCommandDestination = {
 
 #if niMinFeatures(20)
 // Method: AddTopWidget
-static const ni::sParameterDef iWidgetToolbar_AddTopWidget_Parameters[3] = {
-  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" },
-  { "afWidth", ni::eType_F32, NULL, "tF32" },
+static const ni::sParameterDef iWidgetToolbar_AddTopWidget_Parameters[3] = { 
+  { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }, 
+  { "afWidth", ni::eType_F32, NULL, "tF32" }, 
   { "apCmdDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_AddTopWidget = {
   "AddTopWidget",
   0|ni::eType_I8, NULL, "tBool",
@@ -36135,13 +36135,13 @@ static const ni::sMethodDef iWidgetToolbar_AddTopWidget = {
 
 #if niMinFeatures(20)
 // Method: AddGroup
-static const ni::sParameterDef iWidgetToolbar_AddGroup_Parameters[5] = {
-  { "ahspPageID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspPageName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspGroupID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
-  { "ahspGroupName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" },
+static const ni::sParameterDef iWidgetToolbar_AddGroup_Parameters[5] = { 
+  { "ahspPageID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspPageName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspGroupID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
+  { "ahspGroupName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }, 
   { "apCmdDest", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_AddGroup = {
   "AddGroup",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -36156,9 +36156,9 @@ static const ni::sMethodDef iWidgetToolbar_AddGroup = {
 
 #if niMinFeatures(20)
 // Method: GetGroup
-static const ni::sParameterDef iWidgetToolbar_GetGroup_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_GetGroup_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_GetGroup = {
   "GetGroup",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*",
@@ -36173,9 +36173,9 @@ static const ni::sMethodDef iWidgetToolbar_GetGroup = {
 
 #if niMinFeatures(20)
 // Method: RemoveGroup
-static const ni::sParameterDef iWidgetToolbar_RemoveGroup_Parameters[1] = {
+static const ni::sParameterDef iWidgetToolbar_RemoveGroup_Parameters[1] = { 
   { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(ni::iHString), "ni::iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetToolbar_RemoveGroup = {
   "RemoveGroup",
   0|ni::eType_I8, NULL, "tBool",
@@ -36459,9 +36459,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetNumChildNodes = {
 };
 
 // Method: GetChildNode
-static const ni::sParameterDef iWidgetTreeNode_GetChildNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_GetChildNode_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_GetChildNode = {
   "GetChildNode",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36474,9 +36474,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetChildNode = {
 };
 
 // Method: GetChildNodeIndex
-static const ni::sParameterDef iWidgetTreeNode_GetChildNodeIndex_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_GetChildNodeIndex_Parameters[1] = { 
   { "apNode", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "const iWidgetTreeNode*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_GetChildNodeIndex = {
   "GetChildNodeIndex",
   ni::eTypeFlags_MethodGetter|0|ni::eType_U32, NULL, "tU32",
@@ -36489,9 +36489,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetChildNodeIndex = {
 };
 
 // Method: GetChildNodeFromName
-static const ni::sParameterDef iWidgetTreeNode_GetChildNodeFromName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_GetChildNodeFromName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_GetChildNodeFromName = {
   "GetChildNodeFromName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36504,9 +36504,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetChildNodeFromName = {
 };
 
 // Method: AddChildNode
-static const ni::sParameterDef iWidgetTreeNode_AddChildNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_AddChildNode_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_AddChildNode = {
   "AddChildNode",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36519,10 +36519,10 @@ static const ni::sMethodDef iWidgetTreeNode_AddChildNode = {
 };
 
 // Method: AddChildNodeBefore
-static const ni::sParameterDef iWidgetTreeNode_AddChildNodeBefore_Parameters[2] = {
-  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" },
+static const ni::sParameterDef iWidgetTreeNode_AddChildNodeBefore_Parameters[2] = { 
+  { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }, 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_AddChildNodeBefore = {
   "AddChildNodeBefore",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36535,9 +36535,9 @@ static const ni::sMethodDef iWidgetTreeNode_AddChildNodeBefore = {
 };
 
 // Method: RemoveChildNode
-static const ni::sParameterDef iWidgetTreeNode_RemoveChildNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_RemoveChildNode_Parameters[1] = { 
   { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_RemoveChildNode = {
   "RemoveChildNode",
   0|ni::eType_I8, NULL, "tBool",
@@ -36562,9 +36562,9 @@ static const ni::sMethodDef iWidgetTreeNode_Clear = {
 };
 
 // Method: FindNodeFromName
-static const ni::sParameterDef iWidgetTreeNode_FindNodeFromName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_FindNodeFromName_Parameters[1] = { 
   { "aaszName", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_FindNodeFromName = {
   "FindNodeFromName",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36577,9 +36577,9 @@ static const ni::sMethodDef iWidgetTreeNode_FindNodeFromName = {
 };
 
 // Method: FindNodeFromUserdata
-static const ni::sParameterDef iWidgetTreeNode_FindNodeFromUserdata_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_FindNodeFromUserdata_Parameters[1] = { 
   { "apUserdata", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "const iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_FindNodeFromUserdata = {
   "FindNodeFromUserdata",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36592,9 +36592,9 @@ static const ni::sMethodDef iWidgetTreeNode_FindNodeFromUserdata = {
 };
 
 // Method: FindNodeFromWidget
-static const ni::sParameterDef iWidgetTreeNode_FindNodeFromWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_FindNodeFromWidget_Parameters[1] = { 
   { "apWidget", ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "const iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_FindNodeFromWidget = {
   "FindNodeFromWidget",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36607,9 +36607,9 @@ static const ni::sMethodDef iWidgetTreeNode_FindNodeFromWidget = {
 };
 
 // Method: FindNodeFromPosition
-static const ni::sParameterDef iWidgetTreeNode_FindNodeFromPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_FindNodeFromPosition_Parameters[1] = { 
   { "avPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_FindNodeFromPosition = {
   "FindNodeFromPosition",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -36670,9 +36670,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetBelow = {
 };
 
 // Method: SetFlags
-static const ni::sParameterDef iWidgetTreeNode_SetFlags_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetFlags_Parameters[1] = { 
   { "aFlags", ni::eType_Enum, NULL, "tWidgetTreeNodeFlags" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetFlags = {
   "SetFlags",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Enum, NULL, "tBool",
@@ -36697,9 +36697,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetFlags = {
 };
 
 // Method: SetName
-static const ni::sParameterDef iWidgetTreeNode_SetName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetName_Parameters[1] = { 
   { "aVal", ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "const achar*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetName = {
   "SetName",
   ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_AChar|ni::eTypeFlags_Pointer, NULL, "tBool",
@@ -36724,9 +36724,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetName = {
 };
 
 // Method: SetIcon
-static const ni::sParameterDef iWidgetTreeNode_SetIcon_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetIcon_Parameters[1] = { 
   { "aVal", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetIcon = {
   "SetIcon",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "tBool",
@@ -36751,9 +36751,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetIcon = {
 };
 
 // Method: SetSelected
-static const ni::sParameterDef iWidgetTreeNode_SetSelected_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetSelected_Parameters[1] = { 
   { "abSelected", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetSelected = {
   "SetSelected",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -36778,9 +36778,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetSelected = {
 };
 
 // Method: SetExpanded
-static const ni::sParameterDef iWidgetTreeNode_SetExpanded_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetExpanded_Parameters[1] = { 
   { "abExpanded", ni::eType_I8, NULL, "tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetExpanded = {
   "SetExpanded",
   ni::eTypeFlags_MethodSetter|0|ni::eType_I8, NULL, "tBool",
@@ -36805,9 +36805,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetExpanded = {
 };
 
 // Method: SetUserdata
-static const ni::sParameterDef iWidgetTreeNode_SetUserdata_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetUserdata_Parameters[1] = { 
   { "apUserData", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "iUnknown*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetUserdata = {
   "SetUserdata",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iUnknown), "tBool",
@@ -36832,9 +36832,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetUserdata = {
 };
 
 // Method: SetWidget
-static const ni::sParameterDef iWidgetTreeNode_SetWidget_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetWidget_Parameters[1] = { 
   { "apWidget", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "iWidget*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetWidget = {
   "SetWidget",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidget), "tBool",
@@ -36859,9 +36859,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetWidget = {
 };
 
 // Method: SetTextColor
-static const ni::sParameterDef iWidgetTreeNode_SetTextColor_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetTextColor_Parameters[1] = { 
   { "anColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetTextColor = {
   "SetTextColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -36886,9 +36886,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetTextColor = {
 };
 
 // Method: SetTextBackColor
-static const ni::sParameterDef iWidgetTreeNode_SetTextBackColor_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetTextBackColor_Parameters[1] = { 
   { "anColor", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetTextBackColor = {
   "SetTextBackColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -36913,9 +36913,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetTextBackColor = {
 };
 
 // Method: SetRowColor
-static const ni::sParameterDef iWidgetTreeNode_SetRowColor_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetRowColor_Parameters[1] = { 
   { "anRow", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetRowColor = {
   "SetRowColor",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -36940,9 +36940,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetRowColor = {
 };
 
 // Method: SetAttributes
-static const ni::sParameterDef iWidgetTreeNode_SetAttributes_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetAttributes_Parameters[1] = { 
   { "anAttributes", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetAttributes = {
   "SetAttributes",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -36967,9 +36967,9 @@ static const ni::sMethodDef iWidgetTreeNode_GetAttributes = {
 };
 
 // Method: SetVisibleAttributesMask
-static const ni::sParameterDef iWidgetTreeNode_SetVisibleAttributesMask_Parameters[1] = {
+static const ni::sParameterDef iWidgetTreeNode_SetVisibleAttributesMask_Parameters[1] = { 
   { "anAttributes", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTreeNode_SetVisibleAttributesMask = {
   "SetVisibleAttributesMask",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -37097,9 +37097,9 @@ static const ni::sMethodDef iWidgetTree_GetNumNodes = {
 };
 
 // Method: GetNode
-static const ni::sParameterDef iWidgetTree_GetNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_GetNode_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetNode = {
   "GetNode",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -37124,9 +37124,9 @@ static const ni::sMethodDef iWidgetTree_GetNumSelectedNodes = {
 };
 
 // Method: GetSelectedNode
-static const ni::sParameterDef iWidgetTree_GetSelectedNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_GetSelectedNode_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetSelectedNode = {
   "GetSelectedNode",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -37163,9 +37163,9 @@ static const ni::sMethodDef iWidgetTree_ClearSelection = {
 };
 
 // Method: GetNodeFromPosition
-static const ni::sParameterDef iWidgetTree_GetNodeFromPosition_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_GetNodeFromPosition_Parameters[1] = { 
   { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetNodeFromPosition = {
   "GetNodeFromPosition",
   0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*",
@@ -37178,10 +37178,10 @@ static const ni::sMethodDef iWidgetTree_GetNodeFromPosition = {
 };
 
 // Method: GetNodeDropMode
-static const ni::sParameterDef iWidgetTree_GetNodeDropMode_Parameters[2] = {
-  { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" },
+static const ni::sParameterDef iWidgetTree_GetNodeDropMode_Parameters[2] = { 
+  { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }, 
   { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetNodeDropMode = {
   "GetNodeDropMode",
   0|ni::eType_Enum, NULL, "eWidgetTreeNodeDropMode",
@@ -37194,9 +37194,9 @@ static const ni::sMethodDef iWidgetTree_GetNodeDropMode = {
 };
 
 // Method: SetSecondarySelection
-static const ni::sParameterDef iWidgetTree_SetSecondarySelection_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_SetSecondarySelection_Parameters[1] = { 
   { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SetSecondarySelection = {
   "SetSecondarySelection",
   ni::eTypeFlags_MethodSetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "void",
@@ -37233,9 +37233,9 @@ static const ni::sMethodDef iWidgetTree_GetPivotSelection = {
 };
 
 // Method: ScrollToNode
-static const ni::sParameterDef iWidgetTree_ScrollToNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_ScrollToNode_Parameters[1] = { 
   { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_ScrollToNode = {
   "ScrollToNode",
   0|ni::eType_Null, NULL, "void",
@@ -37248,9 +37248,9 @@ static const ni::sMethodDef iWidgetTree_ScrollToNode = {
 };
 
 // Method: SaveTreeStates
-static const ni::sParameterDef iWidgetTree_SaveTreeStates_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_SaveTreeStates_Parameters[1] = { 
   { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SaveTreeStates = {
   "SaveTreeStates",
   0|ni::eType_I8, NULL, "tBool",
@@ -37263,10 +37263,10 @@ static const ni::sMethodDef iWidgetTree_SaveTreeStates = {
 };
 
 // Method: LoadTreeStates
-static const ni::sParameterDef iWidgetTree_LoadTreeStates_Parameters[2] = {
-  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" },
+static const ni::sParameterDef iWidgetTree_LoadTreeStates_Parameters[2] = { 
+  { "apStates", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDataTable), "iDataTable*" }, 
   { "abLoadMatchingNames", ni::eType_I8, NULL, "ni::tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_LoadTreeStates = {
   "LoadTreeStates",
   0|ni::eType_I8, NULL, "tBool",
@@ -37291,9 +37291,9 @@ static const ni::sMethodDef iWidgetTree_PushStates = {
 };
 
 // Method: PopStates
-static const ni::sParameterDef iWidgetTree_PopStates_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_PopStates_Parameters[1] = { 
   { "abLoadMatchingNames", ni::eType_I8, NULL, "ni::tBool" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_PopStates = {
   "PopStates",
   0|ni::eType_I8, NULL, "tBool",
@@ -37306,9 +37306,9 @@ static const ni::sMethodDef iWidgetTree_PopStates = {
 };
 
 // Method: SetNumVisibleAttributes
-static const ni::sParameterDef iWidgetTree_SetNumVisibleAttributes_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_SetNumVisibleAttributes_Parameters[1] = { 
   { "anCount", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SetNumVisibleAttributes = {
   "SetNumVisibleAttributes",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "void",
@@ -37333,10 +37333,10 @@ static const ni::sMethodDef iWidgetTree_GetNumVisibleAttributes = {
 };
 
 // Method: SetAttributeIcon
-static const ni::sParameterDef iWidgetTree_SetAttributeIcon_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetTree_SetAttributeIcon_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "apIcon", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SetAttributeIcon = {
   "SetAttributeIcon",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -37349,9 +37349,9 @@ static const ni::sMethodDef iWidgetTree_SetAttributeIcon = {
 };
 
 // Method: GetAttributeIcon
-static const ni::sParameterDef iWidgetTree_GetAttributeIcon_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_GetAttributeIcon_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetAttributeIcon = {
   "GetAttributeIcon",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iOverlay), "iOverlay*",
@@ -37364,10 +37364,10 @@ static const ni::sMethodDef iWidgetTree_GetAttributeIcon = {
 };
 
 // Method: SetAttributeName
-static const ni::sParameterDef iWidgetTree_SetAttributeName_Parameters[2] = {
-  { "anIndex", ni::eType_U32, NULL, "tU32" },
+static const ni::sParameterDef iWidgetTree_SetAttributeName_Parameters[2] = { 
+  { "anIndex", ni::eType_U32, NULL, "tU32" }, 
   { "ahspName", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SetAttributeName = {
   "SetAttributeName",
   ni::eTypeFlags_MethodSetter|0|ni::eType_Null, NULL, "void",
@@ -37380,9 +37380,9 @@ static const ni::sMethodDef iWidgetTree_SetAttributeName = {
 };
 
 // Method: GetAttributeName
-static const ni::sParameterDef iWidgetTree_GetAttributeName_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_GetAttributeName_Parameters[1] = { 
   { "anIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_GetAttributeName = {
   "GetAttributeName",
   ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*",
@@ -37395,9 +37395,9 @@ static const ni::sMethodDef iWidgetTree_GetAttributeName = {
 };
 
 // Method: SetHoverNode
-static const ni::sParameterDef iWidgetTree_SetHoverNode_Parameters[1] = {
+static const ni::sParameterDef iWidgetTree_SetHoverNode_Parameters[1] = { 
   { "anNodeTreeIndex", ni::eType_U32, NULL, "tU32" }
-};
+}; 
 static const ni::sMethodDef iWidgetTree_SetHoverNode = {
   "SetHoverNode",
   ni::eTypeFlags_MethodSetter|0|ni::eType_U32, NULL, "tBool",

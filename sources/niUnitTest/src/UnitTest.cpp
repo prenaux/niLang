@@ -32,9 +32,6 @@ niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty);
 }
 #endif
 
-#include <niLang/Utils/Asan.h>
-niAsanDefaultOptions();
-
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
 #error "USE_SIGNALS should only be used with TEST_NICATCHALL"
 #endif

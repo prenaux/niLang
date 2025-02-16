@@ -187,7 +187,7 @@ tU32 cWidgetListBox::_ComputeDefaultColumnWidth() const {
   }
   else {
     tU32 w = (tU32)((tF32)clientW / (tF32)numCols);
-    tU32 minW = ni::Min((tU32)clientW,knWidgetListBoxMinDefaultColumnWidth);
+    //tU32 minW = ni::Min((tU32)clientW,knWidgetListBoxMinDefaultColumnWidth);
     return ni::Max(w,knWidgetListBoxMinDefaultColumnWidth);
   }
 }
@@ -857,7 +857,7 @@ tU32 cWidgetListBox::RecomputeWidestItem()
   }
   else {
     niLoop(i,mvItems.size()) {
-      const sItem& item = *mvItems[i];
+      //const sItem& item = *mvItems[i];
       tF32 x = 0;
       niLoop(col,mvColumns.size()) {
         x += _ComputeColumnWidth(col,defColW);

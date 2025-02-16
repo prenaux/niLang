@@ -51,7 +51,9 @@ struct NiVmaMutex {
 
 EA_DISABLE_CLANG_WARNING(-Wnullability-completeness);
 EA_DISABLE_CLANG_WARNING(-Wunused-private-field);
+EA_DISABLE_VC_WARNING(4189);
 #include "include/vk_mem_alloc.h"
+EA_RESTORE_VC_WARNING()
 EA_RESTORE_CLANG_WARNING()
 EA_RESTORE_CLANG_WARNING()
 

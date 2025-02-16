@@ -35,7 +35,6 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
 
   ///////////////////////////////////////////////
   tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) {
-    int i;
     tBool bStereo = eFalse;
     tU32 nBits = 0;
     switch (aFormat) {

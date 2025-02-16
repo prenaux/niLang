@@ -36,7 +36,7 @@ double Image::Diff(Image *pComp)
 
   Image *pImg1, *pImg2;
   ni::tU8 *pSrc1, *pSrc2;
-  ni::tU32  Count, TempResult = 0;
+  ni::tU32  Count;
 
   pImg1 = (Image *)this;
   pSrc1 = (ni::tU8 *)pImg1->GetPixels();
@@ -46,6 +46,7 @@ double Image::Diff(Image *pComp)
   Count = XSize * YSize;
 
 #if defined USE_CODEBOOKMMX
+  ni::tU32 TempResult = 0;
   ni::tU32 Count2;
   while(Count)
   {

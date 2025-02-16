@@ -82,7 +82,7 @@ void MedianCut::BuildTree(CodeBook &Codes, long TreeSize)
   TreeNode *pNode, *pLE, *pGT;
   cbVector *pVect;
   VectPtr *pList;
-  long Axis, Len, i, Split, Count, NumLeaves, Changed = 0;
+  long Axis, Len, i, Split, Count, NumLeaves;
 
   ResetTree();
   BuildRootNode(Codes);

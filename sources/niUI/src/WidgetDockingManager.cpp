@@ -1020,7 +1020,7 @@ tBool cWidgetDockingManager::DoCleanSplitters(iWidget* apSplitter)
       sRectf rectParent = pwParentSplitter->GetRect();
       eWidgetDockStyle dockStyleParent = pwParentSplitter->GetDockStyle();
       tU32 resizableBordersParent = QPtr<iWidgetSplitter>(pwParentSplitter)->GetSplitterResizableBorders();
-      tF32 borderSizeParent = QPtr<iWidgetSplitter>(pwParentSplitter)->GetSplitterBorderSize();
+      //tF32 borderSizeParent = QPtr<iWidgetSplitter>(pwParentSplitter)->GetSplitterBorderSize();
 
       pwParentSplitter->SetParent(NULL);
 

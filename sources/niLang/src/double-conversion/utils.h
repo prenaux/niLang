@@ -28,19 +28,14 @@
 #ifndef DOUBLE_CONVERSION_UTILS_H_
 #define DOUBLE_CONVERSION_UTILS_H_
 
+#include <niLang/Types.h>
+
 #include <stdlib.h>
 #include <string.h>
 
-#include <assert.h>
-#ifndef ASSERT
-#define ASSERT(condition)      (assert(condition))
-#endif
-#ifndef UNIMPLEMENTED
-#define UNIMPLEMENTED() (abort())
-#endif
-#ifndef UNREACHABLE
-#define UNREACHABLE()   (abort())
-#endif
+#define ASSERT(condition) niDebugAssert(condition)
+#define UNIMPLEMENTED() niPanicUnreachable("UNIMPLEMENTED")
+#define UNREACHABLE()   niPanicUnreachable("UNREACHABLE")
 
 // Double operations detection based on target architecture.
 // Linux uses a 80bit wide floating point stack on x86. This induces double

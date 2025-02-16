@@ -2278,19 +2278,19 @@ class TabControl : public Window
   };
 
   inline HIMAGELIST GetImageList() const { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TCM_GETIMAGELIST, 0, 0L); }
-  inline HIMAGELIST SetImageList(HIMAGELIST himl) { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TCM_SETIMAGELIST, 0, (LPARAM)(UINT)(HIMAGELIST)(himl)); }
+  inline HIMAGELIST SetImageList(HIMAGELIST himl) { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TCM_SETIMAGELIST, 0, (LPARAM)(HIMAGELIST)(himl)); }
   inline int GetItemCount() const { return (int)niWin32API(SendMessage)(m_hWnd, TCM_GETITEMCOUNT, 0, 0L); }
-  inline BOOL GetItem(int iItem, TC_ITEM* pitem) const { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_GETITEM, (WPARAM)(int)iItem, (LPARAM)(TC_ITEM FAR*)(pitem)); }
-  inline BOOL SetItem(int iItem, const TC_ITEM* pitem) { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_SETITEM, (WPARAM)(int)iItem, (LPARAM)(TC_ITEM FAR*)(pitem)); }
-  inline int InsertItem(int iItem, const TC_ITEM* pitem) { return   (int)niWin32API(SendMessage)(m_hWnd, TCM_INSERTITEM, (WPARAM)(int)iItem, (LPARAM)(const TC_ITEM FAR*)(pitem)); }
-  inline BOOL DeleteItem(int i) { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_DELETEITEM, (WPARAM)(int)(i), 0L); }
+  inline BOOL GetItem(int iItem, TC_ITEM* pitem) const { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_GETITEM, (WPARAM)iItem, (LPARAM)(TC_ITEM FAR*)(pitem)); }
+  inline BOOL SetItem(int iItem, const TC_ITEM* pitem) { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_SETITEM, (WPARAM)iItem, (LPARAM)(TC_ITEM FAR*)(pitem)); }
+  inline int InsertItem(int iItem, const TC_ITEM* pitem) { return   (int)niWin32API(SendMessage)(m_hWnd, TCM_INSERTITEM, (WPARAM)iItem, (LPARAM)(const TC_ITEM FAR*)(pitem)); }
+  inline BOOL DeleteItem(int i) { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_DELETEITEM, (WPARAM)(i), 0L); }
   inline BOOL DeleteAllItems() { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_DELETEALLITEMS, 0, 0L); }
-  inline BOOL GetItemRect(int i, RECT* prc) const { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_GETITEMRECT, (WPARAM)(int)(i), (LPARAM)(RECT FAR*)(prc)); }
+  inline BOOL GetItemRect(int i, RECT* prc) const { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_GETITEMRECT, (WPARAM)(i), (LPARAM)(RECT FAR*)(prc)); }
   inline int GetCurSel() const { return (int)niWin32API(SendMessage)(m_hWnd, TCM_GETCURSEL, 0, 0); }
   inline int SetCurSel(int i) { return (int)niWin32API(SendMessage)(m_hWnd, TCM_SETCURSEL, (WPARAM)i, 0); }
   inline int HitTest(TC_HITTESTINFO* pinfo) { return (int)niWin32API(SendMessage)(m_hWnd, TCM_HITTEST, 0, (LPARAM)(TC_HITTESTINFO FAR*)(pinfo)); }
   inline BOOL SetItemExtra(void* cb) { return (BOOL)niWin32API(SendMessage)(m_hWnd, TCM_SETITEMEXTRA, (WPARAM)(cb), 0L); }
-  inline int AdjustRect(BOOL bLarger, RECT* prc) { return (int)niWin32API(SendMessage)(m_hWnd, TCM_ADJUSTRECT, (WPARAM)(BOOL)bLarger, (LPARAM)(RECT FAR *)prc); }
+  inline int AdjustRect(BOOL bLarger, RECT* prc) { return (int)niWin32API(SendMessage)(m_hWnd, TCM_ADJUSTRECT, (WPARAM)bLarger, (LPARAM)(RECT FAR *)prc); }
   inline DWORD SetItemSize(int x, int y) { return (DWORD)niWin32API(SendMessage)(m_hWnd, TCM_SETITEMSIZE, 0, MAKELPARAM(x,y)); }
   inline void RemoveImage(int i) { (void)niWin32API(SendMessage)(m_hWnd, TCM_REMOVEIMAGE, i, 0L); }
   inline void SetPadding(int cx, int cy) { (void)niWin32API(SendMessage)(m_hWnd, TCM_SETPADDING, 0, MAKELPARAM(cx, cy)); }
@@ -2746,8 +2746,8 @@ class Static : public Window
     return Window::Create(dwStyle, dwExStyle, _T("STATIC"), lpWindowName, pParent, (HMENU) iID);
   };
 
-  HICON SetIcon(HICON hIcon) { return ((HICON)(UINT)(DWORD)niWin32API(SendMessage)(m_hWnd, STM_SETICON, (WPARAM)(HICON)(hIcon), 0L)); }
-  HICON GetIcon() const { return ((HICON)(UINT)(DWORD)niWin32API(SendMessage)(m_hWnd, STM_GETICON, 0L, 0L)); }
+  HICON SetIcon(HICON hIcon) { return ((HICON)niWin32API(SendMessage)(m_hWnd, STM_SETICON, (WPARAM)(HICON)(hIcon), 0L)); }
+  HICON GetIcon() const { return ((HICON)niWin32API(SendMessage)(m_hWnd, STM_GETICON, 0L, 0L)); }
 
  protected:
 
@@ -2769,10 +2769,10 @@ class Button : public Window
 
   inline BOOL IsChecked() const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, BM_GETCHECK, 0L, 0L)); }
   inline ULONG GetCheck() const { return ((ULONG)niWin32API(SendMessage)(m_hWnd, BM_GETCHECK, 0L, 0L)); }
-  inline void SetCheck(BOOL bChecked)  { ((void)niWin32API(SendMessage)(m_hWnd, BM_SETCHECK, (WPARAM)(int)(bChecked), 0L)); }
+  inline void SetCheck(BOOL bChecked)  { ((void)niWin32API(SendMessage)(m_hWnd, BM_SETCHECK, (WPARAM)(bChecked), 0L)); }
 
   inline ULONG GetState() const { return ((ULONG)(DWORD)niWin32API(SendMessage)(m_hWnd, BM_GETSTATE, 0L, 0L)); }
-  inline void SetState(ULONG aState) { ((void)niWin32API(SendMessage)(m_hWnd, BM_SETSTATE, (WPARAM)(int)(aState), 0L)); }
+  inline void SetState(ULONG aState) { ((void)niWin32API(SendMessage)(m_hWnd, BM_SETSTATE, (WPARAM)(aState), 0L)); }
 
   inline void SetStyle(ULONG aStyle, BOOL bRedraw = TRUE) { ((void)niWin32API(SendMessage)(m_hWnd, BM_SETSTYLE, (WPARAM)LOWORD(aStyle), MAKELPARAM(bRedraw,0))); }
 
@@ -2839,18 +2839,18 @@ class ComboBox : public Window
                           lpWindowName, pParent, (HMENU) iID);
   };
 
-  inline int LimitText(int cchLimit)  {  return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_LIMITTEXT, (WPARAM)(int)(cchLimit), 0L)); }
+  inline int LimitText(int cchLimit)  {  return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_LIMITTEXT, (WPARAM)(cchLimit), 0L)); }
   inline int GetEditSel()       const { return ((DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETEDITSEL, 0L, 0L)); }
   inline int SetEditSel(int ichStart, int ichEnd) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETEDITSEL, 0L, MAKELPARAM((ichStart), (ichEnd)))); }
   inline int GetCount() const   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETCOUNT, 0L, 0L)); }
   inline int ResetContent()     { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_RESETCONTENT, 0L, 0L)); }
   inline int AddString(LPCTSTR lpsz) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_ADDSTRING, 0L, (LPARAM)(LPCTSTR)(lpsz))); }
-  inline int InsertString(int index, LPCTSTR lpsz)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_INSERTSTRING, (WPARAM)(int)(index), (LPARAM)(LPCTSTR)(lpsz))); }
+  inline int InsertString(int index, LPCTSTR lpsz)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_INSERTSTRING, (WPARAM)(index), (LPARAM)(LPCTSTR)(lpsz))); }
   inline int AddItemData(void* data) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_ADDSTRING, 0L, (LPARAM)(data))); }
-  inline int InsertItemData(int index, void* data)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_INSERTSTRING, (WPARAM)(int)(index), (LPARAM)(data))); }
-  inline int DeleteString(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_DELETESTRING, (WPARAM)(int)(index), 0L)); }
-  inline int GetLBTextLen(int index) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETLBTEXTLEN, (WPARAM)(int)(index), 0L)); }
-  inline int GetLBText(int index, LPTSTR lpszBuffer) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETLBTEXT, (WPARAM)(int)(index), (LPARAM)(LPTSTR)(lpszBuffer))); }
+  inline int InsertItemData(int index, void* data)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_INSERTSTRING, (WPARAM)(index), (LPARAM)(data))); }
+  inline int DeleteString(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_DELETESTRING, (WPARAM)(index), 0L)); }
+  inline int GetLBTextLen(int index) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETLBTEXTLEN, (WPARAM)(index), 0L)); }
+  inline int GetLBText(int index, LPTSTR lpszBuffer) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETLBTEXT, (WPARAM)(index), (LPARAM)(LPTSTR)(lpszBuffer))); }
   inline ni::cString GetLBText(int index) const {
     int len = GetLBTextLen(index);
     LPTSTR pszStr = (LPTSTR)niMalloc(len*sizeof(ni::achar));
@@ -2859,23 +2859,23 @@ class ComboBox : public Window
     niFree(pszStr);
     return r;
   }
-  inline void* GetItemData(int index) const { return ((void*)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETITEMDATA, (WPARAM)(int)(index), 0L)); }
-  inline int SetItemData(int index, void* data) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETITEMDATA, (WPARAM)(int)(index), (LPARAM)(data))); }
-  inline int FindString(int indexStart, LPCTSTR lpszFind) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRING, (WPARAM)(int)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
-  inline int FindItemData(int indexStart, void* data) const   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRING, (WPARAM)(int)(indexStart), (LPARAM)(data))); }
+  inline void* GetItemData(int index) const { return ((void*)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETITEMDATA, (WPARAM)(index), 0L)); }
+  inline int SetItemData(int index, void* data) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETITEMDATA, (WPARAM)(index), (LPARAM)(data))); }
+  inline int FindString(int indexStart, LPCTSTR lpszFind) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRING, (WPARAM)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
+  inline int FindItemData(int indexStart, void* data) const   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRING, (WPARAM)(indexStart), (LPARAM)(data))); }
   inline int GetCurSel() const    { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETCURSEL, 0L, 0L)); }
-  inline int SetCurSel(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETCURSEL, (WPARAM)(int)(index), 0L)); }
-  inline int SelectString(int indexStart, LPCTSTR lpszSelect) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SELECTSTRING, (WPARAM)(int)(indexStart), (LPARAM)(LPCTSTR)(lpszSelect))); }
-  inline int SelectItemData(int indexStart, void* data)     { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SELECTSTRING, (WPARAM)(int)(indexStart), (LPARAM)(data))); }
-  inline int Dir(UINT attrs, LPCTSTR lpszFileSpec)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_DIR, (WPARAM)(UINT)(attrs), (LPARAM)(LPCTSTR)(lpszFileSpec))); }
-  inline int ShowDropdown(UINT fShow)       { return ((BOOL)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SHOWDROPDOWN, (WPARAM)(BOOL)(fShow), 0L)); }
-  inline int FindStringExact(int indexStart, LPCTSTR lpszFind) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRINGEXACT, (WPARAM)(int)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
+  inline int SetCurSel(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETCURSEL, (WPARAM)(index), 0L)); }
+  inline int SelectString(int indexStart, LPCTSTR lpszSelect) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SELECTSTRING, (WPARAM)(indexStart), (LPARAM)(LPCTSTR)(lpszSelect))); }
+  inline int SelectItemData(int indexStart, void* data)     { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SELECTSTRING, (WPARAM)(indexStart), (LPARAM)(data))); }
+  inline int Dir(UINT attrs, LPCTSTR lpszFileSpec)  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_DIR, (WPARAM)(attrs), (LPARAM)(LPCTSTR)(lpszFileSpec))); }
+  inline int ShowDropdown(UINT fShow)       { return ((BOOL)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SHOWDROPDOWN, (WPARAM)(fShow), 0L)); }
+  inline int FindStringExact(int indexStart, LPCTSTR lpszFind) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_FINDSTRINGEXACT, (WPARAM)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
   inline int GetDroppedState() const  { return ((BOOL)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETDROPPEDSTATE, 0L, 0L)); }
-  inline void GetDroppedControlRect(RECT* lprc)   { ((void)niWin32API(SendMessage)(m_hWnd, CB_GETDROPPEDCONTROLRECT, 0L, (LPARAM)(RECT *)(lprc))); }
+  inline void GetDroppedControlRect(RECT* lprc)   { ((void)niWin32API(SendMessage)(m_hWnd, CB_GETDROPPEDCONTROLRECT, 0L, (LPARAM)(lprc))); }
   inline int GetItemHeight() const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETITEMHEIGHT, 0L, 0L)); }
-  inline int SetItemHeight(int index, int cyItem) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETITEMHEIGHT, (WPARAM)(int)(index), (LPARAM)(int)cyItem)); }
-  inline int GetExtendedUI() const  { return ((UINT)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETEXTENDEDUI, 0L, 0L)); }
-  inline int SetExtendedUI(UINT flags) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETEXTENDEDUI, (WPARAM)(UINT)(flags), 0L)); }
+  inline int SetItemHeight(int index, int cyItem) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETITEMHEIGHT, (WPARAM)(index), (LPARAM)cyItem)); }
+  inline int GetExtendedUI() const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_GETEXTENDEDUI, 0L, 0L)); }
+  inline int SetExtendedUI(UINT flags) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, CB_SETEXTENDEDUI, (WPARAM)(flags), 0L)); }
 
  protected:
 
@@ -2994,32 +2994,32 @@ class ListBox : public Window
   //! Delete the item at the specified index.
   //! \return The return value is a count of the strings remaining in the list.
   //!     The return value is LB_ERR if the index is greater than the number of items in the list.
-  inline int DeleteItem(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_DELETESTRING, (WPARAM)(int)(index), 0L)); }
+  inline int DeleteItem(int index) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_DELETESTRING, (WPARAM)(index), 0L)); }
 
-  inline int GetTextLen(int index) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETTEXTLEN, (WPARAM)(int)(index), 0L)); }
-  inline int GetText(int index, const TCHAR* lpszBuffer) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETTEXT, (WPARAM)(int)(index), (LPARAM)(LPCTSTR)(lpszBuffer))); }
-  inline int FindString(int indexStart, const TCHAR* lpszFind) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRING, (WPARAM)(int)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
-  inline int FindItemData(int indexStart, void* data) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRING, (WPARAM)(int)(indexStart), (LPARAM)(data))); }
-  inline int SetSel(int fSelect, int index)     { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETSEL, (WPARAM)(BOOL)(fSelect), (LPARAM)(index))); }
-  inline int SelItemRange(int fSelect, int first, int last)    { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SELITEMRANGE, (WPARAM)(BOOL)(fSelect), MAKELPARAM((first), (last)))); }
+  inline int GetTextLen(int index) const  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETTEXTLEN, (WPARAM)(index), 0L)); }
+  inline int GetText(int index, const TCHAR* lpszBuffer) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETTEXT, (WPARAM)(index), (LPARAM)(LPCTSTR)(lpszBuffer))); }
+  inline int FindString(int indexStart, const TCHAR* lpszFind) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRING, (WPARAM)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
+  inline int FindItemData(int indexStart, void* data) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRING, (WPARAM)(indexStart), (LPARAM)(data))); }
+  inline int SetSel(int fSelect, int index)     { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETSEL, (WPARAM)(fSelect), (LPARAM)(index))); }
+  inline int SelItemRange(int fSelect, int first, int last)    { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SELITEMRANGE, (WPARAM)(fSelect), MAKELPARAM((first), (last)))); }
   inline int GetCurSel()  { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LVM_GETSELECTIONMARK, 0L, 0L)); }
-  inline int SetCurSel(int index)           { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETCURSEL, (WPARAM)(int)(index), 0L)); }
-  inline int GetSel(int index) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETSEL, (WPARAM)(int)(index), 0L)); }
+  inline int SetCurSel(int index)           { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETCURSEL, (WPARAM)(index), 0L)); }
+  inline int GetSel(int index) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETSEL, (WPARAM)(index), 0L)); }
   inline int GetSelCount() const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETSELCOUNT, 0L, 0L)); }
   inline int GetTopIndex() const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETTOPINDEX, 0L, 0L)); }
-  inline int GetSelItems(int cItems, int* lpItems) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETSELITEMS, (WPARAM)(int)(cItems), (LPARAM)(int *)(lpItems))); }
-  inline int SetTopIndex(int indexTop)      { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETTOPINDEX, (WPARAM)(int)(indexTop), 0L)); }
-  inline void SetColumnWidth(int cxColumn)   { ((void)niWin32API(SendMessage)(m_hWnd, LB_SETCOLUMNWIDTH, (WPARAM)(int)(cxColumn), 0L)); }
+  inline int GetSelItems(int cItems, int* lpItems) const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETSELITEMS, (WPARAM)(cItems), (LPARAM)(int *)(lpItems))); }
+  inline int SetTopIndex(int indexTop)      { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETTOPINDEX, (WPARAM)(indexTop), 0L)); }
+  inline void SetColumnWidth(int cxColumn)   { ((void)niWin32API(SendMessage)(m_hWnd, LB_SETCOLUMNWIDTH, (WPARAM)(cxColumn), 0L)); }
   inline int GetHorizontalExtent() const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETHORIZONTALEXTENT, 0L, 0L)); }
-  inline void SetHorizontalExtent(int cxExtent)     { ((void)niWin32API(SendMessage)(m_hWnd, LB_SETHORIZONTALEXTENT, (WPARAM)(int)(cxExtent), 0L)); }
-  inline int SetTabStops(int cTabs, int* lpTabs) { return ((BOOL)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETTABSTOPS, (WPARAM)(int)(cTabs), (LPARAM)(int *)(lpTabs))); }
-  inline int GetItemRect(int index, RECT* lprc)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETITEMRECT, (WPARAM)(int)(index), (LPARAM)(RECT *)(lprc))); }
-  inline int SetCaretIndex(int index)       { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETCARETINDEX, (WPARAM)(int)(index), 0L)); }
+  inline void SetHorizontalExtent(int cxExtent)     { ((void)niWin32API(SendMessage)(m_hWnd, LB_SETHORIZONTALEXTENT, (WPARAM)(cxExtent), 0L)); }
+  inline int SetTabStops(int cTabs, int* lpTabs) { return ((BOOL)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETTABSTOPS, (WPARAM)(cTabs), (LPARAM)(int *)(lpTabs))); }
+  inline int GetItemRect(int index, RECT* lprc)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETITEMRECT, (WPARAM)(index), (LPARAM)(RECT *)(lprc))); }
+  inline int SetCaretIndex(int index)       { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETCARETINDEX, (WPARAM)(index), 0L)); }
   inline int GetCaretIndex() const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETCARETINDEX, 0L, 0L)); }
-  inline int FindStringExact(int indexStart, const TCHAR* lpszFind) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRINGEXACT, (WPARAM)(int)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
-  inline int SetItemHeight(int index, int cy)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETITEMHEIGHT, (WPARAM)(int)(index), MAKELPARAM((cy), 0))); }
-  inline int GetItemHeight(int index)  const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETITEMHEIGHT, (WPARAM)(int)(index), 0L)); }
-  inline int Dir(UINT attrs, const TCHAR* lpszFileSpec)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_DIR, (WPARAM)(UINT)(attrs), (LPARAM)(LPCTSTR)(lpszFileSpec))); }
+  inline int FindStringExact(int indexStart, const TCHAR* lpszFind) { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_FINDSTRINGEXACT, (WPARAM)(indexStart), (LPARAM)(LPCTSTR)(lpszFind))); }
+  inline int SetItemHeight(int index, int cy)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_SETITEMHEIGHT, (WPARAM)(index), MAKELPARAM((cy), 0))); }
+  inline int GetItemHeight(int index)  const { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_GETITEMHEIGHT, (WPARAM)(index), 0L)); }
+  inline int Dir(UINT attrs, const TCHAR* lpszFileSpec)   { return ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, LB_DIR, (WPARAM)(attrs), (LPARAM)(LPCTSTR)(lpszFileSpec))); }
   inline BOOL DeleteColumn(int nCol)
   { niAssert(::IsWindow(m_hWnd)); return (BOOL) niWin32API(SendMessage)(m_hWnd, LVM_DELETECOLUMN, nCol, 0); }
   inline int GetColumnWidth(int nCol) const
@@ -3265,7 +3265,7 @@ class TreeView : public Window
   inline UINT GetIndent() const { return (UINT)niWin32API(SendMessage)(m_hWnd, TVM_GETINDENT, 0, 0); }
   inline BOOL SetIndent(int indent)     { return (BOOL)niWin32API(SendMessage)(m_hWnd, TVM_SETINDENT, (WPARAM)indent, 0); }
   inline HIMAGELIST GetImageList(int iImage) { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TVM_GETIMAGELIST, iImage, 0); }
-  inline HIMAGELIST SetImageList(HIMAGELIST himl, int iImage) { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TVM_SETIMAGELIST, iImage, (LPARAM)(UINT)(HIMAGELIST)(himl)); }
+  inline HIMAGELIST SetImageList(HIMAGELIST himl, int iImage) { return (HIMAGELIST)niWin32API(SendMessage)(m_hWnd, TVM_SETIMAGELIST, iImage, (LPARAM)(HIMAGELIST)(himl)); }
   inline HTREEITEM GetNextItem(HIMAGELIST hitem, UINT code) const { return (HTREEITEM)niWin32API(SendMessage)(m_hWnd, TVM_GETNEXTITEM, (WPARAM)code, (LPARAM)(HTREEITEM)(hitem)); }
   inline HTREEITEM GetChild(HIMAGELIST hitem)     const { return GetNextItem(hitem, TVGN_CHILD); }
   inline HTREEITEM GetNextSibling(HIMAGELIST hitem) const { return GetNextItem(hitem, TVGN_NEXT); }
@@ -3331,7 +3331,7 @@ class ProgressBar : public Window
     return TRUE;
   };
 
-  inline void SetPos(int pos) { ((void)niWin32API(SendMessage)(m_hWnd, PBM_SETPOS, (WPARAM)(int)(pos), 0L)); };
+  inline void SetPos(int pos) { ((void)niWin32API(SendMessage)(m_hWnd, PBM_SETPOS, (WPARAM)(pos), 0L)); };
   inline int GetPos() const { ((int)(DWORD)niWin32API(SendMessage)(m_hWnd, PBM_GETPOS, 0L, 0L)); }
 
   inline void SetRange(int min, int max) { ((void)niWin32API(SendMessage)(m_hWnd, PBM_SETRANGE, 0L, MAKELPARAM(min,max))); };
@@ -3505,7 +3505,7 @@ class Edit : public Window
   UINT SetSel(DWORD adwBeg, DWORD adwEnd)
   { return (UINT)niWin32API(SendMessage)(m_hWnd, EM_SETSEL, adwBeg, adwEnd); };
   UINT GetSel(DWORD* apBeg, DWORD* apEnd)
-  { return (UINT)niWin32API(SendMessage)(m_hWnd, EM_GETSEL, (DWORD)apBeg, (DWORD)apEnd); };
+  { return (UINT)niWin32API(SendMessage)(m_hWnd, EM_GETSEL, (WPARAM)apBeg, (LPARAM)apEnd); };
 
   BOOL Undo()
   { niAssert(::IsWindow(m_hWnd)); return (BOOL)niWin32API(SendMessage)(m_hWnd, EM_UNDO, 0, 0); }

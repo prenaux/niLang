@@ -431,10 +431,14 @@ TEST_FIXTURE(FVMBind,EnumDef) {
   CHECK_EQUAL(medef->mnNumValues, tedef->mnNumValues);
   CHECK_EQUAL(medef->mnNumValues, oedef->mnNumValues);
 
-  CHECK_EQUAL(eFileOpenMode_Read,_better_enums::eFileOpenMode::Read);
-  CHECK_EQUAL(eFileOpenMode_Read|eFileOpenMode_Write,_better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write);
-  CHECK_EQUAL(eFileOpenMode_Read,_macro_enums::eFileOpenMode_Read);
-  CHECK_EQUAL(eFileOpenMode_Read|eFileOpenMode_Write,_macro_enums::eFileOpenMode_Read|_macro_enums::eFileOpenMode_Write);
+  CHECK_EQUAL(+eFileOpenMode_Read,+_better_enums::eFileOpenMode::Read);
+  CHECK_EQUAL(+eFileOpenMode_Read|eFileOpenMode_Write,
+              +_better_enums::eFileOpenMode::Read|
+              _better_enums::eFileOpenMode::Write);
+  CHECK_EQUAL(+eFileOpenMode_Read,+_macro_enums::eFileOpenMode_Read);
+  CHECK_EQUAL(+eFileOpenMode_Read|eFileOpenMode_Write,
+              +_macro_enums::eFileOpenMode_Read|
+              _macro_enums::eFileOpenMode_Write);
 
   ni::eFileOpenMode mmode = (ni::eFileOpenMode)(
     ni::eFileOpenMode_Read|ni::eFileOpenMode_Write);

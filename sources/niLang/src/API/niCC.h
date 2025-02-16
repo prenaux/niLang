@@ -9,9 +9,10 @@
 #  define niNoUnsafePtr
 #endif
 
+// clang-format off
+
 #include <niLang/STL/EASTL/EABase/config/eacompilertraits.h>
 
-// clang-format off
 // This is because we want to allow [[nodiscard]] everywhere and I dont want
 // to care about the warning when returning void.
 EA_DISABLE_GCC_WARNING(-Wignored-attributes);
@@ -41,16 +42,34 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-float-conversion);
 EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wimplicit-int-conversion);
 #endif
 
-EA_DISABLE_VC_WARNING(
-  // warning C5054: operator '|': deprecated between enumerations of different types
-  5054
-  // warning C4100: 'size': unreferenced formal parameter
-  4100
-  // warning C4244: 'initializing': conversion from 'ni::<unnamed-enum-eTrue>' to 'ni::tBool', possible loss of data
-  4244
-  // warning C4127: conditional expression is constant
-  4127
+//
+// MSVC: switch case.
+//
+// Note: Unfortunately unusable as it doesnt respect [[maybe_unused]] on enum
+// members
+#if 0
+EA_ENABLE_VC_WARNING_AS_ERROR(
+  // C4061: The specified enumerator identifier has no associated
+  // handler in a switch statement that has a default case.
+  // 4061 -> this is taking it too far...
+
+  // C4062: The enumerator identifier doesn't have a case handler
+  // associated with it in a switch statement, and there's no default label
+  // that can catch it.
+  4062
 )
+#endif
+
+// MSVC: unreference variables
+EA_ENABLE_VC_WARNING_AS_ERROR(
+  // C4101: 'abc': unreferenced local variable
+  4101
+  // C4189: 'xyz': local variable is initialized but not referenced
+  4189
+  // C4701: potentially uninitialized local variable 'pos' used
+  4701
+)
+
 // clang-format on
 
 #include <niLang/Types.h>

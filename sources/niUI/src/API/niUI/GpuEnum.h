@@ -109,9 +109,11 @@ enum eGpuFunctionBindType {
   eGpuFunctionBindType_Fixed = 1,
   //! Basic fixed pipeline, with ray instances
   eGpuFunctionBindType_FixedRayInstances = 2,
+  //! Bindless binding
+  eGpuFunctionBindType_Bindless = 3,
 
   //! \internal
-  eGpuFunctionBindType_Last niMaybeUnused = 3,
+  eGpuFunctionBindType_Last niMaybeUnused = 4,
   //! \internal
   eGpuFunctionBindType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -200,8 +202,10 @@ enum eGLSLVulkanDescriptorSet {
   eGLSLVulkanDescriptorSet_SamplerShadow = 6,
   eGLSLVulkanDescriptorSet_RayInstances = 7,
   eGLSLVulkanDescriptorSet_Image2D = 8,
+  eGLSLVulkanDescriptorSet_AllBuffers = 9,
+  eGLSLVulkanDescriptorSet_AllTextures = 10,
   //! \internal
-  eGLSLVulkanDescriptorSet_Last niMaybeUnused = 9,
+  eGLSLVulkanDescriptorSet_Last niMaybeUnused = 11,
 };
 
 enum eGLSLVulkanVertexInputLayout {

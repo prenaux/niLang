@@ -38,11 +38,32 @@
 
 namespace ni {
 
+struct sVulkanBuffer;
+struct sVulkanBindlessDescriptorPool;
+struct sVulkanRayPrimitives;
+struct sVulkanRayInstances;
+struct sVulkanRayPipeline;
+
 _HDecl(__vktex_white__);
 _HDecl(__vkbuff_dummy__);
 
 niLetK knVulkanMaxFramesInFlight = 1_u32;
 niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
+
+niLetK knVulkanMaxDescrSets = (tU32)eGLSLVulkanDescriptorSet_Last;
+
+// This covers "16 channels" in fixed materials
+niLetK knVulkanMaxDescrFixedTextures = 16_u32;
+niLetK knVulkanMaxDescrFixedSamplers = knCompiledStatesNumSamplers;
+
+// Uniform buffer value is kind of arbitrary, 16 bindings seems more than
+// enough, if you need more switch to bindless?
+niLetK knVulkanMaxDescrFixedUniformBuffers = 16_u32;
+
+// Note: We've tried to find a way to detect that but couldnt.
+niLetK knVulkanMaxDescrBindlessTextures = 100000_u32;
+niLetK knVulkanMaxDescrBindlessUniformBuffers = 100000_u32;
+
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
@@ -52,7 +73,11 @@ static const char* const _vkRequiredDeviceExtensions[] = {
 #endif
 };
 niLetK knVkRequiredDeviceExtensionsCount = (tU32)niCountOf(_vkRequiredDeviceExtensions);
-niLetK knVulkanMaxDescriptorSets = 10000_u32;
+
+static const char* const _vkRequiredBindlessExtensions[] = {
+  VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+};
+niLetK knVkRequiredBindlessExtensionsCount = (tU32)niCountOf(_vkRequiredBindlessExtensions);
 
 static const char* _vkRequiredRayTracingExtensions[] = {
   VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
@@ -64,7 +89,6 @@ static const char* _vkRequiredRayTracingExtensions[] = {
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
-
 #define NISH_VULKAN_TARGET spv_vk12
 
 _HDecl(NISH_VULKAN_TARGET);
@@ -446,8 +470,6 @@ static tBool _VulkanTransitionImageLayout(
   }
 }
 
-struct sVulkanBuffer;
-
 struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu,iGraphicsDriverRay> {
   nn<iGraphics> _graphics;
   VkDevice _device = VK_NULL_HANDLE;
@@ -472,7 +494,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkPhysicalDeviceAccelerationStructurePropertiesKHR _accelStructProps = {};
 
   tBool _isBindlessSupported = eFalse;
-  VkPhysicalDeviceDescriptorIndexingProperties _descriptorIndexingProps = {};
+  Ptr<sVulkanBindlessDescriptorPool> _bindlessDescPool;
 
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
@@ -495,6 +517,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     niCheck(_CreateCommandPool(), eFalse);
     niCheck(_CreateAllocator(), eFalse);
     niCheck(_CreateVulkanDriverResources(), eFalse) ;
+    if (_isBindlessSupported) {
+      niCheck(_CreateVulkanDriverBindlessResources(), eFalse) ;
+    }
     return eTrue;
   }
 
@@ -509,6 +534,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         _ssCompiled[i] = VK_NULL_HANDLE;
       }
     }
+
+    _DestroyVulkanDriverBindlessResources();
 
     if (_commandPool) {
       vkDestroyCommandPool(_device, _commandPool, nullptr);
@@ -652,7 +679,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return eTrue;
   }
 
-  void _InitDeviceFeatures2(VkPhysicalDevice physicalDevice) {
+  void _DetectDeviceFeatures(VkPhysicalDevice physicalDevice) {
     // Initialize structures to query ray tracing and mesh shader features
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {};
     rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
@@ -681,6 +708,16 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     deviceFeatures2.pNext = &rayTracingPipelineFeatures;
     vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
 
+    // Log device features
+    niLog(Info, niFmt(
+      "Vulkan Robustness2 Features:\n"
+      "  robustBufferAccess2: %y\n"
+      "  robustImageAccess2: %y\n"
+      "  nullDescriptor: %y",
+      (tBool)!!robustness2Features.robustBufferAccess2,
+      (tBool)!!robustness2Features.robustImageAccess2,
+      (tBool)!!robustness2Features.nullDescriptor));
+
     // Check bindless support
     _isBindlessSupported =
       descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind &&
@@ -691,68 +728,69 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       descriptorIndexingFeatures.descriptorBindingPartiallyBound &&
       descriptorIndexingFeatures.runtimeDescriptorArray;
 
-    niLog(Info, niFmt(
-      "Vulkan Descriptor Indexing Features:\n"
-      "  shaderInputAttachmentArrayDynamicIndexing: %y\n"
-      "  shaderUniformTexelBufferArrayDynamicIndexing: %y\n"
-      "  shaderStorageTexelBufferArrayDynamicIndexing: %y\n"
-      "  shaderUniformBufferArrayNonUniformIndexing: %y\n"
-      "  shaderSampledImageArrayNonUniformIndexing: %y\n"
-      "  shaderStorageBufferArrayNonUniformIndexing: %y\n"
-      "  shaderStorageImageArrayNonUniformIndexing: %y\n"
-      "  shaderInputAttachmentArrayNonUniformIndexing: %y\n"
-      "  shaderUniformTexelBufferArrayNonUniformIndexing: %y\n"
-      "  shaderStorageTexelBufferArrayNonUniformIndexing: %y\n"
-      "  descriptorBindingUniformBufferUpdateAfterBind: %y\n"
-      "  descriptorBindingSampledImageUpdateAfterBind: %y\n"
-      "  descriptorBindingStorageImageUpdateAfterBind: %y\n"
-      "  descriptorBindingStorageBufferUpdateAfterBind: %y\n"
-      "  descriptorBindingUniformTexelBufferUpdateAfterBind: %y\n"
-      "  descriptorBindingStorageTexelBufferUpdateAfterBind: %y\n"
-      "  descriptorBindingUpdateUnusedWhilePending: %y\n"
-      "  descriptorBindingPartiallyBound: %y\n"
-      "  descriptorBindingVariableDescriptorCount: %y\n"
-      "  runtimeDescriptorArray: %y\n",
-      (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingPartiallyBound,
-      (tBool)!!descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount,
-      (tBool)!!descriptorIndexingFeatures.runtimeDescriptorArray));
-
     if (_isBindlessSupported) {
-      if (_extensions.find(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME) == _extensions.end()) {
-        _isBindlessSupported = false;
-        niLog(Warning, niFmt("Vulkan Bindless disabled because of missing extension '%s'.", VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME));
+      for (const char* ext : _vkRequiredBindlessExtensions) {
+        if (_extensions.find(ext) == _extensions.end()) {
+          _isBindlessSupported = false;
+          niLog(Warning, niFmt("Vulkan Bindless disabled because of missing extension '%s'.", ext));
+        }
       }
     }
 
-    // Log bindless support status
     if (_isBindlessSupported) {
-      _descriptorIndexingProps = {};
-      _descriptorIndexingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+      VkPhysicalDeviceDescriptorIndexingProperties descriptorIndexingProps = {};
+      descriptorIndexingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
 
       VkPhysicalDeviceProperties2 deviceProps2 = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
-        .pNext = &_descriptorIndexingProps
+        .pNext = &descriptorIndexingProps
       };
       vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
 
       niLog(Info, "Vulkan Bindless rendering supported");
+      niLog(Info, niFmt(
+        "Vulkan Descriptor Indexing Features:\n"
+        "  shaderInputAttachmentArrayDynamicIndexing: %y\n"
+        "  shaderUniformTexelBufferArrayDynamicIndexing: %y\n"
+        "  shaderStorageTexelBufferArrayDynamicIndexing: %y\n"
+        "  shaderUniformBufferArrayNonUniformIndexing: %y\n"
+        "  shaderSampledImageArrayNonUniformIndexing: %y\n"
+        "  shaderStorageBufferArrayNonUniformIndexing: %y\n"
+        "  shaderStorageImageArrayNonUniformIndexing: %y\n"
+        "  shaderInputAttachmentArrayNonUniformIndexing: %y\n"
+        "  shaderUniformTexelBufferArrayNonUniformIndexing: %y\n"
+        "  shaderStorageTexelBufferArrayNonUniformIndexing: %y\n"
+        "  descriptorBindingUniformBufferUpdateAfterBind: %y\n"
+        "  descriptorBindingSampledImageUpdateAfterBind: %y\n"
+        "  descriptorBindingStorageImageUpdateAfterBind: %y\n"
+        "  descriptorBindingStorageBufferUpdateAfterBind: %y\n"
+        "  descriptorBindingUniformTexelBufferUpdateAfterBind: %y\n"
+        "  descriptorBindingStorageTexelBufferUpdateAfterBind: %y\n"
+        "  descriptorBindingUpdateUnusedWhilePending: %y\n"
+        "  descriptorBindingPartiallyBound: %y\n"
+        "  descriptorBindingVariableDescriptorCount: %y\n"
+        "  runtimeDescriptorArray: %y\n",
+        (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingPartiallyBound,
+        (tBool)!!descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount,
+        (tBool)!!descriptorIndexingFeatures.runtimeDescriptorArray));
+
       niLog(Info, niFmt(
         "Vulkan Descriptor Indexing Properties:\n"
         "  maxUpdateAfterBindDescriptorsInAllPools: %u\n"
@@ -762,159 +800,156 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         "  maxPerStageDescriptorUpdateAfterBindStorageBuffers: %u\n"
         "  maxPerStageDescriptorUpdateAfterBindSampledImages: %u\n"
         "  maxPerStageDescriptorUpdateAfterBindStorageImages: %u",
-        _descriptorIndexingProps.maxUpdateAfterBindDescriptorsInAllPools,
-        _descriptorIndexingProps.maxPerStageUpdateAfterBindResources,
-        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSamplers,
-        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers,
-        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers,
-        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSampledImages,
-        _descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageImages));
+        descriptorIndexingProps.maxUpdateAfterBindDescriptorsInAllPools,
+        descriptorIndexingProps.maxPerStageUpdateAfterBindResources,
+        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSamplers,
+        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers,
+        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers,
+        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSampledImages,
+        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageImages));
+
     }
     else {
-      niLog(Info, "Vulkan Bindless rendering not supported");
+      niLog(Info, "Vulkan Bindless rendering not supported.");
     }
 
     // Determine support for ray tracing and mesh shaders
-    _isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
-    if (_isRayTracingSupported) {
-      for (const char* ext : _vkRequiredRayTracingExtensions) {
-        if (_extensions.find(ext) == _extensions.end()) {
-          _isRayTracingSupported = false;
-          niLog(Warning, niFmt("Vulkan Ray Tracing disabled because of missing extension '%s'.", ext));
+    if (_isBindlessSupported) {
+      _isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
+      if (_isRayTracingSupported) {
+        for (const char* ext : _vkRequiredRayTracingExtensions) {
+          if (_extensions.find(ext) == _extensions.end()) {
+            _isRayTracingSupported = false;
+            niLog(Warning, niFmt("Vulkan Ray Tracing disabled because of missing extension '%s'.", ext));
+          }
         }
       }
-    }
 
-    if (_isRayTracingSupported) {
-      _rayTracingProps = {};
-      _rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+      if (_isRayTracingSupported) {
+        _rayTracingProps = {};
+        _rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 
-      _accelStructProps = {};
-      _accelStructProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
-      _rayTracingProps.pNext = &_accelStructProps;
+        _accelStructProps = {};
+        _accelStructProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
+        _rayTracingProps.pNext = &_accelStructProps;
 
-      VkPhysicalDeviceProperties2 deviceProps2 = {};
-      deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-      deviceProps2.pNext = &_rayTracingProps;
+        VkPhysicalDeviceProperties2 deviceProps2 = {};
+        deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        deviceProps2.pNext = &_rayTracingProps;
 
-      vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
+        vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
 
-      niLog(Info, niFmt(
-        "Vulkan Ray Tracing Properties:\n"
-        // Size in bytes of the shader group handle.
-        "  shaderGroupHandleSize: %u\n"
-        // Maximum number of levels of ray recursion allowed in a trace command.
-        "  maxRayRecursionDepth: %u\n"
-        // Maximum stride in bytes allowed between shader groups in the shader binding table.
-        "  maxShaderGroupStride: %u\n"
-        // Required alignment in bytes for the base of the shader binding table.
-        "  shaderGroupBaseAlignment: %u\n"
-        // Size in bytes of the shader group handle for capture and replay.
-        "  shaderGroupHandleCaptureReplaySize: %u",
-        _rayTracingProps.shaderGroupHandleSize,
-        _rayTracingProps.maxRayRecursionDepth,
-        _rayTracingProps.maxShaderGroupStride,
-        _rayTracingProps.shaderGroupBaseAlignment,
-        _rayTracingProps.shaderGroupHandleCaptureReplaySize));
+        niLog(Info, niFmt(
+          "Vulkan Ray Tracing Properties:\n"
+          // Size in bytes of the shader group handle.
+          "  shaderGroupHandleSize: %u\n"
+          // Maximum number of levels of ray recursion allowed in a trace command.
+          "  maxRayRecursionDepth: %u\n"
+          // Maximum stride in bytes allowed between shader groups in the shader binding table.
+          "  maxShaderGroupStride: %u\n"
+          // Required alignment in bytes for the base of the shader binding table.
+          "  shaderGroupBaseAlignment: %u\n"
+          // Size in bytes of the shader group handle for capture and replay.
+          "  shaderGroupHandleCaptureReplaySize: %u",
+          _rayTracingProps.shaderGroupHandleSize,
+          _rayTracingProps.maxRayRecursionDepth,
+          _rayTracingProps.maxShaderGroupStride,
+          _rayTracingProps.shaderGroupBaseAlignment,
+          _rayTracingProps.shaderGroupHandleCaptureReplaySize));
 
-      niLog(Info, niFmt(
-        "Vulkan Acceleration Structure Properties:\n"
-        "  minAccelerationStructureScratchOffsetAlignment: %u\n"
-        "  maxGeometryCount: %u\n"
-        "  maxInstanceCount: %u\n"
-        "  maxPrimitiveCount: %u",
-        _accelStructProps.minAccelerationStructureScratchOffsetAlignment,
-        _accelStructProps.maxGeometryCount,
-        _accelStructProps.maxInstanceCount,
-        _accelStructProps.maxPrimitiveCount));
+        niLog(Info, niFmt(
+          "Vulkan Acceleration Structure Properties:\n"
+          "  minAccelerationStructureScratchOffsetAlignment: %u\n"
+          "  maxGeometryCount: %u\n"
+          "  maxInstanceCount: %u\n"
+          "  maxPrimitiveCount: %u",
+          _accelStructProps.minAccelerationStructureScratchOffsetAlignment,
+          _accelStructProps.maxGeometryCount,
+          _accelStructProps.maxInstanceCount,
+          _accelStructProps.maxPrimitiveCount));
+      }
+      else {
+        niLog(Info, "Vulkan Ray Tracing not supported.");
+      }
+
+      if (meshShaderFeatures.meshShader) {
+        VkPhysicalDeviceMeshShaderPropertiesEXT meshShaderProps = {};
+        meshShaderProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+
+        VkPhysicalDeviceProperties2 deviceProps2 = {};
+        deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        deviceProps2.pNext = &meshShaderProps;
+
+        vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
+
+        niLog(Info, niFmt(
+          "Vulkan Mesh Shader Properties:\n"
+          // Maximum total count of task work groups.
+          "  maxTaskWorkGroupTotalCount: %d\n"
+          // Maximum count of task work groups in each dimension.
+          "  maxTaskWorkGroupCount: %s\n"
+          // Maximum number of task shader invocations in a single work group.
+          "  maxTaskWorkGroupInvocations: %d\n"
+          // Maximum size of task work group in each dimension.
+          "  maxTaskWorkGroupSize: %s\n"
+          // Maximum size in bytes of the task payload.
+          "  maxTaskPayloadSize: %d\n"
+          // Maximum size in bytes of task shared memory.
+          "  maxTaskSharedMemorySize: %d\n"
+          // Maximum total count of mesh work groups.
+          "  maxMeshWorkGroupTotalCount: %d\n"
+          // Maximum count of mesh work groups in each dimension.
+          "  maxMeshWorkGroupCount: %s\n"
+          // Maximum number of mesh shader invocations in a single work group.
+          "  maxMeshWorkGroupInvocations: %d\n"
+          // Maximum size of mesh work group in each dimension.
+          "  maxMeshWorkGroupSize: %s\n"
+          // Maximum size in bytes of mesh shared memory.
+          "  maxMeshSharedMemorySize: %d\n"
+          // Maximum number of mesh output vertices.
+          "  maxMeshOutputVertices: %d\n"
+          // Maximum number of mesh output primitives.
+          "  maxMeshOutputPrimitives: %d\n"
+          // Maximum number of mesh output layers.
+          "  maxMeshOutputLayers: %d\n"
+          // Maximum number of mesh multiview views.
+          "  maxMeshMultiviewViewCount: %d\n"
+          // Granularity of mesh output per vertex.
+          "  meshOutputPerVertexGranularity: %d\n"
+          // Granularity of mesh output per primitive.
+          "  meshOutputPerPrimitiveGranularity: %d",
+          meshShaderProps.maxTaskWorkGroupTotalCount,
+          Vec3i(meshShaderProps.maxTaskWorkGroupCount[0], meshShaderProps.maxTaskWorkGroupCount[1], meshShaderProps.maxTaskWorkGroupCount[2]),
+          meshShaderProps.maxTaskWorkGroupInvocations,
+          Vec3i(meshShaderProps.maxTaskWorkGroupSize[0], meshShaderProps.maxTaskWorkGroupSize[1], meshShaderProps.maxTaskWorkGroupSize[2]),
+          meshShaderProps.maxTaskPayloadSize,
+          meshShaderProps.maxTaskSharedMemorySize,
+          meshShaderProps.maxMeshWorkGroupTotalCount,
+          Vec3i(meshShaderProps.maxMeshWorkGroupCount[0], meshShaderProps.maxMeshWorkGroupCount[1], meshShaderProps.maxMeshWorkGroupCount[2]),
+          meshShaderProps.maxMeshWorkGroupInvocations,
+          Vec3i(meshShaderProps.maxMeshWorkGroupSize[0], meshShaderProps.maxMeshWorkGroupSize[1], meshShaderProps.maxMeshWorkGroupSize[2]),
+          meshShaderProps.maxMeshSharedMemorySize,
+          meshShaderProps.maxMeshOutputVertices,
+          meshShaderProps.maxMeshOutputPrimitives,
+          meshShaderProps.maxMeshOutputLayers,
+          meshShaderProps.maxMeshMultiviewViewCount,
+          meshShaderProps.meshOutputPerVertexGranularity,
+          meshShaderProps.meshOutputPerPrimitiveGranularity));
+      }
+      else {
+        niLog(Info, "Vulkan Mesh shader not supported.");
+      }
+
+      if (meshShaderFeatures.taskShader) {
+        niLog(Info, "Vulkan Task shader supported.");
+      }
+      else {
+        niLog(Info, "Vulkan Task shader not supported.");
+      }
     }
     else {
-      niLog(Info, "Vulkan Ray Tracing not supported.");
+      niLog(Info, "Vulkan Raytracing & Mesh shader not supported because bindless isnt supported.");
     }
-
-    if (meshShaderFeatures.meshShader) {
-      VkPhysicalDeviceMeshShaderPropertiesEXT meshShaderProps = {};
-      meshShaderProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
-
-      VkPhysicalDeviceProperties2 deviceProps2 = {};
-      deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-      deviceProps2.pNext = &meshShaderProps;
-
-      vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
-
-      niLog(Info, niFmt(
-        "Vulkan Mesh Shader Properties:\n"
-        // Maximum total count of task work groups.
-        "  maxTaskWorkGroupTotalCount: %d\n"
-        // Maximum count of task work groups in each dimension.
-        "  maxTaskWorkGroupCount: %s\n"
-        // Maximum number of task shader invocations in a single work group.
-        "  maxTaskWorkGroupInvocations: %d\n"
-        // Maximum size of task work group in each dimension.
-        "  maxTaskWorkGroupSize: %s\n"
-        // Maximum size in bytes of the task payload.
-        "  maxTaskPayloadSize: %d\n"
-        // Maximum size in bytes of task shared memory.
-        "  maxTaskSharedMemorySize: %d\n"
-        // Maximum total count of mesh work groups.
-        "  maxMeshWorkGroupTotalCount: %d\n"
-        // Maximum count of mesh work groups in each dimension.
-        "  maxMeshWorkGroupCount: %s\n"
-        // Maximum number of mesh shader invocations in a single work group.
-        "  maxMeshWorkGroupInvocations: %d\n"
-        // Maximum size of mesh work group in each dimension.
-        "  maxMeshWorkGroupSize: %s\n"
-        // Maximum size in bytes of mesh shared memory.
-        "  maxMeshSharedMemorySize: %d\n"
-        // Maximum number of mesh output vertices.
-        "  maxMeshOutputVertices: %d\n"
-        // Maximum number of mesh output primitives.
-        "  maxMeshOutputPrimitives: %d\n"
-        // Maximum number of mesh output layers.
-        "  maxMeshOutputLayers: %d\n"
-        // Maximum number of mesh multiview views.
-        "  maxMeshMultiviewViewCount: %d\n"
-        // Granularity of mesh output per vertex.
-        "  meshOutputPerVertexGranularity: %d\n"
-        // Granularity of mesh output per primitive.
-        "  meshOutputPerPrimitiveGranularity: %d",
-        meshShaderProps.maxTaskWorkGroupTotalCount,
-        Vec3i(meshShaderProps.maxTaskWorkGroupCount[0], meshShaderProps.maxTaskWorkGroupCount[1], meshShaderProps.maxTaskWorkGroupCount[2]),
-        meshShaderProps.maxTaskWorkGroupInvocations,
-        Vec3i(meshShaderProps.maxTaskWorkGroupSize[0], meshShaderProps.maxTaskWorkGroupSize[1], meshShaderProps.maxTaskWorkGroupSize[2]),
-        meshShaderProps.maxTaskPayloadSize,
-        meshShaderProps.maxTaskSharedMemorySize,
-        meshShaderProps.maxMeshWorkGroupTotalCount,
-        Vec3i(meshShaderProps.maxMeshWorkGroupCount[0], meshShaderProps.maxMeshWorkGroupCount[1], meshShaderProps.maxMeshWorkGroupCount[2]),
-        meshShaderProps.maxMeshWorkGroupInvocations,
-        Vec3i(meshShaderProps.maxMeshWorkGroupSize[0], meshShaderProps.maxMeshWorkGroupSize[1], meshShaderProps.maxMeshWorkGroupSize[2]),
-        meshShaderProps.maxMeshSharedMemorySize,
-        meshShaderProps.maxMeshOutputVertices,
-        meshShaderProps.maxMeshOutputPrimitives,
-        meshShaderProps.maxMeshOutputLayers,
-        meshShaderProps.maxMeshMultiviewViewCount,
-        meshShaderProps.meshOutputPerVertexGranularity,
-        meshShaderProps.meshOutputPerPrimitiveGranularity));
-    }
-    else {
-      niLog(Info, "Vulkan Mesh shader not supported.");
-    }
-
-    if (meshShaderFeatures.taskShader) {
-      niLog(Info, "Vulkan Task shader supported.");
-    }
-    else {
-      niLog(Info, "Vulkan Task shader not supported.");
-    }
-
-    niLog(Info, niFmt(
-      "Vulkan Robustness2 Features:\n"
-      "  robustBufferAccess2: %y\n"
-      "  robustImageAccess2: %y\n"
-      "  nullDescriptor: %y",
-      (tBool)!!robustness2Features.robustBufferAccess2,
-      (tBool)!!robustness2Features.robustImageAccess2,
-      (tBool)!!robustness2Features.nullDescriptor));
   }
 
   tBool _InitPhysicalDevice() {
@@ -1138,8 +1173,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     }
 
     // Ray tracing & mesh shaders detection
-    _InitDeviceFeatures2(_physicalDevice);
-
+    _DetectDeviceFeatures(_physicalDevice);
     return eTrue;
   }
 
@@ -1217,6 +1251,24 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     dynamicRenderingFeatures.pNext = &extDynamicStateFeatures;
     extDynamicStateFeatures.pNext = nullptr; // end of chain
 
+    // === BINDLESS SETUP ===
+    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+      .descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE,
+      .descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+      .descriptorBindingStorageImageUpdateAfterBind = VK_TRUE,
+      .descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE,
+      .descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE,
+      .descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE,
+      .descriptorBindingUpdateUnusedWhilePending = VK_TRUE,
+      .descriptorBindingPartiallyBound = VK_TRUE,
+      .descriptorBindingVariableDescriptorCount = VK_TRUE,
+      .runtimeDescriptorArray = VK_TRUE
+    };
+    if (_isBindlessSupported) {
+      extDynamicStateFeatures.pNext = &descriptorIndexingFeatures;
+    }
+
     // === RAY FEATURES SETUP ===
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
@@ -1235,7 +1287,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .rayQuery = VK_TRUE
     };
     if (_isRayTracingSupported) {
-      extDynamicStateFeatures.pNext = &rayTracingPipelineFeatures;
+      descriptorIndexingFeatures.pNext = &rayTracingPipelineFeatures;
       rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
       accelerationStructureFeatures.pNext = &bufferDeviceAddressFeatures;
       bufferDeviceAddressFeatures.pNext = &rayQueryFeatures;
@@ -1247,6 +1299,11 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       requiredExtensions.reserve(knVkRequiredDeviceExtensionsCount+knVkRequiredRayTracingExtensionsCount);
       niLoop(i,knVkRequiredDeviceExtensionsCount) {
         requiredExtensions.push_back(_vkRequiredDeviceExtensions[i]);
+      }
+      if (_isBindlessSupported) {
+        niLoop(i,knVkRequiredBindlessExtensionsCount) {
+          requiredExtensions.push_back(_vkRequiredBindlessExtensions[i]);
+        }
       }
       if (_isRayTracingSupported) {
         niLoop(i,knVkRequiredRayTracingExtensionsCount) {
@@ -1304,6 +1361,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   tBool _CreateVulkanDriverResources();
+  tBool _CreateVulkanDriverBindlessResources();
+  tBool _DestroyVulkanDriverBindlessResources();
 
   inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const {
     if (ahSS >= eCompiledStates_SS_PointRepeat &&
@@ -1683,6 +1742,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
   eBitmapType _type;
   astl::vector<Ptr<sVulkanTexture>> _subTexs;
   tU32 _subTexId = 0;
+  tU32 _resourceIndex = eInvalidHandle;
 
   sVulkanTexture(
     ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
@@ -1700,7 +1760,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       , _pixelFormat(aGpuPixelFormat)
   {
     if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
-      _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
+      _resourceIndex = _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
     }
   }
 
@@ -2564,15 +2624,15 @@ struct sVulkanDescriptorPool {
 
   tBool _CreateDescriptorPool(VkDevice aDevice) {
     VkDescriptorPoolSize poolSizes[] = {
-      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, knVulkanMaxDescriptorSets},
-      {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, knVulkanMaxDescriptorSets},
-      {VK_DESCRIPTOR_TYPE_SAMPLER, knVulkanMaxDescriptorSets}
+      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, knVulkanMaxDescrFixedUniformBuffers},
+      {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, knVulkanMaxDescrFixedTextures},
+      {VK_DESCRIPTOR_TYPE_SAMPLER, knVulkanMaxDescrFixedSamplers}
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
       .flags = 0, // No FREE_DESCRIPTOR_SET_BIT = linear allocation
-      .maxSets = knVulkanMaxDescriptorSets,
+      .maxSets = knVulkanMaxDescrSets,
       .poolSizeCount = niCountOf(poolSizes),
       .pPoolSizes = poolSizes
     };
@@ -2772,10 +2832,242 @@ struct sVulkanDescriptorPool {
   }
 };
 
-struct sVulkanRayPrimitives;
-struct sVulkanRayInstances;
+struct sVulkanBindlessDescriptorPool : public ImplRC<iUnknown> {
+  VkDescriptorPool _pool = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _buffersDescSetLayout = VK_NULL_HANDLE;
+  VkDescriptorSet _buffersDescSet = VK_NULL_HANDLE;
+  VkDescriptorSetLayout _texturesDescSetLayout = VK_NULL_HANDLE;
+  VkDescriptorSet _texturesDescSet = VK_NULL_HANDLE;
 
-struct sVulkanRayPipeline;
+  tBool _CreateBindlessDescriptorPool(ain<nn<sVulkanDriver>> aDriver) {
+    niLet device = aDriver->_device;
+
+    niLet bindingFlags = (VkDescriptorBindingFlags)(
+      VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+      VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
+      VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT);
+
+    niLet bindingFlagsInfo = VkDescriptorSetLayoutBindingFlagsCreateInfo {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
+      .bindingCount = 1,
+      .pBindingFlags = &bindingFlags
+    };
+
+    // Create bindless uniform buffers layout
+    {
+      VkDescriptorSetLayoutBinding binding = {
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers,
+        .stageFlags = VK_SHADER_STAGE_ALL,
+        .pImmutableSamplers = nullptr
+      };
+
+      VkDescriptorSetLayoutCreateInfo layoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .pNext = &bindingFlagsInfo,
+        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
+        .bindingCount = 1,
+        .pBindings = &binding
+      };
+
+      VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_buffersDescSetLayout), eFalse);
+    }
+
+    // Create bindless textures layout
+    {
+      VkDescriptorSetLayoutBinding binding = {
+        .binding = 0,
+        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+        .descriptorCount = knVulkanMaxDescrBindlessTextures,
+        .stageFlags = VK_SHADER_STAGE_ALL,
+        .pImmutableSamplers = nullptr
+      };
+
+      VkDescriptorSetLayoutCreateInfo layoutInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+        .pNext = &bindingFlagsInfo,
+        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
+        .bindingCount = 1,
+        .pBindings = &binding
+      };
+
+      VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_texturesDescSetLayout), eFalse);
+    }
+
+    // Create descriptor pool
+    VkDescriptorPoolSize poolSizes[2] = {
+      { .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers },
+      { .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, .descriptorCount = knVulkanMaxDescrBindlessTextures }
+    };
+
+    VkDescriptorPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+      .flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
+      .maxSets = 2,
+      .poolSizeCount = 2,
+      .pPoolSizes = poolSizes
+    };
+    VK_CHECK(vkCreateDescriptorPool(device, &poolInfo, nullptr, &_pool), eFalse);
+
+    // Allocate descriptor sets
+    {
+      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = &knVulkanMaxDescrBindlessUniformBuffers
+      };
+
+      VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = &variableCountInfo,
+        .descriptorPool = _pool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = &_buffersDescSetLayout
+      };
+
+      VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, &_buffersDescSet), eFalse);
+    }
+
+    {
+      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = &knVulkanMaxDescrBindlessTextures
+      };
+
+      VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = &variableCountInfo,
+        .descriptorPool = _pool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = &_texturesDescSetLayout
+      };
+
+      VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, &_texturesDescSet), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  void _DestroyBindlessDescriptorPool(VkDevice aDevice) {
+    if (_pool) {
+      vkDestroyDescriptorPool(aDevice, _pool, nullptr);
+      _pool = VK_NULL_HANDLE;
+    }
+    if (_buffersDescSetLayout) {
+      vkDestroyDescriptorSetLayout(aDevice, _buffersDescSetLayout, nullptr);
+      _buffersDescSetLayout = VK_NULL_HANDLE;
+    }
+    _buffersDescSet = VK_NULL_HANDLE;
+    if (_texturesDescSetLayout) {
+      vkDestroyDescriptorSetLayout(aDevice, _texturesDescSetLayout, nullptr);
+      _texturesDescSetLayout = VK_NULL_HANDLE;
+    }
+    _texturesDescSetLayout = VK_NULL_HANDLE;
+  }
+
+  tBool UpdateBuffer(VkDevice aDevice, tU32 aIndex, VkBuffer aBuffer) {
+    VkDescriptorBufferInfo bufferInfo = {
+      .buffer = aBuffer,
+      .offset = 0,
+      .range = VK_WHOLE_SIZE
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = _buffersDescSet,
+      .dstBinding = 0,
+      .dstArrayElement = aIndex,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+      .pBufferInfo = &bufferInfo
+    };
+
+    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+    return eTrue;
+  }
+
+  tBool UnbindBuffer(VkDevice aDevice, tU32 aIndex) {
+    VkDescriptorBufferInfo nullInfo = {
+      .buffer = VK_NULL_HANDLE,
+      .offset = 0,
+      .range = VK_WHOLE_SIZE
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = _buffersDescSet,
+      .dstBinding = 0,
+      .dstArrayElement = aIndex,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+      .pBufferInfo = &nullInfo
+    };
+
+    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+    return eTrue;
+  }
+
+  tBool UpdateTexture(VkDevice aDevice, tU32 aIndex, VkImageView aImageView) {
+    VkDescriptorImageInfo imageInfo = {
+      .sampler = VK_NULL_HANDLE,
+      .imageView = aImageView,
+      .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = _texturesDescSet,
+      .dstBinding = 0,
+      .dstArrayElement = aIndex,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+      .pImageInfo = &imageInfo
+    };
+
+    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+    return eTrue;
+  }
+
+  tBool UnbindTexture(VkDevice aDevice, tU32 aIndex) {
+    VkDescriptorImageInfo nullInfo = {
+      .sampler = VK_NULL_HANDLE,
+      .imageView = VK_NULL_HANDLE,
+      .imageLayout = VK_IMAGE_LAYOUT_UNDEFINED
+    };
+
+    VkWriteDescriptorSet write = {
+      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+      .dstSet = _texturesDescSet,
+      .dstBinding = 0,
+      .dstArrayElement = aIndex,
+      .descriptorCount = 1,
+      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+      .pImageInfo = &nullInfo
+    };
+
+    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+    return eTrue;
+  }
+};
+
+tBool sVulkanDriver::_CreateVulkanDriverBindlessResources() {
+  niPanicAssert(_isBindlessSupported);
+
+  _bindlessDescPool = niNew sVulkanBindlessDescriptorPool();
+  niCheck(_bindlessDescPool->_CreateBindlessDescriptorPool(as_nn(this)),eFalse);
+
+  return eTrue;
+}
+
+tBool sVulkanDriver::_DestroyVulkanDriverBindlessResources() {
+  if (_bindlessDescPool.has_value()) {
+    _bindlessDescPool->_DestroyBindlessDescriptorPool(_device);
+  }
+  _bindlessDescPool = nullptr;
+  return eTrue;
+}
 
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);

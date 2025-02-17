@@ -45,6 +45,8 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
   virtual tBool BeforePaint(UnitTest::TestResults& testResults_);
   virtual tBool AfterPaint(UnitTest::TestResults& testResults_);
   virtual tBool OnPaint(UnitTest::TestResults& testResults_);
+
+  virtual tBool OnKeyDown(tU32 aKey, tU32 aKeyMod) { return eFalse; }
 };
 
 typedef sVertexPA tVertexTri;

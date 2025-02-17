@@ -1089,7 +1089,8 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
   NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
-  NN<iTexture> _texture = niDeferredInit(NN<iTexture>);
+  astl::vector<NN<iTexture>> _textures;
+  tU32 _selectedTexture = 0;
 
   tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
     CHECK_RET(sFGpu_Base::OnInit(testResults_),eFalse);
@@ -1105,9 +1106,9 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
         eFalse);
       tVertexFmt* verts = (tVertexFmt*)_vaBuffer->Lock(0, _vaBuffer->GetSize(), eLock_Discard);
       niCheck(verts != nullptr, eFalse);
-      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red, TL
-      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green, TR
-      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue, BR
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // Blue, BR
       verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White, BL
       _vaBuffer->Unlock();
     }
@@ -1145,10 +1146,33 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
     }
 
     {
-      Ptr<iFile> fp;
-      fp = _graphics->OpenBitmapFile("test/tex/earth_d.jpg");
-      _texture = AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default));
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_d.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
+
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/glass.tga"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
+
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/rust_steel.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
+
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_lights.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
+
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_clouds_d.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
     }
 
     return eTrue;
@@ -1160,12 +1184,26 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->SetTexture(_texture, 0);
+    cmdEncoder->SetTexture(_textures[_selectedTexture], 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
     return eTrue;
   }
+
+  tBool OnKeyDown(tU32 anKey, tU32 anKeyMod) niOverride {
+    switch (anKey) {
+      case eKey_T: {
+        _selectedTexture = (_selectedTexture+1)%(tU32)_textures.size();
+        break;
+      };
+      default: {
+        return eFalse;
+      }
+    }
+    return eTrue;
+  }
+
 };
 TEST_CLASS(FGpu,BindlessTexture);
 

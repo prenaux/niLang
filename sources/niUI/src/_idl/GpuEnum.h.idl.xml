@@ -112,7 +112,10 @@
 			<value name="eGpuFunctionBindType_FixedRayInstances" value="2 ">
 				<comments desc="Basic fixed pipeline, with ray instances "/>
 			</value>
-			<value name="eGpuFunctionBindType_Last" value="3 ">
+			<value name="eGpuFunctionBindType_Bindless" value="3 ">
+				<comments desc="Bindless binding "/>
+			</value>
+			<value name="eGpuFunctionBindType_Last" value="4 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -244,7 +247,13 @@
 			<value name="eGLSLVulkanDescriptorSet_Image2D" value="8 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanDescriptorSet_Last" value="9 ">
+			<value name="eGLSLVulkanDescriptorSet_AllBuffers" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_AllTextures" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Last" value="11 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

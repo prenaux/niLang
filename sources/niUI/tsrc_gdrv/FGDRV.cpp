@@ -64,60 +64,64 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
       case eOSWindowMessage_Move:
         TRACE_OSWINDOW(("eOSWindowMessage_Move: %s\n",_ASZ(wnd->GetPosition())));
         break;
+
       case eOSWindowMessage_KeyDown:
         TRACE_OSWINDOW(("eOSWindowMessage_KeyDown: %d (%s)\n",a.mU32,niEnumToChars(eKey,a.mU32)));
-        switch (a.mU32) {
-          case eKey_LControl:
-            niFlagOn(_debugKeyMod,eKeyMod_Control);
-            break;
-          case eKey_LAlt:
-            niFlagOn(_debugKeyMod,eKeyMod_Alt);
-            break;
-          case eKey_LShift:
-            niFlagOn(_debugKeyMod,eKeyMod_Shift);
-            break;
-          case eKey_F:
-            wnd->SetFullScreen(wnd->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
-            break;
-          case eKey_Z:
-            wnd->SetCursorPosition(sVec2i::Zero());
-            break;
-          case eKey_X:
-            wnd->SetCursorPosition(wnd->GetClientSize()/2);
-            break;
-          case eKey_C:
-            wnd->SetCursorPosition(wnd->GetClientSize());
-            break;
-          case eKey_Q:
-            wnd->SetCursor(eOSCursor_None);
-            break;
-          case eKey_W:
-            wnd->SetCursor(eOSCursor_Arrow);
-            break;
-          case eKey_E:
-            wnd->SetCursor(eOSCursor_Text);
-            break;
-          case eKey_K:
-            wnd->SetCursorCapture(!wnd->GetCursorCapture());
-            break;
-          case eKey_Space: {
-            _context->_animated = !_context->_animated;
-            niLog(Info,niFmt("Toggled animation: %z.",_context->_animated));
-            break;
-          }
-          default: {
-            switch (a.mU32 | _debugKeyMod) {
-              // trigger a breakpoint
-              case eKey_B|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
-                TRACE_OSWINDOW(("... Trigger Breakpoint ..."));
-                ni_debug_break();
-                break;
-              }
+        if (!_context->OnKeyDown(a.mU32,_debugKeyMod)) {
+          switch (a.mU32) {
+            case eKey_LControl:
+              niFlagOn(_debugKeyMod,eKeyMod_Control);
+              break;
+            case eKey_LAlt:
+              niFlagOn(_debugKeyMod,eKeyMod_Alt);
+              break;
+            case eKey_LShift:
+              niFlagOn(_debugKeyMod,eKeyMod_Shift);
+              break;
+            case eKey_F:
+              wnd->SetFullScreen(wnd->GetFullScreen() == eInvalidHandle ? 0 : eInvalidHandle);
+              break;
+            case eKey_Z:
+              wnd->SetCursorPosition(sVec2i::Zero());
+              break;
+            case eKey_X:
+              wnd->SetCursorPosition(wnd->GetClientSize()/2);
+              break;
+            case eKey_C:
+              wnd->SetCursorPosition(wnd->GetClientSize());
+              break;
+            case eKey_Q:
+              wnd->SetCursor(eOSCursor_None);
+              break;
+            case eKey_W:
+              wnd->SetCursor(eOSCursor_Arrow);
+              break;
+            case eKey_E:
+              wnd->SetCursor(eOSCursor_Text);
+              break;
+            case eKey_K:
+              wnd->SetCursorCapture(!wnd->GetCursorCapture());
+              break;
+            case eKey_Space: {
+              _context->_animated = !_context->_animated;
+              niLog(Info,niFmt("Toggled animation: %z.",_context->_animated));
+              break;
             }
-            break;
+            default: {
+              switch (a.mU32 | _debugKeyMod) {
+                // trigger a breakpoint
+                case eKey_B|(eKeyMod_Control|eKeyMod_Alt|eKeyMod_Shift): {
+                  TRACE_OSWINDOW(("... Trigger Breakpoint ..."));
+                  ni_debug_break();
+                  break;
+                }
+              }
+              break;
+            }
           }
         }
         break;
+
       case eOSWindowMessage_KeyUp:
         TRACE_OSWINDOW(("eOSWindowMessage_KeyUp: %d (%s)\n",a.mU32,niEnumToChars(eKey,a.mU32)));
         switch (a.mU32) {

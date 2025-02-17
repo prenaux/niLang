@@ -37837,6 +37837,7 @@ static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
 	{ "None", ni::eGpuFunctionBindType_None },
 	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
 	{ "FixedRayInstances", ni::eGpuFunctionBindType_FixedRayInstances },
+	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
 	{ "Last", ni::eGpuFunctionBindType_Last },
 };
 static const ni::sEnumDef Enum_eGpuFunctionBindType = {
@@ -37929,6 +37930,8 @@ static const ni::sEnumValueDef Enum_eGLSLVulkanDescriptorSet_Values[] = {
 	{ "SamplerShadow", ni::eGLSLVulkanDescriptorSet_SamplerShadow },
 	{ "RayInstances", ni::eGLSLVulkanDescriptorSet_RayInstances },
 	{ "Image2D", ni::eGLSLVulkanDescriptorSet_Image2D },
+	{ "AllBuffers", ni::eGLSLVulkanDescriptorSet_AllBuffers },
+	{ "AllTextures", ni::eGLSLVulkanDescriptorSet_AllTextures },
 	{ "Last", ni::eGLSLVulkanDescriptorSet_Last },
 };
 static const ni::sEnumDef Enum_eGLSLVulkanDescriptorSet = {
@@ -40359,6 +40362,18 @@ static const ni::sConstantDef ConstantDef_knFVFTexCountShift = ni::sConstantDef(
   "knFVFTexCountShift",
   ni::Var(knFVFTexCountShift)
 );
+static const ni::sConstantDef ConstantDef_knCompiledStatesNumRS = ni::sConstantDef(
+  "knCompiledStatesNumRS",
+  ni::Var(knCompiledStatesNumRS)
+);
+static const ni::sConstantDef ConstantDef_knCompiledStatesNumDS = ni::sConstantDef(
+  "knCompiledStatesNumDS",
+  ni::Var(knCompiledStatesNumDS)
+);
+static const ni::sConstantDef ConstantDef_knCompiledStatesNumSamplers = ni::sConstantDef(
+  "knCompiledStatesNumSamplers",
+  ni::Var(knCompiledStatesNumSamplers)
+);
 
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoConstDef
 
@@ -40732,6 +40747,9 @@ static const ni::sConstantDef* Constants[] = {
   &ConstantDef_kMaxVertexSize,
   &ConstantDef_knFVFTexCountMask,
   &ConstantDef_knFVFTexCountShift,
+  &ConstantDef_knCompiledStatesNumRS,
+  &ConstantDef_knCompiledStatesNumDS,
+  &ConstantDef_knCompiledStatesNumSamplers,
 };
 
 #endif // #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoConstDef

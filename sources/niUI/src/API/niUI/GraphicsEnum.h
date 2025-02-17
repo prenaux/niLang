@@ -451,6 +451,15 @@ enum eCompiledStates {
   eCompiledStates_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
+const tU32 knCompiledStatesNumRS = eCompiledStates_RS_CWCullingWireframe -
+    eCompiledStates_RS_ColorWriteNone;
+
+const tU32 knCompiledStatesNumDS = eCompiledStates_DS_DepthWriteOnly -
+    eCompiledStates_DS_NoDepthTest;
+
+const tU32 knCompiledStatesNumSamplers = eCompiledStates_SS_SmoothWhiteBorder -
+    eCompiledStates_SS_PointRepeat;
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 }

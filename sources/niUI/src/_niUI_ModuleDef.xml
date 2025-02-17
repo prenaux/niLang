@@ -941,7 +941,10 @@
 			<value name="eGpuFunctionBindType_FixedRayInstances" value="2 ">
 				<comments desc="Basic fixed pipeline, with ray instances "/>
 			</value>
-			<value name="eGpuFunctionBindType_Last" value="3 ">
+			<value name="eGpuFunctionBindType_Bindless" value="3 ">
+				<comments desc="Bindless binding "/>
+			</value>
+			<value name="eGpuFunctionBindType_Last" value="4 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -1073,7 +1076,13 @@
 			<value name="eGLSLVulkanDescriptorSet_Image2D" value="8 ">
 				<comments desc=""/>
 			</value>
-			<value name="eGLSLVulkanDescriptorSet_Last" value="9 ">
+			<value name="eGLSLVulkanDescriptorSet_AllBuffers" value="9 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_AllTextures" value="10 ">
+				<comments desc=""/>
+			</value>
+			<value name="eGLSLVulkanDescriptorSet_Last" value="11 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -1618,6 +1627,24 @@
 				<comments desc="Driver compiled "/>
 			</value>
 		</enum>
+		<variable
+			name="knCompiledStatesNumRS"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="eCompiledStates_RS_CWCullingWireframe-eCompiledStates_RS_ColorWriteNone"/>
+		<variable
+			name="knCompiledStatesNumDS"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="eCompiledStates_DS_DepthWriteOnly-eCompiledStates_DS_NoDepthTest"/>
+		<variable
+			name="knCompiledStatesNumSamplers"
+			type="const tU32"
+			typec="const tU32"
+			typei="ni::eTypeFlags_Constant|ni::eType_U32"
+			value="eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat"/>
 	</namespace>
 	<namespace name="ni" source="niUI/src/_idl/IBitmap2D.h.idl.xml">
 		<interface name="iBitmap2D" uuid1="30011CCB-E4B7-45F9-95BC-7C365A522795" uuid2="0x30011ccb,0xe4b7,0x45f9,0x95,0xbc,0x7c,0x36,0x5a,0x52,0x27,0x95">

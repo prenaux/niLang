@@ -115,7 +115,10 @@
 			<value name="eGpuFunctionBindType_Bindless" value="3 ">
 				<comments desc="Bindless binding "/>
 			</value>
-			<value name="eGpuFunctionBindType_Last" value="4 ">
+			<value name="eGpuFunctionBindType_BindlessRayInstances" value="4 ">
+				<comments desc="Bindless binding, with ray instances "/>
+			</value>
+			<value name="eGpuFunctionBindType_Last" value="5 ">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

@@ -50,7 +50,7 @@ _HDecl(__vkbuff_dummy__);
 niLetK knVulkanMaxFramesInFlight = 1_u32;
 niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
 
-niLetK knVulkanMaxDescrSets = (tU32)eGLSLVulkanDescriptorSet_Last;
+niLetK knVulkanMaxDescrSetsAllocs = 10000_u32;
 
 // This covers "16 channels" in fixed materials
 niLetK knVulkanMaxDescrFixedTextures = 16_u32;
@@ -266,7 +266,7 @@ static VkColorComponentFlags _ToVkColorWriteMask(eColorWriteMask aMask) {
   return 0;
 }
 
-static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputDesc(tFVF aFVF) {
+static astl::vector<VkVertexInputAttributeDescription> _VkCreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
   cFVFDescription fvfDesc(aFVF);
 
@@ -344,7 +344,7 @@ static astl::vector<VkVertexInputAttributeDescription> Vulkan_CreateVertexInputD
   return attrs;
 }
 
-static tBool _VulkanTransitionImageLayout(
+static tBool _VkTransitionImageLayout(
   VkCommandBuffer aCmdBuffer, VkImage aImage,
   VkImageLayout aOldLayout, VkImageLayout aNewLayout,
   tU32 aBaseMipLevel = 0,
@@ -470,8 +470,80 @@ static tBool _VulkanTransitionImageLayout(
   }
 }
 
+static VkResult _VkCreateEmptyDescSetLayout(VkDevice aDevice, aout<VkDescriptorSetLayout> aOutDescrSetLayout) {
+  VkDescriptorSetLayoutCreateInfo emptyLayoutInfo = {
+    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+    .bindingCount = 0,
+    .pBindings = nullptr
+  };
+  return vkCreateDescriptorSetLayout(
+    aDevice, &emptyLayoutInfo, nullptr, &aOutDescrSetLayout);
+}
+
+static VkResult _VkCreateDescSetLayout(
+  VkDevice aDevice,
+  aout<VkDescriptorSetLayout> aOutDescrSetLayout,
+  VkDescriptorType aDescrType,
+  VkShaderStageFlags aStageFlags)
+{
+  VkDescriptorSetLayoutBinding bufferBinding = {
+    .binding = 0,
+    .descriptorType = aDescrType,
+    .descriptorCount = 1,
+    .stageFlags = aStageFlags,
+    .pImmutableSamplers = nullptr
+  };
+  VkDescriptorSetLayoutCreateInfo bufferLayoutInfo = {
+    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+    .flags = 0,
+    .bindingCount = 1,
+    .pBindings = &bufferBinding
+  };
+  return vkCreateDescriptorSetLayout(
+    aDevice, &bufferLayoutInfo, nullptr, &aOutDescrSetLayout);
+}
+
+static VkResult _VkCreateBindlessDescSetLayout(
+  VkDevice aDevice,
+  aout<VkDescriptorSetLayout> aOutDescrSetLayout,
+  VkDescriptorType aDescrType)
+{
+  niLet bindingFlags = (VkDescriptorBindingFlags)(
+    VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+    VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
+    VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT);
+
+  niLet bindingFlagsInfo = VkDescriptorSetLayoutBindingFlagsCreateInfo {
+    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
+    .bindingCount = 1,
+    .pBindingFlags = &bindingFlags
+  };
+
+  VkDescriptorSetLayoutBinding binding = {
+    .binding = 0,
+    .descriptorType = aDescrType,
+    .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers,
+    .stageFlags = VK_SHADER_STAGE_ALL,
+    .pImmutableSamplers = nullptr
+  };
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo = {
+    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+    .pNext = &bindingFlagsInfo,
+    .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
+    .bindingCount = 1,
+    .pBindings = &binding
+  };
+
+  return vkCreateDescriptorSetLayout(
+    aDevice, &layoutInfo, nullptr, &aOutDescrSetLayout);
+}
+
 struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu,iGraphicsDriverRay> {
   nn<iGraphics> _graphics;
+  Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
+  Ptr<iFixedGpuPipelines> _fixedPipelines;
+
   VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
   VkQueue _graphicsQueue = VK_NULL_HANDLE;
@@ -494,14 +566,22 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkPhysicalDeviceAccelerationStructurePropertiesKHR _accelStructProps = {};
 
   tBool _isBindlessSupported = eFalse;
-  Ptr<sVulkanBindlessDescriptorPool> _bindlessDescPool;
 
   LocalIDGenerator _idGenerator;
-  VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
+  VkSampler _ssCompiled[
+    (eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
   Ptr<sVulkanBuffer> _dummyUniformBuffer;
 
-  Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
-  Ptr<iFixedGpuPipelines> _fixedPipelines;
+  VkDescriptorSetLayout _emptyDescrSet;
+  astl::array<
+    VkDescriptorSetLayout,eGLSLVulkanDescriptorSet_Last> _descrSetLayouts;
+
+  astl::array<
+    VkPipelineLayout,eGpuFunctionBindType_Last> _vkPipelineLayouts;
+
+  VkDescriptorPool _bindlessPool = VK_NULL_HANDLE;
+  VkDescriptorSet _bindlessBuffersDescSet = VK_NULL_HANDLE;
+  VkDescriptorSet _bindlessTexturesDescSet = VK_NULL_HANDLE;
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
@@ -517,25 +597,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     niCheck(_CreateCommandPool(), eFalse);
     niCheck(_CreateAllocator(), eFalse);
     niCheck(_CreateVulkanDriverResources(), eFalse) ;
-    if (_isBindlessSupported) {
-      niCheck(_CreateVulkanDriverBindlessResources(), eFalse) ;
-    }
     return eTrue;
   }
 
   virtual ~sVulkanDriver() {
     _fixedPipelines = nullptr;
 
-    _dummyUniformBuffer = nullptr;
-    niLoop(i,niCountOf(_ssCompiled)) {
-      if (_ssCompiled[i]) {
-        vkDestroySampler(_device, _ssCompiled[i],
-                         nullptr);
-        _ssCompiled[i] = VK_NULL_HANDLE;
-      }
-    }
-
-    _DestroyVulkanDriverBindlessResources();
+    _DestroyVulkanDriverResources();
 
     if (_commandPool) {
       vkDestroyCommandPool(_device, _commandPool, nullptr);
@@ -1361,8 +1429,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   tBool _CreateVulkanDriverResources();
-  tBool _CreateVulkanDriverBindlessResources();
-  tBool _DestroyVulkanDriverBindlessResources();
+  tBool _DestroyVulkanDriverResources();
 
   inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const {
     if (ahSS >= eCompiledStates_SS_PointRepeat &&
@@ -1976,7 +2043,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     // Transition image layout for copy
     VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
     niCheck(cmdBuf != VK_NULL_HANDLE, eFalse);
-    niCheck(_VulkanTransitionImageLayout(
+    niCheck(_VkTransitionImageLayout(
       cmdBuf,_vkImage,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -2014,7 +2081,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       &region);
 
     // Transition to shader read
-    niCheck(_VulkanTransitionImageLayout(
+    niCheck(_VkTransitionImageLayout(
       cmdBuf,_vkImage,
       VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -2146,51 +2213,7 @@ static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
   return func;
 }
 
-struct sVulkanDescSetLayouts {
-  astl::vector<VkDescriptorSetLayout> _vkDescSetLayouts;
-  VkDescriptorSetLayout _vkDescSetEmptyLayout;
-
-  tBool _CreateEmptyDescSetLayouts(ain<nn<sVulkanDriver>> aDriver, tU32 anNumLayouts) {
-    niPanicAssert(_vkDescSetLayouts.empty());
-    _vkDescSetLayouts.resize(anNumLayouts);
-    VkDescriptorSetLayoutCreateInfo emptyLayoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-      .bindingCount = 0,
-      .pBindings = nullptr
-    };
-    VK_CHECK(vkCreateDescriptorSetLayout(aDriver->_device, &emptyLayoutInfo, nullptr, &_vkDescSetEmptyLayout), eFalse);
-    niLoop(i,_vkDescSetLayouts.size()) {
-      _vkDescSetLayouts[i] = _vkDescSetEmptyLayout;
-    }
-    return eTrue;
-  }
-
-  void _DestroyDescSetLayouts(ain<nn<sVulkanDriver>> aDriver) {
-    if (!_vkDescSetLayouts.empty()) {
-      niLoop(i,_vkDescSetLayouts.size()) {
-        if (_vkDescSetLayouts[i] != _vkDescSetEmptyLayout &&
-            _vkDescSetLayouts[i] != VK_NULL_HANDLE)
-        {
-          vkDestroyDescriptorSetLayout(
-            aDriver->_device,
-            _vkDescSetLayouts[i],
-            nullptr);
-        }
-      }
-      _vkDescSetLayouts.clear();
-    }
-    if (_vkDescSetEmptyLayout) {
-      vkDestroyDescriptorSetLayout(
-        aDriver->_device,
-        _vkDescSetEmptyLayout,
-        nullptr);
-      _vkDescSetEmptyLayout = VK_NULL_HANDLE;
-    }
-  }
-};
-
-struct sVulkanPipeline : public sVulkanDescSetLayouts {
-  VkPipelineLayout _vkPipelineLayout = VK_NULL_HANDLE;
+struct sVulkanPipeline {
   VkPipeline _vkPipeline = VK_NULL_HANDLE;
   const VkPipelineBindPoint _vkPipelineBindPoint;
 
@@ -2202,10 +2225,6 @@ struct sVulkanPipeline : public sVulkanDescSetLayouts {
     if (_vkPipeline) {
       vkDestroyPipeline(aDriver->_device, _vkPipeline, nullptr);
       _vkPipeline = VK_NULL_HANDLE;
-    }
-    if (_vkPipelineLayout) {
-      vkDestroyPipelineLayout(aDriver->_device, _vkPipelineLayout, nullptr);
-      _vkPipelineLayout = VK_NULL_HANDLE;
     }
   }
 };
@@ -2225,7 +2244,6 @@ struct sVulkanRasterPipeline :
   {}
 
   ~sVulkanRasterPipeline() {
-    _DestroyDescSetLayouts(_driver);
     _DestroyPipeline(_driver);
   }
 
@@ -2236,136 +2254,17 @@ struct sVulkanRasterPipeline :
     return this;
   }
 
-  tBool _CreateNoneDescSetLayout() {
-    niLet vkDevice = _driver->_device;
-    niPanicAssert(_vkDescSetLayouts.empty());
-    VkPipelineLayoutCreateInfo layoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .setLayoutCount = 0,
-      .pushConstantRangeCount = 0,
-      .pPushConstantRanges = nullptr
-    };
-    if (!_vkDescSetLayouts.empty()) {
-      layoutInfo.setLayoutCount = (tU32)_vkDescSetLayouts.size();
-      layoutInfo.pSetLayouts = _vkDescSetLayouts.data();
+  VkPipelineLayout _GetPipelineLayout() const {
+    switch (_gpufuncBindType) {
+      case eGpuFunctionBindType_None:
+      case eGpuFunctionBindType_Fixed:
+      case eGpuFunctionBindType_FixedRayInstances:
+      case eGpuFunctionBindType_Bindless:
+      case eGpuFunctionBindType_BindlessRayInstances: {
+        return _driver->_vkPipelineLayouts[_gpufuncBindType];
+      }
     }
-    VK_CHECK(vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_vkPipelineLayout), eFalse);
-    return eTrue;
-  }
-
-  tBool _CreateFixedDescSetLayout(tBool abWithRayInstances) {
-    niLet vkDevice = _driver->_device;
-    niPanicAssert(_vkDescSetLayouts.empty());
-
-    // Initialize all with empty layouts
-    niCheck(_CreateEmptyDescSetLayouts(_driver,abWithRayInstances ? 8 : 6),eFalse);
-
-    niLet stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    niLet layoutFlags = 0;
-
-    // Buffer layout
-    {
-      VkDescriptorSetLayoutBinding bufferBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo bufferLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &bufferBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &bufferLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Buffer]), eFalse);
-    }
-
-    // Texture2D layout
-    {
-      VkDescriptorSetLayoutBinding textureBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo textureLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &textureBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Texture2D]), eFalse);
-    }
-
-    // TextureCube layout
-    {
-      VkDescriptorSetLayoutBinding textureBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo textureLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &textureBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &textureLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_TextureCube]), eFalse);
-    }
-
-    // Sampler layout
-    {
-      VkDescriptorSetLayoutBinding samplerBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo samplerLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &samplerBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(vkDevice, &samplerLayoutInfo, nullptr, &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Sampler]), eFalse);
-    }
-
-    // Acceleration structure layout
-    if (abWithRayInstances) {
-      VkDescriptorSetLayoutBinding asBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo asLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &asBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(
-        vkDevice, &asLayoutInfo, nullptr,
-        &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_RayInstances]), eFalse);
-    }
-
-    // Pipeline layout
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .setLayoutCount = (tU32)_vkDescSetLayouts.size(),
-      .pSetLayouts = _vkDescSetLayouts.data(),
-      .pushConstantRangeCount = 0,
-      .pPushConstantRanges = nullptr
-    };
-
-    VK_CHECK(vkCreatePipelineLayout(vkDevice, &pipelineLayoutInfo, nullptr, &_vkPipelineLayout), eFalse);
-    return eTrue;
+    return VK_NULL_HANDLE;
   }
 
   tBool _CreateVulkanPipeline(
@@ -2415,29 +2314,16 @@ struct sVulkanRasterPipeline :
       .pName = "main"
     };
 
-    switch (_gpufuncBindType) {
-      case eGpuFunctionBindType_None: {
-        niCheck(_CreateNoneDescSetLayout(),eFalse);
-        break;
-      }
-      case eGpuFunctionBindType_Fixed: {
-        niCheck(_CreateFixedDescSetLayout(eFalse),eFalse);
-        break;
-      }
-      case eGpuFunctionBindType_FixedRayInstances: {
-        niCheck(_CreateFixedDescSetLayout(eTrue),eFalse);
-        break;
-      }
-      default: {
-        niError(niFmt("Unknown bind type '%d'.", _gpufuncBindType));
+    VkPipelineLayout pipelineLayout = _GetPipelineLayout();
+    if (pipelineLayout == VK_NULL_HANDLE) {
+        niError(niFmt(
+          "Cant get pipeline layout for bind type '%d'.", _gpufuncBindType));
         return eFalse;
-      }
     }
-    niPanicAssert(_vkPipelineLayout != nullptr);
 
     // Vertex input
     const cFVFDescription fvfDesc(_desc->GetFVF());
-    niLet vertexAttrs = Vulkan_CreateVertexInputDesc(fvfDesc.GetFVF());
+    niLet vertexAttrs = _VkCreateVertexInputDesc(fvfDesc.GetFVF());
     VkVertexInputBindingDescription bindingDesc = {
       .binding = 0,
       .stride = fvfDesc.GetStride(),
@@ -2588,7 +2474,7 @@ struct sVulkanRasterPipeline :
       .pDepthStencilState = &depthStencil,
       .pColorBlendState = &colorBlending,
       .pDynamicState = &dynamicState,
-      .layout = _vkPipelineLayout,
+      .layout = pipelineLayout,
       .renderPass = VK_NULL_HANDLE,
       .subpass = 0,
     };
@@ -2632,7 +2518,7 @@ struct sVulkanDescriptorPool {
     VkDescriptorPoolCreateInfo poolInfo = {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
       .flags = 0, // No FREE_DESCRIPTOR_SET_BIT = linear allocation
-      .maxSets = knVulkanMaxDescrSets,
+      .maxSets = knVulkanMaxDescrSetsAllocs,
       .poolSizeCount = niCountOf(poolSizes),
       .pPoolSizes = poolSizes
     };
@@ -2675,15 +2561,18 @@ struct sVulkanDescriptorPool {
   }
 
   tBool PushDescriptorUniformBuffer(
-    VkDevice aDevice,
+    ain<nn<sVulkanDriver>> aDriver,
     VkCommandBuffer aCmdBuffer,
-    ain<nn<sVulkanPipeline>> apPipeline,
+    VkPipelineBindPoint aPipelineBindPoint,
+    VkPipelineLayout aPipelineLayout,
     tU32 aSetIndex,
     VkBuffer aBuffer,
     VkDeviceSize aOffset,
     VkDeviceSize aRange = VK_WHOLE_SIZE)
   {
-    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niLet device = aDriver->_device;
+    niLet descSet = AllocateDescriptorSet(
+      device,aDriver->_descrSetLayouts[aSetIndex]);
     niCheck(descSet != VK_NULL_HANDLE,eFalse);
 
     VkDescriptorBufferInfo bufferInfo = {
@@ -2701,22 +2590,25 @@ struct sVulkanDescriptorPool {
       .pBufferInfo = &bufferInfo,
     };
 
-    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
-      aCmdBuffer,apPipeline->_vkPipelineBindPoint,
-      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+      aCmdBuffer,aPipelineBindPoint,
+      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
 
   tBool PushDescriptorImage(
-    VkDevice aDevice,
+    ain<nn<sVulkanDriver>> aDriver,
     VkCommandBuffer aCmdBuffer,
-    ain<nn<sVulkanPipeline>> apPipeline,
+    VkPipelineBindPoint aPipelineBindPoint,
+    VkPipelineLayout aPipelineLayout,
     tU32 aSetIndex,
     VkImageView aImageView,
     VkImageLayout aImageLayout)
   {
-    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niLet device = aDriver->_device;
+    niLet descSet = AllocateDescriptorSet(
+      device,aDriver->_descrSetLayouts[aSetIndex]);
     niCheck(descSet != VK_NULL_HANDLE,eFalse);
 
     VkDescriptorImageInfo imageInfo = {
@@ -2732,21 +2624,24 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
       .pImageInfo = &imageInfo
     };
-    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
-      aCmdBuffer,apPipeline->_vkPipelineBindPoint,
-      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+      aCmdBuffer,aPipelineBindPoint,
+      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
 
   tBool PushDescriptorSampler(
-    VkDevice aDevice,
+    ain<nn<sVulkanDriver>> aDriver,
     VkCommandBuffer aCmdBuffer,
-    ain<nn<sVulkanPipeline>> apPipeline,
+    VkPipelineBindPoint aPipelineBindPoint,
+    VkPipelineLayout aPipelineLayout,
     tU32 aSetIndex,
     VkSampler aSampler)
   {
-    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niLet device = aDriver->_device;
+    niLet descSet = AllocateDescriptorSet(
+      device,aDriver->_descrSetLayouts[aSetIndex]);
     niCheck(descSet != VK_NULL_HANDLE,eFalse);
 
     VkDescriptorImageInfo samplerInfo = {
@@ -2761,21 +2656,24 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
       .pImageInfo = &samplerInfo,
     };
-    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
-      aCmdBuffer,apPipeline->_vkPipelineBindPoint,
-      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+      aCmdBuffer,aPipelineBindPoint,
+      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
 
   tBool PushDescriptorAccelerationStructure(
-    VkDevice aDevice,
+    ain<nn<sVulkanDriver>> aDriver,
     VkCommandBuffer aCmdBuffer,
-    ain<nn<sVulkanPipeline>> apPipeline,
+    VkPipelineBindPoint aPipelineBindPoint,
+    VkPipelineLayout aPipelineLayout,
     tU32 aSetIndex,
     VkAccelerationStructureKHR aAS)
   {
-    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niLet device = aDriver->_device;
+    niLet descSet = AllocateDescriptorSet(
+      device,aDriver->_descrSetLayouts[aSetIndex]);
     niCheck(descSet != VK_NULL_HANDLE,eFalse);
 
     VkWriteDescriptorSetAccelerationStructureKHR asInfo = {
@@ -2793,22 +2691,25 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
     };
 
-    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
-      aCmdBuffer,apPipeline->_vkPipelineBindPoint,
-      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+      aCmdBuffer,aPipelineBindPoint,
+      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
 
   tBool PushDescriptorStorageImage(
-    VkDevice aDevice,
+    ain<nn<sVulkanDriver>> aDriver,
     VkCommandBuffer aCmdBuffer,
-    ain<nn<sVulkanPipeline>> apPipeline,
+    VkPipelineBindPoint aPipelineBindPoint,
+    VkPipelineLayout aPipelineLayout,
     tU32 aSetIndex,
     VkImageView aImageView,
     VkImageLayout aImageLayout)
   {
-    niLet descSet = AllocateDescriptorSet(aDevice,apPipeline->_vkDescSetLayouts[aSetIndex]);
+    niLet device = aDriver->_device;
+    niLet descSet = AllocateDescriptorSet(
+      device,aDriver->_descrSetLayouts[aSetIndex]);
     niCheck(descSet != VK_NULL_HANDLE,eFalse);
 
     VkDescriptorImageInfo imageInfo = {
@@ -2824,250 +2725,13 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
       .pImageInfo = &imageInfo
     };
-    vkUpdateDescriptorSets(aDevice,1,&write,0,nullptr);
+    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
     vkCmdBindDescriptorSets(
-      aCmdBuffer,apPipeline->_vkPipelineBindPoint,
-      apPipeline->_vkPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+      aCmdBuffer,aPipelineBindPoint,
+      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
     return eTrue;
   }
 };
-
-struct sVulkanBindlessDescriptorPool : public ImplRC<iUnknown> {
-  VkDescriptorPool _pool = VK_NULL_HANDLE;
-  VkDescriptorSetLayout _buffersDescSetLayout = VK_NULL_HANDLE;
-  VkDescriptorSet _buffersDescSet = VK_NULL_HANDLE;
-  VkDescriptorSetLayout _texturesDescSetLayout = VK_NULL_HANDLE;
-  VkDescriptorSet _texturesDescSet = VK_NULL_HANDLE;
-
-  tBool _CreateBindlessDescriptorPool(ain<nn<sVulkanDriver>> aDriver) {
-    niLet device = aDriver->_device;
-
-    niLet bindingFlags = (VkDescriptorBindingFlags)(
-      VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
-      VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
-      VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT);
-
-    niLet bindingFlagsInfo = VkDescriptorSetLayoutBindingFlagsCreateInfo {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
-      .bindingCount = 1,
-      .pBindingFlags = &bindingFlags
-    };
-
-    // Create bindless uniform buffers layout
-    {
-      VkDescriptorSetLayoutBinding binding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers,
-        .stageFlags = VK_SHADER_STAGE_ALL,
-        .pImmutableSamplers = nullptr
-      };
-
-      VkDescriptorSetLayoutCreateInfo layoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .pNext = &bindingFlagsInfo,
-        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
-        .bindingCount = 1,
-        .pBindings = &binding
-      };
-
-      VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_buffersDescSetLayout), eFalse);
-    }
-
-    // Create bindless textures layout
-    {
-      VkDescriptorSetLayoutBinding binding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-        .descriptorCount = knVulkanMaxDescrBindlessTextures,
-        .stageFlags = VK_SHADER_STAGE_ALL,
-        .pImmutableSamplers = nullptr
-      };
-
-      VkDescriptorSetLayoutCreateInfo layoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .pNext = &bindingFlagsInfo,
-        .flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
-        .bindingCount = 1,
-        .pBindings = &binding
-      };
-
-      VK_CHECK(vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &_texturesDescSetLayout), eFalse);
-    }
-
-    // Create descriptor pool
-    VkDescriptorPoolSize poolSizes[2] = {
-      { .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers },
-      { .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, .descriptorCount = knVulkanMaxDescrBindlessTextures }
-    };
-
-    VkDescriptorPoolCreateInfo poolInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-      .flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
-      .maxSets = 2,
-      .poolSizeCount = 2,
-      .pPoolSizes = poolSizes
-    };
-    VK_CHECK(vkCreateDescriptorPool(device, &poolInfo, nullptr, &_pool), eFalse);
-
-    // Allocate descriptor sets
-    {
-      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
-        .descriptorSetCount = 1,
-        .pDescriptorCounts = &knVulkanMaxDescrBindlessUniformBuffers
-      };
-
-      VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .pNext = &variableCountInfo,
-        .descriptorPool = _pool,
-        .descriptorSetCount = 1,
-        .pSetLayouts = &_buffersDescSetLayout
-      };
-
-      VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, &_buffersDescSet), eFalse);
-    }
-
-    {
-      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
-        .descriptorSetCount = 1,
-        .pDescriptorCounts = &knVulkanMaxDescrBindlessTextures
-      };
-
-      VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .pNext = &variableCountInfo,
-        .descriptorPool = _pool,
-        .descriptorSetCount = 1,
-        .pSetLayouts = &_texturesDescSetLayout
-      };
-
-      VK_CHECK(vkAllocateDescriptorSets(device, &allocInfo, &_texturesDescSet), eFalse);
-    }
-
-    return eTrue;
-  }
-
-  void _DestroyBindlessDescriptorPool(VkDevice aDevice) {
-    if (_pool) {
-      vkDestroyDescriptorPool(aDevice, _pool, nullptr);
-      _pool = VK_NULL_HANDLE;
-    }
-    if (_buffersDescSetLayout) {
-      vkDestroyDescriptorSetLayout(aDevice, _buffersDescSetLayout, nullptr);
-      _buffersDescSetLayout = VK_NULL_HANDLE;
-    }
-    _buffersDescSet = VK_NULL_HANDLE;
-    if (_texturesDescSetLayout) {
-      vkDestroyDescriptorSetLayout(aDevice, _texturesDescSetLayout, nullptr);
-      _texturesDescSetLayout = VK_NULL_HANDLE;
-    }
-    _texturesDescSetLayout = VK_NULL_HANDLE;
-  }
-
-  tBool UpdateBuffer(VkDevice aDevice, tU32 aIndex, VkBuffer aBuffer) {
-    VkDescriptorBufferInfo bufferInfo = {
-      .buffer = aBuffer,
-      .offset = 0,
-      .range = VK_WHOLE_SIZE
-    };
-
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = _buffersDescSet,
-      .dstBinding = 0,
-      .dstArrayElement = aIndex,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-      .pBufferInfo = &bufferInfo
-    };
-
-    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-    return eTrue;
-  }
-
-  tBool UnbindBuffer(VkDevice aDevice, tU32 aIndex) {
-    VkDescriptorBufferInfo nullInfo = {
-      .buffer = VK_NULL_HANDLE,
-      .offset = 0,
-      .range = VK_WHOLE_SIZE
-    };
-
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = _buffersDescSet,
-      .dstBinding = 0,
-      .dstArrayElement = aIndex,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-      .pBufferInfo = &nullInfo
-    };
-
-    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-    return eTrue;
-  }
-
-  tBool UpdateTexture(VkDevice aDevice, tU32 aIndex, VkImageView aImageView) {
-    VkDescriptorImageInfo imageInfo = {
-      .sampler = VK_NULL_HANDLE,
-      .imageView = aImageView,
-      .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-    };
-
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = _texturesDescSet,
-      .dstBinding = 0,
-      .dstArrayElement = aIndex,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-      .pImageInfo = &imageInfo
-    };
-
-    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-    return eTrue;
-  }
-
-  tBool UnbindTexture(VkDevice aDevice, tU32 aIndex) {
-    VkDescriptorImageInfo nullInfo = {
-      .sampler = VK_NULL_HANDLE,
-      .imageView = VK_NULL_HANDLE,
-      .imageLayout = VK_IMAGE_LAYOUT_UNDEFINED
-    };
-
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = _texturesDescSet,
-      .dstBinding = 0,
-      .dstArrayElement = aIndex,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-      .pImageInfo = &nullInfo
-    };
-
-    vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-    return eTrue;
-  }
-};
-
-tBool sVulkanDriver::_CreateVulkanDriverBindlessResources() {
-  niPanicAssert(_isBindlessSupported);
-
-  _bindlessDescPool = niNew sVulkanBindlessDescriptorPool();
-  niCheck(_bindlessDescPool->_CreateBindlessDescriptorPool(as_nn(this)),eFalse);
-
-  return eTrue;
-}
-
-tBool sVulkanDriver::_DestroyVulkanDriverBindlessResources() {
-  if (_bindlessDescPool.has_value()) {
-    _bindlessDescPool->_DestroyBindlessDescriptorPool(_device);
-  }
-  _bindlessDescPool = nullptr;
-  return eTrue;
-}
 
 struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
@@ -4316,7 +3980,6 @@ struct sVulkanRayPipeline :
   {}
 
   ~sVulkanRayPipeline() {
-    _DestroyDescSetLayouts(_driver);
     _rgenTable._DestroySBT(_driver);
     _missTable._DestroySBT(_driver);
     _hitTable._DestroySBT(_driver);
@@ -4324,81 +3987,12 @@ struct sVulkanRayPipeline :
     _DestroyPipeline(_driver);
   }
 
-  tBool _CreateRayNoTextureDescSetLayout() {
-    niLet vkDevice = _driver->_device;
-    niPanicAssert(_vkDescSetLayouts.empty());
-
-    // Initialize all with empty layouts
-    niLet numLayouts = ni::Max(
-      eGLSLVulkanDescriptorSet_Image2D,
-      eGLSLVulkanDescriptorSet_RayInstances)+1;
-    niCheck(_CreateEmptyDescSetLayouts(_driver,numLayouts),eFalse);
-
-    niLet stageFlags = VK_SHADER_STAGE_RAYGEN_BIT_KHR
-        | VK_SHADER_STAGE_MISS_BIT_KHR
-        | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR
-        | VK_SHADER_STAGE_ANY_HIT_BIT_KHR
-        | VK_SHADER_STAGE_INTERSECTION_BIT_KHR
-        ;
-    niLet layoutFlags = 0;
-
-    // Acceleration structure layout
-    {
-      VkDescriptorSetLayoutBinding asBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo asLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &asBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(
-        vkDevice, &asLayoutInfo, nullptr,
-        &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_RayInstances]), eFalse);
-    }
-
-    // Image2D layout
-    {
-      VkDescriptorSetLayoutBinding imageBinding = {
-        .binding = 0,
-        .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-        .descriptorCount = 1,
-        .stageFlags = stageFlags,
-        .pImmutableSamplers = nullptr
-      };
-      VkDescriptorSetLayoutCreateInfo imageLayoutInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .flags = layoutFlags,
-        .bindingCount = 1,
-        .pBindings = &imageBinding
-      };
-      VK_CHECK(vkCreateDescriptorSetLayout(
-        vkDevice, &imageLayoutInfo, nullptr,
-        &_vkDescSetLayouts[eGLSLVulkanDescriptorSet_Image2D]), eFalse);
-    }
-
-    // Pipeline layout
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-      .setLayoutCount = (tU32)_vkDescSetLayouts.size(),
-      .pSetLayouts = _vkDescSetLayouts.data(),
-      .pushConstantRangeCount = 0,
-      .pPushConstantRanges = nullptr
-    };
-
-    VK_CHECK(vkCreatePipelineLayout(vkDevice, &pipelineLayoutInfo, nullptr, &_vkPipelineLayout), eFalse);
-    return eTrue;
+  VkPipelineLayout _GetPipelineLayout() const {
+    return _driver->_vkPipelineLayouts[eGpuFunctionBindType_BindlessRayInstances];
   }
 
   tBool _CreateRayPipeline() {
     niLet vk = _driver->_device;
-
-    niCheck(_CreateRayNoTextureDescSetLayout(), eFalse);
 
     // Collect shader stages & groups
     astl::vector<VkPipelineShaderStageCreateInfo> stages;
@@ -4504,7 +4098,7 @@ struct sVulkanRayPipeline :
       .groupCount = (tU32)groups.size(),
       .pGroups = groups.data(),
       .maxPipelineRayRecursionDepth = 1,
-      .layout = _vkPipelineLayout
+      .layout = _GetPipelineLayout()
     };
 
     VK_CHECK(vkCreateRayTracingPipelinesKHR(
@@ -4699,12 +4293,13 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
   nn<sVulkanRayPipeline> pipeline = as_nn<sVulkanRayPipeline>(_cache._lastRayPipeline);
   nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
   nn<sVulkanTexture> outputTex = as_nn<sVulkanTexture>(_cache._lastRayOutputImage);
+  const VkPipelineLayout pipelineLayout = pipeline->_GetPipelineLayout();
 
   // End current rendering pass if any
   _EndRendering();
 
   // Transition output image to general layout for storage
-  niCheck(_VulkanTransitionImageLayout(
+  niCheck(_VkTransitionImageLayout(
     _cmdBuffer,
     outputTex->_vkImage,
     VK_IMAGE_LAYOUT_UNDEFINED,
@@ -4713,17 +4308,15 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
   // Bind acceleration structure
   niVar& descPool = _GetCurrentFrame()->_descriptorPool;
   niCheck(descPool.PushDescriptorAccelerationStructure(
-    _driver->_device,
-    _cmdBuffer,
-    pipeline,
+    _driver,_cmdBuffer,
+    VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,pipelineLayout,
     eGLSLVulkanDescriptorSet_RayInstances,
     instancesAS->_asHandle),eFalse);
 
   // Bind output image
   niCheck(descPool.PushDescriptorStorageImage(
-    _driver->_device,
-    _cmdBuffer,
-    pipeline,
+    _driver,_cmdBuffer,
+    VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,pipelineLayout,
     eGLSLVulkanDescriptorSet_Image2D,
     outputTex->_vkView,
     VK_IMAGE_LAYOUT_GENERAL),eFalse);
@@ -4738,7 +4331,7 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
     anW,anH,anD);
 
   // Transition output image back to shader read
-  niCheck(_VulkanTransitionImageLayout(
+  niCheck(_VkTransitionImageLayout(
     _cmdBuffer,
     outputTex->_vkImage,
     VK_IMAGE_LAYOUT_GENERAL,
@@ -4826,12 +4419,256 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
     _dummyUniformBuffer->Unlock();
   }
 
+  // Create the descriptor set layouts
+  niLet stageFlags =
+      VK_SHADER_STAGE_VERTEX_BIT |
+      VK_SHADER_STAGE_FRAGMENT_BIT |
+      (_isRayTracingSupported ?
+       (VK_SHADER_STAGE_RAYGEN_BIT_KHR
+        | VK_SHADER_STAGE_MISS_BIT_KHR
+        | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR
+        | VK_SHADER_STAGE_ANY_HIT_BIT_KHR
+        | VK_SHADER_STAGE_INTERSECTION_BIT_KHR) : 0);
+
+  VK_CHECK(_VkCreateEmptyDescSetLayout(_device,_emptyDescrSet), eFalse);
+  VK_CHECK(_VkCreateDescSetLayout(
+    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Buffer],
+    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,stageFlags), eFalse);
+  VK_CHECK(_VkCreateDescSetLayout(
+    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Texture2D],
+    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,stageFlags), eFalse);
+  VK_CHECK(_VkCreateDescSetLayout(
+    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_TextureCube],
+    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,stageFlags), eFalse);
+  VK_CHECK(_VkCreateDescSetLayout(
+    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Sampler],
+    VK_DESCRIPTOR_TYPE_SAMPLER,stageFlags), eFalse);
+  VK_CHECK(_VkCreateDescSetLayout(
+    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Image2D],
+    VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,stageFlags), eFalse);
+
+#define LAYOUT_SET_DESCR(INDEX,ENUM)                        \
+  static_assert(INDEX < niCountOf(layouts));                \
+  static_assert(ENUM == INDEX);                             \
+  niCheck(_descrSetLayouts[ENUM] != VK_NULL_HANDLE,eFalse); \
+  layouts[INDEX] = _descrSetLayouts[ENUM];
+
+#define LAYOUT_SET_EMPTY(INDEX,ENUM)            \
+  static_assert(INDEX < niCountOf(layouts));    \
+  static_assert(ENUM == INDEX);                 \
+  layouts[INDEX] = _emptyDescrSet;
+
+#define CREATE_PIPELINE_LAYOUT(VAR)                                     \
+  VkPipelineLayoutCreateInfo layoutInfo = {                             \
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,             \
+    .setLayoutCount = (tU32)niCountOf(layouts),                         \
+    .pSetLayouts = layouts,                                             \
+    .pushConstantRangeCount = 0,                                        \
+    .pPushConstantRanges = nullptr                                      \
+  };                                                                    \
+  niPanicAssert(VAR == VK_NULL_HANDLE);                                 \
+  VK_CHECK(vkCreatePipelineLayout(_device, &layoutInfo, nullptr, &VAR), eFalse);
+
+  // eGpuFunctionBindType_None
+  {
+    VkPipelineLayoutCreateInfo layoutInfo = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      .setLayoutCount = 0,
+      .pushConstantRangeCount = 0,
+      .pPushConstantRanges = nullptr
+    };
+    VK_CHECK(vkCreatePipelineLayout(
+      _device, &layoutInfo, nullptr,
+      &_vkPipelineLayouts[eGpuFunctionBindType_None]), eFalse);
+  }
+
+  // eGpuFunctionBindType_Fixed
+  {
+    VkDescriptorSetLayout layouts[6] = {};
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
+    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
+    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+    CREATE_PIPELINE_LAYOUT(
+      _vkPipelineLayouts[eGpuFunctionBindType_Fixed]);
+  }
+
+  if (_isBindlessSupported) {
+    VK_CHECK(_VkCreateBindlessDescSetLayout(
+      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers],
+      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER), eFalse);
+
+    VK_CHECK(_VkCreateBindlessDescSetLayout(
+      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures],
+      VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE), eFalse);
+
+    // eGpuFunctionBindType_Bindless
+    {
+      VkDescriptorSetLayout layouts[11] = {};
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_RayInstances, 7);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Image2D, 8);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllBuffers, 9);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllTextures, 10);
+      CREATE_PIPELINE_LAYOUT(
+        _vkPipelineLayouts[eGpuFunctionBindType_Bindless]);
+    }
+
+    // Create the bindless descriptor pool
+    {
+      VkDescriptorPoolSize poolSizes[2] = {
+        { .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+          .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers },
+        { .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+          .descriptorCount = knVulkanMaxDescrBindlessTextures }
+      };
+
+      VkDescriptorPoolCreateInfo poolInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
+        .maxSets = 2,
+        .poolSizeCount = 2,
+        .pPoolSizes = poolSizes
+      };
+      VK_CHECK(vkCreateDescriptorPool(
+        _device, &poolInfo, nullptr, &_bindlessPool), eFalse);
+    }
+
+    // Allocate bindless buffers descriptor sets
+    {
+      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = &knVulkanMaxDescrBindlessUniformBuffers
+      };
+
+      VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = &variableCountInfo,
+        .descriptorPool = _bindlessPool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers]
+      };
+
+      VK_CHECK(vkAllocateDescriptorSets(
+        _device, &allocInfo, &_bindlessBuffersDescSet), eFalse);
+    }
+
+    {
+      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = &knVulkanMaxDescrBindlessTextures
+      };
+
+      VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = &variableCountInfo,
+        .descriptorPool = _bindlessPool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures]
+      };
+
+      VK_CHECK(vkAllocateDescriptorSets(
+        _device, &allocInfo, &_bindlessTexturesDescSet), eFalse);
+    }
+  }
+
+  if (_isRayTracingSupported) {
+    VK_CHECK(_VkCreateDescSetLayout(
+      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_RayInstances],
+      VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,stageFlags), eFalse);
+
+    // eGpuFunctionBindType_FixedRayInstances
+    {
+      VkDescriptorSetLayout layouts[9] = {};
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_RayInstances, 7);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Image2D, 8);
+      CREATE_PIPELINE_LAYOUT(
+        _vkPipelineLayouts[eGpuFunctionBindType_FixedRayInstances]);
+    }
+
+    // Full bindless ray tracing pipeline, only one option here
+    {
+      VkDescriptorSetLayout layouts[11] = {};
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_RayInstances, 7);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Image2D, 8);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllBuffers, 9);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllTextures, 10);
+      CREATE_PIPELINE_LAYOUT(
+        _vkPipelineLayouts[eGpuFunctionBindType_BindlessRayInstances]);
+    }
+  }
+
+  return eTrue;
+}
+
+tBool sVulkanDriver::_DestroyVulkanDriverResources() {
+  if (_bindlessPool) {
+    vkDestroyDescriptorPool(_device, _bindlessPool, nullptr);
+    _bindlessPool = VK_NULL_HANDLE;
+    _bindlessBuffersDescSet = VK_NULL_HANDLE;
+    _bindlessTexturesDescSet = VK_NULL_HANDLE;
+  }
+
+  niLoop(i,_vkPipelineLayouts.size()) {
+    if (_vkPipelineLayouts[i] != VK_NULL_HANDLE) {
+      vkDestroyPipelineLayout(_device,_vkPipelineLayouts[i],nullptr);
+      _vkPipelineLayouts[i] = VK_NULL_HANDLE;
+    }
+  }
+
+  if (!_descrSetLayouts.empty()) {
+    niLoop(i,eGLSLVulkanDescriptorSet_Last) {
+      if (_descrSetLayouts[i] != VK_NULL_HANDLE) {
+        vkDestroyDescriptorSetLayout(_device, _descrSetLayouts[i],nullptr);
+        _descrSetLayouts[i] = VK_NULL_HANDLE;
+      }
+    }
+  }
+  if (_emptyDescrSet) {
+    vkDestroyDescriptorSetLayout(_device,_emptyDescrSet,nullptr);
+    _emptyDescrSet = VK_NULL_HANDLE;
+  }
+
+  _dummyUniformBuffer = nullptr;
+
+  niLoop(i,niCountOf(_ssCompiled)) {
+    if (_ssCompiled[i]) {
+      vkDestroySampler(_device, _ssCompiled[i],
+                       nullptr);
+      _ssCompiled[i] = VK_NULL_HANDLE;
+    }
+  }
+
   return eTrue;
 }
 
 tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
-  niLet device = _driver->_device;
+  niLet pipelineLayout = pipeline->_GetPipelineLayout();
   niVar& descPool = _GetCurrentFrame()->_descriptorPool;
 
   {
@@ -4844,8 +4681,9 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
       buffer = _driver->_dummyUniformBuffer.raw_ptr();
     }
     niCheck(descPool.PushDescriptorUniformBuffer(
-      device,_cmdBuffer,
-      pipeline,eGLSLVulkanDescriptorSet_Buffer,
+      _driver,_cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
+      eGLSLVulkanDescriptorSet_Buffer,
       buffer->_vkBuffer,bufferOffset),eFalse);
   }
 
@@ -4857,15 +4695,16 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
     switch (texture->GetType()) {
       case eBitmapType_Cube: {
         niCheck(descPool.PushDescriptorImage(
-          device,_cmdBuffer,
-          pipeline,eGLSLVulkanDescriptorSet_TextureCube,
+          _driver,_cmdBuffer,
+          VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
+          eGLSLVulkanDescriptorSet_TextureCube,
           texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
         break;
       }
       case eBitmapType_2D: {
         niCheck(descPool.PushDescriptorImage(
-          device,_cmdBuffer,
-          pipeline,eGLSLVulkanDescriptorSet_Texture2D,
+          _driver,_cmdBuffer,          VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
+          eGLSLVulkanDescriptorSet_Texture2D,
           texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
         break;
       }
@@ -4882,8 +4721,9 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
   {
     tIntPtr hSS = _cache._lastMaterial.mChannels[0].mhSS;
     niCheck(descPool.PushDescriptorSampler(
-      device,_cmdBuffer,
-      pipeline,eGLSLVulkanDescriptorSet_Sampler,
+      _driver,_cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
+      eGLSLVulkanDescriptorSet_Sampler,
       _driver->_GetVkSamplerState(hSS)),eFalse);
   }
 
@@ -4891,9 +4731,8 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
     niCheck(_cache._lastRayInstances.has_value(),eFalse);
     nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
     niCheck(descPool.PushDescriptorAccelerationStructure(
-      _driver->_device,
-      _cmdBuffer,
-      pipeline,
+      _driver,_cmdBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
       eGLSLVulkanDescriptorSet_RayInstances,
       instancesAS->_asHandle),eFalse);
   }
@@ -5574,14 +5413,14 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     // Transition the image from UNDEFINED to COLOR_ATTACHMENT_OPTIMAL (or
     // another suitable layout) here using vkCmdPipelineBarrier.  This must
     // happen before any rendering commands.
-    niCheck(_VulkanTransitionImageLayout(
+    niCheck(_VkTransitionImageLayout(
       _cmdEncoder->_cmdBuffer,currentImage,
       VK_IMAGE_LAYOUT_UNDEFINED,
       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds && ds->_vkImage) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,ds->_vkImage,
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
@@ -5602,14 +5441,14 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     _beganFrame = eFalse;
 
     _cmdEncoder->_EndRendering();
-    niCheck(_VulkanTransitionImageLayout(
+    niCheck(_VkTransitionImageLayout(
       _cmdEncoder->_cmdBuffer,_swapchainImages[_currentImageIndex],
       VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
       VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),eFalse);
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds && ds->_vkImage) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,ds->_vkImage,
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
@@ -5722,7 +5561,7 @@ struct sVulkanContextRT : public sVulkanContextBase {
     niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,rt0->_vkImage,
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
@@ -5730,7 +5569,7 @@ struct sVulkanContextRT : public sVulkanContextBase {
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,ds->_vkImage,
         VK_IMAGE_LAYOUT_UNDEFINED,
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
@@ -5754,7 +5593,7 @@ struct sVulkanContextRT : public sVulkanContextBase {
     // Add transition to shader read
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,rt0->_vkImage,
         VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
@@ -5762,7 +5601,7 @@ struct sVulkanContextRT : public sVulkanContextBase {
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
-      niCheck(_VulkanTransitionImageLayout(
+      niCheck(_VkTransitionImageLayout(
         _cmdEncoder->_cmdBuffer,ds->_vkImage,
         VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);

@@ -111,9 +111,11 @@ enum eGpuFunctionBindType {
   eGpuFunctionBindType_FixedRayInstances = 2,
   //! Bindless binding
   eGpuFunctionBindType_Bindless = 3,
+  //! Bindless binding, with ray instances
+  eGpuFunctionBindType_BindlessRayInstances = 4,
 
   //! \internal
-  eGpuFunctionBindType_Last niMaybeUnused = 4,
+  eGpuFunctionBindType_Last niMaybeUnused = 5,
   //! \internal
   eGpuFunctionBindType_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

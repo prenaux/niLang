@@ -37838,6 +37838,7 @@ static const ni::sEnumValueDef Enum_eGpuFunctionBindType_Values[] = {
 	{ "Fixed", ni::eGpuFunctionBindType_Fixed },
 	{ "FixedRayInstances", ni::eGpuFunctionBindType_FixedRayInstances },
 	{ "Bindless", ni::eGpuFunctionBindType_Bindless },
+	{ "BindlessRayInstances", ni::eGpuFunctionBindType_BindlessRayInstances },
 	{ "Last", ni::eGpuFunctionBindType_Last },
 };
 static const ni::sEnumDef Enum_eGpuFunctionBindType = {

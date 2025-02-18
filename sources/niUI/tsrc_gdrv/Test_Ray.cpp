@@ -999,7 +999,11 @@ struct sFRay_RayQueryTriangle : public sFRay_Base {
     // Create ray tracing shaders
     {
       _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
+        eGpuFunctionType_Pixel, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
+      CHECK_EQUAL(eGpuFunctionType_Pixel,
+                  _triangleRayQueryFun->GetFunctionType());
+      CHECK_EQUAL(eGpuFunctionBindType_FixedRayInstances,
+                  _triangleRayQueryFun->GetFunctionBindType());
     }
 
     // Create acceleration structure
@@ -1030,7 +1034,7 @@ struct sFRay_RayQueryTriangle : public sFRay_Base {
         niCheck(instDesc->AddInstance(
           primitiveAS,
           sMatrixf::Identity(), // Transform
-          0,                    // Instance ID
+          1,                    // Instance ID
           0xFF,                 // Mask
           0,                    // Hit group offset
           eRayInstanceFlags_None), eFalse);
@@ -1058,7 +1062,22 @@ struct sFRay_RayQueryTriangle : public sFRay_Base {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
 
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)_graphicsContext->GetWidth();
+    u.rtHeight = (tF32)_graphicsContext->GetHeight();
+    u.cameraFarClipPlane = 10000.0f;
+    sMatrixf camView = MatrixLookAtLH(
+      Vec3f(0,0,-1.0f),
+      Vec3f(0,0,0),
+      Vec3f(0,1,0)
+    );
+    sMatrixf camProj = MatrixPerspectiveFovLH(
+      u.rtWidth/u.rtHeight,niRadf(45.0f),0.001f,u.cameraFarClipPlane);
+    u.cameraInvView = MatrixInverse(camView);
+    u.cameraInvViewProj = MatrixInverse(camView * camProj);
+
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_instanceAS);
@@ -1068,85 +1087,5 @@ struct sFRay_RayQueryTriangle : public sFRay_Base {
   }
 };
 TEST_CLASS(FRay,RayQueryTriangle);
-
-struct sFRay_RayQueryIntSphere : public sFRay_Base {
-  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
-  NN<iGpuFunction> _triangleRayQueryFun = niDeferredInit(NN<iGpuFunction>);
-
-  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
-
-    // Create ray tracing shaders
-    {
-      _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
-    }
-
-    // Create acceleration structure
-    {
-      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
-      niLet instDesc = niCheckNN(
-        instDesc,
-        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_Triangle")),
-        eFalse);
-
-      {
-        niLet prDesc = niCheckNN(
-          prDesc,
-          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryIntSpherePrimitivesDesc_Triangle")),
-          eFalse);
-
-        // Add a triangle
-        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
-        niCheck(prDesc->AddTriangles(
-          triangleVB,0,sizeof(tVertexTri),3,
-          sMatrixf::Identity(),
-          eRayPrimitiveFlags_Opaque,
-          0), eFalse);
-
-        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-          _H("RayTrianglePrimitives_Triangle"),prDesc), eFalse);
-
-        niCheck(instDesc->AddInstance(
-          primitiveAS,
-          sMatrixf::Identity(), // Transform
-          0,                    // Instance ID
-          0xFF,                 // Mask
-          0,                    // Hit group offset
-          eRayInstanceFlags_None), eFalse);
-      }
-
-      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
-        _H("RayInstances_Triangle"),instDesc), eFalse);
-    }
-
-    // Recreate the display pipeline with our shader
-    {
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
-      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_triangleRayQueryFun);
-      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_RayQueryIntSphere_Pipeline"),pipelineDesc), eFalse);
-    }
-
-    return eTrue;
-  }
-
-  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
-    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
-    niPanicAssert(gpuContext.IsOK());
-
-    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-
-    NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
-    rayEncoder->SetRayInstances(_instanceAS);
-
-    DisplayTexture(gpuEncoder,nullptr);
-    return eTrue;
-  }
-};
-TEST_CLASS(FRay,RayQueryIntSphere);
 
 }

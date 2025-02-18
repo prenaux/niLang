@@ -660,6 +660,20 @@ static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString
 }
 
 /////////////////////////////////////////////////////////////////
+static inline tBool _ReflectionHasArray(iDataTable* apDT) {
+  if (!apDT)
+    return eFalse;
+  niLoop(i,apDT->GetNumChildren()) {
+    iDataTable* cdt = apDT->GetChildFromIndex(i);
+    if (cdt && StrIEq(cdt->GetName(),"array"))
+      return eTrue;
+    if (_ReflectionHasArray(cdt))
+      return eTrue;
+  }
+  return eFalse;
+}
+
+/////////////////////////////////////////////////////////////////
 Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpuFunctionBindType* apOutBindType) {
   niLet dtRoot = niCheckNN_(
     dtRoot,LoadDataTable(aURL),
@@ -668,20 +682,33 @@ Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpu
 
   if (apOutBindType) {
     *apOutBindType = eGpuFunctionBindType_None;
+
     niLet dtReflection = niCheckNN(dtReflection,dtRoot->GetChild("Reflection"),nullptr);
-    niLet dtAccelerationStructures = dtReflection->GetChild("AccelerationStructures");
-    if (dtAccelerationStructures && (dtAccelerationStructures->GetNumChildren() > 0)) {
-      *apOutBindType = eGpuFunctionBindType_FixedRayInstances;
+    Ptr<iDataTable> dtSeparateImages = dtReflection->GetChild("SeparateImages");
+    Ptr<iDataTable> dtUBOs = dtReflection->GetChild("UBOs");
+    Ptr<iDataTable> dtAccelerationStructures = dtReflection->GetChild("AccelerationStructures");
+
+    niLet isBindless =
+        _ReflectionHasArray(dtSeparateImages) ||
+        _ReflectionHasArray(dtUBOs) ||
+        _ReflectionHasArray(dtAccelerationStructures);
+
+    niLet isRT =
+        (dtAccelerationStructures.has_value() && (dtAccelerationStructures->GetNumChildren() > 0));
+
+    if (isBindless) {
+      // TODO: eGpuFunctionBindType_BindlessRayInstances;
+      *apOutBindType = eGpuFunctionBindType_Bindless;
     }
     else {
-      niLoop(i,dtReflection->GetNumChildren()) {
-        niLet dtChild = dtReflection->GetChildFromIndex(i);
-        niLet name = dtChild->GetName();
-        if ((StrEq(name,"SeparateImages") ||
-             StrEq(name,"UBOs")) &&
-            (dtChild->GetNumChildren() > 0)) {
+      if (isRT) {
+        *apOutBindType = eGpuFunctionBindType_FixedRayInstances;
+      }
+      else {
+        if ((dtSeparateImages.has_value() && dtSeparateImages->GetNumChildren() > 0) ||
+            (dtUBOs.has_value() && dtUBOs->GetNumChildren() > 0))
+        {
           *apOutBindType = eGpuFunctionBindType_Fixed;
-          break;
         }
       }
     }

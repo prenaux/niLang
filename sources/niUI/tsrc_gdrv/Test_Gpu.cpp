@@ -1132,7 +1132,8 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
           eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
+      CHECK_EQUAL(eGpuFunctionBindType_Bindless,_pixelGpuFun->GetFunctionBindType());
     }
 
     {

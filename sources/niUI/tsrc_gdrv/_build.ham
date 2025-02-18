@@ -8,6 +8,29 @@ niImportModuleDll_niUI ;
 
 SRC = [ tkPkgSrc ] ;
 
+DEPENDS $(PACKAGE) :
+[ niBuildGpuFuncs $(PACKAGE)_gpufuncs :
+  $(TK_DIR) data test gpufunc :
+  $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
+  triangle_vs
+  triangle_ps
+  texture_vs
+  texture_ps
+  texture_alphatest_vs
+  texture_alphatest_ps
+  skybox_vs
+  skybox_ps
+  triangle_rayquery_ps
+  texture_bindless_ps
+] ;
+
+DEPENDS $(PACKAGE) :
+[ niBuildGpuFuncsHpp $(PACKAGE)_gpufuncs :
+  $(TK_DIR) data test gpufunc :
+  $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
+  TestGpuFuncs.hpp
+] ;
+
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
 runInDir Test_niUI_GDRV ;

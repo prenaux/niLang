@@ -74,6 +74,8 @@ actions nishCompileGlsl {
 # niBuildGpuFuncs TARGET : GPUFUNC_DIR : GEN_SCRIPT (in NIL_SHADERS_DIR) : ENTRYPOINTS
 rule niBuildGpuFuncs {
   local t = $(1) ;
+  NOTFILE $(t) ;
+
   local gpuFuncDir = [ AssertFDirName niBuildGpuFuncs : $(2) ] ;
   local genScript = [ AssertFDirName niBuildGpuFuncs : $(3) ] ;
   local entryPoints = $(4) ;
@@ -108,6 +110,8 @@ rule niBuildGpuFuncs {
 # niBuildGpuFuncsHpp TARGET : GPUFUNC_DIR : GEN_SCRIPT (in NIL_SHADERS_DIR) : Module
 rule niBuildGpuFuncsHpp {
   local t = $(1) ;
+  NOTFILE $(t) ;
+
   local gpuFuncDir = [ AssertFDirName niBuildGpuFuncs : $(2) ] ;
   local genScript = [ AssertFDirName niBuildGpuFuncs : $(3) ] ;
   local entryPoints = $(4) ;
@@ -118,6 +122,7 @@ rule niBuildGpuFuncsHpp {
   }
 
   local r = [ niGeneratorScript $(genList) : $(genScript) : $(genList) ] ;
+  GENERATED $(r) ;
   DEPENDS $(t) : $(r) ;
   return $(r) ;
 }

@@ -306,6 +306,8 @@ TEST_CLASS(FGpu,Square);
 struct sFGpu_Texture : public sFGpu_Base {
   typedef tVertexCanvas tVertexFmt;
   NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _vaBuffer1 = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _vaBuffer2 = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
   NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
@@ -332,6 +334,44 @@ struct sFGpu_Texture : public sFGpu_Base {
       verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White, BL
       _vaBuffer->Unlock();
     }
+
+    {
+      _vaBuffer1 = niCheckNN(
+        _vaBuffer1,
+        _driverGpu->CreateGpuBuffer(
+          _H("GpuTexture_VA"),
+          sizeof(tVertexFmt)*4,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex),
+        eFalse);
+      tVertexFmt* verts = (tVertexFmt*)_vaBuffer1->Lock(0, _vaBuffer1->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      verts[0] = {{ -0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // Blue, BR
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White, BL
+      _vaBuffer1->Unlock();
+    }
+
+    {
+      _vaBuffer2 = niCheckNN(
+        _vaBuffer2,
+        _driverGpu->CreateGpuBuffer(
+          _H("GpuTexture_VA"),
+          sizeof(tVertexFmt)*4,
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Vertex),
+        eFalse);
+      tVertexFmt* verts = (tVertexFmt*)_vaBuffer2->Lock(0, _vaBuffer2->GetSize(), eLock_Discard);
+      niCheck(verts != nullptr, eFalse);
+      verts[0] = {{ -0.5f,   0.2f, 0.0f}, sVec3f::YAxis(), 0xFFFF0000, {0.0f,0.0f}}; // Red, TL
+      verts[1] = {{  0.5f,   0.5f, 0.0f}, sVec3f::YAxis(), 0xFF00FF00, {1.0f,0.0f}}; // Green, TR
+      verts[2] = {{  0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFF0000FF, {1.0f,1.0f}}; // Blue, BR
+      verts[3] = {{ -0.5f,  -0.5f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // White, BL
+      _vaBuffer2->Unlock();
+    }
+
+
     {
       _iaBuffer = niCheckNN(
         _iaBuffer,
@@ -614,7 +654,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
       _rtGC->ClearBuffers(eClearBuffersFlags_ColorDepthStencil,0xFFFF0000,1.0f,0);
       NN<iGpuCommandEncoder> rtEncoder = AsNN(gpuRT->GetCommandEncoder());
       rtEncoder->SetPipeline(_pipeline);
-      rtEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+      rtEncoder->SetVertexBuffer(_vaBuffer2, 0, 0);
       rtEncoder->SetTexture(nullptr, 0); // bind the "white texture"
       rtEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
       rtEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
@@ -626,7 +666,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
-    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->SetVertexBuffer(_vaBuffer1, 0, 0);
     cmdEncoder->SetTexture(_rtTex, 0); // bind the render target
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);

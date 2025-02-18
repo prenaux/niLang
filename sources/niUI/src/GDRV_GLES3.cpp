@@ -37,6 +37,12 @@ niLetK knOpenGLMaxFramesInFlight = 1_u32;
 //  Cache
 //
 //--------------------------------------------------------------------------------------------
+
+struct sOpenGLEncoderFrameData;
+struct sOpenGLRasterPipeline;
+struct sOpenGLBuffer;
+struct sOpenGLDriver;
+
 enum eGLCache
 {
   eGLCache_Context,
@@ -86,11 +92,6 @@ struct sGLCache : public sStateCache {
 //
 //--------------------------------------------------------------------------------------------
 
-struct sOpenGLEncoderFrameData;
-struct sOpenGLRasterPipeline;
-struct sOpenGLBuffer;
-struct sOpenGLDriver;
-
 struct sOpenGLRenderingInfo {
   GLuint _fbo = 0; // Framebuffer Object
   GLuint _vbo = 0; // vertex buffer object;
@@ -104,6 +105,7 @@ struct sOpenGLRenderingInfo {
   sRecti _scissor = Recti(0);
   sRecti _viewport = Recti(0);
   sVec2i _rtSize = { 0, 0 };
+  tBool _rtFlipped = eFalse;
 
   void _BeginRenderingInfo(
     ain<GLuint> aColorTexture,
@@ -213,37 +215,7 @@ struct sOpenGLCommandEncoder : public ImplRC<iGpuCommandEncoder> {
 
   tBool _BeginCmdBuffer();
 
-  tBool _BeginRendering(
-    ain<GLuint> aColorTexture,
-    ain<GLuint> aColorTextureView,
-    ain<GLuint> aDepthTexture,
-    ain<GLuint> aDepthTextureView,
-    ain<tU32> anWidth,
-    ain<tU32> anHeight,
-    ain<sRecti> aViewport,
-    ain<sRecti> aScissor,
-    ain<sVec4f> aClearColor = Vec4f(1, 0, 1, 0),
-    ain<tF32> aClearDepth = 1.0f,
-    ain<tU32> aClearStencil = 0)
-  {
-    niDebugAssert(_beganCmdBuffer);
-    _renderingInfo._BeginRenderingInfo(
-      aColorTexture,
-      aColorTextureView,
-      aDepthTexture,
-      aDepthTextureView,
-      anWidth,
-      anHeight,
-      aViewport,
-      aScissor,
-      aClearColor,
-      aClearDepth,
-      aClearStencil);
-
-    this->SetViewport(aViewport);
-    this->SetScissorRect(aScissor);
-    return eTrue;
-  }
+  // tBool _BeginRendering();
 
   void _ResumeRendering();
 
@@ -333,20 +305,20 @@ struct sGLContext : public sGraphicsContext<1,ImplRC<iGraphicsContextRT,eImplFla
   tBool _beganFrame = eFalse;
 };
 
-static tU32 _kNumGL2TexUpload = 0;
+static tU32 _kNumGL3TexUpload = 0;
 
-class cGL2ContextWindow;
-class cGL2ContextRT;
+class cGL3ContextWindow;
+class cGL3ContextRT;
 
-static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
-static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
-static tBool GLES2_DrawOperation(iGraphicsDriver* apDrv, sGLContext* apContext, iDrawOperation* apDrawOp, const tU32 anAA);
-static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait);
-static tBool GLES2_ResetCache(iGraphicsDriver* apDrv);
-static tBool GLES2_ResetContextDeviceResources(iGraphicsDriver* apDrv);
-static tBool GLES2_InitContextDeviceResources(iGraphicsDriver* apDrv);
-static sGLCache& GLES2_GetCache(iGraphicsDriver* apDrv);
-static tBool GL2_ApplyMaterialChannel(
+static void GLES3_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
+static void GLES3_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil);
+static tBool GLES3_DrawOperation(iGraphicsDriver* apDrv, sGLContext* apContext, iDrawOperation* apDrawOp, const tU32 anAA);
+static tBool GLES3_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait);
+static tBool GLES3_ResetCache(iGraphicsDriver* apDrv);
+static tBool GLES3_ResetContextDeviceResources(iGraphicsDriver* apDrv);
+static tBool GLES3_InitContextDeviceResources(iGraphicsDriver* apDrv);
+static sGLCache& GLES3_GetCache(iGraphicsDriver* apDrv);
+static tBool GL3_ApplyMaterialChannel(
     sGLContext* apContext,
     iGraphics* apGraphics,
     sGLCache& aCache,
@@ -472,13 +444,13 @@ static void _CountBufferUploadedBytes(tU32 anNumBytes) {
 #define _glDeleteProgram _glDeleteObject
 #endif
 
-static GLint kGL2_MaxTU = GLDRV_MAX_TEXTURE_UNIT;
-static GLint kGL2_MaxCubeTexSize = 8192;
-static GLint kGL2_MaxRegularTexSize = 8192;
-static GLint kGL2_MaxOverlayTexSize = 8192;
-static GLint kGL2_MaxVertexAttrs = 16;
-static GLint kGL2_MaxVertexUniforms = 0;
-static GLint kGL2_MaxPixelUniforms = 0;
+static GLint kGL3_MaxTU = GLDRV_MAX_TEXTURE_UNIT;
+static GLint kGL3_MaxCubeTexSize = 8192;
+static GLint kGL3_MaxRegularTexSize = 8192;
+static GLint kGL3_MaxOverlayTexSize = 8192;
+static GLint kGL3_MaxVertexAttrs = 16;
+static GLint kGL3_MaxVertexUniforms = 0;
+static GLint kGL3_MaxPixelUniforms = 0;
 
 #ifdef USE_FBO
 
@@ -537,7 +509,7 @@ static const achar* GL_FBOStatus(GLenum status) {
 
 #endif
 
-static tBool GL2_InitializeExt() {
+static tBool GL3_InitializeExt() {
   static tBool _printedInfos = eTrue;
 
   const cString strExt = (const cchar*)_glGetString(GL_EXTENSIONS);
@@ -554,7 +526,7 @@ static tBool GL2_InitializeExt() {
       ;
 
   if (_printedInfos) {
-    niDebugFmt((_A("--- GL2 Context Infos ---")));
+    niDebugFmt((_A("--- GL3 Context Infos ---")));
     niDebugFmt((_A("GL_VENDOR: %s"),strVendor));
     niDebugFmt((_A("GL_RENDERER: %s"),strRenderer));
     niDebugFmt((_A("GL_VERSION: %s"),strVersion));
@@ -567,60 +539,60 @@ static tBool GL2_InitializeExt() {
   }
 
   if (_printedInfos) {
-    niDebugFmt(("--- GL2_CAPS ---"));
+    niDebugFmt(("--- GL3_CAPS ---"));
   }
 
   // max texture units
   {
-    GLint maxTU = kGL2_MaxTU;
+    GLint maxTU = kGL3_MaxTU;
     _glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS,&maxTU);
-    kGL2_MaxTU = ni::Min(maxTU,kGL2_MaxTU,GLDRV_MAX_TEXTURE_UNIT);
+    kGL3_MaxTU = ni::Min(maxTU,kGL3_MaxTU,GLDRV_MAX_TEXTURE_UNIT);
   }
   // shader caps
   {
-    _glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&kGL2_MaxVertexAttrs);
+    _glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&kGL3_MaxVertexAttrs);
 #if defined niOSX || defined niWindows
-    _glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&kGL2_MaxVertexUniforms);
-    kGL2_MaxVertexUniforms /= 4;
-    _glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&kGL2_MaxPixelUniforms);
-    kGL2_MaxPixelUniforms /= 4;
+    _glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&kGL3_MaxVertexUniforms);
+    kGL3_MaxVertexUniforms /= 4;
+    _glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&kGL3_MaxPixelUniforms);
+    kGL3_MaxPixelUniforms /= 4;
 #else
-    _glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS,&kGL2_MaxVertexUniforms);
-    _glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,&kGL2_MaxPixelUniforms);
+    _glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS,&kGL3_MaxVertexUniforms);
+    _glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,&kGL3_MaxPixelUniforms);
 #endif
   }
   // max texture size
   {
     GLint maxTexSize = 0;
-    if (ni::GetLang()->HasProperty("GL2.GL_MAX_TEXTURE_SIZE")) {
-      maxTexSize = ni::GetLang()->GetProperty("GL2.GL_MAX_TEXTURE_SIZE").Long();
+    if (ni::GetLang()->HasProperty("GL3.GL_MAX_TEXTURE_SIZE")) {
+      maxTexSize = ni::GetLang()->GetProperty("GL3.GL_MAX_TEXTURE_SIZE").Long();
     }
     if (maxTexSize < 4) {
-      maxTexSize = kGL2_MaxRegularTexSize;
+      maxTexSize = kGL3_MaxRegularTexSize;
       _glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxTexSize);
     }
-    if (ni::GetLang()->HasProperty("GL2.MaxRegularTexSize")) {
-      kGL2_MaxRegularTexSize = ni::GetLang()->GetProperty("GL2.MaxRegularTexSize").Long();
+    if (ni::GetLang()->HasProperty("GL3.MaxRegularTexSize")) {
+      kGL3_MaxRegularTexSize = ni::GetLang()->GetProperty("GL3.MaxRegularTexSize").Long();
     }
     else {
-      kGL2_MaxRegularTexSize = ni::Min(maxTexSize,kGL2_MaxRegularTexSize);
+      kGL3_MaxRegularTexSize = ni::Min(maxTexSize,kGL3_MaxRegularTexSize);
     }
-    if (ni::GetLang()->HasProperty("GL2.MaxOverlayTexSize")) {
-      kGL2_MaxOverlayTexSize = ni::GetLang()->GetProperty("GL2.MaxOverlayTexSize").Long();
-    }
-    else {
-      kGL2_MaxOverlayTexSize = ni::Min(maxTexSize,kGL2_MaxOverlayTexSize);
-    }
-    if (ni::GetLang()->HasProperty("GL2.MaxCubeTexSize")) {
-      kGL2_MaxCubeTexSize = ni::GetLang()->GetProperty("GL2.MaxCubeTexSize").Long();
+    if (ni::GetLang()->HasProperty("GL3.MaxOverlayTexSize")) {
+      kGL3_MaxOverlayTexSize = ni::GetLang()->GetProperty("GL3.MaxOverlayTexSize").Long();
     }
     else {
-      kGL2_MaxCubeTexSize = ni::Min(maxTexSize,kGL2_MaxCubeTexSize);
+      kGL3_MaxOverlayTexSize = ni::Min(maxTexSize,kGL3_MaxOverlayTexSize);
+    }
+    if (ni::GetLang()->HasProperty("GL3.MaxCubeTexSize")) {
+      kGL3_MaxCubeTexSize = ni::GetLang()->GetProperty("GL3.MaxCubeTexSize").Long();
+    }
+    else {
+      kGL3_MaxCubeTexSize = ni::Min(maxTexSize,kGL3_MaxCubeTexSize);
     }
   }
   // non power of 2 texture support
   {
-#ifdef __GLES2__
+#ifdef __GLES3__
     hasPartialNP2 = true;
 #else
     hasPartialNP2 = (strExt.contains("GL_ARB_texture_non_power_of_two") ||
@@ -631,7 +603,7 @@ static tBool GL2_InitializeExt() {
   }
   // has cube maps
   {
-#ifdef __GLES2__
+#ifdef __GLES3__
     hasCubeMap = true;
 #else
     hasCubeMap = !!(strExt.contains("GL_ARB_texture_cube_map") ||
@@ -673,8 +645,8 @@ static tBool GL2_InitializeExt() {
 #ifdef niEmbedded
     hasStandardDerivatives = strExt.contains("OES_standard_derivatives");
 #else
-    if (ni::GetLang()->HasProperty("GL2.hasStandardDerivatives")) {
-      hasStandardDerivatives = !!ni::GetLang()->GetProperty("GL2.hasStandardDerivatives").Bool(hasStandardDerivatives);
+    if (ni::GetLang()->HasProperty("GL3.hasStandardDerivatives")) {
+      hasStandardDerivatives = !!ni::GetLang()->GetProperty("GL3.hasStandardDerivatives").Bool(hasStandardDerivatives);
     }
     else {
       hasStandardDerivatives = true;
@@ -699,71 +671,71 @@ static tBool GL2_InitializeExt() {
     if (strExt.contains("EXT_texture_filter_anisotropic")) {
       _glGetIntegerv(GLEXT_MAX_TEXTURE_MAX_ANISOTROPY,&maxAnisotropic);
       if (maxAnisotropic > 1) {
-        if (ni::GetLang()->HasProperty("GL2.samplerFilterAnisotropy")) {
-          knGLSamplerFilterAnisotropy = ni::GetLang()->GetProperty("GL2.samplerFilterAnisotropy").Long();
+        if (ni::GetLang()->HasProperty("GL3.samplerFilterAnisotropy")) {
+          knGLSamplerFilterAnisotropy = ni::GetLang()->GetProperty("GL3.samplerFilterAnisotropy").Long();
         }
       }
     }
     knGLSamplerFilterAnisotropy = ni::Min(knGLSamplerFilterAnisotropy, maxAnisotropic);
   }
 
-  if (ni::GetLang()->HasProperty("GL2.hasContextLost")) {
-    hasContextLost = !!ni::GetLang()->GetProperty("GL2.hasContextLost").Bool(hasContextLost);
+  if (ni::GetLang()->HasProperty("GL3.hasContextLost")) {
+    hasContextLost = !!ni::GetLang()->GetProperty("GL3.hasContextLost").Bool(hasContextLost);
   }
 
   if (_printedInfos) {
 #if GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_SYSTEM_MEMORY
-    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: SYSTEM_MEMORY"));
+    niDebugFmt(("GL3 GL_DYNAMIC_BUFFER_MODE: SYSTEM_MEMORY"));
 #elif GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_ORPHANING
-    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: ORPHANING"));
+    niDebugFmt(("GL3 GL_DYNAMIC_BUFFER_MODE: ORPHANING"));
 #elif GL_DYNAMIC_BUFFER_MODE == GL_DYNAMIC_BUFFER_MODE_NONE
-    niDebugFmt(("GL2 GL_DYNAMIC_BUFFER_MODE: NONE"));
+    niDebugFmt(("GL3 GL_DYNAMIC_BUFFER_MODE: NONE"));
 #else
     #error "No GL_DYNAMIC_BUFFER_MODE defined."
 #endif
 
-    niDebugFmt(("GL2 hasContextLost: %d",hasContextLost));
-    niDebugFmt(("GL2 hasPartialNP2: %d",hasPartialNP2));
-    niDebugFmt(("GL2 hasCubeMap: %d",hasCubeMap));
-    niDebugFmt(("GL2 hasElementUInt: %d",hasElementUInt));
-    niDebugFmt(("GL2 hasTexFmtHalfFloat: %d",hasTexFmtHalfFloat));
-    niDebugFmt(("GL2 hasTexFmtFloat: %d",hasTexFmtFloat));
-    niDebugFmt(("GL2 hasTexFmtDepth: %d",hasTexFmtDepth));
+    niDebugFmt(("GL3 hasContextLost: %d",hasContextLost));
+    niDebugFmt(("GL3 hasPartialNP2: %d",hasPartialNP2));
+    niDebugFmt(("GL3 hasCubeMap: %d",hasCubeMap));
+    niDebugFmt(("GL3 hasElementUInt: %d",hasElementUInt));
+    niDebugFmt(("GL3 hasTexFmtHalfFloat: %d",hasTexFmtHalfFloat));
+    niDebugFmt(("GL3 hasTexFmtFloat: %d",hasTexFmtFloat));
+    niDebugFmt(("GL3 hasTexFmtDepth: %d",hasTexFmtDepth));
 #ifdef GL_TEXTURE_WRAP_R
-    niDebugFmt(("GL2 hasWrapR: %d",hasWrapR));
+    niDebugFmt(("GL3 hasWrapR: %d",hasWrapR));
 #else
-    niDebugFmt(("GL2 NO WarpR at compile time"));
+    niDebugFmt(("GL3 NO WarpR at compile time"));
 #endif
 #ifdef USE_GL_BIND_VAO
-    niDebugFmt(("GL2 hasBindVAO: %d",hasBindVAO));
+    niDebugFmt(("GL3 hasBindVAO: %d",hasBindVAO));
 #else
-    niDebugFmt(("GL2 NO VAO at compile time"));
+    niDebugFmt(("GL3 NO VAO at compile time"));
 #endif
 #ifdef USE_GL_BIND_SAMPLER
-    niDebugFmt(("GL2 hasBindSampler: %d",hasBindSampler));
+    niDebugFmt(("GL3 hasBindSampler: %d",hasBindSampler));
 #else
-    niDebugFmt(("GL2 NO Sampler at compile time"));
+    niDebugFmt(("GL3 NO Sampler at compile time"));
 #endif
 #ifdef USE_FBO
-    niDebugFmt(("GL2 hasFBO: %d",hasFBO));
+    niDebugFmt(("GL3 hasFBO: %d",hasFBO));
 #else
-    niDebugFmt(("GL2 NO FBO at compile time"));
+    niDebugFmt(("GL3 NO FBO at compile time"));
 #endif
 #ifdef USE_OQ
-    niDebugFmt(("GL2 hasOQ: %d",hasOQ));
+    niDebugFmt(("GL3 hasOQ: %d",hasOQ));
 #else
-    niDebugFmt(("GL2 NO OQ at compile time"));
+    niDebugFmt(("GL3 NO OQ at compile time"));
 #endif
-    niDebugFmt(("GL2 hasStandardDerivatives: %d",hasStandardDerivatives));
-    niDebugFmt(("GL2 hasTextureLod: %d",hasTextureLod));
-    niDebugFmt(("GL2 samplerFilterAnisotropy: %d",knGLSamplerFilterAnisotropy));
-    niDebugFmt(("GL_MAX_TEXTURE_SIZE (Regular): %d",kGL2_MaxRegularTexSize));
-    niDebugFmt(("GL_MAX_TEXTURE_SIZE (Overlay): %d",kGL2_MaxOverlayTexSize));
-    niDebugFmt(("GL_MAX_TEXTURE_SIZE (CubeMap): %d",kGL2_MaxCubeTexSize));
-    niDebugFmt(("GL_MAX_TEXTURE_UNITS: %d",kGL2_MaxTU));
-    niDebugFmt(("GL_MAX_VERTEX_ATTRIBS: %d",kGL2_MaxVertexAttrs));
-    niDebugFmt(("GL_MAX_VERTEX_UNIFORM_VECTORS: %d",kGL2_MaxVertexUniforms));
-    niDebugFmt(("GL_MAX_FRAGMENT_UNIFORM_VECTORS: %d",kGL2_MaxPixelUniforms));
+    niDebugFmt(("GL3 hasStandardDerivatives: %d",hasStandardDerivatives));
+    niDebugFmt(("GL3 hasTextureLod: %d",hasTextureLod));
+    niDebugFmt(("GL3 samplerFilterAnisotropy: %d",knGLSamplerFilterAnisotropy));
+    niDebugFmt(("GL_MAX_TEXTURE_SIZE (Regular): %d",kGL3_MaxRegularTexSize));
+    niDebugFmt(("GL_MAX_TEXTURE_SIZE (Overlay): %d",kGL3_MaxOverlayTexSize));
+    niDebugFmt(("GL_MAX_TEXTURE_SIZE (CubeMap): %d",kGL3_MaxCubeTexSize));
+    niDebugFmt(("GL_MAX_TEXTURE_UNITS: %d",kGL3_MaxTU));
+    niDebugFmt(("GL_MAX_VERTEX_ATTRIBS: %d",kGL3_MaxVertexAttrs));
+    niDebugFmt(("GL_MAX_VERTEX_UNIFORM_VECTORS: %d",kGL3_MaxVertexUniforms));
+    niDebugFmt(("GL_MAX_FRAGMENT_UNIFORM_VECTORS: %d",kGL3_MaxPixelUniforms));
   }
 
   if (!hasElementUInt) {
@@ -1074,7 +1046,7 @@ static void GL_ApplyRasterizerStates(sGLCache& aCache, const sRasterizerStatesDe
 //  Textures
 //
 //--------------------------------------------------------------------------------------------
-struct sGL2TextureFormat
+struct sOpenglTextureFormat
 {
   GLenum kind;
   GLint  type;
@@ -1083,7 +1055,7 @@ struct sGL2TextureFormat
   tTextureFlags flags;
   Ptr<iPixelFormat> pxf;
 
-  sGL2TextureFormat() {
+  sOpenglTextureFormat() {
     flags = 0;
     kind = 0;
     type = -1;
@@ -1422,14 +1394,14 @@ struct sGL2TextureFormat
 };
 
 ///////////////////////////////////////////////
-struct sGL2TextureBase : public ImplRC<iGLTexture,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iTexture,iDeviceResource> {
+struct sOpenglTextureBase : public ImplRC<iGLTexture,eImplFlags_DontInherit1|eImplFlags_DontInherit2,iTexture,iDeviceResource> {
   iGraphicsDriver*  mpDriver;
   tHStringPtr       mhspName;
-  sGL2TextureFormat mFormat;
+  sOpenglTextureFormat mFormat;
   GLuint            mGLHandle;
   tIntPtr           mhLastSamplerStateSet;
 
-  sGL2TextureBase() {
+  sOpenglTextureBase() {
     mhLastSamplerStateSet = 0;
   }
 
@@ -1439,7 +1411,7 @@ struct sGL2TextureBase : public ImplRC<iGLTexture,eImplFlags_DontInherit1|eImplF
 };
 
 ///////////////////////////////////////////////
-struct sGL2Texture : public sGL2TextureBase
+struct sOpenglTexture : public sOpenglTextureBase
 {
   tU32        mnWidth, mnHeight;
   tU32        mnNumMipMaps;
@@ -1455,7 +1427,7 @@ struct sGL2Texture : public sGL2TextureBase
 
  public:
   ///////////////////////////////////////////////
-  sGL2Texture(iGraphicsDriver* apDriver, iHString* ahspName, tTextureFlags aTextureFlags = 0)
+  sOpenglTexture(iGraphicsDriver* apDriver, iHString* ahspName, tTextureFlags aTextureFlags = 0)
   {
     ZeroMembers();
     mpDriver = apDriver;
@@ -1467,7 +1439,7 @@ struct sGL2Texture : public sGL2TextureBase
   }
 
   ///////////////////////////////////////////////
-  ~sGL2Texture() {
+  ~sOpenglTexture() {
     Invalidate();
   }
 
@@ -1585,7 +1557,7 @@ struct sGL2Texture : public sGL2TextureBase
     mGLFBOHandle = 0;
 #endif
   }
-  void _InitCubeFace(iGraphics* apGraphics, tIntPtr aGLHandle, const sGL2TextureFormat& aFmt, eBitmapCubeFace aFace, tU32 anW, tU32 anNumMipMaps) {
+  void _InitCubeFace(iGraphics* apGraphics, tIntPtr aGLHandle, const sOpenglTextureFormat& aFmt, eBitmapCubeFace aFace, tU32 anW, tU32 anNumMipMaps) {
     mnWidth = anW;
     mnHeight = anW;
     mnNumMipMaps = anNumMipMaps;
@@ -1758,7 +1730,7 @@ struct sGL2Texture : public sGL2TextureBase
         // If this texture is a RT/DS we make sure that the frame/renderbuffer
         // is initialized, this prevents garbage from being rendered if no one
         // draws in the RT.
-        sGLCache& cache = GLES2_GetCache(mpDriver);
+        sGLCache& cache = GLES3_GetCache(mpDriver);
         if ((mFormat.flags & eTextureFlags_RenderTarget) &&
             (mGLFBOHandle == GLDRV_INVALID_HANDLE))
         {
@@ -1788,7 +1760,7 @@ struct sGL2Texture : public sGL2TextureBase
       if (mGLFBOHandle == GLDRV_INVALID_HANDLE) {
         _glGetIntegerv(GL_FRAMEBUFFER_BINDING, reinterpret_cast<GLint*>(&mGLFBOHandle));
         fboMainRTHandle = mGLFBOHandle;
-        niLog(Info,niFmt("GL2 MainRT FBO: %d",mGLFBOHandle));
+        niLog(Info,niFmt("GL3 MainRT FBO: %d",mGLFBOHandle));
       }
 #endif
       // niAssert(mGLFBOHandle != GLDRV_INVALID_HANDLE);
@@ -1815,7 +1787,7 @@ struct sGL2Texture : public sGL2TextureBase
       // niDebugFmt(("glBindFramebuffer -> %s", mGLFBOHandle));
       _glBindFramebuffer(GL_FRAMEBUFFER, mGLFBOHandle);
       GLERR_RET(eFalse);
-      sGLCache& cache = GLES2_GetCache(mpDriver);
+      sGLCache& cache = GLES3_GetCache(mpDriver);
       cache._renderTargetFBO = mGLFBOHandle;
 
       if (bNewHandle) {
@@ -1826,7 +1798,7 @@ struct sGL2Texture : public sGL2TextureBase
         _glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mGLHandle, 0);
         GLERR_RET(eFalse);
         // Clear RT to black
-        GLES2_DoClear(mpDriver, eClearBuffersFlags_Color, 0, 1.0f, 0);
+        GLES3_DoClear(mpDriver, eClearBuffersFlags_Color, 0, 1.0f, 0);
       }
     }
 
@@ -1840,7 +1812,7 @@ struct sGL2Texture : public sGL2TextureBase
       if (mGLFBOHandle == GLDRV_INVALID_HANDLE) {
         _glGetIntegerv(GL_RENDERBUFFER_BINDING, reinterpret_cast<GLint*>(&mGLFBOHandle));
         fboMainDSHandle = mGLFBOHandle;
-        niLog(Info,niFmt("GL2 MainDS FBO: %d",mGLFBOHandle));
+        niLog(Info,niFmt("GL3 MainDS FBO: %d",mGLFBOHandle));
       }
 #endif
       niAssert(mGLFBOHandle != eInvalidHandle);
@@ -1864,7 +1836,7 @@ struct sGL2Texture : public sGL2TextureBase
 
       _glBindRenderbuffer(GL_RENDERBUFFER, mGLFBOHandle);
       GLERR_RET(eFalse);
-      sGLCache& cache = GLES2_GetCache(mpDriver);
+      sGLCache& cache = GLES3_GetCache(mpDriver);
       cache._depthStencilFBO = mGLFBOHandle;
 
       if (bNewHandle) {
@@ -1875,7 +1847,7 @@ struct sGL2Texture : public sGL2TextureBase
       GLERR_RET(eFalse);
 
       if (bNewHandle) {
-        GLES2_DoClear(mpDriver, eClearBuffersFlags_Depth, 0, 1.0f, 0);
+        GLES3_DoClear(mpDriver, eClearBuffersFlags_Depth, 0, 1.0f, 0);
       }
     }
 
@@ -1966,7 +1938,7 @@ struct sGL2Texture : public sGL2TextureBase
           if (!_UploadBoundTextureLevel(i, mFormat, apBmp ? apBmp->GetLevel(mnNumMipMaps) : NULL, w, h, i)) {
             return eFalse;
           }
-          // GL_DEBUG_LOG(("GL2 Uploaded Dummy Mipmap '%d' to VidMem (%d)",i,++_kNumGL2TexUpload));
+          // GL_DEBUG_LOG(("GL3 Uploaded Dummy Mipmap '%d' to VidMem (%d)",i,++_kNumGL3TexUpload));
           if (w > 1) w >>= 1;
           if (h > 1) h >>= 1;
         }
@@ -1980,7 +1952,7 @@ struct sGL2Texture : public sGL2TextureBase
   ///////////////////////////////////////////////
   tBool _UploadBoundTextureLevel(
       const tU32 anLevel,
-      const sGL2TextureFormat& aFormat,
+      const sOpenglTextureFormat& aFormat,
       const iBitmap2D* apBmpLevel,
       const tU32 anW, const tU32 anH,
       const tU32 anMipmap)
@@ -2031,15 +2003,15 @@ struct sGL2Texture : public sGL2TextureBase
 };
 
 ///////////////////////////////////////////////
-struct sGL2TextureCube : public sGL2TextureBase
+struct sOpenglTextureCube : public sOpenglTextureBase
 {
   tU32              mnWidth;
   tU32              mnNumMipMaps;
-  Ptr<sGL2Texture>  mFaces[6];
+  Ptr<sOpenglTexture>  mFaces[6];
 
  public:
   ///////////////////////////////////////////////
-  sGL2TextureCube(iGraphicsDriver* apDriver, iHString* ahspName)
+  sOpenglTextureCube(iGraphicsDriver* apDriver, iHString* ahspName)
   {
     ZeroMembers();
     mpDriver = apDriver;
@@ -2048,7 +2020,7 @@ struct sGL2TextureCube : public sGL2TextureBase
   }
 
   ///////////////////////////////////////////////
-  ~sGL2TextureCube() {
+  ~sOpenglTextureCube() {
     Invalidate();
   }
 
@@ -2111,7 +2083,7 @@ struct sGL2TextureCube : public sGL2TextureBase
           GL_TEXTURE_CUBE_MAP,mnNumMipMaps,IsPow2(mnWidth));
 
       niLoop(i,6) {
-        sGL2Texture* pFace = mFaces[i];
+        sOpenglTexture* pFace = mFaces[i];
         if (pFace && pFace->mbRestore) {
           pFace->mGLHandle = mGLHandle;
           pFace->_UploadBoundTexture2D(pFace->mptrBmpRestore);
@@ -2189,7 +2161,7 @@ struct sGL2TextureCube : public sGL2TextureBase
     _CreateCubeTextureHandle();
 
     niLoop(i,6) {
-      mFaces[i] = niNew sGL2Texture(mpDriver,NULL,eTextureFlags_SubTexture);
+      mFaces[i] = niNew sOpenglTexture(mpDriver,NULL,eTextureFlags_SubTexture);
       mFaces[i]->_InitCubeFace(apGraphics,mGLHandle,mFormat,(eBitmapCubeFace)i,mnWidth,mnNumMipMaps);
       if (!mFaces[i]->_BindAsTexture()) {
         niError(niFmt(_A("CubeTexture [%s] %d: Can't bind face %d."),
@@ -2215,20 +2187,20 @@ struct sGL2TextureCube : public sGL2TextureBase
 #ifdef USE_OQ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// cGL2OcclusionQuery declaration.
-class cGL2OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
+// cGL3OcclusionQuery declaration.
+class cGL3OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
 {
-  niBeginClass(cGL2OcclusionQuery);
+  niBeginClass(cGL3OcclusionQuery);
 
  public:
   //! Constructor.
-  cGL2OcclusionQuery() {
+  cGL3OcclusionQuery() {
     ZeroMembers();
     GLDRV_GEN_HANDLE(mGLHandle, _glGenQueries);
     GLERR_RET(;);
   }
   //! Destructor.
-  ~cGL2OcclusionQuery() {
+  ~cGL3OcclusionQuery() {
     Invalidate();
   }
 
@@ -2241,7 +2213,7 @@ class cGL2OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
 
   //! Sanity check.
   ni::tBool __stdcall IsOK() const {
-    niClassIsOK(cGL2OcclusionQuery);
+    niClassIsOK(cGL3OcclusionQuery);
     return mGLHandle != GLDRV_INVALID_HANDLE;
   }
 
@@ -2310,7 +2282,7 @@ class cGL2OcclusionQuery : public ni::ImplRC<ni::iOcclusionQuery>
 
   ///////////////////////////////////////////////
   tU32 __stdcall GetResult() const {
-    if (niThis(cGL2OcclusionQuery)->GetStatus(eFalse) != eOcclusionQueryStatus_Successful)
+    if (niThis(cGL3OcclusionQuery)->GetStatus(eFalse) != eOcclusionQueryStatus_Successful)
       return eInvalidHandle;
     return mnResult;
   }
@@ -2319,7 +2291,7 @@ private:
   GLuint                  mGLHandle;
   eOcclusionQueryStatus   mStatus;
   tU32                    mnResult;
-  niEndClass(cGL2OcclusionQuery);
+  niEndClass(cGL3OcclusionQuery);
 };
 
 #endif
@@ -2498,7 +2470,7 @@ struct sGLBufferImpl : public TDATA {
   iDeviceResource* __stdcall Bind(iUnknown*) niImpl {
     const GLenum bufferTarget = this->GetBufferTarget();
     if (mbRestore) {
-      GL2_TRACE_BUFFER((">>> Restoring GLBuffer: target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
+      GL3_TRACE_BUFFER((">>> Restoring GLBuffer: target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
                   (tU32)bufferTarget,
                   niEnumToChars(eArrayUsage, mUsage),
                   this->GetBufferElSize(),
@@ -2561,7 +2533,7 @@ struct sGLVertexArray : public sGLBufferImpl<sGLVertexArrayData> {
     mVertices.resize(mFVF.GetStride()*anNumVertices);
     ni::MemZero((tPtr)mVertices.data(),mVertices.size());
 
-    GL2_TRACE_BUFFER((">>> Created VertexArray GLBuffer: %p, target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
+    GL3_TRACE_BUFFER((">>> Created VertexArray GLBuffer: %p, target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
                 (tIntPtr)this,
                 (tU32)this->GetBufferTarget(),
                 niEnumToChars(eArrayUsage, mUsage),
@@ -2595,7 +2567,7 @@ struct sGLIndexArray32 : public sGLBufferImpl<sGLIndexArray32Data> {
     mIndices.resize(anNumIndices);
     ni::MemZero((tPtr)mIndices.data(),mIndices.size() * sizeof(*mIndices.begin()));
 
-    GL2_TRACE_BUFFER((">>> Created IndexArray32 GLBuffer: %p, target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
+    GL3_TRACE_BUFFER((">>> Created IndexArray32 GLBuffer: %p, target: %d, usage: %s, elSize: %d, elCount: %d, dataSize: %db (%gMB).",
                 (tIntPtr)this,
                 (tU32)this->GetBufferTarget(),
                 niEnumToChars(eArrayUsage, mUsage),
@@ -2628,9 +2600,9 @@ struct sGLIndexArray32 : public sGLBufferImpl<sGLIndexArray32Data> {
 // Graphics Context
 //
 //--------------------------------------------------------------------------------------------
-class cGL2ContextWindow : public sGLContext
+class cGL3ContextWindow : public sGLContext
 {
-  niBeginClass(cGL2ContextWindow);
+  niBeginClass(cGL3ContextWindow);
 
  public:
   iGraphicsDriver* mpDrv;
@@ -2642,7 +2614,7 @@ class cGL2ContextWindow : public sGLContext
   tsglContext* mpTSGLContext;
 #endif
 
-  cGL2ContextWindow(
+  cGL3ContextWindow(
       iGraphicsDriver* apParent,
       iOSWindow* apWindow,
       const achar* aaszBBPxf,
@@ -2683,7 +2655,7 @@ class cGL2ContextWindow : public sGLContext
       return;
     }
   }
-  ~cGL2ContextWindow() {
+  ~cGL3ContextWindow() {
     Invalidate();
   }
 
@@ -2712,8 +2684,8 @@ class cGL2ContextWindow : public sGLContext
 #endif
         )
     {
-      GLES2_ResetContextDeviceResources(mpDrv);
-      GLES2_ResetCache(mpDrv);
+      GLES3_ResetContextDeviceResources(mpDrv);
+      GLES3_ResetCache(mpDrv);
     }
 
     const tU32 w = mptrWindow->GetClientSize().x;
@@ -2743,7 +2715,7 @@ class cGL2ContextWindow : public sGLContext
 #endif
 
       // Initialize extensions
-      if (!GL2_InitializeExt()) {
+      if (!GL3_InitializeExt()) {
         niError("Can't initialize OpenGL extensions.");
         return eFalse;
       }
@@ -2751,30 +2723,30 @@ class cGL2ContextWindow : public sGLContext
       // Initialize main RT
       {
         if (!mptrRT[0].IsOK()) {
-          mptrRT[0] = niNew sGL2Texture(mpDrv,_H("GLES2_MainRT"));
+          mptrRT[0] = niNew sOpenglTexture(mpDrv,_H("GLES3_MainRT"));
         }
-        sGL2Texture* pGLTex = (sGL2Texture*)mptrRT[0].ptr();
+        sOpenglTexture* pGLTex = (sOpenglTexture*)mptrRT[0].ptr();
         pGLTex->_InitMainRT(mptrBBPxf,w,h);
       }
 
       // Initialize main DS
       {
         if (!mptrDS.IsOK()) {
-          mptrDS = niNew sGL2Texture(mpDrv,_H("GLES2_MainDS"));
+          mptrDS = niNew sOpenglTexture(mpDrv,_H("GLES3_MainDS"));
         }
-        sGL2Texture* pGLTex = (sGL2Texture*)mptrDS.ptr();
+        sOpenglTexture* pGLTex = (sOpenglTexture*)mptrDS.ptr();
         pGLTex->_InitMainDS(mptrDSPxf,w,h);
       }
     }
     else {
       // Resize-only stuff
       {
-        sGL2Texture* pGLTex = (sGL2Texture*)mptrRT[0].ptr();
+        sOpenglTexture* pGLTex = (sOpenglTexture*)mptrRT[0].ptr();
         pGLTex->mnWidth = w;
         pGLTex->mnHeight = h;
       }
       {
-        sGL2Texture* pGLTex = (sGL2Texture*)mptrDS.ptr();
+        sOpenglTexture* pGLTex = (sOpenglTexture*)mptrDS.ptr();
         pGLTex->mnWidth = w;
         pGLTex->mnHeight = h;
       }
@@ -2784,9 +2756,10 @@ class cGL2ContextWindow : public sGLContext
     mrectViewport = mrectScissor;
 
     mEncoder->_renderingInfo._rtSize = mrectScissor.GetSize();
+    mEncoder->_renderingInfo._rtFlipped = niFlagIs(mptrRT[0]->GetFlags(),eTextureFlags_RTFlipped);
     mEncoder->_renderingInfo._viewport = mrectScissor;
 
-    niDebugFmt((_A("GLES2 Context - Resized [%p]: %dx%d, BB: %s, DS: %s, AA: %s, VP: %s, SC: %s"),
+    niDebugFmt((_A("GLES3 Context - Resized [%p]: %dx%d, BB: %s, DS: %s, AA: %s, VP: %s, SC: %s"),
                 (tIntPtr)this,
                 w,h,
                 mptrBBPxf->GetFormat(),
@@ -2796,7 +2769,7 @@ class cGL2ContextWindow : public sGLContext
                 this->GetScissorRect()));
 
     if (hasContextLost) {
-      GLES2_InitContextDeviceResources(mpDrv);
+      GLES3_InitContextDeviceResources(mpDrv);
     }
     return eTrue;
   }
@@ -2819,7 +2792,7 @@ class cGL2ContextWindow : public sGLContext
 
   virtual void __stdcall Invalidate() {
     if (mpDrv) {
-      GLES2_ResetContextDeviceResources(mpDrv);
+      GLES3_ResetContextDeviceResources(mpDrv);
       _DestroyContext();
       mpDrv = NULL;
     }
@@ -2837,7 +2810,7 @@ class cGL2ContextWindow : public sGLContext
     niCheck(_beganFrame,eFalse);
     _beganFrame = eFalse;
 
-    GLES2_SwapBuffers(mpDrv,this,niFlagIs(aFlags,eGraphicsDisplayFlags_DoNotWait));
+    GLES3_SwapBuffers(mpDrv,this,niFlagIs(aFlags,eGraphicsDisplayFlags_DoNotWait));
     ++mnSyncCounter; // Make sure the Viewport and scissor will be set next frame
 
 
@@ -2887,25 +2860,25 @@ class cGL2ContextWindow : public sGLContext
 
   /////////////////////////////////////////////
   // virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
-    // GLES2_ClearBuffers(mpDrv,this,clearBuffer,anColor,afDepth,anStencil);
+    // GLES3_ClearBuffers(mpDrv,this,clearBuffer,anColor,afDepth,anStencil);
   // }
 
   /////////////////////////////////////////////
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
-    return GLES2_DrawOperation(mpDrv,this,apDrawOp,this->GetNumAASamples());
+    return GLES3_DrawOperation(mpDrv,this,apDrawOp,this->GetNumAASamples());
   }
 
-  niEndClass(cGL2ContextWindow);
+  niEndClass(cGL3ContextWindow);
 };
 
-class cGL2ContextRT : public sGLContext
+class cGL3ContextRT : public sGLContext
 {
-  niBeginClass(cGL2ContextRT);
+  niBeginClass(cGL3ContextRT);
 
  public:
   iGraphicsDriver* mpDrv;
 
-  cGL2ContextRT(
+  cGL3ContextRT(
       iGraphicsDriver* apParent,
       iTexture* apRT,
       iTexture* apDS,
@@ -2922,9 +2895,11 @@ class cGL2ContextRT : public sGLContext
     niDebugFmt(("Create Context RT %s", mrectScissor));
 
     mEncoder->_renderingInfo._rtSize = mrectScissor.GetSize();
+    mEncoder->_renderingInfo._rtFlipped = niFlagIs(mptrRT[0]->GetFlags(),eTextureFlags_RTFlipped);
     mEncoder->_renderingInfo._viewport = mrectScissor;
+
   }
-  ~cGL2ContextRT() {
+  ~cGL3ContextRT() {
     Invalidate();
   }
 
@@ -2964,19 +2939,19 @@ class cGL2ContextRT : public sGLContext
 
   /////////////////////////////////////////////
   // virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
-    // GLES2_ClearBuffers(mpDrv,this,clearBuffer,anColor,afDepth,anStencil);
+    // GLES3_ClearBuffers(mpDrv,this,clearBuffer,anColor,afDepth,anStencil);
   // }
 
   /////////////////////////////////////////////
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
-    return GLES2_DrawOperation(mpDrv,this,apDrawOp,this->GetNumAASamples());
+    return GLES3_DrawOperation(mpDrv,this,apDrawOp,this->GetNumAASamples());
   }
 
-  niEndClass(cGL2ContextRT);
+  niEndClass(cGL3ContextRT);
 };
 
 ///////////////////////////////////////////////
-static tBool GL2_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlippedRT)
+static tBool GL3_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlippedRT)
 {
   GL_DEBUG_MARKER_GROUP(ApplyContext);
 
@@ -2996,14 +2971,14 @@ static tBool GL2_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlip
         return eFalse;
       }
 
-      Ptr<sGL2Texture> pRT = (sGL2Texture*)apCtx->mptrRT[0]->Bind((iUnknown*)eInvalidHandle);
+      Ptr<sOpenglTexture> pRT = (sOpenglTexture*)apCtx->mptrRT[0]->Bind((iUnknown*)eInvalidHandle);
       if (!pRT->_BindAsRenderTarget()) {
         niError("Can't bind render target.");
         return eFalse;
       }
 
       if (apCtx->mptrDS.IsOK()) {
-        Ptr<sGL2Texture> pDS = (sGL2Texture*)apCtx->mptrDS->Bind((iUnknown*)eInvalidHandle);
+        Ptr<sOpenglTexture> pDS = (sOpenglTexture*)apCtx->mptrDS->Bind((iUnknown*)eInvalidHandle);
         if (!pDS->_BindAsDepthStencil()) {
           niError("Can't bind depth stencil.");
           return eFalse;
@@ -3057,7 +3032,7 @@ static tBool GL2_ApplyContext(sGLCache& aCache, sGLContext* apCtx, tBool& isFlip
 //--------------------------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-static tBool GL2_ApplyMaterialChannel(
+static tBool GL3_ApplyMaterialChannel(
     sGLContext* apContext,
     iGraphics* apGraphics,
     sGLCache& aCache,
@@ -3068,8 +3043,8 @@ static tBool GL2_ApplyMaterialChannel(
 
   const sMaterialChannel& ch = apContext->_GetChannel(apDOMat, aChannel);
 
-  sGL2TextureBase* tex = (sGL2TextureBase*)ch.mTexture.ptr();
-  tex = tex ? (sGL2TextureBase*)tex->Bind(NULL) : NULL;
+  sOpenglTextureBase* tex = (sOpenglTextureBase*)ch.mTexture.ptr();
+  tex = tex ? (sOpenglTextureBase*)tex->Bind(NULL) : NULL;
   if (tex) {
     const sSamplerStatesDesc* pSS = NULL;
     tIntPtr hSS = ch.mhSS;
@@ -3084,7 +3059,7 @@ static tBool GL2_ApplyMaterialChannel(
     tBool bShouldUpdate = tex->mhLastSamplerStateSet != hSS;
     if (bShouldUpdate) {
       tex->mhLastSamplerStateSet = hSS;
-      // niDebugFmt(("... GL2 Texture SetSamplerStates '%s': %p", tex->mhspName, hSS));
+      // niDebugFmt(("... GL3 Texture SetSamplerStates '%s': %p", tex->mhspName, hSS));
 
       {
         iSamplerStates* ss = apGraphics->GetCompiledSamplerStates(hSS);
@@ -3117,11 +3092,11 @@ static tBool GL2_ApplyMaterialChannel(
 
 //--------------------------------------------------------------------------------------------
 //
-// GLES2GraphicsDriver
+// GLES3GraphicsDriver
 //
 //--------------------------------------------------------------------------------------------
-const achar* GL2Drv_GetName() { return _A("GL2"); }
-const achar* GL2Drv_GetDesc() { return _A("GL2 Graphics Driver"); }
+const achar* GL3Drv_GetName() { return _A("GL3"); }
+const achar* GL3Drv_GetDesc() { return _A("GL3 Graphics Driver"); }
 
 struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu>
 {
@@ -3156,8 +3131,8 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   /////////////////////////////////////////////
-  virtual const achar* __stdcall GetName() const { return GL2Drv_GetName(); }
-  virtual const achar* __stdcall GetDesc() const { return GL2Drv_GetDesc(); }
+  virtual const achar* __stdcall GetName() const { return GL3Drv_GetName(); }
+  virtual const achar* __stdcall GetDesc() const { return GL3Drv_GetDesc(); }
   virtual const achar* __stdcall GetDeviceName() const {
     return _A("Default");
   }
@@ -3171,7 +3146,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   {
     niCheckIsOK(apWindow,NULL);
 
-    Ptr<iGraphicsContext> ctx = niNew cGL2ContextWindow(
+    Ptr<iGraphicsContext> ctx = niNew cGL3ContextWindow(
         this,
         apWindow,
         aaszBBFormat,aaszDSFormat,
@@ -3192,7 +3167,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   {
     niCheckIsOK(apRT0,NULL);
 
-    Ptr<iGraphicsContextRT> ctx = niNew cGL2ContextRT(
+    Ptr<iGraphicsContextRT> ctx = niNew cGL3ContextRT(
       this,
       apRT0, apDS,
       NULL);
@@ -3207,7 +3182,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   /////////////////////////////////////////////
   virtual tBool __stdcall ResetAllCaches() {
-    GLES2_ResetCache(this);
+    GLES3_ResetCache(this);
     return eTrue;
   }
 
@@ -3228,11 +3203,11 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       case eGraphicsCaps_DepthStencilTexture:
         return hasTexFmtDepth;
       case eGraphicsCaps_NumTextureUnits:
-        return kGL2_MaxTU;
+        return kGL3_MaxTU;
       case eGraphicsCaps_Texture2DMaxSize:
-        return kGL2_MaxRegularTexSize;
+        return kGL3_MaxRegularTexSize;
       case eGraphicsCaps_TextureCubeMaxSize:
-        return kGL2_MaxCubeTexSize;
+        return kGL3_MaxCubeTexSize;
       case eGraphicsCaps_Texture3DMaxSize:
         return 0;
       case eGraphicsCaps_MaxVertexIndex:
@@ -3287,7 +3262,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     if (!_CheckRenderTargetSupport(apFormat->GetType(), aFlags))
       return eFalse;
 
-    sGL2TextureFormat texFormat;
+    sOpenglTextureFormat texFormat;
 
     tU32 nWidth = apFormat->GetWidth();
     tU32 nHeight = apFormat->GetHeight();
@@ -3296,7 +3271,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       nHeight = GetNearestPow2(nHeight);
     }
     tU32 nMaxSize = niFlagIs(aFlags,eTextureFlags_Overlay) ?
-        kGL2_MaxOverlayTexSize : kGL2_MaxRegularTexSize;
+        kGL3_MaxOverlayTexSize : kGL3_MaxRegularTexSize;
 
     if (nWidth > nMaxSize) {
       nWidth = nMaxSize;
@@ -3352,7 +3327,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         }
 
         tU32 nMaxSize = niFlagIs(aFlags,eTextureFlags_Overlay) ?
-            kGL2_MaxOverlayTexSize : kGL2_MaxRegularTexSize;
+            kGL3_MaxOverlayTexSize : kGL3_MaxRegularTexSize;
 
         // Correct the texture size
         if (anWidth > nMaxSize) {
@@ -3376,7 +3351,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
                       niHStr(ahspName),
                       anWidth,anHeight,anNumMipMaps,aaszFormat,aFlags));
 
-      Ptr<sGL2Texture> newTex = niNew sGL2Texture(this,ahspName);
+      Ptr<sOpenglTexture> newTex = niNew sOpenglTexture(this,ahspName);
       niCheck(newTex.IsOK(),NULL);
 
       niCheck(
@@ -3405,8 +3380,8 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       {
         // Correct the texture size
         anWidth = GetNearestPow2(anWidth);
-        if (anWidth > (tU32)kGL2_MaxCubeTexSize) {
-          anWidth = kGL2_MaxCubeTexSize;
+        if (anWidth > (tU32)kGL3_MaxCubeTexSize) {
+          anWidth = kGL3_MaxCubeTexSize;
         }
         anNumMipMaps = ((anNumMipMaps == 0) && niFlagIs(aFlags,eTextureFlags_MipMaps)) ?
             ComputeNumPow2Levels(anWidth>>1,anHeight>>1) : anNumMipMaps;
@@ -3416,7 +3391,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
                       niHStr(ahspName),
                       anWidth,anNumMipMaps,aaszFormat,aFlags));
 
-      Ptr<sGL2TextureCube> newTex = niNew sGL2TextureCube(this,ahspName);
+      Ptr<sOpenglTextureCube> newTex = niNew sOpenglTextureCube(this,ahspName);
       niCheck(newTex.IsOK(),NULL);
 
       niCheck(
@@ -3442,7 +3417,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     niCheckSilent(niIsOK(apDest),eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_2D,eFalse);
 
-    sGL2Texture* tex = niStaticCast(sGL2Texture*,apDest);
+    sOpenglTexture* tex = niStaticCast(sOpenglTexture*,apDest);
     niCheck(tex->_BlitFromBitmap2D(apSrc,
                                    anDestLevel,
                                    aSrcRect,
@@ -3458,7 +3433,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     niCheckSilent(niIsOK(apDest),eFalse);
     niCheckSilent(apSrc->GetType() == eBitmapType_2D,eFalse);
 
-    sGL2Texture* src = niStaticCast(sGL2Texture*,apSrc);
+    sOpenglTexture* src = niStaticCast(sOpenglTexture*,apSrc);
     if (!src)
       return eFalse;
 
@@ -3617,9 +3592,9 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
     if (apSrc->GetFlags() & eTextureFlags_MainRT) {
       _glFlush();
-      GLES2_ResetCache(this);
-      sGL2Texture* src = niStaticCast(sGL2Texture*,apSrc);
-      sGL2Texture* dst = niStaticCast(sGL2Texture*,apDest);
+      GLES3_ResetCache(this);
+      sOpenglTexture* src = niStaticCast(sOpenglTexture*,apSrc);
+      sOpenglTexture* dst = niStaticCast(sOpenglTexture*,apDest);
       if (!src->_BindAsRenderTarget()) {
         niError("Can't bind the source texture as current render target.");
         return eFalse;
@@ -3641,11 +3616,11 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       GLERR_RET(eFalse);
     }
     else {
-      sGL2Texture* src = niStaticCast(sGL2Texture*,apSrc);
+      sOpenglTexture* src = niStaticCast(sOpenglTexture*,apSrc);
       if (!src || !src->mptrBmpRestore.IsOK())
         return eFalse;
 
-      sGL2Texture* tex = niStaticCast(sGL2Texture*,apDest);
+      sOpenglTexture* tex = niStaticCast(sOpenglTexture*,apDest);
       niCheck(
           tex->_BlitFromBitmap2D(src->mptrBmpRestore, anDestLevel, aSrcRect, aDestRect, aFlags),
           eFalse);
@@ -3749,7 +3724,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   virtual iOcclusionQuery* __stdcall CreateOcclusionQuery() {
 #ifdef USE_OQ
     if (hasOQ)
-      return niNew cGL2OcclusionQuery();
+      return niNew cGL3OcclusionQuery();
 #endif
     return NULL;
   }
@@ -3879,7 +3854,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
 #if !defined DISABLE_ALL_VAA_AFTER_DRAWOP
         // Disable the unused attributes, otherwise some drivers will crash nicely...
-        niLoop(i,kGL2_MaxVertexAttrs) {
+        niLoop(i,kGL3_MaxVertexAttrs) {
           const tU32 bitValue = niBit(i);
           if (
                   (_prevEnabledVertexAttributes&bitValue) // if it was set
@@ -3944,7 +3919,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 #ifdef DISABLE_ALL_VAA_AFTER_DRAWOP
     // We *have* to make sure to disable all the VAO used... (otherwise crash...)
     // TODO: Use the MojoShader lib to manage this even for the fixed shaders
-    niLoop(i,kGL2_MaxVertexAttrs) {
+    niLoop(i,kGL3_MaxVertexAttrs) {
       GLCALL_WARN(_glDisableVertexAttribArray(i));
     }
 #endif
@@ -4007,7 +3982,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
 
       tBool isFlippedRT;
-      if (!GL2_ApplyContext(mCache,apContext,isFlippedRT)) {
+      if (!GL3_ApplyContext(mCache,apContext,isFlippedRT)) {
         niError(_A("Can't apply context."));
         return eFalse;
       }
@@ -4162,7 +4137,7 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   void _ResetContextDeviceResources() {
-#ifndef __GLES2__
+#ifndef __GLES3__
     if (_glUseProgram)
 #endif
     {
@@ -4170,12 +4145,12 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       _glUseProgram(0);
     }
 
-#ifndef __GLES2__
+#ifndef __GLES3__
     if (_glActiveTexture)
 #endif
     {
       // Disable all texture units
-      for (tI32 i = kGL2_MaxTU-1; i >= 0; --i) {
+      for (tI32 i = kGL3_MaxTU-1; i >= 0; --i) {
 #if defined USE_GL_UNBIND_TEXTURES
         _glActiveTexture(GL_TEXTURE0+i);
         _glBindTexture(GL_TEXTURE_2D,0);
@@ -4220,12 +4195,12 @@ struct sOpenGLDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     }
   }
   void _InitContextDeviceResources() {
-#ifndef __GLES2__
+#ifndef __GLES3__
     if (!_glActiveTexture)
       return;
 #endif
     // Disable all texture units
-    for (tI32 i = kGL2_MaxTU-1; i >= 0; --i) {
+    for (tI32 i = kGL3_MaxTU-1; i >= 0; --i) {
 #if defined USE_GL_UNBIND_TEXTURES
       _glActiveTexture(GL_TEXTURE0+i);
       _glBindTexture(GL_TEXTURE_2D,0);
@@ -4554,7 +4529,6 @@ struct sOpenGLRasterPipeline :
   {}
 
   ~sOpenGLRasterPipeline() {
-    niDebugFmt(("~sOpenGLRasterPipeline"));
     _DestroyPipeline();
   }
 
@@ -4566,12 +4540,6 @@ struct sOpenGLRasterPipeline :
   }
   virtual tBool __stdcall ResetDeviceResource() niImpl {
     return eTrue;
-  }
-
-  void _UpdateUniform(tU32 binding) {
-    // GLuint vs = _desc->GetFunction(eGpuFunctionType_Vertex)->GetFunctionId();
-    // GLuint uboIndex = glGetUniformBlockIndex(_programID, "TestGpuFuncs_TestUniforms");    // Bind the uniform block to a binding point
-    // glUniformBlockBinding(_programID, uboIndex, binding); // Binding point 0
   }
 
   void _UpdateVAO(tU32 offset) {
@@ -4607,6 +4575,10 @@ struct sOpenGLRasterPipeline :
   virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
     niCheck(_programID != GLDRV_INVALID_HANDLE, NULL);
     glUseProgram(_programID);
+
+    // GL_ApplyDepthStencilStates(_driver->mCache)
+
+    // _desc->GetDepthFormat()
 
 #if 0
     // Set up vertex attributes
@@ -4763,7 +4735,7 @@ static Ptr<sOpenGLRasterPipeline> __stdcall CreateOpenGLRasterPipeline(
 struct sOpenGLEncoderFrameData : public ImplRC<iUnknown> {
   ThreadEvent _eventFrameCompleted = ThreadEvent(eFalse);
   astl::vector<Ptr<sOpenGLBuffer>> _trackedBuffers;
-  astl::vector<Ptr<sGL2Texture>> _trackedTextures;
+  astl::vector<Ptr<sOpenglTexture>> _trackedTextures;
   astl::vector<Ptr<sOpenGLRasterPipeline>> _trackedPipelines;
   Ptr<iGpuStream> _stream;
   tBool _inFrame = eFalse;
@@ -4792,8 +4764,8 @@ struct sOpenGLEncoderFrameData : public ImplRC<iUnknown> {
     return buffer;
   }
 
-  niInline sGL2Texture* BindTexture(iTexture* apTexture) {
-    sGL2Texture* texture = (sGL2Texture*)apTexture->Bind(NULL); // Note: Bind() is a noop so we don't call it
+  niInline sOpenglTexture* BindTexture(iTexture* apTexture) {
+    sOpenglTexture* texture = (sOpenglTexture*)apTexture->Bind(NULL); // Note: Bind() is a noop so we don't call it
     _trackedTextures.push_back(texture);
     return texture;
   }
@@ -4875,10 +4847,9 @@ tBool sOpenGLCommandEncoder::_CreateCommandBuffer() {
 tBool sOpenGLCommandEncoder::_BeginCmdBuffer() {
   niCheck(_beganCmdBuffer == eFalse, eFalse);
   // niDebugAssert(_fbo != 0);
-  if (!_fbo) {
+  // if (!_fbo) {
     // glGenFramebuffers(1, &_fbo);
-  }
-
+  // }
 
   _beganCmdBuffer = eTrue;
   _cache = sCache {};
@@ -4949,6 +4920,33 @@ tBool sOpenGLCommandEncoder::_BindGpuFunction() {
   return eTrue;
 }
 
+tBool sOpenGLCommandEncoder::_BegainDraw() {
+
+      // Depth stencil states
+      {
+        tIntPtr hDS = apContext->_GetDS(pMatDesc);
+        if (!hDS) {
+          hDS = eCompiledStates_DS_NoDepthTest;
+        }
+        tBool bShouldUpdate = eFalse;
+        mCache.ShouldUpdate(&bShouldUpdate,eGLCache_DepthStencil,hDS);
+        if (bShouldUpdate)
+        {
+          iDepthStencilStates* pDSStates = mpGraphics->GetCompiledDepthStencilStates(hDS);
+          niCheck(pDSStates,eFalse);
+          GL_ApplyDepthStencilStates(
+              this->mCache,
+              *(const sDepthStencilStatesDesc*)pDSStates->GetDescStructPtr());
+        }
+      }
+
+  return eTrue;
+}
+
+tBool sOpenGLCommandEncoder::_EndDraw() {
+  return eTrue;
+}
+
 void __stdcall sOpenGLCommandEncoder::SetPipeline(iGpuPipeline* apPipeline) {
   niCheck(apPipeline != nullptr, ;);
   if ((tIntPtr)_cache._lastPipeline.raw_ptr() == (tIntPtr)apPipeline)
@@ -4962,9 +4960,6 @@ void __stdcall sOpenGLCommandEncoder::_SetFixedPipeline(iGpuPipeline* apPipeline
 
 void __stdcall sOpenGLCommandEncoder::SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) {
   niCheck(apBuffer != nullptr, ;);
-  // if ((tIntPtr)_cache._lastBuffer.raw_ptr() == (tIntPtr)apBuffer) return;
-
-  // niDebugFmt(("SetVertexBuffer %s %s", anOffset));
   sOpenGLBuffer* buffer = _GetCurrentFrame()->BindBuffer(apBuffer);
   _cache._lastPipeline->_UpdateVAO(anOffset);
 }
@@ -4972,8 +4967,6 @@ void __stdcall sOpenGLCommandEncoder::SetVertexBuffer(iGpuBuffer* apBuffer, tU32
 void __stdcall sOpenGLCommandEncoder::SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, eGpuIndexType aIndexType) {
   niCheck(apBuffer != nullptr, ;);
   sOpenGLBuffer* indexBuffer = _GetCurrentFrame()->BindBuffer(apBuffer);
-  // niDebugFmt(("SetIndexBuffer"));
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->_glBuffer);
 }
 
 void __stdcall sOpenGLCommandEncoder::SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) {
@@ -4986,10 +4979,10 @@ void __stdcall sOpenGLCommandEncoder::SetTexture(iTexture* apTexture, tU32 anBin
   niCheck(anBinding < eMaterialChannel_Last, ;);
   // Create a default white texture if the input is null
   if (!apTexture) {
-    apTexture = (sGL2Texture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
+    apTexture = (sOpenglTexture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
   }
 
-  sGL2Texture* tex = _GetCurrentFrame()->BindTexture(apTexture);
+  sOpenglTexture* tex = _GetCurrentFrame()->BindTexture(apTexture);
   _cache._lastMaterial.mChannels[anBinding].mTexture = tex;
 }
 
@@ -4997,8 +4990,8 @@ void __stdcall sOpenGLCommandEncoder::SetSamplerState(tIntPtr ahSS, tU32 anBindi
   niCheck(anBinding < eMaterialChannel_Last, ;);
   _cache._lastMaterial.mChannels[anBinding].mhSS = ahSS;
 
-  sGL2TextureBase* tex = (sGL2TextureBase*)_cache._lastMaterial.mChannels[anBinding].mTexture.ptr();
-  tex = tex ? (sGL2TextureBase*)tex->Bind(NULL) : NULL;
+  sOpenglTextureBase* tex = (sOpenglTextureBase*)_cache._lastMaterial.mChannels[anBinding].mTexture.ptr();
+  tex = tex ? (sOpenglTextureBase*)tex->Bind(NULL) : NULL;
   if (tex) {
     const sSamplerStatesDesc* pSS = NULL;
     tIntPtr hSS = ahSS;
@@ -5013,7 +5006,7 @@ void __stdcall sOpenGLCommandEncoder::SetSamplerState(tIntPtr ahSS, tU32 anBindi
     tBool bShouldUpdate = tex->mhLastSamplerStateSet != hSS;
     if (bShouldUpdate) {
       tex->mhLastSamplerStateSet = hSS;
-      // niDebugFmt(("... GL2 Texture SetSamplerStates '%s': %p", tex->mhspName, hSS));
+      // niDebugFmt(("... GL3 Texture SetSamplerStates '%s': %p", tex->mhspName, hSS));
       {
         iSamplerStates* ss = _driver->GetGraphics()->GetCompiledSamplerStates(hSS);
         if (ss) {
@@ -5059,6 +5052,7 @@ void __stdcall sOpenGLCommandEncoder::SetPolygonOffset(const sVec2f& avOffset)  
 
 void __stdcall sOpenGLCommandEncoder::SetViewport(const sRecti& aRect)  {
   niLet rtSize = _renderingInfo._rtSize;
+  tBool isFlippedRT = _renderingInfo._rtFlipped;
   sRecti vp = aRect;
   if (vp.GetWidth() == 0) vp.SetWidth(rtSize.x);
   if (vp.GetHeight() == 0) vp.SetHeight(rtSize.y);
@@ -5066,9 +5060,8 @@ void __stdcall sOpenGLCommandEncoder::SetViewport(const sRecti& aRect)  {
   if ((vp.y+vp.GetHeight()) > rtSize.y) vp.SetHeight(vp.GetHeight() - ((vp.y+vp.GetHeight())-rtSize.y));
 
   _renderingInfo._viewport = vp;
-
-  const tU32 nVPY = rtSize.y -vp.y -vp.GetHeight();
-  _glViewport(vp.x, nVPY, vp.GetWidth(), vp.GetHeight());
+  const tU32 nSCY = isFlippedRT ? vp.y : rtSize.y - vp.y -vp.GetHeight();
+  _glViewport(vp.x, nSCY, vp.GetWidth(), vp.GetHeight());
 }
 
 void __stdcall sOpenGLCommandEncoder::SetScissorRect(const sRecti& aRect)  {
@@ -5078,7 +5071,8 @@ void __stdcall sOpenGLCommandEncoder::SetScissorRect(const sRecti& aRect)  {
   tBool usScissor = (rtSize.x != sc.GetWidth() || rtSize.y != sc.GetHeight());
   if (usScissor) {
     _glEnable(GL_SCISSOR_TEST);
-    const tU32 nSCY = rtSize.y - sc.y - sc.GetHeight();
+    const tU32 nSCY = _renderingInfo._rtFlipped ? sc.y : rtSize.y -sc.y -sc.GetHeight();
+    // const tU32 nSCY = rtSize.y - sc.y - sc.GetHeight();
     _glScissor(sc.x, nSCY, sc.GetWidth(), sc.GetHeight());
   }
   else {
@@ -5100,37 +5094,61 @@ void __stdcall sOpenGLCommandEncoder::SetBlendColorConstant(const sColor4f& aCol
 
 tBool __stdcall sOpenGLCommandEncoder::DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) {
   niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
-  // niCheck(_BindGpuFunction(), eFalse);
   glDrawElements(GL_Primitive(aPrimType), anNumIndices, GL_UNSIGNED_INT, (void*)(uintptr_t)(anFirstIndex * sizeof(tU32)));
   return eTrue;
 }
 
 tBool __stdcall sOpenGLCommandEncoder::Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) {
   niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
-  // niCheck(_BindGpuFunction(), eFalse);
   glDrawArrays(GL_Primitive(aPrimType), anFirstVertex, anVertexCount);
   return eTrue;
 }
 
 iGpuCommandEncoder* __stdcall sGLContext::GetCommandEncoder() {
-  tBool isFlipped;
-  GL2_ApplyContext(mEncoder->_driver->mCache, this, isFlipped);
+  // tBool isFlipped;
+  // GL3_ApplyContext(mEncoder->_driver->mCache, this, isFlipped);
   // mEncoder->SetViewport(GetViewport());
   // mEncoder->SetScissorRect(GetScissorRect());
-  if (!_beganFrame) {
-    niCheck(_BeginFrame(),nullptr);
-  }
+  // if (!_beganFrame) {
+  niCheck(_BeginFrame(),nullptr);
+  // }
   return mEncoder;
 }
 
-tBool sGLContext::_BeginFrame() {
-  _beganFrame = eTrue;
-  // Get the next view
-  // GLES2_ResetCache(mEncoder->_driver);
-  tBool isFlipped;
-  GL2_ApplyContext(mEncoder->_driver->mCache, this, isFlipped);
+static tBool _BindRenderTargets(sGLContext* apCtx) {
+  if (!apCtx->mptrRT[0].IsOK()) {
+    niError("No render target set.");
+    return eFalse;
+  }
 
-  for (tI32 i = kGL2_MaxTU-1; i >= 0; --i) {
+  Ptr<sOpenglTexture> pRT = (sOpenglTexture*)apCtx->mptrRT[0]->Bind((iUnknown*)eInvalidHandle);
+  if (!pRT->_BindAsRenderTarget()) {
+    niError("Can't bind render target.");
+    return eFalse;
+  }
+
+  if (apCtx->mptrDS.IsOK()) {
+    Ptr<sOpenglTexture> pDS = (sOpenglTexture*)apCtx->mptrDS->Bind((iUnknown*)eInvalidHandle);
+    if (!pDS->_BindAsDepthStencil()) {
+      niError("Can't bind depth stencil.");
+      return eFalse;
+    }
+  }
+
+  if (!niFlagIs(pRT->mFormat.flags,eTextureFlags_MainRT)) {
+    GLFBO_RET(eFalse);
+  }
+  return eTrue;
+}
+
+tBool sGLContext::_BeginFrame() {
+
+  tBool isFlipped;
+  GL3_ApplyContext(mEncoder->_driver->mCache, this, isFlipped);
+
+  if (_beganFrame) return eTrue;
+
+  for (tI32 i = kGL3_MaxTU-1; i >= 0; --i) {
     _glActiveTexture(GL_TEXTURE0+i);
     _glBindTexture(GL_TEXTURE_2D,0);
     _glBindTexture(GL_TEXTURE_CUBE_MAP,0);
@@ -5138,8 +5156,8 @@ tBool sGLContext::_BeginFrame() {
 
   // Begin buffer and rendering
   niCheck(mEncoder->_BeginCmdBuffer(),eFalse);
-
   // mEncoder->_BeginRendering(0,0);
+  _beganFrame = eTrue;
   return eTrue;
 }
 
@@ -5173,40 +5191,24 @@ inline void _ClearBuffers(tClearBuffersFlags aFlags, tU32 anColor, tF32 afDepth,
 }
 
 void __stdcall sGLContext::ClearBuffers(tClearBuffersFlags aFlags, tU32 anColor, tF32 afDepth, tI32 anStencil) {
-#if 0
-  _ClearBuffers(aFlags, anColor, afDepth, anStencil);
-#else
   niUnused(anStencil);
   this->ClearBuffersRect(
     aFlags,
     Rectf(0,0,(tF32)this->GetWidth(),(tF32)this->GetHeight()),
     anColor, afDepth);
-
-#endif
 }
 
 tBool __stdcall sGLContext::ClearBuffersRect(tClearBuffersFlags aFlags, const sRectf& aRect, tU32 anColor, tF32 afZ) {
-  if (!_beganFrame) {
-    niCheck(_BeginFrame(),eFalse);
-  }
+  niCheck(_BeginFrame(),eFalse);
 
-  // GLuint currentFBO;
-  // glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint*)&currentFBO);
-  // niDebugFmt(("Clear %s currentFBO:%s",Rectf(0,0,(tF32)this->GetWidth(),(tF32)this->GetHeight()), currentFBO));
-
-#if 1
   mEncoder->SetScissorRect(aRect.ToInt());
   _ClearBuffers(aFlags, anColor, afZ, 0);
   _glDisable(GL_SCISSOR_TEST);
   return eTrue;
 
-#else
-
-  niLet pixelSize = Vec2f(2.0f / (tF32)this->GetWidth(), 2.0f / (tF32)this->GetHeight());
-  sOpenGLDriver* driver = static_cast<sOpenGLDriver*>(GetDriver());
-  return driver ? driver->_fixedPipelines->ClearRect(mEncoder,pixelSize,aFlags,aRect,anColor,afZ) : eFalse;
-
-#endif
+  // niLet pixelSize = Vec2f(2.0f / (tF32)this->GetWidth(), 2.0f / (tF32)this->GetHeight());
+  // sOpenGLDriver* driver = static_cast<sOpenGLDriver*>(GetDriver());
+  // return driver ? driver->_fixedPipelines->ClearRect(mEncoder,pixelSize,aFlags,aRect,anColor,afZ) : eFalse;
 }
 
 Ptr<iGpuBuffer> sOpenGLDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
@@ -5293,36 +5295,28 @@ Ptr<iAccelerationStructureInstances> sOpenGLDriver::CreateAccelerationStructureI
 
 
 /////////////////////////////////////////////
-tBool __stdcall cGL2ContextRT::Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
+tBool __stdcall cGL3ContextRT::Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
   niCheck(_beganFrame,eFalse);
   // ResetAllCaches();
   _beganFrame = eFalse;
 
   ++mnSyncCounter; // Make sure the Viewport and scissor will be set next frame
 
-  // sOpenGLDriver* d = (sOpenGLDriver*)mpDrv;
-  // tBool isFlippedRT;
-  // if (!GL2_ApplyContext(d->mCache,this,isFlippedRT)) {
-    // niError(_A("Can't apply context."));
-    // return eFalse;
-  // }
-
-  // GLES2_SwapBuffers(mpDrv,this,niFlagIs(aFlags,eGraphicsDisplayFlags_DoNotWait));
   mEncoder->_EndRendering();
   mEncoder->_EndCmdBufferAndSubmit(0, 0);
   return eTrue;
 }
 
 
-static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait) {
+static tBool GLES3_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tBool abDoNotWait) {
   GL_DEBUG_SWAP_BUFFERS();
 
-  // sOpenGLDriver* d = ((sOpenGLDriver*)apDrv);
-  // tBool isFlippedRT;
-  // if (!GL2_ApplyContext(d->mCache,apContext,isFlippedRT)) {
-    // niError(_A("Can't apply context."));
-    // return eFalse;
-  // }
+  sOpenGLDriver* d = ((sOpenGLDriver*)apDrv);
+  tBool isFlippedRT;
+  if (!GL3_ApplyContext(d->mCache,apContext,isFlippedRT)) {
+    niError(_A("Can't apply context."));
+    return eFalse;
+  }
 
 #ifdef TSGL_CONTEXT
   tsglContext* ctx = apContext->GetTSGLContext();
@@ -5333,7 +5327,7 @@ static tBool GLES2_SwapBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tB
   return eTrue;
 }
 
-static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
+static void GLES3_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
   sOpenGLDriver* d = ((sOpenGLDriver*)apDrv);
   sGLCache& cache = d->mCache;
 
@@ -5383,7 +5377,7 @@ static void GLES2_DoClear(iGraphicsDriver* apDrv, tClearBuffersFlags clearBuffer
   }
 }
 
-static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
+static void GLES3_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
   sOpenGLDriver* d = ((sOpenGLDriver*)apDrv);
 
   iGraphicsDrawOpCapture* pDrawOpCapture = d->mptrDOCapture;
@@ -5397,12 +5391,12 @@ static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tC
   GL_DEBUG_MARKER_GROUP(ClearBuffers);
 
   tBool isFlippedRT;
-  if (!GL2_ApplyContext(d->mCache,apContext,isFlippedRT)) {
+  if (!GL3_ApplyContext(d->mCache,apContext,isFlippedRT)) {
     niError(_A("Can't apply context."));
     return;
   }
 
-  GLES2_DoClear(apDrv, clearBuffer, anColor, afDepth, anStencil);
+  GLES3_DoClear(apDrv, clearBuffer, anColor, afDepth, anStencil);
 
   if (pDrawOpCapture) {
     pDrawOpCapture->EndCaptureDrawOp(
@@ -5411,12 +5405,12 @@ static void GLES2_ClearBuffers(iGraphicsDriver* apDrv, sGLContext* apContext, tC
   }
 }
 
-static tBool GLES2_DrawOperation(iGraphicsDriver* apDrv, sGLContext* apContext, iDrawOperation* apDrawOp, const tU32 anAA)
+static tBool GLES3_DrawOperation(iGraphicsDriver* apDrv, sGLContext* apContext, iDrawOperation* apDrawOp, const tU32 anAA)
 {
   return ((sOpenGLDriver*)apDrv)->_DrawOperation(apContext,apDrawOp,anAA);
 }
 
-static tBool GLES2_ResetCache(iGraphicsDriver* apDrv) {
+static tBool GLES3_ResetCache(iGraphicsDriver* apDrv) {
   ((sOpenGLDriver*)apDrv)->mCache.Reset();
 #ifdef USE_GL_BIND_VAO
   if (hasBindVAO) {
@@ -5441,11 +5435,11 @@ static tBool GLES2_ResetCache(iGraphicsDriver* apDrv) {
   _glBindBuffer(GL_ARRAY_BUFFER,0);
   _glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
   _glUseProgram(0);
-  niLoop(i,kGL2_MaxVertexAttrs) {
+  niLoop(i,kGL3_MaxVertexAttrs) {
     GLCALL_WARN(_glDisableVertexAttribArray(i));
   }
   // Disable all texture units
-  for (tI32 i = kGL2_MaxTU-1; i >= 0; --i) {
+  for (tI32 i = kGL3_MaxTU-1; i >= 0; --i) {
     _glActiveTexture(GL_TEXTURE0+i);
     _glBindTexture(GL_TEXTURE_2D,0);
     _glBindTexture(GL_TEXTURE_CUBE_MAP,0);
@@ -5461,16 +5455,16 @@ static tBool GLES2_ResetCache(iGraphicsDriver* apDrv) {
   }
   return eTrue;
 }
-static tBool GLES2_ResetContextDeviceResources(iGraphicsDriver* apDrv) {
+static tBool GLES3_ResetContextDeviceResources(iGraphicsDriver* apDrv) {
   ((sOpenGLDriver*)apDrv)->_ResetContextDeviceResources();
   return eTrue;
 }
-static tBool GLES2_InitContextDeviceResources(iGraphicsDriver* apDrv) {
+static tBool GLES3_InitContextDeviceResources(iGraphicsDriver* apDrv) {
   ((sOpenGLDriver*)apDrv)->_InitContextDeviceResources();
   return eTrue;
 }
 
-static sGLCache& GLES2_GetCache(iGraphicsDriver* apDrv) {
+static sGLCache& GLES3_GetCache(iGraphicsDriver* apDrv) {
   return ((sOpenGLDriver*)apDrv)->mCache;
 }
 
@@ -5480,4 +5474,4 @@ niExportFunc(iUnknown*) New_GraphicsDriver_GL3(const Var& avarA, const Var&) {
   return (iGraphicsDriver*)niNew sOpenGLDriver(ptrGraphics);
 }
 
-#endif // GDRV_GL2
+#endif // GDRV_GL3

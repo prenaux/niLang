@@ -60,7 +60,7 @@
 #define GL_DEBUG_LOG(X)
 #endif
 
-#define GL2_TRACE_BUFFER(aFmt) GL_DEBUG_LOG(aFmt)
+#define GL3_TRACE_BUFFER(aFmt) GL_DEBUG_LOG(aFmt)
 
 // #ifdef niJSCC
 #define NO_STENCIL_BUFFER // not supported in IE11 WebGL

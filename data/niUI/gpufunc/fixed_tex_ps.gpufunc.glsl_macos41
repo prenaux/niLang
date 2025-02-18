@@ -31,6 +31,14 @@ out vec4 rval_color;
 
 void main()
 {
-    // Sample the texture and multiply by input color
-    rval_color = texture(aTexture, aInput_tex0) * aInput_color;
+    // Sample the texture
+    vec4 sampledColor = texture(aTexture, aInput_tex0);
+
+    // Discard the fragment if the alpha is less than the reference value
+    if (sampledColor.a < TestGpuFuncs.alphaRef) {
+        discard;
+    }
+
+    // Output the final color
+    rval_color = sampledColor * aInput_color;
 }

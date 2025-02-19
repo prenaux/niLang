@@ -8,7 +8,7 @@ struct TestGpuFuncs_TestUniforms
     float4 materialColor;
 };
 
-cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0, space0)
 {
     TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
 };

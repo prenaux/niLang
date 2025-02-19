@@ -1,5 +1,5 @@
-TextureCube<float4> IN_1_aTexture : register(t0);
-SamplerState IN_1_aSS : register(s0);
+TextureCube<float4> IN_1_aTexture : register(t0, space2);
+SamplerState IN_1_aSS : register(s0, space5);
 
 static float3 IN_3_aInput_normal;
 static float4 OUT_0_rval_color;

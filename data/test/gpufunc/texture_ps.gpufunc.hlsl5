@@ -1,5 +1,5 @@
-Texture2D<float4> IN_1_aTexture : register(t0);
-SamplerState IN_1_aSS : register(s0);
+Texture2D<float4> IN_1_aTexture : register(t0, space1);
+SamplerState IN_1_aSS : register(s0, space5);
 
 static float4 IN_1_aInput_color;
 static float2 IN_2_aInput_tex0;

@@ -8,13 +8,13 @@ struct TestGpuFuncs_TestUniforms
     float4 materialColor;
 };
 
-cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0)
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0, space0)
 {
     TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
 };
 
-Texture2D<float4> IN_1_aTexture : register(t0);
-SamplerState IN_1_aSS : register(s0);
+Texture2D<float4> IN_1_aTexture : register(t0, space1);
+SamplerState IN_1_aSS : register(s0, space5);
 
 static float4 IN_1_aInput_color;
 static float2 IN_2_aInput_tex0;

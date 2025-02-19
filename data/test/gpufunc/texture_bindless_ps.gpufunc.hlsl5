@@ -1,5 +1,20 @@
-Texture2D<float4> nil_builtin_AllTextures2D[1] : register(t0);
-SamplerState IN_1_aSS : register(s0);
+struct TestGpuFuncs_TestUniforms
+{
+    row_major float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0, space0)
+{
+    TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+Texture2D<float4> nil_builtin_AllTextures2D[] : register(t0, space10);
+SamplerState IN_1_aSS : register(s0, space5);
 
 static float4 IN_1_aInput_color;
 static float2 IN_2_aInput_tex0;
@@ -18,7 +33,32 @@ struct SPIRV_Cross_Output
 
 void frag_main()
 {
-    OUT_0_rval_color = nil_builtin_AllTextures2D[0].Sample(IN_1_aSS, IN_2_aInput_tex0) * IN_1_aInput_color;
+    TestGpuFuncs_TestUniforms _135;
+    _135.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _135.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _135.padding0 = IN_1_aUniforms_v.padding0;
+    _135.padding1 = IN_1_aUniforms_v.padding1;
+    _135.padding2 = IN_1_aUniforms_v.padding2;
+    _135.materialColor = IN_1_aUniforms_v.materialColor;
+    float4 _268;
+    if (IN_2_aInput_tex0.x < 0.300000011920928955078125f)
+    {
+        _268 = nil_builtin_AllTextures2D[uint(_135.padding0)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+    }
+    else
+    {
+        float4 _269;
+        if (IN_2_aInput_tex0.x < 0.699999988079071044921875f)
+        {
+            _269 = nil_builtin_AllTextures2D[uint(_135.padding1)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+        }
+        else
+        {
+            _269 = nil_builtin_AllTextures2D[uint(_135.padding2)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+        }
+        _268 = _269;
+    }
+    OUT_0_rval_color = _268 * IN_1_aInput_color;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

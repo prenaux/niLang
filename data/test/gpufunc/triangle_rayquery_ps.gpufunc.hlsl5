@@ -8,12 +8,12 @@ struct TestGpuFuncs_RayUniforms
     row_major float4x4 cameraInvViewProj;
 };
 
-cbuffer UBO_TestGpuFuncs_RayUniforms : register(b0)
+cbuffer UBO_TestGpuFuncs_RayUniforms : register(b0, space0)
 {
     TestGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
 };
 
-uniform RaytracingAccelerationStructure IN_1_aAS : register(t0);
+uniform RaytracingAccelerationStructure IN_1_aAS : register(t0, space7);
 
 static float4 gl_FragCoord;
 static float4 OUT_0_rval_color;

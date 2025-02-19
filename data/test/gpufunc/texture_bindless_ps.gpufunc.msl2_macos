@@ -1,7 +1,53 @@
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+
 #include <metal_stdlib>
 #include <simd/simd.h>
 
 using namespace metal;
+
+template<typename T>
+struct spvDescriptor
+{
+    T value;
+};
+
+template<typename T>
+struct spvDescriptorArray
+{
+    spvDescriptorArray(const device spvDescriptor<T>* ptr) : ptr(&ptr->value)
+    {
+    }
+    const device T& operator [] (size_t i) const
+    {
+        return ptr[i];
+    }
+    const device T* ptr;
+};
+
+struct TestGpuFuncs_TestUniforms
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct TestGpuFuncs_TestUniforms_1
+{
+    float4x4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_TestGpuFuncs_TestUniforms
+{
+    TestGpuFuncs_TestUniforms_1 v;
+};
 
 struct main0_out
 {
@@ -14,10 +60,37 @@ struct main0_in
     float2 IN_2_aInput_tex0 [[user(locn2)]];
 };
 
-fragment main0_out main0(main0_in in [[stage_in]], array<texture2d<float>, 1> nil_builtin_AllTextures2D [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(1)]], const device spvDescriptor<texture2d<float>>* nil_builtin_AllTextures2D_ [[buffer(0)]], sampler IN_1_aSS [[sampler(0)]])
 {
+    spvDescriptorArray<texture2d<float>> nil_builtin_AllTextures2D {nil_builtin_AllTextures2D_};
+
     main0_out out = {};
-    out.OUT_0_rval_color = nil_builtin_AllTextures2D[0].sample(IN_1_aSS, in.IN_2_aInput_tex0) * in.IN_1_aInput_color;
+    TestGpuFuncs_TestUniforms _135;
+    _135.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _135.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _135.padding0 = IN_1_aUniforms.v.padding0;
+    _135.padding1 = IN_1_aUniforms.v.padding1;
+    _135.padding2 = IN_1_aUniforms.v.padding2;
+    _135.materialColor = IN_1_aUniforms.v.materialColor;
+    float4 _268;
+    if (in.IN_2_aInput_tex0.x < 0.300000011920928955078125)
+    {
+        _268 = nil_builtin_AllTextures2D[uint(_135.padding0)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+    }
+    else
+    {
+        float4 _269;
+        if (in.IN_2_aInput_tex0.x < 0.699999988079071044921875)
+        {
+            _269 = nil_builtin_AllTextures2D[uint(_135.padding1)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+        }
+        else
+        {
+            _269 = nil_builtin_AllTextures2D[uint(_135.padding2)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+        }
+        _268 = _269;
+    }
+    out.OUT_0_rval_color = _268 * in.IN_1_aInput_color;
     return out;
 }
 

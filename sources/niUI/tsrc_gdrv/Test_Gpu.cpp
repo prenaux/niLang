@@ -1179,6 +1179,13 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
     return eTrue;
   }
 
+  tU32 _GetTextureIndex(iTexture* apTexture) const {
+    tU32 r = _graphics->GetTextureDeviceResourceManager()->GetIndexFromResource(apTexture);
+    if (r == eInvalidHandle)
+      return 0;
+    return r;
+  }
+
   tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
@@ -1188,6 +1195,11 @@ struct sFGpu_BindlessTexture : public sFGpu_Base {
     cmdEncoder->SetTexture(_textures[_selectedTexture], 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    TestGpuFuncs_TestUniforms u;
+    u.padding0 = _GetTextureIndex(_textures[_selectedTexture]);
+    u.padding1 = _GetTextureIndex(_textures[(_selectedTexture+1)%_textures.size()]);
+    u.padding2 = _GetTextureIndex(_textures[(_selectedTexture+2)%_textures.size()]);
+    cmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
     cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
     return eTrue;
   }

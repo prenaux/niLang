@@ -177,6 +177,13 @@ typedef sRect<i32> recti;
 typedef sMatrix<f32> matrixf;
 typedef sMatrix<f64> matrix64;
 
+typedef sVec2<u32> vec2u;
+typedef sVec3<u32> vec3u;
+typedef sVec4<u32> vec4u;
+typedef sVec2<u32> sVec2u;
+typedef sVec3<u32> sVec3u;
+typedef sVec4<u32> sVec4u;
+
 // <experimental>
 template <typename T, typename... Args>
 inline niConstExpr ni::QPtr<T> Create(Args&&... args) {

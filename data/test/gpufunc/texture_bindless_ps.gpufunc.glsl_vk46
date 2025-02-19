@@ -1,6 +1,18 @@
 #version 460
+#extension GL_EXT_nonuniform_qualifier : require
 
-layout(set = 10, binding = 0) uniform texture2D nil_builtin_AllTextures2D[1];
+struct TestGpuFuncs_TestUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
+layout(set = 10, binding = 0) uniform texture2D nil_builtin_AllTextures2D[];
 layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
 
 layout(location = 1) in vec4 IN_1_aInput_color;
@@ -9,6 +21,32 @@ layout(location = 0) out vec4 OUT_0_rval_color;
 
 void main()
 {
-    OUT_0_rval_color = texture(sampler2D(nil_builtin_AllTextures2D[0], IN_1_aSS), IN_2_aInput_tex0) * IN_1_aInput_color;
+    TestGpuFuncs_TestUniforms _134 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    TestGpuFuncs_TestUniforms _135;
+    _135.mtxWVP = _134.mtxWVP;
+    _135.alphaRef = _134.alphaRef;
+    _135.padding0 = _134.padding0;
+    _135.padding1 = _134.padding1;
+    _135.padding2 = _134.padding2;
+    _135.materialColor = _134.materialColor;
+    vec4 _268;
+    if (IN_2_aInput_tex0.x < 0.300000011920928955078125)
+    {
+        _268 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_135.padding0)], IN_1_aSS), IN_2_aInput_tex0);
+    }
+    else
+    {
+        vec4 _269;
+        if (IN_2_aInput_tex0.x < 0.699999988079071044921875)
+        {
+            _269 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_135.padding1)], IN_1_aSS), IN_2_aInput_tex0);
+        }
+        else
+        {
+            _269 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_135.padding2)], IN_1_aSS), IN_2_aInput_tex0);
+        }
+        _268 = _269;
+    }
+    OUT_0_rval_color = _268 * IN_1_aInput_color;
 }
 

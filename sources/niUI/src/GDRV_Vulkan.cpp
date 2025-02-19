@@ -39,7 +39,7 @@
 namespace ni {
 
 struct sVulkanBuffer;
-struct sVulkanBindlessDescriptorPool;
+struct sVulkanTexture;
 struct sVulkanRayPrimitives;
 struct sVulkanRayInstances;
 struct sVulkanRayPipeline;
@@ -89,6 +89,8 @@ static const char* _vkRequiredRayTracingExtensions[] = {
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
+#define VULKAN_TRACE_DESCR(aFmt) niDebugFmt(aFmt)
+
 #define NISH_VULKAN_TARGET spv_vk12
 
 _HDecl(NISH_VULKAN_TARGET);
@@ -539,6 +541,69 @@ static VkResult _VkCreateBindlessDescSetLayout(
     aDevice, &layoutInfo, nullptr, &aOutDescrSetLayout);
 }
 
+static tBool _VkDescrUpdateBuffer(
+  ain<VkDevice> aDevice,
+  ain<VkDescriptorSet> aDescrSet,
+  iHString* ahspName,
+  ain<tU32> aIndex,
+  ain<VkBuffer> aBuffer)
+{
+  niDebugAssert(!!aDevice);
+  niDebugAssert(!!aDescrSet);
+  VkDescriptorBufferInfo bufferInfo = {
+    .buffer = aBuffer,
+    .offset = 0,
+    .range = VK_WHOLE_SIZE
+  };
+
+  VkWriteDescriptorSet write = {
+    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+    .dstSet = aDescrSet,
+    .dstBinding = 0,
+    .dstArrayElement = aIndex,
+    .descriptorCount = 1,
+    .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+    .pBufferInfo = &bufferInfo
+  };
+
+  vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+  VULKAN_TRACE_DESCR(("_VkDescrUpdateBuffer(%s,%d,%p)",
+                      ahspName, aIndex, (tIntPtr)aBuffer));
+  return eTrue;
+}
+
+static tBool _VkDescrUpdateTexture(
+  ain<VkDevice> aDevice,
+  ain<VkDescriptorSet> aDescrSet,
+  iHString* ahspName,
+  ain<tU32> aIndex,
+  ain<VkImageView> aImageView)
+{
+  niDebugAssert(!!aDevice);
+  niDebugAssert(!!aDescrSet);
+
+  VkDescriptorImageInfo imageInfo = {
+    .sampler = VK_NULL_HANDLE,
+    .imageView = aImageView,
+    .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+  };
+
+  VkWriteDescriptorSet write = {
+    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+    .dstSet = aDescrSet,
+    .dstBinding = 0,
+    .dstArrayElement = aIndex,
+    .descriptorCount = 1,
+    .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+    .pImageInfo = &imageInfo
+  };
+
+  vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
+  VULKAN_TRACE_DESCR(("_VkDescrUpdateTexture(%s,%d,%p)",
+                      ahspName, aIndex, (tIntPtr)aImageView));
+  return eTrue;
+}
+
 struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu,iGraphicsDriverRay> {
   nn<iGraphics> _graphics;
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
@@ -571,6 +636,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkSampler _ssCompiled[
     (eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
   Ptr<sVulkanBuffer> _dummyUniformBuffer;
+  Ptr<sVulkanTexture> _dummyTexture;
 
   VkDescriptorSetLayout _emptyDescrSet;
   astl::array<
@@ -1838,6 +1904,11 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
   virtual void __stdcall Invalidate() override {
     _subTexs.clear();
     if (_vkView) {
+      if (_resourceIndex != eInvalidHandle) {
+        _VkDescrUpdateTexture(
+          _driver->_device,_driver->_bindlessTexturesDescSet,
+          _name,_resourceIndex,_driver->_dummyTexture->_vkView);
+      }
       vkDestroyImageView(_driver->_device, _vkView, nullptr);
       _vkView = VK_NULL_HANDLE;
     }
@@ -1996,6 +2067,11 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     }
 
     VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
+    if (_resourceIndex != eInvalidHandle) {
+      _VkDescrUpdateTexture(
+        _driver->_device,_driver->_bindlessTexturesDescSet,
+        _name,_resourceIndex,_vkView);
+    }
     return eTrue;
   }
 
@@ -3164,6 +3240,7 @@ struct sVulkanCommandEncoder : public ImplRC<
   }
 
   tBool _DoBindFixedDescLayout(tBool abWithRayInstances);
+  tBool _DoBindBindlessDescLayout(tBool abWithRayInstances);
   tBool _BindGpuFunction();
 
   virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
@@ -4383,40 +4460,35 @@ tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
 }
 
 tBool sVulkanDriver::_CreateVulkanDriverResources() {
-  VkSamplerCreateInfo desc = {
-    .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-    .compareEnable = VK_FALSE,
-    .minLod = 0.0f,
-    .maxLod = FLT_MAX,
-    .unnormalizedCoordinates = VK_FALSE,
-  };
+  // Create the samplers
+  {
+    VkSamplerCreateInfo desc = {
+      .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+      .compareEnable = VK_FALSE,
+      .minLod = 0.0f,
+      .maxLod = FLT_MAX,
+      .unnormalizedCoordinates = VK_FALSE,
+    };
 
 #define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
-    desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;              \
-    _toVkSamplerFilter(desc, eSamplerFilter_##FILTER, _physicalDeviceFeatures); \
-    desc.addressModeU = desc.addressModeV = desc.addressModeW =         \
-        _toVkSamplerAddress[eSamplerWrap_##WRAP];                       \
-    VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                   \
-                             &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
-  }
+      desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;            \
+      _toVkSamplerFilter(desc, eSamplerFilter_##FILTER, _physicalDeviceFeatures); \
+      desc.addressModeU = desc.addressModeV = desc.addressModeW =       \
+          _toVkSamplerAddress[eSamplerWrap_##WRAP];                     \
+      VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                 \
+                               &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
+    }
 
-  INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
-  INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
-  INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
-  INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
 
-  INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
-  INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
-  INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
-  INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
 #undef INIT_COMPILED_SAMPLER_STATES
-
-  _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
-  niCheck(_dummyUniformBuffer->_CreateBuffer(1024,0),eFalse);
-  {
-    tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
-    ni::MemZero(data,1024);
-    _dummyUniformBuffer->Unlock();
   }
 
   // Create the descriptor set layouts
@@ -4622,10 +4694,51 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
     }
   }
 
+  // Create the dummy uniforms
+  {
+    _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
+    niCheck(_dummyUniformBuffer->_CreateBuffer(1024,0),eFalse);
+    {
+      tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
+      ni::MemZero(data,1024);
+      _dummyUniformBuffer->Unlock();
+    }
+  }
+
+  // Create the dummy texture
+  {
+    Ptr<iBitmap2D> dummyBitmap = _graphics->CreateBitmap2D(2,2,"B8G8R8A8");
+    {
+      tU32* pixels = (tU32*)dummyBitmap->GetData();
+      pixels[0] = ULColorBuild(255,0,255,255); // Pink
+      pixels[1] = ULColorBuild(255,0,0,255); // Red
+      pixels[2] = ULColorBuild(0,255,0,255); // Green
+      pixels[3] = ULColorBuild(0,0,255,255); // Blue
+    }
+
+    _dummyTexture = niNew sVulkanTexture(
+      as_nn(this),
+      _H("__DummyTexture__"),
+      eBitmapType_2D,
+      2,2,0,
+      eGpuPixelFormat_BGRA8,
+      eTextureFlags_Default);
+    niCheck(_dummyTexture->_CreateVulkanTexture(),eFalse);
+    niCheck(_dummyTexture->_UploadTexture(
+      dummyBitmap,0,
+      sRecti(0,0,2,2)),eFalse);
+
+    // The dummy/error texture must have the resourceIndex 0
+    niCheck(_dummyTexture->_resourceIndex == 0,eFalse);
+  }
+
   return eTrue;
 }
 
 tBool sVulkanDriver::_DestroyVulkanDriverResources() {
+  _dummyTexture = nullptr;
+  _dummyUniformBuffer = nullptr;
+
   if (_bindlessPool) {
     vkDestroyDescriptorPool(_device, _bindlessPool, nullptr);
     _bindlessPool = VK_NULL_HANDLE;
@@ -4652,8 +4765,6 @@ tBool sVulkanDriver::_DestroyVulkanDriverResources() {
     vkDestroyDescriptorSetLayout(_device,_emptyDescrSet,nullptr);
     _emptyDescrSet = VK_NULL_HANDLE;
   }
-
-  _dummyUniformBuffer = nullptr;
 
   niLoop(i,niCountOf(_ssCompiled)) {
     if (_ssCompiled[i]) {
@@ -4740,9 +4851,43 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
   return eTrue;
 }
 
+tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances) {
+  niLet pipeline = as_nn(_cache._lastRasterPipeline);
+  niLet pipelineLayout = pipeline->_GetPipelineLayout();
+
+  // Fixed uniforms & textures
+  niCheck(_DoBindFixedDescLayout(abWithRayInstances),eFalse);
+
+  // Bind the bindless descriptor sets
+  vkCmdBindDescriptorSets(
+    _cmdBuffer,
+    VK_PIPELINE_BIND_POINT_GRAPHICS,
+    pipelineLayout,
+    eGLSLVulkanDescriptorSet_AllBuffers,
+    1,
+    &_driver->_bindlessBuffersDescSet,
+    0,
+    nullptr);
+
+  vkCmdBindDescriptorSets(
+    _cmdBuffer,
+    VK_PIPELINE_BIND_POINT_GRAPHICS,
+    pipelineLayout,
+    eGLSLVulkanDescriptorSet_AllTextures,
+    1,
+    &_driver->_bindlessTexturesDescSet,
+    0,
+    nullptr);
+
+  return eTrue;
+}
+
 tBool sVulkanCommandEncoder::_BindGpuFunction() {
   niLet pipeline = _cache._lastRasterPipeline;
   switch (pipeline->_gpufuncBindType) {
+    case eGpuFunctionBindType_None: {
+      break;
+    }
     case eGpuFunctionBindType_Fixed: {
       niCheck(_DoBindFixedDescLayout(eFalse),eFalse);
       break;
@@ -4751,8 +4896,19 @@ tBool sVulkanCommandEncoder::_BindGpuFunction() {
       niCheck(_DoBindFixedDescLayout(eTrue),eFalse);
       break;
     }
-    case eGpuFunctionBindType_None: {
+    case eGpuFunctionBindType_Bindless: {
+      niCheck(_DoBindBindlessDescLayout(eFalse),eFalse);
       break;
+    }
+    case eGpuFunctionBindType_BindlessRayInstances: {
+      niCheck(_DoBindBindlessDescLayout(eTrue),eFalse);
+      break;
+    }
+    default: {
+      niError(niFmt("eGpuFunctionBindType '%s' (%d) not supported.",
+                    niEnumToChars(eGpuFunctionBindType,pipeline->_gpufuncBindType),
+                    pipeline->_gpufuncBindType));
+      return eFalse;
     }
   }
   return eTrue;

@@ -78,6 +78,15 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
     niLog(Info, niFmt("Auto detected graphics driver '%s'.",hspDriver));
   }
 
+  mptrDRMGeneric = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsGeneric"));
+  niCheck(mptrDRMGeneric.IsOK(), eFalse);
+
+  mptrDRMTextures = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsTextures"));
+  niCheck(mptrDRMTextures.IsOK(), eFalse);
+
+  mptrDRMShaders = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsShaders"));
+  niCheck(mptrDRMShaders.IsOK(), eFalse);
+
   {
     cString driverName = niFmt("GraphicsDriver.%s",hspDriver);
     QPtr<iGraphicsDriver> ptrDrv = ni::GetLang()->CreateInstance(driverName.c_str(),this);
@@ -87,15 +96,6 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
     }
     mptrDrv = ptrDrv;
   }
-
-  mptrDRMGeneric = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsGeneric"));
-  niCheck(mptrDRMGeneric.IsOK(),eFalse);
-
-  mptrDRMTextures = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsTextures"));
-  niCheck(mptrDRMTextures.IsOK(),eFalse);
-
-  mptrDRMShaders = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsShaders"));
-  niCheck(mptrDRMShaders.IsOK(),eFalse);
 
   niCheck(_CompileDefaultRasterizerStates(),eFalse);
   niCheck(_CompileDefaultDepthStencilStates(),eFalse);

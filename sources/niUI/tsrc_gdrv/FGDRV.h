@@ -22,7 +22,7 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
 
   // graphics driver config
   tHStringPtr _gdrvName;
-  tU32 _swapInterval = 1;
+  tU32 _swapInterval = ni::GetProperty("swapinterval","1").Long();
   tTextureFlags _backBufferFlags = eTextureFlags_Default|eTextureFlags_Default|eTextureFlags_RTAA4Samples;
   tClearBuffersFlags _clearBuffers = eClearBuffersFlags_ColorDepthStencil;
   tU32 _clearColor = 0;

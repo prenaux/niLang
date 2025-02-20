@@ -268,6 +268,20 @@ static VkColorComponentFlags _ToVkColorWriteMask(eColorWriteMask aMask) {
   return 0;
 }
 
+static const achar* const _ToVkPresentModeStr(VkPresentModeKHR mode) {
+  switch (mode) {
+    case VK_PRESENT_MODE_MAILBOX_KHR:
+      return "MAILBOX";
+    case VK_PRESENT_MODE_IMMEDIATE_KHR:
+      return "IMMEDIATE";
+    case VK_PRESENT_MODE_FIFO_KHR:
+      return "FIFO";
+    case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
+      return "FIFO_RELAXED";
+  }
+  return "UNKNOWN";
+};
+
 static astl::vector<VkVertexInputAttributeDescription> _VkCreateVertexInputDesc(tFVF aFVF) {
   astl::vector<VkVertexInputAttributeDescription> attrs;
   cFVFDescription fvfDesc(aFVF);
@@ -5349,12 +5363,16 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
   VkFormat _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
   VkExtent2D _swapchainExtent = {0,0};
   sVec2i _swapchainWindowSize = sVec2i::Zero();
+  const tU32 _swapInterval = 0;
+  VkPresentModeKHR _bestPresentMode0 = (VkPresentModeKHR)eInvalidHandle;
 
   sVulkanContextWindowSurfaceKHR(
     ain<nn<sVulkanDriver>> aDriver,
     const tU32 aFrameMaxInFlight,
-    iOSWindow* apWindow)
+    iOSWindow* apWindow,
+    tU32 anSwapInterval)
       : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+      , _swapInterval(anSwapInterval)
   {
     _window = apWindow;
   }
@@ -5456,9 +5474,45 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       _surface,
       &capabilities);
 
+    // Choose preferred present mode
+    VkPresentModeKHR desiredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+    static tBool _loggedPresentMode0 = eFalse;
+    if (_swapInterval == 0 || _bestPresentMode0 == eInvalidHandle) {
+      if (_bestPresentMode0 == eInvalidHandle) {
+        _bestPresentMode0 = VK_PRESENT_MODE_FIFO_KHR;
+        uint32_t presentModeCount;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(_driver->_physicalDevice, _surface, &presentModeCount, nullptr);
+        astl::vector<VkPresentModeKHR> presentModes(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(_driver->_physicalDevice, _surface, &presentModeCount, presentModes.data());
+#if _DEBUG
+        niLoop(i,presentModeCount) {
+          niLet mode = presentModes[i];
+          niLog(Debug,niFmt(
+            "presentModes[%d/%d]: %s (%d)",
+            i+1,presentModeCount,
+            _ToVkPresentModeStr(mode),mode));
+        }
+#endif
+        for (const auto& mode : presentModes) {
+          if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            _bestPresentMode0 = mode;
+            break;
+          }
+          else if (mode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+            _bestPresentMode0 = mode;
+          }
+        }
+        niLog(Info,niFmt("Best present mode0 detected: %s (%d)",_ToVkPresentModeStr(_bestPresentMode0),_bestPresentMode0));
+      }
+      if (_swapInterval == 0) {
+        desiredPresentMode = _bestPresentMode0;
+      }
+    }
+
     // We assume we can use our chosen format and present mode directly
     _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
 
+    // Create the swap chain
     VkSwapchainCreateInfoKHR createInfo = {
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
       .surface = _surface,
@@ -5471,7 +5525,7 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .preTransform = capabilities.currentTransform,
       .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .presentMode = VK_PRESENT_MODE_FIFO_KHR,
+      .presentMode = desiredPresentMode,
       .clipped = VK_TRUE
     };
 
@@ -5690,7 +5744,6 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
   tTextureFlags aBackBufferFlags)
 {
   niCheckIsOK(apWindow,nullptr);
-  niUnused(anSwapInterval);
   niUnused(aBackBufferFlags);
   niUnused(aaszBBFormat);
   niUnused(aaszDSFormat);
@@ -5705,7 +5758,7 @@ iGraphicsContext* sVulkanDriver::CreateContextForWindow(
   niCheck(gc->_CreateContextWindowMetal(),nullptr);
 #elif defined niVulkan_UseSurfaceKHR
   Ptr<sVulkanContextWindowSurfaceKHR> gc = niCheckNN(gc, niNew sVulkanContextWindowSurfaceKHR(
-    as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
+    as_nn(this),knVulkanMaxFramesInFlight,apWindow,anSwapInterval), nullptr);
   niCheck(gc->_CreateContextWindowSurfaceKHR(),nullptr);
 #else
 #error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"

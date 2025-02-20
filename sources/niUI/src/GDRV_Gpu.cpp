@@ -462,7 +462,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
       {ScreenToClipSpace(aPixelSize,posBR.x,posBR.y,afZ), anColor}, // BR
     };
     apCmdEncoder->StreamVertexBuffer((tPtr)verts,sizeof(verts),0);
-    apCmdEncoder->Draw(eGraphicsPrimitiveType_TriangleStrip,4,0);
+    apCmdEncoder->Draw(eGraphicsPrimitiveType_TriangleStrip,0,1,0,4);
     return eTrue;
   }
 };
@@ -614,15 +614,17 @@ iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA) {
 
 /////////////////////////////////////////////////////////////////
 iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
-    niLet fvfStride = FVFGetStride(anFVF);
-    Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateGpuBuffer(
-      nullptr,
-      fvfStride * anNumVertices,
-      eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Vertex|eGpuBufferUsageFlags_RayBuildInput);
-    niCheckIsOK(vaBuffer,nullptr);
-    return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage);
-  }
+  niLet fvfStride = FVFGetStride(anFVF);
+  Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateGpuBuffer(
+    nullptr,
+    fvfStride * anNumVertices,
+    eGpuBufferMemoryMode_Shared,
+    eGpuBufferUsageFlags_Vertex|
+    eGpuBufferUsageFlags_Storage|
+    eGpuBufferUsageFlags_RayBuildInput);
+  niCheckIsOK(vaBuffer,nullptr);
+  return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage);
+}
 
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
   niUnused(anMaxVertexIndex);
@@ -630,7 +632,9 @@ iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphics
     nullptr,
     knFixedGpuIndexSize * anNumIndices,
     eGpuBufferMemoryMode_Shared,
-    eGpuBufferUsageFlags_Index|eGpuBufferUsageFlags_RayBuildInput);
+    eGpuBufferUsageFlags_Index|
+    eGpuBufferUsageFlags_Storage|
+    eGpuBufferUsageFlags_RayBuildInput);
   return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
 }
 
@@ -976,7 +980,7 @@ tBool DrawOperationSubmitGpuDrawCall(
 
   const tU32 baseVertexIndex = apDrawOp->GetBaseVertexIndex();
   iGpuBuffer* vaBuffer = GetVertexArrayGpuBuffer(va);
-  apCmdEncoder->SetVertexBuffer(vaBuffer, baseVertexIndex * fvfStride, 0);
+  apCmdEncoder->SetVertexBuffer(vaBuffer, 0, 0);
 
   if (ia) {
     const tU32 firstInd = apDrawOp->GetFirstIndex();
@@ -985,12 +989,12 @@ tBool DrawOperationSubmitGpuDrawCall(
       numInds = ia->GetNumIndices()-firstInd;
     }
     iGpuBuffer* iaBuffer = GetIndexArrayGpuBuffer(ia);
-    apCmdEncoder->SetIndexBuffer(iaBuffer, firstInd * knFixedGpuIndexSize, eGpuIndexType_U32);
-    apCmdEncoder->DrawIndexed(apDrawOp->GetPrimitiveType(), numInds, 0);
+    apCmdEncoder->SetIndexBuffer(iaBuffer, 0, eGpuIndexType_U32);
+    apCmdEncoder->DrawIndexed(apDrawOp->GetPrimitiveType(), 0, 1, baseVertexIndex, firstInd, numInds);
   }
   else {
     const tU32 nNumVerts = va->GetNumVertices()-baseVertexIndex;
-    apCmdEncoder->Draw(apDrawOp->GetPrimitiveType(), nNumVerts, baseVertexIndex);
+    apCmdEncoder->Draw(apDrawOp->GetPrimitiveType(), 0, 1, baseVertexIndex, nNumVerts);
   }
 
   return eTrue;

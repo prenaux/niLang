@@ -62,7 +62,7 @@ niLetK knVulkanMaxDescrFixedUniformBuffers = 16_u32;
 
 // Note: We've tried to find a way to detect that but couldnt.
 niLetK knVulkanMaxDescrBindlessTextures = 100000_u32;
-niLetK knVulkanMaxDescrBindlessUniformBuffers = 100000_u32;
+niLetK knVulkanMaxDescrBindlessStorageBuffers = 100000_u32;
 
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
@@ -524,7 +524,7 @@ static VkResult _VkCreateBindlessDescSetLayout(
   VkDescriptorSetLayoutBinding binding = {
     .binding = 0,
     .descriptorType = aDescrType,
-    .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers,
+    .descriptorCount = knVulkanMaxDescrBindlessStorageBuffers,
     .stageFlags = VK_SHADER_STAGE_ALL,
     .pImmutableSamplers = nullptr
   };
@@ -608,6 +608,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   nn<iGraphics> _graphics;
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
   Ptr<iFixedGpuPipelines> _fixedPipelines;
+  NN<iDeviceResourceManager> _drmStorageBuffers;
 
   VkDevice _device = VK_NULL_HANDLE;
   VmaAllocator _allocator = nullptr;
@@ -635,7 +636,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[
     (eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
-  Ptr<sVulkanBuffer> _dummyUniformBuffer;
+  Ptr<sVulkanBuffer> _dummyBuffer;
   Ptr<sVulkanTexture> _dummyTexture;
 
   VkDescriptorSetLayout _emptyDescrSet;
@@ -646,11 +647,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     VkPipelineLayout,eGpuFunctionBindType_Last> _vkPipelineLayouts;
 
   VkDescriptorPool _bindlessPool = VK_NULL_HANDLE;
-  VkDescriptorSet _bindlessBuffersDescSet = VK_NULL_HANDLE;
+  VkDescriptorSet _bindlessStorageBuffersDescSet = VK_NULL_HANDLE;
   VkDescriptorSet _bindlessTexturesDescSet = VK_NULL_HANDLE;
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
+      , _drmStorageBuffers(ni::GetLang()->CreateDeviceResourceManager(
+        "GpuStorageBuffers"))
   {
   }
 
@@ -1357,50 +1360,53 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     features2.features.shaderStorageImageReadWithoutFormat = VK_TRUE;
     features2.features.shaderStorageImageWriteWithoutFormat = VK_TRUE;
 
-    // === RASTER FEATURES SETUP ===
-    VkPhysicalDevice8BitStorageFeatures storage8BitFeatures = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES,
-        .uniformAndStorageBuffer8BitAccess = VK_TRUE,
-    };
+    VkPhysicalDeviceFeatures2* pLastFeatures = &features2;
+    #define CHAIN_FEATURES(NAME) pLastFeatures->pNext = &NAME; pLastFeatures = (VkPhysicalDeviceFeatures2*)&NAME;
 
-    VkPhysicalDevice16BitStorageFeatures storage16BitFeatures = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES,
-        .uniformAndStorageBuffer16BitAccess = VK_TRUE,
+    // === RASTER FEATURES SETUP ===
+    VkPhysicalDeviceVulkan11Features vk11 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES,
+      .storageBuffer16BitAccess = VK_TRUE,
+      .uniformAndStorageBuffer16BitAccess = VK_TRUE,
+      .shaderDrawParameters = VK_TRUE,
     };
+    CHAIN_FEATURES(vk11);
+
+    VkPhysicalDeviceVulkan12Features vk12 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+      .storageBuffer8BitAccess = VK_TRUE,
+      .uniformAndStorageBuffer8BitAccess = VK_TRUE,
+      .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+      .shaderStorageBufferArrayNonUniformIndexing = VK_TRUE,
+    };
+    CHAIN_FEATURES(vk12);
 
     VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES,
-        .dynamicRendering = VK_TRUE
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES,
+     .dynamicRendering = VK_TRUE,
     };
+    CHAIN_FEATURES(dynamicRenderingFeatures);
 
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extDynamicStateFeatures = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
-        .extendedDynamicState = VK_TRUE
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
+      .pNext = &dynamicRenderingFeatures,
+      .extendedDynamicState = VK_TRUE,
     };
-
-    // === RASTER CHAIN CONSTRUCTION ===
-    features2.pNext = &storage8BitFeatures;
-    storage8BitFeatures.pNext = &storage16BitFeatures;
-    storage16BitFeatures.pNext = &dynamicRenderingFeatures;
-    dynamicRenderingFeatures.pNext = &extDynamicStateFeatures;
-    extDynamicStateFeatures.pNext = nullptr; // end of chain
+    CHAIN_FEATURES(extDynamicStateFeatures);
 
     // === BINDLESS SETUP ===
-    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
-      .descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE,
-      .descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
-      .descriptorBindingStorageImageUpdateAfterBind = VK_TRUE,
-      .descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE,
-      .descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE,
-      .descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE,
-      .descriptorBindingUpdateUnusedWhilePending = VK_TRUE,
-      .descriptorBindingPartiallyBound = VK_TRUE,
-      .descriptorBindingVariableDescriptorCount = VK_TRUE,
-      .runtimeDescriptorArray = VK_TRUE
-    };
     if (_isBindlessSupported) {
-      extDynamicStateFeatures.pNext = &descriptorIndexingFeatures;
+      vk12.descriptorIndexing = VK_TRUE;
+      vk12.descriptorBindingUniformBufferUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE;
+      vk12.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
+      vk12.descriptorBindingPartiallyBound = VK_TRUE;
+      vk12.descriptorBindingVariableDescriptorCount = VK_TRUE;
+      vk12.runtimeDescriptorArray = VK_TRUE;
     }
 
     // === RAY FEATURES SETUP ===
@@ -1412,19 +1418,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
       .accelerationStructure = VK_TRUE,
     };
-    VkPhysicalDeviceBufferDeviceAddressFeaturesKHR bufferDeviceAddressFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-      .bufferDeviceAddress = VK_TRUE,
-    };
     VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
       .rayQuery = VK_TRUE
     };
     if (_isRayTracingSupported) {
-      descriptorIndexingFeatures.pNext = &rayTracingPipelineFeatures;
-      rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
-      accelerationStructureFeatures.pNext = &bufferDeviceAddressFeatures;
-      bufferDeviceAddressFeatures.pNext = &rayQueryFeatures;
+      vk12.bufferDeviceAddress = VK_TRUE;
+      CHAIN_FEATURES(rayTracingPipelineFeatures);
+      CHAIN_FEATURES(accelerationStructureFeatures);
+      CHAIN_FEATURES(rayQueryFeatures);
     }
 
     // Gather the required extensions
@@ -1671,6 +1673,9 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() niImpl;
   Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl;
   Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
+  iDeviceResourceManager* __stdcall GetStorageBufferDeviceResourceManager() const niImpl {
+    return _drmStorageBuffers;
+  }
   //// iGraphicsDriverGpu ///////////////////////////////
 
   //// iGraphicsDriverRay ///////////////////////////////
@@ -1698,7 +1703,9 @@ static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
   return vkUsage;
 }
 
-struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource> {
+struct sVulkanBuffer : public ImplRC<
+  iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource>
+{
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   VkBuffer _vkBuffer = VK_NULL_HANDLE;
@@ -1709,6 +1716,7 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
   tU32 _modifiedOffset = 0, _modifiedSize = 0;
   eLock _lockMode;
   tBool _boundModifiedBuffer = eFalse;
+  tU32 _resourceIndex = eInvalidHandle;
 
   sVulkanBuffer(
     ain<nn<sVulkanDriver>> aDriver,
@@ -1760,10 +1768,24 @@ struct sVulkanBuffer : public ImplRC<iGpuBuffer,eImplFlags_DontInherit1,iDeviceR
         &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
     }
 
+    if (niFlagIs(_usage,eGpuBufferUsageFlags_Storage)) {
+      _resourceIndex = _driver->_drmStorageBuffers->Register(this);
+      _VkDescrUpdateBuffer(
+        _driver->_device,_driver->_bindlessStorageBuffersDescSet,
+        _name,_resourceIndex,_vkBuffer);
+    }
     return eTrue;
   }
 
   void _DestroyBuffer() {
+    if (_resourceIndex != eInvalidHandle) {
+      _VkDescrUpdateBuffer(
+        _driver->_device,_driver->_bindlessStorageBuffersDescSet,
+        _name,_resourceIndex,_driver->_dummyBuffer->_vkBuffer);
+      niAssert(niFlagIs(_usage,eGpuBufferUsageFlags_Storage));
+      _driver->_drmStorageBuffers->Unregister(this);
+      _resourceIndex = eInvalidHandle;
+    }
     if (_vkBuffer) {
       vmaDestroyBuffer(_driver->_allocator, _vkBuffer, _vmaAllocation);
       _vkBuffer = VK_NULL_HANDLE;
@@ -1903,19 +1925,20 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
 
   virtual void __stdcall Invalidate() override {
     _subTexs.clear();
-    if (_vkView) {
-      if (_resourceIndex != eInvalidHandle) {
-        _VkDescrUpdateTexture(
-          _driver->_device,_driver->_bindlessTexturesDescSet,
-          _name,_resourceIndex,_driver->_dummyTexture->_vkView);
+    if (_resourceIndex != eInvalidHandle) {
+      _VkDescrUpdateTexture(
+        _driver->_device,_driver->_bindlessTexturesDescSet,
+        _name,_resourceIndex,_driver->_dummyTexture->_vkView);
+      if (_driver->_graphics->GetTextureDeviceResourceManager()) {
+        _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
       }
+      _resourceIndex = eInvalidHandle;
+    }
+    if (_vkView) {
       vkDestroyImageView(_driver->_device, _vkView, nullptr);
       _vkView = VK_NULL_HANDLE;
     }
     if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
-      if (_driver->_graphics->GetTextureDeviceResourceManager()) {
-        _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
-      }
       if (_vkImage) {
         vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
         _vkImage = VK_NULL_HANDLE;
@@ -3243,19 +3266,37 @@ struct sVulkanCommandEncoder : public ImplRC<
   tBool _DoBindBindlessDescLayout(tBool abWithRayInstances);
   tBool _BindGpuFunction();
 
-  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl {
+  virtual tBool __stdcall Draw(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex, tU32 anVertexCount) niImpl
+  {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
     niCheck(_BindGpuFunction(),eFalse);
     vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
-    vkCmdDrawIndexed(_cmdBuffer, anNumIndices, 1, anFirstIndex, 0, 0);
+    vkCmdDraw(_cmdBuffer,
+              anVertexCount,      // vertexCount
+              anInstanceCount,    // instanceCount
+              anFirstVertex,      // firstVertex
+              anFirstInstance);   // firstInstance
     return eTrue;
   }
 
-  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl {
+  virtual tBool __stdcall DrawIndexed(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex,
+    tU32 anFirstIndex, tU32 anNumIndices) niImpl
+  {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
     niCheck(_BindGpuFunction(),eFalse);
     vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
-    vkCmdDraw(_cmdBuffer, anVertexCount, 1, anFirstVertex, 0);
+    vkCmdDrawIndexed(_cmdBuffer,
+                     anNumIndices,     // indexCount
+                     anInstanceCount,  // instanceCount
+                     anFirstIndex,     // firstIndex
+                     anFirstVertex,    // vertexOffset
+                     anFirstInstance); // firstInstance
     return eTrue;
   }
 
@@ -4570,7 +4611,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
   if (_isBindlessSupported) {
     VK_CHECK(_VkCreateBindlessDescSetLayout(
       _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers],
-      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER), eFalse);
+      VK_DESCRIPTOR_TYPE_STORAGE_BUFFER), eFalse);
 
     VK_CHECK(_VkCreateBindlessDescSetLayout(
       _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures],
@@ -4597,10 +4638,10 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
     // Create the bindless descriptor pool
     {
       VkDescriptorPoolSize poolSizes[2] = {
-        { .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-          .descriptorCount = knVulkanMaxDescrBindlessUniformBuffers },
         { .type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-          .descriptorCount = knVulkanMaxDescrBindlessTextures }
+          .descriptorCount = knVulkanMaxDescrBindlessTextures },
+        { .type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+          .descriptorCount = knVulkanMaxDescrBindlessStorageBuffers },
       };
 
       VkDescriptorPoolCreateInfo poolInfo = {
@@ -4612,26 +4653,6 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
       };
       VK_CHECK(vkCreateDescriptorPool(
         _device, &poolInfo, nullptr, &_bindlessPool), eFalse);
-    }
-
-    // Allocate bindless buffers descriptor sets
-    {
-      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
-        .descriptorSetCount = 1,
-        .pDescriptorCounts = &knVulkanMaxDescrBindlessUniformBuffers
-      };
-
-      VkDescriptorSetAllocateInfo allocInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-        .pNext = &variableCountInfo,
-        .descriptorPool = _bindlessPool,
-        .descriptorSetCount = 1,
-        .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers]
-      };
-
-      VK_CHECK(vkAllocateDescriptorSets(
-        _device, &allocInfo, &_bindlessBuffersDescSet), eFalse);
     }
 
     {
@@ -4651,6 +4672,26 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 
       VK_CHECK(vkAllocateDescriptorSets(
         _device, &allocInfo, &_bindlessTexturesDescSet), eFalse);
+    }
+
+    // Allocate bindless storage buffers descriptor sets
+    {
+      VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = &knVulkanMaxDescrBindlessStorageBuffers
+      };
+
+      VkDescriptorSetAllocateInfo allocInfo = {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+        .pNext = &variableCountInfo,
+        .descriptorPool = _bindlessPool,
+        .descriptorSetCount = 1,
+        .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers]
+      };
+
+      VK_CHECK(vkAllocateDescriptorSets(
+        _device, &allocInfo, &_bindlessStorageBuffersDescSet), eFalse);
     }
   }
 
@@ -4696,12 +4737,14 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 
   // Create the dummy uniforms
   {
-    _dummyUniformBuffer = niNew sVulkanBuffer(as_nn(this), eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_Uniform);
-    niCheck(_dummyUniformBuffer->_CreateBuffer(1024,0),eFalse);
+    _dummyBuffer = niNew sVulkanBuffer(
+      as_nn(this), eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_Uniform|eGpuBufferUsageFlags_Storage);
+    niCheck(_dummyBuffer->_CreateBuffer(1024,0),eFalse);
     {
-      tPtr data = _dummyUniformBuffer->Lock(0,1024,eLock_Discard);
+      tPtr data = _dummyBuffer->Lock(0,1024,eLock_Discard);
       ni::MemZero(data,1024);
-      _dummyUniformBuffer->Unlock();
+      _dummyBuffer->Unlock();
     }
   }
 
@@ -4737,12 +4780,12 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
 
 tBool sVulkanDriver::_DestroyVulkanDriverResources() {
   _dummyTexture = nullptr;
-  _dummyUniformBuffer = nullptr;
+  _dummyBuffer = nullptr;
 
   if (_bindlessPool) {
     vkDestroyDescriptorPool(_device, _bindlessPool, nullptr);
     _bindlessPool = VK_NULL_HANDLE;
-    _bindlessBuffersDescSet = VK_NULL_HANDLE;
+    _bindlessStorageBuffersDescSet = VK_NULL_HANDLE;
     _bindlessTexturesDescSet = VK_NULL_HANDLE;
   }
 
@@ -4789,7 +4832,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
       bufferOffset = _cache._lastBufferOffset;
     }
     else {
-      buffer = _driver->_dummyUniformBuffer.raw_ptr();
+      buffer = _driver->_dummyBuffer.raw_ptr();
     }
     niCheck(descPool.PushDescriptorUniformBuffer(
       _driver,_cmdBuffer,
@@ -4865,7 +4908,7 @@ tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances)
     pipelineLayout,
     eGLSLVulkanDescriptorSet_AllBuffers,
     1,
-    &_driver->_bindlessBuffersDescSet,
+    &_driver->_bindlessStorageBuffersDescSet,
     0,
     nullptr);
 

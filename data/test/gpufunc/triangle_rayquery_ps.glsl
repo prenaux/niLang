@@ -121,7 +121,7 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_triangle_rayquery_ps(lib_shader_PixelInput
 // MODULE END TestGpuFuncs
 
 // Pixel Shader main: TestGpuFuncs_triangle_rayquery_ps
-// type size: 48
+// type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_RayUniforms { TestGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 layout(location = 0) out vec4 OUT_0_rval_color;

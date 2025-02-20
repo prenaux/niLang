@@ -338,14 +338,17 @@ struct iGpuCommandEncoder : public iUnknown {
   //! @{
 
   //! Draws primitives using the current vertex buffer.
-  //! \param anVertexCount Number of vertices to draw
-  //! \param anFirstVertex Index of first vertex to draw
-  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) = 0;
+  virtual tBool __stdcall Draw(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex, tU32 anVertexCount) = 0;
 
   //! Draws indexed primitives using the current index buffer.
-  //! \param anNumIndices Number of indices to draw
-  //! \param anFirstIndex Index of first index to draw
-  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) = 0;
+  virtual tBool __stdcall DrawIndexed(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex,
+    tU32 anFirstIndex, tU32 anNumIndices) = 0;
   //! @}
 };
 
@@ -388,6 +391,10 @@ struct iGraphicsDriverGpu : public iUnknown
 
   //! Compile a GPU pipeline description into a driver handle.
   virtual Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) = 0;
+
+  //! Get the storage buffers device resource manager.
+  //! {Property}
+  virtual iDeviceResourceManager* __stdcall GetStorageBufferDeviceResourceManager() const = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

@@ -82,7 +82,7 @@ struct sFGpu_Triangle : public sFGpu_Base {
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
     return eTrue;
   }
 };
@@ -107,7 +107,7 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
       0xFFFF0000,1.0f);
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // Green, TR
     cmdEncoder->SetViewport(Recti(w2,0,w2,h2));
@@ -117,7 +117,7 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
       0xFF00FF00,1.0f);
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // Blue, BR
     cmdEncoder->SetViewport(Recti(w2,h2,w2,h2));
@@ -127,7 +127,7 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
       0xFF0000FF,1.0f);
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // White, BL
     cmdEncoder->SetViewport(Recti(0,h2,w2,h2));
@@ -137,7 +137,7 @@ struct sFGpu_TriangleViewport : public sFGpu_Triangle {
       0xFFFFFFFF,1.0f);
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     return eTrue;
   }
@@ -155,7 +155,7 @@ struct sFGpu_TriangleScissor : public sFGpu_Triangle {
     cmdEncoder->SetScissorRect(Recti(w/3,h/3,w/4,h/4));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     return eTrue;
   }
@@ -182,7 +182,7 @@ struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
     cmdEncoder->SetScissorRect(Recti(w/6,h/6,w/8,h/8));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // Green, TR
     cmdEncoder->SetViewport(Recti(w2,0,w2,h2));
@@ -194,7 +194,7 @@ struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
     cmdEncoder->SetScissorRect(Recti(w2+(w/6),h/6,w/8,h/8));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // Blue, BR
     cmdEncoder->SetViewport(Recti(w2,h2,w2,h2));
@@ -206,7 +206,7 @@ struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
     cmdEncoder->SetScissorRect(Recti(w2+(w/6),h2+(h/6),w/8,h/8));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     // White, BL
     cmdEncoder->SetViewport(Recti(0,h2,w2,h2));
@@ -218,7 +218,7 @@ struct sFGpu_TriangleViewportScissor : public sFGpu_Triangle {
     cmdEncoder->SetScissorRect(Recti(w/6,h2+(h/6),w/8,h/8));
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
-    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,3,0);
+    cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,3);
 
     return eTrue;
   }
@@ -297,7 +297,7 @@ struct sFGpu_Square : public sFGpu_Base {
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -384,7 +384,7 @@ struct sFGpu_Texture : public sFGpu_Base {
     cmdEncoder->SetTexture(_texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -488,7 +488,7 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
     cmdEncoder->SetTexture(_texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothMirror, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -618,7 +618,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
       rtEncoder->SetTexture(nullptr, 0); // bind the "white texture"
       rtEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
       rtEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-      rtEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+      rtEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
       _rtGC->Display(eGraphicsDisplayFlags_Skip,sRecti::Null());
     }
 
@@ -630,7 +630,7 @@ struct sFGpu_RenderTarget : public sFGpu_Texture {
     cmdEncoder->SetTexture(_rtTex, 0); // bind the render target
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 1);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -737,7 +737,7 @@ struct sTest_DepthTest {
     cmdEncoder->SetPipeline(_pipeline);
     cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,18,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,18);
     return eTrue;
   }
 };
@@ -797,7 +797,7 @@ struct sFGpu_DepthTestRenderTarget : public sFGpu_Texture {
     cmdEncoder->SetTexture(_rtTex, 0); // bind the render target as texture
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -896,7 +896,7 @@ struct sFGpu_TextureMipMaps : public sFGpu_Base {
     cmdEncoder->SetTexture(_texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothRepeat, 0);
     cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
@@ -1076,7 +1076,7 @@ struct sFGpu_TextureCube : public sFGpu_Base {
     cmdEncoder->SetTexture(_cubemap,0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_SmoothClamp,0);
     cmdEncoder->SetIndexBuffer(_iaBuffer,0,eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,36,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,36);
     return eTrue;
   }
 };

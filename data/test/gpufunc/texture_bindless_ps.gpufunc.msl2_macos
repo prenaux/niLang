@@ -60,49 +60,52 @@ struct main0_in
     float2 IN_2_aInput_tex0 [[user(locn2)]];
 };
 
-fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(1)]], const device spvDescriptor<texture2d<float>>* nil_builtin_AllTextures2D_ [[buffer(0)]], sampler IN_1_aSS [[sampler(0)]])
+fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_TestUniforms& IN_1_aUniforms [[buffer(1)]], const device spvDescriptor<texture2d<float>>* nil_builtin_GetTexture2D_ [[buffer(0)]], sampler IN_1_aSS [[sampler(0)]])
 {
-    spvDescriptorArray<texture2d<float>> nil_builtin_AllTextures2D {nil_builtin_AllTextures2D_};
+    spvDescriptorArray<texture2d<float>> nil_builtin_GetTexture2D {nil_builtin_GetTexture2D_};
 
     main0_out out = {};
-    TestGpuFuncs_TestUniforms _194;
-    _194.mtxWVP = IN_1_aUniforms.v.mtxWVP;
-    _194.alphaRef = IN_1_aUniforms.v.alphaRef;
-    _194.padding0 = IN_1_aUniforms.v.padding0;
-    _194.padding1 = IN_1_aUniforms.v.padding1;
-    _194.padding2 = IN_1_aUniforms.v.padding2;
-    _194.materialColor = IN_1_aUniforms.v.materialColor;
-    float _288 = precise::atan2(in.IN_2_aInput_tex0.y - 0.5, in.IN_2_aInput_tex0.x - 0.5);
-    float _290 = _288 + 1.57079637050628662109375;
-    float _369;
-    if (_290 < 0.0)
+    TestGpuFuncs_TestUniforms _197;
+    _197.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _197.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _197.padding0 = IN_1_aUniforms.v.padding0;
+    _197.padding1 = IN_1_aUniforms.v.padding1;
+    _197.padding2 = IN_1_aUniforms.v.padding2;
+    _197.materialColor = IN_1_aUniforms.v.materialColor;
+    float _294 = precise::atan2(in.IN_2_aInput_tex0.y - 0.5, in.IN_2_aInput_tex0.x - 0.5);
+    float _296 = _294 + 1.57079637050628662109375;
+    float _375;
+    if (_296 < 0.0)
     {
-        _369 = _288 + 7.85398197174072265625;
+        _375 = _294 + 7.85398197174072265625;
     }
     else
     {
-        _369 = _290;
+        _375 = _296;
     }
-    float _307 = floor(_369 * 0.47746479511260986328125);
-    float4 _370;
-    if (_307 < 1.0)
+    float _313 = floor(_375 * 0.47746479511260986328125);
+    float4 _376;
+    if (_313 < 1.0)
     {
-        _370 = nil_builtin_AllTextures2D[uint(_194.padding0)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+        uint _234 = uint(_197.padding0);
+        _376 = nil_builtin_GetTexture2D[_234].sample(IN_1_aSS, in.IN_2_aInput_tex0);
     }
     else
     {
-        float4 _371;
-        if (_307 < 2.0)
+        float4 _377;
+        if (_313 < 2.0)
         {
-            _371 = nil_builtin_AllTextures2D[uint(_194.padding1)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+            uint _250 = uint(_197.padding1);
+            _377 = nil_builtin_GetTexture2D[_250].sample(IN_1_aSS, in.IN_2_aInput_tex0);
         }
         else
         {
-            _371 = nil_builtin_AllTextures2D[uint(_194.padding2)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+            uint _262 = uint(_197.padding2);
+            _377 = nil_builtin_GetTexture2D[_262].sample(IN_1_aSS, in.IN_2_aInput_tex0);
         }
-        _370 = _371;
+        _376 = _377;
     }
-    out.OUT_0_rval_color = _370 * in.IN_1_aInput_color;
+    out.OUT_0_rval_color = _376 * in.IN_1_aInput_color;
     return out;
 }
 

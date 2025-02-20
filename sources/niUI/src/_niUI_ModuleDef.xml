@@ -10598,11 +10598,8 @@
 					typec="const sColor4f&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec4f|ni::eTypeFlags_Pointer"/>
 			</method>
-			<method java_name="draw" name="Draw" num_parameters="3">
-				<comments desc="Draws primitives using the current vertex buffer. ">
-					<params text="anVertexCount Number of vertices to draw "/>
-					<params text="anFirstVertex Index of first vertex to draw "/>
-				</comments>
+			<method java_name="draw" name="Draw" num_parameters="5">
+				<comments desc="Draws primitives using the current vertex buffer. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aPrimType"
@@ -10610,22 +10607,29 @@
 					typec="eGraphicsPrimitiveType"
 					typei="ni::eType_Enum"/>
 				<parameter
-					name="anVertexCount"
+					name="anFirstInstance"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
 				<parameter
-					last="1"
+					name="anInstanceCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
 					name="anFirstVertex"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
+				<parameter
+					last="1"
+					name="anVertexCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
 			</method>
-			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="3">
-				<comments desc="Draws indexed primitives using the current index buffer. ">
-					<params text="anNumIndices Number of indices to draw "/>
-					<params text="anFirstIndex Index of first index to draw "/>
-				</comments>
+			<method java_name="drawIndexed" name="DrawIndexed" num_parameters="6">
+				<comments desc="Draws indexed primitives using the current index buffer. "/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aPrimType"
@@ -10633,13 +10637,28 @@
 					typec="eGraphicsPrimitiveType"
 					typei="ni::eType_Enum"/>
 				<parameter
-					name="anNumIndices"
+					name="anFirstInstance"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anInstanceCount"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anFirstVertex"
+					type="tU32"
+					typec="tU32"
+					typei="ni::eType_U32"/>
+				<parameter
+					name="anFirstIndex"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
 				<parameter
 					last="1"
-					name="anFirstIndex"
+					name="anNumIndices"
 					type="tU32"
 					typec="tU32"
 					typei="ni::eType_U32"/>
@@ -10807,6 +10826,17 @@
 					type="const iGpuPipelineDesc *"
 					typec="const iGpuPipelineDesc*"
 					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getStorageBufferDeviceResourceManager"
+				name="GetStorageBufferDeviceResourceManager"
+				num_parameters="0"
+				property="get"
+				property_name2="storageBufferDeviceResourceManager"
+				property_name="storage_buffer_device_resource_manager">
+				<comments desc="Get the storage buffers device resource manager. "/>
+				<return type="iDeviceResourceManager *" typec="iDeviceResourceManager*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

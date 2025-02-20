@@ -1,4 +1,5 @@
-#version 450
+#version 460
+#extension GL_EXT_nonuniform_qualifier : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
 // MODULE PROLOGUE BEGIN lib:shader
@@ -63,7 +64,7 @@ TestGpuFuncs_VertexOutputPN TestGpuFuncs_VertexP_skybox_vs(TestGpuFuncs_VertexP 
 
 // Vertex Shader main: TestGpuFuncs_VertexP_skybox_vs
 layout(location = 0) in vec3 IN_0_aInput_position;
-// type size: 48
+// type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestUniforms { TestGpuFuncs_TestUniforms v; } IN_1_aUniforms;
 // layout() in vec4 gl_Position;
 layout(location = 3) out vec3 OUT_3_rval_normal;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "FGDRV.h"
 #include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include <niLang/Math/MathLib.h>
 
 using namespace ni;
 
@@ -172,10 +173,92 @@ struct sFBindless_Textures : public sFBindless_Base {
     u.padding1 = _GetTextureIndex(_textures[(_selectedTexture+1)%_textures.size()]);
     u.padding2 = _GetTextureIndex(_textures[(_selectedTexture+2)%_textures.size()]);
     cmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
     return eTrue;
   }
 };
 TEST_CLASS(FBindless,Textures);
+
+//----------------------------------------------------------------------------
+//
+// Section: sFBindless_Instances
+//
+//----------------------------------------------------------------------------
+struct sFBindless_Instances : public sFBindless_Base {
+  NN<iGpuBuffer> _vaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuBuffer> _iaBuffer = niDeferredInit(NN<iGpuBuffer>);
+  NN<iGpuFunction> _vertexGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
+
+  astl::vector<NN<iGpuBuffer>> _instDataBuffers;
+  tU32 _instDataIndex0 = eInvalidHandle;
+
+  tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
+    CHECK_RET(sFBindless_Base::OnInit(testResults_),eFalse);
+
+    {
+      _vaBuffer = niCheckNN(_vaBuffer, MakeSquareVB(_driverGpu, sVec2f(0,0), 0.5f), eFalse);
+      _iaBuffer = niCheckNN(_iaBuffer, MakeQuadIB(_driverGpu), eFalse);
+
+      niLoop(i,5) {
+        TestGpuFuncs_InstanceData instData;
+        niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
+          HFmt("instData_%s",m_testName),
+          sizeof(instData),
+          eGpuBufferMemoryMode_Shared,
+          eGpuBufferUsageFlags_Storage), eFalse);
+        instData.mtxWorld = MatrixTranslation(Vec3f(0.1f,0.1f,0.0f)*(tF32)i);
+        TestGpuFuncs_InstanceData* locked = (TestGpuFuncs_InstanceData*)instDataBuffer->Lock(0, instDataBuffer->GetSize(), eLock_Discard);
+        *locked = instData;
+        instDataBuffer->Unlock();
+        _instDataBuffers.emplace_back(instDataBuffer);
+      }
+
+      _instDataIndex0 = _driverGpu->GetStorageBufferDeviceResourceManager()->GetIndexFromResource(_instDataBuffers[0]);
+      niDebugFmt(("... _instDataIndex0: %d",_instDataIndex0));
+      CHECK_NOT_EQUAL(eInvalidHandle,_instDataIndex0);
+    }
+
+    {
+      _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
+          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_bindless_vs.gpufunc.xml")),eFalse);
+      _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
+        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
+      //CHECK_EQUAL(eGpuFunctionBindType_Bindless,_pixelGpuFun->GetFunctionBindType());
+    }
+
+    {
+      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
+      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
+      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_vertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_pixelGpuFun);
+      _pipeline = niCheckNN(_pipeline, _driverGpu->CreateGpuPipeline(_H("GpuTexture_Pipeline"),pipelineDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
+    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
+    niPanicAssert(gpuContext.IsOK());
+    NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
+    cmdEncoder->SetPipeline(_pipeline);
+    cmdEncoder->SetVertexBuffer(_vaBuffer, 0, 0);
+    cmdEncoder->SetTexture(_textures[_selectedTexture], 0);
+    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
+    cmdEncoder->SetIndexBuffer(_iaBuffer, 0, eGpuIndexType_U32);
+    TestGpuFuncs_TestUniforms u;
+    u.padding0 = _GetTextureIndex(_textures[_selectedTexture]);
+    u.padding1 = _GetTextureIndex(_textures[(_selectedTexture+1)%_textures.size()]);
+    u.padding2 = _GetTextureIndex(_textures[(_selectedTexture+2)%_textures.size()]);
+    cmdEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,_instDataIndex0,_instDataBuffers.size(),0,0,6);
+    return eTrue;
+  }
+};
+TEST_CLASS(FBindless,Instances);
 
 }

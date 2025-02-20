@@ -21,6 +21,7 @@ DEPENDS $(PACKAGE) :
   skybox_vs
   skybox_ps
   triangle_rayquery_ps
+  texture_bindless_vs
   texture_bindless_ps
 ] ;
 

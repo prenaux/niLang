@@ -5,6 +5,7 @@
 // Module: TestGpuFuncs
 struct TestGpuFuncs_TestUniforms;
 struct TestGpuFuncs_RayUniforms;
+struct TestGpuFuncs_InstanceData;
 
 // TypeMethFwd: TestUniforms
 struct TestGpuFuncs_TestUniforms {
@@ -36,6 +37,21 @@ struct TestGpuFuncs_RayUniforms {
   ni::tF32 padding;
   ni::sMatrixf cameraInvView;
   ni::sMatrixf cameraInvViewProj;
+};
+
+// TypeMethFwd: InstanceData
+struct TestGpuFuncs_InstanceData {
+
+  // Constructor
+  TestGpuFuncs_InstanceData();
+  TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_tex0, ni::ain<ni::tU32> a_tex1, ni::ain<ni::tU32> a_tex2, ni::ain<ni::tU32> a_tex3);
+
+  // Variables
+  ni::sMatrixf mtxWorld;
+  ni::tU32 tex0;
+  ni::tU32 tex1;
+  ni::tU32 tex2;
+  ni::tU32 tex3;
 };
 
 // FunctionFwd: TestGpuFuncs
@@ -70,6 +86,22 @@ inline TestGpuFuncs_RayUniforms::TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rt
   this->cameraFarClipPlane = a_cameraFarClipPlane;
   this->cameraInvView = a_cameraInvView;
   this->cameraInvViewProj = a_cameraInvViewProj;
+}
+
+// TypeMeth: InstanceData
+inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData() {
+  this->mtxWorld = ni::sMatrixf::Identity();
+  this->tex0 = 0;
+  this->tex1 = 0;
+  this->tex2 = 0;
+  this->tex3 = 0;
+}
+inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_tex0, ni::ain<ni::tU32> a_tex1, ni::ain<ni::tU32> a_tex2, ni::ain<ni::tU32> a_tex3) {
+  this->mtxWorld = a_mtxWorld;
+  this->tex0 = a_tex0;
+  this->tex1 = a_tex1;
+  this->tex2 = a_tex2;
+  this->tex3 = a_tex3;
 }
 
 // Function: TestGpuFuncs

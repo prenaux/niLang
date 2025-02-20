@@ -1,4 +1,5 @@
-#version 450
+#version 460
+#extension GL_EXT_nonuniform_qualifier : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
 // MODULE PROLOGUE BEGIN lib:shader
@@ -71,7 +72,7 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexPAT1_texture_alphatest_vs(TestGpuFu
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 4) in vec4 IN_4_aInput_color;
 layout(location = 5) in vec2 IN_5_aInput_tex0;
-// type size: 48
+// type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestUniforms { TestGpuFuncs_TestUniforms v; } IN_1_aUniforms;
 // layout() in vec4 gl_Position;
 layout(location = 1) out vec4 OUT_1_rval_color;

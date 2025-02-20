@@ -1,0 +1,37 @@
+#version 460
+#extension GL_EXT_nonuniform_qualifier : require
+
+struct TestGpuFuncs_InstanceData
+{
+    mat4 mtxWorld;
+    uint tex0;
+    uint tex1;
+    uint tex2;
+    uint tex3;
+};
+
+layout(set = 9, binding = 0, std430) buffer SBO_TestGpuFuncs_InstanceData
+{
+    TestGpuFuncs_InstanceData v;
+} nil_builtin_GetInstanceData[];
+
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 4) in vec4 IN_4_aInput_color;
+layout(location = 5) in vec2 IN_5_aInput_tex0;
+layout(location = 1) out vec4 OUT_1_rval_color;
+layout(location = 2) out vec2 OUT_2_rval_tex0;
+
+void main()
+{
+    uint _168 = uint(gl_InstanceIndex);
+    TestGpuFuncs_InstanceData _171;
+    _171.mtxWorld = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.mtxWorld;
+    _171.tex0 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex0;
+    _171.tex1 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex1;
+    _171.tex2 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex2;
+    _171.tex3 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex3;
+    gl_Position = _171.mtxWorld * vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = IN_4_aInput_color;
+    OUT_2_rval_tex0 = IN_5_aInput_tex0;
+}
+

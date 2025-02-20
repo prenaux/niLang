@@ -12,7 +12,7 @@ struct TestGpuFuncs_TestUniforms
 };
 
 uniform vec4 UBO_TestGpuFuncs_TestUniforms[6];
-layout(set = 10, binding = 0) uniform texture2D nil_builtin_AllTextures2D[];
+layout(set = 10, binding = 0) uniform texture2D nil_builtin_GetTexture2D[];
 layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
 
 layout(location = 1) in vec4 IN_1_aInput_color;
@@ -21,44 +21,47 @@ layout(location = 0) out vec4 OUT_0_rval_color;
 
 void main()
 {
-    TestGpuFuncs_TestUniforms _193 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
-    TestGpuFuncs_TestUniforms _194;
-    _194.mtxWVP = _193.mtxWVP;
-    _194.alphaRef = _193.alphaRef;
-    _194.padding0 = _193.padding0;
-    _194.padding1 = _193.padding1;
-    _194.padding2 = _193.padding2;
-    _194.materialColor = _193.materialColor;
-    float _288 = atan(IN_2_aInput_tex0.y - 0.5, IN_2_aInput_tex0.x - 0.5);
-    float _290 = _288 + 1.57079637050628662109375;
-    float _369;
-    if (_290 < 0.0)
+    TestGpuFuncs_TestUniforms _196 = TestGpuFuncs_TestUniforms(mat4(UBO_TestGpuFuncs_TestUniforms[0], UBO_TestGpuFuncs_TestUniforms[1], UBO_TestGpuFuncs_TestUniforms[2], UBO_TestGpuFuncs_TestUniforms[3]), UBO_TestGpuFuncs_TestUniforms[4].x, UBO_TestGpuFuncs_TestUniforms[4].y, UBO_TestGpuFuncs_TestUniforms[4].z, UBO_TestGpuFuncs_TestUniforms[4].w, UBO_TestGpuFuncs_TestUniforms[5]);
+    TestGpuFuncs_TestUniforms _197;
+    _197.mtxWVP = _196.mtxWVP;
+    _197.alphaRef = _196.alphaRef;
+    _197.padding0 = _196.padding0;
+    _197.padding1 = _196.padding1;
+    _197.padding2 = _196.padding2;
+    _197.materialColor = _196.materialColor;
+    float _294 = atan(IN_2_aInput_tex0.y - 0.5, IN_2_aInput_tex0.x - 0.5);
+    float _296 = _294 + 1.57079637050628662109375;
+    float _375;
+    if (_296 < 0.0)
     {
-        _369 = _288 + 7.85398197174072265625;
+        _375 = _294 + 7.85398197174072265625;
     }
     else
     {
-        _369 = _290;
+        _375 = _296;
     }
-    float _307 = floor(_369 * 0.47746479511260986328125);
-    vec4 _370;
-    if (_307 < 1.0)
+    float _313 = floor(_375 * 0.47746479511260986328125);
+    vec4 _376;
+    if (_313 < 1.0)
     {
-        _370 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_194.padding0)], IN_1_aSS), IN_2_aInput_tex0);
+        uint _234 = uint(_197.padding0);
+        _376 = texture(sampler2D(nil_builtin_GetTexture2D[_234], IN_1_aSS), IN_2_aInput_tex0);
     }
     else
     {
-        vec4 _371;
-        if (_307 < 2.0)
+        vec4 _377;
+        if (_313 < 2.0)
         {
-            _371 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_194.padding1)], IN_1_aSS), IN_2_aInput_tex0);
+            uint _250 = uint(_197.padding1);
+            _377 = texture(sampler2D(nil_builtin_GetTexture2D[_250], IN_1_aSS), IN_2_aInput_tex0);
         }
         else
         {
-            _371 = texture(sampler2D(nil_builtin_AllTextures2D[uint(_194.padding2)], IN_1_aSS), IN_2_aInput_tex0);
+            uint _262 = uint(_197.padding2);
+            _377 = texture(sampler2D(nil_builtin_GetTexture2D[_262], IN_1_aSS), IN_2_aInput_tex0);
         }
-        _370 = _371;
+        _376 = _377;
     }
-    OUT_0_rval_color = _370 * IN_1_aInput_color;
+    OUT_0_rval_color = _376 * IN_1_aInput_color;
 }
 

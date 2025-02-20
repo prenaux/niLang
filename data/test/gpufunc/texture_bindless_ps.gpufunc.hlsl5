@@ -13,7 +13,7 @@ cbuffer UBO_TestGpuFuncs_TestUniforms : register(b0, space0)
     TestGpuFuncs_TestUniforms IN_1_aUniforms_v : packoffset(c0);
 };
 
-Texture2D<float4> nil_builtin_AllTextures2D[] : register(t0, space10);
+Texture2D<float4> nil_builtin_GetTexture2D[] : register(t0, space10);
 SamplerState IN_1_aSS : register(s0, space5);
 
 static float4 IN_1_aInput_color;
@@ -33,44 +33,47 @@ struct SPIRV_Cross_Output
 
 void frag_main()
 {
-    TestGpuFuncs_TestUniforms _194;
-    _194.mtxWVP = IN_1_aUniforms_v.mtxWVP;
-    _194.alphaRef = IN_1_aUniforms_v.alphaRef;
-    _194.padding0 = IN_1_aUniforms_v.padding0;
-    _194.padding1 = IN_1_aUniforms_v.padding1;
-    _194.padding2 = IN_1_aUniforms_v.padding2;
-    _194.materialColor = IN_1_aUniforms_v.materialColor;
-    float _288 = atan2(IN_2_aInput_tex0.y - 0.5f, IN_2_aInput_tex0.x - 0.5f);
-    float _290 = _288 + 1.57079637050628662109375f;
-    float _369;
-    if (_290 < 0.0f)
+    TestGpuFuncs_TestUniforms _197;
+    _197.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _197.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _197.padding0 = IN_1_aUniforms_v.padding0;
+    _197.padding1 = IN_1_aUniforms_v.padding1;
+    _197.padding2 = IN_1_aUniforms_v.padding2;
+    _197.materialColor = IN_1_aUniforms_v.materialColor;
+    float _294 = atan2(IN_2_aInput_tex0.y - 0.5f, IN_2_aInput_tex0.x - 0.5f);
+    float _296 = _294 + 1.57079637050628662109375f;
+    float _375;
+    if (_296 < 0.0f)
     {
-        _369 = _288 + 7.85398197174072265625f;
+        _375 = _294 + 7.85398197174072265625f;
     }
     else
     {
-        _369 = _290;
+        _375 = _296;
     }
-    float _307 = floor(_369 * 0.47746479511260986328125f);
-    float4 _370;
-    if (_307 < 1.0f)
+    float _313 = floor(_375 * 0.47746479511260986328125f);
+    float4 _376;
+    if (_313 < 1.0f)
     {
-        _370 = nil_builtin_AllTextures2D[uint(_194.padding0)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+        uint _234 = uint(_197.padding0);
+        _376 = nil_builtin_GetTexture2D[NonUniformResourceIndex(_234)].Sample(IN_1_aSS, IN_2_aInput_tex0);
     }
     else
     {
-        float4 _371;
-        if (_307 < 2.0f)
+        float4 _377;
+        if (_313 < 2.0f)
         {
-            _371 = nil_builtin_AllTextures2D[uint(_194.padding1)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+            uint _250 = uint(_197.padding1);
+            _377 = nil_builtin_GetTexture2D[NonUniformResourceIndex(_250)].Sample(IN_1_aSS, IN_2_aInput_tex0);
         }
         else
         {
-            _371 = nil_builtin_AllTextures2D[uint(_194.padding2)].Sample(IN_1_aSS, IN_2_aInput_tex0);
+            uint _262 = uint(_197.padding2);
+            _377 = nil_builtin_GetTexture2D[NonUniformResourceIndex(_262)].Sample(IN_1_aSS, IN_2_aInput_tex0);
         }
-        _370 = _371;
+        _376 = _377;
     }
-    OUT_0_rval_color = _370 * IN_1_aInput_color;
+    OUT_0_rval_color = _376 * IN_1_aInput_color;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

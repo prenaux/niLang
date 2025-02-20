@@ -11,7 +11,7 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 		<SeparateImages>
-			<SeparateImage name="nil_builtin_AllTextures2D" type="texture2D" set="10" binding="0">
+			<SeparateImage name="nil_builtin_GetTexture2D" type="texture2D" set="10" binding="0">
 				<array size="0"/>
 			</SeparateImage>
 		</SeparateImages>
@@ -19,7 +19,7 @@
 			<SeparateSampler name="IN_1_aSS" type="sampler" set="5" binding="0"/>
 		</SeparateSamplers>
 		<UBOs>
-			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_188" set="0" binding="0"/>
+			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_191" set="0" binding="0"/>
 		</UBOs>
 	</Reflection>
 	<Target target="spv_vk12" code_path="texture_bindless_ps.gpufunc.spv_vk12"/>

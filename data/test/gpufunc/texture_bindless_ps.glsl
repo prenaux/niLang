@@ -1,4 +1,4 @@
-#version 450
+#version 460
 #extension GL_EXT_nonuniform_qualifier : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
@@ -10,13 +10,13 @@ mat4 nil_Mat3x4ToMat4x4(mat3x4 m) { return mat4(vec4(m[0]), vec4(m[1]), vec4(m[2
 float lib_shader_FloatConsts_niPi2;
 float lib_shader_FloatConsts_ni2Pi;
 // FunctionFwd: lib:shader
+layout(set = 10, binding = 0) uniform texture2D nil_builtin_GetTexture2D[];
 void lib_shader_FloatConsts_static_initialize() {
   // TypeStatic: FloatConsts
   lib_shader_FloatConsts_niPi2 = 1.5707963267949;
   lib_shader_FloatConsts_ni2Pi = 6.2831853071796;
 }
 // Function: lib:shader
-layout(set = 10, binding = 0) uniform texture2D nil_builtin_AllTextures2D[];
 // ModuleInitialize: lib_shader
 void lib_shader_initialize() {
   lib_shader_FloatConsts_static_initialize();
@@ -71,16 +71,16 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_VertexOutput_texture_bindless_ps(TestGpuFu
   vec4 texColor;
   bool _tmp_3 = (q < 1.0);
   if (_tmp_3) {
-    texColor = texture(sampler2D(nil_builtin_AllTextures2D[uint(aUniforms.padding0)],aSS),aInput.tex0);
+    texColor = texture(sampler2D(nil_builtin_GetTexture2D[nonuniformEXT(uint(aUniforms.padding0))],aSS),aInput.tex0);
   }
   else {
     bool _tmp_d = (q < 2.0);
     if (_tmp_d) {
-      texColor = texture(sampler2D(nil_builtin_AllTextures2D[uint(aUniforms.padding1)],aSS),aInput.tex0);
+      texColor = texture(sampler2D(nil_builtin_GetTexture2D[nonuniformEXT(uint(aUniforms.padding1))],aSS),aInput.tex0);
     }
     else {
       {
-        texColor = texture(sampler2D(nil_builtin_AllTextures2D[uint(aUniforms.padding2)],aSS),aInput.tex0);
+        texColor = texture(sampler2D(nil_builtin_GetTexture2D[nonuniformEXT(uint(aUniforms.padding2))],aSS),aInput.tex0);
       }
     }
   }

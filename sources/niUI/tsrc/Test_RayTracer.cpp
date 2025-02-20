@@ -201,7 +201,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     cmdEncoder->SetTexture(texture, 0);
     cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
     cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,6,0);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
   }
 
   void _UpdateCamera() {

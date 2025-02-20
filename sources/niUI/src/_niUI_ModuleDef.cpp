@@ -9291,15 +9291,17 @@ static const ni::sMethodDef iGpuCommandEncoder_SetBlendColorConstant = {
 };
 
 // Method: Draw
-static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[3] = { 
+static const ni::sParameterDef iGpuCommandEncoder_Draw_Parameters[5] = { 
   { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
-  { "anVertexCount", ni::eType_U32, NULL, "tU32" }, 
-  { "anFirstVertex", ni::eType_U32, NULL, "tU32" }
+  { "anFirstInstance", ni::eType_U32, NULL, "tU32" }, 
+  { "anInstanceCount", ni::eType_U32, NULL, "tU32" }, 
+  { "anFirstVertex", ni::eType_U32, NULL, "tU32" }, 
+  { "anVertexCount", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_Draw = {
   "Draw",
   0|ni::eType_I8, NULL, "tBool",
-  3, iGpuCommandEncoder_Draw_Parameters,
+  5, iGpuCommandEncoder_Draw_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_Draw)
 #else
@@ -9308,15 +9310,18 @@ static const ni::sMethodDef iGpuCommandEncoder_Draw = {
 };
 
 // Method: DrawIndexed
-static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[3] = { 
+static const ni::sParameterDef iGpuCommandEncoder_DrawIndexed_Parameters[6] = { 
   { "aPrimType", ni::eType_Enum, NULL, "eGraphicsPrimitiveType" }, 
-  { "anNumIndices", ni::eType_U32, NULL, "tU32" }, 
-  { "anFirstIndex", ni::eType_U32, NULL, "tU32" }
+  { "anFirstInstance", ni::eType_U32, NULL, "tU32" }, 
+  { "anInstanceCount", ni::eType_U32, NULL, "tU32" }, 
+  { "anFirstVertex", ni::eType_U32, NULL, "tU32" }, 
+  { "anFirstIndex", ni::eType_U32, NULL, "tU32" }, 
+  { "anNumIndices", ni::eType_U32, NULL, "tU32" }
 }; 
 static const ni::sMethodDef iGpuCommandEncoder_DrawIndexed = {
   "DrawIndexed",
   0|ni::eType_I8, NULL, "tBool",
-  3, iGpuCommandEncoder_DrawIndexed_Parameters,
+  6, iGpuCommandEncoder_DrawIndexed_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iGpuCommandEncoder_DrawIndexed)
 #else
@@ -9551,6 +9556,18 @@ static const ni::sMethodDef iGraphicsDriverGpu_CreateGpuPipeline = {
 #endif
 };
 
+// Method: GetStorageBufferDeviceResourceManager
+static const ni::sMethodDef iGraphicsDriverGpu_GetStorageBufferDeviceResourceManager = {
+  "GetStorageBufferDeviceResourceManager",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iDeviceResourceManager), "iDeviceResourceManager*",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iGraphicsDriverGpu_GetStorageBufferDeviceResourceManager)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_CreateGpuBuffer,
 	&iGraphicsDriverGpu_CreateGpuBufferFromData,
@@ -9560,6 +9577,7 @@ static const ni::sMethodDef* Methods_iGraphicsDriverGpu[] = {
 	&iGraphicsDriverGpu_CreateGpuPipelineDesc,
 	&iGraphicsDriverGpu_CreateGpuBlendMode,
 	&iGraphicsDriverGpu_CreateGpuPipeline,
+	&iGraphicsDriverGpu_GetStorageBufferDeviceResourceManager,
 
 };
 

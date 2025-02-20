@@ -44,6 +44,14 @@
   }
 
   ///////////////////////////////////////////////
+  function firstKey(that) {
+    foreach (k,v in that) {
+      return k
+    }
+    return null
+  }
+
+  ///////////////////////////////////////////////
   function last(that,_aProperty) {
     local r
     if (_aProperty) {

@@ -19,7 +19,7 @@
 			<SeparateSampler name="IN_1_aSS" type="sampler" set="5" binding="0"/>
 		</SeparateSamplers>
 		<UBOs>
-			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_129" set="0" binding="0"/>
+			<UBO name="UBO_TestGpuFuncs_TestUniforms" type="_188" set="0" binding="0"/>
 		</UBOs>
 	</Reflection>
 	<Target target="spv_vk12" code_path="texture_bindless_ps.gpufunc.spv_vk12"/>

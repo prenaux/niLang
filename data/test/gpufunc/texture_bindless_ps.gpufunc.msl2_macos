@@ -65,32 +65,44 @@ fragment main0_out main0(main0_in in [[stage_in]], constant UBO_TestGpuFuncs_Tes
     spvDescriptorArray<texture2d<float>> nil_builtin_AllTextures2D {nil_builtin_AllTextures2D_};
 
     main0_out out = {};
-    TestGpuFuncs_TestUniforms _135;
-    _135.mtxWVP = IN_1_aUniforms.v.mtxWVP;
-    _135.alphaRef = IN_1_aUniforms.v.alphaRef;
-    _135.padding0 = IN_1_aUniforms.v.padding0;
-    _135.padding1 = IN_1_aUniforms.v.padding1;
-    _135.padding2 = IN_1_aUniforms.v.padding2;
-    _135.materialColor = IN_1_aUniforms.v.materialColor;
-    float4 _268;
-    if (in.IN_2_aInput_tex0.x < 0.300000011920928955078125)
+    TestGpuFuncs_TestUniforms _194;
+    _194.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _194.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _194.padding0 = IN_1_aUniforms.v.padding0;
+    _194.padding1 = IN_1_aUniforms.v.padding1;
+    _194.padding2 = IN_1_aUniforms.v.padding2;
+    _194.materialColor = IN_1_aUniforms.v.materialColor;
+    float _288 = precise::atan2(in.IN_2_aInput_tex0.y - 0.5, in.IN_2_aInput_tex0.x - 0.5);
+    float _290 = _288 + 1.57079637050628662109375;
+    float _369;
+    if (_290 < 0.0)
     {
-        _268 = nil_builtin_AllTextures2D[uint(_135.padding0)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+        _369 = _288 + 7.85398197174072265625;
     }
     else
     {
-        float4 _269;
-        if (in.IN_2_aInput_tex0.x < 0.699999988079071044921875)
+        _369 = _290;
+    }
+    float _307 = floor(_369 * 0.47746479511260986328125);
+    float4 _370;
+    if (_307 < 1.0)
+    {
+        _370 = nil_builtin_AllTextures2D[uint(_194.padding0)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+    }
+    else
+    {
+        float4 _371;
+        if (_307 < 2.0)
         {
-            _269 = nil_builtin_AllTextures2D[uint(_135.padding1)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+            _371 = nil_builtin_AllTextures2D[uint(_194.padding1)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
         }
         else
         {
-            _269 = nil_builtin_AllTextures2D[uint(_135.padding2)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
+            _371 = nil_builtin_AllTextures2D[uint(_194.padding2)].sample(IN_1_aSS, in.IN_2_aInput_tex0);
         }
-        _268 = _269;
+        _370 = _371;
     }
-    out.OUT_0_rval_color = _268 * in.IN_1_aInput_color;
+    out.OUT_0_rval_color = _370 * in.IN_1_aInput_color;
     return out;
 }
 

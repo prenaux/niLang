@@ -100,23 +100,23 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_triangle_rayquery_ps(lib_shader_PixelInput
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
   vec3 _tmp_J = lib_shader_UIntToHashColor((uint(rayQueryGetIntersectionInstanceIdEXT(rayQuery,true)) + 1));
   vec4 instanceColor = vec4(_tmp_J.x,_tmp_J.y,_tmp_J.z,1.0);
-  vec4 _tmp_R;
-  bool _tmp_S = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_S) {
-    _tmp_R = instanceColor;
+  vec4 _tmp_Q;
+  bool _tmp_R = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_R) {
+    _tmp_Q = instanceColor;
   }
   else {
-    bool _tmp_V = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedGenerated);
-    if (_tmp_V) {
-      _tmp_R = vec4(1.0,0.0,0.0,1.0);
+    bool _tmp_U = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedGenerated);
+    if (_tmp_U) {
+      _tmp_Q = vec4(1.0,0.0,0.0,1.0);
     }
     else {
       {
-        _tmp_R = vec4(0.0,0.5,0.8,0.0);
+        _tmp_Q = vec4(0.0,0.5,0.8,0.0);
       }
     }
   }
-  return TestGpuFuncs_PixelOutput_new(_tmp_R);
+  return TestGpuFuncs_PixelOutput_new(_tmp_Q);
 }
 // MODULE END TestGpuFuncs
 

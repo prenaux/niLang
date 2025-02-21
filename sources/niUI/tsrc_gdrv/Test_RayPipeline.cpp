@@ -6,7 +6,7 @@
 #include "MakeTestRayGeometry.h"
 
 //
-// TODO (1/18):
+// TODO: (list)
 // - [ ] p1: Checkerboard floor
 // - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
 // - [ ] p1: One reflective sphere on checkerboard floor
@@ -19,8 +19,8 @@
 // - [ ] p2: Compact static primitives AS
 // - [ ] p2: Textured cube
 // - [ ] p2: Visualize: tex coordinates
-// - [x] p0: FRay-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
-// - [x] p0: FRay-TriangleQuad: Multiple geometries, two triangles and a quad
+// - [x] p0: FRayPipeline-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
+// - [x] p0: FRayPipeline-TriangleQuad: Multiple geometries, two triangles and a quad
 // - [x] p0: Mixed sphere intersection shader with triangles
 // - [x] p0: Sphere intersection shader, visualize the sphere's normal?
 // - [x] p0: Visualize: one colour per instance index & custom instance id
@@ -33,10 +33,10 @@ namespace {
 
 //----------------------------------------------------------------------------
 //
-// Section: sFRay_Base
+// Section: sFRayPipeline_Base
 //
 //----------------------------------------------------------------------------
-struct sFRay_Base : public sFGDRV_Base {
+struct sFRayPipeline_Base : public sFGDRV_Base {
   tU32 _numTriVB = 0;
   tU32 _numTriIB = 0;
   tU32 _numQuadVB = 0;
@@ -139,9 +139,9 @@ struct sFRay_Base : public sFGDRV_Base {
 //
 //----------------------------------------------------------------------------
 //
-// clear ; ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
+// clear ; ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Triangle A2=-Drenderer=Vulkan BUILD=da
 //
-struct sFRay_Triangle : public sFRay_Base {
+struct sFRayPipeline_Triangle : public sFRayPipeline_Base {
 
   // Ray tracing instances, pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
@@ -153,7 +153,7 @@ struct sFRay_Triangle : public sFRay_Base {
   NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -251,9 +251,9 @@ struct sFRay_Triangle : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,Triangle);
+TEST_CLASS(FRayPipeline,Triangle);
 
-struct sFRay_Quad : public sFRay_Base {
+struct sFRayPipeline_Quad : public sFRayPipeline_Base {
 
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
@@ -265,7 +265,7 @@ struct sFRay_Quad : public sFRay_Base {
   NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -364,9 +364,9 @@ struct sFRay_Quad : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,Quad);
+TEST_CLASS(FRayPipeline,Quad);
 
-struct sFRay_TriangleQuad : public sFRay_Base {
+struct sFRayPipeline_TriangleQuad : public sFRayPipeline_Base {
 
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
@@ -378,7 +378,7 @@ struct sFRay_TriangleQuad : public sFRay_Base {
   NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -499,14 +499,14 @@ struct sFRay_TriangleQuad : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,TriangleQuad);
+TEST_CLASS(FRayPipeline,TriangleQuad);
 
 //----------------------------------------------------------------------------
 //
 // Section: Instances tests
 //
 //----------------------------------------------------------------------------
-struct sFRay_InstancesBase : public sFRay_Base {
+struct sFRayPipeline_InstancesBase : public sFRayPipeline_Base {
 
   const tHStringPtr _rchitPath;
 
@@ -531,12 +531,12 @@ struct sFRay_InstancesBase : public sFRay_Base {
   NN<iRayBuildEncoder> _rayBuildEncoder = niDeferredInit(NN<iRayBuildEncoder>);
   NN<iRayInstancesDesc> _instancesDesc = niDeferredInit(NN<iRayInstancesDesc>);
 
-  sFRay_InstancesBase(iHString* ahspRChitPath)
+  sFRayPipeline_InstancesBase(iHString* ahspRChitPath)
       : _rchitPath(ahspRChitPath)
   {}
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -643,40 +643,40 @@ struct sFRay_InstancesBase : public sFRay_Base {
   }
 };
 
-struct sFRay_Instances : public sFRay_InstancesBase {
-  sFRay_Instances()
-      : sFRay_InstancesBase(_H("test/rayfunc/triangle_rchit.gpufunc.xml"))
+struct sFRayPipeline_Instances : public sFRayPipeline_InstancesBase {
+  sFRayPipeline_Instances()
+      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_rchit.gpufunc.xml"))
   {}
 };
-TEST_CLASS(FRay,Instances);
+TEST_CLASS(FRayPipeline,Instances);
 
-struct sFRay_InstancesIndex : public sFRay_InstancesBase {
-  sFRay_InstancesIndex()
-      : sFRay_InstancesBase(_H("test/rayfunc/triangle_instanceindex_rchit.gpufunc.xml"))
+struct sFRayPipeline_InstancesIndex : public sFRayPipeline_InstancesBase {
+  sFRayPipeline_InstancesIndex()
+      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_instanceindex_rchit.gpufunc.xml"))
   {}
 };
-TEST_CLASS(FRay,InstancesIndex);
+TEST_CLASS(FRayPipeline,InstancesIndex);
 
-struct sFRay_InstancesId : public sFRay_InstancesBase {
-  sFRay_InstancesId()
-      : sFRay_InstancesBase(_H("test/rayfunc/triangle_instanceid_rchit.gpufunc.xml"))
+struct sFRayPipeline_InstancesId : public sFRayPipeline_InstancesBase {
+  sFRayPipeline_InstancesId()
+      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_instanceid_rchit.gpufunc.xml"))
   {}
 };
-TEST_CLASS(FRay,InstancesId);
+TEST_CLASS(FRayPipeline,InstancesId);
 
-struct sFRay_InstancesBary : public sFRay_InstancesBase {
-  sFRay_InstancesBary()
-      : sFRay_InstancesBase(_H("test/rayfunc/triangle_bary_rchit.gpufunc.xml"))
+struct sFRayPipeline_InstancesBary : public sFRayPipeline_InstancesBase {
+  sFRayPipeline_InstancesBary()
+      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_bary_rchit.gpufunc.xml"))
   {}
 };
-TEST_CLASS(FRay,InstancesBary);
+TEST_CLASS(FRayPipeline,InstancesBary);
 
 //----------------------------------------------------------------------------
 //
 // Section: Interesection tests
 //
 //----------------------------------------------------------------------------
-struct sFRay_IntSphere : public sFRay_Base {
+struct sFRayPipeline_IntSphere : public sFRayPipeline_Base {
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -688,7 +688,7 @@ struct sFRay_IntSphere : public sFRay_Base {
   NN<iTexture> _rayOutputImage = niDeferredInit(NN<iTexture>);
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -734,13 +734,13 @@ struct sFRay_IntSphere : public sFRay_Base {
         _driverRay->CreateRayInstancesDesc(_H("RayInstancesDesc_Sphere")),
         eFalse);
 
+      // Create a procedural AABB for the sphere
       {
         niLet prDesc = niCheckNN(
           prDesc,
           _driverRay->CreateRayProceduralPrimitivesDesc(_H("RayTrianglePrimitivesDesc_Sphere")),
           eFalse);
 
-        // Create a procedural AABB for the sphere
         niLet aabb = cAABBf(
           Vec3f(-0.5f,-0.5f,-0.5f),
           Vec3f(0.5f,0.5f,0.5f));
@@ -802,9 +802,9 @@ struct sFRay_IntSphere : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,IntSphere);
+TEST_CLASS(FRayPipeline,IntSphere);
 
-struct sFRay_IntSphereWithTriangles : public sFRay_Base {
+struct sFRayPipeline_IntSphereWithTriangles : public sFRayPipeline_Base {
   // Ray tracing pipeline and shaders
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
   NN<iGpuFunction> _rayGenFun = niDeferredInit(NN<iGpuFunction>);
@@ -819,7 +819,7 @@ struct sFRay_IntSphereWithTriangles : public sFRay_Base {
   tU32 _hitGroupSpheres = eInvalidHandle;
 
   niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
+    CHECK_RET(sFRayPipeline_Base::OnInit(testResults_),eFalse);
 
     // Create ray tracing shaders
     {
@@ -982,110 +982,6 @@ struct sFRay_IntSphereWithTriangles : public sFRay_Base {
     return eTrue;
   }
 };
-TEST_CLASS(FRay,IntSphereWithTriangles);
-
-//----------------------------------------------------------------------------
-//
-// Section: Ray queries
-//
-//----------------------------------------------------------------------------
-struct sFRay_RayQueryTriangle : public sFRay_Base {
-  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
-  NN<iGpuFunction> _triangleRayQueryFun = niDeferredInit(NN<iGpuFunction>);
-
-  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
-    CHECK_RET(sFRay_Base::OnInit(testResults_),eFalse);
-
-    // Create ray tracing shaders
-    {
-      _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
-      CHECK_EQUAL(eGpuFunctionType_Pixel,
-                  _triangleRayQueryFun->GetFunctionType());
-      CHECK_EQUAL(eGpuFunctionBindType_FixedRayInstances,
-                  _triangleRayQueryFun->GetFunctionBindType());
-    }
-
-    // Create acceleration structure
-    {
-      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
-      niLet instDesc = niCheckNN(
-        instDesc,
-        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_Triangle")),
-        eFalse);
-
-      // Add a triangle
-      {
-        niLet prDesc = niCheckNN(
-          prDesc,
-          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryTrianglePrimitivesDesc_Triangle")),
-          eFalse);
-
-        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
-        niCheck(prDesc->AddTriangles(
-          triangleVB,0,sizeof(tVertexTri),3,
-          sMatrixf::Identity(),
-          eRayPrimitiveFlags_Opaque,
-          0), eFalse);
-
-        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-          _H("RayTrianglePrimitives_Triangle"),prDesc), eFalse);
-
-        niCheck(instDesc->AddInstance(
-          primitiveAS,
-          sMatrixf::Identity(), // Transform
-          1,                    // Instance ID
-          0xFF,                 // Mask
-          0,                    // Hit group offset
-          eRayInstanceFlags_None), eFalse);
-      }
-
-      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
-        _H("RayInstances_Triangle"),instDesc), eFalse);
-    }
-
-    // Recreate the display pipeline with our shader
-    {
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
-      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_triangleRayQueryFun);
-      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_RayQueryTriangle_Pipeline"),pipelineDesc), eFalse);
-    }
-
-    return eTrue;
-  }
-
-  niFn(tBool) OnPaint(UnitTest::TestResults& testResults_) niOverride {
-    QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
-    niPanicAssert(gpuContext.IsOK());
-
-    TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)_graphicsContext->GetWidth();
-    u.rtHeight = (tF32)_graphicsContext->GetHeight();
-    u.cameraFarClipPlane = 10000.0f;
-    sMatrixf camView = MatrixLookAtLH(
-      Vec3f(0,0,-1.0f),
-      Vec3f(0,0,0),
-      Vec3f(0,1,0)
-    );
-    sMatrixf camProj = MatrixPerspectiveFovLH(
-      u.rtWidth/u.rtHeight,niRadf(45.0f),0.001f,u.cameraFarClipPlane);
-    u.cameraInvView = MatrixInverse(camView);
-    u.cameraInvViewProj = MatrixInverse(camView * camProj);
-
-    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
-
-    NN<iRayCommandEncoder> rayEncoder = AsNN(QueryInterface<iRayCommandEncoder>(gpuEncoder));
-    rayEncoder->SetRayInstances(_instanceAS);
-
-    DisplayTexture(gpuEncoder,nullptr);
-    return eTrue;
-  }
-};
-TEST_CLASS(FRay,RayQueryTriangle);
+TEST_CLASS(FRayPipeline,IntSphereWithTriangles);
 
 }

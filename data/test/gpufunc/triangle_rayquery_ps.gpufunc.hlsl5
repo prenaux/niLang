@@ -32,37 +32,37 @@ static RayQuery<RAY_FLAG_NONE> rayQuery;
 
 void frag_main()
 {
-    TestGpuFuncs_RayUniforms _269;
-    _269.rtWidth = IN_1_aUniforms_v.rtWidth;
-    _269.rtHeight = IN_1_aUniforms_v.rtHeight;
-    _269.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
-    _269.padding = IN_1_aUniforms_v.padding;
-    _269.cameraInvView = IN_1_aUniforms_v.cameraInvView;
-    _269.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
-    float3 _327 = float3(_269.cameraInvView[3].x, _269.cameraInvView[3].y, _269.cameraInvView[3].z);
-    float4 _385 = mul(float4(((gl_FragCoord.x / _269.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _269.rtHeight) * 2.0f), 1.0f, 1.0f), _269.cameraInvViewProj);
-    RayDesc _1ident = {_327, 0.001000000047497451305389404296875f, normalize((_385 / _385.w.xxxx).xyz - _327), _269.cameraFarClipPlane};
+    TestGpuFuncs_RayUniforms _268;
+    _268.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _268.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _268.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _268.padding = IN_1_aUniforms_v.padding;
+    _268.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _268.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _326 = float3(_268.cameraInvView[3].x, _268.cameraInvView[3].y, _268.cameraInvView[3].z);
+    float4 _383 = mul(float4(((gl_FragCoord.x / _268.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _268.rtHeight) * 2.0f), 1.0f, 1.0f), _268.cameraInvViewProj);
+    RayDesc _1ident = {_326, 0.001000000047497451305389404296875f, normalize((_383 / _383.w.xxxx).xyz - _326), _268.cameraFarClipPlane};
     rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
-    bool _342 = rayQuery.Proceed();
-    uint _343 = rayQuery.CommittedStatus();
-    int _344 = rayQuery.CommittedInstanceIndex();
-    uint _346 = uint(_344) + 1u;
-    uint _421 = _346 + (_346 << uint(10));
-    uint _425 = _421 ^ (_421 >> uint(6));
-    uint _429 = _425 + (_425 << uint(3));
-    uint _433 = _429 ^ (_429 >> uint(11));
-    uint _437 = _433 + (_433 << uint(15));
-    float4 _511;
-    if (_343 == 1u)
+    bool _341 = rayQuery.Proceed();
+    uint _342 = rayQuery.CommittedStatus();
+    int _343 = rayQuery.CommittedInstanceID();
+    uint _344 = uint(_343);
+    uint _419 = _344 + (_344 << uint(10));
+    uint _423 = _419 ^ (_419 >> uint(6));
+    uint _427 = _423 + (_423 << uint(3));
+    uint _431 = _427 ^ (_427 >> uint(11));
+    uint _435 = _431 + (_431 << uint(15));
+    float4 _509;
+    if (_342 == 1u)
     {
-        _511 = float4(float((_437 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_437 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_437 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
+        _509 = float4(float((_435 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_435 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_435 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
     }
     else
     {
-        bool4 _514 = (_343 == 2u).xxxx;
-        _511 = float4(_514.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _514.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _514.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _514.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _512 = (_342 == 2u).xxxx;
+        _509 = float4(_512.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _512.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _512.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _512.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _511;
+    OUT_0_rval_color = _509;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

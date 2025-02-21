@@ -1,0 +1,139 @@
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+
+#include <metal_stdlib>
+#include <simd/simd.h>
+#if __METAL_VERSION__ >= 230
+#include <metal_raytracing>
+using namespace metal::raytracing;
+#endif
+
+using namespace metal;
+
+intersection_params spvMakeIntersectionParams(uint flags)
+{
+    intersection_params ip;
+    if ((flags & 1) != 0)
+        ip.force_opacity(forced_opacity::opaque);
+    if ((flags & 2) != 0)
+        ip.force_opacity(forced_opacity::non_opaque);
+    if ((flags & 4) != 0)
+        ip.accept_any_intersection(true);
+    if ((flags & 16) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::back);
+    if ((flags & 32) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::front);
+    if ((flags & 64) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::opaque);
+    if ((flags & 128) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::non_opaque);
+    if ((flags & 256) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::triangle);
+    if ((flags & 512) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::bounding_box);
+    return ip;
+}
+
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct TestGpuFuncs_RayUniforms_1
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct UBO_TestGpuFuncs_RayUniforms
+{
+    TestGpuFuncs_RayUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+fragment main0_out main0(constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(0)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(1)]], float4 gl_FragCoord [[position]])
+{
+    main0_out out = {};
+    TestGpuFuncs_RayUniforms _369;
+    _369.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _369.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _369.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _369.padding = IN_1_aUniforms.v.padding;
+    _369.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _369.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _448 = float3(_369.cameraInvView[3].x, _369.cameraInvView[3].y, _369.cameraInvView[3].z);
+    float4 _538 = _369.cameraInvViewProj * float4(((gl_FragCoord.x / _369.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _369.rtHeight) * 2.0), 1.0, 1.0);
+    raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
+    rayQuery.reset(ray(_448, fast::normalize((_538 / float4(_538.w)).xyz - _448), 0.001000000047497451305389404296875, _369.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
+    for (;;)
+    {
+        bool _466 = rayQuery.next();
+        if (!_466)
+        {
+            break;
+        }
+        uint _471 = uint(rayQuery.get_candidate_intersection_type()) - 1;
+        if (_471 == 0u)
+        {
+            rayQuery.commit_triangle_intersection();
+            rayQuery.abort();
+        }
+        else
+        {
+            float3 _477 = rayQuery.get_candidate_ray_origin();
+            float3 _478 = rayQuery.get_candidate_ray_direction();
+            float _705;
+            do
+            {
+                float _560 = dot(_477, _478);
+                float _572 = (_560 * _560) - (dot(_477, _477) - 0.0900000035762786865234375);
+                if (_572 < 0.0)
+                {
+                    _705 = -1.0;
+                    break;
+                }
+                _705 = (-_560) - sqrt(_572);
+                break;
+            } while(false);
+            if (_705 >= 0.0)
+            {
+                rayQuery.commit_bounding_box_intersection(_705);
+                rayQuery.abort();
+            }
+        }
+        continue;
+    }
+    uint _495 = uint(rayQuery.get_committed_intersection_type());
+    int _496 = rayQuery.get_committed_user_instance_id();
+    uint _498 = uint(_496) + 1u;
+    uint _614 = _498 + (_498 << uint(10));
+    uint _618 = _614 ^ (_614 >> uint(6));
+    uint _622 = _618 + (_618 << uint(3));
+    uint _626 = _622 ^ (_622 >> uint(11));
+    uint _630 = _626 + (_626 << uint(15));
+    float4 _506 = float4(float((_630 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_630 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_630 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
+    float4 _706;
+    if (_495 == 1u)
+    {
+        _706 = _506;
+    }
+    else
+    {
+        _706 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), _506, bool4(_495 == 2u));
+    }
+    out.OUT_0_rval_color = _706;
+    return out;
+}
+

@@ -66,36 +66,36 @@ struct main0_out
 fragment main0_out main0(constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(0)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(1)]], float4 gl_FragCoord [[position]])
 {
     main0_out out = {};
-    TestGpuFuncs_RayUniforms _269;
-    _269.rtWidth = IN_1_aUniforms.v.rtWidth;
-    _269.rtHeight = IN_1_aUniforms.v.rtHeight;
-    _269.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
-    _269.padding = IN_1_aUniforms.v.padding;
-    _269.cameraInvView = IN_1_aUniforms.v.cameraInvView;
-    _269.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
-    float3 _327 = float3(_269.cameraInvView[3].x, _269.cameraInvView[3].y, _269.cameraInvView[3].z);
-    float4 _385 = _269.cameraInvViewProj * float4(((gl_FragCoord.x / _269.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _269.rtHeight) * 2.0), 1.0, 1.0);
+    TestGpuFuncs_RayUniforms _268;
+    _268.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _268.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _268.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _268.padding = IN_1_aUniforms.v.padding;
+    _268.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _268.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _326 = float3(_268.cameraInvView[3].x, _268.cameraInvView[3].y, _268.cameraInvView[3].z);
+    float4 _383 = _268.cameraInvViewProj * float4(((gl_FragCoord.x / _268.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _268.rtHeight) * 2.0), 1.0, 1.0);
     raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
-    rayQuery.reset(ray(_327, fast::normalize((_385 / float4(_385.w)).xyz - _327), 0.001000000047497451305389404296875, _269.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
-    bool _342 = rayQuery.next();
-    uint _343 = uint(rayQuery.get_committed_intersection_type());
-    int _344 = rayQuery.get_committed_instance_id();
-    uint _346 = uint(_344) + 1u;
-    uint _421 = _346 + (_346 << uint(10));
-    uint _425 = _421 ^ (_421 >> uint(6));
-    uint _429 = _425 + (_425 << uint(3));
-    uint _433 = _429 ^ (_429 >> uint(11));
-    uint _437 = _433 + (_433 << uint(15));
-    float4 _511;
-    if (_343 == 1u)
+    rayQuery.reset(ray(_326, fast::normalize((_383 / float4(_383.w)).xyz - _326), 0.001000000047497451305389404296875, _268.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
+    bool _341 = rayQuery.next();
+    uint _342 = uint(rayQuery.get_committed_intersection_type());
+    int _343 = rayQuery.get_committed_user_instance_id();
+    uint _344 = uint(_343);
+    uint _419 = _344 + (_344 << uint(10));
+    uint _423 = _419 ^ (_419 >> uint(6));
+    uint _427 = _423 + (_423 << uint(3));
+    uint _431 = _427 ^ (_427 >> uint(11));
+    uint _435 = _431 + (_431 << uint(15));
+    float4 _509;
+    if (_342 == 1u)
     {
-        _511 = float4(float((_437 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_437 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_437 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
+        _509 = float4(float((_435 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_435 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_435 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
     }
     else
     {
-        _511 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_343 == 2u));
+        _509 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_342 == 2u));
     }
-    out.OUT_0_rval_color = _511;
+    out.OUT_0_rval_color = _509;
     return out;
 }
 

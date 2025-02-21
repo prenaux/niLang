@@ -90,6 +90,7 @@ niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTra
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
 #define VULKAN_TRACE_DESCR(aFmt) niDebugFmt(aFmt)
+#define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
 
 #define NISH_VULKAN_TARGET spv_vk12
 
@@ -1734,9 +1735,11 @@ struct sVulkanBuffer : public ImplRC<
 
   sVulkanBuffer(
     ain<nn<sVulkanDriver>> aDriver,
+    iHString* ahspName,
     eGpuBufferMemoryMode aMemMode,
     tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
+      , _name(ahspName)
       , _memMode(aMemMode)
       , _usage(aUsage)
   {}
@@ -3329,13 +3332,14 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain<nn<sVulkanDriv
 struct sVulkanScratchBuffer {
   Ptr<sVulkanBuffer> _scratchBuffer;
 
-  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, VkDeviceSize aRequiredSize, tU32 aMinAlignment) {
+  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, iHString* ahspBaseName, VkDeviceSize aRequiredSize, tU32 aMinAlignment) {
     if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
       return eTrue;
     }
 
     _scratchBuffer = niNew sVulkanBuffer(
       aDriver,
+      VULKAN_RES_NAME("%s_ScratchBuffer",ahspBaseName),
       eGpuBufferMemoryMode_Private,
       eGpuBufferUsageFlags_Storage);
     niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize,aMinAlignment),eFalse);
@@ -3369,7 +3373,7 @@ struct sVulkanRayBase {
     iHString* ahspName)
       : _driver(aDriver)
       , _name(ahspName)
-      , _asStorage(aDriver,eGpuBufferMemoryMode_Shared,eGpuBufferUsageFlags_RayStorage)
+      , _asStorage(aDriver,VULKAN_RES_NAME("%s_asStorage",_name),eGpuBufferMemoryMode_Shared,eGpuBufferUsageFlags_RayStorage)
   {}
 
   virtual ~sVulkanRayBase() {
@@ -3483,7 +3487,7 @@ struct sVulkanRayASDesc {
     niLet numGeometries = (tU32)_vkGeometries.size();
 
     niCheck(_scratchBuffer._EnsureScratchBuffer(
-      _driver,
+      _driver,_name,
       aAS._asSizeInfo.buildScratchSize,
       _driver->_accelStructProps.minAccelerationStructureScratchOffsetAlignment),
             eFalse);
@@ -3906,6 +3910,7 @@ struct sVulkanRayInstancesDesc : public ImplRC<
 
     _instanceBuffer = ni::MakeNN<sVulkanBuffer>(
       _driver,
+      HFmt("%s_instanceBuffer"),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_RayBuildInput);
     niCheck(_instanceBuffer->_CreateBuffer(
@@ -4752,7 +4757,9 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
   // Create the dummy uniforms
   {
     _dummyBuffer = niNew sVulkanBuffer(
-      as_nn(this), eGpuBufferMemoryMode_Shared,
+      as_nn(this),
+      VULKAN_RES_NAME("_VulkanDriver_DummyBuffer"),
+      eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Uniform|eGpuBufferUsageFlags_Storage);
     niCheck(_dummyBuffer->_CreateBuffer(1024,0),eFalse);
     {
@@ -5879,7 +5886,7 @@ iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
 }
 
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
-  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
+  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),ahspName,aMemMode,aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
   niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
   return buffer;
@@ -5897,7 +5904,7 @@ Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromData(iHString* ahspName, iFile
 
 Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
   niCheck(apData != nullptr, nullptr);
-  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),aMemMode,aUsage);
+  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),ahspName,aMemMode,aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
   niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
   {

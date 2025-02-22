@@ -103,7 +103,6 @@ niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iZip();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iObjectTypeDef();
 niExportFunc(const ni::sInterfaceDef*) GetInterfaceDef_iModuleDef();
 
-niExportFunc(const ni::sEnumDef*) GetEnumDef_Unnamed();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eDataTablePropertyType();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eDataTableCopyFlags();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eExpressionVariableType();

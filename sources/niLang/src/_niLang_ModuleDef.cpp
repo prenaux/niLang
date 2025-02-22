@@ -25774,22 +25774,6 @@ static const ni::sInterfaceDef InterfaceDef_iModuleDef = {
 //////////////////////////////////////////////////////////////////////////////////////////////
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
 
-// --- Not named enums ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_Unnamed() {
-
-static const ni::sEnumValueDef Enum_Unnamed_Values[] = {
-	{ "True", ni::eTrue },
-	{ "False", ni::eFalse },
-	{ "TrueInDebug", ni::eTrueInDebug },
-	{ "FalseInDebug", ni::eFalseInDebug },
-};
-static const ni::sEnumDef Enum_Unnamed = {
-	"niLang.Unnamed",
-	4, Enum_Unnamed_Values
-};
-
-	return &Enum_Unnamed;
-}
 // --- eDataTablePropertyType ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eDataTablePropertyType() {
 
@@ -28230,7 +28214,6 @@ static const ni::sInterfaceDef* Interfaces[] = {
 
 #if !defined niConfig_OnlyObjectTypesIDL && !defined niConfig_NoEnumDef
 static const ni::sEnumDef* Enumerations[] = {
-  GetEnumDef_Unnamed(),
   GetEnumDef_eDataTablePropertyType(),
   GetEnumDef_eDataTableCopyFlags(),
   GetEnumDef_eExpressionVariableType(),

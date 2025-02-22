@@ -1352,26 +1352,10 @@ typedef tI8 tBool;
 
 #define niTrue 1
 #define niFalse 0
-#ifndef _DEBUG
-#  define niTrueInDebug 0
-#  define niFalseInDebug 1
-#else
-#  define niTrueInDebug 1
-#  define niFalseInDebug 0
-#endif
 
 #ifdef __cplusplus
-enum {
-  eTrue = 1,
-  eFalse = 0,
-#  ifndef _DEBUG
-  eTrueInDebug = 0,
-  eFalseInDebug = 1,
-#  else
-  eTrueInDebug = 1,
-  eFalseInDebug = 0,
-#  endif
-};
+niConstValue tBool eTrue = niTrue;
+niConstValue tBool eFalse = niFalse;
 #endif // __cplusplus
 
 typedef niTypeInt  tInt;
@@ -4326,19 +4310,19 @@ namespace ni {
 
 #  define niClassNoHeapAlloc(CLASS)                                     \
   public:                                                               \
-  inline void* operator new(size_t anSize, void* apMem) {               \
-    niUnused(anSize); return apMem;                                     \
+  inline void* operator new(size_t, void* apMem) {                      \
+    return apMem;                                                       \
   }                                                                     \
-  inline void operator delete(void* apMem, void* apMemDum)  { niAssertUnreachable("No Heap Alloc.");  } \
+  inline void operator delete(void*,void*) { niAssertUnreachable("No Heap Alloc."); } \
  private:                                                               \
- void* operator new(size_t anSize)   { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
- void* operator new[](size_t anSize) { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
- void* operator new(size_t anSize, const ni::achar *aaszFile, int anLine)  { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
- void* operator new[](size_t anSize, const ni::achar *aaszFile, int anLine)  { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
- void  operator delete(void *apMem)  { niAssertUnreachable("No Heap Alloc.");  } \
- void  operator delete[](void *apMem)  { niAssertUnreachable("No Heap Alloc.");  } \
- void  operator delete(void *apMem, const ni::achar *aaszFile, int anLine) { niAssertUnreachable("No Heap Alloc.");  } \
- void  operator delete[](void *apMem, const ni::achar *aaszFile, int anLine) { niAssertUnreachable("No Heap Alloc.");  }
+ void* operator new(size_t) { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
+ void* operator new[](size_t) { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
+ void* operator new(size_t, const ni::achar*, int) { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
+ void* operator new[](size_t, const ni::achar*, int) { niAssertUnreachable("No Heap Alloc."); return (void*)((ni::tIntPtr)ni::eInvalidHandle); } \
+ void  operator delete(void*) { niAssertUnreachable("No Heap Alloc.");  } \
+ void  operator delete[](void*) { niAssertUnreachable("No Heap Alloc.");  } \
+ void  operator delete(void*, const ni::achar*, int) { niAssertUnreachable("No Heap Alloc."); } \
+ void  operator delete[](void*, const ni::achar*, int) { niAssertUnreachable("No Heap Alloc.");  }
 
 #  define niClassNoDeref(CLASS)                 \
   private:                                      \

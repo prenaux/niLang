@@ -114,7 +114,7 @@ __forceinline bool IsFinite(const tF64 d) {
 }
 
 __forceinline tF32 InfiniteToZero(tF32 x) {
-  return IsFinite(x) ? x : 0.0;
+  return IsFinite(x) ? x : 0.0f;
 }
 __forceinline tF64 InfiniteToZero(tF64 x) {
   return IsFinite(x) ? x : 0.0;

@@ -9,6 +9,16 @@
 #include <new.h>
 #endif
 
+EA_DISABLE_VC_WARNING(
+  // warning C5054: operator '|': deprecated between enumerations of different
+  // types
+  5054
+  // warning C4127: conditional expression is constant
+  4127
+  // warning C4805: '==': unsafe mix of type ni::tBool == bool
+  4805
+)
+
 #undef niWin32API
 #define niWin32API(FUNC)  ::FUNC##W
 

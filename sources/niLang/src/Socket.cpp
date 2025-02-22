@@ -642,7 +642,7 @@ class cSocket : public ImplRC<ni::iSocket>
   virtual tI32 __stdcall ReceiveBuffers(iRemoteAddress* apAddress, sSocketBuffer* apBuffers, tSize anBufCount)
   {
     tI32 recvLength;
-    struct sockaddr_in sin;
+    struct sockaddr_in sin = {};
 
 #ifdef niPosix
     niCAssert(sizeof(struct iovec) == sizeof(sSocketBuffer));

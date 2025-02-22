@@ -403,10 +403,10 @@ struct CollectionTraitsMap : public astl::map<typename KEYT::tValueType,typename
     const typename tContainer::const_iterator it = aContainer.find(aVal);
     return (typename tContainer::iterator&)it;
   }
-  static tBool Reserve(tContainer& aContainer, tU32 anNumElements) {
+  static tBool Reserve(tContainer&, tU32) {
     return eFalse;
   }
-  static tBool Resize(tContainer& aContainer, tU32 anNumElements) {
+  static tBool Resize(tContainer&, tU32) {
     return eFalse;
   }
   static tBool __stdcall CanPut(const Var& aKey, const Var& aValue) {
@@ -474,10 +474,10 @@ struct CollectionTraitsMap : public astl::map<typename KEYT::tValueType,typename
     aKey = aIt->first;
     aVal = aIt->second;
   }
-  static tPtr __stdcall GetDataPtr(const tContainer& aContainer) {
+  static tPtr __stdcall GetDataPtr(const tContainer&) {
     return NULL;
   }
-  static tSize __stdcall GetDataSize(const tContainer& aContainer) {
+  static tSize __stdcall GetDataSize(const tContainer&) {
     return 0;
   }
 };

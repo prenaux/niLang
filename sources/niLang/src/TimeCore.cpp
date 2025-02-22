@@ -171,7 +171,7 @@ static TM* SecondsToUTCTM(const Time64_T in_time, struct TM *p)
   p->tm_mon  = v_tm_mon+1; // v_tm_mon is computed in base 0, we store in base 1
 
   niAssert((julian_days_by_month[leap][p->tm_mon-1] + (int)m) <= length_of_year[IS_LEAP(p->tm_year)]);
-  niAssert(check_tm(p));niUnused(check_tm);
+  niAssert(check_tm(p));
 
   return p;
 }

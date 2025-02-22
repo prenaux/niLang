@@ -4,21 +4,18 @@
 	<namespace name="ni"/>
 	<namespace name="ni"/>
 	<namespace name="ni">
-		<enum name="">
-			<comments desc=""/>
-			<value name="eTrue" value="1 ">
-				<comments desc=""/>
-			</value>
-			<value name="eFalse" value="0 ">
-				<comments desc=""/>
-			</value>
-			<value name="eTrueInDebug" value="0 ">
-				<comments desc=""/>
-			</value>
-			<value name="eFalseInDebug" value="1 ">
-				<comments desc=""/>
-			</value>
-		</enum>
+		<variable
+			name="eTrue"
+			type="constexpr tBool"
+			typec="constexpr tBool"
+			typei="ni::eType_I8"
+			value="niTrue"/>
+		<variable
+			name="eFalse"
+			type="constexpr tBool"
+			typec="constexpr tBool"
+			typei="ni::eType_I8"
+			value="niFalse"/>
 		<variable
 			name="kFeatures"
 			type="niConstValue tU32"

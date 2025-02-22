@@ -412,7 +412,7 @@ class cString
     return (achar*)niMalloc(size);
   }
   //! Deallocate memory allocated with the string's allocator
-  static void _deallocate(achar* ptr, tU32 size) {
+  static void _deallocate(achar* ptr,tU32) {
     niFree(ptr);
   }
 

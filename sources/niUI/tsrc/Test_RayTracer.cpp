@@ -9,34 +9,6 @@ namespace _ {
 
 using namespace ni;
 
-//
-// TODO:
-// - [ ] p0: Setup bindless descriptor support and eGpuFunctionBindType_BindlessRayTracing
-// - [ ] p0: Access vertex data & normals through bindless buffers
-// - [ ] p0: Rotating cube with basic lighting (1-2 hardcoded lights) using vertex normals
-// - [ ] p0: Ray trace with bary centric coordinates visualization
-// - [ ] p0: Ray trace a sphere with custom intersection test
-// - [ ] p0: Ray trace basic SDFs with union/difference operations
-//
-// Reference scenes (p1):
-// - [ ] Checkerboard floor
-// - [ ] Four reflective spheres on checkerboard (white, red, green, blue)
-// - [ ] One reflective sphere on checkerboard
-// - [ ] Cornell box with white-furnace sky
-// - [ ] Cornell box with ceiling light
-//
-// Debug visualizations (p1):
-// - [ ] Base color, normals, worldspace position
-//
-// References:
-// - Rotating cube w/lighting: https://youtu.be/kYb4Io7TQp4?si=loEyfkB7XRrjFn-e&t=19
-// - SDF resources:
-//   - https://www.youtube.com/watch?v=BNZtUB7yhX4
-//   - https://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/
-//   - https://danielchasehooper.com/posts/code-animated-rick/
-//   - https://github.com/sungiant/sdf
-//
-
 static const tF32 kfRunSpeed = 256.0f;
 static const tF32 kfNormalSpeed = 64.0f;
 

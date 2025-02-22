@@ -5,26 +5,9 @@
 #include <niUI/Utils/AABB.h>
 #include "MakeTestRayGeometry.h"
 
-//
-// TODO: (list)
-// - [ ] p0: Visualize: normals
-// - [ ] p0: Visualize: worldspace position
-// - [ ] p0: Visualize: tex coordinates
-// - [ ] p1: Ref PT cornell box white-furnace sky
-// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive quad should be the light source
-// - [ ] p1: Visualize: base color
-// - [ ] p2: Add dynamic primitive AS
-// - [ ] p2: Compact static primitives AS
-// - [ ] p2: Textured cube
-// - [ ] p1: Checkerboard floor
-// - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
-// - [ ] p1: One reflective sphere on checkerboard floor
-// - [x] p0: Sphere AABBs example
-//
-
 using namespace ni;
 
-namespace {
+namespace _ {
 
 //----------------------------------------------------------------------------
 //

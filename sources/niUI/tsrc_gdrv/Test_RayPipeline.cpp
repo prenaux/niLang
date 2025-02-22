@@ -5,31 +5,9 @@
 #include <niUI/Utils/AABB.h>
 #include "MakeTestRayGeometry.h"
 
-//
-// TODO: (list)
-// - [ ] p1: Checkerboard floor
-// - [ ] p1: Four reflective sphere on checkerboard floor (white, red, green, blue spheres)
-// - [ ] p1: One reflective sphere on checkerboard floor
-// - [ ] p1: Ref PT cornell box white-furnace sky
-// - [ ] p1: Ref PT cornell box with one light on the ceiling - one emissive quad should be the light source
-// - [ ] p1: Visualize: base color
-// - [ ] p1: Visualize: normals
-// - [ ] p1: Visualize: worldspace position
-// - [ ] p2: Add dynamic primitive AS
-// - [ ] p2: Compact static primitives AS
-// - [ ] p2: Textured cube
-// - [ ] p2: Visualize: tex coordinates
-// - [x] p0: FRayPipeline-Instances: Multiple instances, four triangles (one per instance), rotating - rebuilt every frame
-// - [x] p0: FRayPipeline-TriangleQuad: Multiple geometries, two triangles and a quad
-// - [x] p0: Mixed sphere intersection shader with triangles
-// - [x] p0: Sphere intersection shader, visualize the sphere's normal?
-// - [x] p0: Visualize: one colour per instance index & custom instance id
-// - [x] p0: Visualize: triangles with barycentric coordinate
-//
-
 using namespace ni;
 
-namespace {
+namespace _ {
 
 //----------------------------------------------------------------------------
 //

@@ -849,7 +849,8 @@ sVec2f __stdcall cFontTTF::GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex, tU32
 {
   GetTTFGlyphPath(
     mFace,anGlyphIndex,anSize,true,
-    // TODO: I dont know why we need to divide by two to get the right side, must be messing up something somewhere in the glyph extraction...
+    // TODO: I dont know why we need to divide by two to get the right size,
+    // we must be messing up something somewhere in the glyph extraction...
     agg::trans_affine_scaling(afScale/2.0f)*
     agg::trans_affine_translation(avOffset.x,avOffset.y)*
     agg::trans_affine_scaling(1/64.0f),

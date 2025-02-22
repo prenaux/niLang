@@ -489,6 +489,12 @@ static const MTLIndexType _toMTLIndexType[] = {
 };
 niCAssert(niCountOf(_toMTLIndexType) == eGpuIndexType_Last);
 
+static const tU32 _toMTLIndexByteSize[] = {
+  2,
+  4,
+};
+niCAssert(niCountOf(_toMTLIndexByteSize) == eGpuIndexType_Last);
+
 static inline tType _MTLDataTypeToType(MTLDataType aMTLDataType) {
   switch (aMTLDataType) {
     case MTLDataTypeFloat: return eType_F32;
@@ -1074,11 +1080,14 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   NN<iFixedGpuPipelines> mFixedPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
   LocalIDGenerator mIDGenerator;
   Ptr<iGraphicsDrawOpCapture> mptrDOCapture;
+  NN<iDeviceResourceManager> mDRMStorageBuffers;
 
-  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice) {
-    mpGraphics = apGraphics;
-    mMetalDevice = aDevice;
-
+  cMetalGraphicsDriver(iGraphics* apGraphics, id<MTLDevice> aDevice)
+      : mpGraphics(apGraphics)
+      , mMetalDevice(aDevice)
+      , mDRMStorageBuffers(ni::GetLang()->CreateDeviceResourceManager(
+        "GpuStorageBuffers"))
+  {
     _InitCompiledSamplerStates();
     _InitCompiledDepthStencilStates();
 
@@ -1545,6 +1554,10 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   virtual Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl {
     return ni::_CreateGpuBlendMode();
   }
+
+  iDeviceResourceManager* __stdcall GetStorageBufferDeviceResourceManager() const niImpl {
+    return mDRMStorageBuffers;
+  }
 };
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Metal(const Var& avarA, const Var& avarB) {
@@ -1781,7 +1794,11 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
      alpha:aColor.w];
   }
 
-  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType, tU32 anNumIndices, tU32 anFirstIndex) niImpl
+  virtual tBool __stdcall DrawIndexed(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex,
+    tU32 anFirstIndex, tU32 anNumIndices) niImpl
   {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
     niCheckIsOK(_indexBuffer,eFalse);
@@ -1790,16 +1807,27 @@ struct sMetalCommandEncoder : public ImplRC<iGpuCommandEncoder> {
      indexCount:anNumIndices
      indexType:_toMTLIndexType[_indexType]
      indexBuffer:_indexBuffer->_mtlBuffer
-     indexBufferOffset:_indexOffset + (anFirstIndex * sizeof(tU32))];
+     indexBufferOffset:(
+       _indexOffset +
+       (anFirstIndex * _toMTLIndexByteSize[_indexType])
+     )
+     instanceCount:anInstanceCount
+     baseVertex: anFirstVertex
+     baseInstance:anFirstInstance];
     return eTrue;
   }
 
-  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType, tU32 anVertexCount, tU32 anFirstVertex) niImpl
+  virtual tBool __stdcall Draw(
+    eGraphicsPrimitiveType aPrimType,
+    tU32 anFirstInstance, tU32 anInstanceCount,
+    tU32 anFirstVertex, tU32 anVertexCount) niImpl
   {
     niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
     [_cmdEncoder drawPrimitives:_toMTLPrimitiveType[aPrimType]
      vertexStart:anFirstVertex
-     vertexCount:anVertexCount];
+     vertexCount:anVertexCount
+     instanceCount:anInstanceCount
+     baseInstance:anFirstInstance];
     return eTrue;
   }
 };

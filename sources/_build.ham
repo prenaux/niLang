@@ -10,7 +10,6 @@ if $(TARGET_FEATURE_RTCPP) = 1 {
 if ! ( $(EMBEDDED) = 1 ) {
   SubInclude TOP niScript ;
   SubInclude TOP niUnitTest ;
-  SubInclude TOP niTestInterop ;
   SubInclude TOP ni ;
   SubInclude TOP genuuid ;
   SubInclude TOP thirdparty ;

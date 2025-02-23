@@ -71,7 +71,7 @@ local __lint = {
 }
 
 // Create a DataTable, see ni::iSystem::CreateDataTable
-::DataTable <- function(aName,_aInitWith) {
+::DataTable <- function(aName,_aInitWith) iDataTable {
   if (typeof aName == "table") {
     _aInitWith = aName
     aName = ""

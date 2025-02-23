@@ -24170,14 +24170,14 @@
 	<namespace name="ni" source="niLang/src/_idl/Types.h.idl.xml">
 		<variable
 			name="eTrue"
-			type="constexpr tBool"
-			typec="constexpr tBool"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
 			typei="ni::eType_I8"
 			value="niTrue"/>
 		<variable
 			name="eFalse"
-			type="constexpr tBool"
-			typec="constexpr tBool"
+			type="niConstValue tBool"
+			typec="niConstValue tBool"
 			typei="ni::eType_I8"
 			value="niFalse"/>
 		<variable

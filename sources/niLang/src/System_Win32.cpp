@@ -236,7 +236,6 @@ enum GAMECTRL {
   GAMECTRL_NOT_INITIALIZED,
   GAMECTRL_NONE,
   GAMECTRL_XINPUT,
-  GAMECTRL_DINPUT
 };
 
 static tU32 _knGameCtrlType = GAMECTRL_NOT_INITIALIZED;
@@ -246,21 +245,12 @@ void __stdcall XInputGameCtrls_Shutdown();
 tU32 __stdcall XInputGameCtrls_GetNumGameCtrls();
 iGameCtrl* __stdcall XInputGameCtrls_GetGameCtrl(tU32 anIndex);
 
-tBool __stdcall DInputGameCtrls_Startup();
-void __stdcall DInputGameCtrls_Shutdown();
-tU32 __stdcall DInputGameCtrls_GetNumGameCtrls();
-iGameCtrl* __stdcall DInputGameCtrls_GetGameCtrl(tU32 anIndex);
-
 static void _InitGameCtrls() {
   if (_knGameCtrlType != GAMECTRL_NOT_INITIALIZED)
     return;
 
   if (XInputGameCtrls_Startup()) {
     _knGameCtrlType = GAMECTRL_XINPUT;
-    return;
-  }
-  else if (DInputGameCtrls_Startup()) {
-    _knGameCtrlType = GAMECTRL_DINPUT;
     return;
   }
 
@@ -3262,8 +3252,6 @@ ni::tU32 __stdcall cLang::GetNumGameCtrls() const {
   switch (_knGameCtrlType) {
     case GAMECTRL_XINPUT:
       return XInputGameCtrls_GetNumGameCtrls();
-    case GAMECTRL_DINPUT:
-      return DInputGameCtrls_GetNumGameCtrls();
   }
   return 0;
 }
@@ -3272,8 +3260,6 @@ iGameCtrl* __stdcall cLang::GetGameCtrl(tU32 anIndex) const {
   switch (_knGameCtrlType) {
     case GAMECTRL_XINPUT:
       return XInputGameCtrls_GetGameCtrl(anIndex);
-    case GAMECTRL_DINPUT:
-      return DInputGameCtrls_GetGameCtrl(anIndex);
   }
   return NULL;
 }

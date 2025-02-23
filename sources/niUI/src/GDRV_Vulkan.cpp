@@ -50,15 +50,13 @@ _HDecl(__vkbuff_dummy__);
 niLetK knVulkanMaxFramesInFlight = 1_u32;
 niLetK kfVulkanSamplerFilterAnisotropy = 8.0_f32;
 
-niLetK knVulkanMaxDescrSetsAllocs = 10000_u32;
+niLetK knVulkanMaxDescrSetsAllocs = 100000_u32;
 
-// This covers "16 channels" in fixed materials
-niLetK knVulkanMaxDescrFixedTextures = 16_u32;
-niLetK knVulkanMaxDescrFixedSamplers = knCompiledStatesNumSamplers;
-
-// Uniform buffer value is kind of arbitrary, 16 bindings seems more than
-// enough, if you need more switch to bindless?
-niLetK knVulkanMaxDescrFixedUniformBuffers = 16_u32;
+// This is essentially the number of
+// "SetTexture/SetSamplerState/SetUniformBuffer" per frame.
+niLetK knVulkanMaxDescrFixedTextures = knVulkanMaxDescrSetsAllocs;
+niLetK knVulkanMaxDescrFixedSamplers = knVulkanMaxDescrSetsAllocs;
+niLetK knVulkanMaxDescrFixedUniformBuffers = knVulkanMaxDescrSetsAllocs;
 
 // Note: We've tried to find a way to detect that but couldnt.
 niLetK knVulkanMaxDescrBindlessTextures = 100000_u32;
@@ -89,7 +87,7 @@ static const char* _vkRequiredRayTracingExtensions[] = {
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
-#define VULKAN_TRACE_DESCR(aFmt) niDebugFmt(aFmt)
+#define VULKAN_TRACE_DESCR(aFmt) //niDebugFmt(aFmt)
 #define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
 
 #define NISH_VULKAN_TARGET spv_vk12

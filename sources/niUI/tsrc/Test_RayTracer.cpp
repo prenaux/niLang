@@ -53,6 +53,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   tU32 _numTriIB = 0;
   tU32 _numQuadVB = 0;
   tU32 _numQuadIB = 0;
+  tU32 _customInstanceIndex = 1;
 
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
   NN<iGraphicsDriverRay> _driverRay = niDeferredInit(NN<iGraphicsDriverRay>);
@@ -398,10 +399,10 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return mat;
   }
 
-  tBool CreateSphere(const sVec3f& avCenter, iTexture* apTex, tF32 afSize = 10.0f, tBool abForceTranslucent = eFalse) {
+  tBool CreatePolySphere(const sVec3f& avCenter, iTexture* apTex, tF32 afSize = 10.0f, tBool abForceTranslucent = eFalse) {
     Ptr<iGeometry> g = mpWidget->GetGraphics()->CreateGeometryPolygonalSphere(
-        eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
-        afSize,16,16,eTrue,0xFFFFFFFF,sMatrixf::Identity());
+      eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
+      afSize,16,16,eTrue,0xFFFFFFFF,sMatrixf::Identity());
 
     Ptr<iMaterial> mat = CreateMaterial(apTex);
     if (abForceTranslucent) {
@@ -420,12 +421,12 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool CreateCube(const sVec3f& avCenter, iTexture* apTex,
-                   tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
+  tBool CreatePolyCube(const sVec3f& avCenter, iTexture* apTex,
+                       tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
   {
     Ptr<iGeometry> g = mpWidget->GetGraphics()->CreateGeometryPolygonalCube(
-        eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
-        sVec3f::Zero(),afSize*2.0f,abCW,0xFFFFFFFF,sMatrixf::Identity());
+      eGeometryCreateFlags_Static,eFVF_Position|eFVF_Tex1|eFVF_Normal,
+      sVec3f::Zero(),afSize*2.0f,abCW,0xFFFFFFFF,sMatrixf::Identity());
 
     Ptr<iMaterial> mat = CreateMaterial(apTex);
     if (_noTextures && apTex) {
@@ -446,22 +447,131 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool InitSceneOneBox(tBool abBoxed = eFalse) {
-    niCheck(CreateCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+  tBool AddScenePolyGround() {
+    niLog(Info,"AddSceneGround Begin");
+    niCheck(CreatePolyCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+    niLog(Info,"AddSceneGround End");
     return eTrue;
   }
 
-  tBool InitSceneManyBoxes(tBool abBoxed = eFalse) {
-    niCheck(CreateCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+  tBool AddSceneManyPolyBoxes() {
+    niLog(Info,"AddSceneManyBoxes Begin");
+    niCheck(CreatePolyCube(Vec3(-25.0f,-20.0f,100.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3(-30.0f,-10.0f,110.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3(-30.0f, 10.0f,105.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3( 25.0f,-20.0f,100.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3( 30.0f,-10.0f,110.0f),nullptr),eFalse);
 
-    niCheck(CreateCube(Vec3(-25.0f,-20.0f,100.0f),nullptr),eFalse);
-    niCheck(CreateCube(Vec3(-30.0f,-10.0f,110.0f),nullptr),eFalse);
-    niCheck(CreateCube(Vec3(-30.0f, 10.0f,105.0f),nullptr),eFalse);
-    niCheck(CreateCube(Vec3( 25.0f,-20.0f,100.0f),nullptr),eFalse);
-    niCheck(CreateCube(Vec3( 30.0f,-10.0f,110.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3( 30.0f, 10.0f,105.0f),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3(  0.0f,-15.0f,75.0f),nullptr,eTrue,eTrue),eFalse);
+    niLog(Info,"AddSceneManyBoxes End");
+    return eTrue;
+  }
 
-    niCheck(CreateCube(Vec3( 30.0f, 10.0f,105.0f),nullptr),eFalse);
-    niCheck(CreateCube(Vec3(  0.0f,-15.0f,75.0f),nullptr,eTrue,eTrue),eFalse);
+  tBool AddSceneFourPolySpheres() {
+    niLog(Info,"AddSceneFourSpheres Begin");
+    niCheck(CreatePolySphere(Vec3(-75.0f,-20.0f,150.0f),nullptr,20.0f,eTrue),eFalse);
+    niCheck(CreatePolySphere(Vec3( 75.0f,-20.0f,150.0f),nullptr,20.0f,eTrue),eFalse);
+    niCheck(CreatePolySphere(Vec3( 75.0f,-20.0f,200.0f),nullptr,20.0f,eTrue),eFalse);
+    niCheck(CreatePolySphere(Vec3(-75.0f,-20.0f,200.0f),nullptr,20.0f,eTrue),eFalse);
+    niLog(Info,"AddSceneFourSpheres End");
+    return eTrue;
+  }
+
+  tBool AddSceneManyPolySpheres(const tU32 sphereCount = 25, const tU32 stacks = 2) {
+    niLog(Info,"AddSceneManyPolySpheres Begin");
+    const tF32 sphereDistance = 65.0f;
+    tF32 sphereRad = 0.0f;
+
+    niLoop(j,stacks) {
+      niLoop(i,sphereCount) {
+        sphereRad += (tF32)2.0f*niPif/(tF32)sphereCount;
+        sVec3f p;
+        p.y = -20.0f + (tF32)j*20.0f;
+        p.x = ni::Sin(sphereRad)*sphereDistance;
+        p.z = ni::Cos(sphereRad)*sphereDistance;
+        niCheck(CreatePolySphere(p+Vec3(0.0f,0.0f,100.0f),nullptr,8.0f),eFalse);
+      }
+    }
+
+    niLog(Info,"AddSceneManyPolySpheres End");
+    return eTrue;
+  }
+
+  tBool AddRayTriangle(ain<nn<iRayBuildEncoder>> aBuildEncoder, ain<nn<iRayInstancesDesc>> aInstDesc) {
+    niLog(Info,"AddRayTriangle Begin");
+    niLet prDesc = niCheckNN(
+      prDesc,
+      _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_RayTrianglePrimitivesDesc",m_testName)),
+      eFalse);
+
+    niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
+    niCheck(prDesc->AddTriangles(
+      triangleVB,0,sizeof(tVertexTri),3,
+      sMatrixf::Identity(),
+      eRayPrimitiveFlags_Opaque,
+      0), eFalse);
+
+    niLet primitiveAS = niCheckNN(primitiveAS, aBuildEncoder->BuildRayTrianglePrimitives(
+      HFmt("%s_RayTrianglePrimitives",m_testName),prDesc), eFalse);
+
+    niCheck(aInstDesc->AddInstance(
+      primitiveAS,
+      sMatrixf::Identity(),  // Transform
+      _customInstanceIndex++, // Instance ID
+      0xFF,                  // Mask
+      0,                     // Hit group offset
+      eRayInstanceFlags_None), eFalse);
+
+    niLog(Info,"AddRayTriangle End");
+    return eTrue;
+  }
+
+  tBool AddRayGeoms(ain<nn<iRayBuildEncoder>> aBuildEncoder, ain<nn<iRayInstancesDesc>> aInstDesc) {
+    niLog(Info,"AddRayGeoms Begin");
+    niLoop(i,_geoms.size()) {
+      niLet& geom = _geoms[i];
+      nn<iDrawOperation> dop = geom._drawOp;
+      niLet fvfDesc = cFVFDescription(dop->GetVertexArray()->GetFVF());
+      NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
+      NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
+
+      niLet prDesc = niCheckNN(
+        prDesc,
+        _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_RayTrianglePrimitiveDesc_%d",m_testName,i)),
+        eFalse);
+
+      const tU32 firstInd = dop->GetFirstIndex();
+      tU32 numInds = dop->GetNumIndices();
+      if (!numInds) {
+        numInds = dop->GetIndexArray()->GetNumIndices()-firstInd;
+      }
+      niCheck(prDesc->AddTrianglesIndexed(
+        vaBuffer,
+        dop->GetBaseVertexIndex()*fvfDesc.GetStride(),
+        fvfDesc.GetStride(),
+        dop->GetVertexArray()->GetNumVertices(),
+        iaBuffer,
+        firstInd*sizeof(tU32),
+        eGpuIndexType_U32,
+        numInds,
+        sMatrixf::Identity(),
+        eRayPrimitiveFlags_Opaque,
+        0), eFalse);
+
+      niLet primitiveAS = niCheckNN(primitiveAS, aBuildEncoder->BuildRayTrianglePrimitives(
+        HFmt("%s_Prim_%d",m_testName,i),prDesc), eFalse);
+
+      niCheck(aInstDesc->AddInstance(
+        primitiveAS,
+        dop->GetMatrix(),      // Transform
+        _customInstanceIndex++, // Instance ID
+        0xFF,                  // Mask
+        0,                     // Hit group offset
+        eRayInstanceFlags_None), eFalse);
+    }
+
+    niLog(Info,"AddRayGeoms End");
     return eTrue;
   }
 
@@ -486,82 +596,13 @@ struct Triangle : public RayTracerBase {
       niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
       niLet instDesc = niCheckNN(
         instDesc,
-        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_Triangle")),
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
         eFalse);
 
-      // Add a triangle
-      {
-        niLet prDesc = niCheckNN(
-          prDesc,
-          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryTrianglePrimitivesDesc_Triangle")),
-          eFalse);
-
-        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
-        niCheck(prDesc->AddTriangles(
-          triangleVB,0,sizeof(tVertexTri),3,
-          sMatrixf::Identity(),
-          eRayPrimitiveFlags_Opaque,
-          0), eFalse);
-
-        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-          _H("RayTrianglePrimitives_Triangle"),prDesc), eFalse);
-
-        niCheck(instDesc->AddInstance(
-          primitiveAS,
-          sMatrixf::Identity(), // Transform
-          0,                    // Instance ID
-          0xFF,                 // Mask
-          0,                    // Hit group offset
-          eRayInstanceFlags_None), eFalse);
-      }
-
-      // Add all draw operations
-      {
-        niLoop(i,_geoms.size()) {
-          niLet& geom = _geoms[i];
-          nn<iDrawOperation> dop = geom._drawOp;
-          niLet fvfDesc = cFVFDescription(dop->GetVertexArray()->GetFVF());
-          NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
-
-          niLet prDesc = niCheckNN(
-            prDesc,
-            _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_PrimDesc_%d",m_testName,i)),
-            eFalse);
-
-          const tU32 firstInd = dop->GetFirstIndex();
-          tU32 numInds = dop->GetNumIndices();
-          if (!numInds) {
-            numInds = dop->GetIndexArray()->GetNumIndices()-firstInd;
-          }
-          niCheck(prDesc->AddTrianglesIndexed(
-            vaBuffer,
-            dop->GetBaseVertexIndex()*fvfDesc.GetStride(),
-            fvfDesc.GetStride(),
-            dop->GetVertexArray()->GetNumVertices(),
-            iaBuffer,
-            firstInd*sizeof(tU32),
-            eGpuIndexType_U32,
-            numInds,
-            sMatrixf::Identity(),
-            eRayPrimitiveFlags_Opaque,
-            0), eFalse);
-
-          niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-            HFmt("%s_Prim_%d",m_testName,i),prDesc), eFalse);
-
-          niCheck(instDesc->AddInstance(
-            primitiveAS,
-            dop->GetMatrix(),     // Transform
-            0,                    // Instance ID
-            0xFF,                 // Mask
-            0,                    // Hit group offset
-            eRayInstanceFlags_None), eFalse);
-        }
-      }
+      niCheck(AddRayTriangle(buildEncoder,instDesc),eFalse);
 
       _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
-        _H("RayInstances_Triangle"),instDesc), eFalse);
+        HFmt("%s_RayInstances",m_testName),instDesc), eFalse);
     }
 
     return eTrue;
@@ -593,100 +634,33 @@ TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
 
 //----------------------------------------------------------------------------
 //
-// Section: ManyBoxes
+// Section: ManyPolyBoxes
 //
 //----------------------------------------------------------------------------
-struct ManyBoxes : public RayTracerBase {
+struct ManyPolyBoxes : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
 
-  TEST_CONSTRUCTOR_BASE(ManyBoxes,RayTracerBase) {
+  TEST_CONSTRUCTOR_BASE(ManyPolyBoxes,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
     CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
-    CHECK(InitSceneManyBoxes());
+    CHECK(AddScenePolyGround());
+    CHECK(AddSceneManyPolyBoxes());
 
     // Create acceleration structure
     {
       niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
       niLet instDesc = niCheckNN(
         instDesc,
-        _driverRay->CreateRayInstancesDesc(_H("RayQueryInstancesDesc_ManyBoxes")),
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
         eFalse);
 
-      // Add a triangle
-      {
-        niLet prDesc = niCheckNN(
-          prDesc,
-          _driverRay->CreateRayTrianglePrimitivesDesc(_H("RayQueryManyBoxesPrimitivesDesc_ManyBoxes")),
-          eFalse);
-
-        niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
-        niCheck(prDesc->AddTriangles(
-          triangleVB,0,sizeof(tVertexTri),3,
-          sMatrixf::Identity(),
-          eRayPrimitiveFlags_Opaque,
-          0), eFalse);
-
-        niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-          _H("RayTrianglePrimitives_ManyBoxes"),prDesc), eFalse);
-
-        niCheck(instDesc->AddInstance(
-          primitiveAS,
-          sMatrixf::Identity(), // Transform
-          0,                    // Instance ID
-          0xFF,                 // Mask
-          0,                    // Hit group offset
-          eRayInstanceFlags_None), eFalse);
-      }
-
-      // Add all draw operations
-      {
-        niLoop(i,_geoms.size()) {
-          niLet& geom = _geoms[i];
-          nn<iDrawOperation> dop = geom._drawOp;
-          niLet fvfDesc = cFVFDescription(dop->GetVertexArray()->GetFVF());
-          NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
-
-          niLet prDesc = niCheckNN(
-            prDesc,
-            _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_PrimDesc_%d",m_testName,i)),
-            eFalse);
-
-          const tU32 firstInd = dop->GetFirstIndex();
-          tU32 numInds = dop->GetNumIndices();
-          if (!numInds) {
-            numInds = dop->GetIndexArray()->GetNumIndices()-firstInd;
-          }
-          niCheck(prDesc->AddTrianglesIndexed(
-            vaBuffer,
-            dop->GetBaseVertexIndex()*fvfDesc.GetStride(),
-            fvfDesc.GetStride(),
-            dop->GetVertexArray()->GetNumVertices(),
-            iaBuffer,
-            firstInd*sizeof(tU32),
-            eGpuIndexType_U32,
-            numInds,
-            sMatrixf::Identity(),
-            eRayPrimitiveFlags_Opaque,
-            0), eFalse);
-
-          niLet primitiveAS = niCheckNN(primitiveAS, buildEncoder->BuildRayTrianglePrimitives(
-            HFmt("%s_Prim_%d",m_testName,i),prDesc), eFalse);
-
-          niCheck(instDesc->AddInstance(
-            primitiveAS,
-            dop->GetMatrix(),     // Transform
-            0,                    // Instance ID
-            0xFF,                 // Mask
-            0,                    // Hit group offset
-            eRayInstanceFlags_None), eFalse);
-        }
-      }
+      niCheck(AddRayTriangle(buildEncoder,instDesc),eFalse);
+      niCheck(AddRayGeoms(buildEncoder,instDesc),eFalse);
 
       _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
-        _H("RayInstances_ManyBoxes"),instDesc), eFalse);
+        HFmt("%s_RayInstances",m_testName),instDesc), eFalse);
     }
 
     return eTrue;
@@ -714,7 +688,66 @@ struct ManyBoxes : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,ManyBoxes);
+TEST_FIXTURE_WIDGET(FRayTracer,ManyPolyBoxes);
+
+//----------------------------------------------------------------------------
+//
+// Section: ManyPolySpheres
+//
+//----------------------------------------------------------------------------
+struct ManyPolySpheres : public RayTracerBase {
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+
+  TEST_CONSTRUCTOR_BASE(ManyPolySpheres,RayTracerBase) {
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
+    CHECK(AddScenePolyGround());
+    CHECK(AddSceneFourPolySpheres());
+    CHECK(AddSceneManyPolySpheres(12,2));
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      niLet instDesc = niCheckNN(
+        instDesc,
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
+        eFalse);
+
+      niCheck(AddRayTriangle(buildEncoder,instDesc),eFalse);
+      niCheck(AddRayGeoms(buildEncoder,instDesc),eFalse);
+
+      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+        HFmt("%s_RayInstances",m_testName),instDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+    RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+
+    DisplayTexture(gpuEncoder,nullptr);
+    return eFalse;
+  }
+};
+TEST_FIXTURE_WIDGET(FRayTracer,ManyPolySpheres);
 
 }
 #endif

@@ -1,0 +1,53 @@
+#version 460
+#extension GL_EXT_ray_query : require
+
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    mat4 cameraInvView;
+    mat4 cameraInvViewProj;
+};
+
+uniform vec4 UBO_TestGpuFuncs_RayUniforms[9];
+layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
+
+layout(location = 0) out vec4 OUT_0_rval_color;
+rayQueryEXT rayQuery;
+
+void main()
+{
+    TestGpuFuncs_RayUniforms _279 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
+    TestGpuFuncs_RayUniforms _280;
+    _280.rtWidth = _279.rtWidth;
+    _280.rtHeight = _279.rtHeight;
+    _280.cameraFarClipPlane = _279.cameraFarClipPlane;
+    _280.padding = _279.padding;
+    _280.cameraInvView = _279.cameraInvView;
+    _280.cameraInvViewProj = _279.cameraInvViewProj;
+    vec3 _373 = vec3(_280.cameraInvView[3].x, _280.cameraInvView[3].y, _280.cameraInvView[3].z);
+    vec4 _401 = _280.cameraInvViewProj * vec4(((gl_FragCoord.x / _280.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _280.rtHeight) * 2.0), 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, _373, 0.001000000047497451305389404296875, normalize((_401 / vec4(_401.w)).xyz - _373), _280.cameraFarClipPlane);
+    bool _313 = rayQueryProceedEXT(rayQuery);
+    uint _314 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    int _315 = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, bool(1));
+    uint _316 = uint(_315);
+    uint _437 = _316 + (_316 << uint(10));
+    uint _441 = _437 ^ (_437 >> uint(6));
+    uint _445 = _441 + (_441 << uint(3));
+    uint _449 = _445 ^ (_445 >> uint(11));
+    uint _453 = _449 + (_449 << uint(15));
+    vec4 _547;
+    if (_314 == 1u)
+    {
+        _547 = vec4(float((_453 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_453 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_453 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
+    }
+    else
+    {
+        _547 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_314 == 2u));
+    }
+    OUT_0_rval_color = _547;
+}
+

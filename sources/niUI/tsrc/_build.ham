@@ -14,15 +14,9 @@ DEPENDS $(PACKAGE) :
 [ niBuildGpuFuncs $(PACKAGE)_gpufuncs :
   $(TK_DIR) data test gpufunc :
   $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
-  triangle_vs
-  triangle_ps
   texture_vs
-  texture_ps
-  texture_alphatest_vs
-  texture_alphatest_ps
-  skybox_vs
-  skybox_ps
-  triangle_rayquery_ps
+  raytracer_instindex_ps
+  raytracer_bary_ps
 ] ;
 
 DEPENDS $(PACKAGE) :

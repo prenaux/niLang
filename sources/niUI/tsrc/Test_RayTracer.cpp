@@ -454,7 +454,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool AddSceneManyPolyBoxes() {
+  tBool AddSceneSevenPolyBoxes() {
     niLog(Info,"AddSceneManyBoxes Begin");
     niCheck(CreatePolyCube(Vec3(-25.0f,-20.0f,100.0f),nullptr),eFalse);
     niCheck(CreatePolyCube(Vec3(-30.0f,-10.0f,110.0f),nullptr),eFalse);
@@ -589,7 +589,7 @@ struct Triangle : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
 
     // Create acceleration structure
     {
@@ -634,19 +634,20 @@ TEST_FIXTURE_WIDGET(FRayTracer,Triangle);
 
 //----------------------------------------------------------------------------
 //
-// Section: ManyPolyBoxes
+// Section: BoxesAndSpheresInstIndex
 //
 //----------------------------------------------------------------------------
-struct ManyPolyBoxes : public RayTracerBase {
+struct BoxesAndSpheresInstIndex : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
 
-  TEST_CONSTRUCTOR_BASE(ManyPolyBoxes,RayTracerBase) {
+  TEST_CONSTRUCTOR_BASE(BoxesAndSpheresInstIndex,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
-    CHECK(AddSceneManyPolyBoxes());
+    CHECK(AddSceneSevenPolyBoxes());
+    CHECK(AddSceneFourPolySpheres());
 
     // Create acceleration structure
     {
@@ -688,24 +689,24 @@ struct ManyPolyBoxes : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,ManyPolyBoxes);
+TEST_FIXTURE_WIDGET(FRayTracer,BoxesAndSpheresInstIndex);
 
 //----------------------------------------------------------------------------
 //
-// Section: ManyPolySpheres
+// Section: ManyPolySpheresInstIndex
 //
 //----------------------------------------------------------------------------
-struct ManyPolySpheres : public RayTracerBase {
+struct ManyPolySpheresInstIndex : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
 
-  TEST_CONSTRUCTOR_BASE(ManyPolySpheres,RayTracerBase) {
+  TEST_CONSTRUCTOR_BASE(ManyPolySpheresInstIndex,RayTracerBase) {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneFourPolySpheres());
-    CHECK(AddSceneManyPolySpheres(12,2));
+    CHECK(AddSceneManyPolySpheres(25,2));
 
     // Create acceleration structure
     {
@@ -747,7 +748,66 @@ struct ManyPolySpheres : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,ManyPolySpheres);
+TEST_FIXTURE_WIDGET(FRayTracer,ManyPolySpheresInstIndex);
+
+//----------------------------------------------------------------------------
+//
+// Section: BoxesAndSpheresBary
+//
+//----------------------------------------------------------------------------
+struct BoxesAndSpheresBary : public RayTracerBase {
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+
+  TEST_CONSTRUCTOR_BASE(BoxesAndSpheresBary,RayTracerBase) {
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_bary_ps.gpufunc.xml")));
+    CHECK(AddScenePolyGround());
+    CHECK(AddSceneSevenPolyBoxes());
+    CHECK(AddSceneFourPolySpheres());
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      niLet instDesc = niCheckNN(
+        instDesc,
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
+        eFalse);
+
+      niCheck(AddRayTriangle(buildEncoder,instDesc),eFalse);
+      niCheck(AddRayGeoms(buildEncoder,instDesc),eFalse);
+
+      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+        HFmt("%s_RayInstances",m_testName),instDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+    RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+
+    DisplayTexture(gpuEncoder,nullptr);
+    return eFalse;
+  }
+};
+TEST_FIXTURE_WIDGET(FRayTracer,BoxesAndSpheresBary);
 
 }
 #endif

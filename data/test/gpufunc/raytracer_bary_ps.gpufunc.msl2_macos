@@ -1,0 +1,95 @@
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+
+#include <metal_stdlib>
+#include <simd/simd.h>
+#if __METAL_VERSION__ >= 230
+#include <metal_raytracing>
+using namespace metal::raytracing;
+#endif
+
+using namespace metal;
+
+intersection_params spvMakeIntersectionParams(uint flags)
+{
+    intersection_params ip;
+    if ((flags & 1) != 0)
+        ip.force_opacity(forced_opacity::opaque);
+    if ((flags & 2) != 0)
+        ip.force_opacity(forced_opacity::non_opaque);
+    if ((flags & 4) != 0)
+        ip.accept_any_intersection(true);
+    if ((flags & 16) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::back);
+    if ((flags & 32) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::front);
+    if ((flags & 64) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::opaque);
+    if ((flags & 128) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::non_opaque);
+    if ((flags & 256) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::triangle);
+    if ((flags & 512) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::bounding_box);
+    return ip;
+}
+
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct TestGpuFuncs_RayUniforms_1
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct UBO_TestGpuFuncs_RayUniforms
+{
+    TestGpuFuncs_RayUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+fragment main0_out main0(constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(0)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(1)]], float4 gl_FragCoord [[position]])
+{
+    main0_out out = {};
+    TestGpuFuncs_RayUniforms _213;
+    _213.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _213.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _213.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _213.padding = IN_1_aUniforms.v.padding;
+    _213.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _213.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _299 = float3(_213.cameraInvView[3].x, _213.cameraInvView[3].y, _213.cameraInvView[3].z);
+    float4 _327 = _213.cameraInvViewProj * float4(((gl_FragCoord.x / _213.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _213.rtHeight) * 2.0), 1.0, 1.0);
+    raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
+    rayQuery.reset(ray(_299, fast::normalize((_327 / float4(_327.w)).xyz - _299), 0.001000000047497451305389404296875, _213.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
+    bool _244 = rayQuery.next();
+    uint _245 = uint(rayQuery.get_committed_intersection_type());
+    float4 _424;
+    if (_245 == 1u)
+    {
+        float2 _251 = rayQuery.get_committed_triangle_barycentric_coord();
+        _424 = float4(_251, 0.0, 1.0);
+    }
+    else
+    {
+        _424 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_245 == 2u));
+    }
+    out.OUT_0_rval_color = _424;
+    return out;
+}
+

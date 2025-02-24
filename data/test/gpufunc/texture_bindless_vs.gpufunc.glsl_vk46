@@ -4,13 +4,13 @@
 struct TestGpuFuncs_InstanceData
 {
     mat4 mtxWorld;
-    uint tex0;
-    uint tex1;
-    uint tex2;
-    uint tex3;
+    uint texIndex0;
+    uint texIndex1;
+    uint texIndex2;
+    uint texIndex3;
 };
 
-layout(set = 9, binding = 0, std430) buffer SBO_TestGpuFuncs_InstanceData
+layout(set = 9, binding = 0, std430) readonly buffer SBO_TestGpuFuncs_InstanceData
 {
     TestGpuFuncs_InstanceData v;
 } nil_builtin_GetInstanceData[];
@@ -26,10 +26,10 @@ void main()
     uint _168 = uint(gl_InstanceIndex);
     TestGpuFuncs_InstanceData _171;
     _171.mtxWorld = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.mtxWorld;
-    _171.tex0 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex0;
-    _171.tex1 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex1;
-    _171.tex2 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex2;
-    _171.tex3 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.tex3;
+    _171.texIndex0 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex0;
+    _171.texIndex1 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex1;
+    _171.texIndex2 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex2;
+    _171.texIndex3 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex3;
     gl_Position = _171.mtxWorld * vec4(IN_0_aInput_position, 1.0);
     OUT_1_rval_color = IN_4_aInput_color;
     OUT_2_rval_tex0 = IN_5_aInput_tex0;

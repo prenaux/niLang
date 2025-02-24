@@ -13,7 +13,7 @@
 			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
 		<SSBOs>
-			<SSBO name="SBO_TestGpuFuncs_InstanceData" type="_49" set="9" binding="0">
+			<SSBO name="SBO_TestGpuFuncs_InstanceData" type="_49" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
 		</SSBOs>

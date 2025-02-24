@@ -1,13 +1,13 @@
 struct TestGpuFuncs_InstanceData
 {
     row_major float4x4 mtxWorld;
-    uint tex0;
-    uint tex1;
-    uint tex2;
-    uint tex3;
+    uint texIndex0;
+    uint texIndex1;
+    uint texIndex2;
+    uint texIndex3;
 };
 
-RWByteAddressBuffer nil_builtin_GetInstanceData[] : register(u0, space9);
+ByteAddressBuffer nil_builtin_GetInstanceData[] : register(t0, space9);
 
 static float4 gl_Position;
 static int gl_InstanceIndex;
@@ -37,16 +37,16 @@ void vert_main()
     uint _168 = uint(gl_InstanceIndex);
     TestGpuFuncs_InstanceData _170;
     _170.mtxWorld = asfloat(uint4x4(nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(0), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(16), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(32), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(48)));
-    _170.tex0 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(64);
-    _170.tex1 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(68);
-    _170.tex2 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(72);
-    _170.tex3 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(76);
+    _170.texIndex0 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(64);
+    _170.texIndex1 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(68);
+    _170.texIndex2 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(72);
+    _170.texIndex3 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(76);
     TestGpuFuncs_InstanceData _171;
     _171.mtxWorld = _170.mtxWorld;
-    _171.tex0 = _170.tex0;
-    _171.tex1 = _170.tex1;
-    _171.tex2 = _170.tex2;
-    _171.tex3 = _170.tex3;
+    _171.texIndex0 = _170.texIndex0;
+    _171.texIndex1 = _170.texIndex1;
+    _171.texIndex2 = _170.texIndex2;
+    _171.texIndex3 = _170.texIndex3;
     gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _171.mtxWorld);
     OUT_1_rval_color = IN_4_aInput_color;
     OUT_2_rval_tex0 = IN_5_aInput_tex0;

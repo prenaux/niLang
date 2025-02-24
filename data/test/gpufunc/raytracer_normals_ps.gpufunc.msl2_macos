@@ -1,0 +1,215 @@
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#pragma clang diagnostic ignored "-Wmissing-braces"
+
+#include <metal_stdlib>
+#include <simd/simd.h>
+#if __METAL_VERSION__ >= 230
+#include <metal_raytracing>
+using namespace metal::raytracing;
+#endif
+
+using namespace metal;
+
+template<typename T, size_t Num>
+struct spvUnsafeArray
+{
+    T elements[Num ? Num : 1];
+    
+    thread T& operator [] (size_t pos) thread
+    {
+        return elements[pos];
+    }
+    constexpr const thread T& operator [] (size_t pos) const thread
+    {
+        return elements[pos];
+    }
+    
+    device T& operator [] (size_t pos) device
+    {
+        return elements[pos];
+    }
+    constexpr const device T& operator [] (size_t pos) const device
+    {
+        return elements[pos];
+    }
+    
+    constexpr const constant T& operator [] (size_t pos) const constant
+    {
+        return elements[pos];
+    }
+    
+    threadgroup T& operator [] (size_t pos) threadgroup
+    {
+        return elements[pos];
+    }
+    constexpr const threadgroup T& operator [] (size_t pos) const threadgroup
+    {
+        return elements[pos];
+    }
+};
+
+intersection_params spvMakeIntersectionParams(uint flags)
+{
+    intersection_params ip;
+    if ((flags & 1) != 0)
+        ip.force_opacity(forced_opacity::opaque);
+    if ((flags & 2) != 0)
+        ip.force_opacity(forced_opacity::non_opaque);
+    if ((flags & 4) != 0)
+        ip.accept_any_intersection(true);
+    if ((flags & 16) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::back);
+    if ((flags & 32) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::front);
+    if ((flags & 64) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::opaque);
+    if ((flags & 128) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::non_opaque);
+    if ((flags & 256) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::triangle);
+    if ((flags & 512) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::bounding_box);
+    return ip;
+}
+
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct SBO_GetIndex
+{
+    uint v[1];
+};
+
+struct TestGpuFuncs_RayInstanceData
+{
+    uint ibIndex;
+    uint vbIndex;
+};
+
+struct TestGpuFuncs_RayInstanceData_1
+{
+    uint ibIndex;
+    uint vbIndex;
+};
+
+struct SBO_TestGpuFuncs_RayInstanceData
+{
+    TestGpuFuncs_RayInstanceData_1 v;
+};
+
+struct TestGpuFuncs_VertexRay
+{
+    float3 pos;
+    float3 normal;
+    float2 tex0;
+};
+
+struct TestGpuFuncs_VertexRay_1
+{
+    packed_float3 pos;
+    packed_float3 normal;
+    float2 tex0;
+};
+
+struct SBO_GetVertexRay
+{
+    TestGpuFuncs_VertexRay_1 v[1];
+};
+
+struct TestGpuFuncs_RayUniforms_1
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct UBO_TestGpuFuncs_RayUniforms
+{
+    TestGpuFuncs_RayUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(0)]], constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(1)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(2)]], float4 gl_FragCoord [[position]])
+{
+    spvDescriptorArray<const device SBO_GetIndex*> nil_builtin_GetIndex {nil_builtin_GetIndex_};
+    spvDescriptorArray<const device SBO_TestGpuFuncs_RayInstanceData*> nil_builtin_GetRayInstanceData {nil_builtin_GetRayInstanceData_};
+    spvDescriptorArray<const device SBO_GetVertexRay*> nil_builtin_GetVertexRay {nil_builtin_GetVertexRay_};
+
+    const device auto& nil_builtin_GetIndex = *(const device spvUnsafeArray<SBO_GetIndex, 1>*)spvBufferAliasSet9Binding0;
+    const device auto& nil_builtin_GetRayInstanceData = *(const device spvUnsafeArray<SBO_TestGpuFuncs_RayInstanceData, 1>*)spvBufferAliasSet9Binding0;
+    const device auto& nil_builtin_GetVertexRay = *(const device spvUnsafeArray<SBO_GetVertexRay, 1>*)spvBufferAliasSet9Binding0;
+    main0_out out = {};
+    TestGpuFuncs_RayUniforms _401;
+    _401.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _401.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _401.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _401.padding = IN_1_aUniforms.v.padding;
+    _401.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _401.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _567 = float3(_401.cameraInvView[3].x, _401.cameraInvView[3].y, _401.cameraInvView[3].z);
+    float4 _595 = _401.cameraInvViewProj * float4(((gl_FragCoord.x / _401.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _401.rtHeight) * 2.0), 1.0, 1.0);
+    raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
+    rayQuery.reset(ray(_567, fast::normalize((_595 / float4(_595.w)).xyz - _567), 0.001000000047497451305389404296875, _401.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
+    bool _451 = rayQuery.next();
+    uint _452 = uint(rayQuery.get_committed_intersection_type());
+    int _453 = rayQuery.get_committed_user_instance_id();
+    uint _456 = uint(_453);
+    TestGpuFuncs_RayInstanceData _459;
+    _459.ibIndex = nil_builtin_GetRayInstanceData[_456]->v.ibIndex;
+    _459.vbIndex = nil_builtin_GetRayInstanceData[_456]->v.vbIndex;
+    float4 _778;
+    if (_452 == 1u)
+    {
+        float4 _779;
+        if (_459.vbIndex == 0u)
+        {
+            _779 = float4(1.0, 0.0, 1.0, 1.0);
+        }
+        else
+        {
+            int _471 = rayQuery.get_committed_primitive_id();
+            uint _606 = 3u * uint(_471);
+            uint _608 = _459.ibIndex;
+            uint _611 = _606;
+            uint _618 = _606 + 1u;
+            uint _625 = _606 + 2u;
+            uint _479 = _459.vbIndex;
+            TestGpuFuncs_VertexRay _485;
+            _485.pos = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_611]].pos);
+            _485.normal = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_611]].normal);
+            _485.tex0 = nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_611]].tex0;
+            TestGpuFuncs_VertexRay _494;
+            _494.pos = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_618]].pos);
+            _494.normal = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_618]].normal);
+            _494.tex0 = nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_618]].tex0;
+            TestGpuFuncs_VertexRay _503;
+            _503.pos = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_625]].pos);
+            _503.normal = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_625]].normal);
+            _503.tex0 = nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_625]].tex0;
+            float2 _504 = rayQuery.get_committed_triangle_barycentric_coord();
+            _779 = float4(((((_485.normal * ((1.0 - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5) + float3(0.5), 1.0);
+        }
+        _778 = _779;
+    }
+    else
+    {
+        _778 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_452 == 2u));
+    }
+    out.OUT_0_rval_color = _778;
+    return out;
+}
+

@@ -6,6 +6,7 @@
 struct TestGpuFuncs_TestUniforms;
 struct TestGpuFuncs_RayUniforms;
 struct TestGpuFuncs_InstanceData;
+struct TestGpuFuncs_RayInstanceData;
 
 // TypeMethFwd: TestUniforms
 struct TestGpuFuncs_TestUniforms {
@@ -44,14 +45,26 @@ struct TestGpuFuncs_InstanceData {
 
   // Constructor
   TestGpuFuncs_InstanceData();
-  TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_tex0, ni::ain<ni::tU32> a_tex1, ni::ain<ni::tU32> a_tex2, ni::ain<ni::tU32> a_tex3);
+  TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_texIndex0, ni::ain<ni::tU32> a_texIndex1, ni::ain<ni::tU32> a_texIndex2, ni::ain<ni::tU32> a_texIndex3);
 
   // Variables
   ni::sMatrixf mtxWorld;
-  ni::tU32 tex0;
-  ni::tU32 tex1;
-  ni::tU32 tex2;
-  ni::tU32 tex3;
+  ni::tU32 texIndex0;
+  ni::tU32 texIndex1;
+  ni::tU32 texIndex2;
+  ni::tU32 texIndex3;
+};
+
+// TypeMethFwd: RayInstanceData
+struct TestGpuFuncs_RayInstanceData {
+
+  // Constructor
+  TestGpuFuncs_RayInstanceData();
+  TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex);
+
+  // Variables
+  ni::tU32 ibIndex;
+  ni::tU32 vbIndex;
 };
 
 // FunctionFwd: TestGpuFuncs
@@ -91,17 +104,27 @@ inline TestGpuFuncs_RayUniforms::TestGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rt
 // TypeMeth: InstanceData
 inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData() {
   this->mtxWorld = ni::sMatrixf::Identity();
-  this->tex0 = 0;
-  this->tex1 = 0;
-  this->tex2 = 0;
-  this->tex3 = 0;
+  this->texIndex0 = 0;
+  this->texIndex1 = 0;
+  this->texIndex2 = 0;
+  this->texIndex3 = 0;
 }
-inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_tex0, ni::ain<ni::tU32> a_tex1, ni::ain<ni::tU32> a_tex2, ni::ain<ni::tU32> a_tex3) {
+inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf> a_mtxWorld, ni::ain<ni::tU32> a_texIndex0, ni::ain<ni::tU32> a_texIndex1, ni::ain<ni::tU32> a_texIndex2, ni::ain<ni::tU32> a_texIndex3) {
   this->mtxWorld = a_mtxWorld;
-  this->tex0 = a_tex0;
-  this->tex1 = a_tex1;
-  this->tex2 = a_tex2;
-  this->tex3 = a_tex3;
+  this->texIndex0 = a_texIndex0;
+  this->texIndex1 = a_texIndex1;
+  this->texIndex2 = a_texIndex2;
+  this->texIndex3 = a_texIndex3;
+}
+
+// TypeMeth: RayInstanceData
+inline TestGpuFuncs_RayInstanceData::TestGpuFuncs_RayInstanceData() {
+  this->ibIndex = 0;
+  this->vbIndex = 0;
+}
+inline TestGpuFuncs_RayInstanceData::TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex) {
+  this->ibIndex = a_ibIndex;
+  this->vbIndex = a_vbIndex;
 }
 
 // Function: TestGpuFuncs

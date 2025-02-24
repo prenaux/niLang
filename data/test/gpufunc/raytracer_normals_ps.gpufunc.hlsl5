@@ -1,0 +1,134 @@
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    row_major float4x4 cameraInvView;
+    row_major float4x4 cameraInvViewProj;
+};
+
+struct TestGpuFuncs_RayInstanceData
+{
+    uint ibIndex;
+    uint vbIndex;
+};
+
+struct TestGpuFuncs_VertexRay
+{
+    float3 pos;
+    float3 normal;
+    float2 tex0;
+};
+
+ByteAddressBuffer nil_builtin_GetIndex[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetRayInstanceData[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetVertexRay[] : register(t0, space9);
+cbuffer UBO_TestGpuFuncs_RayUniforms : register(b0, space0)
+{
+    TestGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+uniform RaytracingAccelerationStructure IN_1_aAS : register(t0, space7);
+
+static float4 gl_FragCoord;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 gl_FragCoord : SV_Position;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+static RayQuery<RAY_FLAG_NONE> rayQuery;
+
+void frag_main()
+{
+    TestGpuFuncs_RayUniforms _401;
+    _401.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _401.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _401.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _401.padding = IN_1_aUniforms_v.padding;
+    _401.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _401.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _567 = float3(_401.cameraInvView[3].x, _401.cameraInvView[3].y, _401.cameraInvView[3].z);
+    float4 _595 = mul(float4(((gl_FragCoord.x / _401.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _401.rtHeight) * 2.0f), 1.0f, 1.0f), _401.cameraInvViewProj);
+    RayDesc _1ident = {_567, 0.001000000047497451305389404296875f, normalize((_595 / _595.w.xxxx).xyz - _567), _401.cameraFarClipPlane};
+    rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
+    bool _451 = rayQuery.Proceed();
+    uint _452 = rayQuery.CommittedStatus();
+    int _453 = rayQuery.CommittedInstanceID();
+    uint _456 = uint(_453);
+    TestGpuFuncs_RayInstanceData _458;
+    _458.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_456)].Load(0);
+    _458.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_456)].Load(4);
+    TestGpuFuncs_RayInstanceData _459;
+    _459.ibIndex = _458.ibIndex;
+    _459.vbIndex = _458.vbIndex;
+    float4 _778;
+    if (_452 == 1u)
+    {
+        float4 _779;
+        if (_459.vbIndex == 0u)
+        {
+            _779 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+        }
+        else
+        {
+            int _471 = rayQuery.CommittedPrimitiveIndex();
+            uint _606 = 3u * uint(_471);
+            uint _608 = _459.ibIndex;
+            uint _611 = _606;
+            uint _618 = _606 + 1u;
+            uint _625 = _606 + 2u;
+            uint _479 = _459.vbIndex;
+            TestGpuFuncs_VertexRay _484;
+            _484.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_611 * 4 + 0) * 32 + 0));
+            _484.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_611 * 4 + 0) * 32 + 12));
+            _484.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load2(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_611 * 4 + 0) * 32 + 24));
+            TestGpuFuncs_VertexRay _485;
+            _485.pos = _484.pos;
+            _485.normal = _484.normal;
+            _485.tex0 = _484.tex0;
+            TestGpuFuncs_VertexRay _493;
+            _493.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_618 * 4 + 0) * 32 + 0));
+            _493.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_618 * 4 + 0) * 32 + 12));
+            _493.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load2(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_618 * 4 + 0) * 32 + 24));
+            TestGpuFuncs_VertexRay _494;
+            _494.pos = _493.pos;
+            _494.normal = _493.normal;
+            _494.tex0 = _493.tex0;
+            TestGpuFuncs_VertexRay _502;
+            _502.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_625 * 4 + 0) * 32 + 0));
+            _502.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load3(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_625 * 4 + 0) * 32 + 12));
+            _502.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_479)].Load2(nil_builtin_GetIndex[NonUniformResourceIndex(_608)].Load(_625 * 4 + 0) * 32 + 24));
+            TestGpuFuncs_VertexRay _503;
+            _503.pos = _502.pos;
+            _503.normal = _502.normal;
+            _503.tex0 = _502.tex0;
+            float2 _504 = rayQuery.CommittedTriangleBarycentrics();
+            _779 = float4(((((_485.normal * ((1.0f - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5f) + 0.5f.xxx, 1.0f);
+        }
+        _778 = _779;
+    }
+    else
+    {
+        bool4 _782 = (_452 == 2u).xxxx;
+        _778 = float4(_782.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _782.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _782.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _782.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+    }
+    OUT_0_rval_color = _778;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    gl_FragCoord = stage_input.gl_FragCoord;
+    gl_FragCoord.w = 1.0 / gl_FragCoord.w;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

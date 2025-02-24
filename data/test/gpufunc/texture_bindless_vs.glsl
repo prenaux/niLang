@@ -1,4 +1,5 @@
 #version 460
+#extension GL_EXT_scalar_block_layout : require
 #extension GL_EXT_nonuniform_qualifier : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
@@ -23,10 +24,10 @@ struct lib_shader_VertexFuncIds {
 // Type: InstanceData
 struct TestGpuFuncs_InstanceData {
   mat4 mtxWorld;
-  uint tex0;
-  uint tex1;
-  uint tex2;
-  uint tex3;
+  uint texIndex0;
+  uint texIndex1;
+  uint texIndex2;
+  uint texIndex3;
 };
 
 // Type: VertexOutput
@@ -50,7 +51,7 @@ TestGpuFuncs_VertexOutput TestGpuFuncs_VertexOutput_new(vec4 a_position, vec4 a_
 TestGpuFuncs_VertexOutput TestGpuFuncs_VertexPAT1_texture_bindless_vs(TestGpuFuncs_VertexPAT1 aInput, lib_shader_VertexFuncIds aVertexInfo);
 
 // FunctionFwd: TestGpuFuncs
-layout(set = 9, binding = 0) buffer SBO_TestGpuFuncs_InstanceData { TestGpuFuncs_InstanceData v; } nil_builtin_GetInstanceData[];
+layout(scalar, set = 9, binding = 0) readonly buffer SBO_TestGpuFuncs_InstanceData { TestGpuFuncs_InstanceData v; } nil_builtin_GetInstanceData[];
 
 // TypeMeth: VertexOutput
 TestGpuFuncs_VertexOutput TestGpuFuncs_VertexOutput_new(vec4 a_position, vec4 a_color, vec2 a_tex0) {

@@ -17,6 +17,9 @@ DEPENDS $(PACKAGE) :
   texture_vs
   raytracer_instindex_ps
   raytracer_bary_ps
+  raytracer_primindex_ps
+  raytracer_tex0_ps
+  raytracer_normals_ps
 ] ;
 
 DEPENDS $(PACKAGE) :

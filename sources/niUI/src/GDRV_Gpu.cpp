@@ -690,26 +690,33 @@ Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpu
     niLet dtReflection = niCheckNN(dtReflection,dtRoot->GetChild("Reflection"),nullptr);
     Ptr<iDataTable> dtSeparateImages = dtReflection->GetChild("SeparateImages");
     Ptr<iDataTable> dtUBOs = dtReflection->GetChild("UBOs");
+    Ptr<iDataTable> dtSSBOs = dtReflection->GetChild("SSBOs");
     Ptr<iDataTable> dtAccelerationStructures = dtReflection->GetChild("AccelerationStructures");
 
     niLet isBindless =
         _ReflectionHasArray(dtSeparateImages) ||
         _ReflectionHasArray(dtUBOs) ||
+        _ReflectionHasArray(dtSSBOs) ||
         _ReflectionHasArray(dtAccelerationStructures);
 
     niLet isRT =
         (dtAccelerationStructures.has_value() && (dtAccelerationStructures->GetNumChildren() > 0));
 
     if (isBindless) {
-      // TODO: eGpuFunctionBindType_BindlessRayInstances;
-      *apOutBindType = eGpuFunctionBindType_Bindless;
+      if (isRT) {
+        *apOutBindType = eGpuFunctionBindType_BindlessRayInstances;
+      }
+      else {
+        *apOutBindType = eGpuFunctionBindType_Bindless;
+      }
     }
     else {
       if (isRT) {
         *apOutBindType = eGpuFunctionBindType_FixedRayInstances;
       }
       else {
-        if ((dtSeparateImages.has_value() && dtSeparateImages->GetNumChildren() > 0) ||
+        if ((dtSeparateImages.has_value() &&
+             dtSeparateImages->GetNumChildren() > 0) ||
             (dtUBOs.has_value() && dtUBOs->GetNumChildren() > 0))
         {
           *apOutBindType = eGpuFunctionBindType_Fixed;

@@ -16,6 +16,7 @@
 #include <niUI/IGraphics.h>
 #include <niUI/IGpu.h>
 #include <niLang/Utils/IDGenerator.h>
+#include <niLang/Utils/Trace.h>
 
 #define niVulkan_Implement
 #include "../../thirdparty/VulkanUtils/niVulkan.h"
@@ -74,6 +75,7 @@ niLetK knVkRequiredDeviceExtensionsCount = (tU32)niCountOf(_vkRequiredDeviceExte
 
 static const char* const _vkRequiredBindlessExtensions[] = {
   VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+  VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME
 };
 niLetK knVkRequiredBindlessExtensionsCount = (tU32)niCountOf(_vkRequiredBindlessExtensions);
 
@@ -87,8 +89,10 @@ static const char* _vkRequiredRayTracingExtensions[] = {
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
 #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
-#define VULKAN_TRACE_DESCR(aFmt) //niDebugFmt(aFmt)
 #define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
+
+niDeclareModuleTrace_(niUI,TraceVulkanDescr);
+#define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
 
 #define NISH_VULKAN_TARGET spv_vk12
 
@@ -1420,6 +1424,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       vk12.descriptorBindingPartiallyBound = VK_TRUE;
       vk12.descriptorBindingVariableDescriptorCount = VK_TRUE;
       vk12.runtimeDescriptorArray = VK_TRUE;
+      vk12.scalarBlockLayout = VK_TRUE;
     }
 
     // === RAY FEATURES SETUP ===

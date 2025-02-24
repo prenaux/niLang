@@ -215,6 +215,8 @@ struct sFBindless_Instances : public sFBindless_Base {
         _instDataBuffers.emplace_back(instDataBuffer);
       }
 
+      // We assume that all instance buffers are using contiguous resource
+      // indices, which is guaranteed if they are indeeded created in order.
       _instDataIndex0 = _driverGpu->GetStorageBufferDeviceResourceManager()->GetIndexFromResource(_instDataBuffers[0]);
       niDebugFmt(("... _instDataIndex0: %d",_instDataIndex0));
       CHECK_NOT_EQUAL(eInvalidHandle,_instDataIndex0);
@@ -222,10 +224,15 @@ struct sFBindless_Instances : public sFBindless_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_bindless_vs.gpufunc.xml")),eFalse);
+          eGpuFunctionType_Vertex,
+          _H("test/gpufunc/texture_bindless_vs.gpufunc.xml")),eFalse);
+      CHECK_EQUAL(eGpuFunctionBindType_Bindless,
+                  _vertexGpuFun->GetFunctionBindType());
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
-      //CHECK_EQUAL(eGpuFunctionBindType_Bindless,_pixelGpuFun->GetFunctionBindType());
+        eGpuFunctionType_Pixel,
+        _H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
+      CHECK_EQUAL(eGpuFunctionBindType_Bindless,
+                  _pixelGpuFun->GetFunctionBindType());
     }
 
     {

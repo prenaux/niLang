@@ -3,6 +3,7 @@
 #include "API/niLang/ILang.h"
 #include "API/niLang/Utils/UnknownImpl.h"
 #include "API/niLang/STL/utils.h"
+#include "API/niLang/STL/queue.h"
 #include "Lang.h"
 #include "API/niLang/IDeviceResource.h"
 #include "API/niLang/Utils/Trace.h"
@@ -17,11 +18,12 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
   niBeginClass(cDeviceResourceManager);
 
  public:
+  niConstValue tU32 knFreeListSizeBeforeReuse = 64;
+
   ///////////////////////////////////////////////
   cDeviceResourceManager(iHString* ahspType) {
     mhspType = ahspType;
     mvResources.reserve(64);
-    mvFreeList.reserve(16);
   }
 
   ///////////////////////////////////////////////
@@ -151,9 +153,9 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
     }
 
     tU32 newIndex = eInvalidHandle;
-    if (!mvFreeList.empty()) {
-      newIndex = mvFreeList.back();
-      mvFreeList.pop_back();
+    if (mFreeList.size() >= knFreeListSizeBeforeReuse) {
+      newIndex = mFreeList.front();
+      mFreeList.pop();
       niPanicAssert(mvResources[newIndex] == nullptr);
       mvResources[newIndex] = apRes;
     }
@@ -187,7 +189,7 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
                  (void*)this,mhspType,(void*)apRes,foundIndex));
     }
 
-    mvFreeList.emplace_back(foundIndex);
+    mFreeList.emplace(foundIndex);
     mvResources[foundIndex] = nullptr;
     return eTrue;
   }
@@ -196,7 +198,7 @@ class cDeviceResourceManager : public ImplRC<iDeviceResourceManager>
   __sync_mutex();
   tHStringPtr mhspType;
   astl::vector<iDeviceResource*> mvResources;
-  astl::vector<tU32> mvFreeList;
+  astl::queue<tU32> mFreeList;
 
   niEndClass(cDeviceResourceManager);
 };

@@ -52,9 +52,9 @@ namespace eastl
 	///     front
 	///     back
 	///
-	/// In practice this usually means deque, list, intrusive_list. vector and string  
+	/// In practice this usually means deque, list, intrusive_list. vector and string
 	/// cannot be used because they don't provide pop-front. This is reasonable because
-	/// a vector or string pop_front would be inefficient and could lead to 
+	/// a vector or string pop_front would be inefficient and could lead to
 	/// silently poor performance.
 	///
 	template <typename T, typename Container = eastl::deque<T, EASTLAllocatorType, DEQUE_DEFAULT_SUBARRAY_SIZE(T)> >
@@ -63,7 +63,7 @@ namespace eastl
 	public:
 		typedef queue<T, Container>                  this_type;
 		typedef          Container                   container_type;
-	  //typedef typename Container::allocator_type   allocator_type;  // We can't currently declare this because the container may be a type that doesn't have an allocator. 
+	  //typedef typename Container::allocator_type   allocator_type;  // We can't currently declare this because the container may be a type that doesn't have an allocator.
 		typedef typename Container::value_type       value_type;
 		typedef typename Container::reference        reference;
 		typedef typename Container::const_reference  const_reference;
@@ -75,14 +75,14 @@ namespace eastl
 	public:
 		queue();
 
-		// Allocator is templated here because we aren't allowed to infer the allocator_type from the Container, as some containers (e.g. array) don't 
+		// Allocator is templated here because we aren't allowed to infer the allocator_type from the Container, as some containers (e.g. array) don't
 		// have allocators. For containers that don't have allocator types, you could use void or char as the Allocator template type.
 
-		template <class Allocator>                      
+		template <class Allocator>
 		explicit queue(const Allocator& allocator, typename eastl::enable_if<eastl::uses_allocator<container_type, Allocator>::value>::type* = NULL)
 		  : c(allocator)
 		{
-		}    
+		}
 
 		template <class Allocator>
 		queue(const this_type& x, const Allocator& allocator, typename eastl::enable_if<eastl::uses_allocator<container_type, Allocator>::value>::type* = NULL)
@@ -122,7 +122,7 @@ namespace eastl
 		void push(value_type&& x);
 
 		template <class... Args>
-		void emplace_back(Args&&... args);
+		void emplace(Args&&... args);
 
 		void pop();
 
@@ -237,15 +237,15 @@ namespace eastl
 
 
 	template <typename T, typename Container>
-	inline void queue<T, Container>::push(value_type&& x) 
+	inline void queue<T, Container>::push(value_type&& x)
 	{
 		c.push_back(eastl::move(x));
 	}
 
 
 	template <typename T, typename Container>
-	template <class... Args> 
-	inline void queue<T, Container>::emplace_back(Args&&... args)
+	template <class... Args>
+	inline void queue<T, Container>::emplace(Args&&... args)
 	{
 		c.emplace_back(eastl::forward<Args>(args)...);
 	}
@@ -341,16 +341,3 @@ namespace eastl
 
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-
-
-
-

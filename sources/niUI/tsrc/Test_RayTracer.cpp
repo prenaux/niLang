@@ -424,8 +424,9 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool CreatePolyCube(const sVec3f& avCenter, iTexture* apTex,
-                       tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
+  tBool CreatePolyCube(
+    ain<sVec3f> avCenter, ain<sVec2f> aRot, iTexture* apTex,
+    tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
   {
     Ptr<iGeometry> g = mpWidget->GetGraphics()->CreateGeometryPolygonalCube(
       eGeometryCreateFlags_Static,tVertexRay::eFVF,
@@ -445,28 +446,36 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     drawOp->SetMaterial(mat);
     drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
     drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
-    drawOp->SetMatrix(MatrixTranslation(avCenter));
+    drawOp->SetMatrix(MatrixRotationY(aRot.y) * MatrixRotationX(aRot.x) * MatrixTranslation(avCenter));
     _geoms.emplace_back(sGeometry(drawOp));
     return eTrue;
   }
 
   tBool AddScenePolyGround() {
     niLog(Info,"AddSceneGround Begin");
-    niCheck(CreatePolyCube(Vec3(0.0f,-130.0f,100.0f),nullptr,eTrue,eFalse,100.0f), eFalse);
+    niCheck(CreatePolyCube(Vec3(0.0f,-130.0f,100.0f),sVec2f::Zero(),nullptr,eTrue,eFalse,100.0f), eFalse);
     niLog(Info,"AddSceneGround End");
     return eTrue;
   }
 
   tBool AddSceneSevenPolyBoxes() {
     niLog(Info,"AddSceneManyBoxes Begin");
-    niCheck(CreatePolyCube(Vec3(-25.0f,-20.0f,100.0f),nullptr),eFalse);
-    niCheck(CreatePolyCube(Vec3(-30.0f,-10.0f,110.0f),nullptr),eFalse);
-    niCheck(CreatePolyCube(Vec3(-30.0f, 10.0f,105.0f),nullptr),eFalse);
-    niCheck(CreatePolyCube(Vec3( 25.0f,-20.0f,100.0f),nullptr),eFalse);
-    niCheck(CreatePolyCube(Vec3( 30.0f,-10.0f,110.0f),nullptr),eFalse);
 
-    niCheck(CreatePolyCube(Vec3( 30.0f, 10.0f,105.0f),nullptr),eFalse);
-    niCheck(CreatePolyCube(Vec3(  0.0f,-15.0f,75.0f),nullptr,eTrue,eTrue),eFalse);
+    // left column, bottom cube, flip it so that we can easily tell if we're displaying the normals in the right space
+    niCheck(CreatePolyCube(Vec3(-25.0f,-20.0f,100.0f),sVec2f(0.0f,niPif),nullptr),eFalse);
+    // left column, middle
+    niCheck(CreatePolyCube(Vec3(-30.0f,-10.0f,110.0f),sVec2f::Zero(),nullptr),eFalse);
+    // left column, top
+    niCheck(CreatePolyCube(Vec3(-30.0f, 10.0f,105.0f),sVec2f(-niPif/6.0f,0.0f),nullptr),eFalse);
+
+    // right column
+    niCheck(CreatePolyCube(Vec3( 25.0f,-20.0f,100.0f),sVec2f::Zero(),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3( 30.0f,-10.0f,110.0f),sVec2f::Zero(),nullptr),eFalse);
+    niCheck(CreatePolyCube(Vec3( 30.0f, 10.0f,105.0f),Vec2f(0.0f,niPif/4.0f),nullptr),eFalse);
+
+    // front cube
+    niCheck(CreatePolyCube(Vec3(  0.0f,-25.0f,75.0f),Vec2f(niPif/8.0f,niPif+(niPif/4.0f)),nullptr,eTrue,eTrue),eFalse);
+
     niLog(Info,"AddSceneManyBoxes End");
     return eTrue;
   }
@@ -903,7 +912,7 @@ struct VisTex0 : public RayTracerBase {
     CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_tex0_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
-    // CHECK(AddSceneFourPolySpheres());
+    CHECK(AddSceneFourPolySpheres());
 
     // Create acceleration structure
     {
@@ -979,14 +988,14 @@ TEST_FIXTURE_WIDGET(FRayTracer,VisTex0);
 
 //----------------------------------------------------------------------------
 //
-// Section: VisNormals
+// Section: VisObjNormals
 //
 //----------------------------------------------------------------------------
-struct VisNormals : public RayTracerBase {
+struct VisObjNormals : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
   astl::vector<NN<iGpuBuffer>> _instDataBuffers;
 
-  TEST_CONSTRUCTOR_BASE(VisNormals,RayTracerBase) {
+  TEST_CONSTRUCTOR_BASE(VisObjNormals,RayTracerBase) {
   }
 
   tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
@@ -1008,7 +1017,7 @@ struct VisNormals : public RayTracerBase {
     CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
-    //CHECK(AddSceneFourPolySpheres());
+    CHECK(AddSceneFourPolySpheres());
 
     // Create acceleration structure
     {
@@ -1080,7 +1089,7 @@ struct VisNormals : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,VisNormals);
+TEST_FIXTURE_WIDGET(FRayTracer,VisObjNormals);
 
 }
 #endif

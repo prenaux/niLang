@@ -1,0 +1,279 @@
+#pragma clang diagnostic ignored "-Wmissing-prototypes"
+#pragma clang diagnostic ignored "-Wmissing-braces"
+
+#include <metal_stdlib>
+#include <simd/simd.h>
+#if __METAL_VERSION__ >= 230
+#include <metal_raytracing>
+using namespace metal::raytracing;
+#endif
+
+using namespace metal;
+
+template<typename T, size_t Num>
+struct spvUnsafeArray
+{
+    T elements[Num ? Num : 1];
+    
+    thread T& operator [] (size_t pos) thread
+    {
+        return elements[pos];
+    }
+    constexpr const thread T& operator [] (size_t pos) const thread
+    {
+        return elements[pos];
+    }
+    
+    device T& operator [] (size_t pos) device
+    {
+        return elements[pos];
+    }
+    constexpr const device T& operator [] (size_t pos) const device
+    {
+        return elements[pos];
+    }
+    
+    constexpr const constant T& operator [] (size_t pos) const constant
+    {
+        return elements[pos];
+    }
+    
+    threadgroup T& operator [] (size_t pos) threadgroup
+    {
+        return elements[pos];
+    }
+    constexpr const threadgroup T& operator [] (size_t pos) const threadgroup
+    {
+        return elements[pos];
+    }
+};
+
+// Implementation of the GLSL mod() function, which is slightly different than Metal fmod()
+template<typename Tx, typename Ty>
+inline Tx mod(Tx x, Ty y)
+{
+    return x - y * floor(x / y);
+}
+
+intersection_params spvMakeIntersectionParams(uint flags)
+{
+    intersection_params ip;
+    if ((flags & 1) != 0)
+        ip.force_opacity(forced_opacity::opaque);
+    if ((flags & 2) != 0)
+        ip.force_opacity(forced_opacity::non_opaque);
+    if ((flags & 4) != 0)
+        ip.accept_any_intersection(true);
+    if ((flags & 16) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::back);
+    if ((flags & 32) != 0)
+        ip.set_triangle_cull_mode(triangle_cull_mode::front);
+    if ((flags & 64) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::opaque);
+    if ((flags & 128) != 0)
+        ip.set_opacity_cull_mode(opacity_cull_mode::non_opaque);
+    if ((flags & 256) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::triangle);
+    if ((flags & 512) != 0)
+        ip.set_geometry_cull_mode(geometry_cull_mode::bounding_box);
+    return ip;
+}
+
+struct TestGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct SBO_GetIndex
+{
+    uint v[1];
+};
+
+struct TestGpuFuncs_RayInstanceData
+{
+    uint ibIndex;
+    uint vbIndex;
+};
+
+struct TestGpuFuncs_RayInstanceData_1
+{
+    uint ibIndex;
+    uint vbIndex;
+};
+
+struct SBO_TestGpuFuncs_RayInstanceData
+{
+    TestGpuFuncs_RayInstanceData_1 v;
+};
+
+struct TestGpuFuncs_VertexRay
+{
+    float3 pos;
+    float3 normal;
+    float2 tex0;
+};
+
+struct TestGpuFuncs_VertexRay_1
+{
+    packed_float3 pos;
+    packed_float3 normal;
+    float2 tex0;
+};
+
+struct SBO_GetVertexRay
+{
+    TestGpuFuncs_VertexRay_1 v[1];
+};
+
+struct TestGpuFuncs_RayUniforms_1
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    float4x4 cameraInvView;
+    float4x4 cameraInvViewProj;
+};
+
+struct UBO_TestGpuFuncs_RayUniforms
+{
+    TestGpuFuncs_RayUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(0)]], constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(1)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(2)]], float4 gl_FragCoord [[position]])
+{
+    spvDescriptorArray<const device SBO_GetIndex*> nil_builtin_GetIndex {nil_builtin_GetIndex_};
+    spvDescriptorArray<const device SBO_TestGpuFuncs_RayInstanceData*> nil_builtin_GetRayInstanceData {nil_builtin_GetRayInstanceData_};
+    spvDescriptorArray<const device SBO_GetVertexRay*> nil_builtin_GetVertexRay {nil_builtin_GetVertexRay_};
+
+    const device auto& nil_builtin_GetIndex = *(const device spvUnsafeArray<SBO_GetIndex, 1>*)spvBufferAliasSet9Binding0;
+    const device auto& nil_builtin_GetRayInstanceData = *(const device spvUnsafeArray<SBO_TestGpuFuncs_RayInstanceData, 1>*)spvBufferAliasSet9Binding0;
+    const device auto& nil_builtin_GetVertexRay = *(const device spvUnsafeArray<SBO_GetVertexRay, 1>*)spvBufferAliasSet9Binding0;
+    main0_out out = {};
+    TestGpuFuncs_RayUniforms _619;
+    _619.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _619.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _619.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _619.padding = IN_1_aUniforms.v.padding;
+    _619.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _619.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _822 = float3(_619.cameraInvView[3].x, _619.cameraInvView[3].y, _619.cameraInvView[3].z);
+    float4 _850 = _619.cameraInvViewProj * float4(((gl_FragCoord.x / _619.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _619.rtHeight) * 2.0), 1.0, 1.0);
+    raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
+    rayQuery.reset(ray(_822, fast::normalize((_850 / float4(_850.w)).xyz - _822), 0.001000000047497451305389404296875, _619.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
+    bool _686 = rayQuery.next();
+    uint _687 = uint(rayQuery.get_committed_intersection_type());
+    int _688 = rayQuery.get_committed_user_instance_id();
+    uint _691 = uint(_688);
+    TestGpuFuncs_RayInstanceData _694;
+    _694.ibIndex = nil_builtin_GetRayInstanceData[_691]->v.ibIndex;
+    _694.vbIndex = nil_builtin_GetRayInstanceData[_691]->v.vbIndex;
+    float4 _1236;
+    if (_687 == 1u)
+    {
+        float4 _1237;
+        if (_694.vbIndex == 0u)
+        {
+            _1237 = float4(1.0, 0.0, 1.0, 1.0);
+        }
+        else
+        {
+            int _706 = rayQuery.get_committed_primitive_id();
+            uint _861 = 3u * uint(_706);
+            uint _863 = _694.ibIndex;
+            uint _866 = _861;
+            uint _873 = _861 + 1u;
+            uint _880 = _861 + 2u;
+            uint _714 = _694.vbIndex;
+            TestGpuFuncs_VertexRay _720;
+            _720.pos = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_866]].pos);
+            _720.normal = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_866]].normal);
+            _720.tex0 = nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_866]].tex0;
+            TestGpuFuncs_VertexRay _729;
+            _729.pos = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_873]].pos);
+            _729.normal = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_873]].normal);
+            _729.tex0 = nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_873]].tex0;
+            TestGpuFuncs_VertexRay _738;
+            _738.pos = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_880]].pos);
+            _738.normal = float3(nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_880]].normal);
+            _738.tex0 = nil_builtin_GetVertexRay[_714]->v[nil_builtin_GetIndex[_863]->v[_880]].tex0;
+            float2 _739 = rayQuery.get_committed_triangle_barycentric_coord();
+            float _891 = (1.0 - _739.x) - _739.y;
+            float4x3 _750 = rayQuery.get_committed_object_to_world_transform();
+            float4x3 _761 = rayQuery.get_committed_object_to_world_transform();
+            float3 _956 = _761 * float4(((_720.pos * _891) + (_729.pos * _739.x)) + (_738.pos * _739.y), 1.0);
+            float3 _968 = floor(_956 * float3(0.100000001490116119384765625));
+            float3 _970 = abs(_750 * float4(fast::normalize(((_720.normal * _891) + (_729.normal * _739.x)) + (_738.normal * _739.y)), 0.0));
+            float _972 = _970.x;
+            float _974 = _970.y;
+            bool _975 = _972 > _974;
+            bool _983;
+            if (_975)
+            {
+                _983 = _972 > _970.z;
+            }
+            else
+            {
+                _983 = _975;
+            }
+            float _1232;
+            if (_983)
+            {
+                _1232 = mod(_968.y + _968.z, 2.0);
+            }
+            else
+            {
+                float _1233;
+                if (_974 > _970.z)
+                {
+                    _1233 = mod(_968.x + _968.z, 2.0);
+                }
+                else
+                {
+                    _1233 = mod(_968.x + _968.y, 2.0);
+                }
+                _1232 = _1233;
+            }
+            float _1034 = length(_956);
+            float3 _1234;
+            if (_1034 < 100.0)
+            {
+                _1234 = mix(float3(0.0, 1.0, 0.0), float3(1.0, 0.0, 0.0), float3(_1034 * 0.00999999977648258209228515625));
+            }
+            else
+            {
+                float _1057 = _1034 - 100.0;
+                float _1063 = mod(_1057, 200.0) * 0.004999999888241291046142578125;
+                float3 _1235;
+                if (mod(floor(_1057 * 0.004999999888241291046142578125), 2.0) < 0.5)
+                {
+                    _1235 = mix(float3(1.0, 0.0, 0.0), float3(0.0, 0.0, 1.0), float3(_1063));
+                }
+                else
+                {
+                    _1235 = mix(float3(0.0, 0.0, 1.0), float3(1.0, 0.0, 0.0), float3(_1063));
+                }
+                _1234 = _1235;
+            }
+            _1237 = float4(_1234 * mix(1.0, 0.20000000298023223876953125, step(0.5, _1232)), 1.0);
+        }
+        _1236 = _1237;
+    }
+    else
+    {
+        _1236 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_687 == 2u));
+    }
+    out.OUT_0_rval_color = _1236;
+    return out;
+}
+

@@ -88,7 +88,7 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_VertexOutput_texture_bindless_ps(TestGpuFu
 float TestGpuFuncs_ComputePieQuadrant(vec2 pos, float numQuadrants) {
   float centered_x = (pos.x - 0.5);
   float centered_y = (pos.y - 0.5);
-  float angle = (atan(centered_y, centered_x) + lib_shader_FloatConsts_niPi2);
+  float angle = (atan(centered_y,centered_x) + lib_shader_FloatConsts_niPi2);
   float angle_normalized;
   bool _tmp_K = (angle < 0.0);
   if (_tmp_K) {

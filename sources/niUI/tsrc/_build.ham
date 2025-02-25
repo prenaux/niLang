@@ -21,6 +21,7 @@ DEPENDS $(PACKAGE) :
   raytracer_tex0_ps
   raytracer_normals_obj_ps
   raytracer_normals_world_ps
+  raytracer_pos_world_ps
 ] ;
 
 DEPENDS $(PACKAGE) :

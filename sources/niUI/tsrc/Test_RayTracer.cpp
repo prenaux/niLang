@@ -988,14 +988,14 @@ TEST_FIXTURE_WIDGET(FRayTracer,VisTex0);
 
 //----------------------------------------------------------------------------
 //
-// Section: VisObjNormals
+// Section: VisNormalsObj
 //
 //----------------------------------------------------------------------------
-struct VisObjNormals : public RayTracerBase {
+struct VisNormalsObj : public RayTracerBase {
   NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
   astl::vector<NN<iGpuBuffer>> _instDataBuffers;
 
-  TEST_CONSTRUCTOR_BASE(VisObjNormals,RayTracerBase) {
+  TEST_CONSTRUCTOR_BASE(VisNormalsObj,RayTracerBase) {
   }
 
   tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
@@ -1014,7 +1014,7 @@ struct VisObjNormals : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_obj_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1089,7 +1089,112 @@ struct VisObjNormals : public RayTracerBase {
     return eFalse;
   }
 };
-TEST_FIXTURE_WIDGET(FRayTracer,VisObjNormals);
+TEST_FIXTURE_WIDGET(FRayTracer,VisNormalsObj);
+
+//----------------------------------------------------------------------------
+//
+// Section: VisNormalsWorld
+//
+//----------------------------------------------------------------------------
+struct VisNormalsWorld : public RayTracerBase {
+  NN<iRayInstances> _instanceAS = niDeferredInit(NN<iRayInstances>);
+  astl::vector<NN<iGpuBuffer>> _instDataBuffers;
+
+  TEST_CONSTRUCTOR_BASE(VisNormalsWorld,RayTracerBase) {
+  }
+
+  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+    niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
+      HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
+      sizeof(aInstData),
+      eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_Storage), eInvalidHandle);
+    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+      0, instDataBuffer->GetSize(), eLock_Discard);
+    *locked = aInstData;
+    instDataBuffer->Unlock();
+    _instDataBuffers.emplace_back(instDataBuffer);
+    return _driverGpu->GetStorageBufferDeviceResourceManager()->
+        GetIndexFromResource(instDataBuffer);
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_world_ps.gpufunc.xml")));
+    CHECK(AddScenePolyGround());
+    CHECK(AddSceneSevenPolyBoxes());
+    CHECK(AddSceneFourPolySpheres());
+
+    // Create acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      niLet instDesc = niCheckNN(
+        instDesc,
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
+        eFalse);
+
+      {
+        // 0,0 is invalid it should result in an error color
+        TestGpuFuncs_RayInstanceData instData;
+        instData.vbIndex = 0;
+        instData.ibIndex = 0;
+        tU32 triInstData = AddInstData(instData);
+        niCheck(AddRayTriangle(buildEncoder,instDesc,triInstData),eFalse);
+        niDebugFmt(("... triInstData: %d", triInstData));
+      }
+
+      {
+        tU32 firstInstIndex = eInvalidHandle;
+        niLoop(i,_geoms.size()) {
+          niLet& geom = _geoms[i];
+          nn<iDrawOperation> dop = geom._drawOp;
+          NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
+          NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
+          TestGpuFuncs_RayInstanceData instData;
+          instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
+              GetIndexFromResource(vaBuffer);
+          instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
+              GetIndexFromResource(iaBuffer);
+          niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
+                      i,instData.vbIndex,instData.ibIndex));
+          niLet instIndex = AddInstData(instData);
+          if (firstInstIndex == eInvalidHandle) {
+            firstInstIndex = instIndex;
+          }
+        }
+        niDebugFmt(("... firstInstIndex: %d", firstInstIndex));
+        niCheck(AddRayGeoms(buildEncoder,instDesc,firstInstIndex),eFalse);
+      }
+
+      _instanceAS = niCheckNN(_instanceAS, buildEncoder->BuildRayInstances(
+        HFmt("%s_RayInstances",m_testName),instDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+    RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_instanceAS);
+
+    DisplayTexture(gpuEncoder,nullptr);
+    return eFalse;
+  }
+};
+TEST_FIXTURE_WIDGET(FRayTracer,VisNormalsWorld);
 
 }
 #endif

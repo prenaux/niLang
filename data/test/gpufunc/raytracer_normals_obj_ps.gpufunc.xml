@@ -1,4 +1,4 @@
-<GpuFunction ver="3" name="raytracer_normals_ps" exec="pixel">
+<GpuFunction ver="3" name="raytracer_normals_obj_ps" exec="pixel">
 	<Reflection>
 		<EntryPoints>
 			<EntryPoint name="main" exec="pixel"/>
@@ -24,8 +24,8 @@
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>
 		</AccelerationStructures>
 	</Reflection>
-	<Target target="spv_vk12" code_path="raytracer_normals_ps.gpufunc.spv_vk12"/>
-	<Target target="glsl_vk46" code_path="raytracer_normals_ps.gpufunc.glsl_vk46"/>
-	<Target target="msl2_macos" code_path="raytracer_normals_ps.gpufunc.msl2_macos"/>
-	<Target target="hlsl5" code_path="raytracer_normals_ps.gpufunc.hlsl5"/>
+	<Target target="spv_vk12" code_path="raytracer_normals_obj_ps.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="raytracer_normals_obj_ps.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="raytracer_normals_obj_ps.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="raytracer_normals_obj_ps.gpufunc.hlsl5"/>
 </GpuFunction>

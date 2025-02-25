@@ -19,7 +19,8 @@ DEPENDS $(PACKAGE) :
   raytracer_bary_ps
   raytracer_primindex_ps
   raytracer_tex0_ps
-  raytracer_normals_ps
+  raytracer_normals_obj_ps
+  raytracer_normals_world_ps
 ] ;
 
 DEPENDS $(PACKAGE) :

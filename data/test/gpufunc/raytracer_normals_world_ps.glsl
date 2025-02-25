@@ -4,10 +4,6 @@
 #extension GL_EXT_ray_query : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
-// MODULE PROLOGUE BEGIN lib:shader
-mat4 nil_Mat4x3ToMat4x4(mat4x3 m) { return mat4(vec4(m[0], 0), vec4(m[1], 0), vec4(m[2], 0), vec4(m[3], 1)); }
-mat4 nil_Mat3x4ToMat4x4(mat3x4 m) { return mat4(vec4(m[0]), vec4(m[1]), vec4(m[2]), vec4(0,0,0,1)); }
-// MODULE PROLOGUE END lib:shader
 // Type: PixelInput
 struct lib_shader_PixelInput {
   vec4 fragCoord;
@@ -20,6 +16,7 @@ uint lib_shader_RayQueryIntersectionType_CommittedTriangle;
 uint lib_shader_RayQueryIntersectionType_CommittedBoundingVolume;
 // FunctionFwd: lib:shader
 vec3 lib_shader_Vec3TransformCoord(vec3 v, mat4 m);
+vec3 lib_shader_Vec3TransformNormal_2_Vec3_Matrix4x3(vec3 v, mat4x3 m);
 void lib_shader_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
   lib_shader_RayFlags_None = 0;
@@ -34,6 +31,11 @@ vec3 lib_shader_Vec3TransformCoord(vec3 v, mat4 m) {
   vec3 _tmp_3 = v;
   vec4 r = (m * vec4(_tmp_3.x,_tmp_3.y,_tmp_3.z,1.0));
   return ((r/r.w).xyz);
+}
+vec3 lib_shader_Vec3TransformNormal_2_Vec3_Matrix4x3(vec3 v, mat4x3 m) {
+  vec3 _tmp_c = v;
+  vec3 r = (m * vec4(_tmp_c.x,_tmp_c.y,_tmp_c.z,0.0));
+  return (r.xyz);
 }
 // ModuleInitialize: lib_shader
 void lib_shader_initialize() {
@@ -85,7 +87,7 @@ layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetVertexRay { TestGpuF
 void TestGpuFuncs_InitRayQuery(rayQueryEXT aRayQuery, lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
 vec3 TestGpuFuncs_NormalToColor(vec3 n);
-TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_ps(lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_world_ps(lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 
 // TypeMeth: PixelOutput
 TestGpuFuncs_PixelOutput TestGpuFuncs_PixelOutput_new(vec4 a_color) {
@@ -116,7 +118,7 @@ vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBa
 vec3 TestGpuFuncs_NormalToColor(vec3 n) {
   return ((n*0.5)+0.5);
 }
-TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_ps(lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_world_ps(lib_shader_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   rayQueryEXT rayQuery/*__noinit__*/;
   TestGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
   bool done = rayQueryProceedEXT(rayQuery);
@@ -138,15 +140,16 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_ps(lib_shader_PixelInput
         TestGpuFuncs_VertexRay v1 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT(inds.y)];
         TestGpuFuncs_VertexRay v2 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT(inds.z)];
         vec3 bary = TestGpuFuncs_BaryToVec3(rayQueryGetIntersectionBarycentricsEXT(rayQuery,true));
-        vec3 n = TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.normal,v1.normal,v2.normal,bary);
-        vec3 _tmp_l2 = TestGpuFuncs_NormalToColor(n);
-        color = vec4(_tmp_l2.x,_tmp_l2.y,_tmp_l2.z,1.0);
+        vec3 n = normalize(TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.normal,v1.normal,v2.normal,bary));
+        vec3 worldNormal = lib_shader_Vec3TransformNormal_2_Vec3_Matrix4x3(n,rayQueryGetIntersectionObjectToWorldEXT(rayQuery,true));
+        vec3 _tmp_q2 = TestGpuFuncs_NormalToColor(worldNormal);
+        color = vec4(_tmp_q2.x,_tmp_q2.y,_tmp_q2.z,1.0);
       }
     }
   }
   else {
-    bool _tmp_n2 = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_n2) {
+    bool _tmp_s2 = (intersectionType == lib_shader_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_s2) {
       color = vec4(1.0,0.0,0.0,1.0);
     }
     else {
@@ -155,12 +158,12 @@ TestGpuFuncs_PixelOutput TestGpuFuncs_raytracer_normals_ps(lib_shader_PixelInput
       }
     }
   }
-  vec4 _tmp_A2 = color;
-  return TestGpuFuncs_PixelOutput_new(_tmp_A2);
+  vec4 _tmp_F2 = color;
+  return TestGpuFuncs_PixelOutput_new(_tmp_F2);
 }
 // MODULE END TestGpuFuncs
 
-// Pixel Shader main: TestGpuFuncs_raytracer_normals_ps
+// Pixel Shader main: TestGpuFuncs_raytracer_normals_world_ps
 // type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_RayUniforms { TestGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
@@ -172,7 +175,7 @@ void main(void) {
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;
-  TestGpuFuncs_PixelOutput _rval_ = TestGpuFuncs_raytracer_normals_ps(aInput, aUniforms, IN_1_aAS);
+  TestGpuFuncs_PixelOutput _rval_ = TestGpuFuncs_raytracer_normals_world_ps(aInput, aUniforms, IN_1_aAS);
   OUT_0_rval_color = _rval_.color;
 }
 

@@ -1,3 +1,5 @@
+NOTFILE gpufuncs ;
+
 NISH_RUN_EXE = [ FDirName $(WORK) bin $(BUILD_BIN_LOA) nish_$(BUILDEXT_RA)$(BUILD_SUFEXE) ] ;
 NISH_GLSLANG_OPT_FLAGS = -Os ;
 NISH_SPIRV_OPT_FLAGS = -O ;
@@ -104,6 +106,7 @@ rule niBuildGpuFuncs {
     DEPENDS $(t) : $(r) ;
   }
 
+  DEPENDS gpufuncs : $(t) ;
   return $(t) ;
 }
 

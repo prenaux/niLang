@@ -2,10 +2,6 @@
 #extension GL_EXT_nonuniform_qualifier : require
 // DO IMPORTS BEGIN TestGpuFuncs
 // MODULE BEGIN lib:shader
-// MODULE PROLOGUE BEGIN lib:shader
-mat4 nil_Mat4x3ToMat4x4(mat4x3 m) { return mat4(vec4(m[0], 0), vec4(m[1], 0), vec4(m[2], 0), vec4(m[3], 1)); }
-mat4 nil_Mat3x4ToMat4x4(mat3x4 m) { return mat4(vec4(m[0]), vec4(m[1]), vec4(m[2]), vec4(0,0,0,1)); }
-// MODULE PROLOGUE END lib:shader
 // TypeStaticFwd: FloatConsts
 float lib_shader_FloatConsts_niPi2;
 float lib_shader_FloatConsts_ni2Pi;

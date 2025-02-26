@@ -2859,7 +2859,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   astl::vector<Ptr<sVulkanRasterPipeline>> _trackedGpuPipelines;
   astl::vector<Ptr<iRayPipeline>> _trackedRayPipelines;
   astl::vector<Ptr<iRayInstances>> _trackedRayInstances;
-  astl::vector<Ptr<iTexture>> _trackedRayOutputImages;
+  astl::vector<Ptr<iTexture>> _trackedOutputImages;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
   tBool _inFrame = eFalse;;
@@ -2908,8 +2908,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     return (sVulkanRayInstances*)apInstances;
   }
 
-  niInline sVulkanTexture* BindRayOutputImage(iTexture* apInstances) {
-    _trackedRayOutputImages.push_back(apInstances);
+  niInline sVulkanTexture* BindOutputImage(iTexture* apInstances) {
+    _trackedOutputImages.push_back(apInstances);
     return (sVulkanTexture*)apInstances;
   }
 
@@ -2935,7 +2935,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     _trackedGpuPipelines.clear();
     _trackedRayPipelines.clear();
     _trackedRayInstances.clear();
-    _trackedRayOutputImages.clear();
+    _trackedOutputImages.clear();
     _stream->Reset();
     _descriptorPool.ResetDescriptorPool(aDevice);
     _inFrame = eFalse;
@@ -4402,7 +4402,7 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
 
 tBool __stdcall sVulkanCommandEncoder::SetRayInstances(iRayInstances* apRayInstances) {
   niCheckIsOK(apRayInstances,eFalse);
-  _cache._lastRayInstances = apRayInstances;
+  _cache._lastRayInstances = _GetCurrentFrame()->BindRayInstances(apRayInstances);
   return eTrue;
 }
 tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(iRayPipeline* apRayPipeline) {
@@ -4419,7 +4419,7 @@ tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(iRayPipeline* apRayPipelin
 tBool __stdcall sVulkanCommandEncoder::SetRayOutputImage(iTexture* apRayOutputImage) {
   niCheckIsOK(apRayOutputImage,eFalse);
   niCheck(apRayOutputImage->GetFlags()&eTextureFlags_RenderTarget,eFalse);
-  _cache._lastRayOutputImage = static_cast<sVulkanTexture*>(apRayOutputImage);
+  _cache._lastRayOutputImage = _GetCurrentFrame()->BindOutputImage(apRayOutputImage);
   return eTrue;
 }
 

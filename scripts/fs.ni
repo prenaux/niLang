@@ -99,7 +99,7 @@ module <- {
   }
 
   ///////////////////////////////////////////////
-  // Returns an array of tFileEntry
+  // Returns an array of tFileEntry in the order returned by the OS
   function listFiles(aPath,_aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
   {
     aPath = "".setdir(aPath)
@@ -149,6 +149,18 @@ module <- {
       sink.mAttr|(_aRecursive?::eFileAttrFlags.Directory:0),
       sink)
     return sink.mResult
+  }
+
+  ///////////////////////////////////////////////
+  // Returns a sorted table of { filePath, tFileEntry }
+  function listFilesSorted(aPath,_aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
+  {
+    local sortedFiles = {}
+    local files = listFiles(aPath,_aFilter,_aAttr,_aRecursive,_aAppendBaseDir)
+    foreach (f in files) {
+      sortedFiles[f.path] <- f;
+    }
+    return sortedFiles;
   }
 
   ///////////////////////////////////////////////

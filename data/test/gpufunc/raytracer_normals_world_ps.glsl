@@ -56,6 +56,7 @@ struct TestGpuFuncs_PixelOutput {
 struct TestGpuFuncs_RayInstanceData {
   uint ibIndex;
   uint vbIndex;
+  uint texIndex;
 };
 
 // Type: RayUniforms

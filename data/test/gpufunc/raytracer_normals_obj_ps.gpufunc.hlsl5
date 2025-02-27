@@ -12,6 +12,7 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_VertexRay
@@ -66,16 +67,18 @@ void frag_main()
     TestGpuFuncs_RayInstanceData _458;
     _458.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_456)].Load(0);
     _458.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_456)].Load(4);
+    _458.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_456)].Load(8);
     TestGpuFuncs_RayInstanceData _459;
     _459.ibIndex = _458.ibIndex;
     _459.vbIndex = _458.vbIndex;
-    float4 _778;
+    _459.texIndex = _458.texIndex;
+    float4 _779;
     if (_452 == 1u)
     {
-        float4 _779;
+        float4 _780;
         if (_459.vbIndex == 0u)
         {
-            _779 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+            _780 = float4(1.0f, 0.0f, 1.0f, 1.0f);
         }
         else
         {
@@ -111,16 +114,16 @@ void frag_main()
             _503.normal = _502.normal;
             _503.tex0 = _502.tex0;
             float2 _504 = rayQuery.CommittedTriangleBarycentrics();
-            _779 = float4(((((_485.normal * ((1.0f - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5f) + 0.5f.xxx, 1.0f);
+            _780 = float4(((((_485.normal * ((1.0f - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5f) + 0.5f.xxx, 1.0f);
         }
-        _778 = _779;
+        _779 = _780;
     }
     else
     {
-        bool4 _782 = (_452 == 2u).xxxx;
-        _778 = float4(_782.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _782.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _782.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _782.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _783 = (_452 == 2u).xxxx;
+        _779 = float4(_783.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _783.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _783.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _783.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _778;
+    OUT_0_rval_color = _779;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

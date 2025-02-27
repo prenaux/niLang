@@ -91,12 +91,14 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_RayInstanceData_1
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct SBO_TestGpuFuncs_RayInstanceData
@@ -171,13 +173,14 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     TestGpuFuncs_RayInstanceData _459;
     _459.ibIndex = nil_builtin_GetRayInstanceData[_456]->v.ibIndex;
     _459.vbIndex = nil_builtin_GetRayInstanceData[_456]->v.vbIndex;
-    float4 _778;
+    _459.texIndex = nil_builtin_GetRayInstanceData[_456]->v.texIndex;
+    float4 _779;
     if (_452 == 1u)
     {
-        float4 _779;
+        float4 _780;
         if (_459.vbIndex == 0u)
         {
-            _779 = float4(1.0, 0.0, 1.0, 1.0);
+            _780 = float4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
@@ -201,15 +204,15 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
             _503.normal = float3(nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_625]].normal);
             _503.tex0 = nil_builtin_GetVertexRay[_479]->v[nil_builtin_GetIndex[_608]->v[_625]].tex0;
             float2 _504 = rayQuery.get_committed_triangle_barycentric_coord();
-            _779 = float4(((((_485.normal * ((1.0 - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5) + float3(0.5), 1.0);
+            _780 = float4(((((_485.normal * ((1.0 - _504.x) - _504.y)) + (_494.normal * _504.x)) + (_503.normal * _504.y)) * 0.5) + float3(0.5), 1.0);
         }
-        _778 = _779;
+        _779 = _780;
     }
     else
     {
-        _778 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_452 == 2u));
+        _779 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_452 == 2u));
     }
-    out.OUT_0_rval_color = _778;
+    out.OUT_0_rval_color = _779;
     return out;
 }
 

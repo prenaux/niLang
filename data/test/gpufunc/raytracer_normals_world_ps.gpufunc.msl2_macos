@@ -91,12 +91,14 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_RayInstanceData_1
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct SBO_TestGpuFuncs_RayInstanceData
@@ -171,13 +173,14 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     TestGpuFuncs_RayInstanceData _491;
     _491.ibIndex = nil_builtin_GetRayInstanceData[_488]->v.ibIndex;
     _491.vbIndex = nil_builtin_GetRayInstanceData[_488]->v.vbIndex;
-    float4 _832;
+    _491.texIndex = nil_builtin_GetRayInstanceData[_488]->v.texIndex;
+    float4 _833;
     if (_484 == 1u)
     {
-        float4 _833;
+        float4 _834;
         if (_491.vbIndex == 0u)
         {
-            _833 = float4(1.0, 0.0, 1.0, 1.0);
+            _834 = float4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
@@ -202,15 +205,15 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
             _535.tex0 = nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_661]].tex0;
             float2 _536 = rayQuery.get_committed_triangle_barycentric_coord();
             float4x3 _547 = rayQuery.get_committed_object_to_world_transform();
-            _833 = float4(((_547 * float4(fast::normalize(((_517.normal * ((1.0 - _536.x) - _536.y)) + (_526.normal * _536.x)) + (_535.normal * _536.y)), 0.0)) * 0.5) + float3(0.5), 1.0);
+            _834 = float4(((_547 * float4(fast::normalize(((_517.normal * ((1.0 - _536.x) - _536.y)) + (_526.normal * _536.x)) + (_535.normal * _536.y)), 0.0)) * 0.5) + float3(0.5), 1.0);
         }
-        _832 = _833;
+        _833 = _834;
     }
     else
     {
-        _832 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_484 == 2u));
+        _833 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_484 == 2u));
     }
-    out.OUT_0_rval_color = _832;
+    out.OUT_0_rval_color = _833;
     return out;
 }
 

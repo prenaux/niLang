@@ -98,12 +98,14 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_RayInstanceData_1
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct SBO_TestGpuFuncs_RayInstanceData
@@ -178,13 +180,14 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     TestGpuFuncs_RayInstanceData _694;
     _694.ibIndex = nil_builtin_GetRayInstanceData[_691]->v.ibIndex;
     _694.vbIndex = nil_builtin_GetRayInstanceData[_691]->v.vbIndex;
-    float4 _1236;
+    _694.texIndex = nil_builtin_GetRayInstanceData[_691]->v.texIndex;
+    float4 _1237;
     if (_687 == 1u)
     {
-        float4 _1237;
+        float4 _1238;
         if (_694.vbIndex == 0u)
         {
-            _1237 = float4(1.0, 0.0, 1.0, 1.0);
+            _1238 = float4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
@@ -226,54 +229,54 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
             {
                 _983 = _975;
             }
-            float _1232;
+            float _1233;
             if (_983)
             {
-                _1232 = mod(_968.y + _968.z, 2.0);
+                _1233 = mod(_968.y + _968.z, 2.0);
             }
             else
             {
-                float _1233;
+                float _1234;
                 if (_974 > _970.z)
                 {
-                    _1233 = mod(_968.x + _968.z, 2.0);
+                    _1234 = mod(_968.x + _968.z, 2.0);
                 }
                 else
                 {
-                    _1233 = mod(_968.x + _968.y, 2.0);
+                    _1234 = mod(_968.x + _968.y, 2.0);
                 }
-                _1232 = _1233;
+                _1233 = _1234;
             }
             float _1034 = length(_956);
-            float3 _1234;
+            float3 _1235;
             if (_1034 < 100.0)
             {
-                _1234 = mix(float3(0.0, 1.0, 0.0), float3(1.0, 0.0, 0.0), float3(_1034 * 0.00999999977648258209228515625));
+                _1235 = mix(float3(0.0, 1.0, 0.0), float3(1.0, 0.0, 0.0), float3(_1034 * 0.00999999977648258209228515625));
             }
             else
             {
                 float _1057 = _1034 - 100.0;
                 float _1063 = mod(_1057, 200.0) * 0.004999999888241291046142578125;
-                float3 _1235;
+                float3 _1236;
                 if (mod(floor(_1057 * 0.004999999888241291046142578125), 2.0) < 0.5)
                 {
-                    _1235 = mix(float3(1.0, 0.0, 0.0), float3(0.0, 0.0, 1.0), float3(_1063));
+                    _1236 = mix(float3(1.0, 0.0, 0.0), float3(0.0, 0.0, 1.0), float3(_1063));
                 }
                 else
                 {
-                    _1235 = mix(float3(0.0, 0.0, 1.0), float3(1.0, 0.0, 0.0), float3(_1063));
+                    _1236 = mix(float3(0.0, 0.0, 1.0), float3(1.0, 0.0, 0.0), float3(_1063));
                 }
-                _1234 = _1235;
+                _1235 = _1236;
             }
-            _1237 = float4(_1234 * mix(1.0, 0.20000000298023223876953125, step(0.5, _1232)), 1.0);
+            _1238 = float4(_1235 * mix(1.0, 0.20000000298023223876953125, step(0.5, _1233)), 1.0);
         }
-        _1236 = _1237;
+        _1237 = _1238;
     }
     else
     {
-        _1236 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_687 == 2u));
+        _1237 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_687 == 2u));
     }
-    out.OUT_0_rval_color = _1236;
+    out.OUT_0_rval_color = _1237;
     return out;
 }
 

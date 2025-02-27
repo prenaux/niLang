@@ -12,6 +12,7 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_VertexRay
@@ -86,16 +87,18 @@ void frag_main()
     TestGpuFuncs_RayInstanceData _693;
     _693.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_691)].Load(0);
     _693.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_691)].Load(4);
+    _693.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_691)].Load(8);
     TestGpuFuncs_RayInstanceData _694;
     _694.ibIndex = _693.ibIndex;
     _694.vbIndex = _693.vbIndex;
-    float4 _1236;
+    _694.texIndex = _693.texIndex;
+    float4 _1237;
     if (_687 == 1u)
     {
-        float4 _1237;
+        float4 _1238;
         if (_694.vbIndex == 0u)
         {
-            _1237 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+            _1238 = float4(1.0f, 0.0f, 1.0f, 1.0f);
         }
         else
         {
@@ -149,55 +152,55 @@ void frag_main()
             {
                 _983 = _975;
             }
-            float _1232;
+            float _1233;
             if (_983)
             {
-                _1232 = mod(_968.y + _968.z, 2.0f);
+                _1233 = mod(_968.y + _968.z, 2.0f);
             }
             else
             {
-                float _1233;
+                float _1234;
                 if (_974 > _970.z)
                 {
-                    _1233 = mod(_968.x + _968.z, 2.0f);
+                    _1234 = mod(_968.x + _968.z, 2.0f);
                 }
                 else
                 {
-                    _1233 = mod(_968.x + _968.y, 2.0f);
+                    _1234 = mod(_968.x + _968.y, 2.0f);
                 }
-                _1232 = _1233;
+                _1233 = _1234;
             }
             float _1034 = length(_956);
-            float3 _1234;
+            float3 _1235;
             if (_1034 < 100.0f)
             {
-                _1234 = lerp(float3(0.0f, 1.0f, 0.0f), float3(1.0f, 0.0f, 0.0f), (_1034 * 0.00999999977648258209228515625f).xxx);
+                _1235 = lerp(float3(0.0f, 1.0f, 0.0f), float3(1.0f, 0.0f, 0.0f), (_1034 * 0.00999999977648258209228515625f).xxx);
             }
             else
             {
                 float _1057 = _1034 - 100.0f;
                 float _1063 = mod(_1057, 200.0f) * 0.004999999888241291046142578125f;
-                float3 _1235;
+                float3 _1236;
                 if (mod(floor(_1057 * 0.004999999888241291046142578125f), 2.0f) < 0.5f)
                 {
-                    _1235 = lerp(float3(1.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 1.0f), _1063.xxx);
+                    _1236 = lerp(float3(1.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 1.0f), _1063.xxx);
                 }
                 else
                 {
-                    _1235 = lerp(float3(0.0f, 0.0f, 1.0f), float3(1.0f, 0.0f, 0.0f), _1063.xxx);
+                    _1236 = lerp(float3(0.0f, 0.0f, 1.0f), float3(1.0f, 0.0f, 0.0f), _1063.xxx);
                 }
-                _1234 = _1235;
+                _1235 = _1236;
             }
-            _1237 = float4(_1234 * lerp(1.0f, 0.20000000298023223876953125f, step(0.5f, _1232)), 1.0f);
+            _1238 = float4(_1235 * lerp(1.0f, 0.20000000298023223876953125f, step(0.5f, _1233)), 1.0f);
         }
-        _1236 = _1237;
+        _1237 = _1238;
     }
     else
     {
-        bool4 _1240 = (_687 == 2u).xxxx;
-        _1236 = float4(_1240.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _1240.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _1240.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _1240.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _1241 = (_687 == 2u).xxxx;
+        _1237 = float4(_1241.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _1241.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _1241.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _1241.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _1236;
+    OUT_0_rval_color = _1237;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

@@ -17,6 +17,7 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_VertexRay
@@ -67,13 +68,14 @@ void main()
     TestGpuFuncs_RayInstanceData _481;
     _481.ibIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_478)].v.ibIndex;
     _481.vbIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_478)].v.vbIndex;
-    vec4 _822;
+    _481.texIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_478)].v.texIndex;
+    vec4 _823;
     if (_474 == 1u)
     {
-        vec4 _823;
+        vec4 _824;
         if (_481.vbIndex == 0u)
         {
-            _823 = vec4(1.0, 0.0, 1.0, 1.0);
+            _824 = vec4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
@@ -98,32 +100,32 @@ void main()
             _525.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_501)].v[nil_builtin_GetIndex[nonuniformEXT(_655)].v[_672]].tex0;
             vec2 _526 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
             float _683 = (1.0 - _526.x) - _526.y;
-            vec2 _819;
+            vec2 _820;
             if (_683 > 0.85000002384185791015625)
             {
-                _819 = _507.tex0;
+                _820 = _507.tex0;
             }
             else
             {
-                vec2 _820;
+                vec2 _821;
                 if (_526.x > 0.85000002384185791015625)
                 {
-                    _820 = _516.tex0;
+                    _821 = _516.tex0;
                 }
                 else
                 {
-                    _820 = mix(((_507.tex0 * _683) + (_516.tex0 * _526.x)) + (_525.tex0 * _526.y), _525.tex0, bvec2(_526.y > 0.85000002384185791015625));
+                    _821 = mix(((_507.tex0 * _683) + (_516.tex0 * _526.x)) + (_525.tex0 * _526.y), _525.tex0, bvec2(_526.y > 0.85000002384185791015625));
                 }
-                _819 = _820;
+                _820 = _821;
             }
-            _823 = vec4(_819, 0.0, 1.0);
+            _824 = vec4(_820, 0.0, 1.0);
         }
-        _822 = _823;
+        _823 = _824;
     }
     else
     {
-        _822 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_474 == 2u));
+        _823 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_474 == 2u));
     }
-    OUT_0_rval_color = _822;
+    OUT_0_rval_color = _823;
 }
 

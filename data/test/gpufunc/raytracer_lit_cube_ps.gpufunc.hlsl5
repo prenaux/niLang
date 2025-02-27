@@ -12,6 +12,7 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_VertexRay
@@ -67,16 +68,18 @@ void frag_main()
     TestGpuFuncs_RayInstanceData _714;
     _714.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_712)].Load(0);
     _714.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_712)].Load(4);
+    _714.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_712)].Load(8);
     TestGpuFuncs_RayInstanceData _715;
     _715.ibIndex = _714.ibIndex;
     _715.vbIndex = _714.vbIndex;
-    float4 _1332;
+    _715.texIndex = _714.texIndex;
+    float4 _1333;
     if (_708 == 1u)
     {
-        float4 _1333;
+        float4 _1334;
         if (_715.vbIndex == 0u)
         {
-            _1333 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+            _1334 = float4(1.0f, 0.0f, 1.0f, 1.0f);
         }
         else
         {
@@ -129,16 +132,16 @@ void frag_main()
             rayQuery.TraceRayInline(IN_1_aAS, 9u, 255u, _7ident);
             bool _1174 = rayQuery.Proceed();
             uint _1175 = rayQuery.CommittedStatus();
-            _1333 = float4((lerp(0.2400000095367431640625f.xxx, 0.800000011920928955078125f.xxx, (((_1043 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_774, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx) + lerp(float3(0.12000000476837158203125f, 0.060000002384185791015625f, 0.0f), float3(0.4000000059604644775390625f, 0.20000000298023223876953125f, 0.0f), (((_1109 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_774, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx)) + lerp(float3(0.0f, 0.060000002384185791015625f, 0.12000000476837158203125f), float3(0.0f, 0.20000000298023223876953125f, 0.4000000059604644775390625f), (((_1175 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (_774.y * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx), 1.0f);
+            _1334 = float4((lerp(0.2400000095367431640625f.xxx, 0.800000011920928955078125f.xxx, (((_1043 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_774, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx) + lerp(float3(0.12000000476837158203125f, 0.060000002384185791015625f, 0.0f), float3(0.4000000059604644775390625f, 0.20000000298023223876953125f, 0.0f), (((_1109 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_774, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx)) + lerp(float3(0.0f, 0.060000002384185791015625f, 0.12000000476837158203125f), float3(0.0f, 0.20000000298023223876953125f, 0.4000000059604644775390625f), (((_1175 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (_774.y * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx), 1.0f);
         }
-        _1332 = _1333;
+        _1333 = _1334;
     }
     else
     {
-        bool4 _1339 = (_708 == 2u).xxxx;
-        _1332 = float4(_1339.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _1339.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _1339.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _1339.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _1340 = (_708 == 2u).xxxx;
+        _1333 = float4(_1340.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _1340.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _1340.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _1340.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _1332;
+    OUT_0_rval_color = _1333;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

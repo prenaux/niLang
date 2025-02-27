@@ -60,11 +60,12 @@ struct TestGpuFuncs_RayInstanceData {
 
   // Constructor
   TestGpuFuncs_RayInstanceData();
-  TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex);
+  TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex);
 
   // Variables
   ni::tU32 ibIndex;
   ni::tU32 vbIndex;
+  ni::tU32 texIndex;
 };
 
 // FunctionFwd: TestGpuFuncs
@@ -121,10 +122,12 @@ inline TestGpuFuncs_InstanceData::TestGpuFuncs_InstanceData(ni::ain<ni::sMatrixf
 inline TestGpuFuncs_RayInstanceData::TestGpuFuncs_RayInstanceData() {
   this->ibIndex = 0;
   this->vbIndex = 0;
+  this->texIndex = 0;
 }
-inline TestGpuFuncs_RayInstanceData::TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex) {
+inline TestGpuFuncs_RayInstanceData::TestGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex) {
   this->ibIndex = a_ibIndex;
   this->vbIndex = a_vbIndex;
+  this->texIndex = a_texIndex;
 }
 
 // Function: TestGpuFuncs

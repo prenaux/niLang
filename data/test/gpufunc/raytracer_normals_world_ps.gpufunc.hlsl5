@@ -12,6 +12,7 @@ struct TestGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
+    uint texIndex;
 };
 
 struct TestGpuFuncs_VertexRay
@@ -66,16 +67,18 @@ void frag_main()
     TestGpuFuncs_RayInstanceData _490;
     _490.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_488)].Load(0);
     _490.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_488)].Load(4);
+    _490.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_488)].Load(8);
     TestGpuFuncs_RayInstanceData _491;
     _491.ibIndex = _490.ibIndex;
     _491.vbIndex = _490.vbIndex;
-    float4 _832;
+    _491.texIndex = _490.texIndex;
+    float4 _833;
     if (_484 == 1u)
     {
-        float4 _833;
+        float4 _834;
         if (_491.vbIndex == 0u)
         {
-            _833 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+            _834 = float4(1.0f, 0.0f, 1.0f, 1.0f);
         }
         else
         {
@@ -112,16 +115,16 @@ void frag_main()
             _535.tex0 = _534.tex0;
             float2 _536 = rayQuery.CommittedTriangleBarycentrics();
             float4x3 _547 = rayQuery.CommittedObjectToWorld4x3();
-            _833 = float4((mul(float4(normalize(((_517.normal * ((1.0f - _536.x) - _536.y)) + (_526.normal * _536.x)) + (_535.normal * _536.y)), 0.0f), _547) * 0.5f) + 0.5f.xxx, 1.0f);
+            _834 = float4((mul(float4(normalize(((_517.normal * ((1.0f - _536.x) - _536.y)) + (_526.normal * _536.x)) + (_535.normal * _536.y)), 0.0f), _547) * 0.5f) + 0.5f.xxx, 1.0f);
         }
-        _832 = _833;
+        _833 = _834;
     }
     else
     {
-        bool4 _836 = (_484 == 2u).xxxx;
-        _832 = float4(_836.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _836.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _836.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _836.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _837 = (_484 == 2u).xxxx;
+        _833 = float4(_837.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _837.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _837.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _837.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _832;
+    OUT_0_rval_color = _833;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

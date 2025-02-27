@@ -723,13 +723,13 @@ static_assert(std::is_same<
 
 #define niLetNN(V, EXPR, RET)                   \
   niLet V = niCheckNNIfNull(V, EXPR) {          \
-    niError("niCheckNN '" #EXPR "' failed.");   \
+    niError("niLetNN '" #EXPR "' failed.");     \
     return RET;                                 \
   }
 
 #define niVarNN(V, EXPR, RET)                   \
   niVar V = niCheckNNIfNull(V, EXPR) {          \
-    niError("niCheckNN '" #EXPR "' failed.");   \
+    niError("niVarNN '" #EXPR "' failed.");     \
     return RET;                                 \
   }
 

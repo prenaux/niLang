@@ -2,6 +2,7 @@
 #define ASTL_QUEUE
 
 #include "stl_alloc.h"
+#include "deque.h"
 #include "EASTL/queue.h"
 
 namespace astl {

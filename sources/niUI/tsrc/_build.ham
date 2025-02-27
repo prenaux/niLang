@@ -23,6 +23,7 @@ DEPENDS $(PACKAGE) :
   raytracer_normals_world_ps
   raytracer_pos_world_ps
   raytracer_lit_cube_ps
+  raytracer_lit_textured_cube_ps
 ] ;
 
 DEPENDS $(PACKAGE) :

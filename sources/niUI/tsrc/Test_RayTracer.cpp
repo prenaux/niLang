@@ -44,6 +44,9 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   sMatrixf _prevViewMtx;
   sMatrixf _prevProjMtx;
 
+  astl::vector<NN<iTexture>> _textures;
+  tU32 _selectedTexture = 0;
+
   struct sGeometry {
     NN<iDrawOperation> _drawOp;
     const sMatrixf _startMatrix;
@@ -245,6 +248,11 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
   tBool __stdcall OnKeyDown(eKey aKey, tU32 aKeyMod) niOverride {
     switch (aKey) {
+      case eKey_T: {
+        _selectedTexture = (_selectedTexture+1)%(tU32)_textures.size();
+        break;
+      };
+
       case eKey_Space: {
         _ToggleAnimation();
         break;
@@ -392,8 +400,55 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eFalse;
   }
 
-  virtual tBool __stdcall LoadTextures() {
+  tBool LoadTextures() {
+    niTry {
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_d.jpg"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/glass.tga"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/rust_steel.jpg"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_lights.jpg"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_clouds_d.jpg"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+
+      {
+        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/church2k.dds"));
+        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+      }
+    } niCatch(ni::iPanicException,e) {
+      return eFalse;
+    }
+
     return eTrue;
+  }
+
+  tU32 _GetTextureIndex(iTexture* apTexture) const {
+    tU32 r = _graphics->GetTextureDeviceResourceManager()->GetIndexFromResource(apTexture);
+    if (r == eInvalidHandle)
+      return 0;
+    return r;
   }
 
   Ptr<iMaterial> CreateMaterial(iTexture* apTex) {
@@ -1437,6 +1492,123 @@ struct LitCube : public RayTracerBase {
   }
 };
 TEST_FIXTURE_WIDGET(FRayTracer,LitCube);
+
+//----------------------------------------------------------------------------
+//
+// Section: LitTexturedCube
+//
+//----------------------------------------------------------------------------
+struct LitTexturedCube : public RayTracerBase {
+  NN<iRayInstancesDesc> _rayInstsDesc = niDeferredInit(NN<iRayInstancesDesc>);
+  NN<iRayInstances> _rayInsts = niDeferredInit(NN<iRayInstances>);
+  astl::vector<NN<iGpuBuffer>> _instDataBuffers;
+
+  TEST_CONSTRUCTOR_BASE(LitTexturedCube,RayTracerBase) {
+  }
+
+  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+    niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
+      HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
+      sizeof(aInstData),
+      eGpuBufferMemoryMode_Shared,
+      eGpuBufferUsageFlags_Storage), eInvalidHandle);
+    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+      0, instDataBuffer->GetSize(), eLock_Discard);
+    *locked = aInstData;
+    instDataBuffer->Unlock();
+    _instDataBuffers.emplace_back(instDataBuffer);
+    return _driverGpu->GetStorageBufferDeviceResourceManager()->
+        GetIndexFromResource(instDataBuffer);
+  }
+
+  tBool __stdcall OnSinkAttached() niImpl {
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_lit_textured_cube_ps.gpufunc.xml")));
+    CHECK(AddScenePolyGround());
+    CHECK(AddSceneSevenPolyBoxes());
+    CHECK(AddSceneFourPolySpheres());
+    CHECK(AddSceneRotatingCube());
+    CHECK(LoadTextures());
+
+    // Init the instance data
+    niLoop(i,_geoms.size()) {
+      niVar& geom = _geoms[i];
+      nn<iDrawOperation> dop = geom._drawOp;
+      NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
+      NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
+      TestGpuFuncs_RayInstanceData instData;
+      instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
+          GetIndexFromResource(vaBuffer);
+      instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
+          GetIndexFromResource(iaBuffer);
+      if (i == _geoms.size()-1) {
+        instData.texIndex = _GetTextureIndex(_textures[_selectedTexture]);
+      }
+      niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
+                  i,instData.vbIndex,instData.ibIndex));
+      geom._instIndex = AddInstData(instData);
+    }
+    niDebugFmt(("... _geoms[0]._instIndex: %d", _geoms[0]._instIndex));
+
+    // Create the acceleration structure
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      _rayInstsDesc = niCheckNN(
+        _rayInstsDesc,
+        _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
+        eFalse);
+      niCheck(AddRayGeoms(buildEncoder,_rayInstsDesc,_geoms[0]._instIndex),eFalse);
+      _rayInsts = niCheckNN(_rayInsts, buildEncoder->BuildRayInstances(
+        HFmt("%s_RayInstances_Frame%d",m_testName,ni::GetLang()->GetFrameNumber()),_rayInstsDesc), eFalse);
+    }
+
+    return eTrue;
+  }
+
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+    RayTracerBase::OnPaint(avMousePos,apCanvas);
+
+    QPtr<iGraphicsContextGpu> gpuContext = apCanvas->GetGraphicsContext();
+    niPanicAssert(gpuContext.IsOK());
+
+    {
+      niLet buildEncoder = niCheckNN(buildEncoder,_driverRay->CreateRayBuildEncoder(),eFalse);
+      {
+        niVar& lastGeom = _geoms.back();
+        lastGeom._drawOp->SetMatrix(
+          MatrixRotationY(WrapRad((tF32)_animationTime * 2.0f)) *
+          MatrixRotationZ(WrapRad((tF32)_animationTime * 0.5f)) *
+          MatrixTranslation(MatrixGetTranslation(lastGeom._startMatrix)));
+
+        niVar& lastInstData = _instDataBuffers.back();
+        TestGpuFuncs_RayInstanceData* pLastInstData =
+            (TestGpuFuncs_RayInstanceData*)lastInstData->Lock(
+              0, sizeof(TestGpuFuncs_RayInstanceData), eLock_Normal);
+        niCheck(pLastInstData != nullptr, eFalse);
+        pLastInstData->texIndex = _GetTextureIndex(_textures[_selectedTexture]);
+        lastInstData->Unlock();
+      }
+      niCheck(UpdateRayGeomsTransforms(buildEncoder,_rayInstsDesc),eFalse);
+      _rayInsts = niCheckNN(_rayInsts, buildEncoder->BuildRayInstances(
+        HFmt("%s_RayInstances_Frame%d",m_testName,ni::GetLang()->GetFrameNumber()),_rayInstsDesc), eFalse);
+    }
+
+    NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
+    TestGpuFuncs_RayUniforms u;
+    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
+    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
+
+    NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
+    rayEncoder->SetRayInstances(_rayInsts);
+
+    DisplayTexture(gpuEncoder,nullptr);
+    return eFalse;
+  }
+};
+TEST_FIXTURE_WIDGET(FRayTracer,LitTexturedCube);
 
 }
 #endif

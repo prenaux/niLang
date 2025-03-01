@@ -329,7 +329,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     }
 
 #define LOAD_FIXED_GPUFUNC(TYPE,VAR,PATH) {                             \
-      tHStringPtr hspPath = _H("niUI://gpufunc/fixed_" #PATH ".gpufunc.xml"); \
+      tHStringPtr hspPath = _H("niUI://nish/fixed/fixed_" #PATH ".gpufunc.xml"); \
       VAR = niCheckNN(                                                  \
         VAR, gpuDriver->CreateGpuFunction(eGpuFunctionType_##TYPE,hspPath), \
         eFalse);                                                        \
@@ -345,12 +345,12 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 #undef LOAD_FIXED_GPUFUNC
 
     {
-      tHStringPtr hspVfPath = _H("niUI://gpufunc/clear_vs.gpufunc.xml");
+      tHStringPtr hspVfPath = _H("niUI://nish/fixed/fixed_clear_vs.gpufunc.xml");
       niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspVfPath)),eFalse);
       niLet vertexGpuFun = niCheckNN(vertexGpuFun, gpuDriver->CreateGpuFunction(
         eGpuFunctionType_Vertex,hspVfPath),eFalse);
 
-      tHStringPtr hspPfPath = _H("niUI://gpufunc/clear_ps.gpufunc.xml");
+      tHStringPtr hspPfPath = _H("niUI://nish/fixed/fixed_clear_ps.gpufunc.xml");
       niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPfPath)),eFalse);
       niLet pixelGpuFun = niCheckNN(pixelGpuFun, gpuDriver->CreateGpuFunction(
         eGpuFunctionType_Pixel,hspPfPath),eFalse);

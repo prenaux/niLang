@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "../../../data/test/nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 #include <niUI/Utils/AABB.h>
 #include "MakeTestRayGeometry.h"
@@ -79,9 +79,9 @@ struct sFRayQuery_Base : public sFGDRV_Base {
 
     // Setup display pipeline
     _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+      eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
     _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+      eGpuFunctionType_Pixel,_H("test/nish/gpu/texture_ps.gpufunc.xml")),eFalse);
 
     NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
     pipelineDesc->SetFVF(tVertexCanvas::eFVF);
@@ -126,7 +126,7 @@ struct sFRayQuery_Triangle : public sFRayQuery_Base {
     // Create ray tracing shaders
     {
       _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel, _H("test/gpufunc/triangle_rayquery_ps.gpufunc.xml")), eFalse);
+        eGpuFunctionType_Pixel, _H("test/nish/rayquery/triangle_rayquery_ps.gpufunc.xml")), eFalse);
       CHECK_EQUAL(eGpuFunctionType_Pixel,
                   _triangleRayQueryFun->GetFunctionType());
       CHECK_EQUAL(eGpuFunctionBindType_FixedRayInstances,
@@ -231,7 +231,7 @@ struct sFRayQuery_IntSphere : public sFRayQuery_Base {
     // Create ray tracing shaders
     {
       _triangleRayQueryFun = niCheckNN(_triangleRayQueryFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel, _H("test/gpufunc/sphere_rayquery_ps.gpufunc.xml")), eFalse);
+        eGpuFunctionType_Pixel, _H("test/nish/rayquery/sphere_rayquery_ps.gpufunc.xml")), eFalse);
       CHECK_EQUAL(eGpuFunctionType_Pixel,
                   _triangleRayQueryFun->GetFunctionType());
       CHECK_EQUAL(eGpuFunctionBindType_FixedRayInstances,

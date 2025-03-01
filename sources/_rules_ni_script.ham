@@ -107,6 +107,9 @@ actions niGeneratorScript {
     -I"$(WORK)/niLang/scripts"\
     -I"$(WORK)/Vlk/scripts"\
     -I"$(WORK)/Playground/scripts"\
+    -I"$(WORK)/niLang/sources"\
+    -I"$(WORK)/Vlk/sources"\
+    -I"$(WORK)/Playground/sources"\
     -e "$(_GEN_SCRIPT)"\
     $(_SCRIPT_PARAMS)
 }

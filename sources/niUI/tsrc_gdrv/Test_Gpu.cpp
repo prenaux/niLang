@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "../../../data/test/nish/TestGpuFuncs.hpp"
 
 using namespace ni;
 
@@ -58,9 +58,9 @@ struct sFGpu_Triangle : public sFGpu_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,_H("test/nish/gpu/triangle_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/triangle_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -272,9 +272,9 @@ struct sFGpu_Square : public sFGpu_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,_H("test/nish/gpu/triangle_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/triangle_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -350,9 +350,9 @@ struct sFGpu_Texture : public sFGpu_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+          eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/texture_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -453,9 +453,9 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/texture_alphatest_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_alphatest_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_alphatest_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/texture_alphatest_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -710,9 +710,9 @@ struct sTest_DepthTest {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun, aDriverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/triangle_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,_H("test/nish/gpu/triangle_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun, aDriverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/triangle_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/triangle_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -859,9 +859,9 @@ struct sFGpu_TextureMipMaps : public sFGpu_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+          eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/texture_ps.gpufunc.xml")),eFalse);
     }
 
     {
@@ -1024,9 +1024,9 @@ struct sFGpu_TextureCube : public sFGpu_Base {
     // Create shaders
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/skybox_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,_H("test/nish/gpu/skybox_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/skybox_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/gpu/skybox_ps.gpufunc.xml")),eFalse);
     }
 
     // Create pipeline

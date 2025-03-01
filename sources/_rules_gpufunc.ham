@@ -78,7 +78,8 @@ rule niBuildGpuFuncs {
   local t = $(1) ;
   NOTFILE $(t) ;
 
-  local gpuFuncDir = [ AssertFDirName niBuildGpuFuncs : $(2) ] ;
+  local gpuFuncDir = [ FDirName $(2) ] ;
+  MakeDirForTarget $(t) : $(gpuFuncDir) ;
   local genScript = [ AssertFDirName niBuildGpuFuncs : $(3) ] ;
   local entryPoints = $(4) ;
 
@@ -127,5 +128,6 @@ rule niBuildGpuFuncsHpp {
   local r = [ niGeneratorScript $(genList) : $(genScript) : $(genList) ] ;
   GENERATED $(r) ;
   DEPENDS $(t) : $(r) ;
+  DEPENDS gpufuncs : $(t) ;
   return $(r) ;
 }

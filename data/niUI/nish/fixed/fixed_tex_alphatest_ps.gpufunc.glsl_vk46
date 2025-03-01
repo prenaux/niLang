@@ -1,0 +1,38 @@
+#version 460
+
+struct niUIGpuFuncs_FixedUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[6];
+layout(set = 1, binding = 0) uniform texture2D IN_1_aTexture;
+layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
+
+layout(location = 1) in vec4 IN_1_aInput_color;
+layout(location = 2) in vec2 IN_2_aInput_tex0;
+layout(location = 0) out vec4 OUT_0_rval_color;
+
+void main()
+{
+    niUIGpuFuncs_FixedUniforms _105 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), UBO_niUIGpuFuncs_FixedUniforms[4].x, UBO_niUIGpuFuncs_FixedUniforms[4].y, UBO_niUIGpuFuncs_FixedUniforms[4].z, UBO_niUIGpuFuncs_FixedUniforms[4].w, UBO_niUIGpuFuncs_FixedUniforms[5]);
+    niUIGpuFuncs_FixedUniforms _106;
+    _106.mtxWVP = _105.mtxWVP;
+    _106.alphaRef = _105.alphaRef;
+    _106.padding0 = _105.padding0;
+    _106.padding1 = _105.padding1;
+    _106.padding2 = _105.padding2;
+    _106.materialColor = _105.materialColor;
+    vec4 _131 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
+    if (_131.w < _106.alphaRef)
+    {
+        discard;
+    }
+    OUT_0_rval_color = _131 * IN_1_aInput_color;
+}
+

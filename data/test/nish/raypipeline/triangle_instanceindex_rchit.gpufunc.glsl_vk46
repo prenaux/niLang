@@ -1,0 +1,22 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+
+struct nish_std_RayPayload
+{
+    vec4 color;
+    float hitT;
+};
+
+layout(location = 0) rayPayloadInEXT nish_std_RayPayload nil_builtin_RAY_PAYLOAD_0;
+
+void main()
+{
+    uint _237 = uint(gl_InstanceCustomIndexEXT) + 1u;
+    uint _281 = _237 + (_237 << uint(10));
+    uint _285 = _281 ^ (_281 >> uint(6));
+    uint _289 = _285 + (_285 << uint(3));
+    uint _293 = _289 ^ (_289 >> uint(11));
+    uint _297 = _293 + (_293 << uint(15));
+    nil_builtin_RAY_PAYLOAD_0 = nish_std_RayPayload(vec4(float((_297 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_297 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_297 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0), gl_RayTmaxEXT);
+}
+

@@ -19,7 +19,7 @@
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
 #include "Graphics.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "nish/niUIGpuFuncs.hpp"
 
 #ifdef GDRV_VULKAN
 // For the Vulkan driver, needs to be implemented in an objective-c file
@@ -2023,7 +2023,7 @@ struct cMetalContextBase :
     mCmdEncoder->SetViewport(mrectViewport);
     mCmdEncoder->SetScissorRect(mrectScissor);
 
-    TestGpuFuncs_TestUniforms fixedUniforms;
+    niUIGpuFuncs_FixedUniforms fixedUniforms;
     {
       const sMaterialChannel& chBase = _GetChannel(pDOMatDesc, eMaterialChannel_Base);
       const sMaterialChannel& chOpacity = _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);

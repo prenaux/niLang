@@ -98,6 +98,27 @@ SRC_EXTRA += [ tkPkgSrcSubDir libtess2 ] ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncsHpp $(PACKAGE)_nish_public :
+  $(TK_DIR) sources niUI src nish :
+  $(WORK) Playground sources nilTests nish niUI_public.nip :
+  niUIGpuFuncs.hpp
+] ;
+
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_fixed :
+  $(TK_DIR) data niUI nish fixed :
+  $(WORK) Playground sources nilTests nish niUI_fixed.nip :
+  fixed_clear_vs
+  fixed_clear_ps
+  fixed_p_vs
+  fixed_pa_vs
+  fixed_pt1_vs
+  fixed_pat1_vs
+  fixed_tex_ps
+  fixed_tex_alphatest_ps
+] ;
+
+DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;
+
 ### Platform dependent SDKs #############################################
 if $(ANDROID) = 1 {
   LINKLIBS on $(PKGTARGET) ?= $(LINKLIBS) ;

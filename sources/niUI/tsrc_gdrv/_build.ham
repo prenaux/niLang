@@ -8,10 +8,15 @@ niImportModuleDll_niUI ;
 
 SRC = [ tkPkgSrc ] ;
 
-DEPENDS $(PACKAGE) :
-[ niBuildGpuFuncs $(PACKAGE)_gpufuncs :
-  $(TK_DIR) data test gpufunc :
-  $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncsHpp $(PACKAGE)_nish_public :
+  $(TK_DIR) data test nish :
+  $(WORK) Playground sources nilTests nish test_public.nip :
+  TestGpuFuncs.hpp
+] ;
+
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_gpu :
+  $(TK_DIR) data test nish gpu :
+  $(WORK) Playground sources nilTests nish test_gpu.nip :
   triangle_vs
   triangle_ps
   texture_vs
@@ -20,18 +25,35 @@ DEPENDS $(PACKAGE) :
   texture_alphatest_ps
   skybox_vs
   skybox_ps
-  triangle_rayquery_ps
-  sphere_rayquery_ps
+] ;
+
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_bindless :
+  $(TK_DIR) data test nish bindless :
+  $(WORK) Playground sources nilTests nish test_bindless.nip :
   texture_bindless_vs
   texture_bindless_ps
 ] ;
 
-DEPENDS $(PACKAGE) :
-[ niBuildGpuFuncsHpp $(PACKAGE)_gpufuncs :
-  $(TK_DIR) data test gpufunc :
-  $(WORK) Playground sources nilTests Shader_Base_glsl450.nip :
-  TestGpuFuncs.hpp
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_rayquery :
+  $(TK_DIR) data test nish rayquery :
+  $(WORK) Playground sources nilTests nish test_rayquery.nip :
+  triangle_rayquery_ps
+  sphere_rayquery_ps
 ] ;
+
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raypipeline :
+  $(TK_DIR) data test nish raypipeline :
+  $(WORK) Playground sources nilTests nish test_raypipeline.nip :
+  triangle_rgen
+  triangle_rmiss
+  triangle_rchit
+  triangle_instanceindex_rchit
+  triangle_instanceid_rchit
+  triangle_bary_rchit
+  sphere_rint
+] ;
+
+DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;
 
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 

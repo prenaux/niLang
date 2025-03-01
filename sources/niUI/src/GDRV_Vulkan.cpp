@@ -35,7 +35,7 @@
 
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "nish/niUIGpuFuncs.hpp"
 
 namespace ni {
 
@@ -5139,7 +5139,7 @@ struct sVulkanContextBase :
     _cmdEncoder->SetViewport(mrectViewport);
     _cmdEncoder->SetScissorRect(mrectScissor);
 
-    TestGpuFuncs_TestUniforms fixedUniforms;
+    niUIGpuFuncs_FixedUniforms fixedUniforms;
     {
       const sMaterialChannel& chBase = _GetChannel(pDOMatDesc, eMaterialChannel_Base);
       const sMaterialChannel& chOpacity = _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);

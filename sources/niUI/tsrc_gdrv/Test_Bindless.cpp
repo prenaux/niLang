@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "../../../data/test/nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 
 using namespace ni;
@@ -140,9 +140,9 @@ struct sFBindless_Textures : public sFBindless_Base {
 
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+          eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,_H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Pixel,_H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),eFalse);
       //CHECK_EQUAL(eGpuFunctionBindType_Bindless,_pixelGpuFun->GetFunctionBindType());
     }
 
@@ -225,12 +225,12 @@ struct sFBindless_Instances : public sFBindless_Base {
     {
       _vertexGpuFun = niCheckNN(_vertexGpuFun,_driverGpu->CreateGpuFunction(
           eGpuFunctionType_Vertex,
-          _H("test/gpufunc/texture_bindless_vs.gpufunc.xml")),eFalse);
+          _H("test/nish/bindless/texture_bindless_vs.gpufunc.xml")),eFalse);
       CHECK_EQUAL(eGpuFunctionBindType_Bindless,
                   _vertexGpuFun->GetFunctionBindType());
       _pixelGpuFun = niCheckNN(_pixelGpuFun,_driverGpu->CreateGpuFunction(
         eGpuFunctionType_Pixel,
-        _H("test/gpufunc/texture_bindless_ps.gpufunc.xml")),eFalse);
+        _H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),eFalse);
       CHECK_EQUAL(eGpuFunctionBindType_Bindless,
                   _pixelGpuFun->GetFunctionBindType());
     }

@@ -1,0 +1,33 @@
+#version 460
+
+struct niUIGpuFuncs_FixedUniforms
+{
+    mat4 mtxWVP;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    vec4 materialColor;
+};
+
+uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[6];
+layout(location = 0) in vec3 IN_0_aInput_position;
+layout(location = 5) in vec2 IN_5_aInput_tex0;
+layout(location = 1) out vec4 OUT_1_rval_color;
+layout(location = 2) out vec2 OUT_2_rval_tex0;
+
+void main()
+{
+    niUIGpuFuncs_FixedUniforms _100 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), UBO_niUIGpuFuncs_FixedUniforms[4].x, UBO_niUIGpuFuncs_FixedUniforms[4].y, UBO_niUIGpuFuncs_FixedUniforms[4].z, UBO_niUIGpuFuncs_FixedUniforms[4].w, UBO_niUIGpuFuncs_FixedUniforms[5]);
+    niUIGpuFuncs_FixedUniforms _101;
+    _101.mtxWVP = _100.mtxWVP;
+    _101.alphaRef = _100.alphaRef;
+    _101.padding0 = _100.padding0;
+    _101.padding1 = _100.padding1;
+    _101.padding2 = _100.padding2;
+    _101.materialColor = _100.materialColor;
+    gl_Position = _101.mtxWVP * vec4(IN_0_aInput_position, 1.0);
+    OUT_1_rval_color = _101.materialColor;
+    OUT_2_rval_tex0 = IN_5_aInput_tex0;
+}
+

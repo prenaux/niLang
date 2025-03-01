@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "../../../data/test/nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 #include <niUI/Utils/AABB.h>
 #include "MakeTestRayGeometry.h"
@@ -79,9 +79,9 @@ struct sFRayPipeline_Base : public sFGDRV_Base {
 
     // Setup display pipeline
     _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+      eGpuFunctionType_Vertex,_H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
     _displayPixelGpuFun = niCheckNN(_displayPixelGpuFun,_driverGpu->CreateGpuFunction(
-      eGpuFunctionType_Pixel,_H("test/gpufunc/texture_ps.gpufunc.xml")),eFalse);
+      eGpuFunctionType_Pixel,_H("test/nish/gpu/texture_ps.gpufunc.xml")),eFalse);
 
     NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
     pipelineDesc->SetFVF(tVertexCanvas::eFVF);
@@ -136,13 +136,13 @@ struct sFRayPipeline_Triangle : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _H("test/nish/raypipeline/triangle_rchit.gpufunc.xml")), eFalse);
     }
 
     // Create ray tracing pipeline
@@ -248,13 +248,13 @@ struct sFRayPipeline_Quad : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _H("test/nish/raypipeline/triangle_rchit.gpufunc.xml")), eFalse);
     }
 
     // Create ray tracing pipeline
@@ -361,13 +361,13 @@ struct sFRayPipeline_TriangleQuad : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _H("test/nish/raypipeline/triangle_rchit.gpufunc.xml")), eFalse);
     }
 
     // Create ray tracing pipeline
@@ -519,10 +519,10 @@ struct sFRayPipeline_InstancesBase : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
         eGpuFunctionType_RayClosestHit, _rchitPath), eFalse);
@@ -623,28 +623,28 @@ struct sFRayPipeline_InstancesBase : public sFRayPipeline_Base {
 
 struct sFRayPipeline_Instances : public sFRayPipeline_InstancesBase {
   sFRayPipeline_Instances()
-      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_rchit.gpufunc.xml"))
+      : sFRayPipeline_InstancesBase(_H("test/nish/raypipeline/triangle_rchit.gpufunc.xml"))
   {}
 };
 TEST_CLASS(FRayPipeline,Instances);
 
 struct sFRayPipeline_InstancesIndex : public sFRayPipeline_InstancesBase {
   sFRayPipeline_InstancesIndex()
-      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_instanceindex_rchit.gpufunc.xml"))
+      : sFRayPipeline_InstancesBase(_H("test/nish/raypipeline/triangle_instanceindex_rchit.gpufunc.xml"))
   {}
 };
 TEST_CLASS(FRayPipeline,InstancesIndex);
 
 struct sFRayPipeline_InstancesId : public sFRayPipeline_InstancesBase {
   sFRayPipeline_InstancesId()
-      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_instanceid_rchit.gpufunc.xml"))
+      : sFRayPipeline_InstancesBase(_H("test/nish/raypipeline/triangle_instanceid_rchit.gpufunc.xml"))
   {}
 };
 TEST_CLASS(FRayPipeline,InstancesId);
 
 struct sFRayPipeline_InstancesBary : public sFRayPipeline_InstancesBase {
   sFRayPipeline_InstancesBary()
-      : sFRayPipeline_InstancesBase(_H("test/rayfunc/triangle_bary_rchit.gpufunc.xml"))
+      : sFRayPipeline_InstancesBase(_H("test/nish/raypipeline/triangle_bary_rchit.gpufunc.xml"))
   {}
 };
 TEST_CLASS(FRayPipeline,InstancesBary);
@@ -671,16 +671,16 @@ struct sFRayPipeline_IntSphere : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_bary_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _H("test/nish/raypipeline/triangle_bary_rchit.gpufunc.xml")), eFalse);
 
       _rayIntFun = niCheckNN(_rayIntFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayIntersection, _H("test/rayfunc/sphere_rint.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayIntersection, _H("test/nish/raypipeline/sphere_rint.gpufunc.xml")), eFalse);
     }
 
     // Create ray tracing pipeline
@@ -802,16 +802,16 @@ struct sFRayPipeline_IntSphereWithTriangles : public sFRayPipeline_Base {
     // Create ray tracing shaders
     {
       _rayGenFun = niCheckNN(_rayGenFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayGeneration, _H("test/rayfunc/triangle_rgen.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayGeneration, _H("test/nish/raypipeline/triangle_rgen.gpufunc.xml")), eFalse);
 
       _rayMissFun = niCheckNN(_rayMissFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayMiss, _H("test/rayfunc/triangle_rmiss.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayMiss, _H("test/nish/raypipeline/triangle_rmiss.gpufunc.xml")), eFalse);
 
       _rayHitFun = niCheckNN(_rayHitFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayClosestHit, _H("test/rayfunc/triangle_bary_rchit.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayClosestHit, _H("test/nish/raypipeline/triangle_bary_rchit.gpufunc.xml")), eFalse);
 
       _rayIntFun = niCheckNN(_rayIntFun, _driverGpu->CreateGpuFunction(
-        eGpuFunctionType_RayIntersection, _H("test/rayfunc/sphere_rint.gpufunc.xml")), eFalse);
+        eGpuFunctionType_RayIntersection, _H("test/nish/raypipeline/sphere_rint.gpufunc.xml")), eFalse);
     }
 
     // Create ray tracing pipeline

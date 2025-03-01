@@ -2,7 +2,7 @@
 #include <niUI/IGpu.h>
 #include <niUI/IRay.h>
 #include "../tsrc_gdrv/MakeTestRayGeometry.h"
-#include "../../../data/test/gpufunc/TestGpuFuncs.hpp"
+#include "../../../data/test/nish/TestGpuFuncs.hpp"
 
 #if !defined niOSX
 namespace _ {
@@ -135,7 +135,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
       // Setup display pipeline
       _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,_H("test/gpufunc/texture_vs.gpufunc.xml")),eFalse);
+        eGpuFunctionType_Vertex,
+        _H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
 
       _displayRayqueryGpuFun = niCheckNN(_displayRayqueryGpuFun,_driverGpu->CreateGpuFunction(
         eGpuFunctionType_Pixel,ahspRayqueryGpufuncPath),eFalse);
@@ -689,7 +690,7 @@ struct Triangle : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
 
     // Create acceleration structure
     {
@@ -744,7 +745,7 @@ struct VisInstIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -803,7 +804,7 @@ struct ManyPolySpheresInstIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneFourPolySpheres());
     CHECK(AddSceneManyPolySpheres(25,2));
@@ -862,7 +863,7 @@ struct VisBary : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_bary_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_bary_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -921,7 +922,7 @@ struct VisPrimIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_primindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_primindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -996,7 +997,7 @@ struct VisTex0 : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_tex0_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_tex0_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1101,7 +1102,7 @@ struct VisNormalsObj : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_obj_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_normals_obj_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1206,7 +1207,7 @@ struct VisNormalsWorld : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_normals_world_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_normals_world_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1311,7 +1312,7 @@ struct VisPosWorld : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_pos_world_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_pos_world_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1417,7 +1418,7 @@ struct LitCube : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_lit_cube_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_lit_cube_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1522,7 +1523,7 @@ struct LitTexturedCube : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/gpufunc/raytracer_lit_textured_cube_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_lit_textured_cube_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());

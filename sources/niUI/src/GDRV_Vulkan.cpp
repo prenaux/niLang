@@ -94,10 +94,12 @@ niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTra
 niDeclareModuleTrace_(niUI,TraceVulkanDescr);
 #define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
 
+_HSymImpl(vulkan_panic);
+
 #define VK_PANIC(x,RET) {                                               \
     VkResult r = (x);                                                   \
     if (r != VK_SUCCESS) {                                              \
-      niPanicUnreachable(niFmt("Vulkan call failed '" #x "': %s", ni_vulkan::VkResultToString(r))); \
+      niThrowPanic(ni,vulkan_panic,niFmt("Vulkan call failed '" #x "': %s", ni_vulkan::VkResultToString(r))); \
       return RET;                                                       \
     }                                                                   \
   }

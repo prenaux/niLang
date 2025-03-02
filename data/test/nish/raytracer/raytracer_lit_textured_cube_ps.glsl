@@ -156,7 +156,8 @@ uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex);
 vec3 TestGpuFuncs_BaryToVec3(vec2 aBary);
 vec2 TestGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBary);
 vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+float TestGpuFuncs_SkyStep(float a, float b, float v);
+vec3 TestGpuFuncs_ComputeSimpleSkyColor(vec3 aRayDir, vec3 aSunDir);
 float TestGpuFuncs_CosineBiasSat(float v, float b);
 float TestGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS);
 vec3 TestGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS);
@@ -245,13 +246,23 @@ vec2 TestGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBa
 vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary) {
   return (((aX*aBary.x)+(aY*aBary.y))+(aZ*aBary.z));
 }
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
-  vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_R2 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_R2[3][0],_tmp_R2[3][1],_tmp_R2[3][2]);
-  vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
-  vec3 dir = normalize(((target-(origin.xyz)).xyz));
-  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_None,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+float TestGpuFuncs_SkyStep(float a, float b, float v) {
+  return smoothstep(a, b, v);
+}
+vec3 TestGpuFuncs_ComputeSimpleSkyColor(vec3 aRayDir, vec3 aSunDir) {
+  vec3 groundColor = vec3(0.35,0.3,0.35);
+  vec3 skyColorHorizon = vec3(1.0,1.0,1.0);
+  vec3 skyColorZenith = vec3(0.08,0.37,0.73);
+  vec3 sunColor = vec3(1.0,0.9,0.7);
+  float sunSize = 0.0025;
+  float sunIntensity = 10.0;
+  float skyGradientT = pow(TestGpuFuncs_SkyStep(0.0001,0.4,aRayDir.y),0.35);
+  vec3 skyGradient = mix(skyColorHorizon,skyColorZenith,skyGradientT);
+  float groundToSkyT = TestGpuFuncs_SkyStep(-0.02,0.0,aRayDir.y);
+  float cosAngle = dot(aRayDir,aSunDir);
+  float sunDisk = (TestGpuFuncs_SkyStep((1.0 - sunSize),1.0,cosAngle) * sunIntensity);
+  float sunVisibility = float((groundToSkyT >= 1.0));
+  return (mix(groundColor,skyGradient,groundToSkyT)+((sunDisk*sunColor)*sunVisibility));
 }
 float TestGpuFuncs_CosineBiasSat(float v, float b) {
   return clamp(max(0.0,((v * (1.0 - b)) + b)),0.0,1.0);
@@ -261,17 +272,17 @@ float TestGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT a
   rayQueryInitializeEXT(rayQuery,aAS,(nish_std_RayFlags_SkipClosestHitShader | nish_std_RayFlags_Opaque),255,aPos,0.001,aDir,10000.0);
   rayQueryProceedEXT(rayQuery);
   bool hasHit = (rayQueryGetIntersectionTypeEXT(rayQuery,true) == nish_std_RayQueryIntersectionType_CommittedTriangle);
-  float _tmp_B3;
-  bool _tmp_C3 = hasHit;
-  if (_tmp_C3) {
-    _tmp_B3 = 0.0;
+  float _tmp_L3;
+  bool _tmp_M3 = hasHit;
+  if (_tmp_M3) {
+    _tmp_L3 = 0.0;
   }
   else {
     {
-      _tmp_B3 = 1.0;
+      _tmp_L3 = 1.0;
     }
   }
-  return _tmp_B3;
+  return _tmp_L3;
 }
 vec3 TestGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS) {
   float att = TestGpuFuncs_DirShadowRay(worldPos,-worldLightDir,aAS);
@@ -283,7 +294,13 @@ vec3 TestGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, 
 }
 nish_std_PixelOutput TestGpuFuncs_raytracer_lit_textured_cube_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
-  TestGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
+  vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
+  mat4 _tmp_r4 = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_r4[3][0],_tmp_r4[3][1],_tmp_r4[3][2]);
+  vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
+  vec3 dir = normalize(((target-(origin.xyz)).xyz));
+  rayQueryInitializeEXT(rayQuery,aAS,nish_std_RayFlags_None,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+  vec3 sunDir = normalize(vec3(0.1,0.1,1.0));
   float cosBias = 0.5;
   vec3 shadowColor = vec3(0.3,0.3,0.3);
   vec3 lightColor0 = vec3(0.8,0.8,0.8);
@@ -297,14 +314,14 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_lit_textured_cube_ps(nish_std_PixelI
   TestGpuFuncs_IntersectionResult_SetFromCommittedIntersection(intersection,rayQuery);
   /* mut */ TestGpuFuncs_RayInstanceData instData = intersection.instData /*COPY VALUETYPE: membervar*/;
   vec4 color;
-  bool _tmp_r4 = (intersection.type == TestGpuFuncs_IntersectionType_Triangle);
-  if (_tmp_r4) {
+  bool _tmp_h5 = (intersection.type == TestGpuFuncs_IntersectionType_Triangle);
+  if (_tmp_h5) {
     vec3 worldPos = intersection.worldPos;
     vec3 worldNormal = intersection.worldNormal;
     vec2 uv = intersection.uv;
     vec3 texColor;
-    bool _tmp_C4 = (instData.texIndex > 0);
-    if (_tmp_C4) {
+    bool _tmp_s5 = (instData.texIndex > 0);
+    if (_tmp_s5) {
       texColor = (texture(sampler2D(nil_builtin_GetTexture2D[nonuniformEXT(instData.texIndex)],aSS),uv).rgb);
     }
     else {
@@ -313,28 +330,29 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_lit_textured_cube_ps(nish_std_PixelI
       }
     }
     vec3 C = ((TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir0,(lightColor0*texColor),cosBias,shadowColor,aAS)+TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir1,(lightColor1*texColor),cosBias,shadowColor,aAS))+TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir2,(lightColor2*texColor),cosBias,shadowColor,aAS));
-    vec3 _tmp_l5 = C;
-    color = vec4(_tmp_l5.x,_tmp_l5.y,_tmp_l5.z,1.0);
+    vec3 _tmp_b6 = C;
+    color = vec4(_tmp_b6.x,_tmp_b6.y,_tmp_b6.z,1.0);
   }
   else {
-    bool _tmp_m5 = (intersection.type == TestGpuFuncs_IntersectionType_BoundingVolume);
-    if (_tmp_m5) {
+    bool _tmp_c6 = (intersection.type == TestGpuFuncs_IntersectionType_BoundingVolume);
+    if (_tmp_c6) {
       color = vec4(1.0,0.0,0.0,1.0);
     }
     else {
-      bool _tmp_u5 = (intersection.type < TestGpuFuncs_IntersectionType_None);
-      if (_tmp_u5) {
+      bool _tmp_k6 = (intersection.type < TestGpuFuncs_IntersectionType_None);
+      if (_tmp_k6) {
         color = vec4(1.0,0.0,1.0,1.0);
       }
       else {
         {
-          color = vec4(0.0,0.5,0.8,0.0);
+          vec3 _tmp_t6 = TestGpuFuncs_ComputeSimpleSkyColor(dir,sunDir);
+          color = vec4(_tmp_t6.x,_tmp_t6.y,_tmp_t6.z,0.0);
         }
       }
     }
   }
-  vec4 _tmp_I5 = color;
-  return nish_std_PixelOutput_new(_tmp_I5);
+  vec4 _tmp_y6 = color;
+  return nish_std_PixelOutput_new(_tmp_y6);
 }
 
 // ModuleInitialize: TestGpuFuncs

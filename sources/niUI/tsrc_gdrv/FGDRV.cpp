@@ -184,19 +184,27 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
 tBool sFGDRV_Base::Start(UnitTest::TestResults& testResults_) {
   _isInteractive = UnitTest::runFixtureName.Eq(m_testName);
 
-  _mq = niCheckNN(_mq,ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()),eFalse);
+  _mq = niCheckNN(
+    _mq,ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()),
+    eFalse);
 
-  _windowHandler = niCheckNN(_windowHandler,niNew FGDRV_WindowHandler(this),eFalse);
+  _windowHandler = niCheckNN(
+    _windowHandler,niNew FGDRV_WindowHandler(this),eFalse);
+
+  niLet monitorRect = ni::GetLang()->GetMonitorRect(0);
+  sRecti r = monitorRect;
+  r.SetWidth((tI32)((tF32)r.GetWidth() * 0.75));
+  r.SetHeight((tI32)((tF32)r.GetHeight() * 0.75));
+  if ((r.GetWidth() < 10) || (r.GetHeight() < 10)) {
+    r.Set(0, 0, 1024, 768);
+  }
+  niLog(Info, niFmt(
+    "Start: %s, r: %s, monitorRect: %s",
+    m_testName, r, monitorRect));
 
   // Create the window
   _window = niCheckNN(_window,ni::GetLang()->CreateWindow(
-    nullptr,
-    m_testName,
-    sRecti(50,50,640,480),
-    0,
-    eOSWindowStyleFlags_Regular),eFalse);
-  _window->SetClientSize(Vec2i(
-    Vec2f(_window->GetClientSize())*_window->GetContentsScale()));
+    nullptr,m_testName,r,0,eOSWindowStyleFlags_Regular),eFalse);
   _window->GetMessageHandlers()->AddSink(_windowHandler);
 
   // Get the graphics driver name, can be set through -Drenderer=NAME
@@ -243,18 +251,21 @@ tBool sFGDRV_Base::Step(UnitTest::TestResults& testResults_) {
     _window->ActivateWindow();
     _window->SetRefreshTimer(0.0f);
   }
+
+  _window->UpdateWindow(eTrue);
   {
     sMessageDesc msg;
     while (_mq->Poll(&msg)) {
       msg.mptrHandler->HandleMessage(msg.mnMsg, msg.mvarA, msg.mvarB);
-      if (msg.mnMsg == eOSWindowMessage_Paint)
+      if (msg.mnMsg == eOSWindowMessage_Paint) {
         break;
+      }
     }
   }
   if (_window->GetRequestedClose()) {
     return eFalse;
   }
-  _window->UpdateWindow(eTrue);
+
   if (_isInteractive) {
     return eTrue;
   }
@@ -277,6 +288,15 @@ tBool sFGDRV_Base::BeforePaint(UnitTest::TestResults& testResults_) {
     this->_clearTimer = ni::TimerInSeconds();
   }
 
+  // service all scripting hosts
+  ni::GetLang()->ServiceAllScriptingHosts(false);
+
+  // update the main executor
+  ni::GetConcurrent()->GetExecutorMain()->Update(10);
+
+  // update the console
+  ni::GetConsole()->PopAndRunAllCommands();
+
   this->_graphicsContext->ClearBuffers(
     this->_clearBuffers, this->_clearColor, 1.0f, 0);
 
@@ -289,11 +309,15 @@ tBool sFGDRV_Base::AfterPaint(UnitTest::TestResults& testResults_) {
 
   // Update the frame time
   ni::GetLang()->UpdateFrameTime(ni::TimerInSeconds());
+  ni::GetProf()->Update();
+
+  // Update animations
   if (this->_animated) {
     this->_animationTime += ni::GetLang()->GetFrameTime();
     this->_pingpongTime = ni::Cos<tF32>((tF32)_animationTime * 2.0f) * 0.5f + 0.5f;
   }
 
+  // Update live stats
   sVec4i memStats;
   ni_mem_get_stats(&memStats);
   cString fpsText = niFmt(

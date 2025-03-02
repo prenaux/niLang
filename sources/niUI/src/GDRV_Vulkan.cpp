@@ -94,6 +94,14 @@ niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTra
 niDeclareModuleTrace_(niUI,TraceVulkanDescr);
 #define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
 
+#define VK_PANIC(x,RET) {                                               \
+    VkResult r = (x);                                                   \
+    if (r != VK_SUCCESS) {                                              \
+      niPanicUnreachable(niFmt("Vulkan call failed '" #x "': %s", ni_vulkan::VkResultToString(r))); \
+      return RET;                                                       \
+    }                                                                   \
+  }
+
 #define NISH_VULKAN_TARGET spv_vk12
 
 _HDecl(NISH_VULKAN_TARGET);
@@ -1557,8 +1565,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
         .commandBufferCount = 1,
         .pCommandBuffers = &cmdBuf
       };
-      VK_CHECK(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), eFalse);
-      VK_CHECK(vkQueueWaitIdle(_graphicsQueue), eFalse);
+      VK_PANIC(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), eFalse);
+      VK_PANIC(vkQueueWaitIdle(_graphicsQueue), eFalse);
     }
 
     vkFreeCommandBuffers(_device, _commandPool, 1, &cmdBuf);
@@ -5224,7 +5232,7 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
 
   void __stdcall Invalidate() niImpl {
     // Wait for the device to finish all operations before destroying objects.
-    vkDeviceWaitIdle(_driver->_device);
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device),;);
     _DestroySurface(_driver->_device);
     if (_renderFinishedSemaphore) {
       vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
@@ -5415,7 +5423,7 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
 
   void __stdcall Invalidate() niImpl {
     // Wait for the device to finish all operations before destroying objects.
-    vkDeviceWaitIdle(_driver->_device);
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device),;);
     _DestroySwapChainResources();
     if (_renderFinishedSemaphore) {
       vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
@@ -5601,8 +5609,8 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
   }
 
   tBool _RecreateSwapchain(const achar* aaszReason) {
-    vkDeviceWaitIdle(_driver->_device);
     niInfo(niFmt("Recreating vulkan swapchain: %s.", aaszReason));
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device),eFalse);
 
     _DestroySwapChainResources();
     if (mptrDS.IsOK()) {

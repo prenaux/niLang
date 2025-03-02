@@ -487,7 +487,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool CreatePolyCube( 
+  tBool CreatePolyCube(
     ain<sVec3f> avCenter, ain<sVec2f> aRot, iTexture* apTex,
     tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
   {
@@ -717,8 +717,8 @@ struct Triangle : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -778,8 +778,8 @@ struct VisInstIndex : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -837,8 +837,8 @@ struct ManyPolySpheresInstIndex : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -896,8 +896,8 @@ struct VisBary : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -955,8 +955,8 @@ struct VisPrimIndex : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1060,8 +1060,8 @@ struct VisTex0 : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1165,8 +1165,8 @@ struct VisNormalsObj : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1270,8 +1270,8 @@ struct VisNormalsWorld : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1375,8 +1375,8 @@ struct VisPosWorld : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1480,8 +1480,8 @@ struct LitCube : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
@@ -1597,8 +1597,8 @@ struct LitTexturedCube : public RayTracerBase {
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
     TestGpuFuncs_RayUniforms u;
-    u.rtWidth = (tF32)apCanvas->GetViewport().GetWidth();
-    u.rtHeight = (tF32)apCanvas->GetViewport().GetHeight();
+    u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
+    u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
     u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
     u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();

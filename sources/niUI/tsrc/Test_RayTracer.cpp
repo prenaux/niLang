@@ -487,7 +487,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool CreatePolyCube(
+  tBool CreatePolyCube( 
     ain<sVec3f> avCenter, ain<sVec2f> aRot, iTexture* apTex,
     tBool abCW = eTrue, tBool abAlpha = eFalse, tF32 afSize = 10.0f)
   {
@@ -582,14 +582,14 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     return eTrue;
   }
 
-  tBool AddRayTriangle(ain<nn<iRayBuildEncoder>> aBuildEncoder, ain<nn<iRayInstancesDesc>> aInstDesc, tU32 anInstIndex) {
+  tBool AddRayTriangle(ain<nn<iRayBuildEncoder>> aBuildEncoder, ain<nn<iRayInstancesDesc>> aInstDesc, tU32 anInstIndex, ain<sVec3f> aOffset = sVec3f::Zero()) {
     niLog(Info,"AddRayTriangle Begin");
     niLet prDesc = niCheckNN(
       prDesc,
       _driverRay->CreateRayTrianglePrimitivesDesc(HFmt("%s_RayTrianglePrimitivesDesc",m_testName)),
       eFalse);
 
-    niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(0,0,0.3f));
+    niLet triangleVB = MakeTriVB(_driverGpu,++_numTriVB,1.0f,Vec3f(aOffset.x,aOffset.y,aOffset.z+0.3f));
     niCheck(prDesc->AddTriangles(
       triangleVB,0,sizeof(tVertexTri),3,
       sMatrixf::Identity(),
@@ -758,8 +758,10 @@ struct VisInstIndex : public RayTracerBase {
         _driverRay->CreateRayInstancesDesc(HFmt("%s_RayInstancesDesc",m_testName)),
         eFalse);
 
-      niCheck(AddRayTriangle(buildEncoder,instDesc,1),eFalse);
-      niCheck(AddRayGeoms(buildEncoder,instDesc,2),eFalse);
+      tU32 instIndex = 1;
+      niCheck(AddRayTriangle(buildEncoder,instDesc,instIndex++),eFalse);
+      niCheck(AddRayTriangle(buildEncoder,instDesc,instIndex++,Vec3f(0.3f,0.0f,0.1f)),eFalse);
+      niCheck(AddRayGeoms(buildEncoder,instDesc,instIndex++),eFalse);
 
       _rayInsts = niCheckNN(_rayInsts, buildEncoder->BuildRayInstances(
         HFmt("%s_RayInstances",m_testName),instDesc), eFalse);

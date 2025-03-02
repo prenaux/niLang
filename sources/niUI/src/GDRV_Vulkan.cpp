@@ -18,6 +18,9 @@
 #include <niLang/Utils/IDGenerator.h>
 #include <niLang/Utils/Trace.h>
 
+// Note: Better to not rely on this, but can be useful for debugging/ruling things out.
+// #define niVulkan_UseRobustness2
+
 #define niVulkan_Implement
 #include "../../thirdparty/VulkanUtils/niVulkan.h"
 #define niVulkanMemoryAllocator_Implement
@@ -67,6 +70,9 @@ static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
   VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+#if defined niVulkan_UseRobustness2
+  VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,
+#endif
 #if defined niVulkan_UseSurfaceKHR
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 #endif
@@ -1420,6 +1426,16 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .extendedDynamicState = VK_TRUE,
     };
     CHAIN_FEATURES(extDynamicStateFeatures);
+
+#if defined niVulkan_UseRobustness2
+    VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
+      .robustBufferAccess2 = VK_TRUE,
+      .robustImageAccess2 = VK_TRUE,
+      .nullDescriptor = VK_TRUE
+    };
+    CHAIN_FEATURES(robustness2Features);
+#endif    
 
     // === BINDLESS SETUP ===
     if (_isBindlessSupported) {

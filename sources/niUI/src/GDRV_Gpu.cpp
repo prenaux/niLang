@@ -381,6 +381,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl {
     tPipelineMap::iterator it = _pipelines.find(aPipelineId);
     if (it == _pipelines.end()) {
+      GPU_TRACE((">>> sFixedGpuPipelines::GetRenderPipeline: CreateFixedGpuPipeline: %s.",((sFixedGpuPipelineIdDesc&)aPipelineId).ToString()));
       Ptr<iGpuPipeline> pipeline = CreateFixedGpuPipeline(
         apGpuDriver,aPipelineId,apFuncVertex,apFuncPixel);
       if (!pipeline.IsOK()) {
@@ -388,9 +389,8 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
         niPanicUnreachable("Can't create gpu pipeline.");
         return nullptr;
       }
-      it = _pipelines.insert(astl::make_pair(aPipelineId,pipeline)).first;
-    }
-    GPU_TRACE((">>> sFixedGpuPipelines::GetRenderPipeline: %s.",((sFixedGpuPipelineId&)aPipelineId).ToString()));
+      it = _pipelines.insert(astl::make_pair(aPipelineId,pipeline)).first;      
+    }    
     return it->second;
   }
 
@@ -479,20 +479,23 @@ Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver) {
 /////////////////////////////////////////////////////////////////
 struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   NN<iGpuBuffer> _buffer;
-  tFVF _fvf;
-  tU32 _fvfStride;
+  const tFVF _fvf;
+  const tU32 _fvfStride;
   const eArrayUsage _arrayUsage;
+  const tU32 _numVertices;
 
-  sFixedGpuVertexArray(iGpuBuffer* apGpuBuffer, tFVF aFVF, eArrayUsage aUsage)
+  sFixedGpuVertexArray(iGpuBuffer* apGpuBuffer, tFVF aFVF, eArrayUsage aUsage, tU32 anNumVertices)
       : _arrayUsage(aUsage)
       , _buffer(apGpuBuffer)
+      , _fvf(aFVF)
+      , _fvfStride(FVFGetStride(_fvf))
+      , _numVertices(anNumVertices)
   {
-    _fvf = aFVF;
-    _fvfStride = FVFGetStride(_fvf);
+    niDebugAssert(_buffer->GetSize() >= (_fvfStride * _numVertices));
     GPU_TRACE((
       ">>> sFixedGpuVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %db (%gMB).",
       FVFToString(_fvf).Chars(),
-      this->GetNumVertices(),_fvfStride,
+      this->GetNumVertices(), _fvfStride,
       _fvfStride * anNumVertices,
       ((tF64)(_fvfStride * anNumVertices))/(1024.0*1024.0)));
   }
@@ -518,7 +521,7 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
     return _fvf;
   }
   virtual tU32 __stdcall GetNumVertices() const niImpl {
-    return _buffer->GetSize() / _fvfStride;
+    return _numVertices;
   }
   virtual eArrayUsage __stdcall GetUsage() const niImpl {
     return _arrayUsage;
@@ -549,14 +552,19 @@ sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA) {
 /////////////////////////////////////////////////////////////////
 struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
   NN<iGpuBuffer> _buffer;
-  eGraphicsPrimitiveType _primType;
+  const eGraphicsPrimitiveType _primType;
   const eArrayUsage _arrayUsage;
+  const tU32 _numIndices;
+  const tU32 _maxVertexIndex;
 
-  sFixedGpuIndexArray(iGpuBuffer* apGpuBuffer, eGraphicsPrimitiveType aPrimType, eArrayUsage aUsage)
+  sFixedGpuIndexArray(iGpuBuffer* apGpuBuffer, eGraphicsPrimitiveType aPrimType, eArrayUsage aUsage, tU32 anNumIndices, tU32 anMaxVertexIndex)
       : _arrayUsage(aUsage)
       , _primType(aPrimType)
       , _buffer(apGpuBuffer)
+      , _numIndices(anNumIndices)
+      , _maxVertexIndex(anMaxVertexIndex)
   {
+    niDebugAssert(_buffer->GetSize() >= (knFixedGpuIndexSize * _numIndices));
     GPU_TRACE((
       ">>> sFixedGpuIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %db (%gMB).",
       niEnumToChars(eGraphicsPrimitiveType,_primType),
@@ -587,10 +595,10 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
     return _primType;
   }
   virtual tU32 __stdcall GetNumIndices() const niImpl {
-    return _buffer->GetSize() / knFixedGpuIndexSize;
+    return _numIndices;
   }
   virtual tU32 __stdcall GetMaxVertexIndex() const niImpl {
-    return 0xFFFFFFFF;
+    return _maxVertexIndex;
   }
   virtual eArrayUsage __stdcall GetUsage() const niImpl {
     return _arrayUsage;
@@ -623,7 +631,7 @@ iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 an
     eGpuBufferUsageFlags_Storage|
     eGpuBufferUsageFlags_RayBuildInput);
   niCheckIsOK(vaBuffer,nullptr);
-  return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage);
+  return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage, anNumVertices);
 }
 
 iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
@@ -635,7 +643,7 @@ iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphics
     eGpuBufferUsageFlags_Index|
     eGpuBufferUsageFlags_Storage|
     eGpuBufferUsageFlags_RayBuildInput);
-  return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage);
+  return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage, anNumIndices, anMaxVertexIndex);
 }
 
 /////////////////////////////////////////////////////////////////

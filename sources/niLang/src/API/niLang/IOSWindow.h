@@ -621,16 +621,14 @@ struct iOSWindow : public iUnknown
   //! {Property}
   virtual sRecti __stdcall GetRect() const = 0;
 
-  //! Set the window's client size.
+  //! Set the window's client size in pixels.
   //! {Property}
   virtual void __stdcall SetClientSize(const sVec2i& avSize) = 0;
-  //! Get the window's client size.
-  //! {Property}
-  //! \remark The client size can be different of the window's size. For
-  //!         example on retina displays with some window manager, such as on
-  //!         macOS, the client size is larger because it is always specified
-  //!         in pixels. GetContentsScale can be use to retrieve the "virtual
-  //!         units" to "pixel size" ratio.
+  //! Get the window's client size in pixels.
+  //! \remark The client size may differ from the window size. When there's
+  //!         content scaling the client size will differ since it is always
+  //!         measured in pixels. Use GetContentsScale to obtain the ratio
+  //!         between "virtual units" and pixel size.
   virtual sVec2i __stdcall GetClientSize() const = 0;
 
   //! Get the contents' scale factor.

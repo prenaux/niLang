@@ -1024,39 +1024,42 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   virtual sVec2i __stdcall GetPosition() const niImpl {
     return GetRect().GetTopLeft();
   }
+
+  ///////////////////////////////////////////////
   virtual void __stdcall SetRect(const sRecti& aRect) niImpl {
     NSRect rect;
     rect.origin.x = aRect.x;
     rect.origin.y = aRect.y;
     rect.size.width = aRect.GetWidth();
     rect.size.height = aRect.GetHeight();
-    _FlipNSRect(this,&rect);
-    rect = [nsWindow frameRectForContentRect:rect];
-    [nsWindow setFrameOrigin:rect.origin];
-    [nsWindow setContentSize:rect.size];
+    _FlipNSRect(this, &rect);
+    [nsWindow setFrame:rect display:YES];
   }
   virtual sRecti __stdcall GetRect() const niImpl {
-    NSRect rect = [nsWindow contentRectForFrameRect:[nsWindow frame]];
+    NSRect rect = [nsWindow frame];
     _FlipNSRect(this,&rect);
     return sRecti(rect.origin.x,rect.origin.y,rect.size.width,rect.size.height);
   }
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl {
-    return SetSize(avSize);
+    const tF32 contentsScale = GetContentsScale();
+    NSSize pointSize = NSMakeSize(
+      avSize.x / contentsScale, avSize.y / contentsScale);
+    [nsWindow setContentSize:pointSize];
   }
   virtual sVec2i __stdcall GetClientSize() const niImpl {
     sVec2i sz;
     if (nsView) {
-      if (nsViewRect.size.width == 0 || nsViewRect.size.height == 0) {
-        niThis(cOSXWindow)->nsViewRect = [nsView bounds];
-      }
-      sz = Vec2i(nsViewRect.size.width,nsViewRect.size.height);
+      NSRect rect = [nsView bounds];
+      rect = [nsView convertRectToBacking:rect];
+      sz = Vec2i(rect.size.width,rect.size.height);
     }
     else {
-      sz = GetSize();
+      NSRect rect = [nsWindow contentRectForFrameRect:[nsWindow frame]];
+      sz = Vec2i(rect.size.width,rect.size.height) * GetContentsScale();
     }
-    return sz * GetContentsScale();
+    return sz;
   }
 
   ///////////////////////////////////////////////
@@ -1462,8 +1465,7 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   NSCursor*        nsCustomCursor;
   NSWindow*        nsWindow;
   NSView*          nsView;
-  NSRect           nsViewRect;
-  NIWindowDelegate*   nsResponder;
+  NIWindowDelegate* nsResponder;
   tBool            nsOwned;
   tU32             nsModifierFlags;
   tBool            nsIsFullscreen;
@@ -2365,7 +2367,6 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
   if (_wnd->nsGL.context) {
     [_wnd->nsGL.context update];
   }
-  _wnd->nsViewRect = [_wnd->nsView frame];
   _wnd->_SendMessage(eOSWindowMessage_Move);
 }
 
@@ -2376,7 +2377,6 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
   if (_wnd->nsGL.context) {
     [_wnd->nsGL.context update];
   }
-  _wnd->nsViewRect = [_wnd->nsView frame];
   _wnd->_SendMessage(eOSWindowMessage_Size);
 }
 

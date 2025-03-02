@@ -412,7 +412,7 @@ struct sFGpu_TexAlphaBase : public sFGpu_Base {
       // Make a square window so that when we're rotating the square it doesnt
       // look too stretched. We're drawing it directly in clip space which is
       // [-1;1] from the left to the right of our application window.
-      wnd->SetClientSize(Vec2i(500,500));
+      wnd->SetClientSize(Vec2i(500,500) * wnd->GetContentsScale());
       wnd->CenterWindow();
     }
 

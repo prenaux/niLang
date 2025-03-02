@@ -122,6 +122,12 @@ niExportFuncCPP(void) ni_throw_panic(
   int line,
   const char* func)
 {
+#ifdef niWindows
+  if (::IsDebuggerPresent()) {
+    ni_debug_break();
+  }
+#endif
+
 #if defined niNoExceptions
   ni_harakiri(aKind,msg,nullptr,file,line,func);
 #else

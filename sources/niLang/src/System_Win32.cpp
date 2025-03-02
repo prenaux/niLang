@@ -715,6 +715,7 @@ typedef enum MY_DPI_AWARENESS
 #define DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED    ((HANDLE)-5)
 #endif
 
+EA_DISABLE_VC_WARNING(4312);
 static const char* _GetDpiAwarenessContextString(HANDLE h) {
   if (h == DPI_AWARENESS_CONTEXT_UNAWARE) { return "DPI_AWARENESS_CONTEXT_UNAWARE"; }
   else if (h == DPI_AWARENESS_CONTEXT_SYSTEM_AWARE) { return "DPI_AWARENESS_CONTEXT_SYSTEM_AWARE"; }
@@ -724,6 +725,7 @@ static const char* _GetDpiAwarenessContextString(HANDLE h) {
   else if (h == (HANDLE)eInvalidHandle) { return "DPI_AWARENESS_CONTEXT_INVALIDHANDLE"; }
   return "DPI_AWARENESS_CONTEXT_UNKNOWN";
 }
+EA_RESTORE_VC_WARNING();
 
 // shcore.dll
 MY_WINAPI_FUNCPTR(HRESULT, SetProcessDpiAwareness, (MY_PROCESS_DPI_AWARENESS value));
@@ -749,16 +751,19 @@ MY_WINAPI_FUNCPTR(BOOL, EnableNonClientDpiScaling, (HWND hwnd));
 static HMODULE _hDLLShcore = NULL;
 static HMODULE _hDLLUser32 = NULL;
 
+EA_DISABLE_VC_WARNING(4312);
 static void _SetThreadDpiAwareness() {
   HANDLE awareness = (HANDLE)eInvalidHandle;
   if (_pfnSetThreadDpiAwarenessContext) {
     awareness = _pfnSetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
   }
-  TRACE_SET_DPI_AWARE(("... _SetThreadDpiAwareness: threadId: %p, awareness: %s, error: %s",
-                       (tU32)::GetCurrentThreadId(),
-                       _GetDpiAwarenessContextString(awareness),
-                       _GetLastErrorMessage()));
+  TRACE_SET_DPI_AWARE((
+    "... _SetThreadDpiAwareness: threadId: %p, awareness: %s, error: %s",
+    (tU32)::GetCurrentThreadId(),
+    _GetDpiAwarenessContextString(awareness),
+    _GetLastErrorMessage()));
 }
+EA_RESTORE_VC_WARNING();
 
 static tBool _SetDPIAware() {
   static tBool _bDidSet = eFalse;
@@ -1510,7 +1515,7 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
   }
   virtual void __stdcall SetPosition(const sVec2i& avPos) {
     sRecti rect = GetRect();
-    rect.SetTopLeft(avPos);
+    rect.MoveTo(avPos);
     SetRect(rect);
   }
   virtual sVec2i __stdcall GetPosition() const {
@@ -1539,12 +1544,32 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
 
   ///////////////////////////////////////////////
   virtual void __stdcall SetClientSize(const sVec2i& avSize) {
-    sRecti rect = GetRect();
-    rect.SetSize(avSize);
-    AdjustWindowRectEx( (RECT*)&rect, GetWindowLong(mHandle,GWL_STYLE),
-                        GetMenu(mHandle) != NULL,
-                        GetWindowLong(mHandle,GWL_EXSTYLE));
-    SetRect(rect);
+    // Get current client rect
+    RECT clientRect;
+    ::GetClientRect(mHandle, &clientRect);
+
+    // Get current window rect
+    RECT windowRect;
+    ::GetWindowRect(mHandle, &windowRect);
+
+    // Calculate the difference between window size and client size (borders, title, etc.)
+    const int borderWidth = (windowRect.right - windowRect.left) - clientRect.right;
+    const int borderHeight = (windowRect.bottom - windowRect.top) - clientRect.bottom;
+
+    // Calculate new window size based on desired client size
+    const int newWindowWidth = avSize.x + borderWidth;
+    const int newWindowHeight = avSize.y + borderHeight;
+
+    // Set new window size while maintaining the top-left position
+    ::SetWindowPos(
+       mHandle,
+       NULL,
+       windowRect.left,
+       windowRect.top,
+       newWindowWidth,
+       newWindowHeight,
+       SWP_NOZORDER | SWP_NOACTIVATE
+    );
   }
   virtual sVec2i __stdcall GetClientSize() const {
     niCheckSilent(mHandle!=NULL,sVec2i::Zero());

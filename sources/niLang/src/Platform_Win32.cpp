@@ -7,15 +7,13 @@ using namespace ni;
 #include "Lang.h"
 #include "FileFd.h"
 #include "API/niLang/IOSProcess.h"
-
-#ifdef niJNI
-#include "API/niLang/Utils/JNIUtils.h"
-#endif
-
 #include "API/niLang/Utils/CrashReport.h"
 #include "API/niLang/Utils/Path.h"
 #include "API/niLang/Utils/Sync.h"
 #include "API/niLang/STL/set.h"
+#include "API/niLang/StringDef.h"
+#include "API/niLang/Platforms/Win32/Win32_UTF.h"
+#include "API/niLang/Platforms/Win32/WinUI.h"
 
 #pragma comment(lib,"advapi32.lib")
 
@@ -125,11 +123,15 @@ static void _FatalError(const achar* aszMsg) {
     ni_debug_break();
   }
 
+  cString appName = GetLang()->GetProperty("ni.app.name");
+  if (appName.IsEmpty()) {
+    appName = "niApp";
+  }
   cString dialogMessage, logMessage;
 
   // Log message
   {
-    logMessage = niFmt(_A("[FATAL ERROR]\n%s\n"), aszMsg);
+    logMessage = niFmt(_A("[FATAL ERROR] App: %s\n%s\n"), appName, aszMsg);
     tIntPtr errCode = _GetLastErrorCode();
     if (errCode && errCode != 6) {
       logMessage += niFmt(_A("--- OS Error (%d:%x) ---\n"),errCode,errCode);
@@ -142,9 +144,9 @@ static void _FatalError(const achar* aszMsg) {
     dialogMessage = logMessage;
 
     astl::vector<cString> logs;
-    ni_get_last_logs(&logs,20);
+    ni_get_last_logs(&logs,300);
     if (!logs.empty()) {
-      dialogMessage += "--- Last logs ---\n";
+      dialogMessage += niFmt("--- Last %d logs ---\n",logs.size());
       niLoop(i,logs.size()) {
         dialogMessage += logs[i];
       }
@@ -154,10 +156,12 @@ static void _FatalError(const achar* aszMsg) {
   niLog(Error,logMessage);
 
   if (ni_get_show_fatal_error_message_box()) {
-    ni::Windows::UTF16Buffer wMsg;
-    niWin32_UTF8ToUTF16(wMsg,dialogMessage.Chars());
-    ::MessageBoxW(NULL,wMsg.begin(),L"Fatal Error",
-                  MB_OK|MB_ICONERROR|MB_SYSTEMMODAL|MB_TOPMOST|MB_SETFOREGROUND);
+    WinUI::cTextDlg dlg(NULL, niFmt("%s Fatal Error", appName), dialogMessage.c_str());
+    ni::sRecti rect = ni::GetLang()->GetMonitorRect(0);
+    if (rect.GetWidth() > 100 && rect.GetHeight() > 100) {
+      dlg.SetSize(rect.GetWidth()/3,rect.GetHeight()/2);
+    }
+    dlg.DoModal(eTrue);
   }
 
   ::TerminateProcess(::GetCurrentProcess(),0xDEADBEEF);
@@ -168,7 +172,6 @@ static void _FatalError(const achar* aszMsg) {
 // Section: Platform implementation
 //
 //----------------------------------------------------------------------------
-static HINSTANCE  _hInstance = NULL;
 
 ///////////////////////////////////////////////
 void cLang::_PlatformExit(tU32 aulErrorCode) {
@@ -302,10 +305,6 @@ niExportFunc(ni::tPtr) ni_dll_get_proc(ni::tIntPtr aModule, const char* aProcNam
 //
 //----------------------------------------------------------------------------
 #if defined niWin32
-
-#include <stdio.h>
-#include "API/niLang/StringDef.h"
-#include "API/niLang/Platforms/Win32/Win32_UTF.h"
 
 ni::cString _GetCommandLine() {
   return Win32GetCommandLine();

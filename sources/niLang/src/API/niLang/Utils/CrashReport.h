@@ -8,9 +8,17 @@
 #include <exception>
 #endif
 
-
 #if defined __cplusplus
 #include <exception> // for std::set_terminate
+#endif
+
+#ifdef niWindows
+// Unfortunately we have no choice to get SetUnhandledExceptionFilter as
+// forward declaring it sanely is almost impossible to do a in a robust way.
+#include "../Platforms/Win32/Win32_Redef.h"
+#include <signal.h>
+#define niCrashReportHasMinidump
+niExternC __ni_module_export LONG WINAPI ni_UnhandledExceptionFilter(EXCEPTION_POINTERS* pExInfo);
 #endif
 
 namespace ni {
@@ -29,12 +37,6 @@ niExportFuncCPP(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* a
 #define niCrashReport_ModuleInstall()
 
 #else
-
-#ifdef niWindows
-#include <signal.h>
-#define niCrashReportHasMinidump
-niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
-#endif
 
 niExportFunc(void) cpp_terminate_handler();
 niExportFunc(void) cpp_purecall_handler();
@@ -59,6 +61,7 @@ static inline void __niCrashReportModuleInstall()
 #endif
 
 #ifdef niWindows
+  SetUnhandledExceptionFilter(ni_UnhandledExceptionFilter);
   _set_error_mode(_OUT_TO_STDERR);
 #endif
 

@@ -1065,6 +1065,9 @@ _HSymExport(harakiri);
 niExportFunc(int)  ni_get_show_fatal_error_message_box();
 niExportFunc(void) ni_set_show_fatal_error_message_box(int abShow);
 
+niExportFunc(int)  ni_get_panic_harakiri();
+niExportFunc(void) ni_set_panic_harakiri(int abHarakiriOnPanic);
+
 typedef void (__ni_export_call_decl *tpfnHarakiriHandler)(niConst struct iHString* aKind, niConst char* msg, void* apExcPtr, niConst char* file, int line, niConst char* func);
 niExportFunc(void) ni_set_harakiri_handler(tpfnHarakiriHandler apfnHarakiriHandler);
 niExportFunc(tpfnHarakiriHandler) ni_get_harakiri_handler();

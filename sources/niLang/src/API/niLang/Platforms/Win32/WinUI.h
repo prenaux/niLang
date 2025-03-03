@@ -3,6 +3,11 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
+// Note: Might have been declared in niCC.h, we cant set that to nullptr since
+// none of the Windows APIs will work when we do that...
+#undef NULL
+#define NULL 0
+
 #include <niLang/Types.h>
 #include <niLang/StringDef.h>
 #include <niLang/Utils/UnknownImpl.h>
@@ -244,11 +249,11 @@ inline BOOL PostMessage(
   m_hWnd = hWnd;                                                        \
   switch (message) {
 
-#define WINUI_END_WND_MSG_MAP(__base)                                   \
-  default: break;                                                       \
-}                                                                       \
-                                                                return __base::WndProc(hWnd, message, wParam, lParam); \
-}
+#define WINUI_END_WND_MSG_MAP(__base)                     \
+  default: break;                                         \
+  }                                                       \
+  return __base::WndProc(hWnd, message, wParam, lParam);  \
+  }
 
 #define WINUI_BEGIN_DLG_MSG_MAP()                                       \
   virtual INT_PTR DlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) \
@@ -257,11 +262,11 @@ inline BOOL PostMessage(
   m_hWnd = hWnd;                                                        \
   switch (message) {
 
-#define WINUI_END_DLG_MSG_MAP(__base)                                   \
-  default: break;                                                       \
-}                                                                       \
-                                                                return __base::DlgProc(hWnd, message, wParam, lParam); \
-}
+#define WINUI_END_DLG_MSG_MAP(__base)                     \
+  default: break;                                         \
+  }                                                       \
+  return __base::DlgProc(hWnd, message, wParam, lParam);  \
+  }
 
 #define WINUI_BEGIN_NOTIFY_HANDLER()            \
   case WM_NOTIFY:                               \
@@ -269,11 +274,11 @@ inline BOOL PostMessage(
   LPNMHDR wmNMHDR = (LPNMHDR) lParam;           \
   switch (wmNMHDR->idFrom) {                    \
 
-#define WINUI_END_NOTIFY_HANDLER()                      \
-  default: break;                                       \
-}                                                       \
-                                                break;  \
-}
+#define WINUI_END_NOTIFY_HANDLER()              \
+  default: break;                               \
+  }                                             \
+  break;                                        \
+  }
 
 #define WINUI_BEGIN_COMMAND_HANDLER()           \
   case WM_COMMAND:                              \
@@ -284,7 +289,7 @@ inline BOOL PostMessage(
 
 #define WINUI_END_COMMAND_HANDLER()             \
   break;                                        \
-}
+  }
 
 #define WINUI_COMMAND_BEGIN_CTRL_HANDLER()     if (lParam) { switch (wmId) {
 #define WINUI_COMMAND_CTRL_HANLDER(__id, __handler)   case __id: return __handler(wmEvent,lParam);
@@ -5054,7 +5059,7 @@ inline const ni::achar* RegisterApp(const ni::achar* aszAppName, const ni::achar
 {
   ni::cString strCmdLine = niWin32API(GetCommandLine)();
   ni::tU32 lExeLen = 0;
-  achar aszExe[1024] = {0};
+  ni::achar aszExe[1024] = {0};
   ni::StrGetCommandPath(aszExe,niCountOf(aszExe),strCmdLine.Chars(),&lExeLen);
   if (niStringIsOK(aszExe)) {
     ni::cString strBuffer;
@@ -5081,29 +5086,340 @@ inline const ni::achar* RegisterApp(const ni::achar* aszAppName, const ni::achar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Utility dialogs
-
-// cAboutDlg dialog used for App About
-class cAboutDlg : public WinUI::Dialog
+class cTextDlg
 {
  public:
-  cAboutDlg(ULONG anAboutBoxID, BOOL abCenter = TRUE) : WinUI::Dialog(anAboutBoxID), mbCenter(abCenter) {}
-
-  virtual int OnInitDialog(int nCtrlID, WPARAM nCtrlMsg, LPARAM lParam)
+  cTextDlg(HINSTANCE ahInstance, const ni::achar* aaszTitle, const ni::achar* aaszErrorText)
+      : mstrTitle(aaszTitle ? aaszTitle : "Error")
+      , mFont(nullptr)
+      , mDlgWnd(nullptr)
+      , mEditWnd(nullptr)
+      , mOkWnd(nullptr)
+      , mhInstance(ahInstance)
+      , mWidth(800)
+      , mHeight(600)
+      , mnFontSize(18)
   {
-    if (mbCenter)
-      CenterOnScreen();
-    return 0;
+    SetErrorText(aaszErrorText);
   }
 
-  WINUI_BEGIN_DLG_MSG_MAP()
-  WINUI_MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-  WINUI_BEGIN_COMMAND_HANDLER()
-  WINUI_COMMAND_OKCANCEL_HANDLERS()
-  WINUI_END_COMMAND_HANDLER()
-  WINUI_END_DLG_MSG_MAP(Dialog)
+  virtual ~cTextDlg()
+  {
+    if (mFont != nullptr) {
+      ::DeleteObject(mFont);
+      mFont = nullptr;
+    }
+  }
 
-  private:
-  BOOL  mbCenter;
+  ni::cString ProcessNewlines(const ni::achar* text) {
+    if (!text) return "";
+
+    ni::cString result;
+    result.reserve(64);
+    const ni::achar* p = text;
+
+    while (*p) {
+      if (*p == '\n' && (p == text || *(p-1) != '\r')) {
+        result.appendEx("\r\n",2);
+      } else {
+        // appendEx to bypass the UTF8 validation since we're copying the
+        // characters
+        result.appendEx(p,1);
+      }
+      ++p;
+    }
+
+    return result;
+  }
+
+  // Set error text
+  void SetErrorText(const ni::achar* aaszErrorText)
+  {
+    mstrErrorText = ProcessNewlines(aaszErrorText);
+
+    // If edit box already created, update it
+    if (mEditWnd != nullptr) {
+      // Convert to UTF-16
+      ni::Windows::UTF16Buffer wErrorText;
+      niWin32_UTF8ToUTF16(wErrorText, mstrErrorText.Chars());
+      ::SetWindowTextW(mEditWnd, wErrorText.begin());
+    }
+  }
+
+  // Set dialog size
+  void SetSize(int width, int height)
+  {
+    mWidth = width;
+    mHeight = height;
+  }
+
+  void SetFontHeight(int size) {
+    mnFontSize = size;
+  }
+
+  // Display the dialog modally
+  int DoModal(ni::tBool abTopMost, HWND aParent = nullptr)
+  {
+    // Register dialog window class if needed
+    static bool sClassRegistered = false;
+    static const wchar_t* sClassName = L"ErrorDlgClass";
+
+    if (!sClassRegistered) {
+      WNDCLASSEXW wc = {0};
+      wc.cbSize = sizeof(WNDCLASSEXW);
+      wc.lpfnWndProc = _TextDlgProc;
+      wc.hInstance = mhInstance;
+      wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+      wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+      wc.lpszClassName = sClassName;
+
+      if (!RegisterClassExW(&wc)) {
+        return -1;
+      }
+
+      sClassRegistered = true;
+    }
+
+    // Convert title to UTF-16
+    ni::Windows::UTF16Buffer wTitle;
+    niWin32_UTF8ToUTF16(wTitle, mstrTitle.Chars());
+
+    // Create the dialog window
+    mDlgWnd = CreateWindowExW(
+      WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | (abTopMost ? WS_EX_TOPMOST : 0),
+      sClassName,
+      wTitle.begin(),
+      WS_CAPTION | WS_SYSMENU | WS_POPUP,
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      mWidth, mHeight,  // width, height
+      aParent,
+      nullptr,
+      mhInstance,
+      this
+    );
+
+    if (!mDlgWnd) {
+      return -1;
+    }
+
+    // Create controls
+    CreateControls();
+
+    // Center dialog on screen
+    RECT rc;
+    GetWindowRect(mDlgWnd, &rc);
+    int width = rc.right - rc.left;
+    int height = rc.bottom - rc.top;
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    SetWindowPos(
+      mDlgWnd,
+      nullptr,
+      (screenWidth - width) / 2,
+      (screenHeight - height) / 2,
+      0, 0,  // ignored with SWP_NOSIZE
+      SWP_NOSIZE | SWP_NOZORDER
+    );
+
+    // Show the dialog and run message loop
+    ShowWindow(mDlgWnd, SW_SHOW);
+    UpdateWindow(mDlgWnd);
+    SetForegroundWindow(mDlgWnd);
+    SetActiveWindow(mDlgWnd);
+
+    // Modal message loop
+    MSG msg;
+    BOOL ret;
+
+    while ((ret = niWin32API(GetMessage)(&msg, nullptr, 0, 0)) != 0) {
+      if (ret == -1) {
+        return -1;
+      }
+
+      if (!IsDialogMessage(mDlgWnd, &msg)) {
+        TranslateMessage(&msg);
+        niWin32API(DispatchMessage)(&msg);
+      }
+    }
+
+    return (int)msg.wParam;
+  }
+
+ private:
+  void CreateControls()
+  {
+    if (!mDlgWnd) {
+      return;
+    }
+
+    RECT rc;
+    GetClientRect(mDlgWnd, &rc);
+    int width = rc.right - rc.left;
+    int height = rc.bottom - rc.top;
+
+    // Convert error text to UTF-16
+    ni::Windows::UTF16Buffer wErrorText;
+    niWin32_UTF8ToUTF16(wErrorText, mstrErrorText.Chars());
+
+    // Create edit control
+    mEditWnd = CreateWindowExW(
+      WS_EX_CLIENTEDGE,
+      L"EDIT",
+      wErrorText.begin(),
+      WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE |
+      ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY,
+      10, 10,  // x, y
+      width - 20, height - 50,  // width, height
+      mDlgWnd,
+      (HMENU)101,  // control ID
+      mhInstance,
+      nullptr
+    );
+    mOldEditProc = (WNDPROC)SetWindowLongPtrW(mEditWnd, GWLP_WNDPROC, (LONG_PTR)EditSubclassProc);
+    SetPropW(mEditWnd, L"DialogPtr", (HANDLE)this);
+
+    // Create OK button
+    mOkWnd = CreateWindowExW(
+      0,
+      L"BUTTON",
+      L"OK",
+      WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+      (width - 80) / 2, height - 35,  // x, y
+      80, 25,  // width, height
+      mDlgWnd,
+      (HMENU)IDOK,  // standard ID for OK button
+      mhInstance,
+      nullptr
+    );
+
+    // Create monospaced font using system's default monospaced font
+    // First get the system fixed font name
+    NONCLIENTMETRICS ncm;
+    ncm.cbSize = sizeof(NONCLIENTMETRICS);
+    SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+
+    // Create monospaced font
+    mFont = ::CreateFontW(
+      -mnFontSize,           // Height (negative means character height)
+      0,                       // Width (0 means match height's aspect ratio)
+      0,                       // Escapement
+      0,                       // Orientation
+      FW_NORMAL,               // Weight
+      FALSE,                   // Italic
+      FALSE,                   // Underline
+      0,                       // StrikeOut
+      DEFAULT_CHARSET,         // CharSet
+      OUT_DEFAULT_PRECIS,      // OutPrecision
+      CLIP_DEFAULT_PRECIS,     // ClipPrecision
+      DEFAULT_QUALITY,         // Quality
+      FIXED_PITCH | FF_MODERN, // PitchAndFamily
+      L"Courier New"           // Fallback to Courier New which is widely available
+    );
+
+    if (mFont) {
+      niWin32API(SendMessage)(mEditWnd, WM_SETFONT, (WPARAM)mFont, TRUE);
+    }
+
+    // Give focus to the text box by default
+    ::SetFocus(mEditWnd);
+  }
+
+  static LRESULT CALLBACK _TextDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+  {
+    cTextDlg* dlg = nullptr;
+
+    if (msg == WM_CREATE) {
+      CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
+      dlg = (cTextDlg*)cs->lpCreateParams;
+      SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)dlg);
+    } else {
+      dlg = (cTextDlg*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    }
+
+    if (dlg) {
+      return dlg->DlgProc(hwnd, msg, wParam, lParam);
+    }
+
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
+  }
+
+  LRESULT DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+  {
+    switch (msg) {
+      case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
+          DestroyWindow(hwnd);
+          return 0;
+        }
+        break;
+
+      case WM_CLOSE:
+        DestroyWindow(hwnd);
+        return 0;
+
+      case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+
+      case WM_SIZE:
+        if (mEditWnd && mOkWnd) {
+          RECT rc;
+          GetClientRect(hwnd, &rc);
+          int width = rc.right - rc.left;
+          int height = rc.bottom - rc.top;
+
+          // Resize edit control
+          SetWindowPos(
+            mEditWnd,
+            nullptr,
+            10, 10,
+            width - 20, height - 50,
+            SWP_NOZORDER
+          );
+
+          // Reposition OK button
+          SetWindowPos(
+            mOkWnd,
+            nullptr,
+            (width - 80) / 2, height - 35,
+            0, 0,
+            SWP_NOSIZE | SWP_NOZORDER
+          );
+        }
+        break;
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+  }
+
+  static LRESULT CALLBACK EditSubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    cTextDlg* dlg = (cTextDlg*)GetPropW(hwnd, L"DialogPtr");
+    if (!dlg) return DefWindowProcW(hwnd, msg, wParam, lParam);
+
+    if (msg == WM_KEYDOWN) {
+      if (wParam == 'A' && (GetKeyState(VK_CONTROL) & 0x8000)) {
+        // Ctrl+A - Select All
+        niWin32API(SendMessage)(hwnd, EM_SETSEL, 0, -1);
+        return 0;
+      }
+    }
+
+    return CallWindowProcW(dlg->mOldEditProc, hwnd, msg, wParam, lParam);
+  }
+
+  ni::cString mstrErrorText;
+  ni::cString mstrTitle;
+  HFONT mFont;
+  HWND mDlgWnd;
+  HWND mEditWnd;
+  WNDPROC mOldEditProc;
+  HWND mOkWnd;
+  HINSTANCE mhInstance;
+  int mWidth;
+  int mHeight;
+  int mnFontSize;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

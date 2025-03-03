@@ -8,6 +8,9 @@
 #ifdef niWindows
 #include "API/niLang/Platforms/Win32/Win32_Redef.h"
 #define niCrashReportHasMinidump
+namespace ni {
+niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
+}
 #endif
 
 #ifdef niJSCC
@@ -32,13 +35,31 @@ niExportFunc(void) ni_set_show_fatal_error_message_box(int aShowAssertMessageBox
 niExportFunc(int) ni_get_show_fatal_error_message_box() {
   if (_bShowFatalErrorMessageBox == -1) {
     if (!ni::GetLang()->HasProperty("niLang.ShowFatalErrorMessageBox")) {
+      // by default we dont show a message box on error
       _bShowFatalErrorMessageBox = 0;
     }
     else {
-      _bShowFatalErrorMessageBox = ni::GetLang()->GetProperty("niLang.ShowAssertMessageBox").Long();
+      _bShowFatalErrorMessageBox = ni::GetLang()->GetProperty("niLang.ShowFatalErrorMessageBox").Long();
     }
   }
   return _bShowFatalErrorMessageBox;
+}
+
+static int _bHarakiriOnPanic = -1;
+niExportFunc(void) ni_set_panic_harakiri(int abHarakiriOnPanic) {
+  _bHarakiriOnPanic = abHarakiriOnPanic;
+}
+niExportFunc(int)  ni_get_panic_harakiri() {
+  if (_bHarakiriOnPanic == -1) {
+    if (!ni::GetLang()->HasProperty("niLang.HarakiriOnPanic")) {
+      // by default we use the standard panic behavior for the platform
+      _bHarakiriOnPanic = 0;
+    }
+    else {
+      _bHarakiriOnPanic = ni::GetLang()->GetProperty("niLang.HarakiriOnPanic").Long();
+    }
+  }
+  return _bHarakiriOnPanic;
 }
 
 // Disable: warning C4251: 'ni::sPanicException::_desc': 'ni::cString' needs to have dll-interface to be used by clients of 'ni::sPanicException'
@@ -122,11 +143,16 @@ niExportFuncCPP(void) ni_throw_panic(
   int line,
   const char* func)
 {
-#ifdef niWindows
+#if defined niWindows
   if (::IsDebuggerPresent()) {
     ni_debug_break();
   }
 #endif
+
+  if (ni_get_panic_harakiri()) {
+    ni_harakiri(aKind,msg,nullptr,file,line,func);
+    return;
+  }
 
 #if defined niNoExceptions
   ni_harakiri(aKind,msg,nullptr,file,line,func);
@@ -146,6 +172,7 @@ niExportFuncCPP(void) ni_throw_panic(
   niError(fmt.Chars());
 #endif
   throw sPanicException{aKind,std::move(fmt)};
+
 #endif
 }
 
@@ -227,5 +254,15 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
   exit(0x12345678);
 #endif
 }
+
+#ifdef niWindows
+niExternC __ni_module_export LONG WINAPI ni_UnhandledExceptionFilter(EXCEPTION_POINTERS* pExInfo) {
+  // Log the exception
+  DWORD code = pExInfo->ExceptionRecord->ExceptionCode;
+  cString msg = niFmt("ni_UnhandledExceptionFilter (0x%08X)", code);
+  niHarakiri(msg.c_str(), nullptr);
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
 
 }

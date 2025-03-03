@@ -35,7 +35,8 @@ static void DLLLoad_ShowError(
     L"Base path: '%s'\n"
     L"Search paths: '%s'\n",
     dllName, basePath, searchPaths);
-  MessageBoxW(NULL, errorMsg, L"DLL Load Error", MB_OK | MB_ICONERROR);
+  MessageBoxW(NULL, errorMsg, L"DLL Load Error",
+              MB_OK|MB_ICONERROR|MB_SYSTEMMODAL|MB_TOPMOST|MB_SETFOREGROUND);
 }
 
 static const wchar_t* DLLLoad_GetNextPath(

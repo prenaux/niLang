@@ -126,15 +126,10 @@ static tBool ScriptCpp_TryCompileSource(
   const cString& strSourcePath,
   const cString& strSourceAppDir)
 {
-  if (strSourcePath.IsEmpty()) {
-    niError(niFmt("Module '%s': Can't find source path.", mc.name));
-    return eFalse;
-  }
-
   if (!mc.date.IsOK()) {
     mc.date = _GetFileTime(mc.path);
     if (!mc.date.IsOK()) {
-      niError(niFmt("Module '%s': Can't get datetime.", mc.name));
+      niError(niFmt("Module '%s': Can't get datetime of '%s'.", mc.name, mc.path));
       return eFalse;
     }
   }
@@ -397,11 +392,16 @@ static cString _FindModulePath(const cString& strModuleFileName) {
     cPath pathAppModuleFileName;
     pathAppModuleFileName.SetDirectory(binDir.Chars());
     pathAppModuleFileName.SetFile(strModuleFileName.Chars());
-    SCRIPTCPP_TRACE(("Trying module path '%s'", pathAppModuleFileName.GetPath()));
     if (ni::GetRootFS()->FileExists(
           pathAppModuleFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
       return pathAppModuleFileName.GetPath();
     }
+    else {
+      niError(niFmt("Can't find module '%s' at '%s'", strModuleFileName, pathAppModuleFileName.GetPath()));
+    }
+  }
+  else {
+    niError(niFmt("Can't find module '%s', no binDir set.", strModuleFileName));
   }
   return AZEROSTR;
 }
@@ -485,6 +485,17 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
       sScriptCppModuleCache newModule;
       newModule.name = strModule;
       newModule.path = _FindModulePath(strModuleFileName);
+      if (newModule.path.empty()) {
+        niError(niFmt(
+          "Can't find module path. Context: %s, UUID: %s, Resource: %s, Toolkit: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s.",
+          ahspContext, aIID,
+          ahspCodeResource,
+          strTkName,
+          strModule, strModuleFileName,
+          strClass, strCreateFunctionName,
+          strSourcePath, strSourceAppDir));
+        return nullptr;
+      }
       itModule = astl::upsert(_modules,strModuleFileName,newModule);
     }
 

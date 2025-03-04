@@ -10,28 +10,6 @@ niImportModuleDll_niUI ;
 
 SRC = [ tkPkgSrc ] ;
 
-DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncsHpp $(PACKAGE)_nish_public :
-  $(TK_DIR) data test nish :
-  $(WORK) Playground sources nilTests nish test_public.nip :
-  TestGpuFuncs.hpp
-] ;
-
-DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
-  $(TK_DIR) data test nish raytracer :
-  $(WORK) Playground sources nilTests nish test_raytracer.nip :
-  raytracer_instindex_ps
-  raytracer_bary_ps
-  raytracer_primindex_ps
-  raytracer_tex0_ps
-  raytracer_normals_obj_ps
-  raytracer_normals_world_ps
-  raytracer_pos_world_ps
-  raytracer_lit_cube_ps
-  raytracer_lit_textured_cube_ps
-] ;
-
-DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;
-
 BUILD_SRC = [ tkBuildPackage $(SRC) : exc data : $(CHK_SOURCES) ] ;
 
 DEPENDS Run_ci : [ runInDir Test_niUI ] ;

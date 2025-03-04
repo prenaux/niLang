@@ -51,11 +51,5 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
 
 typedef sVertexPA tVertexTri;
 
-NN<iGpuBuffer> MakeTriVB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tF32 afSize, ain<sVec3f> aPos);
-NN<iGpuBuffer> MakeTriIB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tU32 aNumTris);
-// 25 degree-ish rotated quad
-NN<iGpuBuffer> MakeQuadVB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tF32 afSize, ain<sVec3f> aPos);
-NN<iGpuBuffer> MakeQuadIB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tU32 aNumQuads);
-
 }
 #endif // __FGDRV_H_3426D9CE_81BA_3E4A_9716_FC36725205F6__

@@ -109,12 +109,28 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_fixed :
   $(WORK) Playground sources nilTests nish niUI_fixed.nip :
   fixed_clear_vs
   fixed_clear_ps
+  fixed_blit_vs
+  fixed_blit_ps
   fixed_p_vs
   fixed_pa_vs
   fixed_pt1_vs
   fixed_pat1_vs
   fixed_tex_ps
   fixed_tex_alphatest_ps
+] ;
+
+DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
+  $(TK_DIR) data niUI nish raytracer :
+  $(WORK) Playground sources nilTests nish niUI_raytracer.nip :
+  raytracer_instindex_ps
+  raytracer_bary_ps
+  raytracer_primindex_ps
+  raytracer_tex0_ps
+  raytracer_normals_obj_ps
+  raytracer_normals_world_ps
+  raytracer_pos_world_ps
+  raytracer_lit_cube_ps
+  raytracer_lit_textured_cube_ps
 ] ;
 
 DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;

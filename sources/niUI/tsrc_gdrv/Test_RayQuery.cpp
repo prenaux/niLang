@@ -3,7 +3,7 @@
 #include "../../../data/test/nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 #include <niUI/Utils/AABB.h>
-#include "MakeTestRayGeometry.h"
+#include <niUI/Utils/RayUtils.h>
 
 using namespace ni;
 

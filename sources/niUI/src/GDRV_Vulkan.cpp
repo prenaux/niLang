@@ -1435,7 +1435,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .nullDescriptor = VK_TRUE
     };
     CHAIN_FEATURES(robustness2Features);
-#endif    
+#endif
 
     // === BINDLESS SETUP ===
     if (_isBindlessSupported) {

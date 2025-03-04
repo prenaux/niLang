@@ -140,6 +140,36 @@ using eastl::enable_if_t;
 using eastl::is_convertible;
 using eastl::is_convertible_v;
 
+using eastl::remove_cvref_t;
+using eastl::remove_pointer_t;
+
+#define niDeclTypeBase(V) eastl::remove_cvref_t<decltype(V)>
+
+// Default: remove pointers and references
+template <typename T>
+struct extract_value_type {
+  using type = remove_cvref_t<remove_pointer_t<T>>;
+};
+// Specialization for types with value_type (containers, optionals, etc.)
+template <typename T>
+requires requires { typename T::value_type; }
+struct extract_value_type<T> {
+  using type = typename T::value_type;
+};
+// Helper alias
+template <typename T>
+using extract_value_type_t = typename extract_value_type<T>::type;
+
+// For containers with value_type
+static_assert(is_same_v<extract_value_type_t<astl::vector<int>>, int>);
+static_assert(is_same_v<extract_value_type_t<astl::optional<float>>, float>);
+
+// For pointers and raw types
+static_assert(is_same_v<extract_value_type_t<int*>, int>);
+static_assert(is_same_v<extract_value_type_t<const char*>, char>);
+static_assert(is_same_v<extract_value_type_t<int>, int>);
+static_assert(is_same_v<extract_value_type_t<int&>, int>);
+
 }  // namespace astl
 
 namespace ni {
@@ -152,6 +182,8 @@ _HDecl(panic_nn_nullptr_raw);
 _HDecl(panic_nn_nullptr_SmartPtr);
 _HDecl(panic_nn_nullptr_QPtr);
 _HDecl(panic_nn_nullptr_opt);
+_HDecl(panic_unn_optional);
+_HDecl(panic_snn_optional);
 
 using i8 = ni::tI8;
 using i16 = ni::tI16;
@@ -310,6 +342,9 @@ template <typename T>
 using ain = typename to_ain_t<T>::type;
 
 template <typename T>
+using ain_nn = typename to_ain_t<nn<T>>::type;
+
+template <typename T>
 struct to_amove_t {
   using type = T&&;
 };
@@ -401,6 +436,26 @@ concept IsConstructible = requires(Args&&... args) {
   new T(std::forward<Args>(args)...);
 };
 
+template <typename F>
+concept IsHFmtPanicMsgFn = requires(F f) {
+  { f() } -> std::convertible_to<iHString*>;
+};
+
+template <class T, typename F>
+requires IsHFmtPanicMsgFn<F>
+inline auto as_non_null(T&& t, F&& afnHFmtPanicMsg, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) noexcept
+{
+  if (!t) {
+    ni_throw_panic(
+      _HSym(ni,panic),
+      niHStr(afnHFmtPanicMsg()),
+      ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  typedef astl::non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>> tNN;
+  return tNN{typename tNN::tUnsafeUncheckedInitializer(
+    eastl::forward<T>(t))};
+}
+
 template <typename T, typename... Args>
 requires IsConstructible<T, Args...>
 unn<T> make_unn(Args&&... args) {
@@ -412,6 +467,59 @@ requires IsConstructible<T, Args...>
 snn<T> make_snn(Args&&... args) {
   return astl::as_non_null(astl::make_shared<T>(astl::forward<Args>(args)...));
 }
+
+template <typename T, typename F, typename... Args>
+requires IsConstructible<T, Args...> && IsHFmtPanicMsgFn<F>
+unn<T> make_unn(F&& afnHFmtPanicMsg, Args&&... args) {
+  return astl::as_non_null(
+    astl::make_unique<T>(astl::forward<Args>(args)...),
+    afnHFmtPanicMsg);
+}
+
+template <typename T, typename F, typename... Args>
+requires IsConstructible<T, Args...> && IsHFmtPanicMsgFn<F>
+snn<T> make_snn(F&& afnHFmtPanicMsg, Args&&... args) {
+  return astl::as_non_null(
+    astl::make_shared<T>(astl::forward<Args>(args)...),
+    afnHFmtPanicMsg);
+}
+
+template <typename T>
+unn<T> make_unn(astl::optional<T>&& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_unn_optional), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return astl::as_non_null(astl::make_unique<T>(p.value()));
+}
+
+template <typename T, typename F>
+requires IsHFmtPanicMsgFn<F>
+unn<T> make_unn(astl::optional<T>&& p, F&& afnHFmtPanicMsg, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_unn_optional), niHStr(afnHFmtPanicMsg()), ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return astl::as_non_null(astl::make_unique<T>(p.value()));
+}
+
+template <typename T>
+snn<T> make_snn(astl::optional<T>&& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_snn_optional), "", ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return astl::as_non_null(astl::make_unique<T>(p.value()));
+}
+
+template <typename T, typename F>
+requires IsHFmtPanicMsgFn<F>
+snn<T> make_snn(astl::optional<T>&& p, F&& afnHFmtPanicMsg, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) {
+  if (!p.has_value()) {
+    ni_throw_panic(_HC(panic_snn_optional), niHStr(afnHFmtPanicMsg()), ASTL_SOURCE_LOCATION_ARG_CALL);
+  }
+  return astl::as_non_null(astl::make_shared<T>(p.value()));
+}
+
+#define niMakeUNN(EXPR) ni::make_unn<ni::extract_value_type_t<decltype(EXPR)>>(EXPR,niRefExpr(HFmt(#EXPR)))
+#define niMakeUNN_(EXPR,...) ni::make_unn<ni::extract_value_type_t<decltype(EXPR)>>(EXPR,niRefExpr(HFmt(__VA_ARGS__)))
 
 template <typename T, typename... Args>
 requires IsConstructible<T, Args...>

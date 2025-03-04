@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include <niUI/IGpu.h>
-#include <niUI/IRay.h>
-#include "../tsrc_gdrv/MakeTestRayGeometry.h"
+#include <niUI/Utils/RayUtils.h>
 #include "../../../data/test/nish/TestGpuFuncs.hpp"
 
 #if !defined niOSX
@@ -17,8 +15,6 @@ struct FRayTracer {
 
 typedef sVertexPNT1 tVertexRay;
 
-#define niDeclBaseType(V) eastl::remove_cvref_t<decltype(V)>
-
 //----------------------------------------------------------------------------
 //
 // Section: RayTracerBase
@@ -32,7 +28,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
   Ptr<iGraphics> _graphics;
 
-  Ptr<iCamera> mptrCamera;
+  Ptr<iCamera> _camera;
   tBool _cameraInput;
   tBool _mouseLook;
   sVec2f _prevMousePos;
@@ -69,11 +65,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
   NN<iGraphicsDriverRay> _driverRay = niDeferredInit(NN<iGraphicsDriverRay>);
 
-  NN<iGpuBuffer> _displayVABuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iGpuBuffer> _displayIABuffer = niDeferredInit(NN<iGpuBuffer>);
-  NN<iGpuFunction> _displayVertexGpuFun = niDeferredInit(NN<iGpuFunction>);
-  NN<iGpuFunction> _displayRayqueryGpuFun = niDeferredInit(NN<iGpuFunction>);
-  NN<iGpuPipeline> _displayPipeline = niDeferredInit(NN<iGpuPipeline>);
+  unn<sDisplayQuad> _display = niDeferredInit(unn<sDisplayQuad>);
 
   TEST_CONSTRUCTOR(RayTracerBase) {
     _animated = ni::GetProperty("tests.Animated","true").Bool();
@@ -103,52 +95,9 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
     // Setup display quad
     {
-      _displayVABuffer = niCheckNN(
-        _displayVABuffer,
-        _driverGpu->CreateGpuBuffer(
-          _H("RayDisplay_VA"),
-          sizeof(tVertexCanvas)*4,
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Vertex),
-        eFalse);
-      tVertexCanvas* verts = (tVertexCanvas*)_displayVABuffer->Lock(0, _displayVABuffer->GetSize(), eLock_Discard);
-      niCheck(verts != nullptr, eFalse);
-      verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
-      verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
-      verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
-      verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
-      _displayVABuffer->Unlock();
-
-      _displayIABuffer = niCheckNN(
-        _displayIABuffer,
-        _driverGpu->CreateGpuBuffer(
-          _H("RayDisplay_IA"),
-          sizeof(tU32)*6,
-          eGpuBufferMemoryMode_Shared,
-          eGpuBufferUsageFlags_Index),
-        eFalse);
-      tU32* inds = (tU32*)_displayIABuffer->Lock(0, _displayIABuffer->GetSize(), eLock_Discard);
-      niCheck(inds != nullptr, eFalse);
-      inds[0] = 0; inds[1] = 1; inds[2] = 2;
-      inds[3] = 2; inds[4] = 3; inds[5] = 0;
-      _displayIABuffer->Unlock();
-
-      // Setup display pipeline
-      _displayVertexGpuFun = niCheckNN(_displayVertexGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Vertex,
-        _H("test/nish/gpu/texture_vs.gpufunc.xml")),eFalse);
-
-      _displayRayqueryGpuFun = niCheckNN(_displayRayqueryGpuFun,_driverGpu->CreateGpuFunction(
-        eGpuFunctionType_Pixel,ahspRayqueryGpufuncPath),eFalse);
-
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, _driverGpu->CreateGpuPipelineDesc(), eFalse);
-      pipelineDesc->SetFVF(tVertexCanvas::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
-      pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,_displayVertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,_displayRayqueryGpuFun);
-      _displayPipeline = niCheckNN(_displayPipeline, _driverGpu->CreateGpuPipeline(_H("RayDisplay_Pipeline"),pipelineDesc), eFalse);
+      _display = niMakeUNN(MakeDisplayQuad(_driverGpu,ahspRayqueryGpufuncPath));
     }
+
     return eTrue;
   }
 
@@ -161,9 +110,9 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     // TODO: Kinda wierd starting point because it aligns with the tiny
     // default triangle which was setup for NDC. Will reset to something
     // simpler once we have the full geom.
-    mptrCamera->SetPosition(Vec3f(-2.5f,-0.5f,-3.0f));
-    mptrCamera->SetTarget(mptrCamera->GetPosition() + Vec3f(0,0,1));
-    mptrCamera->SetTargetUp(Vec3f(0,1,0));
+    _camera->SetPosition(Vec3f(-2.5f,-0.5f,-3.0f));
+    _camera->SetTarget(_camera->GetPosition() + Vec3f(0,0,1));
+    _camera->SetTargetUp(Vec3f(0,1,0));
   }
 
   tF32 _GetCameraSpeed() const {
@@ -173,21 +122,12 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool __stdcall _InitializeCamera() {
-    mptrCamera = mpWidget->GetGraphics()->CreateCamera();
+    _camera = mpWidget->GetGraphics()->CreateCamera();
     mpWidget->SetStyle(mpWidget->GetStyle()|eWidgetStyle_HoldFocus);
     mpWidget->SetFocus();
     _ResetCamera();
     _mouseLook = eFalse;
     return eTrue;
-  }
-
-  void DisplayTexture(iGpuCommandEncoder* cmdEncoder, iTexture* texture) {
-    cmdEncoder->SetPipeline(_displayPipeline);
-    cmdEncoder->SetVertexBuffer(_displayVABuffer, 0, 0);
-    cmdEncoder->SetTexture(texture, 0);
-    cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
-    cmdEncoder->SetIndexBuffer(_displayIABuffer, 0, eGpuIndexType_U32);
-    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
   }
 
   void _UpdateCamera() {
@@ -196,16 +136,16 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
     const tF32 dt = (tF32)ni::GetLang()->GetFrameTime();
     const tF32 speed = _GetCameraSpeed();
-    mptrCamera->MoveForward(_cameraMove.z * speed * dt);
-    mptrCamera->MoveUp(_cameraMove.y * speed * dt);
-    mptrCamera->MoveSidewards(_cameraMove.x * speed * dt);
+    _camera->MoveForward(_cameraMove.z * speed * dt);
+    _camera->MoveUp(_cameraMove.y * speed * dt);
+    _camera->MoveSidewards(_cameraMove.x * speed * dt);
     _cameraLook = Vec2f(0,0);
     _hasInput = eFalse;
   }
 
   tBool __stdcall OnWheel(tF32 afWheel, const sVec2f& avAbsMousePos) niOverride {
     if (_mouseLook && _cameraInput) {
-      mptrCamera->MoveForward(
+      _camera->MoveForward(
           afWheel*0.2f*_GetCameraSpeed());
     }
     return eFalse;
@@ -238,8 +178,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       const sVec2f newPos = (avNCMP + mpWidget->GetAbsolutePosition());
       sVec2f deltaMove = newPos - _prevMousePos;
       _prevMousePos = newPos;
-      mptrCamera->AddPitch(-deltaMove.y / 300.0f);
-      mptrCamera->AddYaw(-deltaMove.x / 300.0f);
+      _camera->AddPitch(-deltaMove.y / 300.0f);
+      _camera->AddYaw(-deltaMove.x / 300.0f);
     }
     return eFalse;
   }
@@ -348,11 +288,11 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     Ptr<iFixedStates> ptrFS = gc->GetFixedStates();
     const sMatrixf wasViewMatrix = ptrFS->GetViewMatrix();
     const sMatrixf wasProjectionMatrix = ptrFS->GetProjectionMatrix();
-    ptrFS->SetCameraViewMatrix(mptrCamera->GetViewMatrix());
-    ptrFS->SetCameraProjectionMatrix(mptrCamera->GetProjectionMatrix());
+    ptrFS->SetCameraViewMatrix(_camera->GetViewMatrix());
+    ptrFS->SetCameraProjectionMatrix(_camera->GetProjectionMatrix());
 
-    mptrCamera->SetViewport(apCanvas->GetViewport().ToFloat());
-		mptrCamera->SetFov(niPif/3.0f);
+    _camera->SetViewport(apCanvas->GetViewport().ToFloat());
+		_camera->SetFov(niPif/3.0f);
 
     _UpdateCamera();
 
@@ -368,7 +308,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
       (tF32)ni::GetLang()->GetFrameTime()
     );
 
-    iFrustum* frustum = mptrCamera->GetFrustum();
+    iFrustum* frustum = _camera->GetFrustum();
     niLoop(i,_geoms.size()) {
       niVar& geom = _geoms[i];
       nn<iDrawOperation> dop = geom._drawOp;
@@ -386,12 +326,12 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
     cString str = niFmt("Driver: %s, POS: %s, TARGET: %s, UP: %s, Animated: %d, VIEW: %s, PROJ: %s\n",
                         mpWidget->GetGraphics()->GetDriver()->GetName(),
-                        cString(mptrCamera->GetPosition()).Chars(),
-                        cString(mptrCamera->GetTarget()).Chars(),
-                        cString(mptrCamera->GetTargetUp()).Chars(),
+                        cString(_camera->GetPosition()).Chars(),
+                        cString(_camera->GetTarget()).Chars(),
+                        cString(_camera->GetTargetUp()).Chars(),
                         _animated,
-                        mptrCamera->GetViewMatrix(),
-                        mptrCamera->GetProjectionMatrix());
+                        _camera->GetViewMatrix(),
+                        _camera->GetProjectionMatrix());
     apCanvas->BlitText(
         mpWidget->GetFont(),
         sRectf(5,5),
@@ -690,7 +630,8 @@ struct Triangle : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
 
     // Create acceleration structure
     {
@@ -719,15 +660,15 @@ struct Triangle : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -745,7 +686,8 @@ struct VisInstIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -780,15 +722,15 @@ struct VisInstIndex : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -806,7 +748,8 @@ struct ManyPolySpheresInstIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_instindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneFourPolySpheres());
     CHECK(AddSceneManyPolySpheres(25,2));
@@ -839,15 +782,15 @@ struct ManyPolySpheresInstIndex : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -865,7 +808,8 @@ struct VisBary : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_bary_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_bary_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -898,15 +842,15 @@ struct VisBary : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -924,7 +868,8 @@ struct VisPrimIndex : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_primindex_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_primindex_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -957,15 +902,15 @@ struct VisPrimIndex : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -989,7 +934,7 @@ struct VisTex0 : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -999,7 +944,8 @@ struct VisTex0 : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_tex0_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_tex0_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1062,15 +1008,15 @@ struct VisTex0 : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -1094,7 +1040,7 @@ struct VisNormalsObj : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -1104,7 +1050,8 @@ struct VisNormalsObj : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_normals_obj_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_normals_obj_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1167,15 +1114,15 @@ struct VisNormalsObj : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -1199,7 +1146,7 @@ struct VisNormalsWorld : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -1209,7 +1156,8 @@ struct VisNormalsWorld : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_normals_world_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_normals_world_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1272,15 +1220,15 @@ struct VisNormalsWorld : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -1304,7 +1252,7 @@ struct VisPosWorld : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -1314,7 +1262,8 @@ struct VisPosWorld : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_pos_world_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_pos_world_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1377,15 +1326,15 @@ struct VisPosWorld : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -1410,7 +1359,7 @@ struct LitCube : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -1420,7 +1369,8 @@ struct LitCube : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_lit_cube_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_lit_cube_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1482,15 +1432,15 @@ struct LitCube : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };
@@ -1515,7 +1465,7 @@ struct LitTexturedCube : public RayTracerBase {
       sizeof(aInstData),
       eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclBaseType(aInstData)*)instDataBuffer->Lock(
+    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
       0, instDataBuffer->GetSize(), eLock_Discard);
     *locked = aInstData;
     instDataBuffer->Unlock();
@@ -1525,7 +1475,8 @@ struct LitTexturedCube : public RayTracerBase {
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
-    CHECK(RayTracerBase::OnSinkAttached(_H("test/nish/raytracer/raytracer_lit_textured_cube_ps.gpufunc.xml")));
+    CHECK(RayTracerBase::OnSinkAttached(
+      _H("niUI://nish/raytracer/raytracer_lit_textured_cube_ps.gpufunc.xml")));
     CHECK(AddScenePolyGround());
     CHECK(AddSceneSevenPolyBoxes());
     CHECK(AddSceneFourPolySpheres());
@@ -1599,15 +1550,15 @@ struct LitTexturedCube : public RayTracerBase {
     TestGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
-    u.cameraInvView = MatrixInverse(mptrCamera->GetViewMatrix());
-    u.cameraInvViewProj = MatrixInverse(mptrCamera->GetViewMatrix() * mptrCamera->GetProjectionMatrix());
-    u.cameraFarClipPlane = mptrCamera->GetFarClipPlane();
+    u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
+    u.cameraInvViewProj = MatrixInverse(_camera->GetViewMatrix() * _camera->GetProjectionMatrix());
+    u.cameraFarClipPlane = _camera->GetFarClipPlane();
     gpuEncoder->StreamUniformBuffer((tPtr)&u,sizeof(u),0);
 
     NN<iRayCommandEncoder> rayEncoder = AsNN(QPtr<iRayCommandEncoder>(gpuEncoder));
     rayEncoder->SetRayInstances(_rayInsts);
 
-    DisplayTexture(gpuEncoder,nullptr);
+    DisplayTexture(*_display,gpuEncoder,nullptr);
     return eFalse;
   }
 };

@@ -99,7 +99,7 @@ SRC_EXTRA += [ tkPkgSrcSubDir libtess2 ] ;
 BUILD_SRC = [ tkBuildPackage $(SRC) : pch : $(CHK_SOURCES) : $(SRC_EXTRA) ] ;
 
 DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncsHpp $(PACKAGE)_nish_public :
-  $(TK_DIR) sources niUI src nish :
+  $(TK_DIR) sources niUI src API niUI nish :
   $(WORK) Playground sources nilTests nish niUI_public.nip :
   niUIGpuFuncs.hpp
 ] ;

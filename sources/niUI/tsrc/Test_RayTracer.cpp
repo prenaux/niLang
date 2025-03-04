@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <niUI/Utils/RayUtils.h>
-#include "../../../data/test/nish/TestGpuFuncs.hpp"
 
 #if !defined niOSX
 namespace _ {
@@ -657,7 +656,7 @@ struct Triangle : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -719,7 +718,7 @@ struct VisInstIndex : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -779,7 +778,7 @@ struct ManyPolySpheresInstIndex : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -839,7 +838,7 @@ struct VisBary : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -899,7 +898,7 @@ struct VisPrimIndex : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -928,19 +927,12 @@ struct VisTex0 : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(VisTex0,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
-    niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
-      HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
-      sizeof(aInstData),
-      eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Storage), eInvalidHandle);
-    niVar locked = (niDeclTypeBase(aInstData)*)instDataBuffer->Lock(
-      0, instDataBuffer->GetSize(), eLock_Discard);
-    *locked = aInstData;
-    instDataBuffer->Unlock();
-    _instDataBuffers.emplace_back(instDataBuffer);
-    return _driverGpu->GetStorageBufferDeviceResourceManager()->
-        GetIndexFromResource(instDataBuffer);
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
+    _instDataBuffers.emplace_back(
+      AsNN(CreateRayInstanceData(
+        HFmt("%s_%d",m_testName,_instDataBuffers.size()),
+        _driverGpu,aInstData)));
+    return GetBufferResourceIndex(_driverGpu,_instDataBuffers.back());
   }
 
   tBool __stdcall OnSinkAttached() niImpl {
@@ -960,7 +952,7 @@ struct VisTex0 : public RayTracerBase {
 
       {
         // 0,0 is invalid it should result in an error color
-        TestGpuFuncs_RayInstanceData instData;
+        niUIGpuFuncs_RayInstanceData instData;
         instData.vbIndex = 0;
         instData.ibIndex = 0;
         tU32 triInstData = AddInstData(instData);
@@ -975,7 +967,7 @@ struct VisTex0 : public RayTracerBase {
           nn<iDrawOperation> dop = geom._drawOp;
           NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
           NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          TestGpuFuncs_RayInstanceData instData;
+          niUIGpuFuncs_RayInstanceData instData;
           instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
               GetIndexFromResource(vaBuffer);
           instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1005,7 +997,7 @@ struct VisTex0 : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -1034,7 +1026,7 @@ struct VisNormalsObj : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(VisNormalsObj,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
     niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
       HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
       sizeof(aInstData),
@@ -1066,7 +1058,7 @@ struct VisNormalsObj : public RayTracerBase {
 
       {
         // 0,0 is invalid it should result in an error color
-        TestGpuFuncs_RayInstanceData instData;
+        niUIGpuFuncs_RayInstanceData instData;
         instData.vbIndex = 0;
         instData.ibIndex = 0;
         tU32 triInstData = AddInstData(instData);
@@ -1081,7 +1073,7 @@ struct VisNormalsObj : public RayTracerBase {
           nn<iDrawOperation> dop = geom._drawOp;
           NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
           NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          TestGpuFuncs_RayInstanceData instData;
+          niUIGpuFuncs_RayInstanceData instData;
           instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
               GetIndexFromResource(vaBuffer);
           instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1111,7 +1103,7 @@ struct VisNormalsObj : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -1140,7 +1132,7 @@ struct VisNormalsWorld : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(VisNormalsWorld,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
     niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
       HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
       sizeof(aInstData),
@@ -1172,7 +1164,7 @@ struct VisNormalsWorld : public RayTracerBase {
 
       {
         // 0,0 is invalid it should result in an error color
-        TestGpuFuncs_RayInstanceData instData;
+        niUIGpuFuncs_RayInstanceData instData;
         instData.vbIndex = 0;
         instData.ibIndex = 0;
         tU32 triInstData = AddInstData(instData);
@@ -1187,7 +1179,7 @@ struct VisNormalsWorld : public RayTracerBase {
           nn<iDrawOperation> dop = geom._drawOp;
           NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
           NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          TestGpuFuncs_RayInstanceData instData;
+          niUIGpuFuncs_RayInstanceData instData;
           instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
               GetIndexFromResource(vaBuffer);
           instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1217,7 +1209,7 @@ struct VisNormalsWorld : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -1246,7 +1238,7 @@ struct VisPosWorld : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(VisPosWorld,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
     niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
       HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
       sizeof(aInstData),
@@ -1278,7 +1270,7 @@ struct VisPosWorld : public RayTracerBase {
 
       {
         // 0,0 is invalid it should result in an error color
-        TestGpuFuncs_RayInstanceData instData;
+        niUIGpuFuncs_RayInstanceData instData;
         instData.vbIndex = 0;
         instData.ibIndex = 0;
         tU32 triInstData = AddInstData(instData);
@@ -1293,7 +1285,7 @@ struct VisPosWorld : public RayTracerBase {
           nn<iDrawOperation> dop = geom._drawOp;
           NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
           NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-          TestGpuFuncs_RayInstanceData instData;
+          niUIGpuFuncs_RayInstanceData instData;
           instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
               GetIndexFromResource(vaBuffer);
           instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1323,7 +1315,7 @@ struct VisPosWorld : public RayTracerBase {
     niPanicAssert(gpuContext.IsOK());
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -1353,7 +1345,7 @@ struct LitCube : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(LitCube,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
     niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
       HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
       sizeof(aInstData),
@@ -1382,7 +1374,7 @@ struct LitCube : public RayTracerBase {
       nn<iDrawOperation> dop = geom._drawOp;
       NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
       NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-      TestGpuFuncs_RayInstanceData instData;
+      niUIGpuFuncs_RayInstanceData instData;
       instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
           GetIndexFromResource(vaBuffer);
       instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1429,7 +1421,7 @@ struct LitCube : public RayTracerBase {
     }
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());
@@ -1459,7 +1451,7 @@ struct LitTexturedCube : public RayTracerBase {
   TEST_CONSTRUCTOR_BASE(LitTexturedCube,RayTracerBase) {
   }
 
-  tU32 AddInstData(ain<TestGpuFuncs_RayInstanceData> aInstData) {
+  tU32 AddInstData(ain<niUIGpuFuncs_RayInstanceData> aInstData) {
     niLet instDataBuffer = niCheckNN(instDataBuffer, _driverGpu->CreateGpuBuffer(
       HFmt("instData_%s_%d",m_testName,_instDataBuffers.size()),
       sizeof(aInstData),
@@ -1489,7 +1481,7 @@ struct LitTexturedCube : public RayTracerBase {
       nn<iDrawOperation> dop = geom._drawOp;
       NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetIndexArray()));
       NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(dop->GetVertexArray()));
-      TestGpuFuncs_RayInstanceData instData;
+      niUIGpuFuncs_RayInstanceData instData;
       instData.vbIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
           GetIndexFromResource(vaBuffer);
       instData.ibIndex = _driverGpu->GetStorageBufferDeviceResourceManager()->
@@ -1534,9 +1526,9 @@ struct LitTexturedCube : public RayTracerBase {
           MatrixTranslation(MatrixGetTranslation(lastGeom._startMatrix)));
 
         niVar& lastInstData = _instDataBuffers.back();
-        TestGpuFuncs_RayInstanceData* pLastInstData =
-            (TestGpuFuncs_RayInstanceData*)lastInstData->Lock(
-              0, sizeof(TestGpuFuncs_RayInstanceData), eLock_Normal);
+        niUIGpuFuncs_RayInstanceData* pLastInstData =
+            (niUIGpuFuncs_RayInstanceData*)lastInstData->Lock(
+              0, sizeof(niUIGpuFuncs_RayInstanceData), eLock_Normal);
         niCheck(pLastInstData != nullptr, eFalse);
         pLastInstData->texIndex = _GetTextureIndex(_textures[_selectedTexture]);
         lastInstData->Unlock();
@@ -1547,7 +1539,7 @@ struct LitTexturedCube : public RayTracerBase {
     }
 
     NN<iGpuCommandEncoder> gpuEncoder = AsNN(gpuContext->GetCommandEncoder());
-    TestGpuFuncs_RayUniforms u;
+    niUIGpuFuncs_RayUniforms u;
     u.rtWidth = (tF32)apCanvas->GetGraphicsContext()->GetWidth();
     u.rtHeight = (tF32)apCanvas->GetGraphicsContext()->GetHeight();
     u.cameraInvView = MatrixInverse(_camera->GetViewMatrix());

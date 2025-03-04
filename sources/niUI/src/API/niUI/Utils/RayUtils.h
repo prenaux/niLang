@@ -4,6 +4,7 @@
 
 #include <niCC.h>
 #include <niUI.h>
+#include <niUI/nish/niUIGpuFuncs.hpp>
 
 namespace ni {
 
@@ -151,77 +152,111 @@ inline Ptr<iRayPrimitives> CreateRayPrimsFromDop(
     HFmt("%s_RayPrims",aName),prDesc);
 }
 
+// A quad in NDC coordinates. [-1;1]
 struct sDisplayQuad {
-  NN<iGpuBuffer> _displayVABuffer;
-  NN<iGpuBuffer> _displayIABuffer;
   NN<iGpuFunction> _displayVertexGpuFun;
   NN<iGpuFunction> _displayPixelGpuFun;
   NN<iGpuPipeline> _displayPipeline;
 };
 
-inline optional<sDisplayQuad> MakeDisplayQuad(ain_nn<iGraphicsDriverGpu> aDriverGpu, iHString* ahspRayqueryGpufuncPath) {
-  niLet displayVABuffer = niCheckNN(
-    displayVABuffer,
-    aDriverGpu->CreateGpuBuffer(
-      _H("DisplayQuad_VA"),
-      sizeof(tVertexCanvas)*4,
-      eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Vertex),
-    nullopt);
-  {
-    niLet verts = LockAsSpan<tVertexCanvas>(displayVABuffer, 0, displayVABuffer->GetSize(), eLock_Discard);
-    niDefer { displayVABuffer->Unlock(); };
-    verts[0] = {{ -0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}}; // TL
-    verts[1] = {{  0.8f,  0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}}; // TR
-    verts[2] = {{  0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}}; // BR
-    verts[3] = {{ -0.8f, -0.8f, 0.0f}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}}; // BL
-  }
-
-  niLet displayIABuffer = niCheckNN(
-    displayIABuffer,
-    aDriverGpu->CreateGpuBuffer(
-      _H("DisplayQuad_IA"),
-      sizeof(tU32)*6,
-      eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Index),
-    nullopt);
-  niLet inds = LockAsSpan<tU32>(displayIABuffer, 0, displayIABuffer->GetSize(), eLock_Discard);
-  niDefer { displayIABuffer->Unlock(); };
-  inds[0] = 0; inds[1] = 1; inds[2] = 2;
-  inds[3] = 2; inds[4] = 3; inds[5] = 0;
-
+inline optional<sDisplayQuad> MakeDisplayQuad(
+  ain_nn<iGraphicsDriverGpu> aDriverGpu,
+  iHString* ahspRayqueryGpufuncPath)
+{
   // Setup display pipeline
-  niLet displayVertexGpuFun = niCheckNN(displayVertexGpuFun,aDriverGpu->CreateGpuFunction(
-    eGpuFunctionType_Vertex,
-    _H("niUI://nish/fixed/fixed_blit_vs.gpufunc.xml")),nullopt);
+  niLet displayVertexGpuFun = niCheckNN(
+    displayVertexGpuFun,
+    aDriverGpu->CreateGpuFunction(
+      eGpuFunctionType_Vertex,
+      _H("niUI://nish/fixed/fixed_blit_vs.gpufunc.xml")),nullopt);
 
-  niLet displayPixelGpuFun = niCheckNN(displayPixelGpuFun,aDriverGpu->CreateGpuFunction(
-    eGpuFunctionType_Pixel,ahspRayqueryGpufuncPath),nullopt);
+  niLet displayPixelGpuFun = niCheckNN(
+    displayPixelGpuFun,
+    aDriverGpu->CreateGpuFunction(
+      eGpuFunctionType_Pixel,ahspRayqueryGpufuncPath),nullopt);
 
-  niLet pipelineDesc = niCheckNN(pipelineDesc, aDriverGpu->CreateGpuPipelineDesc(), nullopt);
+  niLet pipelineDesc = niCheckNN(
+    pipelineDesc, aDriverGpu->CreateGpuPipelineDesc(), nullopt);
   pipelineDesc->SetFVF(tVertexCanvas::eFVF);
   pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
   pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
   pipelineDesc->SetFunction(eGpuFunctionType_Vertex,displayVertexGpuFun);
   pipelineDesc->SetFunction(eGpuFunctionType_Pixel,displayPixelGpuFun);
-  niLet displayPipeline = niCheckNN(displayPipeline, aDriverGpu->CreateGpuPipeline(_H("DisplayQuad_Pipeline"),pipelineDesc), nullopt);
+  niLet displayPipeline = niCheckNN(
+    displayPipeline,
+    aDriverGpu->CreateGpuPipeline(_H("DisplayQuad_Pipeline"),pipelineDesc),
+    nullopt);
 
   return sDisplayQuad {
-    ._displayVABuffer = displayVABuffer,
-    ._displayIABuffer = displayIABuffer,
     ._displayVertexGpuFun = displayVertexGpuFun,
     ._displayPixelGpuFun = displayPixelGpuFun,
     ._displayPipeline = displayPipeline,
   };
 }
 
-inline void DisplayTexture(ain<sDisplayQuad> aThis, nn<iGpuCommandEncoder> cmdEncoder, iTexture* texture) {
+inline void DisplayTexture(
+  ain<sDisplayQuad> aThis,
+  ain_nn<iGpuCommandEncoder> cmdEncoder,
+  iTexture* texture,
+  ain<sVec2f> aTL = Vec2f(-0.75f,-0.75f),
+  ain<sVec2f> aBR = Vec2f(0.75f,0.75f),
+  ain<tF32> aZ = 0.0f)
+{
+  tVertexCanvas verts[6];
+  // TL
+  verts[0] = {{ aTL.x, aTL.y, aZ}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,0.0f}};
+  // TR
+  verts[1] = {{ aBR.x, aTL.y, aZ}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,0.0f}};
+  // BR
+  verts[2] = {{ aBR.x, aBR.y, aZ}, sVec3f::YAxis(), 0xFFFFFFFF, {1.0f,1.0f}};
+  // BL
+  verts[3] = {{ aTL.x, aBR.y, aZ}, sVec3f::YAxis(), 0xFFFFFFFF, {0.0f,1.0f}};
+  // finish 2nd triangle
+  verts[4] = verts[0];
+  verts[5] = verts[2];
+
   cmdEncoder->SetPipeline(aThis._displayPipeline);
-  cmdEncoder->SetVertexBuffer(aThis._displayVABuffer, 0, 0);
-  cmdEncoder->SetTexture(texture, 0);
+  cmdEncoder->StreamVertexBuffer((tPtr)verts, sizeof(verts), 0);
+  cmdEncoder->SetTexture(texture,0);
   cmdEncoder->SetSamplerState(eCompiledStates_SS_PointRepeat, 0);
-  cmdEncoder->SetIndexBuffer(aThis._displayIABuffer, 0, eGpuIndexType_U32);
-  cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,6);
+  cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,6);
+}
+
+inline tU32 GetTextureResourceIndex(
+  ain_nn<iGraphics> aGraphics,
+  iTexture* apTexture)
+{
+  if (!apTexture) return 0;
+  tU32 r = aGraphics->GetTextureDeviceResourceManager()->
+      GetIndexFromResource(apTexture);
+  return (r == eInvalidHandle) ? 0 : r;
+}
+
+inline tU32 GetBufferResourceIndex(
+  ain_nn<iGraphicsDriverGpu> aDriverGpu,
+  iGpuBuffer* apGpuBuffer)
+{
+  if (!apGpuBuffer) return 0;
+  tU32 r = aDriverGpu->GetStorageBufferDeviceResourceManager()->
+      GetIndexFromResource(apGpuBuffer);
+  return (r == eInvalidHandle) ? 0 : r;
+}
+
+inline Ptr<iGpuBuffer> CreateRayInstanceData(
+  ain_nn<iHString> ahspResName,
+  ain_nn<iGraphicsDriverGpu> aDriverGpu,
+  ain<niUIGpuFuncs_RayInstanceData> aInstData)
+{
+  niLet instDataBuffer = niCheckNN(instDataBuffer, aDriverGpu->CreateGpuBuffer(
+    HFmt("RayInstanceData_%s",ahspResName),
+    sizeof(aInstData),
+    eGpuBufferMemoryMode_Shared,
+    eGpuBufferUsageFlags_Storage), nullptr);
+  niVar locked = LockAsSpan<niDeclTypeBase(aInstData)>(
+    instDataBuffer, 0, instDataBuffer->GetSize(), eLock_Discard);
+  locked[0] = aInstData;
+  instDataBuffer->Unlock();
+  return instDataBuffer;
 }
 
 }

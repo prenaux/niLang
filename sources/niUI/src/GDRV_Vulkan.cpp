@@ -38,7 +38,7 @@
 
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
-#include "nish/niUIGpuFuncs.hpp"
+#include <niUI/nish/niUIGpuFuncs.hpp>
 
 namespace ni {
 
@@ -1885,6 +1885,7 @@ struct sVulkanBuffer : public ImplRC<
     else if ((_lockOffset < (_modifiedOffset+_modifiedSize)) &&
              (_lockOffset+_lockSize) > _modifiedOffset)
     {
+#if 0
       if (_boundModifiedBuffer) {
         // TODO: The lock should fail in this case and return nullptr? We
         // should not allow submitted buffers to be modified?
@@ -1895,6 +1896,7 @@ struct sVulkanBuffer : public ImplRC<
           _lockOffset,_lockSize,
           _modifiedOffset,_modifiedSize));
       }
+#endif
       const tU32 newStart = ni::Min(_modifiedOffset,_lockOffset);
       const tU32 newEnd = ni::Max(_modifiedOffset+_modifiedSize,
                                   _lockOffset+_lockSize);

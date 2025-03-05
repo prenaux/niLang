@@ -115,6 +115,27 @@ ni::Ptr<ni::iHString> GenerateUniqueNameCounter(ni::iHString* ahspBaseName, cons
   return NULL;
 }
 
+template <typename T>
+ni::Ptr<ni::iHString> GenerateUniqueNameRandOrUUID(ni::iHString* ahspBaseName, const T& aPredicate) {
+  {
+    // get the name part, before the "#"
+    ni::cString strName = niHStr(ahspBaseName);
+    ni::tSize pos = strName.rfind(_A("#"));
+    if (pos != ni::cString::npos) {
+      strName = strName.substr(0,pos);
+    }
+
+    ni::tU16 rand = (ni::tU16)ni::RandIntRange(0,0xFFFF);
+    ni::tHStringPtr hspName = _H(niFmt(_A("%s#%04X"),strName.Chars(),rand));
+    if (aPredicate(hspName))
+      return hspName;
+  }
+
+  ni::sUUID guid = ni::GetLang()->CreateGlobalUUID();
+  return ni::GenerateUniqueNameUUID(
+    ahspBaseName,guid,aPredicate);
+}
+
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/

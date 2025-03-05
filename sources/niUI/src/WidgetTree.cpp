@@ -1098,8 +1098,6 @@ void cWidgetTree::ZeroMembers()
 {
   mpWidget = NULL;
   mbDragging = eFalse;
-  mDropMode = eWidgetTreeNodeDropMode_On;
-  // mbProcessLeftClickUp = eFalse;
   mpSelectedLast = NULL;
   mpSecondarySel = NULL;
   mnNotify = 0;
@@ -1305,10 +1303,6 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
       if (mbDragging) {
         sVec2f mousePos = avarA.GetVec2f();
         mptrHighlightedNode = _FindNodeByPos(mousePos);
-        if (mptrHighlightedNode.IsOK()) {
-          mDropMode = GetNodeDropMode(
-              mptrHighlightedNode,mousePos+mpWidget->GetAbsolutePosition()+mpWidget->GetClientPosition());
-        }
       }
       break;
     case eUIMessage_Copy:
@@ -1461,20 +1455,9 @@ void cWidgetTree::_Paint(const sVec2f& avMousePos, iCanvas* c)
     sRectf rect = mptrHighlightedNode->GetScrolledNodeRect();
     // rect.Left() = 0;
     rect.Right() = mpWidget->GetClientSize().x;
-    if (mDropMode == eWidgetTreeNodeDropMode_Above) {
-      c->BlitRect(parentRect,skin.colDropBorder);
-      rect.Left() = parentRect.Left();
-      c->BlitFill(sRectf(rect.GetTopLeft()+Vec2f(0,-1),rect.GetTopRight()+Vec2f(0,1)),skin.colDropBorder);
-    }
-    else if (mDropMode == eWidgetTreeNodeDropMode_Below) {
-      c->BlitRect(parentRect,skin.colDropBorder);
-      rect.Left() = parentRect.Left();
-      c->BlitFill(sRectf(rect.GetBottomLeft()+Vec2f(0,1),rect.GetBottomRight()+Vec2f(0,-1)),skin.colDropBorder);
-    }
-    else /*if (mDropMode == eWidgetTreeNodeDropMode_On)*/ {
-      c->BlitRect(rect,skin.colDropBorder);
-      c->BlitRect((sVec4f&)rect+Vec4f(-1,-1,1,1),skin.colDropBorder);
-    }
+    // Draw line below
+    rect.Left() = parentRect.Left();
+    c->BlitFill(sRectf(rect.GetBottomLeft()+Vec2f(0,1),rect.GetBottomRight()+Vec2f(0,-1)),skin.colDropBorder);
   }
 }
 
@@ -1495,25 +1478,6 @@ iWidgetTreeNode* __stdcall cWidgetTree::GetNodeFromPosition(const sVec2f& avAbsP
   niCheckSilent(niIsOK(mpWidget),NULL);
   sVec2f clientPos = avAbsPos-mpWidget->GetAbsolutePosition()-mpWidget->GetClientPosition();
   return _FindNodeByPos(clientPos);
-}
-
-///////////////////////////////////////////////
-eWidgetTreeNodeDropMode __stdcall cWidgetTree::GetNodeDropMode(iWidgetTreeNode* apNode, const sVec2f& avAbsPos) const
-{
-  niCheckIsOK(mpWidget,eWidgetTreeNodeDropMode_Invalid);
-  niCheckIsOK(apNode,eWidgetTreeNodeDropMode_Invalid);
-  sVec2f clientPos = avAbsPos-mpWidget->GetAbsolutePosition()-mpWidget->GetClientPosition();
-  eWidgetTreeNodeDropMode dropMode = eWidgetTreeNodeDropMode_On;
-  sRectf rect = apNode->GetScrolledNodeRect();
-  if (apNode->GetParentNode()) {
-    if (ni::Abs(rect.Bottom()-clientPos.y) <= _knDropBorderDistance) {
-      dropMode = eWidgetTreeNodeDropMode_Below;
-    }
-    else if (ni::Abs(rect.Top()-clientPos.y) <= _knDropBorderDistance) {
-      dropMode = eWidgetTreeNodeDropMode_Above;
-    }
-  }
-  return dropMode;
 }
 
 ///////////////////////////////////////////////

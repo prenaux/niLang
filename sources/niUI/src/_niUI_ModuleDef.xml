@@ -36816,21 +36816,6 @@
 		</interface>
 	</namespace>
 	<namespace name="ni" source="niUI/src/_idl/IWidgetTree.h.idl.xml">
-		<enum name="eWidgetTreeNodeDropMode">
-			<comments desc="Widget tree node drop mode. "/>
-			<value name="eWidgetTreeNodeDropMode_On" value="0 ">
-				<comments desc="Drop on the node. "/>
-			</value>
-			<value name="eWidgetTreeNodeDropMode_Below" value="1 ">
-				<comments desc="Drop below the node. "/>
-			</value>
-			<value name="eWidgetTreeNodeDropMode_Above" value="2 ">
-				<comments desc="Drop above the node. "/>
-			</value>
-			<value name="eWidgetTreeNodeDropMode_Invalid" value="3 ">
-				<comments desc="Invalid drop area. "/>
-			</value>
-		</enum>
 		<enum name="eWidgetTreeStyle">
 			<comments desc="Widget tree style. "/>
 			<value name="eWidgetTreeStyle_ClickDownSelect" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
@@ -37716,25 +37701,6 @@
 				num_parameters="1">
 				<comments desc="Get a node from an absolute position. "/>
 				<return type="iWidgetTreeNode *" typec="iWidgetTreeNode*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
-				<parameter
-					last="1"
-					name="avAbsPos"
-					type="const sVec2f &amp;"
-					typec="const sVec2f&amp;"
-					typei="ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer"/>
-			</method>
-			<method
-				const="yes"
-				java_name="getNodeDropMode"
-				name="GetNodeDropMode"
-				num_parameters="2">
-				<comments desc="Get the drop mode of the specified node from the specified absolute position. "/>
-				<return type="eWidgetTreeNodeDropMode" typec="eWidgetTreeNodeDropMode" typei="ni::eType_Enum"/>
-				<parameter
-					name="apNode"
-					type="iWidgetTreeNode *"
-					typec="iWidgetTreeNode*"
-					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					last="1"
 					name="avAbsPos"

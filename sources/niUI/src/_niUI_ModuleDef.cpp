@@ -37195,22 +37195,6 @@ static const ni::sMethodDef iWidgetTree_GetNodeFromPosition = {
 #endif
 };
 
-// Method: GetNodeDropMode
-static const ni::sParameterDef iWidgetTree_GetNodeDropMode_Parameters[2] = { 
-  { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }, 
-  { "avAbsPos", ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer, NULL, "const sVec2f&" }
-}; 
-static const ni::sMethodDef iWidgetTree_GetNodeDropMode = {
-  "GetNodeDropMode",
-  0|ni::eType_Enum, NULL, "eWidgetTreeNodeDropMode",
-  2, iWidgetTree_GetNodeDropMode_Parameters,
-#ifndef niConfig_NoXCALL
-  XCALL_CIMPL(iWidgetTree_GetNodeDropMode)
-#else
-  NULL
-#endif
-};
-
 // Method: SetSecondarySelection
 static const ni::sParameterDef iWidgetTree_SetSecondarySelection_Parameters[1] = { 
   { "apNode", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iWidgetTreeNode), "iWidgetTreeNode*" }
@@ -37448,7 +37432,6 @@ static const ni::sMethodDef* Methods_iWidgetTree[] = {
 	&iWidgetTree_Clear,
 	&iWidgetTree_ClearSelection,
 	&iWidgetTree_GetNodeFromPosition,
-	&iWidgetTree_GetNodeDropMode,
 	&iWidgetTree_SetSecondarySelection,
 	&iWidgetTree_GetSecondarySelection,
 	&iWidgetTree_GetPivotSelection,
@@ -40130,23 +40113,6 @@ static const ni::sEnumDef Enum_eWidgetTextStyle = {
 }
 #endif // niMinFeatures(20)
 
-// --- eWidgetTreeNodeDropMode ---
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeNodeDropMode() {
-
-static const ni::sEnumValueDef Enum_eWidgetTreeNodeDropMode_Values[] = {
-	{ "On", ni::eWidgetTreeNodeDropMode_On },
-	{ "Below", ni::eWidgetTreeNodeDropMode_Below },
-	{ "Above", ni::eWidgetTreeNodeDropMode_Above },
-	{ "Invalid", ni::eWidgetTreeNodeDropMode_Invalid },
-};
-static const ni::sEnumDef Enum_eWidgetTreeNodeDropMode = {
-	"eWidgetTreeNodeDropMode",
-  niCountOf(Enum_eWidgetTreeNodeDropMode_Values), Enum_eWidgetTreeNodeDropMode_Values
-};
-
-	return &Enum_eWidgetTreeNodeDropMode;
-}
-
 // --- eWidgetTreeStyle ---
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeStyle() {
 
@@ -40749,7 +40715,6 @@ static const ni::sEnumDef* Enumerations[] = {
 #if niMinFeatures(20)
   GetEnumDef_eWidgetTextStyle(),
 #endif // niMinFeatures(20)
-  GetEnumDef_eWidgetTreeNodeDropMode(),
   GetEnumDef_eWidgetTreeStyle(),
   GetEnumDef_eWidgetTreeCmd(),
   GetEnumDef_eWidgetTreeNodeFlags(),

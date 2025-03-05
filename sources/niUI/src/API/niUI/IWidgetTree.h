@@ -11,20 +11,6 @@ struct iWidgetTreeNode;
  * @{
  */
 
-//! Widget tree node drop mode.
-enum eWidgetTreeNodeDropMode {
-  //! Drop on the node.
-  eWidgetTreeNodeDropMode_On = 0,
-  //! Drop below the node.
-  eWidgetTreeNodeDropMode_Below = 1,
-  //! Drop above the node.
-  eWidgetTreeNodeDropMode_Above = 2,
-  //! Invalid drop area.
-  eWidgetTreeNodeDropMode_Invalid = 3,
-  //! \internal
-  eWidgetTreeNodeDropMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
-};
-
 //! Widget tree style.
 enum eWidgetTreeStyle
 {
@@ -339,8 +325,6 @@ struct iWidgetTree : public iUnknown
   virtual tBool __stdcall ClearSelection() = 0;
   //! Get a node from an absolute position.
   virtual iWidgetTreeNode* __stdcall GetNodeFromPosition(const sVec2f& avAbsPos) const = 0;
-  //! Get the drop mode of the specified node from the specified absolute position.
-  virtual eWidgetTreeNodeDropMode __stdcall GetNodeDropMode(iWidgetTreeNode* apNode, const sVec2f& avAbsPos) const = 0;
   //! Set the secondary selection item.
   //! {Property}
   virtual void __stdcall SetSecondarySelection(iWidgetTreeNode* apNode) = 0;

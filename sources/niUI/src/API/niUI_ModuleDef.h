@@ -264,7 +264,6 @@ niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetSplitterStyle();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetSplitterFoldMode();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTabCmd();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTextStyle();
-niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeNodeDropMode();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeStyle();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeCmd();
 niExportFunc(const ni::sEnumDef*) GetEnumDef_eWidgetTreeNodeFlags();

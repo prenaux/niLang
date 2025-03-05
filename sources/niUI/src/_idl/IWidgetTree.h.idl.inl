@@ -468,17 +468,6 @@ IDLC_METH_BEGIN(ni,iWidgetTree,GetNodeFromPosition,1)
 	IDLC_RET_FROM_INTF(iWidgetTreeNode,_Ret)
 IDLC_METH_END(ni,iWidgetTree,GetNodeFromPosition,1)
 
-/** ni -> iWidgetTree::GetNodeDropMode/2 **/
-IDLC_METH_BEGIN(ni,iWidgetTree,GetNodeDropMode,2)
-	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)
-	IDLC_BUF_TO_INTF(iWidgetTreeNode,apNode)
-	IDLC_DECL_VAR(sVec2f,avAbsPos)
-	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec2f|ni::eTypeFlags_Pointer,avAbsPos)
-	IDLC_DECL_RETVAR(eWidgetTreeNodeDropMode,_Ret)
-	IDLC_METH_CALL(_Ret,ni,iWidgetTree,GetNodeDropMode,2,(apNode,avAbsPos))
-	IDLC_RET_FROM_ENUM(eWidgetTreeNodeDropMode,_Ret)
-IDLC_METH_END(ni,iWidgetTree,GetNodeDropMode,2)
-
 /** ni -> iWidgetTree::SetSecondarySelection/1 **/
 IDLC_METH_BEGIN(ni,iWidgetTree,SetSecondarySelection,1)
 	IDLC_DECL_VAR(iWidgetTreeNode*,apNode)

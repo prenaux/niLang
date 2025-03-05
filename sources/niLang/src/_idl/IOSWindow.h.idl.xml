@@ -1223,7 +1223,7 @@
 				property="set"
 				property_name2="clientSize"
 				property_name="client_size">
-				<comments desc="Set the window&apos;s client size. "/>
+				<comments desc="Set the window&apos;s client size in pixels. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -1236,12 +1236,9 @@
 				const="yes"
 				java_name="getClientSize"
 				name="GetClientSize"
-				num_parameters="0"
-				property="get"
-				property_name2="clientSize"
-				property_name="client_size">
-				<comments desc="Get the window&apos;s client size. ">
-					<remark text="The client size can be different of the window&apos;s size. For example on retina displays with some window manager, such as on macOS, the client size is larger because it is always specified in pixels. GetContentsScale can be use to retrieve the &quot;virtual units&quot; to &quot;pixel size&quot; ratio. "/>
+				num_parameters="0">
+				<comments desc="Get the window&apos;s client size in pixels. ">
+					<remark text="The client size may differ from the window size. When there&apos;s content scaling the client size will differ since it is always measured in pixels. Use GetContentsScale to obtain the ratio between &quot;virtual units&quot; and pixel size. "/>
 				</comments>
 				<return type="sVec2i" typec="sVec2i" typei="ni::eType_Vec2i"/>
 			</method>

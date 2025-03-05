@@ -20933,7 +20933,7 @@ static const ni::sMethodDef iOSWindow_SetClientSize = {
 // Method: GetClientSize
 static const ni::sMethodDef iOSWindow_GetClientSize = {
   "GetClientSize",
-  ni::eTypeFlags_MethodGetter|0|ni::eType_Vec2i, NULL, "sVec2i",
+  0|ni::eType_Vec2i, NULL, "sVec2i",
   0, NULL,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iOSWindow_GetClientSize)

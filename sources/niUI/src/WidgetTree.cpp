@@ -18,6 +18,12 @@ class cWidgetTreeNode;
 
 #define niFlagEq(n,p,x) (niFlagIs(n,x) == niFlagIs(p,x))
 
+inline tU32 ComputePageSize(auto aNumVisibleItems) {
+  if (aNumVisibleItems < 5)
+    return 0_u32;
+  return (((tU32)aNumVisibleItems-1)/2)-1;
+};
+
 //----------------------------------------------------------------------------
 //
 // Section: Tree Node
@@ -1178,66 +1184,243 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
       }
       break;
     }
-    case eUIMessage_KeyDown:
-      {
-        const tU32 key = avarA.mU32;
-        switch (key) {
-          case eKey_Left:
-            if (!mvSelected.empty()) {
-              iWidgetTreeNode* pNode = mvSelected.back();
-              pNode->SetExpanded(eFalse);
-            }
+
+    case eUIMessage_KeyDown: {
+      niLet inputModifiers = apWidget->GetUIContext()->GetInputModifiers();
+      niLet canSelectAboveNode = [&](iWidgetTreeNode* apAbove) {
+        return apAbove &&
+            (niFlagIsNot(mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot) ||
+             apAbove != mptrRootNode);
+      };
+
+      niLet doMoveAbove = [&](iWidgetTreeNode* pNode) {
+        if (canSelectAboveNode(pNode->GetAbove())) {
+          return _DoSelect(pNode->GetAbove(),inputModifiers,eTrue);
+        }
+        return eFalse;
+      };
+      niLet doMoveBelow = [&](iWidgetTreeNode* pNode) {
+        return _DoSelect(pNode->GetBelow(),inputModifiers,eTrue);
+      };
+
+      niLet doMoveHome = [&]() {
+        return _DoSelect(_GetHomeNode(),inputModifiers,eTrue);
+      };
+      niLet doMoveEnd = [&]() {
+        return _DoSelect(_GetEndNode(),inputModifiers,eTrue);
+      };
+
+      niLet doMovePgup = [&](ain_nn<iWidgetTreeNode> aNode) {
+        niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
+        if (!pageSize) {
+          return doMoveAbove(aNode);
+        }
+        niVar aboveNode = aNode;
+        niLoop(i,pageSize) {
+          iWidgetTreeNode* maybe = aboveNode->GetAbove();
+          if (maybe && canSelectAboveNode(maybe)) {
+            aboveNode = as_nn(maybe);
+          }
+          else {
             break;
-          case eKey_Right:
-            if (!mvSelected.empty()) {
-              iWidgetTreeNode* pNode = mvSelected.back();
-              pNode->SetExpanded(eTrue);
-            }
+          }
+        }
+        if (aNode == aboveNode)
+          return eFalse;
+        return _DoSelect(aboveNode,inputModifiers,eTrue);
+      };
+      niLet doMovePgdn = [&](ain_nn<iWidgetTreeNode> aNode) {
+        niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
+        if (!pageSize) {
+          return doMoveBelow(aNode);
+        }
+        niVar belowNode = aNode;
+        niLoop(i,pageSize) {
+          iWidgetTreeNode* maybe = belowNode->GetBelow();
+          if (maybe) {
+            belowNode = as_nn(maybe);
+          }
+          else {
             break;
-          case eKey_Home:
-            {
-              _DoSelect(_GetHomeNode(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-              break;
+          }
+        }
+        if (aNode == belowNode)
+          return eFalse;
+        return _DoSelect(belowNode,inputModifiers,eTrue);
+      };
+
+      niLet doMovePrevSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
+        niLet prevSibling = aNode->GetPrevSibling();
+        if (canSelectAboveNode(prevSibling)) {
+          return _DoSelect(prevSibling,aInputModifiers,eTrue);
+        }
+        return eFalse;
+      };
+      niLet doMoveNextSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
+        return _DoSelect(aNode->GetNextSibling(),aInputModifiers,eTrue);
+      };
+      niLet doMoveFirstSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
+        niLet parentNode = aNode->GetParentNode();
+        if (parentNode) {
+          return _DoSelect(parentNode->GetChildNode(0),aInputModifiers,eTrue);
+        }
+        return eFalse;
+      };
+      niLet doMoveLastSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
+        niLet parentNode = aNode->GetParentNode();
+        if (parentNode) {
+          return _DoSelect(parentNode->GetChildNode(parentNode->GetNumChildNodes()-1),aInputModifiers,eTrue);
+        }
+        return eFalse;
+      };
+
+      const tU32 key = avarA.mU32;
+      switch (key) {
+        case eKey_Left: {
+          if (!mvSelected.empty()) {
+            // gather what to process first since the vector might change
+            // and become invalid while updating the nodes
+            astl::deque<Ptr<iWidgetTreeNode>> toProcess;
+            for_each(mvSelected,niFun1(&) {
+                iWidgetTreeNode* pNode = _0;
+                if (pNode->GetExpanded()) {
+                  toProcess.push_back(pNode);
+                }
+              });
+            if (!toProcess.empty()) {
+              for_each(toProcess,niExpr1(_0->SetExpanded(eFalse)));
             }
-          case eKey_End:
-            {
-              _DoSelect(_GetEndNode(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-              break;
-            }
-          case eKey_Up:
-            if (!mvSelected.empty()) {
+            else {
+              // If we didnt collapsed any node we go to the parent
               iWidgetTreeNode* pNode = mvSelected.back();
-              if (pNode && pNode->GetAbove() &&
-                  (niFlagIsNot(mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot) ||
-                   pNode->GetAbove() != mptrRootNode))
-              {
-                _DoSelect(pNode->GetAbove(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
+              iWidgetTreeNode* pParent = pNode->GetParentNode();
+              if (pParent) {
+                _DoSelect(pParent,inputModifiers,eTrue);
+              }
+              else {
+                doMoveAbove(pNode);
               }
             }
-            else {
-              _DoSelect(_GetEndNode(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-            }
-            break;
-          case eKey_Down:
-            if (!mvSelected.empty()) {
-              iWidgetTreeNode* pNode = mvSelected.back();
-              _DoSelect(pNode->GetBelow(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-            }
-            else {
-              _DoSelect(_GetHomeNode(),apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-            }
-            break;
-          case eKey_Enter:
-          case eKey_NumPadEnter:
-          case eKey_Space:
-            if (!mvSelected.empty()) {
-              iWidgetTreeNode* pNode = mvSelected.back();
-              pNode->SetExpanded(pNode->GetExpanded()?eFalse:eTrue);
-            }
-            break;
+          }
+          else {
+            doMoveEnd();
+          }
+          break;
         }
-        break;
+        case eKey_Right: {
+          if (!mvSelected.empty()) {
+            // gather what to process first since the vector might change
+            // and become invalid while updating the nodes
+            astl::deque<Ptr<iWidgetTreeNode>> toProcess;
+            for_each(mvSelected,niFun1(&) {
+                iWidgetTreeNode* pNode = _0;
+                if (!pNode->GetExpanded() && pNode->GetNumChildNodes()) {
+                  toProcess.push_back(pNode);
+                }
+              });
+            if (!toProcess.empty()) {
+              for_each(toProcess,niExpr1(_0->SetExpanded(eTrue)));
+            }
+            else {
+              // If we didnt expand anything we go to the node below
+              iWidgetTreeNode* pNode = mvSelected.back();
+              doMoveBelow(pNode);
+            }
+          }
+          else {
+            _DoSelect(_GetHomeNode(),inputModifiers,eTrue);
+          }
+          break;
+        }
+
+        case eKey_Up: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
+              doMovePrevSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
+            }
+            else {
+              doMoveAbove(pNode);
+            }
+          }
+          else {
+            doMoveEnd();
+          }
+          break;
+        }
+        case eKey_Down: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
+              doMoveNextSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
+            }
+            else {
+              doMoveBelow(pNode);
+            }
+          }
+          else {
+            doMoveHome();
+          }
+          break;
+        }
+
+        case eKey_Home: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
+              doMoveFirstSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
+              break;
+            }
+          }
+          doMoveHome();
+          break;
+        }
+        case eKey_End: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
+              doMoveLastSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
+              break;
+            }
+          }
+          doMoveEnd();
+          break;
+        }
+
+        case eKey_PgUp: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            doMovePgup(pNode);
+          }
+          else {
+            doMoveEnd();
+          }
+          break;
+        }
+        case eKey_PgDn: {
+          if (!mvSelected.empty()) {
+            niLet pNode = as_nn(mvSelected.back());
+            doMovePgdn(pNode);
+          }
+          else {
+            doMoveHome();
+          }
+          break;
+        }
+
+        case eKey_Enter:
+        case eKey_NumPadEnter:
+        case eKey_Space: {
+          if (!mvSelected.empty()) {
+            iWidgetTreeNode* pNode = mvSelected.back();
+            pNode->SetExpanded(pNode->GetExpanded()?eFalse:eTrue);
+          }
+          break;
+        }
       }
+      break;
+    }
+
     case eUIMessage_RightClickDown:
       SetSecondarySelection(NULL);
       _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F),

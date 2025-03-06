@@ -31,7 +31,7 @@ struct Ptr
 
 public:
   typedef T element_type;
-  // don't allow as in<> parameter, use nn<> or Opt/QPtr<> instead.
+  // don't allow as in<> parameter, use nn<> or QPtr<> instead.
   typedef void in_type_t;
 
   Ptr() : mPtr(NULL) {}

@@ -322,9 +322,6 @@ using nullopt_t = eastl::nullopt_t;
 template <typename T>
 using opt = opt_raw_ptr<T*>;
 
-template <typename T>
-using Opt = ni::QPtr<T>;
-
 // primary template handles types that have no nested ::type member:
 template <typename T, typename = void>
 struct to_ain_t : astl::false_type {

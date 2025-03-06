@@ -33,8 +33,6 @@ struct is_comparable_to_nullptr<
 
 } // namespace details
 
-struct is_non_null_type_tag {};
-
 //
 // non_null
 //

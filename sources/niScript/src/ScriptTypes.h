@@ -547,7 +547,7 @@ struct sScriptTypeResolvedType : SQ_USERDATA_BASE(sScriptTypeResolvedType)
 
   const eScriptType _scriptType;
   const SQOpcode _opcode = __OP_LAST;
-  const Opt<iUnknown> _opcodeInfo = nullptr;
+  const Ptr<iUnknown> _opcodeInfo = nullptr;
   const cString _typeParameter = AZEROSTR;
 
   sScriptTypeResolvedType(

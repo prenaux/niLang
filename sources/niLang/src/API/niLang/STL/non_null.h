@@ -33,6 +33,8 @@ struct is_comparable_to_nullptr<
 
 } // namespace details
 
+struct is_non_null_type_tag {};
+
 //
 // non_null
 //
@@ -55,6 +57,12 @@ struct non_null
 
  public:
   static_assert(details::is_comparable_to_nullptr<T>::value, "T cannot be compared to nullptr.");
+
+  typedef eastl::remove_pointer_t<T> element_type;
+  typedef T raw_ptr_type;
+  typedef const T const_raw_ptr_type;
+  // indicate that we are a non_null type
+  typedef void is_non_null_type;
 
   template <typename U>
   constexpr non_null(U&& u, eastl::enable_if_t<eastl::is_pointer_v<U>>* = nullptr) {

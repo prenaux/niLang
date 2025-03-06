@@ -34,13 +34,15 @@ struct Nonnull
   friend struct Nonnull;
 
  public:
-  typedef T tNonnullIType;
-  typedef T* tRawPtr;
-  typedef const T* tConstRawPtr;
-  typedef astl::non_null<tRawPtr> non_null_t;
-  typedef astl::non_null<tConstRawPtr> non_null_const_t;
+  typedef T element_type;
+  typedef T* raw_ptr_type;
+  typedef const T* const_raw_ptr_type;
+  typedef astl::non_null<raw_ptr_type> non_null_t;
+  typedef astl::non_null<const_raw_ptr_type> non_null_const_t;
   // don't allow as in<> parameter, use nn<> instead.
   typedef void in_type_t;
+  // indicate that we are a non_null type
+  typedef void is_non_null_type;
 
   // Explicit so that its clear at callsites that it will enforce it to be
   // non-null.

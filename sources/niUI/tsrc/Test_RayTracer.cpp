@@ -64,7 +64,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   NN<iGraphicsDriverGpu> _driverGpu = niDeferredInit(NN<iGraphicsDriverGpu>);
   NN<iGraphicsDriverRay> _driverRay = niDeferredInit(NN<iGraphicsDriverRay>);
 
-  unn<sDisplayQuad> _display = niDeferredInit(unn<sDisplayQuad>);
+  optional<sDisplayQuad> _display;
 
   TEST_CONSTRUCTOR(RayTracerBase) {
     _animated = ni::GetProperty("tests.Animated","true").Bool();
@@ -94,7 +94,7 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
 
     // Setup display quad
     {
-      _display = niMakeUNN(MakeDisplayQuad(_driverGpu,ahspRayqueryGpufuncPath));
+      _display = MakeDisplayQuad(_driverGpu,ahspRayqueryGpufuncPath);
     }
 
     return eTrue;

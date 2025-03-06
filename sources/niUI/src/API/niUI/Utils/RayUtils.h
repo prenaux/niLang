@@ -10,13 +10,75 @@ namespace ni {
 
 using namespace astl;
 
-template <typename T, typename BUFFER_T>
-inline astl::span<T> LockAsSpan(BUFFER_T&& aBuffer, tU32 anOffset, tU32 anSize, eLock aFlags) {
-  const tU32 elementSize = sizeof(T);
-  const tU32 numElements = anSize / elementSize;
-  T* data = reinterpret_cast<T*>(aBuffer->Lock(anOffset, anSize, aFlags));
-  niPanicAssertMsg(data != nullptr, "Cant lock buffer.");
-  return astl::span<T>(data, numElements);
+template <typename T, typename IBUFFER_T>
+struct sAutoLockBuffer {
+  NN<IBUFFER_T> _buffer;
+  astl::span<T> _span;
+
+  sAutoLockBuffer(
+    ain_nn<IBUFFER_T> aBuffer,
+    ain<tU32> anOffset, ain<tU32> anMaybeSize,
+    ain<eLock> aFlags)
+      : _buffer(aBuffer)
+  {
+    tU32 lockSize = (anMaybeSize == eInvalidHandle) ?
+        aBuffer->GetSize() : anMaybeSize;
+    const tU32 elementSize = sizeof(T);
+    const tU32 numElements = lockSize / elementSize;
+    niPanicAssertMsg((numElements >= 1) && (lockSize >= elementSize),
+                     "Must lock at least one element.");
+    T* data = reinterpret_cast<T*>(_buffer->Lock(anOffset, lockSize, aFlags));
+    niPanicAssertMsg(data != nullptr, "Cant lock buffer.");
+    _span = astl::span<T>(data, numElements);
+  }
+
+  ~sAutoLockBuffer() {
+    if (!_span.empty()) {
+      _buffer->Unlock();
+    }
+  }
+
+  T* data() const {
+    return _span.data();
+  }
+
+  T* operator -> () const {
+    return data();
+  }
+
+  T& operator[](tU32 anIdx) const {
+    return _span[anIdx];
+  }
+
+  bool empty() const {
+    return _span.empty();
+  }
+
+  tU32 size() const {
+    return (tU32)_span.size();
+  }
+
+  tU32 size_bytes() const {
+    return (tU32)_span.size_bytes();
+  }
+};
+
+template <typename T, IsNonNullType IBUFFER_T>
+inline auto AutoLockBufferReadOnly(IBUFFER_T&& aBuffer, tU32 anOffset = 0, tU32 anSize = eInvalidHandle) {
+  using BufferType = typename remove_cvref_t<IBUFFER_T>::element_type;
+  return sAutoLockBuffer<const T, BufferType>(std::forward<IBUFFER_T>(aBuffer), anOffset, anSize, eLock_ReadOnly);
+}
+
+template <typename T, IsNonNullType IBUFFER_T>
+inline auto AutoLockBufferReadWrite(IBUFFER_T&& aBuffer, tU32 anOffset = 0, tU32 anSize = eInvalidHandle) {
+  using BufferType = typename remove_cvref_t<IBUFFER_T>::element_type;
+  return sAutoLockBuffer<T, BufferType>(std::forward<IBUFFER_T>(aBuffer), anOffset, anSize, eLock_Normal);
+}
+
+template <typename T, IsNonNullType IBUFFER_T>
+inline auto AutoLockBufferDiscard(IBUFFER_T&& aBuffer, tU32 anOffset = 0, tU32 anSize = eInvalidHandle) {
+  using BufferType = typename remove_cvref_t<IBUFFER_T>::element_type;
+  return sAutoLockBuffer<T, BufferType>(std::forward<IBUFFER_T>(aBuffer), anOffset, anSize, eLock_Discard);
 }
 
 typedef sVertexPNT1 tVertexRay;
@@ -31,8 +93,7 @@ inline NN<iGpuBuffer> MakeTriVB(ain_nn<iGraphicsDriverGpu> aGpu, tU32 anId, tF32
     eGpuBufferUsageFlags_RayBuildInput));
   {
     niLet w = afSize/2.0f;
-    niLet verts = LockAsSpan<tVertexTri>(triVB, 0, triVB->GetSize(), eLock_Discard);
-    niDefer { triVB->Unlock(); };
+    niLet verts = AutoLockBufferDiscard<tVertexTri>(triVB);
     // Red, TC
     verts[0] = {{ aPos.x, w+aPos.y, aPos.z}, 0xFFFF0000};
     // Green, BR
@@ -52,8 +113,7 @@ inline NN<iGpuBuffer> MakeTriIB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tU3
     eGpuBufferUsageFlags_RayBuildInput));
   tU32 baseIndex = 0;
   {
-    niLet inds = LockAsSpan<tU32>(triIB, 0, triIB->GetSize(), eLock_Discard);
-    niDefer { triIB->Unlock(); };
+    niLet inds = AutoLockBufferDiscard<tU32>(triIB);
     niLoop(i,aNumTris) {
       niLet indsBase = i*3;
       inds[indsBase+0] = baseIndex+0;
@@ -75,8 +135,7 @@ inline NN<iGpuBuffer> MakeQuadVB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tF
     eGpuBufferUsageFlags_Vertex|
     eGpuBufferUsageFlags_RayBuildInput));
   {
-    niLet verts = LockAsSpan<tVertexTri>(quadVB, 0, quadVB->GetSize(), eLock_Discard);
-    niDefer { quadVB->Unlock(); };
+    niLet verts = AutoLockBufferDiscard<tVertexTri>(quadVB);
     // Red, TL
     verts[0] = {{ -0.35f*afSize+aPos.x, 0.6f*afSize+aPos.y, aPos.z}, 0xFFFF0000};
     // Green, TR
@@ -98,8 +157,7 @@ inline NN<iGpuBuffer> MakeQuadIB(ain<nn<iGraphicsDriverGpu>> aGpu, tU32 anId, tU
     eGpuBufferUsageFlags_RayBuildInput));
   tU32 baseIndex = 0;
   {
-    niLet inds = LockAsSpan<tU32>(quadIB, 0, quadIB->GetSize(), eLock_Discard);
-    niDefer { quadIB->Unlock(); };
+    niLet inds = AutoLockBufferDiscard<tU32>(quadIB);
     niLoop(i,aNumQuads) {
       niLet indsBase = i*6;
       inds[indsBase+0] = baseIndex+0;
@@ -252,8 +310,8 @@ inline Ptr<iGpuBuffer> CreateRayInstanceData(
     sizeof(aInstData),
     eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Storage), nullptr);
-  niVar locked = LockAsSpan<niDeclTypeBase(aInstData)>(
-    instDataBuffer, 0, instDataBuffer->GetSize(), eLock_Discard);
+  niVar locked = AutoLockBufferDiscard<niDeclTypeBase(aInstData)>(
+    instDataBuffer);
   locked[0] = aInstData;
   instDataBuffer->Unlock();
   return instDataBuffer;

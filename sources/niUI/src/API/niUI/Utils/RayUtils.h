@@ -317,5 +317,87 @@ inline Ptr<iGpuBuffer> CreateRayInstanceData(
   return instDataBuffer;
 }
 
+struct sRayGeometry {
+  ni::NN<iRayPrimitives> rayPrims;
+  ni::NN<iGpuBuffer>     rayInstData;
+  ni::tU32               rayInstDataIndex = eInvalidHandle;
+
+  void UpdateTexIndex(ain<tU32> anTexResIndex) {
+    niLet lock = AutoLockBufferReadWrite<niUIGpuFuncs_RayInstanceData>(rayInstData.non_null());
+    niLet currentTexIndex = lock->texIndex;
+    niLet newTexIndex = anTexResIndex;
+    if (currentTexIndex != newTexIndex) {
+      niDebugFmt(("... sRayGeometry::InitFromDrawOp: currentTexIndex: %d -> newTexIndex: %d",
+                  currentTexIndex, newTexIndex));
+      lock->texIndex = newTexIndex;
+    }
+  }
+
+  tBool AddInstance(ain_nn<ni::iRayInstancesDesc> aRayInstsDesc,
+                    ain<sMatrixf> aWorldMatrix,
+                    ain<tU32> anInstanceMask) const {
+    return aRayInstsDesc->AddInstance(
+      rayPrims,
+      aWorldMatrix,
+      rayInstDataIndex,
+      anInstanceMask,
+      0,
+      eRayInstanceFlags_None);
+  }
+};
+
+inline optional<sRayGeometry> MakeRayGeometry(
+  ain_nn<iHString> resName,
+  ain_nn<iGraphicsDriverGpu> driverGpu,
+  ain_nn<iGraphicsDriverRay> driverRay,
+  ain_nn<iRayBuildEncoder> rayBuildEncoder,
+  ain_nn<iDrawOperation> drawOp,
+  ain<tU32> anTexResIndex)
+{
+  NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(
+    drawOp->GetIndexArray()));
+  NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(
+    drawOp->GetVertexArray()));
+
+  niUIGpuFuncs_RayInstanceData instData;
+  instData.vbIndex = GetBufferResourceIndex(driverGpu,vaBuffer);
+  instData.ibIndex = GetBufferResourceIndex(driverGpu,iaBuffer);
+  instData.texIndex = anTexResIndex;
+  niLet rayInstData = niCheckNN_(
+    rayInstData,
+    CreateRayInstanceData(
+      resName,
+      driverGpu,
+      instData),
+    niFmt("Cant create rayinstdata for '%s'.",resName),
+    nullopt);
+  niLet rayInstDataIndex = GetBufferResourceIndex(
+    driverGpu,rayInstData.non_null());
+
+  niLet rayPrims = niCheckNN_(
+    rayPrims,
+    CreateRayPrimsFromDop(
+      resName,
+      driverRay,
+      rayBuildEncoder,
+      drawOp),
+    niFmt("Cant create rayprims for '%s'.",resName),
+    nullopt);
+
+  niDebugFmt((
+    "... MakeRayGeometry: %s, mnRayInstDataIndex: %d, vbIndex: %d, ibIndex: %d, texIndex: %d",
+    resName,
+    rayInstDataIndex,
+    instData.vbIndex,
+    instData.ibIndex,
+    instData.texIndex));
+
+  return sRayGeometry {
+    .rayPrims = rayPrims,
+    .rayInstData = rayInstData,
+    .rayInstDataIndex =rayInstDataIndex
+  };
+}
+
 }
 #endif // __RAYUTILS_H_D7E1ED73_ACC5_4013_A7E9_B849E4A2A1F9__

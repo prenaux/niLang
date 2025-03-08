@@ -541,8 +541,7 @@ tBool __stdcall cWidgetListBox::OnWidgetSink(iWidget *apWidget, tU32 nMsg, const
         sVec2f vMousePos = varParam1.GetVec2f();
         if (mrectHeader.Intersect(vMousePos)) {
           mnHeaderHandlePressed = GetSelectedColumnHandle(vMousePos);
-          niDebugFmt(("... mnHeaderHandlePressed: %d",
-                      mnHeaderHandlePressed));
+          // niDebugFmt(("... mnHeaderHandlePressed: %d", mnHeaderHandlePressed));
           if (mnHeaderHandlePressed != eInvalidHandle) {
             mvHeaderPivot = vMousePos;
             mnBaseSize = mvColumns[mnHeaderHandlePressed].nSetSize;
@@ -666,7 +665,7 @@ void cWidgetListBox::DoUpdateLayout(tBool abForce)
         // niDebugFmt(("... inview"));
       }
       else {
-        niDebugFmt(("... tomiddle"));
+        // niDebugFmt(("... tomiddle"));
         const tI32 midPageOffset = ni::Max(0,(pagesize/2) - 1);
         ptrVSB->SetScrollPosition((tF32)destPos - midPageOffset);
       }

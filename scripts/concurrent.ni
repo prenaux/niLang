@@ -110,6 +110,12 @@ module <- {
     return ::gConcurrent.executor_main.Submit(r)
   }
 
+  function mainRunInterrupt() {
+    ::concurrent.mainRun(function() {
+      ::gConcurrent.executor_main.InterruptUpdate();
+    });
+  }
+
   function update(aTimeSlice) {
     aTimeSlice = aTimeSlice || 5;
     return ::gConcurrent.executor_main.Update(aTimeSlice)

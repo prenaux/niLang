@@ -317,10 +317,21 @@ inline Ptr<iGpuBuffer> CreateRayInstanceData(
   return instDataBuffer;
 }
 
+inline tU32 GetMaterialTextureResourceIndex(
+  ain_nn<iGraphics> aGraphics,
+  iMaterial* apMaterial,
+  eMaterialChannel aCh = eMaterialChannel_Base)
+{
+  if (!apMaterial)
+    return 0;
+  return GetTextureResourceIndex(aGraphics, apMaterial->GetChannelTexture(aCh));
+}
+
 struct sRayGeometry {
   ni::NN<iRayPrimitives> rayPrims;
   ni::NN<iGpuBuffer>     rayInstData;
   ni::tU32               rayInstDataIndex = eInvalidHandle;
+  ni::Ptr<iMaterial>     material;
 
   void UpdateTexIndex(ain<tU32> anTexResIndex) {
     niLet lock = AutoLockBufferReadWrite<niUIGpuFuncs_RayInstanceData>(rayInstData.non_null());

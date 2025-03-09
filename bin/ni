@@ -1,27 +1,170 @@
 #!/bin/bash
 #===== PRELUDE BEGIN ===========
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set!"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set!"
+  exit 1
+fi
 # shellcheck disable=SC2034
 SCRIPT_NAME=$(basename "$0")
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 #===== PRELUDE END =============
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. "$SCRIPT_DIR/ni-bash-setenv.sh" ra
+NI_EXE=
+SET_MODE="set -e"
+if [ -n "$VERBOSE" ]; then
+  SET_MODE="set -ex"
+fi
 
+#===== Section: usage =====
+function usage() {
+  if [ -e "$NI_EXE" ]; then
+    (
+      $SET_MODE
+      "${NI_EXE}" -h
+    )
+  fi
+  echo "ni envvar options:"
+  echo "  NI_BASE / -w          If not empty use as base exe name instead of 'ni_', if -w is specified set to 'niw_'."
+  echo "  VERBOSE / -verbose    If set echos the command ran."
+  echo "  BUILD                 Specifies whether to use ra (release, the default) or da (debug) mode."
+  echo "  HAM_GDB / -gdb        If set specifies what debugger to run the command under."
+  echo "  HAM_GDB_OUT_BASENAME / -A appname  Sets the session filename for the debugger."
+  exit 1
+}
+
+function verbose() {
+  if [ -n "$VERBOSE" ]; then
+    echo "V/ni: $*"
+  fi
+}
+
+#===== Section: BIN_EXT/BIN_LOA =====
+BUILD=${BUILD:-ra}
+if [ -z "$WORK" ]; then
+  WORK="$SCRIPT_DIR/../.."
+fi
+
+if [[ $OS == Windows* ]]; then
+  export NI_OS=NT
+  export BIN_EXT=.exe
+  export BIN_LOA=nt-x64
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  export NI_OS=OSX
+  UNAME_STR=$(uname)
+  MACHINE_TYPE=$(uname -m)
+  if [ "$MACHINE_TYPE" == "x86_64" ]; then
+    IS_TRANSLATED=$(
+      sysctl -n sysctl.proc_translated 2>/dev/null
+      true
+    )
+    if [ "$IS_TRANSLATED" == "1" ]; then
+      # echo "W/!!! RUNNING UNDER ROSETTA, forcing HAM_BIN_LOA=osx-arm64 !!!"
+      export BIN_LOA=osx-arm64
+    else
+      export BIN_LOA=osx-x64
+    fi
+  elif [ "$MACHINE_TYPE" == "arm64" ]; then
+    export BIN_LOA=osx-arm64
+  else
+    echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
+  fi
+  # export HAM_LOCAL_HOMEBREW="$HAM_HOME/toolsets/_brew/$HAM_BIN_LOA"
+else
+  UNAME_STR=$(/bin/uname)
+  MACHINE_TYPE=$(/bin/uname -m)
+  if [ "$UNAME_STR" == "Linux" ] && [ "$MACHINE_TYPE" == "x86_64" ]; then
+    export NI_OS=LINUX
+    export BIN_EXT=.x64
+    export BIN_LOA=lin-x64
+  else
+    echo "W/Unknown OS '$UNAME_STR' '$MACHINE_TYPE'"
+    exit 1
+  fi
+fi
+
+#===== Section: Add default include directories =====
 INCLUDE_DIRS=(
   "$SCRIPT_DIR/../scripts"
   "$SCRIPT_DIR/../sources"
 )
 
-PARAMS=()
 for dir in "${INCLUDE_DIRS[@]}"; do
   if [ -d "$dir" ]; then
     PARAMS+=(-I"$dir")
   fi
 done
 
+#===== Section: Parse parameters =====
+SHOW_HELP=
+NI_BASE=${NI_BASE:-ni_}
+while [[ "$1" == "-"* ]]; do
+  if [ "$1" == "-h" ]; then
+    shift
+    SHOW_HELP=yes
+  elif [ "$1" == "-gdb" ]; then
+    shift
+    export HAM_GDB=${HAM_GDB:-ham-gdb}
+  elif [ "$1" == "-ra" ]; then
+    shift
+    export BUILD=ra
+  elif [ "$1" == "-da" ]; then
+    shift
+    export BUILD=da
+  elif [ "$1" == "-w" ]; then
+    shift
+    export NI_BASE="niw_"
+  elif [ "$1" == "-verbose" ]; then
+    shift
+    SET_MODE="set -ex"
+  elif [ "$1" == "-A" ]; then
+    shift
+    APP_NAME="$1"
+    if [ -z "$APP_NAME" ]; then
+      echo "E/No application name specified after -A"
+      usage
+    fi
+    shift
+    PARAMS+=(-A "$APP_NAME")
+    if [ -z "$HAM_GDB_OUT_BASENAME" ]; then
+      export HAM_GDB_OUT_BASENAME="niApp_${APP_NAME}"
+    fi
+  else
+    PARAMS+=("$1")
+    shift
+  fi
+done
+
+POSSIBLE_LOCATIONS=(
+  "$WORK/bin/$BIN_LOA/${NI_BASE}${BUILD}${BIN_EXT}"
+  "$PWD/${NI_BASE}${BUILD}${BIN_EXT}"
+  "$PWD/$BIN_LOA/${NI_BASE}${BUILD}${BIN_EXT}"
+  "$SCRIPT_DIR/${NI_BASE}${BUILD}${BIN_EXT}"
+  "$SCRIPT_DIR/$BIN_LOA/${NI_BASE}${BUILD}${BIN_EXT}"
+)
+
+for LOCATION in "${POSSIBLE_LOCATIONS[@]}"; do
+  verbose "Trying NI_EXE: ${LOCATION}"
+  if [ -e "${LOCATION}" ]; then
+    NI_EXE="${LOCATION}"
+    break
+  fi
+done
+
+if [ -z "NI_EXE" ]; then
+  NI_EXE="${NI_BASE}${BUILD}${BIN_EXT}"
+fi
+
+if [ ! -e "${NI_EXE}" ]; then
+  echo "E/Cant find ni executable '$NI_EXE'"
+  usage
+fi
+
+if [ -n "$SHOW_HELP" ]; then
+  usage
+fi
+
+#===== Section: Run =====
 (
-  # set -x
-  "${NI_EXE}" "${PARAMS[@]}" "$@"
+  ${SET_MODE}
+  ${HAM_GDB} "${NI_EXE}" "${PARAMS[@]}" "$@"
 )

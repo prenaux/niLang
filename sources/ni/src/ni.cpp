@@ -146,9 +146,7 @@ cString GetHelpString() {
       _A("   -D pname=value \t set the value of a system property\n")
       _A("   -E filename    \t set the entry point script (default: main.niw)\n")
       _A("   -M entrypoint  \t set the main script function (default: try this.main and then ::main)\n")
-#ifdef NI_WINDOWED
       _A("   -A appName     \t run as hosted app, the main function is ran in OnAppStarted\n")
-#endif
 #ifdef NI_REPL
       _A("   -i             \t run the repl after executing the script\n")
       _A("   -x cmd         \t run the specifed command when the repl starts\n")

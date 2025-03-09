@@ -1,6 +1,9 @@
 #!/bin/bash
 export HAM_NO_VER_CHECK=1
-if [[ -z "$HAM_HOME" ]]; then echo "E/HAM_HOME not set !"; exit 1; fi
+if [[ -z "$HAM_HOME" ]]; then
+  echo "E/HAM_HOME not set !"
+  exit 1
+fi
 . "$HAM_HOME/bin/ham-bash-setenv.sh"
 
 NI_PARAMS=()
@@ -19,6 +22,11 @@ usage() {
   echo "  If no files or directories are provided, the current directory is used."
   exit 1
 }
+
+export NO_COLOR=${NO_COLOR:-1}
+if [ -n "$LINT_OUTPUT_FORMAT" ]; then
+  NI_PARAMS+=(-DniScript.LintFormat="${LINT_OUTPUT_FORMAT}")
+fi
 
 # Separate -* parameters from file/directory parameters
 for arg in "$@"; do

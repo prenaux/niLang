@@ -41,6 +41,18 @@ niExportFuncCPP(cString) StringRepeat(ain<tI32> aN, ain<tChars> aToRepeat) {
   return StringCatRepeat(r, aN, aToRepeat);
 }
 
+enum eLintOutputFormat {
+  eLintOutputFormat_Default = 0,
+  eLintOutputFormat_GCC = 1,
+  eLintOutputFormat_MSVC = 2,
+};
+
+static eLintOutputFormat _ToLintOutputFormat(const achar* aFormat) {
+  if (StrIEq(aFormat,"msvc")) return eLintOutputFormat_MSVC;
+  if (StrIEq(aFormat,"gcc")) return eLintOutputFormat_GCC;
+  return eLintOutputFormat_Default;
+}
+
 struct iLintFuncCall : public iUnknown {
   niDeclareInterfaceUUID(iLintFuncCall,0xfeee9127,0x5c61,0xef11,0x8a,0x5c,0x97,0x69,0xc8,0x3a,0xa9,0xff);
 
@@ -558,10 +570,10 @@ typedef astl::hash_map<const SQFunctionProto*,Ptr<LintClosure> > tFuncClosureMap
 #define _LKEY(KIND) (kLint_##KIND.key)
 #define _LNAME(KIND) (kLint_##KIND.name.ptr())
 #define _LTRACE(MSG) if (shouldLintTrace) { niDebugFmt(MSG); }
-#define _LINTERNAL_ERROR(MSG) aLinter.Log(_LKEY(internal_error), _LNAME(internal_error), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
-#define _LINTERNAL_WARNING(MSG) aLinter.Log(_LKEY(internal_warning), _LNAME(internal_warning), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
+#define _LINTERNAL_ERROR(MSG) aLinter.Log(_LKEY(internal_error), _LNAME(internal_error), _LKEY(internal_error), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
+#define _LINTERNAL_WARNING(MSG) aLinter.Log(_LKEY(internal_warning), _LNAME(internal_warning), _LKEY(internal_warning), *thisfunc, thisfunc->GetSourceLineCol(), MSG)
 #define _LENABLED(KIND) aLinter.IsEnabled(_LKEY(KIND))
-#define _LINT_(KIND,LINECOL,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), *thisfunc, LINECOL, MSG)
+#define _LINT_(KIND,LINECOL,MSG) aLinter.Log(_LKEY(KIND), _LNAME(KIND), _LKEY(KIND), *thisfunc, LINECOL, MSG)
 #define _LINT(KIND,MSG) _LINT_(KIND, getlinecol(inst), MSG)
 
 static tU32 _lintKeyGen = 0;
@@ -898,34 +910,79 @@ struct sLinter {
   void Log(
     const tU32 aLint,
     const iHString* aLintName,
+    const tU32 aLintKey,
     const SQFunctionProto& aProto,
     const sVec2i aLineCol,
     const cString& aMsg)
   {
+    static niLet _kFormat = _ToLintOutputFormat(ni::GetProperty("niScript.LintFormat","default").c_str());
+
     cString& o = _logs.push_back();
-    o << "Lint: ";
-    if (niFlagIs(aLint,eLintFlags_IsError)) {
-      o << "Error: ";
-      ++_numLintErrors;
-    }
-    else if (niFlagIs(aLint,eLintFlags_IsWarning)) {
-      o << "Warning: ";
-      ++_numLintWarnings;
-    }
-    else if (niFlagIs(aLint,eLintFlags_IsInfo)) {
-      o << "Info: ";
+
+    switch (_kFormat) {
+      case eLintOutputFormat_MSVC:
+      case eLintOutputFormat_GCC: {
+        if (_kFormat == eLintOutputFormat_MSVC) {
+          o << niFmt("%s(%s):", aProto.GetSourceName(), aLineCol.x);
+        }
+        else if (_kFormat == eLintOutputFormat_GCC) {
+          o << niFmt("%s:%s:%s:", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
+        }
+
+        if (niFlagIs(aLint,eLintFlags_IsExperimental)) {
+          o << " experimental";
+        }
+        if (niFlagIs(aLint,eLintFlags_IsExplicit)) {
+          o << " explicit";
+        }
+
+        if (niFlagIs(aLint,eLintFlags_IsError)) {
+          o << " error";
+          ++_numLintErrors;
+        }
+        else if (niFlagIs(aLint,eLintFlags_IsWarning)) {
+          o << " warning";
+          ++_numLintWarnings;
+        }
+        else if (niFlagIs(aLint,eLintFlags_IsInfo)) {
+          o << " info";
+        }
+
+        if (_kFormat == eLintOutputFormat_MSVC) {
+          o << niFmt(" C%04d: %s: ", aLintKey&0xFFFF, aLintName);
+        }
+        else {
+          o << niFmt(": %s: ", aLintName);
+        }
+        break;
+      }
+
+      default: {
+        o << "Lint: ";
+        if (niFlagIs(aLint,eLintFlags_IsError)) {
+          o << "Error: ";
+          ++_numLintErrors;
+        }
+        else if (niFlagIs(aLint,eLintFlags_IsWarning)) {
+          o << "Warning: ";
+          ++_numLintWarnings;
+        }
+        else if (niFlagIs(aLint,eLintFlags_IsInfo)) {
+          o << "Info: ";
+        }
+
+        if (niFlagIs(aLint,eLintFlags_IsExperimental)) {
+          o << "Experimental: ";
+        }
+        if (niFlagIs(aLint,eLintFlags_IsExplicit)) {
+          o << "Explicit: ";
+        }
+
+        o << niHStr(aLintName) << ": ";
+        break;
+      }
     }
 
-    if (niFlagIs(aLint,eLintFlags_IsExperimental)) {
-      o << "Experimental: ";
-    }
-    if (niFlagIs(aLint,eLintFlags_IsExplicit)) {
-      o << "Explicit: ";
-    }
-
-    // if (aLintName != NULL) {
-    o << niHStr(aLintName) << ": ";
-    // }
     o << aMsg;
 
     if (aLineCol.x == aProto._sourceline) {
@@ -934,7 +991,13 @@ struct sLinter {
     else {
       o << niFmt(" (in %s:%s)", aProto.GetName(), aProto._sourceline);
     }
-    o << niFmt(" [%s:%s:%s]\n", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
+
+    if (_kFormat == eLintOutputFormat_Default) {
+      o << niFmt(" [%s:%s:%s]\n", aProto.GetSourceName(), aLineCol.x, aLineCol.y);
+    }
+    else {
+      o << "\n";
+    }
 
     if (_printLogs) {
       // Raw goes to stderr when eLogFlags_Stdout isnt specified

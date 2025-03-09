@@ -779,7 +779,7 @@ niExportFunc(SQRESULT) sq_compilestring(HSQUIRRELVM v, iHString* ahspSourceName,
     }
 
     return sq_throwerror(v, niFmt(
-      "[%s:%d:%d] compile error: %s",
+      "%s:%d:%d: error: compilestring, %s",
       hspSource,
       errors.GetLastError().line,
       errors.GetLastError().col,

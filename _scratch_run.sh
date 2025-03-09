@@ -9,23 +9,18 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 set -e
 cd "$SCRIPT_DIR"
 
-log_info "Compile shaders"
-(
-  set -x
-  cd "$WORK/Playground"
-  # hamx :niLang :Playground ni
-  # ./_build_shaders.sh
-)
-
 log_info "Build and run test case"
 (
   set -x
   cd "$WORK/niLang"
-  # ham Run_Test_niUI_GDRV FIXTURE=FRay,Triangle A2=-Drenderer=Vulkan BUILD=da
-  # ham Run_Test_niUI_GDRV BUILD=da FIXTURE=FRay,RayQueryTriangle
-  # ham Run_Test_niUI_GDRV BUILD=da FIXTURE=FRay,RayQueryIntSphere
-  # ham Debug_Test_niUI BUILD=da FIXTURE=FRayTracer,Triangle
-  # ham Debug_Test_niUI BUILD=da FIXTURE=FRayTracer,Triangle
-  ham Run_Test_niUI BUILD=ra FIXTURE=FRayTracer,Triangle
-  # ham Run_Test_niUI_GDRV BUILD=ra FIXTURE=FRay,RayQueryTriangle
+
+  export BUILD=da
+  export A3=-Dswapinterval=0
+
+  ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
+  # ham Run_Test_niUI FIXTURE=FRayTracer,Triangle
+  # ham Run_Test_niUI_GDRV FIXTURE=FGpu,Triangle
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Quad
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Triangle
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayQuery,IntSphere
 )

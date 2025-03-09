@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/nish/TestGpuFuncs.hpp"
+#include "nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 #include <niUI/Utils/AABB.h>
 #include <niUI/Utils/RayUtils.h>

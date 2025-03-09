@@ -9,7 +9,7 @@ niImportModuleDll_niUI ;
 SRC = [ tkPkgSrc ] ;
 
 DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncsHpp $(PACKAGE)_nish_public :
-  $(TK_DIR) data test nish :
+  $(TK_DIR) sources niUI tsrc_gdrv nish :
   $(WORK) Playground sources nilTests nish test_public.nip :
   TestGpuFuncs.hpp
 ] ;

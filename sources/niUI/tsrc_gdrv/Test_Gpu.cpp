@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "../../../data/test/nish/TestGpuFuncs.hpp"
+#include "nish/TestGpuFuncs.hpp"
 
 using namespace ni;
 

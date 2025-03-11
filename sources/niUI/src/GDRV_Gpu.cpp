@@ -1052,7 +1052,7 @@ struct sGpuStream : public ImplRC<iGpuStream> {
 
   tBool __stdcall UpdateNextBlock(ain<tPtr> apData, ain<tU32> anSize) niImpl {
     if (anSize > _chunkSize) {
-      niError("Data size larger than chunk size");
+      niError(niFmt("Data size '%d' larger than chunk size '%d'.", anSize, _chunkSize));
       return eFalse;
     }
 

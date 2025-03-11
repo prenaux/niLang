@@ -13,34 +13,13 @@
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
 
-#define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
-#include "API/niUI/Utils/BufferCache.h"
-
-#define USE_GPU_COMMAND_ENCODER
-// #define USE_BUFFER_CACHE
-// #define USE_BUFFER_CACHE_RING_BUFFER
-
-namespace ni {
-template struct BufferCacheVertex<tVertexCanvas>;
-}
-
 static const sVec2f _vTLTex = {0,0};
 static const sVec2f _vTRTex = {1,0};
 static const sVec2f _vBRTex = {1,1};
 static const sVec2f _vBLTex = {0,1};
 
-#ifdef USE_BUFFER_CACHE
-#ifdef USE_BUFFER_CACHE_RING_BUFFER
-#define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex[mnCurrentBufferCache];
-#define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex[mnCurrentBufferCache];
-static const tU32 _knRingBufferSize = 1024;
-#else
-#define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex;
-#define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex;
-#endif
-
-static const tU32 _knBufferCacheInitSize = 1024;
-#endif
+// Auto flush before we reach the end of one stream buffer chunk
+static const tU32 _knMaxVertsBeforeAutoFlush = (0xFFFF/sizeof(tVertexCanvas)) - 16;
 
 enum CANVAS_FLAGS {
   CANVAS_FLAGS_BakeTransform = niBit(1),
@@ -632,12 +611,6 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
  public:
   cCanvasGraphics(iGraphics* apGraphics, iGraphicsContext* apContext, iMaterial* apResetMaterial)
   {
-#ifdef USE_BUFFER_CACHE_RING_BUFFER
-    niLog(Info,"cCanvasGraphics USE_BUFFER_CACHE_RING_BUFFER");
-#else
-    niLog(Info,"cCanvasGraphics NO USE_BUFFER_CACHE_RING_BUFFER");
-#endif
-
     mptrGraphics = apGraphics;
     mptrContext = apContext;
     mptrContextGpu = AsNN(QPtr<iGraphicsContextGpu>(mptrContext));
@@ -671,11 +644,6 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
     // Set the default states
     _SetDefaultStates();
 
-#if !defined USE_GPU_COMMAND_ENCODER
-    // Initialize the draw op
-    mptrDrawOp = mptrContext->GetGraphics()->CreateDrawOperation();
-#endif
-
     // Begin a batch...
     _BeginNextBatch();
   }
@@ -705,9 +673,15 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
+  __forceinline void _MaybeFlush() {
+    if (mvVertices.size() >= _knMaxVertsBeforeAutoFlush) {
+      this->Flush();
+    }
+  }
+
+  ///////////////////////////////////////////////
   virtual tBool __stdcall Flush() {
-    if (_HasVertices()) {
-#if 1
+    if (!mvVertices.empty()) {
       NN<iGpuCommandEncoder> cmdEncoder = AsNN(mptrContextGpu->GetCommandEncoder());
 
       niLet fvf = tVertexCanvas::eFVF;
@@ -763,40 +737,10 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       cmdEncoder->SetSamplerState((eCompiledStates)(chBase.mhSS ?
         chBase.mhSS : eCompiledStates_SS_PointClamp),0);
 
-#ifdef USE_BUFFER_CACHE
-      GET_BUFFER_CACHE_VERTEX();
-      GET_BUFFER_CACHE_INDEX();
-      const sVec2i verts = bufferCacheVertex->Update();
-      const sVec2i inds = bufferCacheIndex->Update();
-      cmdEncoder->SetVertexBuffer(AsNN(QPtr<iGpuBuffer>(bufferCacheVertex->mptrVA)),0,0);
-      cmdEncoder->SetIndexBuffer(AsNN(QPtr<iGpuBuffer>(bufferCacheIndex->mptrIA)),0,eGpuIndexType_U32);
-      cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,verts.x,inds.x,inds.y);
-#else
       cmdEncoder->StreamVertexBuffer((tPtr)mvVertices.data(),sizeof(mvVertices[0])*mvVertices.size(),0);
-      cmdEncoder->StreamIndexBuffer((tPtr)mvIndices.data(),sizeof(mvIndices[0])*mvIndices.size(),eGpuIndexType_U32);
-      cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,mvIndices.size());
-#endif
-
-#else
-      GET_BUFFER_CACHE_VERTEX();
-      GET_BUFFER_CACHE_INDEX();
-
-      const sVec2i verts = bufferCacheVertex->Update();
-      const sVec2i inds = bufferCacheIndex->Update();
-      if (!verts.y || !inds.y) {
-        return eFalse;
-      }
-
-      mptrDrawOp->SetVertexArray(bufferCacheVertex->mptrVA);
-      mptrDrawOp->SetIndexArray(bufferCacheIndex->mptrIA);
-      mptrDrawOp->SetFirstIndex(inds.x);
-      mptrDrawOp->SetNumIndices(inds.y);
-      mptrDrawOp->SetBaseVertexIndex(verts.x);
-      mptrDrawOp->SetMaterial(mStates.mptrMaterial.IsOK() ? mStates.mptrMaterial : mptrDefaultMaterial);
-      mptrDrawOp->SetMatrix(mStates.mMatrix);
-      mptrContext->DrawOperation(mptrDrawOp);
-#endif
+      cmdEncoder->Draw(eGraphicsPrimitiveType_TriangleList,0,1,0,mvVertices.size());
     }
+
     _BeginNextBatch();
     return eTrue;
   }
@@ -1042,177 +986,94 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  __forceinline void _AddVertex(const tVertexCanvas& aV) {
-#ifdef USE_BUFFER_CACHE
-    GET_BUFFER_CACHE_VERTEX();
-#endif
-    if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
-      const sMatrixf& m = mStates.mMatrix;
-      tVertexCanvas v = aV;
-      VecTransformCoord(v.pos,aV.pos,m);
-      VecTransformNormal(v.normal,aV.normal,m);
-#ifdef USE_BUFFER_CACHE
-      bufferCacheVertex->Add(v);
-#else
-      mvVertices.emplace_back(v);
-#endif
-    }
-    else {
-#ifdef USE_BUFFER_CACHE
-      bufferCacheVertex->Add(aV);
-#else
-      mvVertices.emplace_back(aV);
-#endif
-    }
-  }
-  __forceinline void _AddVertices(const tVertexCanvas* aV, tU32 anCount) {
-#ifdef USE_BUFFER_CACHE
-    GET_BUFFER_CACHE_VERTEX();
-#endif
-    if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
-      const sMatrixf& m = mStates.mMatrix;
-      mvIndices.reserve(mvIndices.size()+anCount);
-      niLoop(i,anCount) {
-        tVertexCanvas v = aV[i];
-        VecTransformCoord(v.pos,v.pos,m);
-        VecTransformNormal(v.normal,v.normal,m);
-#ifdef USE_BUFFER_CACHE
-        bufferCacheVertex->Add(v);
-#else
-        mvVertices.emplace_back(v);
-#endif
-      }
-    }
-    else {
-#ifdef USE_BUFFER_CACHE
-      bufferCacheVertex->Add(aV,anCount);
-#else
-      mvVertices.insert(mvVertices.end(),aV,aV+anCount);
-#endif
-    }
+  __forceinline void _TransformVertex(aout<tVertexCanvas>& aV) {
+    niLet& m = mStates.mMatrix;
+    VecTransformCoord(aV.pos,aV.pos,m);
+    VecTransformNormal(aV.normal,aV.normal,m);
   }
 
-#ifdef USE_BUFFER_CACHE
-  __forceinline tIndex _GetCurrentVertex() const {
-    GET_BUFFER_CACHE_VERTEX();
-    return bufferCacheVertex->GetCurrentIndex();
+  ///////////////////////////////////////////////
+  __forceinline void _AddTransformedVertex(ain<tVertexCanvas> aV) {
+    mvVertices.emplace_back(aV);
   }
-  __forceinline void _AddIndex(tIndex anIndex) {
-    GET_BUFFER_CACHE_INDEX();
-    bufferCacheIndex->Add(anIndex);
+
+  ///////////////////////////////////////////////
+  __forceinline void _AddTransformedVertices(const tVertexCanvas* aV, ain<tU32> anCount) {
+    mvVertices.insert(mvVertices.end(),aV,aV+anCount);
   }
-  __forceinline void _AddIndices(tIndex* apIndices, tU32 anCount) {
-    GET_BUFFER_CACHE_INDEX();
-    bufferCacheIndex->Add(apIndices,anCount);
+
+  ///////////////////////////////////////////////
+  __forceinline void _MaybeBakeAndAddVertex(aout<tVertexCanvas> aV) {
+    if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
+      tVertexCanvas v = aV;
+      _TransformVertex(v);
+      _AddTransformedVertex(v);
+    }
+    else {
+      _AddTransformedVertex(aV);
+    }
   }
-#else
-  __forceinline tIndex _GetCurrentVertex() const {
-    return mvVertices.size();
-  }
-  __forceinline void _AddIndex(tIndex anIndex) {
-    mvIndices.emplace_back(anIndex);
-  }
-  __forceinline void _AddIndices(tIndex* apIndices, tU32 anCount) {
-    mvIndices.insert(mvIndices.end(),apIndices,apIndices+anCount);
-  }
-#endif
 
   inline void _BeginNextBatch() {
-#ifdef USE_BUFFER_CACHE_RING_BUFFER
-    if (mnCurrentBufferCache >= _knRingBufferSize-1) {
-      mnCurrentBufferCache = 0;
-    }
-    else {
-      ++mnCurrentBufferCache;
-    }
-    if (!mptrBufferCacheVertex[mnCurrentBufferCache].IsOK()) {
-      mptrBufferCacheVertex[mnCurrentBufferCache] = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), _knBufferCacheInitSize);
-    }
-    if (!mptrBufferCacheIndex[mnCurrentBufferCache].IsOK()) {
-      mptrBufferCacheIndex[mnCurrentBufferCache] = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
-    }
-#elif defined USE_BUFFER_CACHE
-    if (!mptrBufferCacheVertex.IsOK()) {
-      mptrBufferCacheVertex = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), _knBufferCacheInitSize);
-    }
-    if (!mptrBufferCacheIndex.IsOK()) {
-      mptrBufferCacheIndex = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
-    }
-    GET_BUFFER_CACHE_VERTEX();
-    GET_BUFFER_CACHE_INDEX();
-    bufferCacheVertex->Reset();
-    bufferCacheIndex->Reset();
-#else
     mvVertices.clear();
-    mvIndices.clear();
-#endif
-  }
-  __forceinline tBool _HasVertices() const {
-    return _GetCurrentVertex() > 2;
   }
   virtual tBool __stdcall GetHasVertices() const {
-    return _HasVertices();
+    return !mvVertices.empty();
   }
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall VertexP(const sVec3f& avPosition) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = mStates.mnColorA;
     v.normal = mStates.mvNormal;
     v.tex1 = sVec2f::Zero();
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
   virtual tBool __stdcall VertexPN(const sVec3f& avPosition, const sVec3f& avNormal) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = mStates.mnColorA;
     v.normal = mStates.mvNormal;
     v.tex1 = sVec2f::Zero();
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
   virtual tBool __stdcall VertexPT(const sVec3f& avPosition, const sVec2f& avTex) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = mStates.mnColorA;
     v.normal = mStates.mvNormal;
     v.tex1 = avTex;
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
   virtual tBool __stdcall VertexPTA(const sVec3f& avPosition, const sVec2f& avTex, tU32 anColorA) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = anColorA;
     v.normal = mStates.mvNormal;
     v.tex1 = avTex;
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
   virtual tBool __stdcall VertexPNT(const sVec3f& avPosition, const sVec3f& avNormal, const sVec2f& avTex) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = mStates.mnColorA;
     v.normal = avNormal;
     v.tex1 = avTex;
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
   virtual tBool __stdcall VertexPNTA(const sVec3f& avPosition, const sVec3f& avNormal, const sVec2f& avTex, tU32 anColorA) {
-    _AddIndex(_GetCurrentVertex());
     tVertexCanvas v;
     v.pos = avPosition;
     v.colora = anColorA;
     v.normal = avNormal;
     v.tex1 = avTex;
-    _AddVertex(v);
+    _MaybeBakeAndAddVertex(v);
     return eTrue;
   }
 
@@ -1279,17 +1140,9 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       const sVec3f& avBR, const sVec3f& avBRN, const sVec2f& avBRT, tU32 anBRA,
       const sVec3f& avBL, const sVec3f& avBLN, const sVec2f& avBLT, tU32 anBLA)
   {
-    tVertexCanvas v;
+    _MaybeFlush();
 
-    tU32 nFirstIndex = _GetCurrentVertex();
-    tU32 nIndices[6] {
-      nFirstIndex+0,
-      nFirstIndex+1,
-      nFirstIndex+3,
-      nFirstIndex+1,
-      nFirstIndex+2,
-      nFirstIndex+3,
-    };
+    tVertexCanvas v[6];
 
     sVec3f vTL, vTR, vBL, vBR;
     if (mStates.mBBMode) {
@@ -1318,41 +1171,49 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       vBR  = vPos + (vUp * fBottom) + (vRight * fRight);
     }
     else {
-      vTL = (avTL);
-      vTR = (avTR);
-      vBL = (avBL);
-      vBR = (avBR);
+      vTL = avTL;
+      vTR = avTR;
+      vBL = avBL;
+      vBR = avBR;
     }
 
     // Top-Left
-    v.pos = vTL;
-    v.colora = anTLA;
-    v.tex1 = avTLT;
-    v.normal = avTLN;
-    _AddVertex(v);
+    v[0].pos = vTL;
+    v[0].colora = anTLA;
+    v[0].tex1 = avTLT;
+    v[0].normal = avTLN;
 
     // Top-Right
-    v.pos = vTR;
-    v.colora = anTRA;
-    v.tex1 = avTRT;
-    v.normal = avTRN;
-    _AddVertex(v);
+    v[1].pos = vTR;
+    v[1].colora = anTRA;
+    v[1].tex1 = avTRT;
+    v[1].normal = avTRN;
 
     // Bottom-Right
-    v.pos = vBR;
-    v.colora = anBRA;
-    v.tex1 = avBRT;
-    v.normal = avBRN;
-    _AddVertex(v);
+    v[2].pos = vBR;
+    v[2].colora = anBRA;
+    v[2].tex1 = avBRT;
+    v[2].normal = avBRN;
 
     // Bottom-Left
-    v.pos = vBL;
-    v.colora = anBLA;
-    v.tex1 = avBLT;
-    v.normal = avBLN;
-    _AddVertex(v);
+    v[3].pos = vBL;
+    v[3].colora = anBLA;
+    v[3].tex1 = avBLT;
+    v[3].normal = avBLN;
 
-    _AddIndices(nIndices,6);
+    if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
+      // Note: Mmm, I dont think we should do this in BBMode?
+      _TransformVertex(v[0]);
+      _TransformVertex(v[1]);
+      _TransformVertex(v[2]);
+      _TransformVertex(v[3]);
+    }
+
+    // finish 2nd triangle
+    v[4] = v[0];
+    v[5] = v[2];
+
+    _AddTransformedVertices(v,6);
     return eTrue;
   }
 
@@ -1462,23 +1323,9 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
                                  const sVec3f& avEnd, const sVec2f& avEndTex,
                                  tF32 afEndSize, tU32 anEndCol)
   {
-    tVertexCanvas v[4];
-    tU32 nFirstIndex = _GetCurrentVertex();
-    tU32 nIndices[12];
-    nIndices[0] = nFirstIndex+0;
-    nIndices[1] = nFirstIndex+1;
-    nIndices[2] = nFirstIndex+3;
-    nIndices[3] = nFirstIndex+1;
-    nIndices[4] = nFirstIndex+2;
-    nIndices[5] = nFirstIndex+3;
+    _MaybeFlush();
 
-    // draw double sided
-    nIndices[ 6] = nFirstIndex+0;
-    nIndices[ 7] = nFirstIndex+3;
-    nIndices[ 8] = nFirstIndex+1;
-    nIndices[ 9] = nFirstIndex+1;
-    nIndices[10] = nFirstIndex+3;
-    nIndices[11] = nFirstIndex+2;
+    tVertexCanvas v[6];
 
     tBool bVisible = DoComputeScreenQuad(
       mptrContext,
@@ -1508,8 +1355,12 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       v[3].colora = anStartCol;
       v[3].tex1.x = avStartTex.x;
       v[3].tex1.y = avEndTex.y;
-      _AddVertices(v,4);
-      _AddIndices(nIndices,niCountOf(nIndices));
+
+      // finish 2nd triangle
+      v[4] = v[0];
+      v[5] = v[2];
+
+      _AddTransformedVertices(v,6);
     }
     return eTrue;
   }
@@ -2005,6 +1856,7 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
     }
   }
   virtual void __stdcall DrawPath(const iVGPath* apPath) {
+    _MaybeFlush();
     niThis(cCanvasGraphics)->_CheckVGPathRenderer();
     apPath->RenderTesselated(mptrCanvasVGPathRenderer,
                              mptrCanvasVGPathRenderer->mVGTransforms[eVGTransform_Path],
@@ -2033,27 +1885,13 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
 
   sGraphicsCanvasStates   mStates;
 
-#ifdef USE_BUFFER_CACHE_RING_BUFFER
-  Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex[_knRingBufferSize];
-  Ptr<BufferCacheIndex> mptrBufferCacheIndex[_knRingBufferSize];
-  tU32 mnCurrentBufferCache = ~0;
-#elif defined USE_BUFFER_CACHE
-  Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex;
-  Ptr<BufferCacheIndex> mptrBufferCacheIndex;
-#endif
-
   Ptr<sCanvasVGPathTesselatedRenderer> mptrCanvasVGPathRenderer;
 
-#ifdef USE_GPU_COMMAND_ENCODER
   NN<iGraphicsContextGpu> mptrContextGpu = niDeferredInit(NN<iGraphicsContextGpu>);
   NN<iFixedGpuPipelines> mptrFixedGpuPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
   Ptr<iGpuPipeline> mptrLastPipeline = nullptr;
   tU32 mnLastPipelineId = eInvalidHandle;
   astl::vector<tVertexCanvas> mvVertices;
-  astl::vector<tU32> mvIndices;
-#else
-  Ptr<iDrawOperation> mptrDrawOp;
-#endif
 };
 
 ///////////////////////////////////////////////

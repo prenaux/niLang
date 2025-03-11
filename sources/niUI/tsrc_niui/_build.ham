@@ -1,12 +1,12 @@
-if [ SubDirOnce TOP niUI tsrc_ni ] = 1 { return ; }
+if [ SubDirOnce TOP niUI tsrc_niui ] = 1 { return ; }
 if ! $(TARGET_FEATURE_CONSOLE) { return ; }
 
-tkDefTest Test_niUI_ni ;
+tkDefTest Test_niUI_niui ;
 
-SRC = [ tkPkgSrc gml ] ;
+SRC = [ tkPkgSrc niui ] ;
 
 for _i in $(SRC) {
-  local t = Test_niUI_$(_i:B) ;
+  local t = Test_niUI_niui_$(_i:B) ;
   niScriptTest $(t) : $(_i) ;
   DEPENDS $(t) : niLang niUI ni ;
   DEPENDS Test_niUI_ni : $(t) ;

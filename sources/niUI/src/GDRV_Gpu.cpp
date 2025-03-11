@@ -1057,14 +1057,19 @@ struct sGpuStream : public ImplRC<iGpuStream> {
     }
 
     if (_chunks.empty() || (_currentOffset + anSize > _chunkSize)) {
-      if (_chunks.size() >= _maxChunks) {
+      if (_currentChunk + 1 < _chunks.size()) {
+        // Reuse existing chunk
+        _currentChunk++;
+        _currentOffset = 0;
+      } else if (_chunks.size() >= _maxChunks) {
         niError("Maximum chunks reached");
         return eFalse;
+      } else {
+        // Allocate new chunk
+        niCheck(_AllocateNextChunk(),eFalse);
+        _currentChunk = (tU32)_chunks.size() - 1;
+        _currentOffset = 0;
       }
-
-      niCheck(_AllocateNextChunk(),eFalse);
-      _currentChunk = (tU32)_chunks.size() - 1;
-      _currentOffset = 0;
     }
 
     niLet& chunk = _chunks[_currentChunk];

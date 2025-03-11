@@ -159,7 +159,7 @@ for LOCATION in "${POSSIBLE_LOCATIONS[@]}"; do
   fi
 done
 
-if [ -z "NI_EXE" ]; then
+if [ -z "$NI_EXE" ]; then
   NI_EXE="${NI_BASE}${BUILD}${BIN_EXT}"
 fi
 
@@ -175,7 +175,5 @@ fi
 #=============================================================================
 #= Section: Run
 #=============================================================================
-(
-  ${SET_MODE}
-  ${HAM_GDB} "${NI_EXE}" "${PARAMS[@]}" "$@"
-)
+${SET_MODE}
+${HAM_GDB} "${NI_EXE}" "${PARAMS[@]}" "$@"

@@ -40,6 +40,14 @@
 #include "GDRV_Utils.h"
 #include <niUI/nish/niUIGpuFuncs.hpp>
 
+#define VULKAN_LOG_LOCK_OVERLAP
+
+#define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
+#define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
+
+niDeclareModuleTrace_(niUI,TraceVulkanDescr);
+#define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
+
 namespace ni {
 
 struct sVulkanBuffer;
@@ -93,12 +101,6 @@ static const char* _vkRequiredRayTracingExtensions[] = {
   VK_KHR_RAY_QUERY_EXTENSION_NAME,
 };
 niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
-
-#define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
-#define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
-
-niDeclareModuleTrace_(niUI,TraceVulkanDescr);
-#define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
 
 _HSymImpl(vulkan_panic);
 
@@ -731,6 +733,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return _device != VK_NULL_HANDLE;
   }
   virtual void __stdcall Invalidate() niImpl {
+  }
+
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) {
+    if (niGetInterfaceUUID(iFixedGpuPipelines) == aIID)
+      return _fixedPipelines;
+    return BaseImpl::QueryInterface(aIID);
   }
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
@@ -1885,7 +1893,7 @@ struct sVulkanBuffer : public ImplRC<
     else if ((_lockOffset < (_modifiedOffset+_modifiedSize)) &&
              (_lockOffset+_lockSize) > _modifiedOffset)
     {
-#if 0
+#ifdef VULKAN_LOG_LOCK_OVERLAP
       if (_boundModifiedBuffer) {
         // TODO: The lock should fail in this case and return nullptr? We
         // should not allow submitted buffers to be modified?

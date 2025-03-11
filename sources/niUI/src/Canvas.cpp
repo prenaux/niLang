@@ -9,10 +9,15 @@
 #include <niLang/Math/MathTriangle.h>
 #include <niLang/STL/sort.h>
 #include "API/niUI/IImage.h"
+#include <niUI/nish/niUIGpuFuncs.hpp>
+#include "GDRV_Gpu.h"
+#include "GDRV_Utils.h"
 
 #define TRACE_BUFFER_CACHE(X) // niDebugFmt(X)
 #include "API/niUI/Utils/BufferCache.h"
 
+#define USE_GPU_COMMAND_ENCODER
+// #define USE_BUFFER_CACHE
 // #define USE_BUFFER_CACHE_RING_BUFFER
 
 namespace ni {
@@ -24,6 +29,7 @@ static const sVec2f _vTRTex = {1,0};
 static const sVec2f _vBRTex = {1,1};
 static const sVec2f _vBLTex = {0,1};
 
+#ifdef USE_BUFFER_CACHE
 #ifdef USE_BUFFER_CACHE_RING_BUFFER
 #define GET_BUFFER_CACHE_VERTEX() auto& bufferCacheVertex = mptrBufferCacheVertex[mnCurrentBufferCache];
 #define GET_BUFFER_CACHE_INDEX() auto& bufferCacheIndex = mptrBufferCacheIndex[mnCurrentBufferCache];
@@ -34,6 +40,7 @@ static const tU32 _knRingBufferSize = 1024;
 #endif
 
 static const tU32 _knBufferCacheInitSize = 1024;
+#endif
 
 enum CANVAS_FLAGS {
   CANVAS_FLAGS_BakeTransform = niBit(1),
@@ -633,6 +640,8 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
 
     mptrGraphics = apGraphics;
     mptrContext = apContext;
+    mptrContextGpu = AsNN(QPtr<iGraphicsContextGpu>(mptrContext));
+    mptrFixedGpuPipelines = AsNN(QPtr<iFixedGpuPipelines>(mptrGraphics->GetDriver()));
     mfContentsScale = 1.0f;
 
     if (!niIsOK(mptrContext->GetFixedStates())) {
@@ -662,8 +671,10 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
     // Set the default states
     _SetDefaultStates();
 
+#if !defined USE_GPU_COMMAND_ENCODER
     // Initialize the draw op
     mptrDrawOp = mptrContext->GetGraphics()->CreateDrawOperation();
+#endif
 
     // Begin a batch...
     _BeginNextBatch();
@@ -696,13 +707,86 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   ///////////////////////////////////////////////
   virtual tBool __stdcall Flush() {
     if (_HasVertices()) {
+#if 1
+      NN<iGpuCommandEncoder> cmdEncoder = AsNN(mptrContextGpu->GetCommandEncoder());
+
+      niLet fvf = tVertexCanvas::eFVF;
+      niLet& matDesc = *(const sMaterialDesc*)(mStates.mptrMaterial.IsOK() ?
+        mStates.mptrMaterial.raw_ptr() : mptrDefaultMaterial.raw_ptr())->GetDescStructPtr();
+      niLet& chBase = matDesc.mChannels[eMaterialChannel_Base];
+      niLet& chOpacity = matDesc.mChannels[eMaterialChannel_Opacity];
+      iGpuFunction* funcVertex = mptrFixedGpuPipelines->GetFixedGpuFuncVertex(fvf);
+      iGpuFunction* funcPixel = mptrFixedGpuPipelines->GetFixedGpuFuncPixel(matDesc);
+      const tFixedGpuPipelineId rpId = GetFixedGpuPipelineId(
+        eGpuPixelFormat_BGRA8, eGpuPixelFormat_D32,
+        fvf,
+        matDesc.mBlendMode,
+        (eCompiledStates)(matDesc.mhRS ? matDesc.mhRS : eCompiledStates_RS_NoCullingFilled),
+        (eCompiledStates)(matDesc.mhDS ? matDesc.mhDS : eCompiledStates_DS_NoDepthTest),
+        funcVertex, funcPixel);
+      niCheck(rpId != 0, eFalse);
+
+      if (!mptrLastPipeline.has_value() || rpId != mnLastPipelineId) {
+        mptrLastPipeline = mptrFixedGpuPipelines->GetRenderPipeline(
+          AsNN(QPtr<iGraphicsDriverGpu>(mptrGraphics->GetDriver())), rpId,
+          funcVertex, funcPixel);
+        if (!mptrLastPipeline.has_value()) {
+          niError("Can't get the pipeline.");
+          return eFalse;
+        }
+        mnLastPipelineId = rpId;
+      }
+      cmdEncoder->SetPipeline(mptrLastPipeline);
+
+      niUIGpuFuncs_FixedUniforms fixedUniforms;
+      {
+        cmdEncoder->SetTexture(chBase.mTexture, 0);
+        cmdEncoder->SetSamplerState(chBase.mhSS, 0);
+        if (matDesc.mFlags & eMaterialFlags_DiffuseModulate || !chBase.mTexture.raw_ptr()) {
+          fixedUniforms.materialColor = chBase.mColor;
+        }
+        else {
+          fixedUniforms.materialColor = sColor4f::White();
+        }
+        fixedUniforms.alphaRef = chOpacity.mColor.w;
+      }
+
+      cmdEncoder->SetViewport(mptrContext->GetViewport());
+      cmdEncoder->SetScissorRect(mptrContext->GetScissorRect());
+      {
+        sMatrixf mtxVP = mptrContext->GetFixedStates()->GetViewProjectionMatrix();
+        fixedUniforms.mtxWVP = mStates.mMatrix * mtxVP;
+        cmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,sizeof(fixedUniforms),0);
+      }
+
+      cmdEncoder->SetTexture(chBase.mTexture,0);
+      cmdEncoder->SetSamplerState((eCompiledStates)(chBase.mhSS ?
+        chBase.mhSS : eCompiledStates_SS_PointClamp),0);
+
+#ifdef USE_BUFFER_CACHE
       GET_BUFFER_CACHE_VERTEX();
       GET_BUFFER_CACHE_INDEX();
+      const sVec2i verts = bufferCacheVertex->Update();
+      const sVec2i inds = bufferCacheIndex->Update();
+      cmdEncoder->SetVertexBuffer(AsNN(QPtr<iGpuBuffer>(bufferCacheVertex->mptrVA)),0,0);
+      cmdEncoder->SetIndexBuffer(AsNN(QPtr<iGpuBuffer>(bufferCacheIndex->mptrIA)),0,eGpuIndexType_U32);
+      cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,verts.x,inds.x,inds.y);
+#else
+      cmdEncoder->StreamVertexBuffer((tPtr)mvVertices.data(),sizeof(mvVertices[0])*mvVertices.size(),0);
+      cmdEncoder->StreamIndexBuffer((tPtr)mvIndices.data(),sizeof(mvIndices[0])*mvIndices.size(),eGpuIndexType_U32);
+      cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,0,1,0,0,mvIndices.size());
+#endif
+
+#else
+      GET_BUFFER_CACHE_VERTEX();
+      GET_BUFFER_CACHE_INDEX();
+
       const sVec2i verts = bufferCacheVertex->Update();
       const sVec2i inds = bufferCacheIndex->Update();
       if (!verts.y || !inds.y) {
         return eFalse;
       }
+
       mptrDrawOp->SetVertexArray(bufferCacheVertex->mptrVA);
       mptrDrawOp->SetIndexArray(bufferCacheIndex->mptrIA);
       mptrDrawOp->SetFirstIndex(inds.x);
@@ -711,6 +795,7 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
       mptrDrawOp->SetMaterial(mStates.mptrMaterial.IsOK() ? mStates.mptrMaterial : mptrDefaultMaterial);
       mptrDrawOp->SetMatrix(mStates.mMatrix);
       mptrContext->DrawOperation(mptrDrawOp);
+#endif
     }
     _BeginNextBatch();
     return eTrue;
@@ -958,33 +1043,56 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
 
   ///////////////////////////////////////////////
   __forceinline void _AddVertex(const tVertexCanvas& aV) {
+#ifdef USE_BUFFER_CACHE
     GET_BUFFER_CACHE_VERTEX();
+#endif
     if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
       const sMatrixf& m = mStates.mMatrix;
       tVertexCanvas v = aV;
       VecTransformCoord(v.pos,aV.pos,m);
       VecTransformNormal(v.normal,aV.normal,m);
+#ifdef USE_BUFFER_CACHE
       bufferCacheVertex->Add(v);
+#else
+      mvVertices.emplace_back(v);
+#endif
     }
     else {
+#ifdef USE_BUFFER_CACHE
       bufferCacheVertex->Add(aV);
+#else
+      mvVertices.emplace_back(aV);
+#endif
     }
   }
   __forceinline void _AddVertices(const tVertexCanvas* aV, tU32 anCount) {
+#ifdef USE_BUFFER_CACHE
     GET_BUFFER_CACHE_VERTEX();
+#endif
     if (mStates.mnFlags & CANVAS_FLAGS_BakeTransform) {
       const sMatrixf& m = mStates.mMatrix;
+      mvIndices.reserve(mvIndices.size()+anCount);
       niLoop(i,anCount) {
         tVertexCanvas v = aV[i];
         VecTransformCoord(v.pos,v.pos,m);
         VecTransformNormal(v.normal,v.normal,m);
+#ifdef USE_BUFFER_CACHE
         bufferCacheVertex->Add(v);
+#else
+        mvVertices.emplace_back(v);
+#endif
       }
     }
     else {
+#ifdef USE_BUFFER_CACHE
       bufferCacheVertex->Add(aV,anCount);
+#else
+      mvVertices.insert(mvVertices.end(),aV,aV+anCount);
+#endif
     }
   }
+
+#ifdef USE_BUFFER_CACHE
   __forceinline tIndex _GetCurrentVertex() const {
     GET_BUFFER_CACHE_VERTEX();
     return bufferCacheVertex->GetCurrentIndex();
@@ -997,10 +1105,17 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
     GET_BUFFER_CACHE_INDEX();
     bufferCacheIndex->Add(apIndices,anCount);
   }
-  __forceinline tIndex _GetCurrentIndex() const {
-    GET_BUFFER_CACHE_INDEX();
-    return bufferCacheIndex->GetCurrentEl();
+#else
+  __forceinline tIndex _GetCurrentVertex() const {
+    return mvVertices.size();
   }
+  __forceinline void _AddIndex(tIndex anIndex) {
+    mvIndices.emplace_back(anIndex);
+  }
+  __forceinline void _AddIndices(tIndex* apIndices, tU32 anCount) {
+    mvIndices.insert(mvIndices.end(),apIndices,apIndices+anCount);
+  }
+#endif
 
   inline void _BeginNextBatch() {
 #ifdef USE_BUFFER_CACHE_RING_BUFFER
@@ -1016,18 +1131,21 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
     if (!mptrBufferCacheIndex[mnCurrentBufferCache].IsOK()) {
       mptrBufferCacheIndex[mnCurrentBufferCache] = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
     }
-#else
+#elif defined USE_BUFFER_CACHE
     if (!mptrBufferCacheVertex.IsOK()) {
       mptrBufferCacheVertex = niNew BufferCacheVertex<tVertexCanvas>(mptrContext->GetGraphics(), _knBufferCacheInitSize);
     }
     if (!mptrBufferCacheIndex.IsOK()) {
       mptrBufferCacheIndex = niNew BufferCacheIndex(mptrContext->GetGraphics(), _knBufferCacheInitSize*3);
     }
-#endif
     GET_BUFFER_CACHE_VERTEX();
     GET_BUFFER_CACHE_INDEX();
     bufferCacheVertex->Reset();
     bufferCacheIndex->Reset();
+#else
+    mvVertices.clear();
+    mvIndices.clear();
+#endif
   }
   __forceinline tBool _HasVertices() const {
     return _GetCurrentVertex() > 2;
@@ -1914,18 +2032,28 @@ class cCanvasGraphics : public ImplRC<iCanvas,eImplFlags_Default>
   tF32                  mfContentsScale;
 
   sGraphicsCanvasStates   mStates;
-  Ptr<iDrawOperation>     mptrDrawOp;
 
 #ifdef USE_BUFFER_CACHE_RING_BUFFER
   Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex[_knRingBufferSize];
   Ptr<BufferCacheIndex> mptrBufferCacheIndex[_knRingBufferSize];
   tU32 mnCurrentBufferCache = ~0;
-#else
+#elif defined USE_BUFFER_CACHE
   Ptr<BufferCacheVertex<tVertexCanvas> > mptrBufferCacheVertex;
   Ptr<BufferCacheIndex> mptrBufferCacheIndex;
 #endif
 
   Ptr<sCanvasVGPathTesselatedRenderer> mptrCanvasVGPathRenderer;
+
+#ifdef USE_GPU_COMMAND_ENCODER
+  NN<iGraphicsContextGpu> mptrContextGpu = niDeferredInit(NN<iGraphicsContextGpu>);
+  NN<iFixedGpuPipelines> mptrFixedGpuPipelines = niDeferredInit(NN<iFixedGpuPipelines>);
+  Ptr<iGpuPipeline> mptrLastPipeline = nullptr;
+  tU32 mnLastPipelineId = eInvalidHandle;
+  astl::vector<tVertexCanvas> mvVertices;
+  astl::vector<tU32> mvIndices;
+#else
+  Ptr<iDrawOperation> mptrDrawOp;
+#endif
 };
 
 ///////////////////////////////////////////////

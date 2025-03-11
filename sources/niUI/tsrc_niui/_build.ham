@@ -9,8 +9,8 @@ for _i in $(SRC) {
   local t = Test_niUI_niui_$(_i:B) ;
   niScriptTest $(t) : $(_i) ;
   DEPENDS $(t) : niLang niUI ni ;
-  DEPENDS Test_niUI_ni : $(t) ;
-  DEPENDS Run_Test_niUI_ni : Run_$(t) ;
+  DEPENDS Test_niUI_niui : $(t) ;
+  DEPENDS Run_Test_niUI_niui : Run_$(t) ;
 }
 
 tkIncludeDep TOP niLang ;

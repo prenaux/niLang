@@ -1530,6 +1530,10 @@ class cOSWindowWindows : public ni::ImplRC<ni::iOSWindow,
         ScreenToClient(mHandle,(LPPOINT)&newRect.z);
       }
     }
+    // We shouldn't move a window thats maximized or minimized
+    if (GetIsMinimized() || GetIsMaximized()) {
+      return;
+    }
     SetWindowPos(mHandle,NULL,
                  newRect.GetLeft(),newRect.GetTop(),
                  newRect.GetWidth(),newRect.GetHeight(),

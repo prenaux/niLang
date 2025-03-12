@@ -583,6 +583,23 @@ static int base_StringToEnum(HSQUIRRELVM v)
   return 1;
 }
 
+static int base_FindEnumDef(HSQUIRRELVM v)
+{
+  const SQChar* enumName = NULL;
+  if (!SQ_SUCCEEDED(sq_getstring(v,2,&enumName)))
+    return sq_throwerror(v,_A("base_GetEnumDef: Can't get enum name."));
+
+  const sEnumDef* enumDef = ni::GetLang()->GetEnumDef(enumName);
+  if (!enumDef) {
+    sq_pushnull(v);
+    return 1;
+  }
+  else {
+    sqa_pushEnumDef(v, enumDef);
+    return 1;
+  }
+}
+
 static int base_CreateCollectionVector(HSQUIRRELVM v)
 {
   SQInt valueType;
@@ -2590,6 +2607,7 @@ SQRegFunction SQSharedState::_base_funcs[] = {
   {_A("SleepSecsSpin"), base_sleepSecsSpin, 2, _A("tn"), _HC(typestr_void)},
   {_A("EnumToString"), base_EnumToString, -2, _A(".n"), _HC(typestr_string)},
   {_A("StringToEnum"), base_StringToEnum, -2, _A(".s"), _HC(typestr_int)},
+  {_A("FindEnumDef"), base_FindEnumDef, 2, _A(".s"), _HC(typestr_enum)},
   {_A("format"),string_format,-2,_A(".s"), _HC(typestr_string)},
   {_A("Format"),string_format,-2,_A(".s"), _HC(typestr_string)},
   {_A("MessageID"), base_MessageID, 3, _A("tsn"), _HC(typestr_int)},

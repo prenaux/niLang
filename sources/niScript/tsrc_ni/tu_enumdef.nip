@@ -1,0 +1,14 @@
+::Import("unittest.ni")
+::Import("lang.ni")
+
+::FIXTURE(["enumdef"])
+
+::TEST("enumdef" "FindEnumDef" #{
+  local enumDef = ::FindEnumDef("eFileOpenMode");
+  local enumTable = enumDef.GetTable();
+  foreach (k,v in enumTable) {
+    ::vmprintln(k+" = "+v)
+  }
+  ::CHECK_EQUAL(2,enumTable["Write"])
+  ::CHECK_EQUAL(4,enumTable.len())
+});

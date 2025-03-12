@@ -114,7 +114,7 @@ SQTable::~SQTable()
     Invalidate();
     if (mpDispatch) {
 #ifdef _DEBUG
-      niDebugFmt(("V/Table %p with dispatch %p deleted ...",(void*)this,(void*)mpDispatch));
+      niDebugFmt(("Table %p with dispatch %p deleted ...",(void*)this,(void*)mpDispatch));
 #endif
       mpDispatch->DeleteThis();
       // dispatch's constructor should have set mpDispatch to NULL

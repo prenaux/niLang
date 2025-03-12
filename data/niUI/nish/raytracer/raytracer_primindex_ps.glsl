@@ -14,7 +14,7 @@ struct nish_std_PixelOutput {
   vec4 color;
 };
 // TypeStaticFwd: RayFlags
-uint nish_std_RayFlags_None;
+uint nish_std_RayFlags_CullBackFacingTriangles;
 // TypeStaticFwd: RayQueryIntersectionType
 uint nish_std_RayQueryIntersectionType_CommittedTriangle;
 uint nish_std_RayQueryIntersectionType_CommittedBoundingVolume;
@@ -26,7 +26,7 @@ uint nish_std_HashJenkins(uint aStartX);
 vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m);
 void nish_std_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
-  nish_std_RayFlags_None = 0;
+  nish_std_RayFlags_CullBackFacingTriangles = 16;
 }
 void nish_std_RayQueryIntersectionType_static_initialize() {
   // TypeStatic: RayQueryIntersectionType
@@ -89,7 +89,7 @@ void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelIn
   vec3 origin = vec3(_tmp_l[3][0],_tmp_l[3][1],_tmp_l[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
-  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_None,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
 nish_std_PixelOutput TestGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;

@@ -12,8 +12,6 @@ static const tF32 kfNormalSpeed = 64.0f;
 struct FRayTracer {
 };
 
-typedef sVertexPNT1 tVertexRay;
-
 //----------------------------------------------------------------------------
 //
 // Section: RayTracerBase

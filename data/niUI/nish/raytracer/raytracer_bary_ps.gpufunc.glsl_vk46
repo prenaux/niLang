@@ -19,29 +19,30 @@ rayQueryEXT rayQuery;
 
 void main()
 {
-    TestGpuFuncs_RayUniforms _237 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
-    TestGpuFuncs_RayUniforms _238;
-    _238.rtWidth = _237.rtWidth;
-    _238.rtHeight = _237.rtHeight;
-    _238.cameraFarClipPlane = _237.cameraFarClipPlane;
-    _238.padding = _237.padding;
-    _238.cameraInvView = _237.cameraInvView;
-    _238.cameraInvViewProj = _237.cameraInvViewProj;
-    vec3 _332 = vec3(_238.cameraInvView[3].x, _238.cameraInvView[3].y, _238.cameraInvView[3].z);
-    vec4 _360 = _238.cameraInvViewProj * vec4(((gl_FragCoord.x / _238.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _238.rtHeight) * 2.0), 1.0, 1.0);
-    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, _332, 0.001000000047497451305389404296875, normalize((_360 / vec4(_360.w)).xyz - _332), _238.cameraFarClipPlane);
-    bool _272 = rayQueryProceedEXT(rayQuery);
-    uint _273 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
-    vec4 _475;
-    if (_273 == 1u)
+    TestGpuFuncs_RayUniforms _244 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
+    TestGpuFuncs_RayUniforms _245;
+    _245.rtWidth = _244.rtWidth;
+    _245.rtHeight = _244.rtHeight;
+    _245.cameraFarClipPlane = _244.cameraFarClipPlane;
+    _245.padding = _244.padding;
+    _245.cameraInvView = _244.cameraInvView;
+    _245.cameraInvViewProj = _244.cameraInvViewProj;
+    vec3 _344 = vec3(_245.cameraInvView[3].x, _245.cameraInvView[3].y, _245.cameraInvView[3].z);
+    vec4 _372 = _245.cameraInvViewProj * vec4(((gl_FragCoord.x / _245.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _245.rtHeight) * 2.0), 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 16u, 255u, _344, 0.001000000047497451305389404296875, normalize((_372 / vec4(_372.w)).xyz - _344), _245.cameraFarClipPlane);
+    bool _280 = rayQueryProceedEXT(rayQuery);
+    uint _281 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    vec4 _487;
+    if (_281 == 1u)
     {
-        vec2 _279 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
-        _475 = vec4((1.0 - _279.x) - _279.y, _279, 1.0);
+        bool _287 = rayQueryGetIntersectionFrontFaceEXT(rayQuery, bool(0));
+        vec2 _289 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
+        _487 = vec4(vec3((1.0 - _289.x) - _289.y, _289) * float(_287), 1.0);
     }
     else
     {
-        _475 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_273 == 2u));
+        _487 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_281 == 2u));
     }
-    OUT_0_rval_color = _475;
+    OUT_0_rval_color = _487;
 }
 

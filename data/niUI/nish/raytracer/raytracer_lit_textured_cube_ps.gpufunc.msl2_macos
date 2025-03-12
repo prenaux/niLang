@@ -124,6 +124,7 @@ struct TestGpuFuncs_VertexRay
 {
     float3 pos;
     float3 normal;
+    uint color;
     float2 tex0;
 };
 
@@ -131,7 +132,8 @@ struct TestGpuFuncs_VertexRay_1
 {
     packed_float3 pos;
     packed_float3 normal;
-    float2 tex0;
+    uint color;
+    packed_float2 tex0;
 };
 
 struct SBO_GetVertexRay
@@ -227,15 +229,18 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
             TestGpuFuncs_VertexRay _1352;
             _1352.pos = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1420]].pos);
             _1352.normal = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1420]].normal);
-            _1352.tex0 = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1420]].tex0;
+            _1352.color = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1420]].color;
+            _1352.tex0 = float2(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1420]].tex0);
             TestGpuFuncs_VertexRay _1360;
             _1360.pos = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1427]].pos);
             _1360.normal = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1427]].normal);
-            _1360.tex0 = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1427]].tex0;
+            _1360.color = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1427]].color;
+            _1360.tex0 = float2(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1427]].tex0);
             TestGpuFuncs_VertexRay _1368;
             _1368.pos = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1434]].pos);
             _1368.normal = float3(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1434]].normal);
-            _1368.tex0 = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1434]].tex0;
+            _1368.color = nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1434]].color;
+            _1368.tex0 = float2(nil_builtin_GetVertexRay[_1346]->v[nil_builtin_GetIndex[_1417]->v[_1434]].tex0);
             float _1445 = (1.0 - _1285.x) - _1285.y;
             _2208 = _1286 * float4(((_1352.pos * _1445) + (_1360.pos * _1285.x)) + (_1368.pos * _1285.y), 1.0);
             _2207 = fast::normalize(_1286 * float4(fast::normalize(((_1352.normal * _1445) + (_1360.normal * _1285.x)) + (_1368.normal * _1285.y)), 0.0));

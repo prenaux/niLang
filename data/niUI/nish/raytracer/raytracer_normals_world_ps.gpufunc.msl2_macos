@@ -110,6 +110,7 @@ struct TestGpuFuncs_VertexRay
 {
     float3 pos;
     float3 normal;
+    uint color;
     float2 tex0;
 };
 
@@ -117,7 +118,8 @@ struct TestGpuFuncs_VertexRay_1
 {
     packed_float3 pos;
     packed_float3 normal;
-    float2 tex0;
+    uint color;
+    packed_float2 tex0;
 };
 
 struct SBO_GetVertexRay
@@ -155,65 +157,68 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     const device auto& nil_builtin_GetRayInstanceData = *(const device spvUnsafeArray<SBO_TestGpuFuncs_RayInstanceData, 1>*)spvBufferAliasSet9Binding0;
     const device auto& nil_builtin_GetVertexRay = *(const device spvUnsafeArray<SBO_GetVertexRay, 1>*)spvBufferAliasSet9Binding0;
     main0_out out = {};
-    TestGpuFuncs_RayUniforms _430;
-    _430.rtWidth = IN_1_aUniforms.v.rtWidth;
-    _430.rtHeight = IN_1_aUniforms.v.rtHeight;
-    _430.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
-    _430.padding = IN_1_aUniforms.v.padding;
-    _430.cameraInvView = IN_1_aUniforms.v.cameraInvView;
-    _430.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
-    float3 _603 = float3(_430.cameraInvView[3].x, _430.cameraInvView[3].y, _430.cameraInvView[3].z);
-    float4 _631 = _430.cameraInvViewProj * float4(((gl_FragCoord.x / _430.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _430.rtHeight) * 2.0), 1.0, 1.0);
+    TestGpuFuncs_RayUniforms _431;
+    _431.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _431.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _431.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _431.padding = IN_1_aUniforms.v.padding;
+    _431.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _431.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _604 = float3(_431.cameraInvView[3].x, _431.cameraInvView[3].y, _431.cameraInvView[3].z);
+    float4 _632 = _431.cameraInvViewProj * float4(((gl_FragCoord.x / _431.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _431.rtHeight) * 2.0), 1.0, 1.0);
     raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
-    rayQuery.reset(ray(_603, fast::normalize((_631 / float4(_631.w)).xyz - _603), 0.001000000047497451305389404296875, _430.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
-    bool _483 = rayQuery.next();
-    uint _484 = uint(rayQuery.get_committed_intersection_type());
-    int _485 = rayQuery.get_committed_user_instance_id();
-    uint _488 = uint(_485);
-    TestGpuFuncs_RayInstanceData _491;
-    _491.ibIndex = nil_builtin_GetRayInstanceData[_488]->v.ibIndex;
-    _491.vbIndex = nil_builtin_GetRayInstanceData[_488]->v.vbIndex;
-    _491.texIndex = nil_builtin_GetRayInstanceData[_488]->v.texIndex;
-    float4 _833;
-    if (_484 == 1u)
+    rayQuery.reset(ray(_604, fast::normalize((_632 / float4(_632.w)).xyz - _604), 0.001000000047497451305389404296875, _431.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(16u));
+    bool _484 = rayQuery.next();
+    uint _485 = uint(rayQuery.get_committed_intersection_type());
+    int _486 = rayQuery.get_committed_user_instance_id();
+    uint _489 = uint(_486);
+    TestGpuFuncs_RayInstanceData _492;
+    _492.ibIndex = nil_builtin_GetRayInstanceData[_489]->v.ibIndex;
+    _492.vbIndex = nil_builtin_GetRayInstanceData[_489]->v.vbIndex;
+    _492.texIndex = nil_builtin_GetRayInstanceData[_489]->v.texIndex;
+    float4 _834;
+    if (_485 == 1u)
     {
-        float4 _834;
-        if (_491.vbIndex == 0u)
+        float4 _835;
+        if (_492.vbIndex == 0u)
         {
-            _834 = float4(1.0, 0.0, 1.0, 1.0);
+            _835 = float4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
-            int _503 = rayQuery.get_committed_primitive_id();
-            uint _642 = 3u * uint(_503);
-            uint _644 = _491.ibIndex;
-            uint _647 = _642;
-            uint _654 = _642 + 1u;
-            uint _661 = _642 + 2u;
-            uint _511 = _491.vbIndex;
-            TestGpuFuncs_VertexRay _517;
-            _517.pos = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_647]].pos);
-            _517.normal = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_647]].normal);
-            _517.tex0 = nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_647]].tex0;
-            TestGpuFuncs_VertexRay _526;
-            _526.pos = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_654]].pos);
-            _526.normal = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_654]].normal);
-            _526.tex0 = nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_654]].tex0;
-            TestGpuFuncs_VertexRay _535;
-            _535.pos = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_661]].pos);
-            _535.normal = float3(nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_661]].normal);
-            _535.tex0 = nil_builtin_GetVertexRay[_511]->v[nil_builtin_GetIndex[_644]->v[_661]].tex0;
-            float2 _536 = rayQuery.get_committed_triangle_barycentric_coord();
-            float4x3 _547 = rayQuery.get_committed_object_to_world_transform();
-            _834 = float4(((_547 * float4(fast::normalize(((_517.normal * ((1.0 - _536.x) - _536.y)) + (_526.normal * _536.x)) + (_535.normal * _536.y)), 0.0)) * 0.5) + float3(0.5), 1.0);
+            int _504 = rayQuery.get_committed_primitive_id();
+            uint _643 = 3u * uint(_504);
+            uint _645 = _492.ibIndex;
+            uint _648 = _643;
+            uint _655 = _643 + 1u;
+            uint _662 = _643 + 2u;
+            uint _512 = _492.vbIndex;
+            TestGpuFuncs_VertexRay _518;
+            _518.pos = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_648]].pos);
+            _518.normal = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_648]].normal);
+            _518.color = nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_648]].color;
+            _518.tex0 = float2(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_648]].tex0);
+            TestGpuFuncs_VertexRay _527;
+            _527.pos = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_655]].pos);
+            _527.normal = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_655]].normal);
+            _527.color = nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_655]].color;
+            _527.tex0 = float2(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_655]].tex0);
+            TestGpuFuncs_VertexRay _536;
+            _536.pos = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_662]].pos);
+            _536.normal = float3(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_662]].normal);
+            _536.color = nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_662]].color;
+            _536.tex0 = float2(nil_builtin_GetVertexRay[_512]->v[nil_builtin_GetIndex[_645]->v[_662]].tex0);
+            float2 _537 = rayQuery.get_committed_triangle_barycentric_coord();
+            float4x3 _548 = rayQuery.get_committed_object_to_world_transform();
+            _835 = float4(((_548 * float4(fast::normalize(((_518.normal * ((1.0 - _537.x) - _537.y)) + (_527.normal * _537.x)) + (_536.normal * _537.y)), 0.0)) * 0.5) + float3(0.5), 1.0);
         }
-        _833 = _834;
+        _834 = _835;
     }
     else
     {
-        _833 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_484 == 2u));
+        _834 = select(float4(0.0, 0.5, 0.800000011920928955078125, 0.0), float4(1.0, 0.0, 0.0, 1.0), bool4(_485 == 2u));
     }
-    out.OUT_0_rval_color = _833;
+    out.OUT_0_rval_color = _834;
     return out;
 }
 

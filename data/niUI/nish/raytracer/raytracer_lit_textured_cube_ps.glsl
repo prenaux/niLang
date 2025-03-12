@@ -119,6 +119,7 @@ struct TestGpuFuncs_RayInstanceData {
 struct TestGpuFuncs_VertexRay {
   vec3 pos;
   vec3 normal;
+  uint color;
   vec2 tex0;
 };
 

@@ -14,7 +14,7 @@ struct nish_std_PixelOutput {
   vec4 color;
 };
 // TypeStaticFwd: RayFlags
-uint nish_std_RayFlags_None;
+uint nish_std_RayFlags_CullBackFacingTriangles;
 // TypeStaticFwd: RayQueryIntersectionType
 uint nish_std_RayQueryIntersectionType_CommittedTriangle;
 uint nish_std_RayQueryIntersectionType_CommittedBoundingVolume;
@@ -24,7 +24,7 @@ nish_std_PixelOutput nish_std_PixelOutput_new(vec4 a_color);
 vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m);
 void nish_std_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
-  nish_std_RayFlags_None = 0;
+  nish_std_RayFlags_CullBackFacingTriangles = 16;
 }
 void nish_std_RayQueryIntersectionType_static_initialize() {
   // TypeStatic: RayQueryIntersectionType
@@ -78,7 +78,7 @@ void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelIn
   vec3 origin = vec3(_tmp_y[3][0],_tmp_y[3][1],_tmp_y[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
-  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_None,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
 nish_std_PixelOutput TestGpuFuncs_raytracer_bary_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
@@ -88,13 +88,14 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_bary_ps(nish_std_PixelInput aInput, 
   vec4 color;
   bool _tmp_Z = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
   if (_tmp_Z) {
+    float isFrontFacing = float(rayQueryGetIntersectionFrontFaceEXT(rayQuery,false));
     vec2 tribary = rayQueryGetIntersectionBarycentricsEXT(rayQuery,true);
-    vec3 _tmp_51 = TestGpuFuncs_BaryToVec3(tribary);
-    color = vec4(_tmp_51.x,_tmp_51.y,_tmp_51.z,1.0);
+    vec3 _tmp_81 = (TestGpuFuncs_BaryToVec3(tribary)*isFrontFacing);
+    color = vec4(_tmp_81.x,_tmp_81.y,_tmp_81.z,1.0);
   }
   else {
-    bool _tmp_71 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_71) {
+    bool _tmp_c1 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_c1) {
       color = vec4(1.0,0.0,0.0,1.0);
     }
     else {
@@ -103,8 +104,8 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_bary_ps(nish_std_PixelInput aInput, 
       }
     }
   }
-  vec4 _tmp_k1 = color;
-  return nish_std_PixelOutput_new(_tmp_k1);
+  vec4 _tmp_p1 = color;
+  return nish_std_PixelOutput_new(_tmp_p1);
 }
 // MODULE END TestGpuFuncs
 

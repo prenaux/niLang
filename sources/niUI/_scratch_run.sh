@@ -20,7 +20,7 @@ cd "$SCRIPT_DIR"
   export A0=-DdrawFPS=1
   export A3=-Dswapinterval=0
 
-  #ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
   #ham Run_Test_niUI_niui_ListBox
-  ham Run_Test_niUI_niui_Text
+  #ham Run_Test_niUI_niui_Text
+  ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
 )

@@ -10,6 +10,9 @@ namespace ni {
 
 using namespace astl;
 
+typedef sVertexPNAT1 tVertexRay;
+typedef sVertexPA tVertexTri;
+
 template <typename T, typename IBUFFER_T>
 struct sAutoLockBuffer {
   NN<IBUFFER_T> _buffer;
@@ -80,9 +83,6 @@ inline auto AutoLockBufferDiscard(IBUFFER_T&& aBuffer, tU32 anOffset = 0, tU32 a
   using BufferType = typename remove_cvref_t<IBUFFER_T>::element_type;
   return sAutoLockBuffer<T, BufferType>(std::forward<IBUFFER_T>(aBuffer), anOffset, anSize, eLock_Discard);
 }
-
-typedef sVertexPNT1 tVertexRay;
-typedef sVertexPA tVertexTri;
 
 inline NN<iGpuBuffer> MakeTriVB(ain_nn<iGraphicsDriverGpu> aGpu, tU32 anId, tF32 afSize, ain<sVec3f> aPos) {
   niLet triVB = AsNN(aGpu->CreateGpuBuffer(
@@ -178,6 +178,8 @@ inline Ptr<iRayPrimitives> CreateRayPrimsFromDop(
   ain<nn<iRayBuildEncoder>> aBuildEncoder,
   ain<nn<iDrawOperation>> aDop)
 {
+  niCheck(tVertexRay::eFVF == aDop->GetVertexArray()->GetFVF(),nullptr);
+
   niLet fvfDesc = cFVFDescription(aDop->GetVertexArray()->GetFVF());
   NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(aDop->GetVertexArray()));
   NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(aDop->GetIndexArray()));
@@ -331,7 +333,8 @@ struct sRayGeometry {
   ni::NN<iRayPrimitives> rayPrims;
   ni::NN<iGpuBuffer>     rayInstData;
   ni::tU32               rayInstDataIndex = eInvalidHandle;
-  ni::Ptr<iMaterial>     material;
+  ni::Ptr<iMaterial>      material;
+  ni::Ptr<iDrawOperation> drawOp;
 
   void UpdateTexIndex(ain<tU32> anTexResIndex) {
     niLet lock = AutoLockBufferReadWrite<niUIGpuFuncs_RayInstanceData>(rayInstData.non_null());

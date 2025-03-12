@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "../src/API/niLang/Utils/VMBind.h"
-#include "../src/API/niLang/Utils/BetterEnum.h"
+#include "../src/API/niLang/Utils/NiBetterEnum.h"
+#include "../src/API/niLang/Utils/NiEnumXMacros.h"
 
 //----------------------------------------------------------------------------
 //
@@ -15,45 +16,25 @@ DECLARE_VMBIND_PARAM_ENUM_TRAITS(ni::eFileOpenMode, eType_Enum, "eFileOpenMode")
 
 //----------------------------------------------------------------------------
 //
-// Section: Macro enums :|
+// Section: Macro enums
 //
 //----------------------------------------------------------------------------
-namespace _macro_enums {
+namespace _xmacro_enums {
 
-#define ENUM_ENTRY(ENUMNAME, NAME, VALUE, ATTR) ENUMNAME##_##NAME ATTR = VALUE,
-#define ENUM_DECLARE_ENUM(MACRO_DEFINITION, ENUMNAME) \
-  enum ENUMNAME {                                     \
-    MACRO_DEFINITION(ENUMNAME,ENUM_ENTRY)             \
-  };
-
-#define ENUM_VALUE_DEF(ENUMNAME, name, value, attr) { #name, ENUMNAME##_##name },
-#define ENUM_DECLARE_VALUE_DEFS(MACRO_DEFINITION, ENUMNAME)     \
-  static const ni::sEnumValueDef Enum_##ENUMNAME##_Values[] = { \
-    MACRO_DEFINITION(ENUMNAME, ENUM_VALUE_DEF)                  \
-  };
-
-#define ENUM_DECLARE_ENUMDEF(MACRO_DEFINITION, ENUMNAME)            \
-  niExportFunc(const ni::sEnumDef*) GetEnumDef_##ENUMNAME() {       \
-    ENUM_DECLARE_VALUE_DEFS(MACRO_DEFINITION, ENUMNAME);            \
-    static const ni::sEnumDef Enum_##ENUMNAME = {                   \
-      #ENUMNAME,                                                    \
-      niCountOf(Enum_##ENUMNAME##_Values), Enum_##ENUMNAME##_Values \
-    };                                                              \
-    return &Enum_##ENUMNAME;                                        \
-  }
-
-#define DECLARE_eFileOpenMode(N,X)              \
-  /*! Read open mode. */                        \
+#define FOREACH_eXFileOpenMode(N,X)             \
   X(N, Read, niBit(0), )                        \
-  /*! Write open mode. */                       \
   X(N, Write, niBit(1), )                       \
-  /*! Append open mode */                       \
-  X(N, Append, niBit(2)|eFileOpenMode_Write, )  \
-  /*! Optimized form random access. */          \
+  X(N, Append, niBit(2)|eXFileOpenMode_Write, ) \
   X(N, Random, niBit(3), )
 
-ENUM_DECLARE_ENUM(DECLARE_eFileOpenMode, eFileOpenMode);
-ENUM_DECLARE_ENUMDEF(DECLARE_eFileOpenMode, eFileOpenMode);
+NI_XENUM(eXFileOpenMode);
+
+NI_DECL_XENUM_DEF(eXFileOpenMode);
+NI_IMPL_XENUM_DEF(eXFileOpenMode);
+
+static void _DoRegister() {
+  NI_REGISTER_XENUM_DEF(eXFileOpenMode);
+}
 
 }
 
@@ -64,45 +45,7 @@ ENUM_DECLARE_ENUMDEF(DECLARE_eFileOpenMode, eFileOpenMode);
 //----------------------------------------------------------------------------
 namespace _better_enums {
 
-template <typename TENUM>
-struct enum_traits {
-  constexpr static size_t size = TENUM::_size();
-
-  constexpr static TENUM get_value(size_t index) {
-    return TENUM::_values()[index];
-  }
-
-  constexpr static const char* get_identifier(size_t index) {
-    return TENUM::_names()[index];
-  }
-
-  constexpr static TENUM get_last_value() {
-    return get_value(size - 1);
-  }
-};
-
-// Utility to build array per enum value
-template<typename E, size_t... I>
-constexpr auto MakeEnumValueDefs(std::index_sequence<I...>) {
-    static const ni::sEnumValueDef values[] = {
-        { E::_names()[I], E::_values()[I] }...
-    };
-    return values;
-}
-
-template<typename E>
-constexpr const ni::sEnumDef* MakeEnumDef() {
-    constexpr auto size = E::_size();
-    static const auto values = MakeEnumValueDefs<E>(std::make_index_sequence<size>());
-    static const ni::sEnumDef def = {
-        E::_name(),
-        size,
-        values
-    };
-    return &def;
-}
-
-BETTER_ENUM(eFileOpenMode, ni::tU32,
+NI_BETTER_ENUM(eBetterFileOpenMode, ni::tU32,
   //! Read open mode.
   Read = niBit(0),
   //! Write open mode.
@@ -111,10 +54,13 @@ BETTER_ENUM(eFileOpenMode, ni::tU32,
   Append = niBit(2)|Write,
   //! Optimized form random access.
   Random = niBit(3)
-)
+);
 
-static const ni::sEnumDef* GetEnumDef_eFileOpenMode() {
-  return MakeEnumDef<eFileOpenMode>();
+NI_DECL_BETTER_ENUM_DEF(eBetterFileOpenMode);
+NI_IMPL_BETTER_ENUM_DEF(eBetterFileOpenMode);
+
+static void _DoRegister() {
+  NI_REGISTER_BETTER_ENUM_DEF(eBetterFileOpenMode);
 }
 
 }
@@ -423,29 +369,32 @@ TEST_FIXTURE(FVMBind,InterfaceDef) {
 
 TEST_FIXTURE(FVMBind,EnumDef) {
   niLet medef = ManualGetEnumDef_eFileOpenMode();
-  niLet tedef = _better_enums::GetEnumDef_eFileOpenMode();
-  niLet oedef = _macro_enums::GetEnumDef_eFileOpenMode();
+  niLet tedef = _better_enums::GetEnumDef_eBetterFileOpenMode();
+  niLet oedef = _xmacro_enums::GetEnumDef_eXFileOpenMode();
   CHECK_EQUAL(4, medef->mnNumValues);
   CHECK_EQUAL(4, tedef->mnNumValues);
   CHECK_EQUAL(4, oedef->mnNumValues);
   CHECK_EQUAL(medef->mnNumValues, tedef->mnNumValues);
   CHECK_EQUAL(medef->mnNumValues, oedef->mnNumValues);
 
-  CHECK_EQUAL(+eFileOpenMode_Read,+_better_enums::eFileOpenMode::Read);
+  CHECK_EQUAL(+eFileOpenMode_Read,+_better_enums::eBetterFileOpenMode::Read);
   CHECK_EQUAL(+eFileOpenMode_Read|eFileOpenMode_Write,
-              +_better_enums::eFileOpenMode::Read|
-              _better_enums::eFileOpenMode::Write);
-  CHECK_EQUAL(+eFileOpenMode_Read,+_macro_enums::eFileOpenMode_Read);
+              +_better_enums::eBetterFileOpenMode::Read|
+              _better_enums::eBetterFileOpenMode::Write);
+  CHECK_EQUAL(+eFileOpenMode_Read,+_xmacro_enums::eXFileOpenMode_Read);
   CHECK_EQUAL(+eFileOpenMode_Read|eFileOpenMode_Write,
-              +_macro_enums::eFileOpenMode_Read|
-              _macro_enums::eFileOpenMode_Write);
+              +_xmacro_enums::eXFileOpenMode_Read|
+              _xmacro_enums::eXFileOpenMode_Write);
 
   ni::eFileOpenMode mmode = (ni::eFileOpenMode)(
     ni::eFileOpenMode_Read|ni::eFileOpenMode_Write);
-  _better_enums::eFileOpenMode tmode = _better_enums::eFileOpenMode::_from_integral_unchecked(
-    _better_enums::eFileOpenMode::Read|_better_enums::eFileOpenMode::Write);
-  _macro_enums::eFileOpenMode omode = (_macro_enums::eFileOpenMode)(
-    _macro_enums::eFileOpenMode_Read|_macro_enums::eFileOpenMode_Write);
+  _better_enums::eBetterFileOpenMode tmode =
+    _better_enums::eBetterFileOpenMode::_from_integral_unchecked(
+      _better_enums::eBetterFileOpenMode::Read|
+      _better_enums::eBetterFileOpenMode::Write);
+  _xmacro_enums::eXFileOpenMode omode = (_xmacro_enums::eXFileOpenMode)(
+    _xmacro_enums::eXFileOpenMode_Read|
+    _xmacro_enums::eXFileOpenMode_Write);
   CHECK_EQUAL((tU32)mmode, (tU32)tmode);
   CHECK_EQUAL((tU32)mmode, (tU32)omode);
 

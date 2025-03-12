@@ -21,11 +21,11 @@ DECLARE_VMBIND_PARAM_ENUM_TRAITS(ni::eFileOpenMode, eType_Enum, "eFileOpenMode")
 //----------------------------------------------------------------------------
 namespace _xmacro_enums {
 
-#define FOREACH_eXFileOpenMode(N,X)             \
-  X(N, Read, niBit(0), )                        \
-  X(N, Write, niBit(1), )                       \
-  X(N, Append, niBit(2)|eXFileOpenMode_Write, ) \
-  X(N, Random, niBit(3), )
+#define FOREACH_eXFileOpenMode(N,DO)             \
+  DO(N, Read, niBit(0), )                        \
+  DO(N, Write, niBit(1), )                       \
+  DO(N, Append, niBit(2)|eXFileOpenMode_Write, ) \
+  DO(N, Random, niBit(3), )
 
 NI_XENUM(eXFileOpenMode);
 

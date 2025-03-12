@@ -68,6 +68,8 @@ struct TestGpuFuncs_RayInstanceData {
   uint ibIndex;
   uint vbIndex;
   uint texIndex;
+  uint firstIndex;
+  uint baseVertexIndex;
 };
 
 // Type: VertexRay
@@ -82,15 +84,15 @@ struct TestGpuFuncs_VertexRay {
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_TestGpuFuncs_RayInstanceData { TestGpuFuncs_RayInstanceData v; } nil_builtin_GetRayInstanceData[];
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetIndex { uint v[]; } nil_builtin_GetIndex[];
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetVertexRay { TestGpuFuncs_VertexRay v[]; } nil_builtin_GetVertexRay[];
-uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex);
+uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex);
 vec3 TestGpuFuncs_BaryToVec3(vec2 aBary);
 vec2 TestGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBary);
 void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 nish_std_PixelOutput TestGpuFuncs_raytracer_tex0_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 
 // Function: TestGpuFuncs
-uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex) {
-  uint ibase = (3 * aPrimIndex);
+uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex) {
+  uint ibase = (aFirstIndex + (3 * aPrimIndex));
   return uvec3(nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 0))],nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 1))],nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 2))]);
 }
 vec3 TestGpuFuncs_BaryToVec3(vec2 aBary) {
@@ -101,8 +103,8 @@ vec2 TestGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBa
 }
 void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_41 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_41[3][0],_tmp_41[3][1],_tmp_41[3][2]);
+  mat4 _tmp_61 = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_61[3][0],_tmp_61[3][1],_tmp_61[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
   rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
@@ -115,34 +117,34 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_tex0_ps(nish_std_PixelInput aInput, 
   uint userInstIndex = uint(rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery,true));
   TestGpuFuncs_RayInstanceData instData = nil_builtin_GetRayInstanceData[nonuniformEXT(userInstIndex)].v;
   vec4 color;
-  bool _tmp_x1 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_x1) {
-    bool _tmp_A1 = (instData.vbIndex == 0);
-    if (_tmp_A1) {
+  bool _tmp_z1 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_z1) {
+    bool _tmp_C1 = (instData.vbIndex == 0);
+    if (_tmp_C1) {
       color = vec4(1.0,0.0,1.0,1.0);
     }
     else {
       {
         uint primIndex = uint(rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery,true));
-        uvec3 inds = TestGpuFuncs_GetTriangleIndices(instData.ibIndex,primIndex);
-        TestGpuFuncs_VertexRay v0 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT(inds.x)];
-        TestGpuFuncs_VertexRay v1 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT(inds.y)];
-        TestGpuFuncs_VertexRay v2 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT(inds.z)];
+        uvec3 inds = TestGpuFuncs_GetTriangleIndices(instData.ibIndex,primIndex,instData.firstIndex);
+        TestGpuFuncs_VertexRay v0 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.x))];
+        TestGpuFuncs_VertexRay v1 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.y))];
+        TestGpuFuncs_VertexRay v2 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.z))];
         vec3 bary = TestGpuFuncs_BaryToVec3(rayQueryGetIntersectionBarycentricsEXT(rayQuery,true));
         vec2 uvi = TestGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(v0.tex0,v1.tex0,v2.tex0,bary);
         vec2 uv;
-        bool _tmp_f2 = (bary.x > 0.85);
-        if (_tmp_f2) {
+        bool _tmp_s2 = (bary.x > 0.85);
+        if (_tmp_s2) {
           uv = v0.tex0;
         }
         else {
-          bool _tmp_k2 = (bary.y > 0.85);
-          if (_tmp_k2) {
+          bool _tmp_x2 = (bary.y > 0.85);
+          if (_tmp_x2) {
             uv = v1.tex0;
           }
           else {
-            bool _tmp_p2 = (bary.z > 0.85);
-            if (_tmp_p2) {
+            bool _tmp_C2 = (bary.z > 0.85);
+            if (_tmp_C2) {
               uv = v2.tex0;
             }
             else {
@@ -158,8 +160,8 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_tex0_ps(nish_std_PixelInput aInput, 
     }
   }
   else {
-    bool _tmp_B2 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_B2) {
+    bool _tmp_O2 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_O2) {
       color = vec4(1.0,0.0,0.0,1.0);
     }
     else {
@@ -168,8 +170,8 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_tex0_ps(nish_std_PixelInput aInput, 
       }
     }
   }
-  vec4 _tmp_O2 = color;
-  return nish_std_PixelOutput_new(_tmp_O2);
+  vec4 _tmp_13 = color;
+  return nish_std_PixelOutput_new(_tmp_13);
 }
 // MODULE END TestGpuFuncs
 

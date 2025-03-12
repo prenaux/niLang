@@ -333,8 +333,9 @@ struct sRayGeometry {
   ni::NN<iRayPrimitives> rayPrims;
   ni::NN<iGpuBuffer>     rayInstData;
   ni::tU32               rayInstDataIndex = eInvalidHandle;
-  ni::Ptr<iMaterial>      material;
-  ni::Ptr<iDrawOperation> drawOp;
+  ni::Ptr<iMaterial>     material;
+  ni::Ptr<iTransform>    transform;
+  ni::tU32               userIndex = eInvalidHandle;
 
   void UpdateTexIndex(ain<tU32> anTexResIndex) {
     niLet lock = AutoLockBufferReadWrite<niUIGpuFuncs_RayInstanceData>(rayInstData.non_null());
@@ -373,10 +374,22 @@ inline optional<sRayGeometry> MakeRayGeometry(
   NN<iGpuBuffer> vaBuffer = AsNN(QPtr<iGpuBuffer>(
     drawOp->GetVertexArray()));
 
+  niLet rayPrims = niCheckNN_(
+    rayPrims,
+    CreateRayPrimsFromDop(
+      resName,
+      driverRay,
+      rayBuildEncoder,
+      drawOp),
+    niFmt("Cant create rayprims for '%s'.",resName),
+    nullopt);
+
   niUIGpuFuncs_RayInstanceData instData;
   instData.vbIndex = GetBufferResourceIndex(driverGpu,vaBuffer);
   instData.ibIndex = GetBufferResourceIndex(driverGpu,iaBuffer);
   instData.texIndex = anTexResIndex;
+  instData.firstIndex = drawOp->GetFirstIndex();
+  instData.baseVertexIndex = drawOp->GetBaseVertexIndex();
   niLet rayInstData = niCheckNN_(
     rayInstData,
     CreateRayInstanceData(
@@ -388,28 +401,20 @@ inline optional<sRayGeometry> MakeRayGeometry(
   niLet rayInstDataIndex = GetBufferResourceIndex(
     driverGpu,rayInstData.non_null());
 
-  niLet rayPrims = niCheckNN_(
-    rayPrims,
-    CreateRayPrimsFromDop(
-      resName,
-      driverRay,
-      rayBuildEncoder,
-      drawOp),
-    niFmt("Cant create rayprims for '%s'.",resName),
-    nullopt);
-
   niDebugFmt((
-    "... MakeRayGeometry: %s, mnRayInstDataIndex: %d, vbIndex: %d, ibIndex: %d, texIndex: %d",
+    "... MakeRayGeometry: %s, mnRayInstDataIndex: %d, vbIndex: %d, ibIndex: %d, texIndex: %d, firstIndex: %d, baseVertexIndex: %d",
     resName,
     rayInstDataIndex,
     instData.vbIndex,
     instData.ibIndex,
-    instData.texIndex));
+    instData.texIndex,
+    instData.firstIndex,
+    instData.baseVertexIndex));
 
   return sRayGeometry {
     .rayPrims = rayPrims,
     .rayInstData = rayInstData,
-    .rayInstDataIndex =rayInstDataIndex
+    .rayInstDataIndex = rayInstDataIndex
   };
 }
 

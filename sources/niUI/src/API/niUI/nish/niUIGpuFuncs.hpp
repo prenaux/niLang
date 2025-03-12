@@ -28,12 +28,14 @@ struct niUIGpuFuncs_RayInstanceData {
 
   // Constructor
   niUIGpuFuncs_RayInstanceData();
-  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex);
+  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex);
 
   // Variables
   ni::tU32 ibIndex;
   ni::tU32 vbIndex;
   ni::tU32 texIndex;
+  ni::tU32 firstIndex;
+  ni::tU32 baseVertexIndex;
 };
 
 // TypeMethFwd: RayUniforms
@@ -74,11 +76,15 @@ inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData() {
   this->ibIndex = 0;
   this->vbIndex = 0;
   this->texIndex = 0;
+  this->firstIndex = 0;
+  this->baseVertexIndex = 0;
 }
-inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex) {
+inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex) {
   this->ibIndex = a_ibIndex;
   this->vbIndex = a_vbIndex;
   this->texIndex = a_texIndex;
+  this->firstIndex = a_firstIndex;
+  this->baseVertexIndex = a_baseVertexIndex;
 }
 
 // TypeMeth: RayUniforms

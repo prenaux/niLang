@@ -19,7 +19,7 @@
 #include "GDRV_Gpu.h"
 #include "GDRV_Utils.h"
 #include "Graphics.h"
-#include "nish/niUIGpuFuncs.hpp"
+#include <niUI/nish/niUIGpuFuncs.hpp>
 
 #ifdef GDRV_VULKAN
 // For the Vulkan driver, needs to be implemented in an objective-c file

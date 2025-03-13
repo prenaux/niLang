@@ -28,14 +28,15 @@ struct niUIGpuFuncs_RayInstanceData {
 
   // Constructor
   niUIGpuFuncs_RayInstanceData();
-  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex);
+  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_materialColor);
 
   // Variables
   ni::tU32 ibIndex;
   ni::tU32 vbIndex;
-  ni::tU32 texIndex;
   ni::tU32 firstIndex;
   ni::tU32 baseVertexIndex;
+  ni::tU32 texIndex;
+  ni::tU32 materialColor;
 };
 
 // TypeMethFwd: RayUniforms
@@ -75,16 +76,18 @@ inline niUIGpuFuncs_FixedUniforms::niUIGpuFuncs_FixedUniforms(ni::ain<ni::sMatri
 inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData() {
   this->ibIndex = 0;
   this->vbIndex = 0;
-  this->texIndex = 0;
   this->firstIndex = 0;
   this->baseVertexIndex = 0;
+  this->texIndex = 0;
+  this->materialColor = 4294967295;
 }
-inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex) {
+inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_materialColor) {
   this->ibIndex = a_ibIndex;
   this->vbIndex = a_vbIndex;
-  this->texIndex = a_texIndex;
   this->firstIndex = a_firstIndex;
   this->baseVertexIndex = a_baseVertexIndex;
+  this->texIndex = a_texIndex;
+  this->materialColor = a_materialColor;
 }
 
 // TypeMeth: RayUniforms

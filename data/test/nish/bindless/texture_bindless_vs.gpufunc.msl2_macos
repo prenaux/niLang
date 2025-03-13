@@ -24,7 +24,7 @@ struct spvDescriptorArray
     const device T* ptr;
 };
 
-struct TestGpuFuncs_InstanceData
+struct TestGpuFuncs_TestInstanceData
 {
     float4x4 mtxWorld;
     uint texIndex0;
@@ -33,7 +33,7 @@ struct TestGpuFuncs_InstanceData
     uint texIndex3;
 };
 
-struct TestGpuFuncs_InstanceData_1
+struct TestGpuFuncs_TestInstanceData_1
 {
     float4x4 mtxWorld;
     uint texIndex0;
@@ -42,9 +42,9 @@ struct TestGpuFuncs_InstanceData_1
     uint texIndex3;
 };
 
-struct SBO_TestGpuFuncs_InstanceData
+struct SBO_TestGpuFuncs_TestInstanceData
 {
-    TestGpuFuncs_InstanceData_1 v;
+    TestGpuFuncs_TestInstanceData_1 v;
 };
 
 struct main0_out
@@ -61,18 +61,18 @@ struct main0_in
     float2 IN_5_aInput_tex0 [[attribute(5)]];
 };
 
-vertex main0_out main0(main0_in in [[stage_in]], const device spvDescriptor<const device SBO_TestGpuFuncs_InstanceData*>* nil_builtin_GetInstanceData_ [[buffer(0)]], uint gl_InstanceIndex [[instance_id]])
+vertex main0_out main0(main0_in in [[stage_in]], const device spvDescriptor<const device SBO_TestGpuFuncs_TestInstanceData*>* nil_builtin_GetTestInstanceData_ [[buffer(0)]], uint gl_InstanceIndex [[instance_id]])
 {
-    spvDescriptorArray<const device SBO_TestGpuFuncs_InstanceData*> nil_builtin_GetInstanceData {nil_builtin_GetInstanceData_};
+    spvDescriptorArray<const device SBO_TestGpuFuncs_TestInstanceData*> nil_builtin_GetTestInstanceData {nil_builtin_GetTestInstanceData_};
 
     main0_out out = {};
     uint _168 = uint(int(gl_InstanceIndex));
-    TestGpuFuncs_InstanceData _171;
-    _171.mtxWorld = nil_builtin_GetInstanceData[_168]->v.mtxWorld;
-    _171.texIndex0 = nil_builtin_GetInstanceData[_168]->v.texIndex0;
-    _171.texIndex1 = nil_builtin_GetInstanceData[_168]->v.texIndex1;
-    _171.texIndex2 = nil_builtin_GetInstanceData[_168]->v.texIndex2;
-    _171.texIndex3 = nil_builtin_GetInstanceData[_168]->v.texIndex3;
+    TestGpuFuncs_TestInstanceData _171;
+    _171.mtxWorld = nil_builtin_GetTestInstanceData[_168]->v.mtxWorld;
+    _171.texIndex0 = nil_builtin_GetTestInstanceData[_168]->v.texIndex0;
+    _171.texIndex1 = nil_builtin_GetTestInstanceData[_168]->v.texIndex1;
+    _171.texIndex2 = nil_builtin_GetTestInstanceData[_168]->v.texIndex2;
+    _171.texIndex3 = nil_builtin_GetTestInstanceData[_168]->v.texIndex3;
     out.gl_Position = _171.mtxWorld * float4(in.IN_0_aInput_position, 1.0);
     out.OUT_1_rval_color = in.IN_4_aInput_color;
     out.OUT_2_rval_tex0 = in.IN_5_aInput_tex0;

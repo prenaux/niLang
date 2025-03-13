@@ -1,7 +1,7 @@
 #version 460
 #extension GL_EXT_nonuniform_qualifier : require
 
-struct TestGpuFuncs_InstanceData
+struct TestGpuFuncs_TestInstanceData
 {
     mat4 mtxWorld;
     uint texIndex0;
@@ -10,10 +10,10 @@ struct TestGpuFuncs_InstanceData
     uint texIndex3;
 };
 
-layout(set = 9, binding = 0, std430) readonly buffer SBO_TestGpuFuncs_InstanceData
+layout(set = 9, binding = 0, std430) readonly buffer SBO_TestGpuFuncs_TestInstanceData
 {
-    TestGpuFuncs_InstanceData v;
-} nil_builtin_GetInstanceData[];
+    TestGpuFuncs_TestInstanceData v;
+} nil_builtin_GetTestInstanceData[];
 
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 4) in vec4 IN_4_aInput_color;
@@ -24,12 +24,12 @@ layout(location = 2) out vec2 OUT_2_rval_tex0;
 void main()
 {
     uint _168 = uint(gl_InstanceIndex);
-    TestGpuFuncs_InstanceData _171;
-    _171.mtxWorld = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.mtxWorld;
-    _171.texIndex0 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex0;
-    _171.texIndex1 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex1;
-    _171.texIndex2 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex2;
-    _171.texIndex3 = nil_builtin_GetInstanceData[nonuniformEXT(_168)].v.texIndex3;
+    TestGpuFuncs_TestInstanceData _171;
+    _171.mtxWorld = nil_builtin_GetTestInstanceData[nonuniformEXT(_168)].v.mtxWorld;
+    _171.texIndex0 = nil_builtin_GetTestInstanceData[nonuniformEXT(_168)].v.texIndex0;
+    _171.texIndex1 = nil_builtin_GetTestInstanceData[nonuniformEXT(_168)].v.texIndex1;
+    _171.texIndex2 = nil_builtin_GetTestInstanceData[nonuniformEXT(_168)].v.texIndex2;
+    _171.texIndex3 = nil_builtin_GetTestInstanceData[nonuniformEXT(_168)].v.texIndex3;
     gl_Position = _171.mtxWorld * vec4(IN_0_aInput_position, 1.0);
     OUT_1_rval_color = IN_4_aInput_color;
     OUT_2_rval_tex0 = IN_5_aInput_tex0;

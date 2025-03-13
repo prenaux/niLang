@@ -39,8 +39,8 @@ nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec4 a_color, v
 
 // MODULE BEGIN TestGpuFuncs
 
-// Type: InstanceData
-struct TestGpuFuncs_InstanceData {
+// Type: TestInstanceData
+struct TestGpuFuncs_TestInstanceData {
   mat4 mtxWorld;
   uint texIndex0;
   uint texIndex1;
@@ -49,12 +49,12 @@ struct TestGpuFuncs_InstanceData {
 };
 
 // FunctionFwd: TestGpuFuncs
-layout(scalar, set = 9, binding = 0) readonly buffer SBO_TestGpuFuncs_InstanceData { TestGpuFuncs_InstanceData v; } nil_builtin_GetInstanceData[];
+layout(scalar, set = 9, binding = 0) readonly buffer SBO_TestGpuFuncs_TestInstanceData { TestGpuFuncs_TestInstanceData v; } nil_builtin_GetTestInstanceData[];
 nish_std_VertexOutput TestGpuFuncs_texture_bindless_vs(nish_std_VertexPAT1 aInput, nish_std_VertexFuncIds aVertexInfo);
 
 // Function: TestGpuFuncs
 nish_std_VertexOutput TestGpuFuncs_texture_bindless_vs(nish_std_VertexPAT1 aInput, nish_std_VertexFuncIds aVertexInfo) {
-  TestGpuFuncs_InstanceData instData = nil_builtin_GetInstanceData[nonuniformEXT(aVertexInfo.instanceIndex)].v;
+  TestGpuFuncs_TestInstanceData instData = nil_builtin_GetTestInstanceData[nonuniformEXT(aVertexInfo.instanceIndex)].v;
   vec3 _tmp_3 = aInput.position;
   vec4 outPos = vec4(_tmp_3.x,_tmp_3.y,_tmp_3.z,1.0);
   vec4 outColor = aInput.color;

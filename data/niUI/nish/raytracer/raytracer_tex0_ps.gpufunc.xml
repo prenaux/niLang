@@ -10,7 +10,7 @@
 			<SSBO name="SBO_GetIndex" type="_121" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
-			<SSBO name="SBO_TestGpuFuncs_RayInstanceData" type="_251" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_251" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
 			<SSBO name="SBO_GetVertexRay" type="_298" readonly="1" set="9" binding="0">
@@ -18,7 +18,7 @@
 			</SSBO>
 		</SSBOs>
 		<UBOs>
-			<UBO name="UBO_TestGpuFuncs_RayUniforms" type="_430" set="0" binding="0"/>
+			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_430" set="0" binding="0"/>
 		</UBOs>
 		<AccelerationStructures>
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>

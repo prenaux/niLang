@@ -1,4 +1,4 @@
-struct TestGpuFuncs_InstanceData
+struct TestGpuFuncs_TestInstanceData
 {
     row_major float4x4 mtxWorld;
     uint texIndex0;
@@ -7,7 +7,7 @@ struct TestGpuFuncs_InstanceData
     uint texIndex3;
 };
 
-ByteAddressBuffer nil_builtin_GetInstanceData[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetTestInstanceData[] : register(t0, space9);
 
 static float4 gl_Position;
 static int gl_InstanceIndex;
@@ -35,13 +35,13 @@ struct SPIRV_Cross_Output
 void vert_main()
 {
     uint _168 = uint(gl_InstanceIndex);
-    TestGpuFuncs_InstanceData _170;
-    _170.mtxWorld = asfloat(uint4x4(nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(0), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(16), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(32), nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load4(48)));
-    _170.texIndex0 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(64);
-    _170.texIndex1 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(68);
-    _170.texIndex2 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(72);
-    _170.texIndex3 = nil_builtin_GetInstanceData[NonUniformResourceIndex(_168)].Load(76);
-    TestGpuFuncs_InstanceData _171;
+    TestGpuFuncs_TestInstanceData _170;
+    _170.mtxWorld = asfloat(uint4x4(nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load4(0), nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load4(16), nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load4(32), nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load4(48)));
+    _170.texIndex0 = nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load(64);
+    _170.texIndex1 = nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load(68);
+    _170.texIndex2 = nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load(72);
+    _170.texIndex3 = nil_builtin_GetTestInstanceData[NonUniformResourceIndex(_168)].Load(76);
+    TestGpuFuncs_TestInstanceData _171;
     _171.mtxWorld = _170.mtxWorld;
     _171.texIndex0 = _170.texIndex0;
     _171.texIndex1 = _170.texIndex1;

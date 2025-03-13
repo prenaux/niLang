@@ -2,7 +2,7 @@
 #extension GL_EXT_scalar_block_layout : require
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_EXT_ray_query : require
-// DO IMPORTS BEGIN TestGpuFuncs
+// DO IMPORTS BEGIN niUIGpuFuncs
 // MODULE BEGIN nish:std
 // Type: PixelInput
 struct nish_std_PixelInput {
@@ -71,12 +71,22 @@ void nish_std_initialize() {
   vec3_static_initialize();
 }
 // MODULE END nish:std
-// DO IMPORTS END TestGpuFuncs
+// DO IMPORTS END niUIGpuFuncs
 
-// MODULE BEGIN TestGpuFuncs
+// MODULE BEGIN niUIGpuFuncs
+
+// Type: RayInstanceData
+struct niUIGpuFuncs_RayInstanceData {
+  uint ibIndex;
+  uint vbIndex;
+  uint firstIndex;
+  uint baseVertexIndex;
+  uint texIndex;
+  uint materialColor;
+};
 
 // Type: RayUniforms
-struct TestGpuFuncs_RayUniforms {
+struct niUIGpuFuncs_RayUniforms {
   float rtWidth;
   float rtHeight;
   float cameraFarClipPlane;
@@ -85,48 +95,39 @@ struct TestGpuFuncs_RayUniforms {
   mat4 cameraInvViewProj;
 };
 
-// Type: RayInstanceData
-struct TestGpuFuncs_RayInstanceData {
-  uint ibIndex;
-  uint vbIndex;
-  uint texIndex;
-  uint firstIndex;
-  uint baseVertexIndex;
-};
-
 // Type: VertexRay
-struct TestGpuFuncs_VertexRay {
+struct niUIGpuFuncs_VertexRay {
   vec3 pos;
   vec3 normal;
   uint color;
   vec2 tex0;
 };
 
-// FunctionFwd: TestGpuFuncs
-layout(scalar, set = 9, binding = 0) readonly buffer SBO_TestGpuFuncs_RayInstanceData { TestGpuFuncs_RayInstanceData v; } nil_builtin_GetRayInstanceData[];
+// FunctionFwd: niUIGpuFuncs
+layout(scalar, set = 9, binding = 0) readonly buffer SBO_niUIGpuFuncs_RayInstanceData { niUIGpuFuncs_RayInstanceData v; } nil_builtin_GetRayInstanceData[];
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetIndex { uint v[]; } nil_builtin_GetIndex[];
-layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetVertexRay { TestGpuFuncs_VertexRay v[]; } nil_builtin_GetVertexRay[];
-uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex);
-vec3 TestGpuFuncs_BaryToVec3(vec2 aBary);
-vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
-float TestGpuFuncs_CosineBiasSat(float v, float b);
-float TestGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS);
-vec3 TestGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS);
-nish_std_PixelOutput TestGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetVertexRay { niUIGpuFuncs_VertexRay v[]; } nil_builtin_GetVertexRay[];
+uvec3 niUIGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex);
+vec3 niUIGpuFuncs_BaryToVec3(vec2 aBary);
+vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
+void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+float niUIGpuFuncs_CosineBiasSat(float v, float b);
+float niUIGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS);
+vec3 niUIGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS);
+nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 
-// Function: TestGpuFuncs
-uvec3 TestGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex) {
+// Function: niUIGpuFuncs
+uvec3 niUIGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex) {
   uint ibase = (aFirstIndex + (3 * aPrimIndex));
   return uvec3(nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 0))],nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 1))],nil_builtin_GetIndex[nonuniformEXT(aIBIndex)].v[nonuniformEXT((ibase + 2))]);
 }
-vec3 TestGpuFuncs_BaryToVec3(vec2 aBary) {
+vec3 niUIGpuFuncs_BaryToVec3(vec2 aBary) {
   return vec3(((1.0 - aBary.x) - aBary.y),aBary.x,aBary.y);
 }
-vec3 TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary) {
+vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary) {
   return (((aX*aBary.x)+(aY*aBary.y))+(aZ*aBary.z));
 }
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
   mat4 _tmp_61 = aUniforms.cameraInvView;
   vec3 origin = vec3(_tmp_61[3][0],_tmp_61[3][1],_tmp_61[3][2]);
@@ -134,10 +135,10 @@ void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelIn
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
   rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
-float TestGpuFuncs_CosineBiasSat(float v, float b) {
+float niUIGpuFuncs_CosineBiasSat(float v, float b) {
   return clamp(max(0.0,((v * (1.0 - b)) + b)),0.0,1.0);
 }
-float TestGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS) {
+float niUIGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
   rayQueryInitializeEXT(rayQuery,aAS,(nish_std_RayFlags_SkipClosestHitShader | nish_std_RayFlags_Opaque),255,aPos,0.001,aDir,10000.0);
   rayQueryProceedEXT(rayQuery);
@@ -154,17 +155,17 @@ float TestGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT a
   }
   return _tmp_Q1;
 }
-vec3 TestGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS) {
-  float att = TestGpuFuncs_DirShadowRay(worldPos,-worldLightDir,aAS);
+vec3 niUIGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS) {
+  float att = niUIGpuFuncs_DirShadowRay(worldPos,-worldLightDir,aAS);
   vec3 D = lightColor;
   vec3 S = vec3_Zero;
-  float NdotL = TestGpuFuncs_CosineBiasSat(dot(worldNormal,-worldLightDir),cosBias);
+  float NdotL = niUIGpuFuncs_CosineBiasSat(dot(worldNormal,-worldLightDir),cosBias);
   vec3 C = (D+S);
   return mix((shadowColor*C),C,(att * NdotL));
 }
-nish_std_PixelOutput TestGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
-  TestGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
+  niUIGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
   float cosBias = 0.5;
   vec3 shadowColor = vec3(0.3,0.3,0.3);
   vec3 lightColor0 = vec3(0.8,0.8,0.8);
@@ -176,7 +177,7 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInp
   bool done = rayQueryProceedEXT(rayQuery);
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
   uint userInstIndex = uint(rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery,true));
-  TestGpuFuncs_RayInstanceData instData = nil_builtin_GetRayInstanceData[nonuniformEXT(userInstIndex)].v;
+  niUIGpuFuncs_RayInstanceData instData = nil_builtin_GetRayInstanceData[nonuniformEXT(userInstIndex)].v;
   vec4 color;
   bool _tmp_G2 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
   if (_tmp_G2) {
@@ -188,16 +189,16 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInp
       {
         uint primIndex = uint(rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery,true));
         uint firstIndex = instData.firstIndex;
-        uvec3 inds = TestGpuFuncs_GetTriangleIndices(instData.ibIndex,primIndex,instData.firstIndex);
-        TestGpuFuncs_VertexRay v0 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.x))];
-        TestGpuFuncs_VertexRay v1 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.y))];
-        TestGpuFuncs_VertexRay v2 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.z))];
-        vec3 bary = TestGpuFuncs_BaryToVec3(rayQueryGetIntersectionBarycentricsEXT(rayQuery,true));
-        vec3 n = normalize(TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.normal,v1.normal,v2.normal,bary));
+        uvec3 inds = niUIGpuFuncs_GetTriangleIndices(instData.ibIndex,primIndex,instData.firstIndex);
+        niUIGpuFuncs_VertexRay v0 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.x))];
+        niUIGpuFuncs_VertexRay v1 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.y))];
+        niUIGpuFuncs_VertexRay v2 = nil_builtin_GetVertexRay[nonuniformEXT(instData.vbIndex)].v[nonuniformEXT((instData.baseVertexIndex + inds.z))];
+        vec3 bary = niUIGpuFuncs_BaryToVec3(rayQueryGetIntersectionBarycentricsEXT(rayQuery,true));
+        vec3 n = normalize(niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.normal,v1.normal,v2.normal,bary));
         vec3 worldNormal = normalize(nish_std_Vec3TransformNormal_2_Vec3_Matrix4x3(n,rayQueryGetIntersectionObjectToWorldEXT(rayQuery,true)));
-        vec3 p = TestGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.pos,v1.pos,v2.pos,bary);
+        vec3 p = niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.pos,v1.pos,v2.pos,bary);
         vec3 worldPos = nish_std_Vec3Transform_2_Vec3_Matrix4x3(p,rayQueryGetIntersectionObjectToWorldEXT(rayQuery,true));
-        vec3 C = ((TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir0,lightColor0,cosBias,shadowColor,aAS)+TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir1,lightColor1,cosBias,shadowColor,aAS))+TestGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir2,lightColor2,cosBias,shadowColor,aAS));
+        vec3 C = ((niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir0,lightColor0,cosBias,shadowColor,aAS)+niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir1,lightColor1,cosBias,shadowColor,aAS))+niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir2,lightColor2,cosBias,shadowColor,aAS));
         vec3 _tmp_j4 = C;
         color = vec4(_tmp_j4.x,_tmp_j4.y,_tmp_j4.z,1.0);
       }
@@ -217,21 +218,21 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_lit_cube_ps(nish_std_PixelInput aInp
   vec4 _tmp_x4 = color;
   return nish_std_PixelOutput_new(_tmp_x4);
 }
-// MODULE END TestGpuFuncs
+// MODULE END niUIGpuFuncs
 
-// Pixel Shader main: TestGpuFuncs_raytracer_lit_cube_ps
+// Pixel Shader main: niUIGpuFuncs_raytracer_lit_cube_ps
 // type size: 48, underlying: float
-layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_RayUniforms { TestGpuFuncs_RayUniforms v; } IN_1_aUniforms;
+layout(set = 0, binding = 0) uniform UBO_niUIGpuFuncs_RayUniforms { niUIGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 layout(location = 0) out vec4 OUT_0_rval_color;
 void main(void) {
   nish_std_initialize();
   nish_std_PixelInput aInput;
-  TestGpuFuncs_RayUniforms aUniforms;
+  niUIGpuFuncs_RayUniforms aUniforms;
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;
-  nish_std_PixelOutput _rval_ = TestGpuFuncs_raytracer_lit_cube_ps(aInput, aUniforms, IN_1_aAS);
+  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_lit_cube_ps(aInput, aUniforms, IN_1_aAS);
   OUT_0_rval_color = _rval_.color;
 }
 

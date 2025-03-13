@@ -4537,7 +4537,9 @@ tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
   // Check if formats are compatible, convert if needed
   if (!srcBmp->GetPixelFormat()->IsSamePixelFormat(tex->GetPixelFormat())) {
     niWarning(niFmt(
-      "BlitBitmapToTexture: Converting from '%s' to '%s' - performance warning.",
+      "BlitBitmapToTexture: Texture '%s' (%dx%d), converting from '%s' to '%s' - performance warning.",
+      tex->GetDeviceResourceName(),
+      srcBmp->GetWidth(),srcBmp->GetHeight(),
       srcBmp->GetPixelFormat()->GetFormat(),
       tex->GetPixelFormat()->GetFormat()));
     srcBmp = _graphics->CreateBitmap2DEx(

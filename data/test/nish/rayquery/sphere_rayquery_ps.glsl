@@ -101,8 +101,8 @@ float nish_ray_SphereIntersect(vec3 aSphereCenter, float aSphereRadius, vec3 aRa
 
 // MODULE BEGIN TestGpuFuncs
 
-// Type: RayUniforms
-struct TestGpuFuncs_RayUniforms {
+// Type: TestRayUniforms
+struct TestGpuFuncs_TestRayUniforms {
   float rtWidth;
   float rtHeight;
   float cameraFarClipPlane;
@@ -112,10 +112,10 @@ struct TestGpuFuncs_RayUniforms {
 };
 
 // FunctionFwd: TestGpuFuncs
-nish_std_PixelOutput TestGpuFuncs_sphere_rayquery_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+nish_std_PixelOutput TestGpuFuncs_sphere_rayquery_ps(nish_std_PixelInput aInput, TestGpuFuncs_TestRayUniforms aUniforms, accelerationStructureEXT aAS);
 
 // Function: TestGpuFuncs
-nish_std_PixelOutput TestGpuFuncs_sphere_rayquery_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+nish_std_PixelOutput TestGpuFuncs_sphere_rayquery_ps(nish_std_PixelInput aInput, TestGpuFuncs_TestRayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
   mat4 _tmp_l = aUniforms.cameraInvView;
   vec3 origin = vec3(_tmp_l[3][0],_tmp_l[3][1],_tmp_l[3][2]);
@@ -174,13 +174,13 @@ nish_std_PixelOutput TestGpuFuncs_sphere_rayquery_ps(nish_std_PixelInput aInput,
 
 // Pixel Shader main: TestGpuFuncs_sphere_rayquery_ps
 // type size: 48, underlying: float
-layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_RayUniforms { TestGpuFuncs_RayUniforms v; } IN_1_aUniforms;
+layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_TestRayUniforms { TestGpuFuncs_TestRayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 layout(location = 0) out vec4 OUT_0_rval_color;
 void main(void) {
   nish_std_initialize();
   nish_std_PixelInput aInput;
-  TestGpuFuncs_RayUniforms aUniforms;
+  TestGpuFuncs_TestRayUniforms aUniforms;
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;

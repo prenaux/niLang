@@ -1,4 +1,4 @@
-struct TestGpuFuncs_RayUniforms
+struct niUIGpuFuncs_RayUniforms
 {
     float rtWidth;
     float rtHeight;
@@ -8,9 +8,9 @@ struct TestGpuFuncs_RayUniforms
     row_major float4x4 cameraInvViewProj;
 };
 
-cbuffer UBO_TestGpuFuncs_RayUniforms : register(b0, space0)
+cbuffer UBO_niUIGpuFuncs_RayUniforms : register(b0, space0)
 {
-    TestGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
+    niUIGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
 };
 
 uniform RaytracingAccelerationStructure IN_1_aAS : register(t0, space7);
@@ -32,7 +32,7 @@ static RayQuery<RAY_FLAG_NONE> rayQuery;
 
 void frag_main()
 {
-    TestGpuFuncs_RayUniforms _283;
+    niUIGpuFuncs_RayUniforms _283;
     _283.rtWidth = IN_1_aUniforms_v.rtWidth;
     _283.rtHeight = IN_1_aUniforms_v.rtHeight;
     _283.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;

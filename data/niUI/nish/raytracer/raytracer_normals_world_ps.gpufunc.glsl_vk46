@@ -3,7 +3,7 @@
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_EXT_scalar_block_layout : require
 
-struct TestGpuFuncs_RayUniforms
+struct niUIGpuFuncs_RayUniforms
 {
     float rtWidth;
     float rtHeight;
@@ -13,16 +13,17 @@ struct TestGpuFuncs_RayUniforms
     mat4 cameraInvViewProj;
 };
 
-struct TestGpuFuncs_RayInstanceData
+struct niUIGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
-    uint texIndex;
     uint firstIndex;
     uint baseVertexIndex;
+    uint texIndex;
+    uint materialColor;
 };
 
-struct TestGpuFuncs_VertexRay
+struct niUIGpuFuncs_VertexRay
 {
     vec3 pos;
     vec3 normal;
@@ -35,17 +36,17 @@ layout(set = 9, binding = 0, std430) readonly buffer SBO_GetIndex
     uint v[];
 } nil_builtin_GetIndex[];
 
-layout(set = 9, binding = 0, std430) readonly buffer SBO_TestGpuFuncs_RayInstanceData
+layout(set = 9, binding = 0, std430) readonly buffer SBO_niUIGpuFuncs_RayInstanceData
 {
-    TestGpuFuncs_RayInstanceData v;
+    niUIGpuFuncs_RayInstanceData v;
 } nil_builtin_GetRayInstanceData[];
 
 layout(set = 9, binding = 0, scalar) readonly buffer SBO_GetVertexRay
 {
-    TestGpuFuncs_VertexRay v[];
+    niUIGpuFuncs_VertexRay v[];
 } nil_builtin_GetVertexRay[];
 
-uniform vec4 UBO_TestGpuFuncs_RayUniforms[9];
+uniform vec4 UBO_niUIGpuFuncs_RayUniforms[9];
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 
 layout(location = 0) out vec4 OUT_0_rval_color;
@@ -53,8 +54,8 @@ rayQueryEXT rayQuery;
 
 void main()
 {
-    TestGpuFuncs_RayUniforms _445 = TestGpuFuncs_RayUniforms(UBO_TestGpuFuncs_RayUniforms[0].x, UBO_TestGpuFuncs_RayUniforms[0].y, UBO_TestGpuFuncs_RayUniforms[0].z, UBO_TestGpuFuncs_RayUniforms[0].w, mat4(UBO_TestGpuFuncs_RayUniforms[1], UBO_TestGpuFuncs_RayUniforms[2], UBO_TestGpuFuncs_RayUniforms[3], UBO_TestGpuFuncs_RayUniforms[4]), mat4(UBO_TestGpuFuncs_RayUniforms[5], UBO_TestGpuFuncs_RayUniforms[6], UBO_TestGpuFuncs_RayUniforms[7], UBO_TestGpuFuncs_RayUniforms[8]));
-    TestGpuFuncs_RayUniforms _446;
+    niUIGpuFuncs_RayUniforms _445 = niUIGpuFuncs_RayUniforms(UBO_niUIGpuFuncs_RayUniforms[0].x, UBO_niUIGpuFuncs_RayUniforms[0].y, UBO_niUIGpuFuncs_RayUniforms[0].z, UBO_niUIGpuFuncs_RayUniforms[0].w, mat4(UBO_niUIGpuFuncs_RayUniforms[1], UBO_niUIGpuFuncs_RayUniforms[2], UBO_niUIGpuFuncs_RayUniforms[3], UBO_niUIGpuFuncs_RayUniforms[4]), mat4(UBO_niUIGpuFuncs_RayUniforms[5], UBO_niUIGpuFuncs_RayUniforms[6], UBO_niUIGpuFuncs_RayUniforms[7], UBO_niUIGpuFuncs_RayUniforms[8]));
+    niUIGpuFuncs_RayUniforms _446;
     _446.rtWidth = _445.rtWidth;
     _446.rtHeight = _445.rtHeight;
     _446.cameraFarClipPlane = _445.cameraFarClipPlane;
@@ -68,12 +69,13 @@ void main()
     uint _501 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
     int _502 = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, bool(1));
     uint _505 = uint(_502);
-    TestGpuFuncs_RayInstanceData _508;
+    niUIGpuFuncs_RayInstanceData _508;
     _508.ibIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.ibIndex;
     _508.vbIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.vbIndex;
-    _508.texIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.texIndex;
     _508.firstIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.firstIndex;
     _508.baseVertexIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.baseVertexIndex;
+    _508.texIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.texIndex;
+    _508.materialColor = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.materialColor;
     vec4 _867;
     if (_501 == 1u)
     {
@@ -92,19 +94,19 @@ void main()
             uint _691 = _672 + 2u;
             uint _530 = _508.vbIndex;
             uint _536 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_677];
-            TestGpuFuncs_VertexRay _539;
+            niUIGpuFuncs_VertexRay _539;
             _539.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].pos;
             _539.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].normal;
             _539.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].color;
             _539.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].tex0;
             uint _548 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_684];
-            TestGpuFuncs_VertexRay _551;
+            niUIGpuFuncs_VertexRay _551;
             _551.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].pos;
             _551.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].normal;
             _551.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].color;
             _551.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].tex0;
             uint _560 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_691];
-            TestGpuFuncs_VertexRay _563;
+            niUIGpuFuncs_VertexRay _563;
             _563.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].pos;
             _563.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].normal;
             _563.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].color;

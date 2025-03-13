@@ -72,7 +72,7 @@ intersection_params spvMakeIntersectionParams(uint flags)
     return ip;
 }
 
-struct TestGpuFuncs_RayUniforms
+struct niUIGpuFuncs_RayUniforms
 {
     float rtWidth;
     float rtHeight;
@@ -87,30 +87,32 @@ struct SBO_GetIndex
     uint v[1];
 };
 
-struct TestGpuFuncs_RayInstanceData
+struct niUIGpuFuncs_RayInstanceData
 {
     uint ibIndex;
     uint vbIndex;
-    uint texIndex;
     uint firstIndex;
     uint baseVertexIndex;
+    uint texIndex;
+    uint materialColor;
 };
 
-struct TestGpuFuncs_RayInstanceData_1
+struct niUIGpuFuncs_RayInstanceData_1
 {
     uint ibIndex;
     uint vbIndex;
-    uint texIndex;
     uint firstIndex;
     uint baseVertexIndex;
+    uint texIndex;
+    uint materialColor;
 };
 
-struct SBO_TestGpuFuncs_RayInstanceData
+struct SBO_niUIGpuFuncs_RayInstanceData
 {
-    TestGpuFuncs_RayInstanceData_1 v;
+    niUIGpuFuncs_RayInstanceData_1 v;
 };
 
-struct TestGpuFuncs_VertexRay
+struct niUIGpuFuncs_VertexRay
 {
     float3 pos;
     float3 normal;
@@ -118,7 +120,7 @@ struct TestGpuFuncs_VertexRay
     float2 tex0;
 };
 
-struct TestGpuFuncs_VertexRay_1
+struct niUIGpuFuncs_VertexRay_1
 {
     packed_float3 pos;
     packed_float3 normal;
@@ -128,10 +130,10 @@ struct TestGpuFuncs_VertexRay_1
 
 struct SBO_GetVertexRay
 {
-    TestGpuFuncs_VertexRay_1 v[1];
+    niUIGpuFuncs_VertexRay_1 v[1];
 };
 
-struct TestGpuFuncs_RayUniforms_1
+struct niUIGpuFuncs_RayUniforms_1
 {
     float rtWidth;
     float rtHeight;
@@ -141,9 +143,9 @@ struct TestGpuFuncs_RayUniforms_1
     float4x4 cameraInvViewProj;
 };
 
-struct UBO_TestGpuFuncs_RayUniforms
+struct UBO_niUIGpuFuncs_RayUniforms
 {
-    TestGpuFuncs_RayUniforms_1 v;
+    niUIGpuFuncs_RayUniforms_1 v;
 };
 
 struct main0_out
@@ -151,17 +153,17 @@ struct main0_out
     float4 OUT_0_rval_color [[color(0)]];
 };
 
-fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(0)]], constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(1)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(2)]], float4 gl_FragCoord [[position]])
+fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(0)]], constant UBO_niUIGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(1)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(2)]], float4 gl_FragCoord [[position]])
 {
     spvDescriptorArray<const device SBO_GetIndex*> nil_builtin_GetIndex {nil_builtin_GetIndex_};
-    spvDescriptorArray<const device SBO_TestGpuFuncs_RayInstanceData*> nil_builtin_GetRayInstanceData {nil_builtin_GetRayInstanceData_};
+    spvDescriptorArray<const device SBO_niUIGpuFuncs_RayInstanceData*> nil_builtin_GetRayInstanceData {nil_builtin_GetRayInstanceData_};
     spvDescriptorArray<const device SBO_GetVertexRay*> nil_builtin_GetVertexRay {nil_builtin_GetVertexRay_};
 
     const device auto& nil_builtin_GetIndex = *(const device spvUnsafeArray<SBO_GetIndex, 1>*)spvBufferAliasSet9Binding0;
-    const device auto& nil_builtin_GetRayInstanceData = *(const device spvUnsafeArray<SBO_TestGpuFuncs_RayInstanceData, 1>*)spvBufferAliasSet9Binding0;
+    const device auto& nil_builtin_GetRayInstanceData = *(const device spvUnsafeArray<SBO_niUIGpuFuncs_RayInstanceData, 1>*)spvBufferAliasSet9Binding0;
     const device auto& nil_builtin_GetVertexRay = *(const device spvUnsafeArray<SBO_GetVertexRay, 1>*)spvBufferAliasSet9Binding0;
     main0_out out = {};
-    TestGpuFuncs_RayUniforms _446;
+    niUIGpuFuncs_RayUniforms _446;
     _446.rtWidth = IN_1_aUniforms.v.rtWidth;
     _446.rtHeight = IN_1_aUniforms.v.rtHeight;
     _446.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
@@ -176,12 +178,13 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     uint _501 = uint(rayQuery.get_committed_intersection_type());
     int _502 = rayQuery.get_committed_user_instance_id();
     uint _505 = uint(_502);
-    TestGpuFuncs_RayInstanceData _508;
+    niUIGpuFuncs_RayInstanceData _508;
     _508.ibIndex = nil_builtin_GetRayInstanceData[_505]->v.ibIndex;
     _508.vbIndex = nil_builtin_GetRayInstanceData[_505]->v.vbIndex;
-    _508.texIndex = nil_builtin_GetRayInstanceData[_505]->v.texIndex;
     _508.firstIndex = nil_builtin_GetRayInstanceData[_505]->v.firstIndex;
     _508.baseVertexIndex = nil_builtin_GetRayInstanceData[_505]->v.baseVertexIndex;
+    _508.texIndex = nil_builtin_GetRayInstanceData[_505]->v.texIndex;
+    _508.materialColor = nil_builtin_GetRayInstanceData[_505]->v.materialColor;
     float4 _867;
     if (_501 == 1u)
     {
@@ -200,19 +203,19 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
             uint _691 = _672 + 2u;
             uint _530 = _508.vbIndex;
             uint _536 = _508.baseVertexIndex + nil_builtin_GetIndex[_674]->v[_677];
-            TestGpuFuncs_VertexRay _539;
+            niUIGpuFuncs_VertexRay _539;
             _539.pos = float3(nil_builtin_GetVertexRay[_530]->v[_536].pos);
             _539.normal = float3(nil_builtin_GetVertexRay[_530]->v[_536].normal);
             _539.color = nil_builtin_GetVertexRay[_530]->v[_536].color;
             _539.tex0 = float2(nil_builtin_GetVertexRay[_530]->v[_536].tex0);
             uint _548 = _508.baseVertexIndex + nil_builtin_GetIndex[_674]->v[_684];
-            TestGpuFuncs_VertexRay _551;
+            niUIGpuFuncs_VertexRay _551;
             _551.pos = float3(nil_builtin_GetVertexRay[_530]->v[_548].pos);
             _551.normal = float3(nil_builtin_GetVertexRay[_530]->v[_548].normal);
             _551.color = nil_builtin_GetVertexRay[_530]->v[_548].color;
             _551.tex0 = float2(nil_builtin_GetVertexRay[_530]->v[_548].tex0);
             uint _560 = _508.baseVertexIndex + nil_builtin_GetIndex[_674]->v[_691];
-            TestGpuFuncs_VertexRay _563;
+            niUIGpuFuncs_VertexRay _563;
             _563.pos = float3(nil_builtin_GetVertexRay[_530]->v[_560].pos);
             _563.normal = float3(nil_builtin_GetVertexRay[_530]->v[_560].normal);
             _563.color = nil_builtin_GetVertexRay[_530]->v[_560].color;

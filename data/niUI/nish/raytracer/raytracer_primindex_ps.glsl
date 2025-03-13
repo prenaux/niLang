@@ -2,7 +2,7 @@
 #extension GL_EXT_scalar_block_layout : require
 #extension GL_EXT_nonuniform_qualifier : require
 #extension GL_EXT_ray_query : require
-// DO IMPORTS BEGIN TestGpuFuncs
+// DO IMPORTS BEGIN niUIGpuFuncs
 // MODULE BEGIN nish:std
 // Type: PixelInput
 struct nish_std_PixelInput {
@@ -64,12 +64,12 @@ void nish_std_initialize() {
   nish_std_RayQueryIntersectionType_static_initialize();
 }
 // MODULE END nish:std
-// DO IMPORTS END TestGpuFuncs
+// DO IMPORTS END niUIGpuFuncs
 
-// MODULE BEGIN TestGpuFuncs
+// MODULE BEGIN niUIGpuFuncs
 
 // Type: RayUniforms
-struct TestGpuFuncs_RayUniforms {
+struct niUIGpuFuncs_RayUniforms {
   float rtWidth;
   float rtHeight;
   float cameraFarClipPlane;
@@ -78,12 +78,12 @@ struct TestGpuFuncs_RayUniforms {
   mat4 cameraInvViewProj;
 };
 
-// FunctionFwd: TestGpuFuncs
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
-nish_std_PixelOutput TestGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+// FunctionFwd: niUIGpuFuncs
+void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+nish_std_PixelOutput niUIGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 
-// Function: TestGpuFuncs
-void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+// Function: niUIGpuFuncs
+void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
   mat4 _tmp_l = aUniforms.cameraInvView;
   vec3 origin = vec3(_tmp_l[3][0],_tmp_l[3][1],_tmp_l[3][2]);
@@ -91,9 +91,9 @@ void TestGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelIn
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
   rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
-nish_std_PixelOutput TestGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aInput, TestGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+nish_std_PixelOutput niUIGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
-  TestGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
+  niUIGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
   bool done = rayQueryProceedEXT(rayQuery);
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
   vec4 color;
@@ -117,21 +117,21 @@ nish_std_PixelOutput TestGpuFuncs_raytracer_primindex_ps(nish_std_PixelInput aIn
   vec4 _tmp_71 = color;
   return nish_std_PixelOutput_new(_tmp_71);
 }
-// MODULE END TestGpuFuncs
+// MODULE END niUIGpuFuncs
 
-// Pixel Shader main: TestGpuFuncs_raytracer_primindex_ps
+// Pixel Shader main: niUIGpuFuncs_raytracer_primindex_ps
 // type size: 48, underlying: float
-layout(set = 0, binding = 0) uniform UBO_TestGpuFuncs_RayUniforms { TestGpuFuncs_RayUniforms v; } IN_1_aUniforms;
+layout(set = 0, binding = 0) uniform UBO_niUIGpuFuncs_RayUniforms { niUIGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
 layout(location = 0) out vec4 OUT_0_rval_color;
 void main(void) {
   nish_std_initialize();
   nish_std_PixelInput aInput;
-  TestGpuFuncs_RayUniforms aUniforms;
+  niUIGpuFuncs_RayUniforms aUniforms;
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;
-  nish_std_PixelOutput _rval_ = TestGpuFuncs_raytracer_primindex_ps(aInput, aUniforms, IN_1_aAS);
+  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_primindex_ps(aInput, aUniforms, IN_1_aAS);
   OUT_0_rval_color = _rval_.color;
 }
 

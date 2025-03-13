@@ -12,6 +12,25 @@ static const tF32 kfNormalSpeed = 64.0f;
 struct FRayTracer {
 };
 
+static tU32 HashJenkins(tU32 anStartX) {
+  tU32 x = anStartX;
+  x += x << 10u;
+  x ^= x >> 6u;
+  x += x << 3u;
+  x ^= x >> 11u;
+  x += x << 15u;
+  return x;
+}
+
+static tU32 UIntToHashColor(tU32 anI) {
+  tU32 hash = HashJenkins(anI+1);
+  return ULColorBuild(
+    (hash >> 0u) & 255u,
+    (hash >> 8u) & 255u,
+    (hash >> 16u) & 255u,
+    255u);
+}
+
 //----------------------------------------------------------------------------
 //
 // Section: RayTracerBase
@@ -972,6 +991,7 @@ struct VisTex0 : public RayTracerBase {
               GetIndexFromResource(iaBuffer);
           niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                       i,instData.vbIndex,instData.ibIndex));
+          instData.materialColor = UIntToHashColor(i);
           geom._instIndex = AddInstData(instData);
           if (firstInstIndex == eInvalidHandle) {
             firstInstIndex = geom._instIndex;
@@ -1078,6 +1098,7 @@ struct VisNormalsObj : public RayTracerBase {
               GetIndexFromResource(iaBuffer);
           niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                       i,instData.vbIndex,instData.ibIndex));
+          instData.materialColor = UIntToHashColor(i);
           geom._instIndex = AddInstData(instData);
           if (firstInstIndex == eInvalidHandle) {
             firstInstIndex = geom._instIndex;
@@ -1184,6 +1205,7 @@ struct VisNormalsWorld : public RayTracerBase {
               GetIndexFromResource(iaBuffer);
           niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                       i,instData.vbIndex,instData.ibIndex));
+          instData.materialColor = UIntToHashColor(i);
           geom._instIndex = AddInstData(instData);
           if (firstInstIndex == eInvalidHandle) {
             firstInstIndex = geom._instIndex;
@@ -1290,6 +1312,7 @@ struct VisPosWorld : public RayTracerBase {
               GetIndexFromResource(iaBuffer);
           niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                       i,instData.vbIndex,instData.ibIndex));
+          instData.materialColor = UIntToHashColor(i);
           geom._instIndex = AddInstData(instData);
           if (firstInstIndex == eInvalidHandle) {
             firstInstIndex = geom._instIndex;
@@ -1379,6 +1402,7 @@ struct LitCube : public RayTracerBase {
           GetIndexFromResource(iaBuffer);
       niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                   i,instData.vbIndex,instData.ibIndex));
+      instData.materialColor = UIntToHashColor(i);
       geom._instIndex = AddInstData(instData);
     }
     niDebugFmt(("... _geoms[0]._instIndex: %d", _geoms[0]._instIndex));
@@ -1489,6 +1513,7 @@ struct LitTexturedCube : public RayTracerBase {
       }
       niDebugFmt(("... geom[%d]: vbIndex: %d, ibIndex: %d",
                   i,instData.vbIndex,instData.ibIndex));
+      instData.materialColor = UIntToHashColor(i);
       geom._instIndex = AddInstData(instData);
     }
     niDebugFmt(("... _geoms[0]._instIndex: %d", _geoms[0]._instIndex));
@@ -1529,6 +1554,7 @@ struct LitTexturedCube : public RayTracerBase {
               0, sizeof(niUIGpuFuncs_RayInstanceData), eLock_Normal);
         niCheck(pLastInstData != nullptr, eFalse);
         pLastInstData->texIndex = _GetTextureIndex(_textures[_selectedTexture]);
+        pLastInstData->materialColor = 0xFFFF0000;
         lastInstData->Unlock();
       }
       niCheck(UpdateRayGeomsTransforms(buildEncoder,_rayInstsDesc),eFalse);

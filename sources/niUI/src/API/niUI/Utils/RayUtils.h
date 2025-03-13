@@ -292,6 +292,16 @@ inline tU32 GetTextureResourceIndex(
   return (r == eInvalidHandle) ? 0 : r;
 }
 
+inline tU32 RayGetMaterialColor(iMaterial* apMaterial, tU32 anErrorColor = 0xFFFF00FF) {
+  if (!apMaterial) return anErrorColor;
+  iTexture* tex = apMaterial->GetChannelTexture(eMaterialChannel_Base);
+  sColor4f col = apMaterial->GetChannelColor(eMaterialChannel_Base);
+  if (!tex || (apMaterial->GetFlags()&eMaterialFlags_DiffuseModulate)) {
+    return ULColorBuild(col);
+  }
+  return 0xFFFFFFFF;
+}
+
 inline tU32 GetBufferResourceIndex(
   ain_nn<iGraphicsDriverGpu> aDriverGpu,
   iGpuBuffer* apGpuBuffer)
@@ -367,7 +377,8 @@ inline optional<sRayGeometry> MakeRayGeometry(
   ain_nn<iGraphicsDriverRay> driverRay,
   ain_nn<iRayBuildEncoder> rayBuildEncoder,
   ain_nn<iDrawOperation> drawOp,
-  ain<tU32> anTexResIndex)
+  ain<tU32> anTexResIndex,
+  ain<tU32> anMaterialColor)
 {
   NN<iGpuBuffer> iaBuffer = AsNN(QPtr<iGpuBuffer>(
     drawOp->GetIndexArray()));
@@ -387,9 +398,10 @@ inline optional<sRayGeometry> MakeRayGeometry(
   niUIGpuFuncs_RayInstanceData instData;
   instData.vbIndex = GetBufferResourceIndex(driverGpu,vaBuffer);
   instData.ibIndex = GetBufferResourceIndex(driverGpu,iaBuffer);
-  instData.texIndex = anTexResIndex;
   instData.firstIndex = drawOp->GetFirstIndex();
   instData.baseVertexIndex = drawOp->GetBaseVertexIndex();
+  instData.texIndex = anTexResIndex;
+  instData.materialColor = anMaterialColor;
   niLet rayInstData = niCheckNN_(
     rayInstData,
     CreateRayInstanceData(
@@ -402,13 +414,14 @@ inline optional<sRayGeometry> MakeRayGeometry(
     driverGpu,rayInstData.non_null());
 
   niDebugFmt((
-    "... MakeRayGeometry: %s, mnRayInstDataIndex: %d, vbIndex: %d, ibIndex: %d, texIndex: %d, firstIndex: %d, baseVertexIndex: %d",
+    "... MakeRayGeometry: %s, mnRayInstDataIndex: %d, vbIndex: %d, ibIndex: %d, texIndex: %d, firstIndex: %d, numTris: %d, baseVertexIndex: %d",
     resName,
     rayInstDataIndex,
     instData.vbIndex,
     instData.ibIndex,
     instData.texIndex,
     instData.firstIndex,
+    drawOp->GetNumIndices()/3,
     instData.baseVertexIndex));
 
   return sRayGeometry {

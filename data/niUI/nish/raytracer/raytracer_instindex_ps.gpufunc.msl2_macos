@@ -33,7 +33,7 @@ intersection_params spvMakeIntersectionParams(uint flags)
     return ip;
 }
 
-struct TestGpuFuncs_RayUniforms
+struct niUIGpuFuncs_RayUniforms
 {
     float rtWidth;
     float rtHeight;
@@ -43,7 +43,7 @@ struct TestGpuFuncs_RayUniforms
     float4x4 cameraInvViewProj;
 };
 
-struct TestGpuFuncs_RayUniforms_1
+struct niUIGpuFuncs_RayUniforms_1
 {
     float rtWidth;
     float rtHeight;
@@ -53,9 +53,9 @@ struct TestGpuFuncs_RayUniforms_1
     float4x4 cameraInvViewProj;
 };
 
-struct UBO_TestGpuFuncs_RayUniforms
+struct UBO_niUIGpuFuncs_RayUniforms
 {
-    TestGpuFuncs_RayUniforms_1 v;
+    niUIGpuFuncs_RayUniforms_1 v;
 };
 
 struct main0_out
@@ -63,10 +63,10 @@ struct main0_out
     float4 OUT_0_rval_color [[color(0)]];
 };
 
-fragment main0_out main0(constant UBO_TestGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(0)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(1)]], float4 gl_FragCoord [[position]])
+fragment main0_out main0(constant UBO_niUIGpuFuncs_RayUniforms& IN_1_aUniforms [[buffer(0)]], raytracing::instance_acceleration_structure IN_1_aAS [[buffer(1)]], float4 gl_FragCoord [[position]])
 {
     main0_out out = {};
-    TestGpuFuncs_RayUniforms _281;
+    niUIGpuFuncs_RayUniforms _281;
     _281.rtWidth = IN_1_aUniforms.v.rtWidth;
     _281.rtHeight = IN_1_aUniforms.v.rtHeight;
     _281.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "FGDRV.h"
-#include "nish/TestGpuFuncs.hpp"
 #include <niLang/Math/MathLib.h>
 #include <niUI/Utils/AABB.h>
 #include <niUI/Utils/RayUtils.h>
+#include "nish/TestGpuFuncs.hpp"
 
 using namespace ni;
 
@@ -190,7 +190,7 @@ struct sFRayQuery_Triangle : public sFRayQuery_Base {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
 
-    TestGpuFuncs_RayUniforms u;
+    TestGpuFuncs_TestRayUniforms u;
     u.rtWidth = (tF32)_graphicsContext->GetWidth();
     u.rtHeight = (tF32)_graphicsContext->GetHeight();
     u.cameraFarClipPlane = 10000.0f;
@@ -334,7 +334,7 @@ struct sFRayQuery_IntSphere : public sFRayQuery_Base {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
 
-    TestGpuFuncs_RayUniforms u;
+    TestGpuFuncs_TestRayUniforms u;
     u.rtWidth = (tF32)_graphicsContext->GetWidth();
     u.rtHeight = (tF32)_graphicsContext->GetHeight();
     u.cameraFarClipPlane = 10000.0f;

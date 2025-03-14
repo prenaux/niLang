@@ -252,7 +252,7 @@ struct sFBindless_Instances : public sFBindless_Base {
       _iaBuffer = niCheckNN(_iaBuffer, MakeQuadIB(_driverGpu), eFalse);
 
       niLoop(i, 5) {
-        TestGpuFuncs_InstanceData instData;
+        TestGpuFuncs_TestInstanceData instData;
         niLet instDataBuffer = niCheckNN(
           instDataBuffer,
           _driverGpu->CreateGpuBuffer(
@@ -263,8 +263,8 @@ struct sFBindless_Instances : public sFBindless_Base {
           eFalse);
         instData.mtxWorld =
           MatrixTranslation(Vec3f(0.1f, 0.1f, 0.0f) * (tF32)i);
-        TestGpuFuncs_InstanceData* locked =
-          (TestGpuFuncs_InstanceData*)instDataBuffer->Lock(
+        TestGpuFuncs_TestInstanceData* locked =
+          (TestGpuFuncs_TestInstanceData*)instDataBuffer->Lock(
             0, instDataBuffer->GetSize(), eLock_Discard);
         *locked = instData;
         instDataBuffer->Unlock();

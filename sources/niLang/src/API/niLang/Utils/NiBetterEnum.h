@@ -12,6 +12,8 @@ namespace ni {
 Example usage:
 
 ```cpp
+#include <niLang/Utils/NiEnumXMacros.h>
+
 NI_BETTER_ENUM(eBetterFileOpenMode, ni::tU32,
   //! Read open mode.
   Read = niBit(0),
@@ -19,7 +21,7 @@ NI_BETTER_ENUM(eBetterFileOpenMode, ni::tU32,
   Write = niBit(1),
   //! Append open mode.
   Append = niBit(2)|Write,
-  //! Optimized form random access.
+  //! Optimized for random access.
   Random = niBit(3)
 );
 

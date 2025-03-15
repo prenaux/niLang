@@ -4,29 +4,34 @@
 
 namespace ni {
 
-/*!
-\example
-
-Example usage:
-
-```cpp
-#define FOREACH_eXFileOpenMode(N,DO)             \
-  DO(N, Read, niBit(0), )                        \
-  DO(N, Write, niBit(1), )                       \
-  DO(N, Append, niBit(2)|eXFileOpenMode_Write, ) \
-  DO(N, Random, niBit(3), )
-
-NI_XENUM(eXFileOpenMode);
-
-NI_DECL_XENUM_DEF(eXFileOpenMode);
-NI_IMPL_XENUM_DEF(eXFileOpenMode);
-
-static void _DoRegister() {
-  NI_REGISTER_XENUM_DEF(eXFileOpenMode);
-}
-```
-
-*/
+//!
+//! \example
+//!
+//! Example usage:
+//!
+//! ```cpp
+//! #include <niLang/Utils/NiEnumXMacros.h>
+//!
+//! #define FOREACH_eXFileOpenMode(N,DO)             \
+//!   /* Read open mode. */                          \
+//!   DO(N, Read, niBit(0), )                        \
+//!   /* Write open mode. */                         \
+//!   DO(N, Write, niBit(1), )                       \
+//!   /* Append open mode. */                        \
+//!   DO(N, Append, niBit(2)|eXFileOpenMode_Write, ) \
+//!   /* Optimized for random access. */             \
+//!   DO(N, Random, niBit(3), )
+//!
+//! NI_XENUM(eXFileOpenMode);
+//!
+//! NI_DECL_XENUM_DEF(eXFileOpenMode);
+//! NI_IMPL_XENUM_DEF(eXFileOpenMode);
+//!
+//! static void _DoRegister() {
+//!   NI_REGISTER_XENUM_DEF(eXFileOpenMode);
+//! }
+//! ```
+//!
 
 #define NI_XENUM_ENTRY(ENUMNAME, NAME, VALUE, ATTR) ENUMNAME##_##NAME ATTR = VALUE,
 #define NI_XENUM(ENUMNAME) \

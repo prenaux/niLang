@@ -123,7 +123,6 @@ struct FindFile
     return FindFile_FileAttribs(&mFF);
   }
 
- private:
   sFindFile mFF;
 };
 
@@ -131,9 +130,9 @@ struct FindFile
 struct sFileInfo
 {
   tU32    count;
-  cString   name;
+  cString name;
   tI64    size;
-  time_t    time;
+  time_t  time;
   tU32    attribs;
   sFileInfo() {
     count = 0;

@@ -251,6 +251,7 @@ namespace eastl
 		bool      empty() const EA_NOEXCEPT;
 		size_type size() const EA_NOEXCEPT;
 		size_type capacity() const EA_NOEXCEPT;
+    size_type size_bytes() const EA_NOEXCEPT;
 
 		void resize(size_type n, const value_type& value);
 		void resize(size_type n);
@@ -793,6 +794,12 @@ namespace eastl
 		return (size_type)(mpEnd - mpBegin);
 	}
 
+  template <typename T, typename Allocator>
+  inline typename vector<T, Allocator>::size_type
+  vector<T, Allocator>::size_bytes() const EA_NOEXCEPT
+  {
+    return (size_type)(mpEnd - mpBegin) * sizeof(T);
+  }
 
 	template <typename T, typename Allocator>
 	inline typename vector<T, Allocator>::size_type

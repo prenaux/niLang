@@ -108,6 +108,7 @@ namespace eastl
 		EA_CPP14_CONSTEXPR bool empty() const EA_NOEXCEPT;
 		EA_CPP14_CONSTEXPR size_type size() const EA_NOEXCEPT;
 		EA_CPP14_CONSTEXPR size_type max_size() const EA_NOEXCEPT;
+    EA_CPP14_CONSTEXPR size_type size_bytes() const EA_NOEXCEPT;
 
 		EA_CPP14_CONSTEXPR T*       data() EA_NOEXCEPT;
 		EA_CPP14_CONSTEXPR const T* data() const EA_NOEXCEPT;
@@ -267,6 +268,12 @@ namespace eastl
 		return (size_type)N;
 	}
 
+  template <typename T, size_t N>
+  EA_CPP14_CONSTEXPR inline typename array<T, N>::size_type
+  array<T, N>::size_bytes() const EA_NOEXCEPT
+  {
+    return (size_type)N * sizeof(T);
+  }
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool array<T, N>::empty() const EA_NOEXCEPT

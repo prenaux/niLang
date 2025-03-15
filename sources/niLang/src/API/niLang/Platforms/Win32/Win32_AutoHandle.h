@@ -35,6 +35,9 @@ class AutoHandle {
     Set(h);
   }
 
+  AutoHandle(AutoHandle&& aRight) : _handle(aRight.Take()) {
+  }
+
   ~AutoHandle() {
     Close();
   }
@@ -49,15 +52,14 @@ class AutoHandle {
     Close();
 
     // Windows is inconsistent about invalid handles, so we always use NULL
-    if (new_handle != INVALID_HANDLE_VALUE)
+    if (new_handle != INVALID_HANDLE_VALUE) {
       _handle = new_handle;
+    }
   }
 
-  HANDLE Get() {
+  HANDLE Get() const {
     return _handle;
   }
-
-  operator HANDLE() { return _handle; }
 
   HANDLE Take() {
     // transfers ownership away from this object
@@ -91,7 +93,7 @@ class AutoHDC {
     Close();
   }
 
-  HDC Get() {
+  HDC Get() const {
     return _hdc;
   }
 
@@ -99,8 +101,6 @@ class AutoHDC {
     Close();
     _hdc = h;
   }
-
-  operator HDC() { return _hdc; }
 
  private:
   void Close() {
@@ -123,7 +123,7 @@ class AutoGDIObject {
     Close();
   }
 
-  T Get() {
+  T Get() const {
     return _object;
   }
 
@@ -138,12 +138,11 @@ class AutoGDIObject {
     return *this;
   }
 
-  operator T() { return _object; }
-
  private:
   void Close() {
-    if (_object)
+    if (_object) {
       DeleteObject(_object);
+    }
   }
 
   T _object;
@@ -166,14 +165,10 @@ class AutoHGlobal {
     GlobalUnlock(_glob);
   }
 
-  T* get() { return _data; }
+  T* Get() { return _data; }
+  const T* Get() const { return _data; }
 
   size_t Size() const { return GlobalSize(_glob); }
-
-  T* operator->() const  {
-    assert(_data != 0);
-    return _data;
-  }
 
  private:
   HGLOBAL _glob;

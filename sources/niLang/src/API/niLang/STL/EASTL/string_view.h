@@ -178,6 +178,17 @@ namespace eastl
 			return (cmp != 0 ? cmp : (n1 < n2 ? -1 : (n1 > n2 ? 1 : 0)));
 		}
 
+    template <typename U>
+    static EA_CPP14_CONSTEXPR int compare(const T* pBegin1, const T* pEnd1, const U* pBegin2, const U* pEnd2)
+    {
+      const ptrdiff_t n1   = pEnd1 - pBegin1;
+      const ptrdiff_t n2   = pEnd2 - pBegin2;
+      const ptrdiff_t nMin = eastl::min_alt(n1, n2);
+      const int       cmp  = Compare(pBegin1, pBegin2, (size_type)nMin);
+
+      return (cmp != 0 ? cmp : (n1 < n2 ? -1 : (n1 > n2 ? 1 : 0)));
+    }
+
 		EA_CPP14_CONSTEXPR int compare(basic_string_view sw) const EA_NOEXCEPT
 		{
 			return compare(mpBegin, mpBegin + mnCount, sw.mpBegin, sw.mpBegin + sw.mnCount);
@@ -208,6 +219,11 @@ namespace eastl
 		{
 			return substr(pos1, count1).compare(basic_string_view(s, count2));
 		}
+
+    template <typename U>
+    int compare(const basic_string_view<U>& aRight) const {
+      return compare(this->begin(), this->end(), aRight.begin(), aRight.end());
+    }
 
 		EA_CPP14_CONSTEXPR size_type find(basic_string_view sw, size_type pos = 0) const EA_NOEXCEPT
 		{

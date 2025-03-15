@@ -235,6 +235,15 @@ class cString
     return appendEx(rhs.c_str(),rhs.length()*sizeof(achar));
   }
 
+  template <typename TStringViewType>
+  cString& append(const TStringViewType& aStringView) {
+    this->reserve(this->size() + aStringView.size());
+    for (auto c : aStringView) {
+      this->appendChar(static_cast<tU32>(c));
+    }
+    return *this;
+  }
+
   cString& insertEx(tI32 anPos, const achar* rhs, tU32 anSizeInBytes) {
     if (!anSizeInBytes)
       anSizeInBytes = StrSize(rhs);
@@ -883,6 +892,12 @@ class cString
   cString& operator << (const iToString* obj);
   cString& operator << (const cString& str) { *this += str; return *this; }
   cString& operator << (const tUUID& uuidVal);
+
+  template <typename TStringViewType>
+  cString& operator << (const TStringViewType& aStringView) {
+    this->append(aStringView);
+    return *this;
+  }
 
 #if defined niTypeIntIsOtherType
   cString& operator << (signed int v) {

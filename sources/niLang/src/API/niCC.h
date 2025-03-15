@@ -907,6 +907,11 @@ inline ni::tHStringPtr operator"" _hstr(const char* aStr, std::size_t aLen) {
 
 inline constexpr ni::tSize operator"" _sz(unsigned long long aVal) { return static_cast<ni::tSize>(aVal); }
 
+inline constexpr astl::string_view operator "" _sv(const char* str, size_t len) EA_NOEXCEPT { return {str, len}; }
+inline constexpr astl::u16string_view operator "" _sv(const char16_t* str, size_t len) EA_NOEXCEPT { return {str, len}; }
+inline constexpr astl::u32string_view operator "" _sv(const char32_t* str, size_t len) EA_NOEXCEPT { return {str, len}; }
+inline constexpr astl::wstring_view operator "" _sv(const wchar_t* str, size_t len) EA_NOEXCEPT { return {str, len}; }
+
 } // end namespace ni
 
 //##################################################################
@@ -941,6 +946,17 @@ template<StringSetConvertible T>
 inline cString ToString(T aValue) {
   cString str;
   str.Set(aValue);
+  return str;
+}
+
+template<typename T>
+concept StringAppendConvertible = requires(cString str, T value) {
+  { str.append(value) };
+};
+template<StringAppendConvertible T>
+inline cString ToString(T aValue) {
+  cString str;
+  str.append(aValue);
   return str;
 }
 

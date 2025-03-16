@@ -354,7 +354,7 @@ class cDataTable : public ni::ImplRC<ni::iDataTable,ni::eImplFlags_Default,ni::i
 
   tBool __stdcall _FindChildDataTable(iDataTable* apThis, iDataTable* apToFind) const;
 
-  inline void _FetchPropertyVar(Var& aVar, tU32 anIndex) const {
+  void _FetchPropertyVar(Var& aVar, tU32 anIndex) const {
     Ptr<SinkList<iDataTableSink> > pLst = _GetRootSinkList();
     niLoopImmutableIterator(SinkList<iDataTableSink>, it, pLst) {
       aVar = it->_Value()->OnDataTableSink_GetProperty(const_cast<cDataTable*>(this),anIndex);

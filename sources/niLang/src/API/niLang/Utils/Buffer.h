@@ -187,20 +187,6 @@ struct BufferUTF32 : public Buffer {
   }
 };
 
-#define niToCChars(X) ni::BufferUTF8(X).Chars()
-#define niToGChars(X) ni::BufferUTF16(X).Chars()
-#define niToXChars(X) ni::BufferUTF32(X).Chars()
-
-#if niUCharSize == 1
-#define niToUChars niToCChars
-#elif niUCharSize == 2
-#define niToUChars niToGChars
-#else
-#define niToUChars niToXChars
-#endif
-
-#define niToAChars niToCChars
-
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/

@@ -872,8 +872,8 @@ TEST_FIXTURE(niCore_String,CopyConstructor) {
 ///////////////////////////////////////////////
 TEST_FIXTURE(niCore_String,StrFormatConvert) {
   niDebugFmt((_A("CSZ: %s"),GetTestStringUTF8()));
-  niDebugFmt((_A("USZ: %s"),niToAChars(GetTestStringUTF16())));
-  niDebugFmt((_A("XSZ: %s"),niToAChars(GetTestStringUTF32())));
+  niDebugFmt((_A("USZ: %s"),_ASTR(GetTestStringUTF16())));
+  niDebugFmt((_A("XSZ: %s"),_ASTR(GetTestStringUTF32())));
   niDebugFmt((_A("ASZ: %s"),ASZ_TEST_STRING));
   ni::cString f = GetTestStringUTF16();
   // ni::cUString u = _USTR(GetTestStringUTF16());

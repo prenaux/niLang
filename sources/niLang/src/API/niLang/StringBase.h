@@ -226,23 +226,20 @@ class cString
     return appendEx(rhs,0);
   }
   cString& append(const gchar* rhs) {
-    return append(niToAChars(rhs));
+    return append(astl::gstring_view(rhs,eastl::CharStrlen(rhs)));
   }
   cString& append(const xchar* rhs) {
-    return append(niToAChars(rhs));
+    return append(astl::xstring_view(rhs,eastl::CharStrlen(rhs)));
   }
   cString& append(const cString& rhs) {
     return appendEx(rhs.c_str(),rhs.length()*sizeof(achar));
   }
 
-  template <typename TStringViewType>
-  cString& append(const TStringViewType& aStringView) {
-    this->reserve(this->size() + aStringView.size());
-    for (auto c : aStringView) {
-      this->appendChar(static_cast<tU32>(c));
-    }
-    return *this;
+  cString& append(const astl::string_view& aSV) {
+    return this->appendEx(aSV.data(), aSV.size());
   }
+  cString& append(const astl::gstring_view& aSV);
+  cString& append(const astl::xstring_view& aSV);
 
   cString& insertEx(tI32 anPos, const achar* rhs, tU32 anSizeInBytes) {
     if (!anSizeInBytes)
@@ -468,9 +465,10 @@ class cString
     }
   }
 
-  //! Reserves memory for the specified number of characters (not including the end zero).
-  //! \remark This will allocate exactly the requested amount of memory but not lower
-  //!         than the currently allocated size/capacity.
+  //! Reserves memory for the specified number of characters (not including
+  //! the end zero).
+  //! \remark This will allocate exactly the requested amount of memory but
+  //!  not lower than the currently allocated size/capacity.
   void reserve(tU32 anNumChars, achar** appPrevBuf = NULL) {
     if (mnCapacity && (anNumChars <= (mnCapacity-1))) {
       return;
@@ -489,8 +487,10 @@ class cString
   }
 
   //! Resize the string, sets the end character to zero.
-  //! \remark This will allocate at least the requested amount of memory with alignment.
-  //! \remark resize never deallocates memory, use clear() to release the memory
+  //! \remark This will allocate at least the requested amount of memory with
+  //!  alignment.
+  //! \remark resize never deallocates memory, use clear() or compact() to
+  //!  release the memory
   void resize(const tU32 len, achar** appPrevBuf = NULL)
   {
     niAssert(len < 1024*1024*16); // 16MB is a lot for a string, it'll be out of the
@@ -893,8 +893,15 @@ class cString
   cString& operator << (const cString& str) { *this += str; return *this; }
   cString& operator << (const tUUID& uuidVal);
 
-  template <typename TStringViewType>
-  cString& operator << (const TStringViewType& aStringView) {
+  cString& operator << (const astl::string_view& aStringView) {
+    this->append(aStringView);
+    return *this;
+  }
+  cString& operator << (const astl::gstring_view& aStringView) {
+    this->append(aStringView);
+    return *this;
+  }
+  cString& operator << (const astl::xstring_view& aStringView) {
     this->append(aStringView);
     return *this;
   }
@@ -1580,13 +1587,13 @@ inline const achar* cString::Set(const cchar* pBegin, const cchar* pEnd) {
   return Chars();
 }
 inline const achar* cString::Set(const gchar* pBegin, const gchar* pEnd) {
-  const tU32 nSize = (tU32)((pEnd-pBegin)*sizeof(gchar));
-  *this = BufferUTF8(pBegin,nSize).Chars();
+  this->resize(0);
+  append(astl::gstring_view(pBegin,pEnd-pBegin));
   return Chars();
 }
 inline const achar* cString::Set(const xchar* pBegin, const xchar* pEnd) {
-  const tU32 nSize = (tU32)((pEnd-pBegin)*sizeof(xchar));
-  *this = BufferUTF8(pBegin,nSize).Chars();
+  this->resize(0);
+  append(astl::xstring_view(pBegin,pEnd-pBegin));
   return Chars();
 }
 
@@ -1640,12 +1647,10 @@ inline cString& cString::operator << (const cchar* szChar) {
   return *this;
 }
 inline cString& cString::operator << (const gchar* gszChar) {
-  this->append(gszChar);
-  return *this;
+  return this->append(gszChar);
 }
 inline cString& cString::operator << (const xchar* xszChar) {
-  this->append(xszChar);
-  return *this;
+  return this->append(xszChar);
 }
 
 ///////////////////////////////////////////////

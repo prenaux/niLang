@@ -6,7 +6,7 @@
 #include "API/niLang/Utils/UnknownImpl.h"
 #include "API/niLang/Utils/UTFImpl.h"
 #include "API/niLang/ILang.h"
-#include <stdio.h>
+#include "API/niCC.h"
 
 namespace ni {
 
@@ -1761,7 +1761,7 @@ niExportFunc(tBool) StrIsAbsolutePath(const achar* path) {
 
 ///////////////////////////////////////////////
 niExportFunc(tBool) StrIsInt(const achar* cszStr) {
-  if (!cszStr) return NULL;
+  if (!cszStr) return eFalse;
   const achar* p = cszStr;
   while (*p) {
     if (*p == '.')
@@ -3460,5 +3460,40 @@ niExportFuncCPP(cString) StringBytesToReadableSize(tU64 aBytes, tBool abAlwaysPr
   }
 }
 
+template <typename T>
+tBool _AppendUTFToUTF8(
+  cString& astrOut, const typename T::tChar* apData, tSize anCount) {
+  if (!apData || anCount == 0) {
+    return eTrue;
+  }
+
+  niLet outPrevSize = astrOut.size();
+  // resize to the maximum possible size
+  astrOut.resize(outPrevSize + (anCount * 4));
+  niLet outStart = astrOut.data();
+  niVar pOut = outStart + outPrevSize;
+
+  niLet pSrcEnd = apData + anCount;
+  niVar pSrc = apData;
+  while (pSrc < pSrcEnd) {
+    niLet c = T::next(pSrc);
+    if (c == 0)
+      break;
+    pOut = utf8::append(c, pOut);
+  }
+
+  astrOut.resize(pOut - outStart);
+  return eTrue;
+}
+
+niExportFuncCPP(tBool) StringCatUTF16(
+  cString& astrOut, const gchar* aChars, const tSize anCount) {
+  return _AppendUTFToUTF8<ni::utf16>(astrOut, aChars, anCount);
+}
+
+niExportFuncCPP(tBool) StringCatUTF32(
+  cString& astrOut, const xchar* aChars, const tSize anCount) {
+  return _AppendUTFToUTF8<ni::utf32>(astrOut, aChars, anCount);
+}
 
 }

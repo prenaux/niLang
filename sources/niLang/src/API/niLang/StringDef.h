@@ -150,6 +150,23 @@ niExportFuncCPP(tU32) StringSplitCsvFields(const cString& aToSplit,
 
 //----------------------------------------------------------------------------
 //
+// Section: UTF conversion.
+//
+//----------------------------------------------------------------------------
+niExportFuncCPP(tBool) StringCatUTF16(cString& astrOut, const gchar* aChars, const tSize anCount);
+niExportFuncCPP(tBool) StringCatUTF32(cString& astrOut, const xchar* aChars, const tSize anCount);
+
+inline cString& cString::append(const astl::gstring_view& aSV) {
+  StringCatUTF16(*this,aSV.data(),aSV.size());
+  return *this;
+}
+inline cString& cString::append(const astl::xstring_view& aSV) {
+  StringCatUTF32(*this,aSV.data(),aSV.size());
+  return *this;
+}
+
+//----------------------------------------------------------------------------
+//
 // Section: String vararg format
 //
 //----------------------------------------------------------------------------

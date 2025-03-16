@@ -101,6 +101,11 @@ namespace eastl
 			return Base::operator bool();
 		}
 
+    bool has_value() const EA_NOEXCEPT
+    {
+      return Base::operator bool();
+    }
+
 		R operator ()(Args... args) const
 		{
 			return Base::operator ()(eastl::forward<Args>(args)...);

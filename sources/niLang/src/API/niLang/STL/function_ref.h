@@ -197,6 +197,10 @@ public:
     return callback_(obj_, eastl::forward<Args>(args)...);
   }
 
+  bool has_value() const {
+    return obj_ != nullptr;
+  }
+
 private:
   void *obj_ = nullptr;
   R (*callback_)(void *, Args...) = nullptr;

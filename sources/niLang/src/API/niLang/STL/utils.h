@@ -61,6 +61,7 @@ using eastl::search;
 using eastl::count_if;
 using eastl::any_of;
 using eastl::is_permutation;
+using eastl::lower_bound;
 
 template <typename T>
 struct hash_cast {

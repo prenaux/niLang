@@ -46,7 +46,7 @@ class cString
   cString() STR_INIT {
   }
   ~cString() {
-    clear();
+    SetCapacity(0,nullptr);
   }
   cString(const cString& str) STR_INIT  { *this = str; }
   cString(const char* aszStr, tSize aLen) STR_INIT {
@@ -465,25 +465,43 @@ class cString
     }
   }
 
-  //! Reserves memory for the specified number of characters (not including
-  //! the end zero).
+  //! Reserves memory for the specified number of characters (plus the end
+  //! zero).
   //! \remark This will allocate exactly the requested amount of memory but
   //!  not lower than the currently allocated size/capacity.
+  //! \remark 0 characters allocate zero bytes, 1 character allocates two
+  //!  bytes since it then needs a spot for the end zero aswell.
   void reserve(tU32 anNumChars, achar** appPrevBuf = NULL) {
-    if (mnCapacity && (anNumChars <= (mnCapacity-1))) {
+    if (!anNumChars || (mnCapacity && (anNumChars <= (mnCapacity-1)))) {
       return;
     }
     SetCapacity(anNumChars+1,appPrevBuf);
   }
 
   //! Clear the string
+  //! \remark Intentionally does not release memory. To reclaim memory use
+  //!  cString::compact or cString::ClearAndCompact.
   void clear() {
-    SetCapacity(0,NULL);
+    resize(0);
   }
 
   //! Set the capactity to the minimum required to contain the stored string
   void compact() {
     SetCapacity(mnLen+1,NULL);
+  }
+
+  // clear the string content and preallocate nSize bytes
+  void Clear(tSize anReserve = 0) {
+    resize(0);
+    reserve(anReserve);
+  }
+
+  // clear the string and makes sure only the specified amount of memory is
+  // reserved, if any
+  void ClearAndCompact(tSize anReserve = 0) {
+    resize(anReserve); // make sure we have the memory we need/want
+    compact(); // reallocate/release if there's too much allocated
+    resize(0); // reset string to 0 while keeping any reserved memory
   }
 
   //! Resize the string, sets the end character to zero.
@@ -548,9 +566,6 @@ class cString
     niAssert(str[mnLen] == 0);
     return &str[mnLen];
   }
-
-  // clear the string content and preallocate nSize bytes
-  void Clear(tSize anReserve = 0) { niUnused(anReserve); return clear(); }
 
   // return the string's length
   tU32 Len() const      { return length(); }

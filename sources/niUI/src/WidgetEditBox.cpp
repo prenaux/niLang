@@ -741,12 +741,21 @@ void __stdcall cEditBoxWidget::MoveCursorParaDelta(const tI32 aDelta) {
 
 void cEditBoxWidget::MoveCursorLineDelta(tI32 line)
 {
-  Position cursor=mbufText.GetCursor();
-  tI32 targetline=cursor._line+line;
-  tI32 targetcol=mbufText.GetLogicalCursorCol();
-  if(targetline<0)targetline=0;
-  Position pos(targetline,targetcol);
-  Position closestPos = mbufText.GetClosestValidPos(pos,0);
+  if (!line) {
+    return;
+  }
+
+  niLet cursor=mbufText.GetCursor();
+  niLet targetline=ni::Min(0,cursor._line+line);
+  niLet targetcol=mbufText.GetLogicalCursorCol();
+  niLet pos = Position(targetline,targetcol);
+  niLet closestPos = mbufText.GetClosestValidPos(pos,0);
+  if (closestPos._line == cursor._line) {
+    // dont MoveCursor() if we're not moving line so that we never move the
+    // column or trigger any message in this case
+    return;
+  }
+
   MoveCursor((sVec2i&)closestPos,eFalse);
 }
 

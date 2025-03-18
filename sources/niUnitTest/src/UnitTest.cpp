@@ -662,6 +662,14 @@ void TestReporterStdout::ReportSummary(int testCount,
       str << "- " << _failures[i];
     }
   }
+
+  ni::sVec4i memStats;
+  ni_mem_get_stats(&memStats);
+  str += niFmt(
+    "Total Allocs: %d (objs: %d), Live Allocs: %d (objs: %d)",
+    memStats.x, memStats.z,
+    memStats.x - memStats.y,
+    memStats.z - memStats.w);
   str += niFmt(_A("Test time: %g seconds.\n"), secondsElapsed);
   niPrintln(str.Chars());
 }

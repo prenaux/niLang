@@ -78,6 +78,29 @@ class cString
   template<typename TF> explicit
   cString(const sMatrix<TF>& obj, const achar* aszPrefix = NULL) STR_INIT { Set(obj,aszPrefix); }
 
+  cString(cString&& str) noexcept
+    : mnCapacity(str.mnCapacity), mnLen(str.mnLen), mpStorage(str.mpStorage)
+  {
+    str.mpStorage = StringEmpty<achar>();
+    str.mnCapacity = 0;
+    str.mnLen = 0;
+  }
+
+  cString& operator=(cString&& str) noexcept {
+    if (this != &str) {
+      SetCapacity(0, nullptr);
+
+      mpStorage = str.mpStorage;
+      mnCapacity = str.mnCapacity;
+      mnLen = str.mnLen;
+
+      str.mpStorage = StringEmpty<achar>();
+      str.mnCapacity = 0;
+      str.mnLen = 0;
+    }
+    return *this;
+  }
+
   achar* data() {
     return mpStorage;
   }

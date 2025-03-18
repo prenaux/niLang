@@ -16,11 +16,17 @@ cd "$SCRIPT_DIR"
   set -x
   cd "$WORK/niLang"
 
-  export BUILD=ra
-  export A0=-DdrawFPS=1
+  export BUILD=da
+  #export A0=-DdrawFPS=1
   export A3=-Dswapinterval=0
 
-  #ham Run_Test_niUI_niui_ListBox
-  #ham Run_Test_niUI_niui_Text
-  ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
+  # ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
+  # ham Run_Test_niUI FIXTURE=FRayTracer,Triangle
+  # ham Run_Test_niUI_niui_ListBox
+  # ham Run_Test_niUI_niui_Text
+
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Quad
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Triangle
+  # ham Run_Test_niUI_GDRV FIXTURE=FRayQuery,IntSphere
+  ham Run_Test_niUI_GDRV FIXTURE=FGpu,Triangle
 )

@@ -11,6 +11,7 @@
 namespace ni {
 niExportFuncCPP(ni::cString) ni_generate_minidump(void* apExp);
 }
+#define NI_SEH_EXCEPTION_PANIC (0xE000BEEF)
 #endif
 
 #ifdef niJSCC
@@ -62,30 +63,23 @@ niExportFunc(int)  ni_get_panic_harakiri() {
   return _bHarakiriOnPanic;
 }
 
-// Disable: warning C4251: 'ni::sPanicException::_desc': 'ni::cString' needs to have dll-interface to be used by clients of 'ni::sPanicException'
-EA_DISABLE_VC_WARNING(4251);
-
-struct __ni_module_export sPanicException : public iPanicException {
-  sPanicException(const iHString* aKind, const cString&& aDesc) noexcept
+struct sPanicDescription : public iPanicDescription {
+  sPanicDescription(const iHString* aKind, const cString&& aDesc) noexcept
       : _kind(aKind), _desc(astl::move(aDesc))
   {
     const_cast<iHString*>(_kind)->AddRef();
   }
-  virtual ~sPanicException() {
+  virtual ~sPanicDescription() {
     if (_kind) {
       const_cast<iHString*>(_kind)->Release();
     }
-  }
-
-  const char* what() const noexcept niImpl {
-    return _desc.c_str();
   }
 
   const iHString* __stdcall GetKind() const noexcept niImpl {
     return _kind;
   }
 
-  virtual const cString& GetDesc() const noexcept niImpl {
+  virtual const cString& __stdcall GetDesc() const noexcept niImpl {
     return _desc;
   }
 
@@ -93,10 +87,80 @@ private:
   const iHString* _kind;
   const cString _desc;
 
-  sPanicException(const sPanicException& aRight) noexcept = delete;
-  sPanicException(sPanicException&& aRight) noexcept = delete;
-  sPanicException() noexcept = delete;
+  sPanicDescription(const sPanicDescription& aRight) noexcept = delete;
+  sPanicDescription(sPanicDescription&& aRight) noexcept = delete;
+  sPanicDescription() noexcept = delete;
 };
+
+#ifdef niWindows
+static inline const char* ni_windows_seh_get_excode_string(DWORD excode)
+{
+  switch(excode) {
+  case EXCEPTION_ACCESS_VIOLATION: return "EXCEPTION_ACCESS_VIOLATION";
+  case EXCEPTION_DATATYPE_MISALIGNMENT: return "EXCEPTION_DATATYPE_MISALIGNMENT";
+  case EXCEPTION_BREAKPOINT: return "EXCEPTION_BREAKPOINT";
+  case EXCEPTION_SINGLE_STEP: return "EXCEPTION_SINGLE_STEP";
+  case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
+  case EXCEPTION_FLT_DENORMAL_OPERAND: return "EXCEPTION_FLT_DENORMAL_OPERAND";
+  case EXCEPTION_FLT_DIVIDE_BY_ZERO: return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
+  case EXCEPTION_FLT_INEXACT_RESULT: return "EXCEPTION_FLT_INEXACT_RESULT";
+  case EXCEPTION_FLT_INVALID_OPERATION: return "EXCEPTION_FLT_INVALID_OPERATION";
+  case EXCEPTION_FLT_OVERFLOW: return "EXCEPTION_FLT_OVERFLOW";
+  case EXCEPTION_FLT_STACK_CHECK: return "EXCEPTION_FLT_STACK_CHECK";
+  case EXCEPTION_FLT_UNDERFLOW: return "EXCEPTION_FLT_UNDERFLOW";
+  case EXCEPTION_INT_DIVIDE_BY_ZERO: return "EXCEPTION_INT_DIVIDE_BY_ZERO";
+  case EXCEPTION_INT_OVERFLOW: return "EXCEPTION_INT_OVERFLOW";
+  case EXCEPTION_PRIV_INSTRUCTION: return "EXCEPTION_PRIV_INSTRUCTION";
+  case EXCEPTION_IN_PAGE_ERROR: return "EXCEPTION_IN_PAGE_ERROR";
+  case EXCEPTION_ILLEGAL_INSTRUCTION: return "EXCEPTION_ILLEGAL_INSTRUCTION";
+  case EXCEPTION_NONCONTINUABLE_EXCEPTION: return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
+  case EXCEPTION_STACK_OVERFLOW: return "EXCEPTION_STACK_OVERFLOW";
+  case EXCEPTION_INVALID_DISPOSITION: return "EXCEPTION_INVALID_DISPOSITION";
+  case EXCEPTION_GUARD_PAGE: return "EXCEPTION_GUARD_PAGE";
+  case EXCEPTION_INVALID_HANDLE: return "EXCEPTION_INVALID_HANDLE";
+  case NI_SEH_EXCEPTION_PANIC: return "NI_SEH_EXCEPTION_PANIC";
+  };
+  return "EXCEPTION_UNKNOWN";
+}
+
+niExternC __ni_module_export LONG WINAPI ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo) {
+  // Log the exception
+  DWORD code = pExInfo->ExceptionRecord->ExceptionCode;
+  cString msg = niFmt("ni_windows_seh_unhandled_exception_filter: 0x%08X: %s.", code, ni_windows_seh_get_excode_string(code));
+  niHarakiri(msg.c_str(), nullptr);
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
+#ifdef niUseWindowsSEHExceptions
+thread_local sPanicDescription* _lastPanic = nullptr;
+
+niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo) {
+  EXCEPTION_POINTERS* pExp = reinterpret_cast<EXCEPTION_POINTERS*>(aExcInfo);
+  //niDebugFmt(("niWindows_HandleSEH: %p, %p", aExcCode, (tIntPtr)aExcInfo));
+  if ((aExcCode == NI_SEH_EXCEPTION_PANIC) &&
+      (pExp->ExceptionRecord->NumberParameters >= 1))
+  {
+    if (_lastPanic) {
+      delete _lastPanic;
+    }
+    _lastPanic = reinterpret_cast<sPanicDescription*>(
+      pExp->ExceptionRecord->ExceptionInformation[0]);
+    return EXCEPTION_EXECUTE_HANDLER;
+  }
+  else {
+    DWORD code = pExp->ExceptionRecord->ExceptionCode;
+    cString msg = niFmt("ni_windows_seh_on_handle: UnhandledException 0x%08X: %s.", code, ni_windows_seh_get_excode_string(code));
+    niHarakiri(msg.c_str(), nullptr);
+    return EXCEPTION_EXECUTE_HANDLER;
+  }
+}
+
+niExportFunc(iPanicDescription*) ni_windows_seh_get_last_panic() {
+  return _lastPanic;
+}
+
+#endif
 
 static void _FormatThrowMessage(
   cString& fmt,
@@ -171,7 +235,14 @@ niExportFuncCPP(void) ni_throw_panic(
 #else
   niError(fmt.Chars());
 #endif
-  throw sPanicException{aKind,std::move(fmt)};
+
+#ifdef niUseWindowsSEHExceptions
+  sPanicDescription* pEx = new sPanicDescription{aKind, std::move(fmt)};
+  ULONG_PTR exceptionArgs[1] = {reinterpret_cast<ULONG_PTR>(pEx)};
+  RaiseException(NI_SEH_EXCEPTION_PANIC, 0, 1, exceptionArgs);
+#else
+  throw sPanicDescription{aKind,std::move(fmt)};
+#endif
 
 #endif
 }
@@ -254,15 +325,5 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int) {
   exit(0x12345678);
 #endif
 }
-
-#ifdef niWindows
-niExternC __ni_module_export LONG WINAPI ni_UnhandledExceptionFilter(EXCEPTION_POINTERS* pExInfo) {
-  // Log the exception
-  DWORD code = pExInfo->ExceptionRecord->ExceptionCode;
-  cString msg = niFmt("ni_UnhandledExceptionFilter (0x%08X)", code);
-  niHarakiri(msg.c_str(), nullptr);
-  return EXCEPTION_EXECUTE_HANDLER;
-}
-#endif
 
 }

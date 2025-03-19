@@ -1081,18 +1081,11 @@ niExportFunc(void) ni_harakiri(niConst struct iHString* aKind, niConst char* msg
 #ifdef __cplusplus
 class cString; // string class forward declaration
 
-// \remark We can't inherit std::exception on Windows because it forces us to
-//         use the DLL version of the CRT which forces us to redistribute the
-//         vcredist package which makes it impossible to create self contained
-//         exes without creating a different build target. It also makes it
-//         impossible to cleanly distribute an application without a Windows
-//         installer.
-struct __ni_module_export iPanicException {
-  // std::exception like api, alias for GetDesc().c_str()
-  virtual const char* what() const noexcept = 0;
-
+// Use ni::TryCatchPanic in <niLang/Utils/CrashReport.h> to handle it if you
+// must. You generally should not.
+struct iPanicDescription {
   virtual const iHString* __stdcall GetKind() const noexcept = 0;
-  virtual const cString& GetDesc() const noexcept = 0;
+  virtual const cString& __stdcall GetDesc() const noexcept = 0;
 };
 
 niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char* msg, const char* file, int line, const char* func);

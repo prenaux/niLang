@@ -18,7 +18,8 @@
 #include "../Platforms/Win32/Win32_Redef.h"
 #include <signal.h>
 #define niCrashReportHasMinidump
-niExternC __ni_module_export LONG WINAPI ni_UnhandledExceptionFilter(EXCEPTION_POINTERS* pExInfo);
+niExternC __ni_module_export LONG WINAPI ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo);
+#define niUseWindowsSEHExceptions
 #endif
 
 namespace ni {
@@ -61,7 +62,7 @@ static inline void __niCrashReportModuleInstall()
 #endif
 
 #ifdef niWindows
-  SetUnhandledExceptionFilter(ni_UnhandledExceptionFilter);
+  SetUnhandledExceptionFilter(ni_windows_seh_unhandled_exception_filter);
   _set_error_mode(_OUT_TO_STDERR);
 #endif
 
@@ -115,10 +116,6 @@ static inline void __niCrashReportModuleInstall()
 static inline void __niCrashReportModuleUninstall()
 {
   // niPrintln("__niCrashReportModuleUninstall");
-
-#ifdef niWindows
-  _set_error_mode(_OUT_TO_STDERR);
-#endif
 
 #if defined _MSC_VER
 #if _MSC_VER>=1300
@@ -181,7 +178,73 @@ struct sNiCrashReport {
 #define niCrashReport_ModuleInstall()
 #endif
 
-#endif
+#ifdef niUseWindowsSEHExceptions
+extern "C" void* __cdecl _exception_info(void);
+#pragma intrinsic(_exception_info)
+
+extern "C" unsigned long __cdecl _exception_code(void);
+#pragma intrinsic(_exception_code)
+
+niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo);
+niExportFunc(iPanicDescription*) ni_windows_seh_get_last_panic();
+
+template <typename RunFunc, typename CatchFunc>
+auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
+  using RunReturnType = decltype(aRun());
+  using CatchReturnType = decltype(aCatch(*ni_windows_seh_get_last_panic()));
+  static_assert(
+    std::is_same_v<RunReturnType, CatchReturnType>,
+    "Run and catch functions must return the same type");
+
+  if constexpr (std::is_void_v<RunReturnType>) {
+    __try {
+      aRun();
+    } __except (
+      ni_windows_seh_on_handle(_exception_code(), _exception_info())) {
+      aCatch(*ni_windows_seh_get_last_panic());
+    }
+  }
+  else {
+    __try {
+      return aRun();
+    } __except (
+      ni_windows_seh_on_handle(_exception_code(), _exception_info())) {
+      return aCatch(*ni_windows_seh_get_last_panic());
+    }
+  }
+}
+
+#else // #ifdef niUseWindowsSEHExceptions
+
+template <typename RunFunc, typename CatchFunc>
+auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
+  using RunReturnType = decltype(aRun());
+  using CatchReturnType = decltype(aCatch(nullptr));
+  static_assert(
+    std::is_same_v<RunReturnType, CatchReturnType>,
+    "Run and catch functions must return the same type");
+
+  if constexpr (std::is_void_v<RunReturnType>) {
+    niTry {
+      aRun();
+    }
+    niCatch(ni::iPanicDescription,e) {
+      aCatch(e);
+    }
+  }
+  else {
+    niTry {
+      return aRun();
+    }
+    niCatch(ni::iPanicDescription,e) {
+      return aCatch(e);
+    }
+  }
+}
+
+#endif // #ifdef niUseWindowsSEHExceptions
+
+#endif // #if !defined __cplusplus
 
 /**@}*/
 /**@}*/

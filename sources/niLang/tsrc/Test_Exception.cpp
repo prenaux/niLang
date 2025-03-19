@@ -1,5 +1,6 @@
 // #define niNoExceptions
 #include "stdafx.h"
+#include <niLang/Utils/CrashReport.h>
 
 using namespace ni;
 using namespace astl;
@@ -20,56 +21,42 @@ void TestThrowPanicMsg(const char* msg) {
   niThrowPanic(foo,my_exception,msg);
 }
 
+#if 0
 TEST_FIXTURE(FException,CheckThrow1) {
-  CHECK_THROW(TestThrowPanic(), iPanicException);
+  CHECK_THROW(TestThrowPanic(), iPanicDescription);
 }
 
 TEST_FIXTURE(FException,CheckThrow2) {
-  CHECK_THROW(TestThrowPanicMsg("weee"), iPanicException);
+  CHECK_THROW(TestThrowPanicMsg("weee"), iPanicDescription);
 }
+#endif
 
-TEST_FIXTURE(FException,Std) {
+TEST_FIXTURE(FException,Panic) {
   tHStringPtr caughtKind;
   cString caughtDesc;
-  try {
+  TryCatchPanic([&]() {
     TestThrowPanic();
-  } catch (const iPanicException& e) {
+  },
+  [&](const ni::iPanicDescription& e) {
     caughtKind = e.GetKind();
     caughtDesc = e.GetDesc();
     niDebugFmt(("... caught: %s", e.GetKind()));
-  } catch (...) {
-    CHECK(false && "Unreachable");
-  }
+  });
   CHECK_EQUAL(_HC(panic), caughtKind.raw_ptr());
   CHECK(caughtDesc.contains("--- CALLSTACK ---"));
 };
 
-TEST_FIXTURE(FException,GenericPanic) {
+TEST_FIXTURE(FException,PanicWithMsg) {
   tHStringPtr caughtKind;
   cString caughtDesc;
-  niTry {
-    TestThrowPanic();
-  }
-  niCatch(ni::iPanicException,e) {
-    caughtKind = e.GetKind();
-    caughtDesc = e.GetDesc();
-    niDebugFmt(("... caught: %s", e.GetKind()));
-  }
-  CHECK_EQUAL(_HC(panic), caughtKind.raw_ptr());
-  CHECK(caughtDesc.contains("--- CALLSTACK ---"));
-};
-
-TEST_FIXTURE(FException,WithMsg) {
-  tHStringPtr caughtKind;
-  cString caughtDesc;
-  niTry {
+  TryCatchPanic([&]() {
     TestThrowPanicMsg("foo bar qoo");
-  }
-  niCatch(ni::iPanicException,e) {
+  },
+  [&](const ni::iPanicDescription& e) {
     caughtKind = e.GetKind();
     caughtDesc = e.GetDesc();
     niDebugFmt(("... caught: %s", e.GetKind()));
-  }
+  });
   CHECK_EQUAL(_HSym(foo,my_exception), caughtKind.raw_ptr());
   CHECK(caughtDesc.contains("--- CALLSTACK ---"));
 };

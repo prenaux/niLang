@@ -33,6 +33,7 @@ if (!::gUIContext) {
   ///////////////////////////////////////////////
   // Called after the basic startup to init the application
   function appStartup() {
+    ::gLang.SetProperty("niLang.ShowFatalErrorMessageBox","1");
   }
 
   ///////////////////////////////////////////////

@@ -9,7 +9,6 @@
 
 #ifdef niWindows
 #  ifdef niMSVC
-//#define USE_SEH
 #    include <windows.h>
 #    include <winbase.h>
 #  elif defined TEST_NICATCHALL && !defined __JSCC__
@@ -34,87 +33,6 @@ niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty);
 
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
 #error "USE_SIGNALS should only be used with TEST_NICATCHALL"
-#endif
-
-//----------------------------------------------------------------------------
-//
-// Section: SEH
-//
-//----------------------------------------------------------------------------
-#ifdef USE_SEH
-namespace UnitTest {
-class SEHException : public astl::exception
-{
- public:
-  SEHException(const char* desc) {
-    strncpy(m_desc,desc,sizeof(m_desc)/sizeof(char));
-  }
-  virtual ~SEHException() {
-  }
-  const char* what() const {
-    return m_desc;
-  }
-  char m_desc[1024];
-
-  static inline int _Handle(DWORD excode)
-  {
-    switch(excode) {
-      case EXCEPTION_ACCESS_VIOLATION:
-      case EXCEPTION_DATATYPE_MISALIGNMENT:
-      case EXCEPTION_BREAKPOINT:
-      case EXCEPTION_SINGLE_STEP:
-      case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-      case EXCEPTION_FLT_DENORMAL_OPERAND:
-      case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-      case EXCEPTION_FLT_INEXACT_RESULT:
-      case EXCEPTION_FLT_INVALID_OPERATION:
-      case EXCEPTION_FLT_OVERFLOW:
-      case EXCEPTION_FLT_STACK_CHECK:
-      case EXCEPTION_FLT_UNDERFLOW:
-      case EXCEPTION_INT_DIVIDE_BY_ZERO:
-      case EXCEPTION_INT_OVERFLOW:
-      case EXCEPTION_PRIV_INSTRUCTION:
-      case EXCEPTION_IN_PAGE_ERROR:
-      case EXCEPTION_ILLEGAL_INSTRUCTION:
-      case EXCEPTION_NONCONTINUABLE_EXCEPTION:
-      case EXCEPTION_STACK_OVERFLOW:
-      case EXCEPTION_INVALID_DISPOSITION:
-      case EXCEPTION_GUARD_PAGE:
-      case EXCEPTION_INVALID_HANDLE:
-        return EXCEPTION_EXECUTE_HANDLER;
-    };
-    return EXCEPTION_CONTINUE_SEARCH;
-  }
-  static inline const char* _Desc(DWORD excode)
-  {
-    switch(excode) {
-      case EXCEPTION_ACCESS_VIOLATION: return "EXCEPTION_ACCESS_VIOLATION";
-      case EXCEPTION_DATATYPE_MISALIGNMENT: return "EXCEPTION_DATATYPE_MISALIGNMENT";
-      case EXCEPTION_BREAKPOINT: return "EXCEPTION_BREAKPOINT";
-      case EXCEPTION_SINGLE_STEP: return "EXCEPTION_SINGLE_STEP";
-      case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
-      case EXCEPTION_FLT_DENORMAL_OPERAND: return "EXCEPTION_FLT_DENORMAL_OPERAND";
-      case EXCEPTION_FLT_DIVIDE_BY_ZERO: return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
-      case EXCEPTION_FLT_INEXACT_RESULT: return "EXCEPTION_FLT_INEXACT_RESULT";
-      case EXCEPTION_FLT_INVALID_OPERATION: return "EXCEPTION_FLT_INVALID_OPERATION";
-      case EXCEPTION_FLT_OVERFLOW: return "EXCEPTION_FLT_OVERFLOW";
-      case EXCEPTION_FLT_STACK_CHECK: return "EXCEPTION_FLT_STACK_CHECK";
-      case EXCEPTION_FLT_UNDERFLOW: return "EXCEPTION_FLT_UNDERFLOW";
-      case EXCEPTION_INT_DIVIDE_BY_ZERO: return "EXCEPTION_INT_DIVIDE_BY_ZERO";
-      case EXCEPTION_INT_OVERFLOW: return "EXCEPTION_INT_OVERFLOW";
-      case EXCEPTION_PRIV_INSTRUCTION: return "EXCEPTION_PRIV_INSTRUCTION";
-      case EXCEPTION_IN_PAGE_ERROR: return "EXCEPTION_IN_PAGE_ERROR";
-      case EXCEPTION_ILLEGAL_INSTRUCTION: return "EXCEPTION_ILLEGAL_INSTRUCTION";
-      case EXCEPTION_NONCONTINUABLE_EXCEPTION: return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
-      case EXCEPTION_STACK_OVERFLOW: return "EXCEPTION_STACK_OVERFLOW";
-      case EXCEPTION_INVALID_DISPOSITION: return "EXCEPTION_INVALID_DISPOSITION";
-      case EXCEPTION_GUARD_PAGE: return "EXCEPTION_GUARD_PAGE";
-      case EXCEPTION_INVALID_HANDLE: return "EXCEPTION_INVALID_HANDLE";
-    };
-    return "EXCEPTION_UNKNOWN";
-  }
-};
-}
 #endif
 
 //----------------------------------------------------------------------------
@@ -328,130 +246,109 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  TEST_TRY {
+  return ni::TryCatchPanic([&]() {
+#if defined TEST_NICATCHALL
+    TEST_TRY
+#endif
+    {
 #ifdef USE_SIGNALS
-    TEST_THROW_SIGNALS;
+      TEST_THROW_SIGNALS;
 #endif
 #ifndef TEST_DONT_PRINT_TEST_NAMES
-    niPrintln(niFmt(_A("## [%d/%d] Test: %s ##\n"),
-                            testResults.m_testCount,testResults.m_numTests,m_testName));
+      niPrintln(niFmt(_A("## [%d/%d] Test: %s ##\n"),
+        testResults.m_testCount,testResults.m_numTests,m_testName));
 #endif
-    m_timeStart = ni::TimerInSeconds();
-#ifdef USE_SEH
-    __try {
-#endif
+      m_timeStart = ni::TimerInSeconds();
       BeforeRunImpl(testResults);
-#ifdef USE_SEH
     }
-    __except(SEHException::_Handle(::GetExceptionCode())) {
-      throw SEHException(SEHException::_Desc(::GetExceptionCode()));
-    }
-#endif
-  }
-#ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::iPanicException,e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  }
-#endif
 #if defined TEST_NICATCHALL
-  TEST_CATCH(astl::exception, e) {
+    TEST_CATCH(astl::exception, e) {
+      ni::cString stream;
+      stream << "Unhandled exception: " << e.what();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
+      return false;
+    }
+    TEST_CATCHALL() {
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
+      return false;
+    }
+#endif
+    return true;
+  }, [&](const ni::iPanicDescription& e) {
     ni::cString stream;
-    stream << "Unhandled exception: " << e.what();
+    stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
-  }
-  TEST_CATCHALL() {
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-    return false;
-  }
-#endif
-  return true;
+  });
 }
 
 bool Test::Run(TestResults& testResults) const
 {
-  TEST_TRY {
-#ifdef USE_SIGNALS
-    TEST_THROW_SIGNALS;
+  return ni::TryCatchPanic([&]() {
+#if defined TEST_NICATCHALL
+    TEST_TRY
 #endif
-#ifdef USE_SEH
-    __try {
+    {
+#ifdef USE_SIGNALS
+      TEST_THROW_SIGNALS;
 #endif
       RunImpl(testResults);
-#ifdef USE_SEH
     }
-    __except(SEHException::_Handle(::GetExceptionCode())) {
-      throw SEHException(SEHException::_Desc(::GetExceptionCode()));
-    }
-#endif
-  }
-#ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::iPanicException,e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  }
-#endif
 #if defined TEST_NICATCHALL
-  TEST_CATCH(astl::exception, e) {
+    TEST_CATCH(astl::exception, e) {
+      ni::cString stream;
+      stream << "Unhandled exception: " << e.what();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
+      return false;
+    }
+    TEST_CATCHALL() {
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
+      return false;
+    }
+#endif
+    return true;
+  }, [&](const ni::iPanicDescription& e) {
     ni::cString stream;
-    stream << "Unhandled exception: " << e.what();
+    stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
-  }
-  TEST_CATCHALL() {
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-    return false;
-  }
-#endif
-  return true;
+  });
 }
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  TEST_TRY {
-#ifdef USE_SIGNALS
-    TEST_THROW_SIGNALS;
+  return ni::TryCatchPanic([&]() {
+#if defined TEST_NICATCHALL
+    TEST_TRY
 #endif
-#ifdef USE_SEH
-    __try {
+    {
+#ifdef USE_SIGNALS
+      TEST_THROW_SIGNALS;
 #endif
       AfterRunImpl(testResults);
-#ifdef USE_SEH
+      if (m_timeReport) {
+        testResults.OnTestTime(m_testName, ni::TimerInSeconds() - m_timeStart);
+      }
     }
-    __except(SEHException::_Handle(::GetExceptionCode())) {
-      throw SEHException(SEHException::_Desc(::GetExceptionCode()));
-    }
-#endif
-    if (m_timeReport) {
-      testResults.OnTestTime(m_testName, ni::TimerInSeconds() - m_timeStart);
-    }
-  }
-#ifdef TEST_NITHROWASSERT
-  TEST_CATCH(ni::iPanicException,e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.what();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  }
-#endif
 #if defined TEST_NICATCHALL
-  TEST_CATCH(astl::exception, e) {
+    TEST_CATCH(astl::exception, e) {
+      ni::cString stream;
+      stream << "Unhandled exception: " << e.what();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
+      return false;
+    }
+    TEST_CATCHALL() {
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
+      return false;
+    }
+#endif
+    return true;
+  }, [&](const ni::iPanicDescription& e) {
     ni::cString stream;
-    stream << "Unhandled exception: " << e.what();
+    stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
     return false;
-  }
-  TEST_CATCHALL() {
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-    return false;
-  }
-#endif
-  return true;
+  });
 }
 
 }

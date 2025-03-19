@@ -358,44 +358,40 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
   }
 
   tBool LoadTextures() {
-    niTry {
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_d.jpg"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_d.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
 
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/glass.tga"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/glass.tga"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
 
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/rust_steel.jpg"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/rust_steel.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
 
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_lights.jpg"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_lights.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
 
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_clouds_d.jpg"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_clouds_d.jpg"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
+    }
 
-      {
-        NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/church2k.dds"));
-        _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-          _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
-      }
-    } niCatch(ni::iPanicException,e) {
-      return eFalse;
+    {
+      NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/church2k.dds"));
+      _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
+        _H(fp->GetSourcePath()),_graphics->LoadBitmap(fp),eTextureFlags_Default)));
     }
 
     return eTrue;

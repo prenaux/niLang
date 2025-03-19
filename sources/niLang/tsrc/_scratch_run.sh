@@ -1,2 +1,4 @@
 #!/bin/bash -ex
-hamx :niLang Run_Test_niLang FIXTURE=niCore_String
+export BUILD=da
+#hamx :niLang Run_Test_niLang FIXTURE=niCore_String
+hamx :niLang Run_Test_niLang FIXTURE=FException

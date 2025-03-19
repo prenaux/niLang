@@ -1230,14 +1230,24 @@ ni_main
 #ifdef NI_WINDOWED
 niWindowedMain()
 {
-  ni::GetLang()->SetProperty("ni.app.name","niw");
-  return niw_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+  TryCatchPanic([&]() {
+    ni::GetLang()->SetProperty("ni.app.name","niw");
+    return niw_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+  },[&](const ni::iPanicDescription& e) {
+    ni::GetLang()->FatalError(e.GetDesc().Chars());
+    return (int)eInvalidHandle;
+  });
 }
 #else
 niConsoleMain()
 {
-  ni::GetLang()->SetProperty("ni.app.name","ni");
-  return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+  TryCatchPanic([&]() {
+    ni::GetLang()->SetProperty("ni.app.name","ni");
+    return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+  },[&](const ni::iPanicDescription& e) {
+    ni::GetLang()->FatalError(e.GetDesc().Chars());
+    return (int)eInvalidHandle;
+  });
 }
 #endif
 

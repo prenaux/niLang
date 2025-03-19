@@ -112,6 +112,9 @@ MY_WINBASEAPI int MY_WINAPI ReleaseSemaphore(void* hObject, long lReleaseCount, 
 
 MY_WINBASEAPI MY_DWORD MY_WINAPI WaitForSingleObject(void* hHandle,MY_DWORD dwMilliseconds);
 
+MY_WINBASEAPI int MY_WINAPI TryEnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI void MY_WINAPI Sleep(MY_DWORD dwMilliseconds);
+
 #define MY_STATUS_WAIT_0 ((MY_DWORD)0x00000000L)
 #define MY_WAIT_OBJECT_0 ((MY_STATUS_WAIT_0) + 0)
 
@@ -190,6 +193,14 @@ struct ThreadMutex : public Impl_HeapAlloc {
     int r = pthread_mutex_unlock(&mID);
     niAssertMsg(r>=0,_A("Can't unlock pthread mutex."));
     niUnused(r);
+#endif
+  }
+
+  bool __stdcall ThreadTryLock() const {
+#ifdef niWin32
+    return TryEnterCriticalSection((struct _RTL_CRITICAL_SECTION*)&mCS) != 0;
+#else
+    return pthread_mutex_trylock(&mID) == 0;
 #endif
   }
 

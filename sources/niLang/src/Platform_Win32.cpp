@@ -159,7 +159,7 @@ static void _FatalError(const achar* aszMsg) {
     WinUI::cTextDlg dlg(NULL, niFmt("%s Fatal Error", appName), dialogMessage.c_str());
     ni::sRecti rect = ni::GetLang()->GetMonitorRect(0);
     if (rect.GetWidth() > 100 && rect.GetHeight() > 100) {
-      dlg.SetSize(rect.GetWidth()/3,rect.GetHeight()/2);
+      dlg.SetSize(rect.GetWidth()/2,rect.GetHeight()/8*5);
     }
     dlg.DoModal(eTrue);
   }

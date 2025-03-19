@@ -5089,7 +5089,7 @@ inline const ni::achar* RegisterApp(const ni::achar* aszAppName, const ni::achar
 class cTextDlg
 {
  public:
-  cTextDlg(HINSTANCE ahInstance, const ni::achar* aaszTitle, const ni::achar* aaszErrorText)
+  cTextDlg(HINSTANCE ahInstance, const ni::achar* aaszTitle, const ni::achar* aaszText)
       : mstrTitle(aaszTitle ? aaszTitle : "Error")
       , mFont(nullptr)
       , mDlgWnd(nullptr)
@@ -5099,8 +5099,9 @@ class cTextDlg
       , mWidth(800)
       , mHeight(600)
       , mnFontSize(18)
+      , mbAutoScroll(FALSE)
   {
-    SetErrorText(aaszErrorText);
+    SetText(aaszText);
   }
 
   virtual ~cTextDlg()
@@ -5132,17 +5133,41 @@ class cTextDlg
     return result;
   }
 
-  // Set error text
-  void SetErrorText(const ni::achar* aaszErrorText)
+  void SetText(const ni::achar* aaszText)
   {
-    mstrErrorText = ProcessNewlines(aaszErrorText);
+    mstrText = ProcessNewlines(aaszText);
 
     // If edit box already created, update it
     if (mEditWnd != nullptr) {
       // Convert to UTF-16
       ni::Windows::UTF16Buffer wErrorText;
-      niWin32_UTF8ToUTF16(wErrorText, mstrErrorText.Chars());
+      niWin32_UTF8ToUTF16(wErrorText, mstrText.Chars());
       ::SetWindowTextW(mEditWnd, wErrorText.begin());
+      _AutoScroll();
+    }
+  }
+
+  void SetAutoScroll(BOOL abEnabled) {
+    mbAutoScroll = abEnabled;
+  }
+  BOOL GetAutoScroll() const {
+    return mbAutoScroll;
+  }
+
+  void _AutoScroll() {
+    if (mbAutoScroll && mEditWnd != nullptr) {
+  if (mEditWnd != nullptr) {
+    // Get text length
+    int textLen = ::GetWindowTextLengthW(mEditWnd);
+
+    // Scroll to the end by sending proper scroll messages
+    ::SendMessageW(mEditWnd, WM_VSCROLL, SB_BOTTOM, 0);
+    ::SendMessageW(mEditWnd, WM_HSCROLL, SB_LEFT, 0);
+
+    // Also set selection at the end to ensure caret visibility
+    ::SendMessageW(mEditWnd, EM_SETSEL, textLen, textLen);
+    ::SendMessageW(mEditWnd, EM_SCROLLCARET, 0, 0);
+  }
     }
   }
 
@@ -5261,7 +5286,7 @@ class cTextDlg
 
     // Convert error text to UTF-16
     ni::Windows::UTF16Buffer wErrorText;
-    niWin32_UTF8ToUTF16(wErrorText, mstrErrorText.Chars());
+    niWin32_UTF8ToUTF16(wErrorText, mstrText.Chars());
 
     // Create edit control
     mEditWnd = CreateWindowExW(
@@ -5324,6 +5349,7 @@ class cTextDlg
 
     // Give focus to the text box by default
     ::SetFocus(mEditWnd);
+    _AutoScroll();
   }
 
   static LRESULT CALLBACK _TextDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -5409,7 +5435,7 @@ class cTextDlg
     return CallWindowProcW(dlg->mOldEditProc, hwnd, msg, wParam, lParam);
   }
 
-  ni::cString mstrErrorText;
+  ni::cString mstrText;
   ni::cString mstrTitle;
   HFONT mFont;
   HWND mDlgWnd;
@@ -5420,6 +5446,7 @@ class cTextDlg
   int mWidth;
   int mHeight;
   int mnFontSize;
+  BOOL mbAutoScroll;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

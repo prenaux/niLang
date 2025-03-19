@@ -127,6 +127,7 @@ using eastl::is_base_of_v;
 using eastl::is_same_v;
 using eastl::is_null_pointer_v;
 using eastl::is_pointer_v;
+using eastl::is_void_v;
 using eastl::void_t;
 
 using eastl::integral_constant;

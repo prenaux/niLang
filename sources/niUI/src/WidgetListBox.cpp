@@ -1033,7 +1033,7 @@ void cWidgetListBox::Paint_Items(iCanvas* apCanvas)
       if (col == 0 && item.ptrIcon.IsOK()) {
         const sVec2f iconSize = item.ptrIcon->GetSize();
         apCanvas->BlitOverlay(
-          sRectf(curX,y+(fh-iconSize.y)/2,iconSize.x,iconSize.x),
+          sRectf(curX,y+(fh-iconSize.y)/2,iconSize.x,iconSize.y),
           item.ptrIcon);
         curX += iconSize.x;
       }

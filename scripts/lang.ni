@@ -104,13 +104,15 @@ local __lint = {
   }
   d.unquote <- function() {
     local str = ::LINT_AS_TYPE("string",this);
-    if (str.startswith("\"")) {
-      str = str.slice(1)
-    }
-    if (str.endswith("\"")) {
-      str = str.slice(0,-1)
-    }
-    return str;
+    return str.trimex("\"");
+  }
+  d.squote <- function() {
+    local str = this;
+    return "'" + str + "'"
+  }
+  d.unsquote <- function() {
+    local str = ::LINT_AS_TYPE("string",this);
+    return str.trimex("'");
   }
   d.replace <- function(aSearchFor, aReplaceBy) {
     if (typeof aSearchFor == "table") {

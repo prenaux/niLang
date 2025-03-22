@@ -463,10 +463,10 @@ struct CURLRunnable : public ImplRC<iRunnable>
 
   size_t __cdecl _WriteRecvData(void* buffer, size_t size, size_t nmemb) {
     _UpdateResponseCode();
-    _UpdateState(eCURLMessage_ReceivingData,_recvData.ptr());
+    _UpdateState(eCURLMessage_ReceivingData, _recvData.ptr());
     _recvDataSize += size*nmemb;
     if (_recvData.IsOK()) {
-      return _recvData->WriteRaw(buffer,size*nmemb);
+      return _recvData->WriteRaw(buffer, size*nmemb);
     }
     else {
       return 0;
@@ -650,20 +650,18 @@ class cCURL : public ImplRC<iCURL>
 {
   niBeginClass(cCURL);
  public:
-  tU32 mnRequestTimeoutInSecs;
-  tU32 mnConnectionTimeoutInSecs;
-  tHStringPtr mhspUserAgent;
+  tU32 mnRequestTimeoutInSecs = 10;
+  tU32 mnConnectionTimeoutInSecs = 60;
+  tSize mnBufferSize = CURL_MAX_WRITE_SIZE; // 16KB
+  tHStringPtr mhspUserAgent = _H("niCURL");
   tHStringPtr mhspUserName;
   tHStringPtr mhspUserPass;
-  eCURLHttpAuth mHttpAuth;
+  eCURLHttpAuth mHttpAuth = eCURLHttpAuth_None;
 #ifdef niJSCC
   tBool _hasFetchOverride;
 #endif
+
   cCURL() {
-    mnConnectionTimeoutInSecs = 10;
-    mnRequestTimeoutInSecs = 60;
-    mhspUserAgent = _H("niCURL");
-    mHttpAuth = eCURLHttpAuth_None;
 #ifdef niJSCC
     _hasFetchOverride = static_cast<tBool>(EM_ASM_INT({
       if (typeof Module["niCURL"] != "undefined") {
@@ -702,7 +700,6 @@ class cCURL : public ImplRC<iCURL>
   virtual void __stdcall SetUserName(const achar* aaszUserName) {
     mhspUserName = _H(aaszUserName);
   }
-
   virtual const achar* __stdcall GetUserName() const {
     return niHStr(mhspUserName);
   }
@@ -710,7 +707,6 @@ class cCURL : public ImplRC<iCURL>
   virtual void __stdcall SetUserPass(const achar* aaszUserPass) {
     mhspUserPass = _H(aaszUserPass);
   }
-
   virtual const achar* __stdcall GetUserPass() const {
     return niHStr(mhspUserPass);
   }
@@ -718,9 +714,15 @@ class cCURL : public ImplRC<iCURL>
   virtual void __stdcall SetHttpAuth(eCURLHttpAuth aHttpAuth) {
     mHttpAuth = aHttpAuth;
   }
-
   virtual const eCURLHttpAuth __stdcall GetHttpAuth() const {
     return mHttpAuth;
+  }
+
+  virtual void __stdcall SetBufferSize(tSize anSizeInBytes) {
+    mnBufferSize = anSizeInBytes;
+  }
+  virtual tSize __stdcall GetBufferSize() const {
+    return mnBufferSize;
   }
 
 #ifdef HAS_CURL
@@ -759,6 +761,10 @@ class cCURL : public ImplRC<iCURL>
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, mnConnectionTimeoutInSecs); // timeout for the connection in secs
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, mnRequestTimeoutInSecs); // timeout for the whole query in secs
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+    if (mnBufferSize > 0) {
+      curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, (long)mnBufferSize);
+    }
 
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);

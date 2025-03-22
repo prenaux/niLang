@@ -225,6 +225,33 @@ static const ni::sMethodDef iCURL_GetHttpAuth = {
 #endif
 };
 
+// Method: SetBufferSize
+static const ni::sParameterDef iCURL_SetBufferSize_Parameters[1] = { 
+  { "anSizeInBytes", ni::eType_Size, NULL, "tSize" }
+}; 
+static const ni::sMethodDef iCURL_SetBufferSize = {
+  "SetBufferSize",
+  ni::eTypeFlags_MethodSetter|0|ni::eType_Size, NULL, "void",
+  1, iCURL_SetBufferSize_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iCURL_SetBufferSize)
+#else
+  NULL
+#endif
+};
+
+// Method: GetBufferSize
+static const ni::sMethodDef iCURL_GetBufferSize = {
+  "GetBufferSize",
+  ni::eTypeFlags_MethodGetter|0|ni::eType_Size, NULL, "tSize",
+  0, NULL,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iCURL_GetBufferSize)
+#else
+  NULL
+#endif
+};
+
 // Method: URLGet
 static const ni::sParameterDef iCURL_URLGet_Parameters[5] = { 
   { "apMessageHandler", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iMessageHandler), "iMessageHandler*" }, 
@@ -421,6 +448,8 @@ static const ni::sMethodDef* Methods_iCURL[] = {
 	&iCURL_GetUserPass,
 	&iCURL_SetHttpAuth,
 	&iCURL_GetHttpAuth,
+	&iCURL_SetBufferSize,
+	&iCURL_GetBufferSize,
 	&iCURL_URLGet,
 	&iCURL_URLPostFile,
 	&iCURL_URLPostFields,

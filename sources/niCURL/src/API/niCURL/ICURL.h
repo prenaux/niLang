@@ -55,7 +55,7 @@ enum eCURLMessage
   //! \param B: iFuture, which can be used to cancel the request
   eCURLMessage_Progress = niMessageID('C','U','R','L','p'),
   //! \internal
-  eCURLMessage_ForceDWORD = 0xFFFFFFFF
+  eCURLMessage_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! HTTP authentication modes
@@ -73,7 +73,7 @@ enum eCURLHttpAuth
   eCURLHttpAuth_Any          = ~eCURLHttpAuth_DigestIE,
   eCURLHttpAuth_AnySafe      = ~(eCURLHttpAuth_Basic|eCURLHttpAuth_DigestIE),
   //! \internal
-  eCURLHttpAuth_ForceDWORD = 0xFFFFFFFF
+  eCURLHttpAuth_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! CURL interface.
@@ -117,6 +117,11 @@ struct iCURL : public iUnknown
   virtual void __stdcall SetHttpAuth(eCURLHttpAuth aHttpAuth) = 0;
   //! {Property}
   virtual const eCURLHttpAuth __stdcall GetHttpAuth() const = 0;
+
+  //! {Property}
+  virtual void __stdcall SetBufferSize(tSize anSizeInBytes) = 0;
+  //! {Property}
+  virtual tSize __stdcall GetBufferSize() const = 0;
 
   virtual Ptr<iRunnable> __stdcall URLGet(
       iMessageHandler* apMessageHandler,

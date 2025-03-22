@@ -114,6 +114,20 @@ IDLC_METH_BEGIN(ni,iCURL,GetHttpAuth,0)
 	IDLC_RET_FROM_ENUM(eCURLHttpAuth,_Ret)
 IDLC_METH_END(ni,iCURL,GetHttpAuth,0)
 
+/** ni -> iCURL::SetBufferSize/1 **/
+IDLC_METH_BEGIN(ni,iCURL,SetBufferSize,1)
+	IDLC_DECL_VAR(tSize,anSizeInBytes)
+	IDLC_BUF_TO_BASE(ni::eType_Size,anSizeInBytes)
+	IDLC_METH_CALL_VOID(ni,iCURL,SetBufferSize,1,(anSizeInBytes))
+IDLC_METH_END(ni,iCURL,SetBufferSize,1)
+
+/** ni -> iCURL::GetBufferSize/0 **/
+IDLC_METH_BEGIN(ni,iCURL,GetBufferSize,0)
+	IDLC_DECL_RETVAR(tSize,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iCURL,GetBufferSize,0,())
+	IDLC_RET_FROM_PTR(ni::eType_Size,_Ret)
+IDLC_METH_END(ni,iCURL,GetBufferSize,0)
+
 /** ni -> iCURL::URLGet/5 **/
 IDLC_METH_BEGIN(ni,iCURL,URLGet,5)
 	IDLC_DECL_VAR(iMessageHandler*,apMessageHandler)

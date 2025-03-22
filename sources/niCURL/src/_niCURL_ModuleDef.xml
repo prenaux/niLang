@@ -302,6 +302,33 @@
 				<comments desc=""/>
 				<return type="const eCURLHttpAuth" typec="const eCURLHttpAuth" typei="ni::eTypeFlags_Constant|ni::eType_Enum"/>
 			</method>
+			<method
+				java_name="setBufferSize"
+				name="SetBufferSize"
+				num_parameters="1"
+				property="set"
+				property_name2="bufferSize"
+				property_name="buffer_size">
+				<comments desc=""/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					last="1"
+					name="anSizeInBytes"
+					type="tSize"
+					typec="tSize"
+					typei="ni::eType_Size"/>
+			</method>
+			<method
+				const="yes"
+				java_name="getBufferSize"
+				name="GetBufferSize"
+				num_parameters="0"
+				property="get"
+				property_name2="bufferSize"
+				property_name="buffer_size">
+				<comments desc=""/>
+				<return type="tSize" typec="tSize" typei="ni::eType_Size"/>
+			</method>
 			<method java_name="urlget" name="URLGet" num_parameters="5">
 				<comments desc=""/>
 				<return type="Ptr&lt;iRunnable&gt;" typec="Ptr&lt;iRunnable&gt;" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>

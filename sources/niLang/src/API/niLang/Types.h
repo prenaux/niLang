@@ -557,7 +557,10 @@ typedef SYNC_INT_TYPE tSyncInt;
 // Exceptions
 #ifdef niNoExceptions
 #  define niTry
-#  define niCatch(T,EXC) if(niMaybeUnused const T EXC = {}; 0)
+// Use non-zero address to avoid nullptr dereference warnings. The block never
+// executes (false condition) but maintains type checking when exceptions are
+// turned off.
+#  define niCatch(T,EXC) if(niMaybeUnused const T& EXC = *reinterpret_cast<const T*>((void*)1); false)
 #  define niCatchAll()   if(0)
 #  define niThrow(X) ;
 #  define niThrowSpec()

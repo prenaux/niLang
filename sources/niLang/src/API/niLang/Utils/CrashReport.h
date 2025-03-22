@@ -4,9 +4,7 @@
 // SPDX-License-Identifier: MIT
 #include "../Types.h"
 #include "../StringDef.h"
-#ifndef niNoExceptions
-#include <exception>
-#endif
+#include "../STL/type_traits.h"
 
 #if defined __cplusplus
 #include <exception> // for std::set_terminate
@@ -219,7 +217,7 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
 template <typename RunFunc, typename CatchFunc>
 auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
   using RunReturnType = decltype(aRun());
-  using CatchReturnType = decltype(aCatch(nullptr));
+  using CatchReturnType = decltype(aCatch(astl::declval<ni::iPanicDescription>()));
   static_assert(
     std::is_same_v<RunReturnType, CatchReturnType>,
     "Run and catch functions must return the same type");

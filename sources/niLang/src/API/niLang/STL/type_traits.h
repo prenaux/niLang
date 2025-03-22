@@ -16,6 +16,7 @@ using eastl::remove_reference_t;
 using eastl::tuple_element_t;
 using eastl::get;
 using eastl::is_void_v;
+using eastl::declval;
 
 template<typename T, typename U>
 concept same_as = is_same_v<T, U> && is_same_v<U, T>;

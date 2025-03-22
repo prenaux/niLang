@@ -1084,13 +1084,6 @@ niExportFunc(void) ni_harakiri(niConst struct iHString* aKind, niConst char* msg
 #ifdef __cplusplus
 class cString; // string class forward declaration
 
-// Use ni::TryCatchPanic in <niLang/Utils/CrashReport.h> to handle it if you
-// must. You generally should not.
-struct iPanicDescription {
-  virtual const iHString* __stdcall GetKind() const noexcept = 0;
-  virtual const cString& __stdcall GetDesc() const noexcept = 0;
-};
-
 niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind, const char* msg, const char* file, int line, const char* func);
 
 #define niThrowPanic(NS,KIND,MSG) ni_throw_panic(_HSym(NS,KIND),MSG,niSourceLoc)

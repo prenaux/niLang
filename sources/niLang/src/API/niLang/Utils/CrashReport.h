@@ -176,6 +176,15 @@ struct sNiCrashReport {
 #define niCrashReport_ModuleInstall()
 #endif
 
+// Use ni::TryCatchPanic in <niLang/Utils/CrashReport.h> to handle it if you
+// must. You generally should not.
+struct iPanicDescription {
+  niDeclareInterfaceUUID(iPanicDescription,0x57142E2C,0xF9CF,0x4971,0x96,0x92,0xC5,0x22,0xFF,0xC2,0xF5,0xFD);
+
+  virtual const iHString* __stdcall GetKind() const noexcept = 0;
+  virtual const cString& __stdcall GetDesc() const noexcept = 0;
+};
+
 #ifdef niUseWindowsSEHExceptions
 extern "C" void* __cdecl _exception_info(void);
 #pragma intrinsic(_exception_info)

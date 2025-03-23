@@ -39,7 +39,7 @@ struct sUnixFFBlk {
   sUnixFFInfo info;
   niNamespace(ni,achar) name[FF_MAXPATHLEN];
   time_t      time_write;
-  unsigned long size;
+  ni::tI64    size;
   unsigned long attrib;
 };
 

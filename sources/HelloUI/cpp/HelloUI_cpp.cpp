@@ -24,8 +24,9 @@ ni::Var OnAppStarted() {
   return ni::eTrue;
 }
 
-niConsoleMain() {
+niWindowedMain() {
   ni_log_system_info_once();
+  ni_set_show_fatal_error_message_box(1);
 
   // gAppContext._config.drawFPS = 2;
   // bg update, makes profiling/debugging a lot simpler

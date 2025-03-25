@@ -32,6 +32,19 @@ struct sCapturedGraphicsContext : public ImplRC<iGraphicsContext> {
     mptrDS = gc->GetDepthStencil();
   }
 
+  ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) niImpl {
+    if (aIID == niGetInterfaceUUID(ni::iGraphicsContext) ||
+        aIID == niGetInterfaceUUID(ni::iUnknown)) {
+      return static_cast<ni::iGraphicsContext*>(this);
+    }
+    if (mptrCapturedContext.has_value()) {
+      iUnknown* r = mptrCapturedContext->QueryInterface(aIID);
+      if (r != nullptr)
+        return r;
+    }
+    return BaseImpl::QueryInterface(aIID);
+  }
+
   virtual iGraphics* __stdcall GetGraphics() const {
     return mptrCapturedContext->GetGraphics();
   }

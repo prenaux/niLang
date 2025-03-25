@@ -443,10 +443,21 @@ struct cImageGraphicsContext : public ni::ImplRC<iGraphicsContext>
   }
 
   ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) niImpl {
-    if (aIID == niGetInterfaceUUID(ni::iImage))
+    if (aIID == niGetInterfaceUUID(ni::iImage)) {
       return mptrImage;
+    }
+    if (aIID == niGetInterfaceUUID(ni::iGraphicsContext) ||
+        aIID == niGetInterfaceUUID(ni::iUnknown)) {
+      return static_cast<ni::iGraphicsContext*>(this);
+    }
+    if (mptrGraphicsContext.has_value()) {
+      iUnknown* r = mptrGraphicsContext->QueryInterface(aIID);
+      if (r != nullptr)
+        return r;
+    }
     return BaseImpl::QueryInterface(aIID);
   }
+
   void __stdcall ListInterfaces(ni::iMutableCollection* apLst, ni::tU32 anFlags) const niImpl {
     apLst->Add(niGetInterfaceUUID(ni::iImage));
     BaseImpl::ListInterfaces(apLst,anFlags);

@@ -4,7 +4,7 @@ using namespace ni;
 
 #define TEST_ONPAINT_CANVAS
 #define TEST_ONPAINT_CANVAS_TEXT
-//#define TEST_INDEPENDANT_CANVAS // TODO: Fix on Vulkan (RDP Only issue?)
+#define TEST_INDEPENDANT_CANVAS // TODO: Fix on Vulkan (RDP Only issue?)
 #define TEST_CHILD_WIDGETS
 //#define TEST_IPCAM 640
 #define TEST_TEXT_TABS

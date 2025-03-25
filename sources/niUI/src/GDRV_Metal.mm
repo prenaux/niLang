@@ -1110,6 +1110,13 @@ struct cMetalGraphicsDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,i
   }
 
   /////////////////////////////////////////////
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) {
+    if (niGetInterfaceUUID(iFixedGpuPipelines) == aIID)
+      return mFixedPipelines;
+    return BaseImpl::QueryInterface(aIID);
+  }
+
+  /////////////////////////////////////////////
   virtual const achar* __stdcall GetName() const {
     return _A("Metal");
   }

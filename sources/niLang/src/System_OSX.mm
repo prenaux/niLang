@@ -2640,6 +2640,123 @@ static void _TerminateApp() {
   }
 }
 
+static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* aaszText)
+{
+  _RegisterApp();
+
+  cString strTitle = niIsStringOK(aaszTitle) ? aaszTitle : "Message";
+  cString strText = niIsStringOK(aaszText) ? aaszText : _A("");
+
+  NSString* title = _ToNSString(strTitle.Chars());
+  NSString* msg = _ToNSString(strText.Chars());
+
+  // Create a panel for our custom dialog
+  NSPanel* panel = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 600, 400)
+                                              styleMask:NSWindowStyleMaskTitled |
+                                                        NSWindowStyleMaskClosable |
+                                                        NSWindowStyleMaskResizable
+                                                backing:NSBackingStoreBuffered
+                                                  defer:NO];
+  [panel setTitle:title];
+  [panel setReleasedWhenClosed:YES];
+
+  // Create a scrollable text view with monospaced font
+  NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(20, 60, 560, 320)];
+  [scrollView setBorderType:NSBezelBorder];
+  [scrollView setHasVerticalScroller:YES];
+  [scrollView setHasHorizontalScroller:YES];
+  [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+
+  NSTextView* textView = [[NSTextView alloc] initWithFrame:[[scrollView contentView] bounds]];
+  [textView setMinSize:NSMakeSize(0.0, 0.0)];
+  [textView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+  [textView setVerticallyResizable:YES];
+  [textView setHorizontallyResizable:YES];
+  [textView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [textView setEditable:NO];
+  [textView setSelectable:YES];
+  [[textView textContainer] setContainerSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+  [[textView textContainer] setWidthTracksTextView:NO];
+
+  // Set monospace font
+  NSFont* monoFont = [NSFont fontWithName:@"Menlo" size:11.0];
+  if (!monoFont) {
+    monoFont = [NSFont fontWithName:@"Monaco" size:11.0];
+  }
+  if (!monoFont) {
+    monoFont = [NSFont monospacedSystemFontOfSize:11.0 weight:NSFontWeightRegular];
+  }
+
+  [textView setFont:monoFont];
+  [textView setString:msg];
+
+  // Configure the scroll view to display the text view
+  [scrollView setDocumentView:textView];
+
+  // Add Copy to Clipboard button
+  NSButton* copyButton = [[NSButton alloc] initWithFrame:NSMakeRect(20, 20, 150, 24)];
+  [copyButton setTitle:@"Copy to Clipboard"];
+  [copyButton setBezelStyle:NSBezelStyleRounded];
+  [copyButton setAutoresizingMask:NSViewMaxXMargin | NSViewMaxYMargin];
+
+  // Set up copy button action
+  [copyButton setTarget:nil];
+  [copyButton setAction:@selector(performClick:)];
+
+  // Add OK button
+  NSButton* okButton = [[NSButton alloc] initWithFrame:NSMakeRect(500, 20, 80, 24)];
+  [okButton setTitle:@"OK"];
+  [okButton setBezelStyle:NSBezelStyleRounded];
+  [okButton setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];
+  [okButton setKeyEquivalent:@"\r"]; // Enter key
+
+  // Set up the OK button action
+  __block BOOL buttonClicked = NO;
+  [okButton setTarget:nil];
+  [okButton setAction:@selector(performClick:)];
+
+  // Add views to panel
+  [[panel contentView] addSubview:scrollView];
+  [[panel contentView] addSubview:copyButton];
+  [[panel contentView] addSubview:okButton];
+
+  // Make sure our app is frontmost
+  [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+
+  // Center the panel on screen
+  [panel center];
+
+  // Run the panel modally
+  NSModalSession session = [NSApp beginModalSessionForWindow:panel];
+  NSInteger result = NSModalResponseContinue;
+
+  while (result == NSModalResponseContinue) {
+    result = [NSApp runModalSession:session];
+
+    // Check if OK button was clicked
+    if ([okButton state] == NSControlStateValueOn) {
+      buttonClicked = YES;
+      break;
+    }
+
+    // Check if Copy button was clicked
+    if ([copyButton state] == NSControlStateValueOn) {
+      NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+      [pasteboard clearContents];
+      [pasteboard setString:msg forType:NSPasteboardTypeString];
+      [copyButton setState:NSControlStateValueOff];
+    }
+
+    // Short delay to prevent CPU hogging
+    [NSThread sleepForTimeInterval:0.01];
+  }
+
+  [NSApp endModalSession:session];
+  [panel close];
+
+  return eOSMessageBoxReturn_Yes;
+}
+
 void cLang::FatalError(const achar* aszMsg) {
   sOSXSystem* osx = _GetOSXSystem();
 
@@ -2660,7 +2777,8 @@ void cLang::FatalError(const achar* aszMsg) {
       }
     }
 
-    ni::GetLang()->MessageBox(NULL, "Fatal Error", dialogMessage.Chars(), eOSMessageBoxFlags_Ok|eOSMessageBoxFlags_IconError);
+    //ni::GetLang()->MessageBox(NULL, "Fatal Error", dialogMessage.Chars(), eOSMessageBoxFlags_Ok|eOSMessageBoxFlags_IconError);
+    _OSXTextDialog("Fatal Error", dialogMessage.Chars());
   }
 
   _PlatformExit(0xDEADBEEF);

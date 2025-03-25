@@ -54,10 +54,7 @@ niExportFunc(void) cpp_sigterm_handler(int);
 static inline void __niCrashReportModuleInstall()
 {
   // niPrintln("__niCrashReportModuleInstall");
-
-#ifndef niNoExceptions
   std::set_terminate(cpp_terminate_handler);
-#endif
 
 #ifdef niWindows
   SetUnhandledExceptionFilter(ni_windows_seh_unhandled_exception_filter);

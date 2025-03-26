@@ -2623,6 +2623,10 @@ void sLinter::RegisterBuiltinTypesAndFuncs(SQTable* table) {
     NEW_BASE_RESOLVED_TYPE(eScriptType_UUID, uuid);
     REGISTER_BASE_TYPE(UUID);
   }
+  {
+    NEW_BASE_RESOLVED_TYPE(eScriptType_EnumDef, enum);
+    REGISTER_BASE_TYPE(typestr_enum);
+  }
 
   // Those are hardcoded in ScriptVM.cpp, ideally it should be cleaned up
   RegisterFunc(table, "vmprint", niNew sScriptTypeMethodDef(_ss, nullptr, &kFuncDecl_vmprint));

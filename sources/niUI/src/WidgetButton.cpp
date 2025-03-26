@@ -34,6 +34,40 @@ static void _UncheckSameGroup(iWidget* apSkip, iHString* ahspDummy, iHString* ah
   }
 }
 
+void cButtonWidget::SetIcon(iOverlay *apIcon) {
+  mptrIconNormal = apIcon;
+}
+iOverlay* cButtonWidget::GetIcon() const {
+  return mptrIconNormal;
+}
+
+void cButtonWidget::SetIconPressed(iOverlay *apIcon) {
+  mptrIconPressed = apIcon;
+}
+iOverlay* cButtonWidget::GetIconPressed() const {
+  return mptrIconPressed;
+}
+
+void cButtonWidget::SetIconHover(iOverlay *apIcon) {
+  mptrIconHover = apIcon;
+}
+iOverlay* cButtonWidget::GetIconHover() const {
+  return mptrIconHover;
+}
+
+void cButtonWidget::SetIconSize(const sVec2f& avSize) {
+  if (mpWidget->GetID() == _H("Gizmo.Select")) {
+    mvIconSize = Vec2f(111,111);
+  }
+  mvIconSize = avSize;
+}
+sVec2f cButtonWidget::GetIconSize() const {
+  if (mpWidget->GetID() == _H("Gizmo.Select")) {
+    return mvIconSize;
+  }
+  return mvIconSize;
+}
+
 void cButtonWidget::SetCheck(tBool abChecked)
 {
   tBool bWasChecked = mbChecked;
@@ -52,6 +86,9 @@ void cButtonWidget::SetCheck(tBool abChecked)
       }
     }
   }
+}
+tBool __stdcall cButtonWidget::GetCheck() const {
+  return mbChecked;
 }
 
 void cButtonWidget::ProcessClick(const sVec2f& avMousePos)
@@ -114,46 +151,62 @@ void cButtonWidget::Paint_PushButton(const sRectf& aRect, iCanvas* apCanvas)
 
   const tBool bHorizontal = rect.GetWidth() >= rect.GetHeight();
   if (pIcon) {
-    const sVec2f destRectSize = {
+    niLet destRectSize = sVec2f {
       rect.GetWidth()-mvIconMargin.x-mvIconMargin.w,
       rect.GetHeight()-mvIconMargin.y-mvIconMargin.z
     };
 
-    sVec2f size = (mvIconSize != sVec2f::Zero()) ? mvIconSize : pIcon->GetSize();
+    // Split the 'layout' and 'draw' size, draw size preserves the aspect
+    // ratio of the icon by default.
+    sVec2f layoutSize = (mvIconSize != sVec2f::Zero()) ? mvIconSize : pIcon->GetSize();
+    sVec2f drawSize;
     if (niFlagIs(nStyle,eWidgetButtonStyle_IconStretch)) {
-      size = destRectSize;
+      // both stretched so same size
+      drawSize = layoutSize = destRectSize;
     }
-    else if (niFlagIs(nStyle,eWidgetButtonStyle_IconFit)) {
-      size = Rectf(0,0,size).FitInto(Rectf(0,0,destRectSize)).GetSize();
+    else {
+      if (niFlagIs(nStyle,eWidgetButtonStyle_IconFit)) {
+        // fit the layout in the destination size
+        layoutSize = Rectf(0,0,layoutSize).FitInto(Rectf(0,0,destRectSize)).GetSize();
+      }
+      // the drawSize is always fitted in the layoutSize
+      drawSize = Rectf(0,0,pIcon->GetSize()).FitInto(Rectf(0,0,layoutSize)).GetSize();
     }
 
-    const tF32 xcenter = ni::UnitSnapf((rect.GetWidth() - size.x) * 0.5f);
-    const tF32 ycenter = ni::UnitSnapf((rect.GetHeight() - size.y) * 0.5f);
+    const tF32 xcenter = ni::UnitSnapf((rect.GetWidth() - drawSize.x) * 0.5f);
+    const tF32 ycenter = ni::UnitSnapf((rect.GetHeight() - drawSize.y) * 0.5f);
 
     if (niFlagIs(nStyle,eWidgetButtonStyle_IconCenter)) {
       mrectIcon.SetTopLeft(Vec2<tF32>(rect.Left()+xcenter,rect.Top()+ycenter));
-      mrectIcon.SetSize(size.x,size.y);
+      mrectIcon.SetSize(drawSize.x,drawSize.y);
       // no text offset...
     }
     else if (niFlagIs(nStyle,eWidgetButtonStyle_IconTop)) {
-      mrectIcon.SetTopLeft(Vec2<tF32>(rect.Left()+xcenter,rect.Top()+mvIconMargin.Top()));
-      mrectIcon.SetSize(size.x,size.y);
-      rect.SetTop(mrectIcon.GetBottom());
+      mrectIcon.SetTopLeft(Vec2<tF32>(
+        rect.Left()+xcenter,
+        rect.Top()+mvIconMargin.Top()));
+      mrectIcon.SetSize(drawSize.x,drawSize.y);
+      rect.SetTop(mrectIcon.GetTop()+layoutSize.y+mvIconMargin.Bottom());
     }
     else if (niFlagIs(nStyle,eWidgetButtonStyle_IconBottom)) {
-      mrectIcon.SetTopLeft(Vec2<tF32>(rect.Left()+xcenter,rect.Bottom()-mvIconMargin.Bottom()-size.y));
-      mrectIcon.SetSize(size.x,size.y);
-      rect.SetBottom(mrectIcon.GetTop());
+      mrectIcon.SetTopLeft(Vec2<tF32>(
+        rect.Left()+xcenter,
+        rect.Bottom()-mvIconMargin.Bottom()-layoutSize.y));
+      mrectIcon.SetSize(drawSize.x,drawSize.y);
+      rect.SetBottom(mrectIcon.GetTop()-mvIconMargin.Top());
     }
     else if (niFlagIs(nStyle,eWidgetButtonStyle_IconRight)) {
-      mrectIcon.SetTopLeft(Vec2<tF32>(rect.Right()-mvIconMargin.Right()-size.x,rect.Top()+ycenter));
-      mrectIcon.SetSize(size.x,size.y);
-      rect.SetRight(mrectIcon.GetLeft());
+      mrectIcon.SetTopLeft(Vec2<tF32>(
+        rect.Right()-mvIconMargin.Right()-layoutSize.x,
+        rect.Top()+ycenter));
+      mrectIcon.SetSize(drawSize.x,drawSize.y);
+      rect.SetRight(mrectIcon.GetLeft()-mvIconMargin.Left());
     }
     else /*if (niFlagIs(nStyle,eWidgetButtonStyle_IconLeft))*/ {
-      mrectIcon.SetTopLeft(Vec2<tF32>(rect.Left()+mvIconMargin.Left(),rect.Top()+ycenter));
-      mrectIcon.SetSize(size.x,size.y);
-      rect.SetLeft(mrectIcon.GetRight()+mvIconMargin.Right());
+      mrectIcon.SetTopLeft(Vec2<tF32>(
+        rect.Left()+mvIconMargin.Left(),rect.Top()+ycenter));
+      mrectIcon.SetSize(drawSize.x,drawSize.y);
+      rect.SetLeft(mrectIcon.GetLeft()+layoutSize.x+mvIconMargin.Right());
     }
 
     if (pFont) {

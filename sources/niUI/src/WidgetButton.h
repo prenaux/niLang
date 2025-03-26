@@ -12,16 +12,16 @@ class cButtonWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetButton
   ~cButtonWidget();
 
   //// iWidgetButton ////////////////////////////
-  void __stdcall SetIcon(iOverlay *apIcon)  { mptrIconNormal = apIcon; }
-  iOverlay* __stdcall GetIcon() const { return mptrIconNormal; }
-  void __stdcall SetIconPressed(iOverlay *apIcon) { mptrIconPressed = apIcon; }
-  iOverlay* __stdcall GetIconPressed() const { return mptrIconPressed; }
-  void __stdcall SetIconHover(iOverlay *apIcon) { mptrIconHover = apIcon; }
-  iOverlay* __stdcall GetIconHover() const { return mptrIconHover; }
-  void __stdcall SetIconSize(const sVec2f& avSize) { mvIconSize = avSize; }
-  sVec2f __stdcall GetIconSize() const { return mvIconSize; }
+  void __stdcall SetIcon(iOverlay *apIcon);
+  iOverlay* __stdcall GetIcon() const;
+  void __stdcall SetIconPressed(iOverlay *apIcon);
+  iOverlay* __stdcall GetIconPressed() const;
+  void __stdcall SetIconHover(iOverlay *apIcon);
+  iOverlay* __stdcall GetIconHover() const;
+  void __stdcall SetIconSize(const sVec2f& avSize);
+  sVec2f __stdcall GetIconSize() const;
   void __stdcall SetCheck(tBool abCkecked);
-  tBool __stdcall GetCheck() const { return mbChecked; }
+  tBool __stdcall GetCheck() const;
   tBool __stdcall SetGroupID(iHString* aVal);
   iHString* __stdcall GetGroupID() const;
   void __stdcall SetIconMargin(const sVec4f& avMargin);

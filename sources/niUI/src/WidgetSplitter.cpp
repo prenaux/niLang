@@ -343,16 +343,12 @@ tBool __stdcall cWidgetSplitter::OnWidgetSink(iWidget* apWidget, tU32 anMsg, con
       {
         if (!_SplittersEnabled()) return eFalse;
         if (niFlagIsNot(mpWidget->GetStyle(),eWidgetSplitterStyle_NoCursorResize)) {
-          sVec2f vMousePos;
-          if (anMsg == eUIMessage_NCLeftClickDown) {
-            vMousePos = *(sVec2f*)aB.mV2F;
-          }
-          else {
-            vMousePos = *(sVec2f*)aA.mV2F;
-          }
+
+          niLet ncMousePos = aB.GetVec2fValue();
+
           tU32 nI, nF;
           mnDragging = eInvalidHandle;
-          if (TestIntersection(vMousePos,nI,nF)) {
+          if (TestIntersection(ncMousePos,nI,nF)) {
             if (!nF) {
               mnDragging = nI;
               mpWidget->SetCapture(eTrue);
@@ -382,10 +378,8 @@ tBool __stdcall cWidgetSplitter::OnWidgetSink(iWidget* apWidget, tU32 anMsg, con
         if (mnDragging != eInvalidHandle) {
           FoldClear(mnDragging);
           if (mnDragging >= DRAGGINGBORDER_FIRST) {
-            sRectf rect = mpWidget->GetAbsoluteRect();
-
-            sVec2f mousepos = aB.GetVec2f();
-            mousepos += mpWidget->GetAbsolutePosition();
+            sRectf absRect = mpWidget->GetAbsoluteRect();
+            niLet absMousePos = aB.GetVec2fValue() + mpWidget->GetAbsolutePosition();
 
             iWidget* pParent = mpWidget->GetParent();
             if (mpWidget->GetDockStyle() == eWidgetDockStyle_None) {
@@ -401,58 +395,56 @@ tBool __stdcall cWidgetSplitter::OnWidgetSink(iWidget* apWidget, tU32 anMsg, con
             switch (mnDragging) {
               case DRAGGINGBORDER_LEFT:
                 {
-                  tF32 fNewPos = mousepos.x;
+                  tF32 fNewPos = absMousePos.x;
                   if (pParent && mvParentDockRectMinSize.x >= 0.0f  &&
                       fNewPos < (rectDockFill.GetLeft()+mvParentDockRectMinSize.x)) {
                     fNewPos = rectDockFill.GetLeft()+mvParentDockRectMinSize.x;
                   }
-                  rect.SetLeft(fNewPos);
+                  absRect.SetLeft(fNewPos);
                   break;
                 }
               case DRAGGINGBORDER_RIGHT:
                 {
-                  tF32 fNewPos = mousepos.x;
+                  tF32 fNewPos = absMousePos.x;
                   if (pParent && mvParentDockRectMinSize.x >= 0.0f &&
                       fNewPos > (rectDockFill.GetRight()-mvParentDockRectMinSize.x)) {
                     fNewPos = rectDockFill.GetRight()-mvParentDockRectMinSize.x;
                   }
-                  rect.SetRight(fNewPos);
+                  absRect.SetRight(fNewPos);
                   break;
                 }
               case DRAGGINGBORDER_TOP:
                 {
-                  tF32 fNewPos = mousepos.y;
+                  tF32 fNewPos = absMousePos.y;
                   if (pParent && mvParentDockRectMinSize.y >= 0.0f &&
                       fNewPos < (rectDockFill.GetTop()+mvParentDockRectMinSize.y)) {
                     fNewPos = rectDockFill.GetTop()+mvParentDockRectMinSize.y;
                   }
-                  rect.SetTop(fNewPos);
+                  absRect.SetTop(fNewPos);
                   break;
                 }
               case DRAGGINGBORDER_BOTTOM:
                 {
-                  tF32 fNewPos = mousepos.y;
+                  tF32 fNewPos = absMousePos.y;
                   if (pParent && mvParentDockRectMinSize.y >= 0.0f &&
                       fNewPos > (rectDockFill.GetBottom()-mvParentDockRectMinSize.y)) {
                     fNewPos = rectDockFill.GetBottom()-mvParentDockRectMinSize.y;
                   }
-                  rect.SetBottom(fNewPos);
+                  absRect.SetBottom(fNewPos);
                   break;
                 }
             }
 
             //niTrace(niFmt(_A("NEWABSRECT: %.2f,%.2f,%.2f,%.2f\n"),rect.Left(),rect.Top(),rect.GetWidth(),rect.GetHeight()));
-            mpWidget->SetAbsoluteRect(rect);
+            mpWidget->SetAbsoluteRect(absRect);
           }
           else {
-            sVec2f mousepos;
-            mousepos.x = aA.mV2F[0];
-            mousepos.y = aA.mV2F[1];
+            niLet ncMousePos = aB.GetVec2fValue();
             if (niFlagIs(mpWidget->GetStyle(),eWidgetSplitterStyle_Horizontal)) {
-              SetSplitterPosition(mnDragging,mousepos.y/mpWidget->GetClientSize().y);
+              SetSplitterPosition(mnDragging,ncMousePos.y/mpWidget->GetClientSize().y);
             }
             else {
-              SetSplitterPosition(mnDragging,mousepos.x/mpWidget->GetClientSize().x);
+              SetSplitterPosition(mnDragging,ncMousePos.x/mpWidget->GetClientSize().x);
             }
           }
         }
@@ -461,8 +453,6 @@ tBool __stdcall cWidgetSplitter::OnWidgetSink(iWidget* apWidget, tU32 anMsg, con
     case eUIMessage_SetCursor:
       {
         if (!_SplittersEnabled()) return eFalse;
-
-        sVec2f vMousePos = *((sVec2f*)aA.mV2F);
         if (mnDragging != eInvalidHandle) {
           apWidget->GetUIContext()->SetCursor(apWidget->FindSkinCursor(NULL,NULL,_H("Hand")));
           return eTrue;
@@ -471,8 +461,9 @@ tBool __stdcall cWidgetSplitter::OnWidgetSink(iWidget* apWidget, tU32 anMsg, con
         if (mnDragging != eInvalidHandle || niFlagIs(mpWidget->GetStyle(),eWidgetSplitterStyle_NoCursorResize))
           return eTrue;
 
+        niLet ncMousePos = aB.GetVec2fValue();
         tU32 nI, nF;
-        if (TestIntersection(vMousePos+mpWidget->GetClientPosition(),nI,nF)) {
+        if (TestIntersection(ncMousePos,nI,nF)) {
           if (GetIsZoneHorizontal(nI)) {
             switch (nF) {
               case FOLD_UNFOLD:   apWidget->GetUIContext()->SetCursor(skin.curArrowBiVt); break;

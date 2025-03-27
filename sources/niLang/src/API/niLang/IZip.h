@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IZIP_19759546_H__
 #define __IZIP_19759546_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

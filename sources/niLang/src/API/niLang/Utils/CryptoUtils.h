@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __CRYPTOUTILS_H_692D3D45_2A68_4E35_BC73_8BB77F69C4AE__
 #define __CRYPTOUTILS_H_692D3D45_2A68_4E35_BC73_8BB77F69C4AE__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

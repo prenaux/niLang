@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ICURL_H_585EE2CB_EA5B_4D4E_9943_891B1A03A152__
 #define __ICURL_H_585EE2CB_EA5B_4D4E_9943_891B1A03A152__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

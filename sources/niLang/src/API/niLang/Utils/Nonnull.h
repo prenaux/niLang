@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __REF_H_E82A7EBA_7FCF_2845_98FF_920CC296C3CF__
 #define __REF_H_E82A7EBA_7FCF_2845_98FF_920CC296C3CF__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

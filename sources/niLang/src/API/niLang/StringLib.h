@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __STRINGLIB_H_8B4B4FF5_B474_47EB_B185_6F69B2E6C016__
 #define __STRINGLIB_H_8B4B4FF5_B474_47EB_B185_6F69B2E6C016__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

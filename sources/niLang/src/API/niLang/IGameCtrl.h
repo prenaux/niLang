@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IGAMECTRL_H_E3E8B83D_D5CF_4C13_8107_8EA31A0A1300__
 #define __IGAMECTRL_H_E3E8B83D_D5CF_4C13_8107_8EA31A0A1300__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

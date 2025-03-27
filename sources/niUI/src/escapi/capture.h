@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef __CAPTURE_H_EB6E8191_16EF_4588_BA4B_A4976774831F__
+#define __CAPTURE_H_EB6E8191_16EF_4588_BA4B_A4976774831F__
 
 class CaptureClass : public IMFSourceReaderCallback
 {
@@ -51,3 +51,5 @@ public:
 	unsigned int			mUsedIndex;
 	int						mRedoFromStart;
 };
+
+#endif // __CAPTURE_H_EB6E8191_16EF_4588_BA4B_A4976774831F__

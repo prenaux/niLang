@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __OBJMODEL_4180864_H__
 #define __OBJMODEL_4180864_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

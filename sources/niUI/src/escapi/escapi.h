@@ -1,36 +1,39 @@
+#ifndef __ESCAPI_H_FAB003FB_5DC4_40CE_9D23_F34E3EAA46C1__
+#define __ESCAPI_H_FAB003FB_5DC4_40CE_9D23_F34E3EAA46C1__
+
 /* Extremely Simple Capture API */
 struct SimpleCapParams
 {
-	/* Target buffer.
-	 * Must be at least mWidth * mHeight * sizeof(int) of size!
-	 */
-	int * mTargetBuf;
-	/* Buffer width */
-	int mWidth;
-	/* Buffer height */
-	int mHeight;
+  /* Target buffer.
+   * Must be at least mWidth * mHeight * sizeof(int) of size!
+   */
+  int * mTargetBuf;
+  /* Buffer width */
+  int mWidth;
+  /* Buffer height */
+  int mHeight;
 };
 
 enum CAPTURE_PROPETIES
 {
-	CAPTURE_BRIGHTNESS,
-	CAPTURE_CONTRAST,
-	CAPTURE_HUE,
-	CAPTURE_SATURATION,
-	CAPTURE_SHARPNESS,
-	CAPTURE_GAMMA,
-	CAPTURE_COLORENABLE,
-	CAPTURE_WHITEBALANCE,
-	CAPTURE_BACKLIGHTCOMPENSATION,
-	CAPTURE_GAIN,
-	CAPTURE_PAN,
-	CAPTURE_TILT,
-	CAPTURE_ROLL,
-	CAPTURE_ZOOM,
-	CAPTURE_EXPOSURE,
-	CAPTURE_IRIS,
-	CAPTURE_FOCUS,
-	CAPTURE_PROP_MAX
+  CAPTURE_BRIGHTNESS,
+  CAPTURE_CONTRAST,
+  CAPTURE_HUE,
+  CAPTURE_SATURATION,
+  CAPTURE_SHARPNESS,
+  CAPTURE_GAMMA,
+  CAPTURE_COLORENABLE,
+  CAPTURE_WHITEBALANCE,
+  CAPTURE_BACKLIGHTCOMPENSATION,
+  CAPTURE_GAIN,
+  CAPTURE_PAN,
+  CAPTURE_TILT,
+  CAPTURE_ROLL,
+  CAPTURE_ZOOM,
+  CAPTURE_EXPOSURE,
+  CAPTURE_IRIS,
+  CAPTURE_FOCUS,
+  CAPTURE_PROP_MAX
 };
 
 /* should be called once to intialize ESCAPI */
@@ -63,11 +66,11 @@ extern "C" int ESCAPI_isCaptureDone(unsigned int deviceno);
 extern "C" void ESCAPI_getCaptureDeviceName(unsigned int deviceno, char *namebuffer, int bufferlength);
 
 /*
-	On properties -
-	- Not all cameras support properties at all.
-	- Not all properties can be set to auto.
-	- Not all cameras support all properties.
-	- Messing around with camera properties may lead to weird results, so YMMV.
+  On properties -
+  - Not all cameras support properties at all.
+  - Not all properties can be set to auto.
+  - Not all cameras support all properties.
+  - Messing around with camera properties may lead to weird results, so YMMV.
 */
 
 /* Gets value (0..1) of a camera property (see CAPTURE_PROPERTIES, above) */
@@ -78,13 +81,15 @@ extern "C" int ESCAPI_getCapturePropertyAuto(unsigned int deviceno, int prop);
 extern "C" int ESCAPI_setCaptureProperty(unsigned int deviceno, int prop, float value, int autoval);
 
 /*
-	All error situations in ESCAPI are considered catastrophic. If such should
-	occur, the following functions can be used to check which line reported the
-	error, and what the HRESULT of the error was. These may help figure out
-	what the problem is.
+  All error situations in ESCAPI are considered catastrophic. If such should
+  occur, the following functions can be used to check which line reported the
+  error, and what the HRESULT of the error was. These may help figure out
+  what the problem is.
 */
 
 /* Return line number of error, or 0 if no catastrophic error has occurred. */
 extern "C" int ESCAPI_getCaptureErrorLine(unsigned int deviceno);
 /* Return HRESULT of the catastrophic error, or 0 if none. */
 extern "C" int ESCAPI_getCaptureErrorCode(unsigned int deviceno);
+
+#endif // __ESCAPI_H_FAB003FB_5DC4_40CE_9D23_F34E3EAA46C1__

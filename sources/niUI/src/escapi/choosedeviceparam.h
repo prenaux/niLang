@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CHOOSEDEVICEPARAM_H_F1285117_79AC_485D_AB1B_3A00776F2BE5__
+#define __CHOOSEDEVICEPARAM_H_F1285117_79AC_485D_AB1B_3A00776F2BE5__
 
 struct ChooseDeviceParam
 {
@@ -17,3 +18,5 @@ struct ChooseDeviceParam
 		CoTaskMemFree(mDevices);
 	}
 };
+
+#endif // __CHOOSEDEVICEPARAM_H_F1285117_79AC_485D_AB1B_3A00776F2BE5__

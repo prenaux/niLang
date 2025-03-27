@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IREGEX_61444864_H__
 #define __IREGEX_61444864_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

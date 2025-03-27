@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __STRINGLIBIT_H_4DAC3019_5160_4377_A2FF_7CB5CAB10D2A__
 #define __STRINGLIBIT_H_4DAC3019_5160_4377_A2FF_7CB5CAB10D2A__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

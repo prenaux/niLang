@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __VAR_H_84696F7E_67DE_46FE_853C_D441EF7275C5__
 #define __VAR_H_84696F7E_67DE_46FE_853C_D441EF7275C5__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IDATATABLE_15270737_H__
 #define __IDATATABLE_15270737_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

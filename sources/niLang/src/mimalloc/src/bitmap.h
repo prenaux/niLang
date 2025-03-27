@@ -16,7 +16,6 @@ between the bitmap fields (and a sequence must be <= MI_BITMAP_FIELD_BITS).
 The `_across` postfixed functions do allow sequences that can cross over
 between the fields. (This is used in arena allocation)
 ---------------------------------------------------------------------------- */
-#pragma once
 #ifndef MI_BITMAP_H
 #define MI_BITMAP_H
 
@@ -75,7 +74,7 @@ bool _mi_bitmap_try_find_from_claim(mi_bitmap_t bitmap, const size_t bitmap_fiel
 // Returns `true` if all `count` bits were 1 previously.
 bool _mi_bitmap_unclaim(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count, mi_bitmap_index_t bitmap_idx);
 
-// Try to set `count` bits at `bitmap_idx` from 0 to 1 atomically. 
+// Try to set `count` bits at `bitmap_idx` from 0 to 1 atomically.
 // Returns `true` if successful when all previous `count` bits were 0.
 bool _mi_bitmap_try_claim(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count, mi_bitmap_index_t bitmap_idx);
 

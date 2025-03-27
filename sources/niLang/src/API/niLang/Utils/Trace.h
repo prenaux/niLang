@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __TRACE_H_0103851F_7CEF_5448_B17A_30AE16EB8F64__
 #define __TRACE_H_0103851F_7CEF_5448_B17A_30AE16EB8F64__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

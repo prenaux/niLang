@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __STRINGBASE_27803022_H__
 #define __STRINGBASE_27803022_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

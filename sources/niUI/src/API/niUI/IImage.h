@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IIMAGE_H_61C48F5A_1349_4733_AD7C_BB05BCD9F997__
 #define __IIMAGE_H_61C48F5A_1349_4733_AD7C_BB05BCD9F997__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

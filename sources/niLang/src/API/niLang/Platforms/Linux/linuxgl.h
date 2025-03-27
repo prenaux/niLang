@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __LINUXGL_H_6A10DB64_06C2_C441_A70B_1FB42BA690F4__
 #define __LINUXGL_H_6A10DB64_06C2_C441_A70B_1FB42BA690F4__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ISINKLIST_H_00B467F2_68C8_40DC_B374_A2D9E4A9AD3E__
 #define __ISINKLIST_H_00B467F2_68C8_40DC_B374_A2D9E4A9AD3E__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

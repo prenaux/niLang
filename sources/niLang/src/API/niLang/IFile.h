@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __NIIFILE_H__
 #define __NIIFILE_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IFILESYSTEM_8014780_H__
 #define __IFILESYSTEM_8014780_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __PROCESSUTILS_H_19DABF7F_719B_4E37_8DE8_ABA02E9B15F5__
 #define __PROCESSUTILS_H_19DABF7F_719B_4E37_8DE8_ABA02E9B15F5__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

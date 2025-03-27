@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IGPU_H_990FD559_373C_7E4E_8C0C_63859580DB23__
 #define __IGPU_H_990FD559_373C_7E4E_8C0C_63859580DB23__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __DLLLOADER_H_B8DB559B_A075_EF11_AA74_1BE41DF5A1EB__
 #define __DLLLOADER_H_B8DB559B_A075_EF11_AA74_1BE41DF5A1EB__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

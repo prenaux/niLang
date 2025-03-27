@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IOS_H_437DE32C_09C2_40C5_AD83_5E275AEB67AC__
 #define __IOS_H_437DE32C_09C2_40C5_AD83_5E275AEB67AC__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

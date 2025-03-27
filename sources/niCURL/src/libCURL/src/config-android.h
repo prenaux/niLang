@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __CONFIG_ANDROID_H_713C5AA0_156D_420C_8932_01EC55FD15FA__
 #define __CONFIG_ANDROID_H_713C5AA0_156D_420C_8932_01EC55FD15FA__
 /* lib/curl_config.h.  Generated from curl_config.h.in by configure.  */

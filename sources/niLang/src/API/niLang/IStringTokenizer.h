@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ISTRINGTOKENIZER_25608894_H__
 #define __ISTRINGTOKENIZER_25608894_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

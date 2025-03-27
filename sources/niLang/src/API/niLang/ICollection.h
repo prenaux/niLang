@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ICOLLECTION_H_EC13D733_C7E7_4E18_BDDA_F61DFEE721D3__
 #define __ICOLLECTION_H_EC13D733_C7E7_4E18_BDDA_F61DFEE721D3__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

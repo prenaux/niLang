@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IJSON_H_5694692E_30C5_46B2_9423_72DD9BF023C6__
 #define __IJSON_H_5694692E_30C5_46B2_9423_72DD9BF023C6__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

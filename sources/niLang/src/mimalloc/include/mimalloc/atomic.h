@@ -4,7 +4,6 @@ This is free software; you can redistribute it and/or modify it under the
 terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
-#pragma once
 #ifndef MIMALLOC_ATOMIC_H
 #define MIMALLOC_ATOMIC_H
 
@@ -406,9 +405,9 @@ static inline void mi_atomic_yield(void) {
 
 
 // ----------------------------------------------------------------------
-// Locks 
-// These do not have to be recursive and should be light-weight 
-// in-process only locks. Only used for reserving arena's and to 
+// Locks
+// These do not have to be recursive and should be light-weight
+// in-process only locks. Only used for reserving arena's and to
 // maintain the abandoned list.
 // ----------------------------------------------------------------------
 #if _MSC_VER

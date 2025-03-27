@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __TIME_20124180_H__
 #define __TIME_20124180_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

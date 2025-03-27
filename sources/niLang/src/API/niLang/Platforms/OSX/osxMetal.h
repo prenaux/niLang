@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __OSXMETAL_H_5DE6C4B9_12AD_4544_8F88_59BA1F7CCFCE__
 #define __OSXMETAL_H_5DE6C4B9_12AD_4544_8F88_59BA1F7CCFCE__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

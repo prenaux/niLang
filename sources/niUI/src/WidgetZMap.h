@@ -1,6 +1,5 @@
 #ifndef __WIDGETZMAP_57626044_H__
 #define __WIDGETZMAP_57626044_H__
-#pragma once
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 

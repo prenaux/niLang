@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ITOSTRING_56944860_H__
 #define __ITOSTRING_56944860_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

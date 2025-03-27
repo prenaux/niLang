@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __BUFFERCACHE_H_58BB0AB1_7281_2E4C_BF3B_F6B3720C0458__
 #define __BUFFERCACHE_H_58BB0AB1_7281_2E4C_BF3B_F6B3720C0458__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

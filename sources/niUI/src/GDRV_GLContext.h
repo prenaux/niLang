@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __GLCONTEXT_H_234535FDSF_FDSF_123213_H__
 #define __GLCONTEXT_H_234535FDSF_FDSF_123213_H__
 

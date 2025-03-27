@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ICONSOLE_61424165_H__
 #define __ICONSOLE_61424165_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

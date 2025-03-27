@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __TEMPFILES_H_EAE428FB_5516_4A3D_9C58_B3DB78FEC99E__
 #define __TEMPFILES_H_EAE428FB_5516_4A3D_9C58_B3DB78FEC99E__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

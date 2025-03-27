@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ISERIALIZABLE_20417058_H__
 #define __ISERIALIZABLE_20417058_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

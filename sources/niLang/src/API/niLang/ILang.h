@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ILANG_H_1CD42183_7376_49A5_BEE6_0141CD400B64__
 #define __ILANG_H_1CD42183_7376_49A5_BEE6_0141CD400B64__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

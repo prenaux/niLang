@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __STRINGDEF_H_AE1C5EFC_3561_44FB_83F5_E5DACC64A138__
 #define __STRINGDEF_H_AE1C5EFC_3561_44FB_83F5_E5DACC64A138__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

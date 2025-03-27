@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IOSWINDOW_H_6D7C42F3_D6B8_41FD_8AF2_0641803C9F5A__
 #define __IOSWINDOW_H_6D7C42F3_D6B8_41FD_8AF2_0641803C9F5A__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

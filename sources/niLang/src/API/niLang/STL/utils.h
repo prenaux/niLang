@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __UTILS_H_D308314C_59E1_E345_B070_E0B4895E4773__
 #define __UTILS_H_D308314C_59E1_E345_B070_E0B4895E4773__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

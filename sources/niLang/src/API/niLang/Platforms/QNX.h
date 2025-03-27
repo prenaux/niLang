@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-#pragma once
 #ifndef __QNX_H_AEF452DS649__
 #define __QNX_H_AEF452DS649__
 #if defined(__QNX__)

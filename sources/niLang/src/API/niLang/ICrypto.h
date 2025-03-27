@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ICRYPTO_H_05BFBCD8_3E83_4730_840C_B7BEC964EA6A__
 #define __ICRYPTO_H_05BFBCD8_3E83_4730_840C_B7BEC964EA6A__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

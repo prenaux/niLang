@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __TYPES_H_C2ADBAF2_7B9D_4C93_BE52_AB1F88D2CB54__
 #define __TYPES_H_C2ADBAF2_7B9D_4C93_BE52_AB1F88D2CB54__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

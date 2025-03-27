@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ISOCKET_H_1BFFA368_8773_EF48_ACA6_B81C73C1A2D7__
 #define __ISOCKET_H_1BFFA368_8773_EF48_ACA6_B81C73C1A2D7__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

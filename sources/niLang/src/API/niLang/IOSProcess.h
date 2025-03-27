@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IOSPROCESS_50BD34A2_37BC_4088_9518_47212EC83EE5_H__
 #define __IOSPROCESS_50BD34A2_37BC_4088_9518_47212EC83EE5_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

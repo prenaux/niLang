@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IEXPRESSION_H_5FF07DF5_2A37_436B_BCF5_7C09A8AA989D__
 #define __IEXPRESSION_H_5FF07DF5_2A37_436B_BCF5_7C09A8AA989D__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

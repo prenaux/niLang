@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __ICANVAS_H_C64A5B5C_B71A_403F_A371_E2BDD3F1D6F4__
 #define __ICANVAS_H_C64A5B5C_B71A_403F_A371_E2BDD3F1D6F4__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

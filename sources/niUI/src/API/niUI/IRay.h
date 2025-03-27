@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __IRAY_H_168A30FF_C2BC_EF11_B76A_7FBF5918B21E__
 #define __IRAY_H_168A30FF_C2BC_EF11_B76A_7FBF5918B21E__
 #include <niLang/Types.h>

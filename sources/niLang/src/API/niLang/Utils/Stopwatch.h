@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __STOPWATCH_H_B513D9A2_BFC8_354D_854E_B34E715D58C4__
 #define __STOPWATCH_H_B513D9A2_BFC8_354D_854E_B34E715D58C4__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

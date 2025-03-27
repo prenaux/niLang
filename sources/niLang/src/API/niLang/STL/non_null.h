@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __NON_NULL_H_A46F1134_B458_8647_8976_5FCF07AB39DD__
 #define __NON_NULL_H_A46F1134_B458_8647_8976_5FCF07AB39DD__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors

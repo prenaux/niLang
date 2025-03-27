@@ -124,6 +124,7 @@ struct iWidgetButton : public iUnknown
   virtual sVec4f __stdcall GetIconMargin() const = 0;
   //! Get the icon's drawing rectangle, client rectangle relative.
   //! {Property}
+  //! \remark Includes the icon's margin.
   virtual sRectf __stdcall GetIconDrawRect() const = 0;
   //! Set the draw frame flags.
   //! {Property}

@@ -34,7 +34,7 @@ static tBool __stdcall _UpdateWidgetSizeFromText(
     if (!niFlagIs(style,eWidgetButtonStyle_NoText)) {
       text = niHStr(w->GetText());
       if (bt->GetIcon()) {
-        width += ni::Max(bt->GetIconSize().x,bt->GetIcon()->GetSize().x);
+        width += bt->GetIconDrawRect().GetWidth();
       }
     }
   }

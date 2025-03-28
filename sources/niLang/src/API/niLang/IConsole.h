@@ -20,7 +20,7 @@ struct iConsole;
 //! {DispatchWrapper}
 struct iCommandSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iCommandSink,0x4c99779b,0xaedf,0x404c,0x95,0x43,0x70,0xc3,0x78,0x6e,0x6f,0xac)
+  niDeclareInterfaceUUID(iCommandSink,0x4c99779b,0xaedf,0x404c,0x95,0x43,0x70,0xc3,0x78,0x6e,0x6f,0xac);
 
   //! Name of the command.
   virtual const achar* __stdcall GetName() const = 0;
@@ -98,7 +98,7 @@ struct iCommandSink : public iUnknown
 //! {DispatchWrapper}
 struct iConsoleSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iConsoleSink,0x415f0fc4,0x3e03,0x49ea,0xb2,0x1b,0x68,0xa5,0x10,0x82,0x1e,0x19)
+  niDeclareInterfaceUUID(iConsoleSink,0x415f0fc4,0x3e03,0x49ea,0xb2,0x1b,0x68,0xa5,0x10,0x82,0x1e,0x19);
   //! Called when a variable value changed
   virtual void __stdcall OnConsoleSink_NamespaceVariableChanged(const achar* aNamespace, const achar* aaszName, const achar* aaszValue) = 0;
   //! Called before a console command is ran.
@@ -120,7 +120,7 @@ typedef SinkList<iConsoleSink> tConsoleSinkLst;
 //! Console interface.
 struct iConsole : public iUnknown
 {
-  niDeclareInterfaceUUID(iConsole,0x064c5f0a,0x32bb,0x4a7c,0x9a,0x8d,0xf8,0x8c,0xbd,0xc5,0x13,0x50)
+  niDeclareInterfaceUUID(iConsole,0x064c5f0a,0x32bb,0x4a7c,0x9a,0x8d,0xf8,0x8c,0xbd,0xc5,0x13,0x50);
 
   //! Get the console sink list.
   //! {Property}

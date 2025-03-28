@@ -39,7 +39,7 @@ enum eWidgetScrollBarCmd
 //! Scroll bar widget interface.
 struct iWidgetScrollBar : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetScrollBar,0x8ddd8646,0x8921,0x4760,0x8d,0xdc,0x2e,0x89,0x50,0x73,0x99,0xf2)
+  niDeclareInterfaceUUID(iWidgetScrollBar,0x8ddd8646,0x8921,0x4760,0x8d,0xdc,0x2e,0x89,0x50,0x73,0x99,0xf2);
   //! Set the scroll bar range.
   //! {Property}
   virtual void __stdcall SetScrollRange(const sVec2f& avRange) = 0;

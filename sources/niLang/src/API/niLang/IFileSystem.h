@@ -49,7 +49,7 @@ typedef tU32 tFileSystemRightsFlags;
 //! File system enumerator interface.
 struct iFileSystemEnumerator : public iUnknown
 {
-  niDeclareInterfaceUUID(iFileSystemEnumerator,0x85fb1784,0x1a48,0x4581,0xa3,0xaf,0xa7,0xd9,0x65,0x3f,0x5f,0x77)
+  niDeclareInterfaceUUID(iFileSystemEnumerator,0x85fb1784,0x1a48,0x4581,0xa3,0xaf,0xa7,0xd9,0x65,0x3f,0x5f,0x77);
   //! Get the owner file system.
   //! {Property}
   virtual iFileSystem* __stdcall GetFileSystem() const = 0;
@@ -75,7 +75,7 @@ struct iFileSystemEnumerator : public iUnknown
 //! File system interface.
 struct iFileSystem : public iUnknown
 {
-  niDeclareInterfaceUUID(iFileSystem,0x0a9c86eb,0xe95e,0x43a1,0xa7,0x24,0x58,0xb5,0x79,0x69,0x71,0x76)
+  niDeclareInterfaceUUID(iFileSystem,0x0a9c86eb,0xe95e,0x43a1,0xa7,0x24,0x58,0xb5,0x79,0x69,0x71,0x76);
 
   //! Get the file system's rights.
   //! {Property}

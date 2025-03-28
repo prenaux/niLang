@@ -11,7 +11,7 @@ namespace ni {
 //! Device resource interface.
 struct iDeviceResource : public iUnknown
 {
-  niDeclareInterfaceUUID(iDeviceResource,0xbd49fea5,0xd9e4,0x4798,0xa3,0xfe,0x1e,0xf3,0x90,0x98,0x0c,0xe7)
+  niDeclareInterfaceUUID(iDeviceResource,0xbd49fea5,0xd9e4,0x4798,0xa3,0xfe,0x1e,0xf3,0x90,0x98,0x0c,0xe7);
 
   //! Get the resource's name.
   //! \return NULL if the resource is not named.
@@ -34,7 +34,7 @@ struct iDeviceResource : public iUnknown
 //! \remark When the inteface is released it invalidates all the device resources contained.
 struct iDeviceResourceManager : public iUnknown
 {
-  niDeclareInterfaceUUID(iDeviceResourceManager,0x96aa6bb9,0x898d,0x4d68,0xad,0x3f,0x5a,0x39,0x0b,0xdc,0x62,0x05)
+  niDeclareInterfaceUUID(iDeviceResourceManager,0x96aa6bb9,0x898d,0x4d68,0xad,0x3f,0x5a,0x39,0x0b,0xdc,0x62,0x05);
 
   //! Resource type.
   //! {Property}

@@ -112,7 +112,7 @@ enum eClipboardType
 //////////////////////////////////////////////////////////////////////////////////////////////
 struct iLang : public iUnknown
 {
-  niDeclareInterfaceUUID(iLang,0x8e2cebd1,0x783b,0x4b0b,0xb7,0xb3,0x62,0xa3,0x87,0xd1,0x90,0xb1)
+  niDeclareInterfaceUUID(iLang,0x8e2cebd1,0x783b,0x4b0b,0xb7,0xb3,0x62,0xa3,0x87,0xd1,0x90,0xb1);
 
   //########################################################################################
   //! \name Platform

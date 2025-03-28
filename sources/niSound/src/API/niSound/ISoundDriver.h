@@ -29,7 +29,7 @@ typedef tU32 tSoundDriverCapFlags;
 //! Sound driver data callback.
 struct iSoundDriverBufferDataSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iSoundDriverBufferDataSink,0x17f3f5d0,0xa4fe,0x4e30,0xbb,0x8c,0x9b,0x7b,0xcd,0x75,0x91,0x85)
+  niDeclareInterfaceUUID(iSoundDriverBufferDataSink,0x17f3f5d0,0xa4fe,0x4e30,0xbb,0x8c,0x9b,0x7b,0xcd,0x75,0x91,0x85);
 
   //! Called when data needs to be written to the buffer.
   virtual void __stdcall OnSoundDriverBufferDataSink(void* ptr, tU32 size) = 0;
@@ -38,7 +38,7 @@ struct iSoundDriverBufferDataSink : public iUnknown
 //! Sound driver buffer.
 struct iSoundDriverBuffer : public iUnknown
 {
-  niDeclareInterfaceUUID(iSoundDriverBuffer,0xfe0e1afa,0x668c,0x43bc,0x90,0x03,0x50,0xfa,0x77,0x59,0x41,0xa3)
+  niDeclareInterfaceUUID(iSoundDriverBuffer,0xfe0e1afa,0x668c,0x43bc,0x90,0x03,0x50,0xfa,0x77,0x59,0x41,0xa3);
 
   //! Switch in the application.
   virtual tBool __stdcall SwitchIn() = 0;
@@ -61,7 +61,7 @@ struct iSoundDriverBuffer : public iUnknown
 //! Sound driver interface.
 struct iSoundDriver : public iUnknown
 {
-  niDeclareInterfaceUUID(iSoundDriver,0x9b0219cb,0x3f6b,0x4c8b,0x91,0x00,0xe3,0x1d,0xb7,0x72,0x41,0x69)
+  niDeclareInterfaceUUID(iSoundDriver,0x9b0219cb,0x3f6b,0x4c8b,0x91,0x00,0xe3,0x1d,0xb7,0x72,0x41,0x69);
 
   //! Get the driver's name.
   //! {Property}

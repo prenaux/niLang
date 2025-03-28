@@ -36,7 +36,7 @@ enum eStringTokenizerCharType
 //! {DispatchWrapper}
 struct iStringTokenizer : public iUnknown
 {
-  niDeclareInterfaceUUID(iStringTokenizer,0x59cd4f04,0xd5bb,0x4e1e,0xbb,0x23,0xbc,0x1a,0x5b,0xb4,0x5b,0xdc)
+  niDeclareInterfaceUUID(iStringTokenizer,0x59cd4f04,0xd5bb,0x4e1e,0xbb,0x23,0xbc,0x1a,0x5b,0xb4,0x5b,0xdc);
   virtual eStringTokenizerCharType __stdcall GetCharType(tU32 c) = 0;
   virtual void __stdcall OnNewLine() = 0;
 };

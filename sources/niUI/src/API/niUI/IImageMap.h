@@ -23,7 +23,7 @@ typedef tU32 tImageMapSerializeFlags;
 //! Image map interface.
 struct iImageMap : public iUnknown
 {
-  niDeclareInterfaceUUID(iImageMap,0xa5a4c988,0xbc75,0x4a36,0xb0,0x54,0xb9,0x6c,0xb9,0xd2,0x54,0x1b)
+  niDeclareInterfaceUUID(iImageMap,0xa5a4c988,0xbc75,0x4a36,0xb0,0x54,0xb9,0x6c,0xb9,0xd2,0x54,0x1b);
 
   //########################################################################################
   //! \name Pages

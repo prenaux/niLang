@@ -16,7 +16,7 @@ typedef tU32 tDrawOperationFlags;
 //! Draw operation interface.
 struct iDrawOperation : public iUnknown
 {
-  niDeclareInterfaceUUID(iDrawOperation,0x7f9eaa80,0x03e5,0x4514,0xa1,0x62,0xa3,0x53,0x86,0xcf,0x61,0xea)
+  niDeclareInterfaceUUID(iDrawOperation,0x7f9eaa80,0x03e5,0x4514,0xa1,0x62,0xa3,0x53,0x86,0xcf,0x61,0xea);
 
   //! Copy another draw operation.
   virtual tBool __stdcall Copy(const iDrawOperation* apDO) = 0;

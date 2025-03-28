@@ -174,7 +174,7 @@ const tI64 knTimeSecsPerDay = knTimeMinPerDay*knTimeSecsPerMinute;
 //! Time interface.
 struct iTime : public iUnknown
 {
-  niDeclareInterfaceUUID(iTime,0x2b3e468b,0x96fc,0x4abd,0x86,0x94,0x48,0x10,0xb3,0x17,0xd4,0x2d)
+  niDeclareInterfaceUUID(iTime,0x2b3e468b,0x96fc,0x4abd,0x86,0x94,0x48,0x10,0xb3,0x17,0xd4,0x2d);
 
   //! Update the time class from the current system's time.
   virtual void __stdcall UpdateFromCurrentSystemTime() = 0;

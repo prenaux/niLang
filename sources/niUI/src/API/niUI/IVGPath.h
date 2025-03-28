@@ -48,7 +48,7 @@ enum eVGPathCommand
 //! {DispatchWrapper}
 struct iVGPathTesselatedRenderer : public iUnknown
 {
-  niDeclareInterfaceUUID(iVGPathTesselatedRenderer,0x4629b016,0x9a7a,0x44bb,0x8f,0x6c,0x24,0xf5,0x88,0x6d,0xe4,0x62)
+  niDeclareInterfaceUUID(iVGPathTesselatedRenderer,0x4629b016,0x9a7a,0x44bb,0x8f,0x6c,0x24,0xf5,0x88,0x6d,0xe4,0x62);
 
   //! Called when begining to render a path.
   virtual void __stdcall BeginAddPath(const iVGStyle* apStyle, tBool abStroke) = 0;
@@ -63,7 +63,7 @@ struct iVGPathTesselatedRenderer : public iUnknown
 //! VGPath interface.
 struct iVGPath : public iUnknown
 {
-  niDeclareInterfaceUUID(iVGPath,0x01302541,0x1712,0x47b1,0x80,0xa9,0xe2,0xb1,0x61,0x53,0x9f,0x96)
+  niDeclareInterfaceUUID(iVGPath,0x01302541,0x1712,0x47b1,0x80,0xa9,0xe2,0xb1,0x61,0x53,0x9f,0x96);
 
   //! Copy the specified path.
   virtual tBool __stdcall Copy(const iVGPath* apPath) = 0;

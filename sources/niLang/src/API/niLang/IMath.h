@@ -27,7 +27,7 @@ enum eClassify
 //!     they are expected to be implemented natively into the target language.
 struct iMath : public iUnknown
 {
-  niDeclareInterfaceUUID(iMath,0x4b3c51e1,0x7b6d,0x4875,0x99,0x61,0x1d,0x43,0xd2,0xcb,0x5b,0x88)
+  niDeclareInterfaceUUID(iMath,0x4b3c51e1,0x7b6d,0x4875,0x99,0x61,0x1d,0x43,0xd2,0xcb,0x5b,0x88);
 
   //########################################################################################
   //! \name Standard.

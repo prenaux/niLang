@@ -83,7 +83,7 @@ typedef tU32 tUIInputSubmitFlags;
 //! UI Context interface.
 struct iUIContext : public iUnknown
 {
-  niDeclareInterfaceUUID(iUIContext,0x2c6b89cb,0x0e9e,0x41fc,0x92,0xbb,0xae,0x6a,0xa3,0xee,0x44,0x2c)
+  niDeclareInterfaceUUID(iUIContext,0x2c6b89cb,0x0e9e,0x41fc,0x92,0xbb,0xae,0x6a,0xa3,0xee,0x44,0x2c);
 
   //########################################################################################
   //! \name Graphics context

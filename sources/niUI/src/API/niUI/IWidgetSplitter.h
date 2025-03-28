@@ -37,7 +37,7 @@ enum eWidgetSplitterFoldMode
 //! Splitter widget interface.
 struct iWidgetSplitter : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetSplitter,0x78bc04f6,0x9b0c,0x446c,0x87,0xa2,0x46,0xbc,0x8b,0xb6,0xfb,0xa1)
+  niDeclareInterfaceUUID(iWidgetSplitter,0x78bc04f6,0x9b0c,0x446c,0x87,0xa2,0x46,0xbc,0x8b,0xb6,0xfb,0xa1);
   //! Add a splitter in the front (top or left).
   virtual tBool __stdcall AddSplitterFront(tF32 afPos) = 0;
   //! Add a splitter in the back (bottom or right).

@@ -28,7 +28,7 @@ struct iScriptVM;
 //! Script object enumeration sink.
 struct iScriptObjectEnumSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iScriptObjectEnumSink,0xc8e07068,0xb84a,0x4adc,0xa2,0x98,0x2b,0x5d,0xa2,0x1c,0x69,0x00)
+  niDeclareInterfaceUUID(iScriptObjectEnumSink,0xc8e07068,0xb84a,0x4adc,0xa2,0x98,0x2b,0x5d,0xa2,0x1c,0x69,0x00);
 
   virtual tBool __stdcall OnScriptObjectEnumSinkFound(iScriptVM* apVM, iScriptObject* apKey, iScriptObject* apValue) = 0;
 };
@@ -58,7 +58,7 @@ enum eScriptRaiseErrorMode
 //! Script Virtual Machine interface.
 struct iScriptVM : public iScriptingHost
 {
-  niDeclareInterfaceUUID(iScriptVM,0x50bc7ff5,0x0e32,0x4390,0x8c,0x5e,0xb9,0x60,0xa2,0xbe,0xe9,0x02)
+  niDeclareInterfaceUUID(iScriptVM,0x50bc7ff5,0x0e32,0x4390,0x8c,0x5e,0xb9,0x60,0xa2,0xbe,0xe9,0x02);
 
   //########################################################################################
   //! \name System

@@ -17,7 +17,7 @@ struct iDrawOperationSet;
 //! Graphics context description interface.
 struct iGraphicsContext : public iUnknown
 {
-  niDeclareInterfaceUUID(iGraphicsContext,0xf61a7db5,0x532f,0x4c23,0x90,0xf5,0xb5,0x86,0xf9,0x9c,0x78,0x53)
+  niDeclareInterfaceUUID(iGraphicsContext,0xf61a7db5,0x532f,0x4c23,0x90,0xf5,0xb5,0x86,0xf9,0x9c,0x78,0x53);
 
   //########################################################################################
   //! \name System

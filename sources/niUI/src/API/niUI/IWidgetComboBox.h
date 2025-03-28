@@ -42,7 +42,7 @@ enum eWidgetComboBoxCmd {
 //! Combo box widget interface.
 struct iWidgetComboBox : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetComboBox,0x69e43028,0xc01d,0x4cb9,0xb3,0xba,0xe3,0xcd,0x0c,0xd4,0x08,0x9e)
+  niDeclareInterfaceUUID(iWidgetComboBox,0x69e43028,0xc01d,0x4cb9,0xb3,0xba,0xe3,0xcd,0x0c,0xd4,0x08,0x9e);
   //! Set the number of lines dropped.
   //! {Property}
   virtual void __stdcall SetNumLines(tU32 anNum) = 0;

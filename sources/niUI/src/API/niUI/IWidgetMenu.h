@@ -95,7 +95,7 @@ typedef tU32 tWidgetMenuItemFlags;
 //! Menu item interface.
 struct iWidgetMenuItem : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetMenuItem,0x5c063f02,0x4c0e,0x4828,0x9d,0x0a,0xec,0xca,0xc5,0xf3,0x92,0xb0)
+  niDeclareInterfaceUUID(iWidgetMenuItem,0x5c063f02,0x4c0e,0x4828,0x9d,0x0a,0xec,0xca,0xc5,0xf3,0x92,0xb0);
   //! Get the item's menu.
   //! {Property}
   virtual iWidgetMenu* __stdcall GetMenu() const = 0;
@@ -161,7 +161,7 @@ struct iWidgetMenuItem : public iUnknown
 //! \remark If the NoCloseOnNCClick style is set the main menu will not close when escape is pressed.
 struct iWidgetMenu : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetMenu,0x1bbb53a4,0xf078,0x4d46,0x87,0xd4,0xdd,0x86,0xde,0xad,0x1b,0x95)
+  niDeclareInterfaceUUID(iWidgetMenu,0x1bbb53a4,0xf078,0x4d46,0x87,0xd4,0xdd,0x86,0xde,0xad,0x1b,0x95);
 
   //! Clear/removes all the items in the menu.
   virtual tBool __stdcall ClearItems() = 0;

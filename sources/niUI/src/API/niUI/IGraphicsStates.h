@@ -32,7 +32,7 @@ struct sSamplerStatesDesc
 //! {Serialize}
 struct iSamplerStates : public iUnknown {
 
-  niDeclareInterfaceUUID(iSamplerStates,0x86963478,0x914d,0x4e43,0x84,0x59,0xa1,0xdc,0x87,0xf5,0x83,0xf9)
+  niDeclareInterfaceUUID(iSamplerStates,0x86963478,0x914d,0x4e43,0x84,0x59,0xa1,0xdc,0x87,0xf5,0x83,0xf9);
 
   //! Copy another sampler states.
   virtual tBool __stdcall Copy(const iSamplerStates* apStates) = 0;
@@ -138,7 +138,7 @@ struct sDepthStencilStatesDesc
 //! DepthStencil states
 //! {Serialize}
 struct iDepthStencilStates : public iUnknown {
-  niDeclareInterfaceUUID(iDepthStencilStates,0xfdb9705c,0x32d0,0x41fb,0xa0,0x41,0x54,0x9d,0xc2,0x3c,0x7b,0xcd)
+  niDeclareInterfaceUUID(iDepthStencilStates,0xfdb9705c,0x32d0,0x41fb,0xa0,0x41,0x54,0x9d,0xc2,0x3c,0x7b,0xcd);
 
   //########################################################################################
   //! \name General
@@ -283,7 +283,7 @@ struct sRasterizerStatesDesc
 //! {Serialize}
 struct iRasterizerStates : public iUnknown {
 
-  niDeclareInterfaceUUID(iRasterizerStates,0x8712bd8c,0x0924,0x481d,0x92,0x22,0xee,0xfa,0xc1,0x73,0xc9,0x41)
+  niDeclareInterfaceUUID(iRasterizerStates,0x8712bd8c,0x0924,0x481d,0x92,0x22,0xee,0xfa,0xc1,0x73,0xc9,0x41);
 
   //########################################################################################
   //! \name General
@@ -346,7 +346,7 @@ struct sFixedStatesDesc
 //! Graphics fixed pipeline states interface.
 //! {Serialize}
 struct iFixedStates : public iUnknown {
-  niDeclareInterfaceUUID(iFixedStates,0xe5ed8d23,0xc0b6,0x443b,0x9b,0x90,0xc5,0xf4,0x49,0x5d,0x62,0x0f)
+  niDeclareInterfaceUUID(iFixedStates,0xe5ed8d23,0xc0b6,0x443b,0x9b,0x90,0xc5,0xf4,0x49,0x5d,0x62,0x0f);
 
   //########################################################################################
   //! \name General

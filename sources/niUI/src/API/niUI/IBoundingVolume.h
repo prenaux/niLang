@@ -37,7 +37,7 @@ enum eBoundingVolumeType
 //! Bounding volume interface.
 struct iBoundingVolume : public iUnknown
 {
-  niDeclareInterfaceUUID(iBoundingVolume,0x489ebd21,0x5b90,0x46db,0xa8,0x57,0x5c,0x6e,0x8d,0x3b,0x89,0xba)
+  niDeclareInterfaceUUID(iBoundingVolume,0x489ebd21,0x5b90,0x46db,0xa8,0x57,0x5c,0x6e,0x8d,0x3b,0x89,0xba);
 
   //! Copy another bounding volume in this volume.
   virtual tBool __stdcall Copy(iBoundingVolume* apSrc) = 0;

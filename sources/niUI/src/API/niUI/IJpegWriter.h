@@ -27,7 +27,7 @@ typedef tU32 tJpegWriteFlags;
 //! Jpeg writer interface.
 struct iJpegWriter : public iUnknown
 {
-  niDeclareInterfaceUUID(iJpegWriter,0xd8ddbbf9,0x9609,0x44ee,0x80,0xe5,0x7a,0x99,0x97,0x3a,0xf9,0x03)
+  niDeclareInterfaceUUID(iJpegWriter,0xd8ddbbf9,0x9609,0x44ee,0x80,0xe5,0x7a,0x99,0x97,0x3a,0xf9,0x03);
   //! Begin writing a new jpeg file.
   virtual tBool __stdcall BeginWrite(iFile* apDest,
                                      tU32 anWidth, tU32 anHeight,

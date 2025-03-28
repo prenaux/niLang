@@ -33,7 +33,7 @@ enum eVGGradientType
 //! Gradient table.
 struct iVGGradientTable : public iUnknown
 {
-  niDeclareInterfaceUUID(iVGGradientTable,0xd508082d,0x9992,0x4eeb,0xa8,0xa7,0x0a,0xde,0xe6,0xe2,0x66,0x48)
+  niDeclareInterfaceUUID(iVGGradientTable,0xd508082d,0x9992,0x4eeb,0xa8,0xa7,0x0a,0xde,0xe6,0xe2,0x66,0x48);
   //! Copy another table.
   virtual tBool __stdcall Copy(const iVGGradientTable* apSrc) = 0;
   //! Clone this table.

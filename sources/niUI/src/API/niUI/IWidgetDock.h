@@ -28,7 +28,7 @@ enum eWidgetDockingManagerMessage
 //!     to handle their docking.
 struct iWidgetDockable : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetDockable,0x74ad7011,0xe5fb,0x47d8,0x8a,0xad,0x4b,0x2c,0x65,0xc5,0x0d,0x35)
+  niDeclareInterfaceUUID(iWidgetDockable,0x74ad7011,0xe5fb,0x47d8,0x8a,0xad,0x4b,0x2c,0x65,0xc5,0x0d,0x35);
 
   //! Get the dock's name.
   //! {Property}
@@ -74,7 +74,7 @@ typedef tU32 tWidgetDockingManagerFlags;
 //! \remark The docking manager is a normal widget that implements iWidgetSink.
 struct iWidgetDockingManager : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetDockingManager,0x3ecf2b94,0x14cf,0x4e24,0xb5,0xa9,0xc2,0xf0,0xbf,0xb8,0xf5,0x01)
+  niDeclareInterfaceUUID(iWidgetDockingManager,0x3ecf2b94,0x14cf,0x4e24,0xb5,0xa9,0xc2,0xf0,0xbf,0xb8,0xf5,0x01);
 
   //########################################################################################
   //! \name Main

@@ -41,7 +41,7 @@ niExportFuncCPP(cString) HexEncodeToString(const tPtr src, tInt slen, const tBoo
  */
 struct iToString : public iUnknown
 {
-  niDeclareInterfaceUUID(iToString,0x78b80893,0x3543,0x408e,0xaa,0x0f,0xac,0xa5,0x59,0x8c,0x2d,0x05)
+  niDeclareInterfaceUUID(iToString,0x78b80893,0x3543,0x408e,0xaa,0x0f,0xac,0xa5,0x59,0x8c,0x2d,0x05);
   //! Convert the object to a string.
   virtual ni::cString __stdcall ToString() const = 0;
 };

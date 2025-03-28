@@ -108,7 +108,7 @@ typedef tU32 tWidgetTreeNodeFlags;
 //! Widget tree node interface.
 struct iWidgetTreeNode : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetTreeNode,0x96fa976d,0xc757,0x42d9,0xb8,0xef,0xde,0x82,0x35,0x9d,0x1a,0x6c)
+  niDeclareInterfaceUUID(iWidgetTreeNode,0x96fa976d,0xc757,0x42d9,0xb8,0xef,0xde,0x82,0x35,0x9d,0x1a,0x6c);
 
   //########################################################################################
   //! \name Nodes
@@ -302,7 +302,7 @@ struct iWidgetTreeNode : public iUnknown
 //! Widget tree interface.
 struct iWidgetTree : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetTree,0xb9cd35a1,0x6ad7,0x442d,0x87,0x7b,0xfd,0xc0,0xaa,0x9f,0x6c,0xf9)
+  niDeclareInterfaceUUID(iWidgetTree,0xb9cd35a1,0x6ad7,0x442d,0x87,0x7b,0xfd,0xc0,0xaa,0x9f,0x6c,0xf9);
   //! Get the root tree node.
   //! {Property}
   virtual iWidgetTreeNode* __stdcall GetRootNode() const = 0;

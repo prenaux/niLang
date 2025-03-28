@@ -109,7 +109,7 @@ struct iGraphicsDrawOpCapture : public iUnknown
 //! Graphics driver.
 //! \remark This interface should never be used directly, iGraphics is the interface that should be used.
 struct iGraphicsDriver : public iUnknown {
-  niDeclareInterfaceUUID(iGraphicsDriver,0x18477542,0x75b2,0x4c16,0x9e,0xe0,0xb2,0x31,0x61,0xcb,0x3e,0xb2)
+  niDeclareInterfaceUUID(iGraphicsDriver,0x18477542,0x75b2,0x4c16,0x9e,0xe0,0xb2,0x31,0x61,0xcb,0x3e,0xb2);
 
   //########################################################################################
   //! \name System

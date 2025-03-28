@@ -219,7 +219,7 @@ typedef tU32 tWidgetAutoLayoutFlags;
 //{DispatchWrapper}
 struct iWidgetSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetSink,0x6905dfa1,0xfa65,0x4444,0xa3,0x90,0xba,0x80,0x95,0x80,0xdb,0xf6)
+  niDeclareInterfaceUUID(iWidgetSink,0x6905dfa1,0xfa65,0x4444,0xa3,0x90,0xba,0x80,0x95,0x80,0xdb,0xf6);
   //! Widget sink message handler.
   virtual tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const ni::Var& varParam0, const ni::Var& varParam1) = 0;
 };
@@ -227,7 +227,7 @@ struct iWidgetSink : public iUnknown
 //! Widget command interface.
 struct iWidgetCommand : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetCommand,0x6d19a44f,0x87ad,0x4517,0xb5,0xae,0xfe,0x57,0xc7,0xa2,0xf2,0x5e)
+  niDeclareInterfaceUUID(iWidgetCommand,0x6d19a44f,0x87ad,0x4517,0xb5,0xae,0xfe,0x57,0xc7,0xa2,0xf2,0x5e);
   //! Copy the specified command in this command.
   virtual tBool __stdcall Copy(const iWidgetCommand* apSrc) = 0;
   //! Clone this command.
@@ -278,7 +278,7 @@ enum eWidgetSystemTimer
 //! Widget interface.
 struct iWidget : public iMessageHandler
 {
-  niDeclareInterfaceUUID(iWidget,0x84722d61,0x18b8,0x4081,0xab,0xce,0x5a,0xfe,0x18,0x6f,0x3f,0xda)
+  niDeclareInterfaceUUID(iWidget,0x84722d61,0x18b8,0x4081,0xab,0xce,0x5a,0xfe,0x18,0x6f,0x3f,0xda);
 
   //########################################################################################
   //! \name Widget

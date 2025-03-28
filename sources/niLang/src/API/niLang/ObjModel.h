@@ -82,7 +82,7 @@ struct sInterfaceDef
 //! Object type definition interface.
 struct iObjectTypeDef : public iUnknown
 {
-  niDeclareInterfaceUUID(iObjectTypeDef,0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2)
+  niDeclareInterfaceUUID(iObjectTypeDef,0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2);
   //! Get the object type's name.
   virtual const achar* __stdcall GetName() const = 0;
   //! Create an instance of the object.
@@ -92,7 +92,7 @@ struct iObjectTypeDef : public iUnknown
 //! Module definition interface.
 struct iModuleDef : public iUnknown
 {
-  niDeclareInterfaceUUID(iModuleDef,0x80463a66,0xfc9e,0x4490,0xab,0x81,0x00,0xb9,0x15,0x2c,0x17,0xf3)
+  niDeclareInterfaceUUID(iModuleDef,0x80463a66,0xfc9e,0x4490,0xab,0x81,0x00,0xb9,0x15,0x2c,0x17,0xf3);
 
   //! Get the module's name.
   virtual const achar* __stdcall GetName() const = 0;

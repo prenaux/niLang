@@ -136,7 +136,7 @@ enum ePCREError {
 //! Generic regular expression interface.
 struct iRegex : public iUnknown
 {
-  niDeclareInterfaceUUID(iRegex,0xc48d7f86,0xd623,0x4327,0xb9,0xdb,0xdb,0x35,0x9e,0x1b,0xc0,0xe6)
+  niDeclareInterfaceUUID(iRegex,0xc48d7f86,0xd623,0x4327,0xb9,0xdb,0xdb,0x35,0x9e,0x1b,0xc0,0xe6);
   //! Get the implementation type of the regular experssion.
   //! {Property}
   virtual const achar* __stdcall GetImplType() const = 0;
@@ -149,7 +149,7 @@ struct iRegex : public iUnknown
 //! PCRE Regular Expression interface.
 struct iPCRE : public iRegex
 {
-  niDeclareInterfaceUUID(iPCRE,0xb168fd05,0x0fa2,0x4238,0x8b,0x44,0x51,0x5f,0xec,0x76,0x24,0x24)
+  niDeclareInterfaceUUID(iPCRE,0xb168fd05,0x0fa2,0x4238,0x8b,0x44,0x51,0x5f,0xec,0x76,0x24,0x24);
 
   //########################################################################################
   //! \name Compilation

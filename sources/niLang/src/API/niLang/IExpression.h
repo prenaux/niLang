@@ -61,7 +61,7 @@ typedef tU32 tExpressionVariableFlags;
 //! Expression variable interface.
 struct iExpressionVariable : public iUnknown
 {
-  niDeclareInterfaceUUID(iExpressionVariable,0x69569e99,0x6b3a,0x444c,0xb3,0x75,0xd2,0xce,0xb3,0x74,0x9b,0x4b)
+  niDeclareInterfaceUUID(iExpressionVariable,0x69569e99,0x6b3a,0x444c,0xb3,0x75,0xd2,0xce,0xb3,0x74,0x9b,0x4b);
   //! Set the variable name.
   virtual void __stdcall SetName(iHString* ahspString) = 0;
   //! Get the variable name.
@@ -117,7 +117,7 @@ struct iExpressionVariable : public iUnknown
 //! Expression interface.
 struct iExpression : public iUnknown
 {
-  niDeclareInterfaceUUID(iExpression,0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9)
+  niDeclareInterfaceUUID(iExpression,0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9);
   //! Eval the expression and returns the result.
   virtual Ptr<iExpressionVariable> __stdcall Eval() = 0;
   //! Get the result returned by the last Eval.
@@ -131,7 +131,7 @@ struct iExpression : public iUnknown
 //! Expression URL resolver interface.
 //! {DispatchWrapper}
 struct iExpressionURLResolver : public iUnknown {
-  niDeclareInterfaceUUID(iExpressionURLResolver,0x7802dc51,0xfdaf,0x4de0,0xb0,0x7e,0x8b,0x5d,0x08,0x90,0x13,0x68)
+  niDeclareInterfaceUUID(iExpressionURLResolver,0x7802dc51,0xfdaf,0x4de0,0xb0,0x7e,0x8b,0x5d,0x08,0x90,0x13,0x68);
 
   virtual Var __stdcall ResolveURL(const achar* aURL) = 0;
 };
@@ -139,7 +139,7 @@ struct iExpressionURLResolver : public iUnknown {
 //! Expression context.
 struct iExpressionContext : public iUnknown
 {
-  niDeclareInterfaceUUID(iExpressionContext,0xa870ed3f,0xd227,0x467c,0x98,0xa2,0x8a,0xf1,0x41,0x1a,0xbe,0xe2)
+  niDeclareInterfaceUUID(iExpressionContext,0xa870ed3f,0xd227,0x467c,0x98,0xa2,0x8a,0xf1,0x41,0x1a,0xbe,0xe2);
 
   //########################################################################################
   //! \name General

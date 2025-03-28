@@ -24,7 +24,7 @@ enum eIntersectionResult
 //! Intersection result interface.
 struct iIntersection : public iUnknown
 {
-  niDeclareInterfaceUUID(iIntersection,0x64c8b5c4,0x4d70,0x46e4,0xb5,0x34,0x9d,0xa2,0x85,0x4d,0x19,0x28)
+  niDeclareInterfaceUUID(iIntersection,0x64c8b5c4,0x4d70,0x46e4,0xb5,0x34,0x9d,0xa2,0x85,0x4d,0x19,0x28);
   //! Set the intersection result.
   //! {Property}
   virtual void __stdcall SetResult(eIntersectionResult aResult) = 0;

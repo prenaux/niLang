@@ -51,7 +51,7 @@ enum eWidgetEditBoxCmd {
 //! Simple editbox widget interface.
 struct iWidgetEditBox : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetEditBox,0xe1f70622,0x8a53,0x4f98,0xab,0x3c,0xd8,0xe9,0x90,0x36,0xa5,0xab)
+  niDeclareInterfaceUUID(iWidgetEditBox,0xe1f70622,0x8a53,0x4f98,0xab,0x3c,0xd8,0xe9,0x90,0x36,0xa5,0xab);
 
   //! Add the specified text at the end of the edit box.
   virtual void __stdcall AddText(const achar* aaszText) = 0;

@@ -27,7 +27,7 @@ enum eSoundMode {
 //! Sound mixer interface.
 struct iSoundMixer : public iUnknown
 {
-  niDeclareInterfaceUUID(iSoundMixer,0xa45cfb5d,0x7391,0x4bf6,0x92,0xd9,0x6d,0x4e,0x74,0x1f,0xf1,0x14)
+  niDeclareInterfaceUUID(iSoundMixer,0xa45cfb5d,0x7391,0x4bf6,0x92,0xd9,0x6d,0x4e,0x74,0x1f,0xf1,0x14);
 
   //########################################################################################
   //! \name General
@@ -168,7 +168,7 @@ struct iSoundMixer : public iUnknown
 //! Sound mixer 3d interface.
 struct iSoundMixer3D : public iUnknown
 {
-  niDeclareInterfaceUUID(iSoundMixer3D,0xededed66,0xbea9,0x4dc4,0xac,0xd5,0x27,0x6c,0xfe,0x1f,0x72,0xfb)
+  niDeclareInterfaceUUID(iSoundMixer3D,0xededed66,0xbea9,0x4dc4,0xac,0xd5,0x27,0x6c,0xfe,0x1f,0x72,0xfb);
 
   //########################################################################################
   //! \name 3D channels

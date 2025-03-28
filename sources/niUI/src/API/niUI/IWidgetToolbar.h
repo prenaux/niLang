@@ -12,7 +12,7 @@ namespace ni {
 //! Toolbar group widget interface.
 struct iWidgetToolbarGroup : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetToolbarGroup,0xf0ad342b,0x5139,0x4dea,0x98,0x8f,0x1e,0xfa,0x94,0x87,0x16,0x59)
+  niDeclareInterfaceUUID(iWidgetToolbarGroup,0xf0ad342b,0x5139,0x4dea,0x98,0x8f,0x1e,0xfa,0x94,0x87,0x16,0x59);
 
   //! Set the width of the group from the total with of the children.
   virtual void __stdcall SetWidthFromChildren() = 0;
@@ -29,7 +29,7 @@ struct iWidgetToolbarGroup : public iUnknown
 //! Toolbar widget interface.
 struct iWidgetToolbar : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetToolbar,0x8e50495c,0x6577,0x4693,0x80,0x59,0x8e,0x9b,0xab,0x98,0xde,0x8e)
+  niDeclareInterfaceUUID(iWidgetToolbar,0x8e50495c,0x6577,0x4693,0x80,0x59,0x8e,0x9b,0xab,0x98,0xde,0x8e);
 
   //########################################################################################
   //! \name General

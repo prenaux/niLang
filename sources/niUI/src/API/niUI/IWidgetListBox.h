@@ -36,7 +36,7 @@ enum eWidgetListBoxStyle
 //! Listbox widget interface.
 struct iWidgetListBox : public iUnknown
 {
-  niDeclareInterfaceUUID(iWidgetListBox,0x72906a6e,0xe5d6,0x4a1c,0xb0,0xd9,0xac,0x68,0x79,0x86,0xbf,0xf6)
+  niDeclareInterfaceUUID(iWidgetListBox,0x72906a6e,0xe5d6,0x4a1c,0xb0,0xd9,0xac,0x68,0x79,0x86,0xbf,0xf6);
 
   //! Add a column with the specified name and size.
   virtual void __stdcall AddColumn(const achar* aaszName, tU32 anSize) = 0;

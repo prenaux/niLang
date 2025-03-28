@@ -114,7 +114,7 @@ niCAssert(sizeof(sShaderConstantsDesc::sConstant) == ((2*sizeof(tPtr)) + 16));
 //! Shader constants buffer.
 //! \remark All sizes and offsets are expressed in register (sVec4f/l) unit.
 struct iShaderConstants : public iSerializable {
-  niDeclareInterfaceUUID(iShaderConstants,0x4450dc53,0xe4b1,0x4bc3,0x8c,0xd3,0xec,0x39,0x6b,0x36,0xc2,0xd7)
+  niDeclareInterfaceUUID(iShaderConstants,0x4450dc53,0xe4b1,0x4bc3,0x8c,0xd3,0xec,0x39,0x6b,0x36,0xc2,0xd7);
 
   //! Clone this constant buffer.
   virtual iShaderConstants* __stdcall Clone() const = 0;
@@ -207,7 +207,7 @@ struct sShaderDesc
 //! Shader interface.
 struct iShader : public iDeviceResource
 {
-  niDeclareInterfaceUUID(iShader,0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d)
+  niDeclareInterfaceUUID(iShader,0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d);
 
   //! Return the Shader unit on which it runs.
   //! {Property}

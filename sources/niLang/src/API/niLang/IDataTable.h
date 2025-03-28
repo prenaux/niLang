@@ -71,7 +71,7 @@ typedef tU32 tDataTableCopyFlags;
 //! {DispatchWrapper}
 struct iDataTableSink : public iUnknown
 {
-  niDeclareInterfaceUUID(iDataTableSink,0x3c187c5e,0x45d3,0x42c2,0x9e,0x59,0x0e,0x2b,0x33,0x15,0xfc,0x48)
+  niDeclareInterfaceUUID(iDataTableSink,0x3c187c5e,0x45d3,0x42c2,0x9e,0x59,0x0e,0x2b,0x33,0x15,0xfc,0x48);
   //! The name of the data table has been set.
   //! {Optional}
   virtual void __stdcall OnDataTableSink_SetName(iDataTable* apDT) = 0;
@@ -103,7 +103,7 @@ typedef SinkList<iDataTableSink> tDataTableSinkLst;
 //! Data table.
 struct iDataTable : public iUnknown
 {
-  niDeclareInterfaceUUID(iDataTable,0x6a1f95c1,0x4d23,0x4c62,0x96,0x86,0x56,0x1c,0xb9,0x2c,0x36,0xd5)
+  niDeclareInterfaceUUID(iDataTable,0x6a1f95c1,0x4d23,0x4c62,0x96,0x86,0x56,0x1c,0xb9,0x2c,0x36,0xd5);
 
   //########################################################################################
   //! \name System
@@ -494,7 +494,7 @@ struct iDataTable : public iUnknown
 //! Data table read stack interface.
 struct iDataTableReadStack : public iUnknown
 {
-  niDeclareInterfaceUUID(iDataTableReadStack,0x8fd58593,0xf9bc,0x4368,0x82,0x57,0x99,0x75,0xca,0xbe,0x19,0x3f)
+  niDeclareInterfaceUUID(iDataTableReadStack,0x8fd58593,0xf9bc,0x4368,0x82,0x57,0x99,0x75,0xca,0xbe,0x19,0x3f);
 
   //! Get the top of the data table stack.
   //! {Property}
@@ -613,7 +613,7 @@ struct iDataTableReadStack : public iUnknown
 //! Data table write stack interface.
 struct iDataTableWriteStack : public iUnknown
 {
-  niDeclareInterfaceUUID(iDataTableWriteStack,0x3f35c253,0x8a23,0x4d2f,0x9a,0xf9,0x47,0x15,0xbc,0x80,0x7f,0x31)
+  niDeclareInterfaceUUID(iDataTableWriteStack,0x3f35c253,0x8a23,0x4d2f,0x9a,0xf9,0x47,0x15,0xbc,0x80,0x7f,0x31);
 
   //! Get the top of the data table stack.
   //! {Property}

@@ -58,7 +58,7 @@ struct sTransformDesc
 //! iTransform is the interface for positionning and orienting.
 struct iTransform : public iUnknown
 {
-  niDeclareInterfaceUUID(iTransform,0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4)
+  niDeclareInterfaceUUID(iTransform,0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4);
 
   //########################################################################################
   //! \name General

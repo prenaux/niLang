@@ -10,7 +10,7 @@ typedef astl::pair<tU32, cString> tSearchItem;
 // TODO: Expose that in IWidgetSearchBar?
 struct iSearchEngine : public iUnknown
 {
-  niDeclareInterfaceUUID(iSearchEngine, 0xbe57611e, 0x58a2, 0x4f10, 0xa6, 0x33, 0x2b, 0xb2, 0x70, 0x93, 0xb2, 0xbe)
+  niDeclareInterfaceUUID(iSearchEngine,0xbe57611e,0x58a2,0x4f10,0xa6,0x33,0x2b,0xb2,0x70,0x93,0xb2,0xbe);
   virtual void __stdcall SetCorpus(const astl::vector<tSearchItem>& avCorpus) = 0;
   virtual void __stdcall Search(const achar* aSearchTerm, astl::vector<tSearchItem>& avResult) = 0;
 };

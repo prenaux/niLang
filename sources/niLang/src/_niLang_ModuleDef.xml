@@ -2063,7 +2063,7 @@
 			<value name="eDataTablePropertyType_Matrix" value="eType_Matrixf ">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_IUnknown" value="eType_IUnknown|eTypeFlags_Pointer">
+			<value name="eDataTablePropertyType_IUnknown" value="eType_IUnknown| eTypeFlags_Pointer">
 				<comments desc=""/>
 			</value>
 		</enum>
@@ -8718,7 +8718,7 @@
 				min_features="20"
 				name="OnJsonParserSink_Error"
 				num_parameters="3">
-				<comments desc="Json parser sink interface. Called when a parsing error occured. "/>
+				<comments desc="Called when a parsing error occured. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="aaszReason"
@@ -8771,7 +8771,7 @@
 				min_features="20"
 				name="OnJsonWriterSink_Error"
 				num_parameters="1">
-				<comments desc="Json writer sink interface. Called when there&apos;s a writting error. "/>
+				<comments desc="Called when there&apos;s a writting error. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -20890,7 +20890,7 @@
 			<value name="eSerializeMode_Write" value="eSerializeFlags_Write ">
 				<comments desc="Write mode. "/>
 			</value>
-			<value name="eSerializeMode_WriteRaw" value="eSerializeFlags_Write|eSerializeFlags_Raw ">
+			<value name="eSerializeMode_WriteRaw" value="eSerializeFlags_Write| eSerializeFlags_Raw ">
 				<comments desc="Write raw mode. ">
 					<remark text="Means that no object header will be written. "/>
 				</comments>
@@ -20898,7 +20898,7 @@
 			<value name="eSerializeMode_Read" value="eSerializeFlags_Read ">
 				<comments desc="Read mode. "/>
 			</value>
-			<value name="eSerializeMode_ReadRaw" value="eSerializeFlags_Read|eSerializeFlags_Raw ">
+			<value name="eSerializeMode_ReadRaw" value="eSerializeFlags_Read| eSerializeFlags_Raw ">
 				<comments desc="Read raw mode. ">
 					<remark text="Means that no object header will be checked for. "/>
 				</comments>
@@ -21796,16 +21796,16 @@
 			<value name="eTimeZone_A" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Alpha Time Zone Military UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_ADT" value="( tU32 ) - 3 * 3600 ">
+			<value name="eTimeZone_ADT" value="( tU32 ) -3 * 3600 ">
 				<comments desc="Atlantic Daylight Time North America UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_AKDT" value="( tU32 ) - 8 * 3600 ">
+			<value name="eTimeZone_AKDT" value="( tU32 ) -8 * 3600 ">
 				<comments desc="Alaska Daylight Time North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_AKST" value="( tU32 ) - 9 * 3600 ">
+			<value name="eTimeZone_AKST" value="( tU32 ) -9 * 3600 ">
 				<comments desc="Alaska Standard Time North America UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_AST" value="( tU32 ) - 4 * 3600 ">
+			<value name="eTimeZone_AST" value="( tU32 ) -4 * 3600 ">
 				<comments desc="Atlantic Standard Time North America UTC - 4 hours "/>
 			</value>
 			<value name="eTimeZone_B" value="( tU32 ) + 2 * 3600 ">
@@ -21817,7 +21817,7 @@
 			<value name="eTimeZone_C" value="( tU32 ) + 3 * 3600 ">
 				<comments desc="Charlie Time Zone Military UTC + 3 hours "/>
 			</value>
-			<value name="eTimeZone_CDT" value="( tU32 ) - 5 * 3600 ">
+			<value name="eTimeZone_CDT" value="( tU32 ) -5 * 3600 ">
 				<comments desc="Central Daylight Time North America UTC - 5 hours "/>
 			</value>
 			<value name="eTimeZone_CEDT" value="( tU32 ) + 2 * 3600 ">
@@ -21829,7 +21829,7 @@
 			<value name="eTimeZone_CET" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Central European Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_CST" value="( tU32 ) - 6 * 3600 ">
+			<value name="eTimeZone_CST" value="( tU32 ) -6 * 3600 ">
 				<comments desc="Central Standard Time North America UTC - 6 hours "/>
 			</value>
 			<value name="eTimeZone_D" value="( tU32 ) + 4 * 3600 ">
@@ -21838,7 +21838,7 @@
 			<value name="eTimeZone_E" value="( tU32 ) + 5 * 3600 ">
 				<comments desc="Echo Time Zone Military UTC + 5 hours "/>
 			</value>
-			<value name="eTimeZone_EDT" value="( tU32 ) - 4 * 3600 ">
+			<value name="eTimeZone_EDT" value="( tU32 ) -4 * 3600 ">
 				<comments desc="Eastern Daylight Time North America UTC - 4 hours "/>
 			</value>
 			<value name="eTimeZone_EEDT" value="( tU32 ) + 3 * 3600 ">
@@ -21850,7 +21850,7 @@
 			<value name="eTimeZone_EET" value="( tU32 ) + 2 * 3600 ">
 				<comments desc="Eastern European Time Europe UTC + 2 hours "/>
 			</value>
-			<value name="eTimeZone_EST" value="( tU32 ) - 5 * 3600 ">
+			<value name="eTimeZone_EST" value="( tU32 ) -5 * 3600 ">
 				<comments desc="Eastern Standard Time North America UTC - 5 hours "/>
 			</value>
 			<value name="eTimeZone_F" value="( tU32 ) + 6 * 3600 ">
@@ -21862,52 +21862,52 @@
 			<value name="eTimeZone_H" value="( tU32 ) + 8 * 3600 ">
 				<comments desc="Hotel Time Zone Military UTC + 8 hours "/>
 			</value>
-			<value name="eTimeZone_HAA" value="( tU32 ) - 3 * 3600 ">
+			<value name="eTimeZone_HAA" value="( tU32 ) -3 * 3600 ">
 				<comments desc="Heure Avancee de l&apos;Atlantique North America UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_HAC" value="( tU32 ) - 5 * 3600 ">
+			<value name="eTimeZone_HAC" value="( tU32 ) -5 * 3600 ">
 				<comments desc="Heure Avancee du Centre North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_HADT" value="( tU32 ) - 9 * 3600 ">
+			<value name="eTimeZone_HADT" value="( tU32 ) -9 * 3600 ">
 				<comments desc="Hawaii-Aleutian Daylight Time North America UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_HAE" value="( tU32 ) - 4 * 3600 ">
+			<value name="eTimeZone_HAE" value="( tU32 ) -4 * 3600 ">
 				<comments desc="Heure Avancee de l&apos;Est North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_HAP" value="( tU32 ) - 7 * 3600 ">
+			<value name="eTimeZone_HAP" value="( tU32 ) -7 * 3600 ">
 				<comments desc="Heure Avancee du Pacifique North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_HAR" value="( tU32 ) - 6 * 3600 ">
+			<value name="eTimeZone_HAR" value="( tU32 ) -6 * 3600 ">
 				<comments desc="Heure Avancee des Rocheuses North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_HAST" value="( tU32 ) - 10 * 3600 - 1800 ">
+			<value name="eTimeZone_HAST" value="( tU32 ) -10 * 3600 - 1800 ">
 				<comments desc="Hawaii-Aleutian Standard Time North America UTC - 10 hours "/>
 			</value>
-			<value name="eTimeZone_HAT" value="( tU32 ) - 2 * 3600 - 1800 ">
+			<value name="eTimeZone_HAT" value="( tU32 ) -2 * 3600 - 1800 ">
 				<comments desc="Heure Avancee de Terre-Neuve North America UTC - 2:30 hours "/>
 			</value>
-			<value name="eTimeZone_HAY" value="( tU32 ) - 8 * 3600 ">
+			<value name="eTimeZone_HAY" value="( tU32 ) -8 * 3600 ">
 				<comments desc="Heure Avancee du Yukon North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_HNA" value="( tU32 ) - 4 * 3600 ">
+			<value name="eTimeZone_HNA" value="( tU32 ) -4 * 3600 ">
 				<comments desc="Heure Normale de l&apos;Atlantique North America UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_HNC" value="( tU32 ) - 6 * 3600 ">
+			<value name="eTimeZone_HNC" value="( tU32 ) -6 * 3600 ">
 				<comments desc="Heure Normale du Centre North America UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_HNE" value="( tU32 ) - 5 * 3600 ">
+			<value name="eTimeZone_HNE" value="( tU32 ) -5 * 3600 ">
 				<comments desc="Heure Normale de l&apos;Est North America UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_HNP" value="( tU32 ) - 8 * 3600 ">
+			<value name="eTimeZone_HNP" value="( tU32 ) -8 * 3600 ">
 				<comments desc="Heure Normale du Pacifique North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_HNR" value="( tU32 ) - 7 * 3600 ">
+			<value name="eTimeZone_HNR" value="( tU32 ) -7 * 3600 ">
 				<comments desc="Heure Normale des Rocheuses North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_HNT" value="( tU32 ) - 3 * 3600 - 1800 ">
+			<value name="eTimeZone_HNT" value="( tU32 ) -3 * 3600 - 1800 ">
 				<comments desc="Heure Normale de Terre-Neuve North America UTC - 3:30 hours "/>
 			</value>
-			<value name="eTimeZone_HNY" value="( tU32 ) - 9 * 3600 ">
+			<value name="eTimeZone_HNY" value="( tU32 ) -9 * 3600 ">
 				<comments desc="Heure Normale du Yukon North America UTC - 9 hours "/>
 			</value>
 			<value name="eTimeZone_I" value="( tU32 ) + 9 * 3600 ">
@@ -21925,7 +21925,7 @@
 			<value name="eTimeZone_M" value="( tU32 ) + 12 * 3600 ">
 				<comments desc="Mike Time Zone Military UTC + 12 hours "/>
 			</value>
-			<value name="eTimeZone_MDT" value="( tU32 ) - 6 * 3600 ">
+			<value name="eTimeZone_MDT" value="( tU32 ) -6 * 3600 ">
 				<comments desc="Mountain Daylight Time North America UTC - 6 hours "/>
 			</value>
 			<value name="eTimeZone_MESZ" value="( tU32 ) + 2 * 3600 ">
@@ -21934,49 +21934,49 @@
 			<value name="eTimeZone_MEZ" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Mitteleuropaische Zeit Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_MST" value="( tU32 ) - 7 * 3600 ">
+			<value name="eTimeZone_MST" value="( tU32 ) -7 * 3600 ">
 				<comments desc="Mountain Standard Time North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_N" value="( tU32 ) - 1 * 3600 ">
+			<value name="eTimeZone_N" value="( tU32 ) -1 * 3600 ">
 				<comments desc="November Time Zone Military UTC - 1 hour "/>
 			</value>
-			<value name="eTimeZone_NDT" value="( tU32 ) - 2 * 3600 - 1800 ">
+			<value name="eTimeZone_NDT" value="( tU32 ) -2 * 3600 - 1800 ">
 				<comments desc="Newfoundland Daylight Time North America UTC - 2:30 hours "/>
 			</value>
-			<value name="eTimeZone_NST" value="( tU32 ) - 3 * 3600 - 1800 ">
+			<value name="eTimeZone_NST" value="( tU32 ) -3 * 3600 - 1800 ">
 				<comments desc="Newfoundland Standard Time North America UTC - 3:30 hours "/>
 			</value>
-			<value name="eTimeZone_O" value="( tU32 ) - 2 * 3600 ">
+			<value name="eTimeZone_O" value="( tU32 ) -2 * 3600 ">
 				<comments desc="Oscar Time Zone Military UTC - 2 hours "/>
 			</value>
-			<value name="eTimeZone_P" value="( tU32 ) - 3 * 3600 ">
+			<value name="eTimeZone_P" value="( tU32 ) -3 * 3600 ">
 				<comments desc="Papa Time Zone Military UTC - 3 hours "/>
 			</value>
-			<value name="eTimeZone_PDT" value="( tU32 ) - 7 * 3600 ">
+			<value name="eTimeZone_PDT" value="( tU32 ) -7 * 3600 ">
 				<comments desc="Pacific Daylight Time North America UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_PST" value="( tU32 ) - 8 * 3600 ">
+			<value name="eTimeZone_PST" value="( tU32 ) -8 * 3600 ">
 				<comments desc="Pacific Standard Time North America UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_Q" value="( tU32 ) - 4 * 3600 ">
+			<value name="eTimeZone_Q" value="( tU32 ) -4 * 3600 ">
 				<comments desc="Quebec Time Zone Military UTC - 4 hours "/>
 			</value>
-			<value name="eTimeZone_R" value="( tU32 ) - 5 * 3600 ">
+			<value name="eTimeZone_R" value="( tU32 ) -5 * 3600 ">
 				<comments desc="Romeo Time Zone Military UTC - 5 hours "/>
 			</value>
-			<value name="eTimeZone_S" value="( tU32 ) - 6 * 3600 ">
+			<value name="eTimeZone_S" value="( tU32 ) -6 * 3600 ">
 				<comments desc="Sierra Time Zone Military UTC - 6 hours "/>
 			</value>
-			<value name="eTimeZone_T" value="( tU32 ) - 7 * 3600 ">
+			<value name="eTimeZone_T" value="( tU32 ) -7 * 3600 ">
 				<comments desc="Tango Time Zone Military UTC - 7 hours "/>
 			</value>
-			<value name="eTimeZone_U" value="( tU32 ) - 8 * 3600 ">
+			<value name="eTimeZone_U" value="( tU32 ) -8 * 3600 ">
 				<comments desc="Uniform Time Zone Military UTC - 8 hours "/>
 			</value>
-			<value name="eTimeZone_V" value="( tU32 ) - 9 * 3600 ">
+			<value name="eTimeZone_V" value="( tU32 ) -9 * 3600 ">
 				<comments desc="Victor Time Zone Military UTC - 9 hours "/>
 			</value>
-			<value name="eTimeZone_W" value="( tU32 ) - 10 * 3600 ">
+			<value name="eTimeZone_W" value="( tU32 ) -10 * 3600 ">
 				<comments desc="Whiskey Time Zone Military UTC - 10 hours "/>
 			</value>
 			<value name="eTimeZone_WEDT" value="( tU32 ) + 1 * 3600 ">
@@ -21985,10 +21985,10 @@
 			<value name="eTimeZone_WEST" value="( tU32 ) + 1 * 3600 ">
 				<comments desc="Western European Summer Time Europe UTC + 1 hour "/>
 			</value>
-			<value name="eTimeZone_X" value="( tU32 ) - 11 * 3600 ">
+			<value name="eTimeZone_X" value="( tU32 ) -11 * 3600 ">
 				<comments desc="X-ray Time Zone Military UTC - 11 hours "/>
 			</value>
-			<value name="eTimeZone_Y" value="( tU32 ) - 12 * 3600 ">
+			<value name="eTimeZone_Y" value="( tU32 ) -12 * 3600 ">
 				<comments desc="Yankee Time Zone Military UTC - 12 hours "/>
 			</value>
 			<value name="eTimeZone_Z" value="( tU32 ) 0 ">
@@ -22447,7 +22447,7 @@
 				min_features="20"
 				name="OnXmlParserSink_Node"
 				num_parameters="2">
-				<comments desc="Xml parser sink interface. "/>
+				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aType"
@@ -23833,10 +23833,10 @@
 			<value name="eStrFindFlags_ICmp" value="niBit ( 1 ) ">
 				<comments desc=""/>
 			</value>
-			<value name="eStrFindFlags_ForwardI" value="eStrFindFlags_Forward|eStrFindFlags_ICmp ">
+			<value name="eStrFindFlags_ForwardI" value="eStrFindFlags_Forward| eStrFindFlags_ICmp ">
 				<comments desc=""/>
 			</value>
-			<value name="eStrFindFlags_ReversedI" value="eStrFindFlags_Reversed|eStrFindFlags_ICmp ">
+			<value name="eStrFindFlags_ReversedI" value="eStrFindFlags_Reversed| eStrFindFlags_ICmp ">
 				<comments desc=""/>
 			</value>
 		</enum>
@@ -24440,28 +24440,28 @@
 			<value name="eType_FirstGroup4" value="0x10 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I8" value="eType_FirstGroup4+0 ">
+			<value name="eType_I8" value="eType_FirstGroup4 + 0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U8" value="eType_FirstGroup4+1 ">
+			<value name="eType_U8" value="eType_FirstGroup4 + 1 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I16" value="eType_FirstGroup4+2 ">
+			<value name="eType_I16" value="eType_FirstGroup4 + 2 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U16" value="eType_FirstGroup4+3 ">
+			<value name="eType_U16" value="eType_FirstGroup4 + 3 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I32" value="eType_FirstGroup4+4 ">
+			<value name="eType_I32" value="eType_FirstGroup4 + 4 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U32" value="eType_FirstGroup4+5 ">
+			<value name="eType_U32" value="eType_FirstGroup4 + 5 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_F32" value="eType_FirstGroup4+6 ">
+			<value name="eType_F32" value="eType_FirstGroup4 + 6 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_AChar" value="eType_FirstGroup4+7 ">
+			<value name="eType_AChar" value="eType_FirstGroup4 + 7 ">
 				<comments desc=""/>
 			</value>
 			<value name="eType_LastGroup4" value="0x1F ">
@@ -24470,19 +24470,19 @@
 			<value name="eType_FirstGroup8" value="0x20 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I64" value="eType_FirstGroup8+0 ">
+			<value name="eType_I64" value="eType_FirstGroup8 + 0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U64" value="eType_FirstGroup8+1 ">
+			<value name="eType_U64" value="eType_FirstGroup8 + 1 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_F64" value="eType_FirstGroup8+2 ">
+			<value name="eType_F64" value="eType_FirstGroup8 + 2 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec2f" value="eType_FirstGroup8+3 ">
+			<value name="eType_Vec2f" value="eType_FirstGroup8 + 3 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec2i" value="eType_FirstGroup8+4 ">
+			<value name="eType_Vec2i" value="eType_FirstGroup8 + 4 ">
 				<comments desc=""/>
 			</value>
 			<value name="eType_LastGroup8" value="0x2F ">
@@ -24491,13 +24491,13 @@
 			<value name="eType_FirstGroup12" value="0x30 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec3f" value="eType_FirstGroup12+0 ">
+			<value name="eType_Vec3f" value="eType_FirstGroup12 + 0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec3i" value="eType_FirstGroup12+1 ">
+			<value name="eType_Vec3i" value="eType_FirstGroup12 + 1 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_String" value="eType_FirstGroup12+2 ">
+			<value name="eType_String" value="eType_FirstGroup12 + 2 ">
 				<comments desc=""/>
 			</value>
 			<value name="eType_LastGroup12" value="0x3F ">
@@ -24506,13 +24506,13 @@
 			<value name="eType_FirstGroup16" value="0x40 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec4f" value="eType_FirstGroup16+0 ">
+			<value name="eType_Vec4f" value="eType_FirstGroup16 + 0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec4i" value="eType_FirstGroup16+1 ">
+			<value name="eType_Vec4i" value="eType_FirstGroup16 + 1 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_UUID" value="eType_FirstGroup16+2 ">
+			<value name="eType_UUID" value="eType_FirstGroup16 + 2 ">
 				<comments desc=""/>
 			</value>
 			<value name="eType_LastGroup16" value="0x4F ">
@@ -24521,10 +24521,10 @@
 			<value name="eType_FirstExtended" value="0x50 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Matrixf" value="eType_FirstExtended+0 ">
+			<value name="eType_Matrixf" value="eType_FirstExtended + 0 ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Variant" value="eType_FirstExtended+1 ">
+			<value name="eType_Variant" value="eType_FirstExtended + 1 ">
 				<comments desc=""/>
 			</value>
 			<value name="eType_LastExtended" value="0x7F ">
@@ -24557,7 +24557,7 @@
 			<value name="eType_ASZ" value="eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer ">
 				<comments desc=""/>
 			</value>
-			<value name="eType_IUnknownPtr" value="eType_IUnknown|eTypeFlags_Pointer ">
+			<value name="eType_IUnknownPtr" value="eType_IUnknown| eTypeFlags_Pointer ">
 				<comments desc=""/>
 			</value>
 		</enum>
@@ -24769,19 +24769,19 @@
 			<value name="eRectCorners_BottomLeft" value="niBit ( 3 ) ">
 				<comments desc="Bottom left rectangle corner. "/>
 			</value>
-			<value name="eRectCorners_Top" value="eRectCorners_TopLeft|eRectCorners_TopRight ">
+			<value name="eRectCorners_Top" value="eRectCorners_TopLeft| eRectCorners_TopRight ">
 				<comments desc="Top rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Right" value="eRectCorners_TopRight|eRectCorners_BottomRight ">
+			<value name="eRectCorners_Right" value="eRectCorners_TopRight| eRectCorners_BottomRight ">
 				<comments desc="Right rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Bottom" value="eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_Bottom" value="eRectCorners_BottomRight| eRectCorners_BottomLeft ">
 				<comments desc="Bottom rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Left" value="eRectCorners_TopLeft|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_Left" value="eRectCorners_TopLeft| eRectCorners_BottomLeft ">
 				<comments desc="Left rectangle corners, "/>
 			</value>
-			<value name="eRectCorners_All" value="eRectCorners_TopLeft|eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_All" value="eRectCorners_TopLeft| eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft ">
 				<comments desc="All rectangle corners. "/>
 			</value>
 		</enum>
@@ -24799,13 +24799,13 @@
 			<value name="eRectEdges_Left" value="niBit ( 3 ) ">
 				<comments desc="Left rectangle edge. "/>
 			</value>
-			<value name="eRectEdges_Vertical" value="eRectEdges_Left|eRectEdges_Right ">
+			<value name="eRectEdges_Vertical" value="eRectEdges_Left| eRectEdges_Right ">
 				<comments desc="Vertical rectangle edges. "/>
 			</value>
-			<value name="eRectEdges_Horizontal" value="eRectEdges_Top|eRectEdges_Bottom ">
+			<value name="eRectEdges_Horizontal" value="eRectEdges_Top| eRectEdges_Bottom ">
 				<comments desc="Horizontal rectangle edges, "/>
 			</value>
-			<value name="eRectEdges_All" value="eRectEdges_Vertical|eRectEdges_Horizontal ">
+			<value name="eRectEdges_All" value="eRectEdges_Vertical| eRectEdges_Horizontal ">
 				<comments desc="All rectangle edges. "/>
 			</value>
 		</enum>
@@ -25095,58 +25095,58 @@
 			<value name="eFileAttrFlags_Device" value="niBit ( 8 ) ">
 				<comments desc="Device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceFixed" value="eFileAttrFlags_Device|niBit ( 15 ) ">
+			<value name="eFileAttrFlags_DeviceFixed" value="eFileAttrFlags_Device| niBit ( 15 ) ">
 				<comments desc="Fixed device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRemovable" value="eFileAttrFlags_Device|niBit ( 16 ) ">
+			<value name="eFileAttrFlags_DeviceRemovable" value="eFileAttrFlags_Device| niBit ( 16 ) ">
 				<comments desc="Removable device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRAM" value="eFileAttrFlags_Device|niBit ( 17 ) ">
+			<value name="eFileAttrFlags_DeviceRAM" value="eFileAttrFlags_Device| niBit ( 17 ) ">
 				<comments desc="RAM drive device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRemote" value="eFileAttrFlags_Device|niBit ( 18 ) ">
+			<value name="eFileAttrFlags_DeviceRemote" value="eFileAttrFlags_Device| niBit ( 18 ) ">
 				<comments desc="Remote device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceFloppy" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 19 ) ">
+			<value name="eFileAttrFlags_DeviceFloppy" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit(19) ">
 				<comments desc="Floppy device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceCDRom" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 20 ) ">
+			<value name="eFileAttrFlags_DeviceCDRom" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit(20) ">
 				<comments desc="CDRom device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved0" value="eFileAttrFlags_Device|niBit ( 21 ) ">
+			<value name="eFileAttrFlags_DeviceReserved0" value="eFileAttrFlags_Device| niBit ( 21 ) ">
 				<comments desc="Reserved0 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved1" value="eFileAttrFlags_Device|niBit ( 22 ) ">
+			<value name="eFileAttrFlags_DeviceReserved1" value="eFileAttrFlags_Device| niBit ( 22 ) ">
 				<comments desc="Reserved1 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved2" value="eFileAttrFlags_Device|niBit ( 23 ) ">
+			<value name="eFileAttrFlags_DeviceReserved2" value="eFileAttrFlags_Device| niBit ( 23 ) ">
 				<comments desc="Reserved2 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved3" value="eFileAttrFlags_Device|niBit ( 24 ) ">
+			<value name="eFileAttrFlags_DeviceReserved3" value="eFileAttrFlags_Device| niBit ( 24 ) ">
 				<comments desc="Reserved3 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved4" value="eFileAttrFlags_Device|niBit ( 25 ) ">
+			<value name="eFileAttrFlags_DeviceReserved4" value="eFileAttrFlags_Device| niBit ( 25 ) ">
 				<comments desc="Reserved4 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved5" value="eFileAttrFlags_Device|niBit ( 26 ) ">
+			<value name="eFileAttrFlags_DeviceReserved5" value="eFileAttrFlags_Device| niBit ( 26 ) ">
 				<comments desc="Reserved5 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved6" value="eFileAttrFlags_Device|niBit ( 27 ) ">
+			<value name="eFileAttrFlags_DeviceReserved6" value="eFileAttrFlags_Device| niBit ( 27 ) ">
 				<comments desc="Reserved6 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved7" value="eFileAttrFlags_Device|niBit ( 28 ) ">
+			<value name="eFileAttrFlags_DeviceReserved7" value="eFileAttrFlags_Device| niBit ( 28 ) ">
 				<comments desc="Reserved7 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved8" value="eFileAttrFlags_Device|niBit ( 29 ) ">
+			<value name="eFileAttrFlags_DeviceReserved8" value="eFileAttrFlags_Device| niBit ( 29 ) ">
 				<comments desc="Reserved8 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved9" value="eFileAttrFlags_Device|niBit ( 30 ) ">
+			<value name="eFileAttrFlags_DeviceReserved9" value="eFileAttrFlags_Device| niBit ( 30 ) ">
 				<comments desc="Reserved9 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved10" value="eFileAttrFlags_Device|niBit ( 31 ) ">
+			<value name="eFileAttrFlags_DeviceReserved10" value="eFileAttrFlags_Device| niBit ( 31 ) ">
 				<comments desc="Reserved10 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_All" value="eFileAttrFlags_File|eFileAttrFlags_Directory ">
+			<value name="eFileAttrFlags_All" value="eFileAttrFlags_File| eFileAttrFlags_Directory ">
 				<comments desc="All. "/>
 			</value>
 			<value name="eFileAttrFlags_AllFiles" value="eFileAttrFlags_File ">
@@ -25176,7 +25176,7 @@
 			<value name="eFileOpenMode_Write" value="niBit ( 1 ) ">
 				<comments desc="Write open mode. "/>
 			</value>
-			<value name="eFileOpenMode_Append" value="niBit ( 2 ) |eFileOpenMode_Write ">
+			<value name="eFileOpenMode_Append" value="niBit ( 2 )| eFileOpenMode_Write ">
 				<comments desc="Append open mode. "/>
 			</value>
 			<value name="eFileOpenMode_Random" value="niBit ( 3 ) ">

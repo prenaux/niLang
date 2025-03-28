@@ -15,39 +15,42 @@
 //----------------------------------------------------------------------------
 
 // Don't include windows.h just for this
-extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long dwMilliseconds);
+extern "C" __declspec(dllimport) void __stdcall Sleep(
+  unsigned long dwMilliseconds);
 
 namespace ni {
 
-inline void SleepMs(tU32 anMs) {
+inline void SleepMs(tU32 anMs)
+{
   ::Sleep(anMs);
 }
 
-}
+} // namespace ni
 
 #elif defined niPosix
-//----------------------------------------------------------------------------
-//
-// Section: Posix version
-//
-//----------------------------------------------------------------------------
-#include <unistd.h>
+  //----------------------------------------------------------------------------
+  //
+  // Section: Posix version
+  //
+  //----------------------------------------------------------------------------
+  #include <unistd.h>
 
 namespace ni {
 
-inline void SleepMs(tU32 anMs) {
-  usleep(anMs*1000);
+inline void SleepMs(tU32 anMs)
+{
+  usleep(anMs * 1000);
 }
 
-}
+} // namespace ni
 
 #else
-//----------------------------------------------------------------------------
-//
-// Section: Unknown platform
-//
-//----------------------------------------------------------------------------
-#error "SleepMs not implemented for this platform."
+  //----------------------------------------------------------------------------
+  //
+  // Section: Unknown platform
+  //
+  //----------------------------------------------------------------------------
+  #error "SleepMs not implemented for this platform."
 
 #endif
 
@@ -55,12 +58,14 @@ namespace ni {
 
 //! Generally coarse and imprecise (up to 15ms variation) but uses the least
 //! cpu. Use ni::SleepSecsPrecise if you need a precise sleep.
-__forceinline void SleepSecsCoarse(ni::tF64 aSeconds) {
+__forceinline void SleepSecsCoarse(ni::tF64 aSeconds)
+{
   ni::SleepMs((tU32)(aSeconds * 1000.0));
 }
 
 //! The most precise sleep method, but uses 100% cpu.
-__forceinline void SleepSecsSpin(const ni::tF64 aSeconds) {
+__forceinline void SleepSecsSpin(const ni::tF64 aSeconds)
+{
   // spin lock
   ni::tF64 spinStart = ni::TimerInSeconds();
   while ((ni::TimerInSeconds() - spinStart) < aSeconds) {
@@ -68,7 +73,8 @@ __forceinline void SleepSecsSpin(const ni::tF64 aSeconds) {
 }
 
 //! A precise sleep method with low cpu usage. The best default choice.
-__forceinline void SleepSecs(ni::tF64 aSeconds) {
+__forceinline void SleepSecs(ni::tF64 aSeconds)
+{
   // Inspired by https://blat-blatnik.github.io/computerBear/making-accurate-sleep-function/
 
   static niThreadLocal11 ni::tF64 estimate = 5e-3;
@@ -87,7 +93,7 @@ __forceinline void SleepSecs(ni::tF64 aSeconds) {
     ++count;
     const ni::tF64 delta = observed - mean;
     mean += delta / ((ni::tF64)count);
-    m2   += delta * (observed - mean);
+    m2 += delta * (observed - mean);
     const ni::tF64 stddev = sqrt(m2 / (ni::tF64)(count - 1));
     estimate = mean + stddev;
   }

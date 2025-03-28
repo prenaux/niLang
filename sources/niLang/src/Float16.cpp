@@ -167,10 +167,9 @@
 //
 //----------------------------------------------------------------------------
 
-union uF32
-{
-  ni::tU32  i;
-  ni::tF32  f;
+union uF32 {
+  ni::tU32 i;
+  ni::tF32 f;
 };
 
 //---------------------------------------------------
@@ -182,36 +181,29 @@ static ni::tU32 halfToFloat(ni::tU16 y)
 {
   int s = (y >> 15) & 0x00000001;
   int e = (y >> 10) & 0x0000001f;
-  int m =  y        & 0x000003ff;
+  int m = y & 0x000003ff;
 
-  if (e == 0)
-  {
-    if (m == 0)
-    {
+  if (e == 0) {
+    if (m == 0) {
       // Plus or minus zero
       return s << 31;
     }
-    else
-    {
+    else {
       // Denormalized number -- renormalize it
-      while (!(m & 0x00000400))
-      {
+      while (!(m & 0x00000400)) {
         m <<= 1;
-        e -=  1;
+        e -= 1;
       }
       e += 1;
       m &= ~0x00000400;
     }
   }
-  else if (e == 31)
-  {
-    if (m == 0)
-    {
+  else if (e == 31) {
+    if (m == 0) {
       // Positive or negative infinity
       return (s << 31) | 0x7f800000;
     }
-    else
-    {
+    else {
       // Nan -- preserve sign and significand bits
       return (s << 31) | 0x7f800000 | (m << 13);
     }
@@ -234,22 +226,19 @@ static ni::tU32 halfToFloat(ni::tU16 y)
 // the corresponding half may not be normalized (zero,
 // denormalized, overflow).
 //-----------------------------------------------------
-static void initELut (unsigned short eLut[])
+static void initELut(unsigned short eLut[])
 {
-  for (int i = 0; i < 0x100; i++)
-  {
+  for (int i = 0; i < 0x100; i++) {
     int e = (i & 0x0ff) - (127 - 15);
 
-    if (e <= 0 || e >= 30)
-    {
+    if (e <= 0 || e >= 30) {
       // Special case
-      eLut[i]         = 0;
+      eLut[i] = 0;
       eLut[i | 0x100] = 0;
     }
-    else
-    {
+    else {
       // Common case - normalized half, no exponent overflow possible
-      eLut[i]         =  (e << 10);
+      eLut[i] = (e << 10);
       eLut[i | 0x100] = ((e << 10) | 0x8000);
     }
   }
@@ -260,13 +249,14 @@ static ni::tU16* _table_F32toF16 = NULL;
 
 static ni::tBool ni_f16_init_tables()
 {
-  if (_table_F16toF32) return ni::eFalse;
+  if (_table_F16toF32)
+    return ni::eFalse;
   // F16 -> F32 lookup table
-  _table_F16toF32 = (uF32*)niMalloc(sizeof(uF32)*(1<<16));
+  _table_F16toF32 = (uF32*)niMalloc(sizeof(uF32) * (1 << 16));
   for (int i = 0; i < 0xFFFF; i++)
     _table_F16toF32[i].i = halfToFloat(i);
   // F32 -> F16 lookup table
-  _table_F32toF16 = (ni::tU16*)niMalloc(sizeof(ni::tU16)*(1<<9));
+  _table_F32toF16 = (ni::tU16*)niMalloc(sizeof(ni::tU16) * (1 << 9));
   initELut(_table_F32toF16);
   return ni::eTrue;
 }
@@ -295,15 +285,13 @@ static inline ni::tI16 convert(ni::tI32 i)
   // resulting half number.
   // Adjust e, accounting for the different exponent bias
   // of float and half (127 versus 15).
-  int s =  (i >> 16) & 0x00008000;
+  int s = (i >> 16) & 0x00008000;
   int e = ((i >> 23) & 0x000000ff) - (127 - 15);
-  int m =   i        & 0x007fffff;
+  int m = i & 0x007fffff;
 
   // Now reassemble s, e and m into a half:
-  if (e <= 0)
-  {
-    if (e < -10)
-    {
+  if (e <= 0) {
+    if (e < -10) {
       // E is less than -10.  The absolute value of f is
       // less than HALF_MIN (f may be a small normalized
       // float, a denormalized float or a zero).
@@ -324,48 +312,42 @@ static inline ni::tI16 convert(ni::tI32 i)
     // our number normalized.  Because of the way a half's bits
     // are laid out, we don't have to treat this case separately;
     // the code below will handle it correctly.
-    if (m &  0x00001000)
+    if (m & 0x00001000)
       m += 0x00002000;
 
     // Assemble the half from s, e (zero) and m.
     return s | (m >> 13);
   }
-  else if (e == 0xff - (127 - 15))
-  {
-    if (m == 0)
-    {
+  else if (e == 0xff - (127 - 15)) {
+    if (m == 0) {
       // F is an infinity; convert f to a half
       // infinity with the same sign as f.
       return s | 0x7c00;
     }
-    else
-    {
+    else {
       // F is a NAN; produce a half NAN that preserves
       // the sign bit and the 10 leftmost bits of the
       // significand of f.
       return s | 0x7c00 | (m >> 13);
     }
   }
-  else
-  {
+  else {
     // E is greater than zero.  F is a normalized float.
     // We try to convert f to a normalized half.
     //
     // Round to nearest, round "0.5" up
-    if (m &  0x00001000)
-    {
+    if (m & 0x00001000) {
       m += 0x00002000;
-      if (m & 0x00800000)
-      {
-        m =  0;      // overflow in significand,
-        e += 1;      // adjust exponent
+      if (m & 0x00800000) {
+        m = 0;  // overflow in significand,
+        e += 1; // adjust exponent
       }
     }
 
     // Handle exponent overflow
-    if (e > 30)
-    {
-      return s|0x7c00;   // if this returns, the half becomes an infinity with the same sign as f.
+    if (e > 30) {
+      return s |
+             0x7c00; // if this returns, the half becomes an infinity with the same sign as f.
     }
 
     // Assemble the half from s, e and m.
@@ -377,14 +359,12 @@ niExportFunc(ni::tU16) ni_f32_to_f16(ni::tF32 f)
 {
   ni_f16_init_tables();
   ni::tU16 v = 0;
-  if (f == 0)
-  {
+  if (f == 0) {
     // Common special case - zero.
     // For speed, we don't preserve the zero's sign.
     v = 0;
   }
-  else
-  {
+  else {
     // We extract the combined sign and exponent, e, from our
     // floating-point number, f.  Then we convert e to the sign
     // and exponent of the cFloat16 number via a table lookup.
@@ -403,23 +383,22 @@ niExportFunc(ni::tU16) ni_f32_to_f16(ni::tF32 f)
     int e = (x.i >> 23) & 0x000001ff;
     e = _table_F32toF16[e];
 
-    if (e)
-    {
+    if (e) {
       // Simple case - round the significand and
       // combine it with the sign and exponent.
       v = (ni::tU16)(e + (((x.i & 0x007fffff) + 0x00001000) >> 13));
     }
-    else
-    {
+    else {
       // Difficult case - call a function.
-      v = convert (x.i);
+      v = convert(x.i);
     }
   }
 
   return v;
 }
 
-niExportFunc(ni::tF32) ni_f16_to_f32(ni::tU16 v) {
+niExportFunc(ni::tF32) ni_f16_to_f32(ni::tU16 v)
+{
   ni_f16_init_tables();
   return _table_F16toF32[v].f;
 }

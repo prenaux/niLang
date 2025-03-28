@@ -6,14 +6,14 @@
 
 #if !defined niNoSocket
 
-#ifdef niWindows
-#include "../Platforms/Win32/Win32_Redef.h"
-#include <winsock2.h>
-#endif
+  #ifdef niWindows
+    #include "../Platforms/Win32/Win32_Redef.h"
+    #include <winsock2.h>
+  #endif
 
-#ifdef niPosix
-#include <netinet/in.h>
-#endif
+  #ifdef niPosix
+    #include <netinet/in.h>
+  #endif
 
 namespace ni {
 /** \addtogroup niLang
@@ -24,11 +24,15 @@ namespace ni {
  */
 
 ///////////////////////////////////////////////
-static inline tBool RemoteAddrToSocketAddr(const iRemoteAddress* apAddr, sockaddr_in* dest) {
-  if (!dest) return eFalse;
+static inline tBool RemoteAddrToSocketAddr(const iRemoteAddress* apAddr,
+                                           sockaddr_in* dest)
+{
+  if (!dest)
+    return eFalse;
   QPtr<iRemoteAddressIPv4> ra = apAddr;
-  if (!ra.IsOK()) return eFalse;
-  memset(&dest,0,sizeof(dest));
+  if (!ra.IsOK())
+    return eFalse;
+  memset(&dest, 0, sizeof(dest));
   dest->sin_family = AF_INET;
   dest->sin_addr.s_addr = ra->GetHost();
   dest->sin_port = niSwapBE16(ra->GetPort());
@@ -36,20 +40,25 @@ static inline tBool RemoteAddrToSocketAddr(const iRemoteAddress* apAddr, sockadd
 }
 
 ///////////////////////////////////////////////
-static inline tBool SocketAddrToRemoteAddr(const sockaddr_in* src, iRemoteAddress* apAddr) {
-  if (!src) return eFalse;
+static inline tBool SocketAddrToRemoteAddr(const sockaddr_in* src,
+                                           iRemoteAddress* apAddr)
+{
+  if (!src)
+    return eFalse;
   QPtr<iRemoteAddressIPv4> ra = apAddr;
-  if (!ra.IsOK()) return eFalse;
+  if (!ra.IsOK())
+    return eFalse;
   ra->SetHost(src->sin_addr.s_addr);
   ra->SetPort(niSwapBE16(src->sin_port));
   return eTrue;
 }
 
-niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(sockaddr_in* apSockAddrIn);
+niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(
+  sockaddr_in* apSockAddrIn);
 
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 
 #endif // #if !defined niNoSocket
 

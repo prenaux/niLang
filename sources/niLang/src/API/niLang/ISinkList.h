@@ -11,8 +11,7 @@ namespace ni {
  */
 
 //! Sink list interface.
-struct iSinkList : public iCollection
-{
+struct iSinkList : public iCollection {
   niDeclareInterfaceUUID(iSinkList,0xeaace572,0x345e,0x44f6,0xb0,0xeb,0xd9,0xb7,0x99,0x52,0x37,0xc4);
   //! Get the UUID of the sink.
   //! {Property}
@@ -37,5 +36,5 @@ struct iSinkList : public iCollection
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISINKLIST_H_00B467F2_68C8_40DC_B374_A2D9E4A9AD3E__

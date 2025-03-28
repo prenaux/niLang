@@ -15,12 +15,13 @@ namespace eastl {
 
 ASTL_TEMPLATE_NULL
 struct hash<const ni::iUnknown*> {
-  size_t operator()(const ni::iUnknown* v) const {
+  size_t operator()(const ni::iUnknown* v) const
+  {
     return size_t(v);
   }
 };
 
-}
+} // namespace eastl
 
 namespace astl {
 /** \addtogroup niSTL
@@ -54,70 +55,84 @@ using eastl::swap;
 using eastl::transform;
 using eastl::unique;
 // using eastl::remove_if; // you most likely want astl::erase_if, not astl::remove_if
+using eastl::any_of;
+using eastl::count_if;
 using eastl::equal;
 using eastl::identical;
-using eastl::search;
-using eastl::count_if;
-using eastl::any_of;
 using eastl::is_permutation;
 using eastl::lower_bound;
+using eastl::search;
 
 template <typename T>
 struct hash_cast {
-  size_t operator()(T __x) const { return (size_t)__x; }
+  size_t operator()(T __x) const
+  {
+    return (size_t)__x;
+  }
 };
 
 struct dangling_iterator {};
 
 template <typename T>
-typename T::const_iterator find(const T& container, const typename T::value_type& v) {
+typename T::const_iterator find(const T& container,
+                                const typename T::value_type& v)
+{
   return eastl::find(container.begin(), container.end(), v);
 }
 
 template <typename T>
-typename T::iterator find(T& container, const typename T::value_type& v) {
+typename T::iterator find(T& container, const typename T::value_type& v)
+{
   return eastl::find(container.begin(), container.end(), v);
 }
 
 template <typename T>
-dangling_iterator find(T&& container, const typename T::value_type& v) {
+dangling_iterator find(T&& container, const typename T::value_type& v)
+{
   return dangling_iterator();
 }
 
 template <typename T, typename Predicate>
-typename T::const_iterator find_if(const T& container, Predicate aPred) {
+typename T::const_iterator find_if(const T& container, Predicate aPred)
+{
   return astl::find_if(container.begin(), container.end(), aPred);
 }
 
 template <typename T, typename Predicate>
-typename T::const_iterator find_if(T& container, Predicate aPred) {
+typename T::const_iterator find_if(T& container, Predicate aPred)
+{
   return astl::find_if(container.begin(), container.end(), aPred);
 }
 
 template <typename T, typename Predicate>
-dangling_iterator find_if(T&& container, Predicate aPred) {
+dangling_iterator find_if(T&& container, Predicate aPred)
+{
   return dangling_iterator();
 }
 
 template <typename T>
-void fill(T& container, const typename T::value_type& v) {
+void fill(T& container, const typename T::value_type& v)
+{
   eastl::fill(container.begin(), container.end(), v);
 }
 
 template <typename T, class... ARGS>
-typename T::value_type& emplace_back(T& container, ARGS&&... args) {
+typename T::value_type& emplace_back(T& container, ARGS&&... args)
+{
   container.emplace_back(eastl::forward<ARGS>(args)...);
   return container.back();
 }
 
 template <typename T, typename U>
-typename T::value_type& push_back(T& container, const U& v) {
+typename T::value_type& push_back(T& container, const U& v)
+{
   container.push_back(v);
   return container.back();
 }
 
 template <typename T>
-typename T::value_type& push_back(T& container) {
+typename T::value_type& push_back(T& container)
+{
   container.emplace_back();
   return container.back();
 }
@@ -126,9 +141,9 @@ typename T::value_type& push_back(T& container) {
 template <typename T>
 void clear_invalidate(T& t)
 {
-  if (t.empty()) return;
-  for (typename T::iterator it = t.begin(); it != t.end(); ++it)
-  {
+  if (t.empty())
+    return;
+  for (typename T::iterator it = t.begin(); it != t.end(); ++it) {
     if (niIsOK(*it)) {
       (*it)->Invalidate();
     }
@@ -138,8 +153,10 @@ void clear_invalidate(T& t)
 
 //! Erase the specified iterator in map-type container.
 template <typename T, typename S>
-S map_erase(T& map, S it) {
-  S nextIt = it; ++nextIt;
+S map_erase(T& map, S it)
+{
+  S nextIt = it;
+  ++nextIt;
   map.erase(it);
   return nextIt;
 }
@@ -148,9 +165,11 @@ S map_erase(T& map, S it) {
 template <typename T, typename U>
 bool map_find_erase(T& container, U v)
 {
-  if (container.empty()) return false;
+  if (container.empty())
+    return false;
   typename T::iterator it = container.find(v);
-  if (it == container.end()) return false;
+  if (it == container.end())
+    return false;
   container.erase(it);
   return true;
 }
@@ -159,7 +178,8 @@ bool map_find_erase(T& container, U v)
 template <typename T, typename U>
 bool find_erase(T& container, U v)
 {
-  if (container.empty()) return false;
+  if (container.empty())
+    return false;
   for (typename T::iterator it = container.begin(); it != container.end(); ++it)
   {
     if (*it == v) {
@@ -174,7 +194,8 @@ bool find_erase(T& container, U v)
 template <typename T, typename U>
 bool find_erase_invalidate(T& container, U v)
 {
-  if (container.empty()) return false;
+  if (container.empty())
+    return false;
   for (typename T::iterator it = container.begin(); it != container.end(); ++it)
   {
     if (*it == v) {
@@ -190,8 +211,9 @@ bool find_erase_invalidate(T& container, U v)
 
 //! Insert/add or update/set map like container.
 template <typename MapT, typename KeyArgT, typename ValueArgT>
-typename MapT::iterator upsert(MapT& m, const KeyArgT& k, const ValueArgT& v) {
-  return m.insert_or_assign(k,v).first;
+typename MapT::iterator upsert(MapT& m, const KeyArgT& k, const ValueArgT& v)
+{
+  return m.insert_or_assign(k, v).first;
 }
 
 //! Push back an object in a container only if it's not already in the container.
@@ -245,42 +267,51 @@ ni::tSize const_iterator_index(const T& v, niTypename T::const_iterator it)
 template <class T>
 ni::tSize reverse_iterator_index(T& v, niTypename T::reverse_iterator it)
 {
-  return (ni::tSize)(v.size()-(it-v.rbegin()));
+  return (ni::tSize)(v.size() - (it - v.rbegin()));
 }
 
 //! Get the index of the given const_reverse_iterator.
 //! \remark This works only for vectors.
 template <class T>
-ni::tSize const_reverse_iterator_index(const T& v, niTypename T::const_reverse_iterator it)
+ni::tSize const_reverse_iterator_index(const T& v,
+                                       niTypename T::const_reverse_iterator it)
 {
-  return (ni::tSize)(v.size()-(it-v.rbegin()));
+  return (ni::tSize)(v.size() - (it - v.rbegin()));
 }
 
 //! Check whether the specified container contains the specified value. (based on astl::find)
 template <typename T, typename U>
-bool contains(const T& container, const U& v) {
-  return astl::find(container,v) != container.end();
+bool contains(const T& container, const U& v)
+{
+  return astl::find(container, v) != container.end();
 }
 
 template <typename T>
-niTypename T::iterator cadvance(niTypename T::iterator it, size_t n) {
+niTypename T::iterator cadvance(niTypename T::iterator it, size_t n)
+{
   eastl::advance(it, n);
   return it;
 }
 
 template <typename T>
-void insert_at(T& container, unsigned int idx, const typename T::value_type& val) {
-  container.insert(container.begin()+idx,val);
+void insert_at(T& container, unsigned int idx,
+               const typename T::value_type& val)
+{
+  container.insert(container.begin() + idx, val);
 }
 
 template <typename T>
-void remove_at(T& container, unsigned int idx) {
-  container.erase(container.begin()+idx);
+void remove_at(T& container, unsigned int idx)
+{
+  container.erase(container.begin() + idx);
 }
 
 //! Get a value in a map like container, return aDefault if it can't be found.
 template <typename T>
-typename T::mapped_type get_default(const T& aContainer, const typename T::key_type& aKey, const typename T::mapped_type& aDefaultValue) {
+typename T::mapped_type get_default(
+  const T& aContainer, const typename T::key_type& aKey,
+  const typename T::mapped_type& aDefaultValue)
+{
   typename T::const_iterator it = aContainer.find(aKey);
   if (it == aContainer.end())
     return aDefaultValue;
@@ -289,17 +320,20 @@ typename T::mapped_type get_default(const T& aContainer, const typename T::key_t
 
 //! Get a value in at the specified index in an int addressable container, return aDefault if the index isn't whitin range.
 template <typename T>
-typename T::value_type at_default(const T& aContainer, const size_t aIndex, const typename T::value_type& aDefaultValue) {
+typename T::value_type at_default(const T& aContainer, const size_t aIndex,
+                                  const typename T::value_type& aDefaultValue)
+{
   if (aIndex >= aContainer.size())
     return aDefaultValue;
   return aContainer[static_cast<typename T::size_type>(aIndex)];
 }
 
 template <typename T, typename FUN>
-ni::tSize erase_if(T& container, const FUN& pred) {
+ni::tSize erase_if(T& container, const FUN& pred)
+{
   const ni::tSize wasSize = container.size();
-  typename T::iterator remit = eastl::remove_if(
-    container.begin(), container.end(), pred);
+  typename T::iterator remit =
+    eastl::remove_if(container.begin(), container.end(), pred);
   if (remit != container.end()) {
     container.erase(remit, container.end());
   }
@@ -307,10 +341,11 @@ ni::tSize erase_if(T& container, const FUN& pred) {
 }
 
 template <typename T, typename FUN>
-void for_each(T& c, FUN&& f) {
+void for_each(T& c, FUN&& f)
+{
   astl::for_each(c.begin(), c.end(), f);
 }
 
 /**@}*/
-}; // End of astl
+};     // namespace astl
 #endif // __UTILS_H_D308314C_59E1_E345_B070_E0B4895E4773__

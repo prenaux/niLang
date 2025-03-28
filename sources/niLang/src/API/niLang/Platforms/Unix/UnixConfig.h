@@ -146,32 +146,32 @@
 #define HAVE_DIRENT_H
 
 #ifdef HAVE_DIRENT_H
-#include <sys/types.h>
-#include <dirent.h>
-#define NAMELEN(dirent) (strlen((dirent)->d_name))
+  #include <sys/types.h>
+  #include <dirent.h>
+  #define NAMELEN(dirent) (strlen((dirent)->d_name))
 #else
-#define dirent direct
-#define NAMELEN(dirent) ((dirent)->d_namlen)
-#ifdef HAVE_SYS_NDIR_H
-#include <sys/ndir.h>
-#endif
-#ifdef HAVE_SYS_DIR_H
-#include <sys/dir.h>
-#endif
-#ifdef HAVE_NDIR_H
-#include <ndir.h>
-#endif
+  #define dirent direct
+  #define NAMELEN(dirent) ((dirent)->d_namlen)
+  #ifdef HAVE_SYS_NDIR_H
+    #include <sys/ndir.h>
+  #endif
+  #ifdef HAVE_SYS_DIR_H
+    #include <sys/dir.h>
+  #endif
+  #ifdef HAVE_NDIR_H
+    #include <ndir.h>
+  #endif
 #endif
 
 #ifdef TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
+  #include <sys/time.h>
+  #include <time.h>
 #else
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
+  #ifdef HAVE_SYS_TIME_H
+    #include <sys/time.h>
+  #else
+    #include <time.h>
+  #endif
 #endif
 
 #endif // __UNIXCONFIG_H_26C93CBA_7B6D_443E_AF3B_FFECC3785BFA__

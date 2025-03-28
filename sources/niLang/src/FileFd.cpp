@@ -3,75 +3,88 @@
 
 using namespace ni;
 
-class cFileFd : public ImplRC<iFileBase,eImplFlags_Default>
-{
+class cFileFd : public ImplRC<iFileBase, eImplFlags_Default> {
  public:
-  cFileFd(int anRead, int anWrite, tFileFdFlags aFileFlags, const char* aaszFileName)
+  cFileFd(int anRead, int anWrite, tFileFdFlags aFileFlags,
+          const char* aaszFileName)
       : mstrName(aaszFileName)
       , mFileFlags(aFileFlags)
       , mnRead(anRead)
       , mnWrite(anWrite)
-  {}
+  {
+  }
 
-  ~cFileFd() {
+  ~cFileFd()
+  {
     Invalidate();
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     const tBool bRWSame = (mnRead == mnWrite);
     if (mnRead != -1) {
-      if (niFlagIsNot(mFileFlags,eFileFdFlags_DontOwnRead)) {
+      if (niFlagIsNot(mFileFlags, eFileFdFlags_DontOwnRead)) {
         close(mnRead);
       }
       mnRead = -1;
     }
     if (mnWrite != -1) {
-      if (niFlagIsNot(mFileFlags,eFileFdFlags_DontOwnWrite) && !bRWSame) {
+      if (niFlagIsNot(mFileFlags, eFileFdFlags_DontOwnWrite) && !bRWSame) {
         close(mnWrite);
       }
       mnWrite = -1;
     }
   }
 
-  tBool  __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     return mnRead != -1 || mnWrite != -1;
   }
 
-  tBool __stdcall _CanSeek() const {
-    if (niFlagIs(mFileFlags,eFileFdFlags_NoSeek))
+  tBool __stdcall _CanSeek() const
+  {
+    if (niFlagIs(mFileFlags, eFileFdFlags_NoSeek))
       return eFalse;
     if (mnRead != -1 && mnWrite != -1 && mnRead != mnWrite)
       return eFalse;
     return eTrue;
   }
 
-  int _GetSeekHandle() const {
-    if (!_CanSeek()) return -1;
+  int _GetSeekHandle() const
+  {
+    if (!_CanSeek())
+      return -1;
     return (mnRead != -1) ? mnRead : mnWrite;
   }
 
-  tBool  __stdcall Seek(tI64 offset) {
+  tBool __stdcall Seek(tI64 offset)
+  {
     int fd = _GetSeekHandle();
-    if (fd < 0) return eFalse;
-    return FdSeek(fd,offset,SEEK_CUR) == -1LL ? eFalse : eTrue;
+    if (fd < 0)
+      return eFalse;
+    return FdSeek(fd, offset, SEEK_CUR) == -1LL ? eFalse : eTrue;
   }
 
-  tBool  __stdcall SeekSet(tI64 offset) {
+  tBool __stdcall SeekSet(tI64 offset)
+  {
     int fd = _GetSeekHandle();
-    if (fd < 0) return eFalse;
-    return FdSeek(fd,offset,SEEK_SET) == -1LL ? eFalse : eTrue;
+    if (fd < 0)
+      return eFalse;
+    return FdSeek(fd, offset, SEEK_SET) == -1LL ? eFalse : eTrue;
   }
 
-  tBool __stdcall SeekEnd(tI64 offset) {
+  tBool __stdcall SeekEnd(tI64 offset)
+  {
     int fd = _GetSeekHandle();
-    if (fd < 0) return eFalse;
+    if (fd < 0)
+      return eFalse;
     if (offset == 0) {
-      return FdSeek(fd,offset,SEEK_END) == -1LL ? eFalse : eTrue;
+      return FdSeek(fd, offset, SEEK_END) == -1LL ? eFalse : eTrue;
     }
     else {
       const tI64 size = GetSize();
       if (offset < size) {
-        return SeekSet(size-offset);
+        return SeekSet(size - offset);
       }
       else {
         return SeekSet(0);
@@ -80,35 +93,44 @@ class cFileFd : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  tSize  __stdcall ReadRaw(void* pOut, tSize nSize) {
-    if (mnRead < 0) return 0;
-    return FdRead(mnRead,pOut,nSize);
+  tSize __stdcall ReadRaw(void* pOut, tSize nSize)
+  {
+    if (mnRead < 0)
+      return 0;
+    return FdRead(mnRead, pOut, nSize);
   }
 
   ///////////////////////////////////////////////
-  tSize  __stdcall WriteRaw(const void* pOut, tSize nSize) {
-    if (mnWrite < 0) return 0;
-    return FdWrite(mnWrite,pOut,nSize);
+  tSize __stdcall WriteRaw(const void* pOut, tSize nSize)
+  {
+    if (mnWrite < 0)
+      return 0;
+    return FdWrite(mnWrite, pOut, nSize);
   }
 
   ///////////////////////////////////////////////
-  inline tI64 __stdcall Tell() {
+  inline tI64 __stdcall Tell()
+  {
     int fd = _GetSeekHandle();
-    if (fd < 0) return 0;
+    if (fd < 0)
+      return 0;
     tI64 pos;
     pos = FdTell(fd);
     return pos;
   }
 
   ///////////////////////////////////////////////
-  inline tI64 __stdcall GetSize() const {
+  inline tI64 __stdcall GetSize() const
+  {
     int fd = _GetSeekHandle();
-    if (fd < 0) return 0;
+    if (fd < 0)
+      return 0;
     return FdSize(fd);
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Flush() {
+  tBool __stdcall Flush()
+  {
     if (mnWrite >= 0) {
       FdFlush(mnWrite);
     }
@@ -116,26 +138,32 @@ class cFileFd : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const {
+  tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const
+  {
     return eFalse;
   }
-  tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) {
+  tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime)
+  {
     return eFalse;
   }
-  tBool __stdcall Resize(tI64 newSize) {
+  tBool __stdcall Resize(tI64 newSize)
+  {
     return eFalse;
   }
 
   ///////////////////////////////////////////////
-  tFileFlags __stdcall GetFileFlags() const {
+  tFileFlags __stdcall GetFileFlags() const
+  {
     tFileFlags ff = 0;
-    niFlagOnIf(ff,eFileFlags_Read,mnRead!=-1);
-    niFlagOnIf(ff,eFileFlags_Write,mnWrite!=-1);
-    niFlagOnIf(ff,eFileFlags_NoSeek,!_CanSeek());
-    niFlagOnIf(ff,eFileFlags_Stream,niFlagIs(mFileFlags,eFileFdFlags_NoSeek));
+    niFlagOnIf(ff, eFileFlags_Read, mnRead != -1);
+    niFlagOnIf(ff, eFileFlags_Write, mnWrite != -1);
+    niFlagOnIf(ff, eFileFlags_NoSeek, !_CanSeek());
+    niFlagOnIf(ff, eFileFlags_Stream,
+               niFlagIs(mFileFlags, eFileFdFlags_NoSeek));
     return ff;
   }
-  const achar* __stdcall GetSourcePath() const {
+  const achar* __stdcall GetSourcePath() const
+  {
     return mstrName.Chars();
   }
 
@@ -147,7 +175,10 @@ class cFileFd : public ImplRC<iFileBase,eImplFlags_Default>
 };
 
 namespace ni {
-niExportFunc(ni::iFileBase*) CreateFileFd(int anRead, int anWrite, tFileFdFlags aFileFlags, const char* aaszFileName) {
-  return niNew cFileFd(anRead,anWrite,aFileFlags,aaszFileName);
+niExportFunc(ni::iFileBase*) CreateFileFd(int anRead, int anWrite,
+                                          tFileFdFlags aFileFlags,
+                                          const char* aaszFileName)
+{
+  return niNew cFileFd(anRead, anWrite, aFileFlags, aaszFileName);
 }
-}
+} // namespace ni

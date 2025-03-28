@@ -15,5 +15,5 @@ using optional_function_ref = eastl::optional<astl::function_ref<T>>;
 using eastl::nullopt;
 using nullopt_t = eastl::nullopt_t;
 
-}  // namespace astl
+} // namespace astl
 #endif // __OPTIONAL_H_CD77D39C_9D47_C14D_924F_2EB3D16EFCCD__

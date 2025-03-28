@@ -2,42 +2,42 @@
 	<namespace name="ni">
 		<enum name="eEnumToStringFlags">
 			<comments desc="Enum to string flags "/>
-			<value name="eEnumToStringFlags_Full" value="niBit ( 0 ) ">
+			<value name="eEnumToStringFlags_Full" value="niBit(0)">
 				<comments desc="Dont use the specified enum as default enumeration (will fully qualify the enumeration value&apos;s name). "/>
 			</value>
-			<value name="eEnumToStringFlags_Flags" value="niBit ( 1 ) ">
+			<value name="eEnumToStringFlags_Flags" value="niBit(1)">
 				<comments desc="Handle the enumeration as a set of flags. "/>
 			</value>
-			<value name="eEnumToStringFlags_GlobalSearch" value="niBit ( 2 ) ">
+			<value name="eEnumToStringFlags_GlobalSearch" value="niBit(2)">
 				<comments desc="Search all registered enumerations if the specified fully qualified enumeration can&apos;t be found. "/>
 			</value>
 		</enum>
 		<enum name="eSystemMessage">
 			<comments desc="System messages id. "/>
-			<value name="eSystemMessage_Exit" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;x&apos; ) ">
+			<value name="eSystemMessage_Exit" value="niMessageID(&apos;_&apos;,&apos;S&apos;,&apos;Y&apos;,&apos;S&apos;,&apos;x&apos;)">
 				<comments desc="The application exits. ">
 					<params text="A: unused "/>
 					<params text="B: unused "/>
 				</comments>
 			</value>
-			<value name="eSystemMessage_SetupParentWindow" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;W&apos; ) ">
+			<value name="eSystemMessage_SetupParentWindow" value="niMessageID(&apos;_&apos;,&apos;S&apos;,&apos;Y&apos;,&apos;S&apos;,&apos;W&apos;)">
 				<comments desc="Sent to a child process to notify which is the actual parent window. ">
 					<params text="A: parent window handle "/>
 				</comments>
 			</value>
-			<value name="eSystemMessage_SetupClientWindow" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;w&apos; ) ">
+			<value name="eSystemMessage_SetupClientWindow" value="niMessageID(&apos;_&apos;,&apos;S&apos;,&apos;Y&apos;,&apos;S&apos;,&apos;w&apos;)">
 				<comments desc="Sent to a parent process to notify which is the actual child window created. ">
 					<remark text="Sent as reply of SetupParentWindow "/>
 					<params text="A: parent window handle "/>
 				</comments>
 			</value>
-			<value name="eSystemMessage_Log" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;L&apos; ) ">
+			<value name="eSystemMessage_Log" value="niMessageID(&apos;_&apos;,&apos;S&apos;,&apos;Y&apos;,&apos;S&apos;,&apos;L&apos;)">
 				<comments desc="Log message. ">
 					<params text="A: log type "/>
 					<params text="B: unused "/>
 				</comments>
 			</value>
-			<value name="eSystemMessage_OpenFile" value="niMessageID ( &apos;_&apos; , &apos;S&apos; , &apos;Y&apos; , &apos;S&apos; , &apos;O&apos; ) ">
+			<value name="eSystemMessage_OpenFile" value="niMessageID(&apos;_&apos;,&apos;S&apos;,&apos;Y&apos;,&apos;S&apos;,&apos;O&apos;)">
 				<comments desc="Open file. ">
 					<params text="A: file path "/>
 					<params text="B: unused "/>
@@ -46,40 +46,40 @@
 		</enum>
 		<enum name="eClipboardType">
 			<comments desc="Clipboard types "/>
-			<value name="eClipboardType_System" value="0 ">
+			<value name="eClipboardType_System" value="0">
 				<comments desc="System clipboard. "/>
 			</value>
-			<value name="eClipboardType_Memory1" value="1 ">
+			<value name="eClipboardType_Memory1" value="1">
 				<comments desc="Memory clipboard 1. "/>
 			</value>
-			<value name="eClipboardType_Memory2" value="2 ">
+			<value name="eClipboardType_Memory2" value="2">
 				<comments desc="Memory clipboard 2. "/>
 			</value>
-			<value name="eClipboardType_Memory3" value="3 ">
+			<value name="eClipboardType_Memory3" value="3">
 				<comments desc="Memory clipboard 3. "/>
 			</value>
-			<value name="eClipboardType_Memory4" value="4 ">
+			<value name="eClipboardType_Memory4" value="4">
 				<comments desc="Memory clipboard 4. "/>
 			</value>
-			<value name="eClipboardType_Memory5" value="5 ">
+			<value name="eClipboardType_Memory5" value="5">
 				<comments desc="Memory clipboard 5. "/>
 			</value>
-			<value name="eClipboardType_Memory6" value="6 ">
+			<value name="eClipboardType_Memory6" value="6">
 				<comments desc="Memory clipboard 6. "/>
 			</value>
-			<value name="eClipboardType_Memory7" value="7 ">
+			<value name="eClipboardType_Memory7" value="7">
 				<comments desc="Memory clipboard 7. "/>
 			</value>
-			<value name="eClipboardType_Memory8" value="8 ">
+			<value name="eClipboardType_Memory8" value="8">
 				<comments desc="Memory clipboard 8. "/>
 			</value>
-			<value name="eClipboardType_Memory9" value="9 ">
+			<value name="eClipboardType_Memory9" value="9">
 				<comments desc="Memory clipboard 9. "/>
 			</value>
-			<value name="eClipboardType_Memory10" value="10 ">
+			<value name="eClipboardType_Memory10" value="10">
 				<comments desc="Memory clipboard 10. "/>
 			</value>
-			<value name="eClipboardType_Last" value="11 ">
+			<value name="eClipboardType_Last" value="11">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

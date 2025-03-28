@@ -10,38 +10,47 @@
 using namespace ni;
 
 static sPropertyBool _traceLoadModule("niLang.TraceLoadModule", eFalse);
-#define TRACE_LOAD_MODULE(FMT) if (_traceLoadModule.get()) { niDebugFmt(FMT); }
+#define TRACE_LOAD_MODULE(FMT)  \
+  if (_traceLoadModule.get()) { \
+    niDebugFmt(FMT);            \
+  }
 
-static const sInterfaceDef IDef_iUnknown = {
-  niGetInterfaceID(ni::iUnknown),
-  &niGetInterfaceUUID(ni::iUnknown),
-  0,
-  NULL,
-  0,
-  NULL,
-  NULL
-};
-static const sInterfaceDef IDef_iDispatch = {
-  niGetInterfaceID(ni::iDispatch),
-  &niGetInterfaceUUID(ni::iDispatch),
-  0,
-  NULL,
-  0,
-  NULL,
-  NULL
-};
+static const sInterfaceDef IDef_iUnknown = { niGetInterfaceID(ni::iUnknown),
+                                             &niGetInterfaceUUID(ni::iUnknown),
+                                             0,
+                                             NULL,
+                                             0,
+                                             NULL,
+                                             NULL };
+static const sInterfaceDef IDef_iDispatch = { niGetInterfaceID(ni::iDispatch),
+                                              &niGetInterfaceUUID(
+                                                ni::iDispatch),
+                                              0,
+                                              NULL,
+                                              0,
+                                              NULL,
+                                              NULL };
 
-struct sObjectTypeDefCallback : public ni::ImplRC<iCallback,eImplFlags_DontInherit1,iRunnable> {
+struct sObjectTypeDefCallback
+    : public ni::ImplRC<iCallback, eImplFlags_DontInherit1, iRunnable> {
   Ptr<iObjectTypeDef> _odef;
-  sObjectTypeDefCallback(const iObjectTypeDef* aObjectTypeDef) : _odef(aObjectTypeDef) {}
-  virtual Var __stdcall Run() { return RunCallback(niVarNull, niVarNull); }
-  virtual Var __stdcall RunCallback(const Var& avarA, const Var& avarB) {
-    return _odef->CreateInstance(avarA,avarB);
+  sObjectTypeDefCallback(const iObjectTypeDef* aObjectTypeDef)
+      : _odef(aObjectTypeDef)
+  {
+  }
+  virtual Var __stdcall Run()
+  {
+    return RunCallback(niVarNull, niVarNull);
+  }
+  virtual Var __stdcall RunCallback(const Var& avarA, const Var& avarB)
+  {
+    return _odef->CreateInstance(avarA, avarB);
   }
 };
 
 ///////////////////////////////////////////////
-void cLang::_StartupModules() {
+void cLang::_StartupModules()
+{
   mbmapUUIDNames.insert(niGetInterfaceUUID(ni::iUnknown), _H("iUnknown"));
   mbmapUUIDNames.insert(niGetInterfaceUUID(ni::iDispatch), _H("iDispatch"));
   mmapUUIDDef[niGetInterfaceUUID(ni::iUnknown)] = &IDef_iUnknown;
@@ -49,24 +58,27 @@ void cLang::_StartupModules() {
 }
 
 ///////////////////////////////////////////////
-tBool cLang::_FinalizeRegisterModuleDef(const cLang::sModuleDef& mod) {
+tBool cLang::_FinalizeRegisterModuleDef(const cLang::sModuleDef& mod)
+{
   const iModuleDef* mdef = mod.mptrModuleDef;
-  niLoop(i,mdef->GetNumEnums()) {
+  niLoop (i, mdef->GetNumEnums()) {
     const sEnumDef* edef = mdef->GetEnum(i);
     // TRACE_LOAD_MODULE(("_FinalizeRegisterModuleDef: adding enum: %s.",edef->maszName));
     RegisterEnumDef(edef);
   }
-  niLoop(i,mdef->GetNumObjectTypes()) {
+  niLoop (i, mdef->GetNumObjectTypes()) {
     const iObjectTypeDef* odef = mdef->GetObjectType(i);
     // TRACE_LOAD_MODULE(("_FinalizeRegisterModuleDef: adding odef: %s.",odef->GetName()));
-    astl::upsert(*mmapCreateInstance, odef->GetName(),niNew sObjectTypeDefCallback(odef));
+    astl::upsert(*mmapCreateInstance, odef->GetName(),
+                 niNew sObjectTypeDefCallback(odef));
   }
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cLang::RegisterModuleDef(const iModuleDef* apDef) {
-  niCheckIsOK(apDef,eFalse);
+tBool __stdcall cLang::RegisterModuleDef(const iModuleDef* apDef)
+{
+  niCheckIsOK(apDef, eFalse);
   const tU32 nModuleIndex = GetModuleDefIndex(apDef->GetName());
   if (nModuleIndex != eInvalidHandle) {
     niWarning(niFmt("Module '%s' already registered.", apDef->GetName()));
@@ -76,10 +88,8 @@ tBool __stdcall cLang::RegisterModuleDef(const iModuleDef* apDef) {
   mod.mptrModuleDef = apDef;
   TRACE_LOAD_MODULE((
     "RegisterModuleDef: name: %s, numDeps: %s, numInterfaces: %s, numEnums: %s, numConsts: %s, numObjectTypes: %s",
-    mod.mptrModuleDef->GetName(),
-    mod.mptrModuleDef->GetNumDependencies(),
-    mod.mptrModuleDef->GetNumInterfaces(),
-    mod.mptrModuleDef->GetNumEnums(),
+    mod.mptrModuleDef->GetName(), mod.mptrModuleDef->GetNumDependencies(),
+    mod.mptrModuleDef->GetNumInterfaces(), mod.mptrModuleDef->GetNumEnums(),
     mod.mptrModuleDef->GetNumConstants(),
     mod.mptrModuleDef->GetNumObjectTypes()));
   mvModuleDefs.push_back(mod);
@@ -87,28 +97,35 @@ tBool __stdcall cLang::RegisterModuleDef(const iModuleDef* apDef) {
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetNumModuleDefs() const {
+tU32 __stdcall cLang::GetNumModuleDefs() const
+{
   return (tU32)mvModuleDefs.size();
 }
 
 ///////////////////////////////////////////////
-const iModuleDef* __stdcall cLang::GetModuleDef(tU32 anIndex) const {
-  if (anIndex >= mvModuleDefs.size()) return NULL;
+const iModuleDef* __stdcall cLang::GetModuleDef(tU32 anIndex) const
+{
+  if (anIndex >= mvModuleDefs.size())
+    return NULL;
   return mvModuleDefs[anIndex].mptrModuleDef;
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetModuleDefIndex(const achar* aaszName) const {
-  niLoop(i,mvModuleDefs.size()) {
-    if (StrEq(mvModuleDefs[i].mptrModuleDef->GetName(),aaszName))
+tU32 __stdcall cLang::GetModuleDefIndex(const achar* aaszName) const
+{
+  niLoop (i, mvModuleDefs.size()) {
+    if (StrEq(mvModuleDefs[i].mptrModuleDef->GetName(), aaszName))
       return i;
   }
   return eInvalidHandle;
 }
 
 ///////////////////////////////////////////////
-const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName, const achar* aaszFile) {
-  TRACE_LOAD_MODULE(("LoadModuleDef: name: '%s', file: '%s'.",aName,aaszFile));
+const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName,
+                                                 const achar* aaszFile)
+{
+  TRACE_LOAD_MODULE(
+    ("LoadModuleDef: name: '%s', file: '%s'.", aName, aaszFile));
 
   // Check if the module has already been loaded
   {
@@ -122,10 +139,12 @@ const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName, const achar
 
   // Try to load from the specified file path
   if (niStringIsOK(aaszFile)) {
-    TRACE_LOAD_MODULE(("LoadModuleDef: trying from explicit path: %s.",aaszFile));
+    TRACE_LOAD_MODULE(
+      ("LoadModuleDef: trying from explicit path: %s.", aaszFile));
     mod.mhDLL = ni_dll_load(aaszFile);
     if (mod.mhDLL) {
-      TRACE_LOAD_MODULE(("Loaded module DLL '%s' from explicit path '%s'.",aName,aaszFile));
+      TRACE_LOAD_MODULE(
+        ("Loaded module DLL '%s' from explicit path '%s'.", aName, aaszFile));
     }
   }
 
@@ -134,51 +153,54 @@ const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName, const achar
     cPath path;
     path.SetDirectory(this->GetProperty("ni.dirs.bin").Chars());
     path.SetFile(ni::GetModuleFileName(aName).Chars());
-    TRACE_LOAD_MODULE(("LoadModuleDef: trying from binary folder: %s.",path.GetPath().Chars()));
+    TRACE_LOAD_MODULE(("LoadModuleDef: trying from binary folder: %s.",
+                       path.GetPath().Chars()));
     mod.mhDLL = ni_dll_load(path.GetPath().Chars());
     if (mod.mhDLL) {
-      TRACE_LOAD_MODULE(("Loaded module DLL '%s' from bin dir '%s'.",aName,path.GetPath()));
+      TRACE_LOAD_MODULE(
+        ("Loaded module DLL '%s' from bin dir '%s'.", aName, path.GetPath()));
     }
     else {
-      TRACE_LOAD_MODULE(("LoadModuleDef: trying from file: %s.",path.GetFile()));
+      TRACE_LOAD_MODULE(
+        ("LoadModuleDef: trying from file: %s.", path.GetFile()));
       mod.mhDLL = ni_dll_load(path.GetFile().Chars());
       if (mod.mhDLL) {
-        TRACE_LOAD_MODULE(("Loaded module DLL '%s' from system PATH.",aName,path.GetPath()));
+        TRACE_LOAD_MODULE(
+          ("Loaded module DLL '%s' from system PATH.", aName, path.GetPath()));
       }
     }
   }
 
   // Load the module definition
-  if (mod.mhDLL)
-  {
+  if (mod.mhDLL) {
     cString strEntryPoint = "GetModuleDef_";
     strEntryPoint += aName;
-    tpfnGetModuleDef pfnGetModuleDef = (tpfnGetModuleDef)ni_dll_get_proc(mod.mhDLL,strEntryPoint.Chars());
+    tpfnGetModuleDef pfnGetModuleDef =
+      (tpfnGetModuleDef)ni_dll_get_proc(mod.mhDLL, strEntryPoint.Chars());
     if (pfnGetModuleDef == NULL) {
-      niError(niFmt(_A("Module '%s' doesn't have '%s'."),aName,strEntryPoint));
+      niError(
+        niFmt(_A("Module '%s' doesn't have '%s'."), aName, strEntryPoint));
       ni_dll_free(mod.mhDLL);
       return NULL;
     }
 
     mod.mptrModuleDef = pfnGetModuleDef();
     if (!mod.mptrModuleDef.IsOK()) {
-      niError(niFmt(_A("Module '%s' can't get module def."),aName));
+      niError(niFmt(_A("Module '%s' can't get module def."), aName));
       ni_dll_free(mod.mhDLL);
       return NULL;
     }
 
     if (!_FinalizeRegisterModuleDef(mod)) {
-      niError(niFmt(_A("Module '%s' can't finalize registration."),aName));
+      niError(niFmt(_A("Module '%s' can't finalize registration."), aName));
       ni_dll_free(mod.mhDLL);
       return NULL;
     }
 
     TRACE_LOAD_MODULE((
       "LoadModuleDef: name: %s, numDeps: %s, numInterfaces: %s, numEnums: %s, numConsts: %s, numObjectTypes: %s",
-      mod.mptrModuleDef->GetName(),
-      mod.mptrModuleDef->GetNumDependencies(),
-      mod.mptrModuleDef->GetNumInterfaces(),
-      mod.mptrModuleDef->GetNumEnums(),
+      mod.mptrModuleDef->GetName(), mod.mptrModuleDef->GetNumDependencies(),
+      mod.mptrModuleDef->GetNumInterfaces(), mod.mptrModuleDef->GetNumEnums(),
       mod.mptrModuleDef->GetNumConstants(),
       mod.mptrModuleDef->GetNumObjectTypes()));
     mvModuleDefs.push_back(mod);
@@ -191,9 +213,8 @@ const iModuleDef* __stdcall cLang::LoadModuleDef(const achar* aName, const achar
 }
 
 ///////////////////////////////////////////////
-iUnknown* __stdcall cLang::CreateInstance(
-    const achar* aOID,
-    const Var& aVarA, const Var& aVarB)
+iUnknown* __stdcall cLang::CreateInstance(const achar* aOID, const Var& aVarA,
+                                          const Var& aVarB)
 {
   tCreateInstanceCMap::const_iterator it = mmapCreateInstance->find(aOID);
   if (it == mmapCreateInstance->end()) {
@@ -207,7 +228,7 @@ iUnknown* __stdcall cLang::CreateInstance(
     return NULL;
   }
 
-  Var r = ptrCreateCallback->RunCallback(aVarA,aVarB);
+  Var r = ptrCreateCallback->RunCallback(aVarA, aVarB);
   if (!r.IsIUnknownPointer()) {
     niError(niFmt("Create '%s' failed.", aOID));
     return NULL;
@@ -217,14 +238,17 @@ iUnknown* __stdcall cLang::CreateInstance(
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cLang::SetGlobalInstance(const achar* aaszName, iUnknown* apInstance) {
-  niCheckIsOK(apInstance,eFalse);
-  niCheck(niStringIsOK(aaszName),eFalse);
+tBool __stdcall cLang::SetGlobalInstance(const achar* aaszName,
+                                         iUnknown* apInstance)
+{
+  niCheckIsOK(apInstance, eFalse);
+  niCheck(niStringIsOK(aaszName), eFalse);
   astl::upsert(*mmapGlobalInstance, aaszName, apInstance);
   niAssert(apInstance == mmapGlobalInstance->find(aaszName)->second);
   return eTrue;
 }
-iUnknown* __stdcall cLang::GetGlobalInstance(const achar* aaszName) const {
+iUnknown* __stdcall cLang::GetGlobalInstance(const achar* aaszName) const
+{
   tGlobalInstanceCMap::const_iterator it = mmapGlobalInstance->find(aaszName);
   if (it == mmapGlobalInstance->end())
     return NULL;
@@ -236,10 +260,10 @@ iHString* cLang::GetInterfaceName(const tUUID& aUUID) const
 {
   tUUIDNameBMap::const_iterator_from itFind = mbmapUUIDNames.findFrom(aUUID);
   if (itFind == mbmapUUIDNames.endFrom()) {
-    niLoopit(astl::vector<sModuleDef>::const_iterator,it,mvModuleDefs) {
+    niLoopit (astl::vector<sModuleDef>::const_iterator, it, mvModuleDefs) {
       const iModuleDef* pDef = it->mptrModuleDef;
       if (pDef) {
-        niLoop(i,pDef->GetNumInterfaces()) {
+        niLoop (i, pDef->GetNumInterfaces()) {
           const sInterfaceDef* pIDef = pDef->GetInterface(i);
           niPanicAssertMsg(
             pIDef->mUUID != nullptr,
@@ -247,7 +271,7 @@ iHString* cLang::GetInterfaceName(const tUUID& aUUID) const
                   pIDef->maszName, i, pDef->GetName()));
           if (pIDef->mUUID && *pIDef->mUUID == aUUID) {
             tHStringPtr hspName = _H(pIDef->maszName);
-            niThis(cLang)->mbmapUUIDNames.insert(aUUID,hspName);
+            niThis(cLang)->mbmapUUIDNames.insert(aUUID, hspName);
             return hspName;
           }
         }
@@ -267,18 +291,18 @@ const tUUID& cLang::GetInterfaceUUID(iHString* ahspName) const
   tUUIDNameBMap::const_iterator_to itFind = mbmapUUIDNames.findTo(hspName);
   if (itFind == mbmapUUIDNames.endTo()) {
     if (!HStringIsEmpty(hspName)) {
-      niLoopit(astl::vector<sModuleDef>::const_iterator,it,mvModuleDefs) {
+      niLoopit (astl::vector<sModuleDef>::const_iterator, it, mvModuleDefs) {
         const iModuleDef* pDef = it->mptrModuleDef;
         if (pDef) {
-          niLoop(i,pDef->GetNumInterfaces()) {
+          niLoop (i, pDef->GetNumInterfaces()) {
             const sInterfaceDef* pIDef = pDef->GetInterface(i);
             niPanicAssertMsg(
               pIDef->mUUID != nullptr,
               niFmt("Invalid interface def '%s' (%d) in module def '%s'.",
                     pIDef->maszName, i, pDef->GetName()));
             niPanicAssert(pIDef->maszName != nullptr);
-            if (ni::StrEq(niHStr(hspName),pIDef->maszName)) {
-              niThis(cLang)->mbmapUUIDNames.insert(*pIDef->mUUID,hspName);
+            if (ni::StrEq(niHStr(hspName), pIDef->maszName)) {
+              niThis(cLang)->mbmapUUIDNames.insert(*pIDef->mUUID, hspName);
               return *pIDef->mUUID;
             }
           }
@@ -297,10 +321,10 @@ const sInterfaceDef* cLang::GetInterfaceDefFromUUID(const tUUID& aUUID) const
 {
   tUUIDDefMap::const_iterator itFind = mmapUUIDDef.find(aUUID);
   if (itFind == mmapUUIDDef.end()) {
-    niLoopit(astl::vector<sModuleDef>::const_iterator,it,mvModuleDefs) {
+    niLoopit (astl::vector<sModuleDef>::const_iterator, it, mvModuleDefs) {
       const iModuleDef* pDef = it->mptrModuleDef;
       if (pDef) {
-        niLoop(i,pDef->GetNumInterfaces()) {
+        niLoop (i, pDef->GetNumInterfaces()) {
           const sInterfaceDef* pIDef = pDef->GetInterface(i);
           niPanicAssertMsg(
             pIDef->mUUID != nullptr,
@@ -321,10 +345,12 @@ const sInterfaceDef* cLang::GetInterfaceDefFromUUID(const tUUID& aUUID) const
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cLang::RegisterEnumDef(const sEnumDef* apEnumDef) {
-  tEnumDefMap::const_iterator itEnumDef = mmapEnumDefs.find(apEnumDef->maszName);
+tBool __stdcall cLang::RegisterEnumDef(const sEnumDef* apEnumDef)
+{
+  tEnumDefMap::const_iterator itEnumDef =
+    mmapEnumDefs.find(apEnumDef->maszName);
   if (itEnumDef == mmapEnumDefs.end()) {
-    mmapEnumDefs.insert(eastl::make_pair(apEnumDef->maszName,apEnumDef));
+    mmapEnumDefs.insert(eastl::make_pair(apEnumDef->maszName, apEnumDef));
   }
   return eTrue;
 }

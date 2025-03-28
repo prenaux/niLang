@@ -18,5 +18,5 @@ using make_index_sequence = eastl::make_index_sequence<N>;
 
 using eastl::make_tuple;
 
-}
+} // namespace astl
 #endif // __STL_TUPLE_H_7E9B1898_ADB5_4849_AEEC_6C643BEE4E44__

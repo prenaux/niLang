@@ -7,7 +7,7 @@
 #include "../STL/EASTL/utility.h"
 
 #ifndef TRACE_NI_NONNULL
-#define TRACE_NI_NONNULL(X)
+  #define TRACE_NI_NONNULL(X)
 #endif
 
 namespace ni {
@@ -18,18 +18,20 @@ namespace ni {
  * @{
  */
 
-template<typename T> struct Ptr;
-template<typename T> struct QPtr;
-template<typename T> struct WeakPtr;
+template <typename T>
+struct Ptr;
+template <typename T>
+struct QPtr;
+template <typename T>
+struct WeakPtr;
 
 /**
  * A strong reference pointer for iUnknown instances that can never be null.
  */
 template <typename T>
-struct Nonnull
-{
+struct Nonnull {
   niClassNoHeapAlloc(Nonnull);
-  template<typename U>
+  template <typename U>
   friend struct Nonnull;
 
  public:
@@ -45,15 +47,17 @@ struct Nonnull
 
   // Explicit so that its clear at callsites that it will enforce it to be
   // non-null.
-  explicit Nonnull(const T* aPtr) {
+  explicit Nonnull(const T* aPtr)
+  {
     TRACE_NI_NONNULL("COPY explicit constructor T*")
     niPanicAssertMsg(aPtr != nullptr,
                      "Nonnull explicit constructor, T* can't be null.");
-    mRefPtr = niConstCast(T*,aPtr);
+    mRefPtr = niConstCast(T*, aPtr);
     ni::AddRef(mRefPtr);
   }
 
-  Nonnull(const astl::non_null<T*> aRight) {
+  Nonnull(const astl::non_null<T*> aRight)
+  {
     TRACE_NI_NONNULL("COPY constructor astl::non_null<T>")
     niAssertMsg(aRight.raw_ptr() != nullptr,
                 "Nonnull copy constructor, astl::non_null<T> can't be null.");
@@ -61,9 +65,9 @@ struct Nonnull
     ni::AddRef(mRefPtr);
   }
   template <typename U,
-            typename = eastl::enable_if_t<
-              eastl::is_convertible<U*, T*>::value>>
-  Nonnull(const astl::non_null<U*>& aRight) {
+            typename = eastl::enable_if_t<eastl::is_convertible<U*, T*>::value>>
+  Nonnull(const astl::non_null<U*>& aRight)
+  {
     TRACE_NI_NONNULL("COPY constructor astl::non_null<U>")
     niAssertMsg(aRight.raw_ptr() != nullptr,
                 "Nonnull copy constructor, astl::non_null<U> can't be null.");
@@ -71,7 +75,8 @@ struct Nonnull
     ni::AddRef(mRefPtr);
   }
 
-  Nonnull(const Nonnull<T>& aRight) {
+  Nonnull(const Nonnull<T>& aRight)
+  {
     TRACE_NI_NONNULL("COPY constructor<T>")
     niAssertMsg(aRight.mRefPtr != nullptr,
                 "Nonnull copy constructor, Nonnull<T> can't be null.");
@@ -79,9 +84,9 @@ struct Nonnull
     ni::AddRef(mRefPtr);
   }
   template <typename U,
-            typename = eastl::enable_if_t<
-              eastl::is_convertible<U*, T*>::value>>
-  Nonnull(const Nonnull<U>& aRight) {
+            typename = eastl::enable_if_t<eastl::is_convertible<U*, T*>::value>>
+  Nonnull(const Nonnull<U>& aRight)
+  {
     TRACE_NI_NONNULL("COPY constructor<U>");
     niAssertMsg(aRight.mRefPtr != nullptr,
                 "Nonnull copy constructor, Nonnull<U> can't be null.");
@@ -89,7 +94,8 @@ struct Nonnull
     ni::AddRef(mRefPtr);
   }
 
-  Nonnull(Nonnull<T>&& aRight) {
+  Nonnull(Nonnull<T>&& aRight)
+  {
     TRACE_NI_NONNULL("MOVE constructor<T>");
     niAssertMsg(aRight.mRefPtr != nullptr,
                 "Nonnull move constructor, Nonnull<T> can't be null.");
@@ -97,9 +103,9 @@ struct Nonnull
     aRight.mRefPtr = NULL;
   }
   template <typename U,
-            typename = eastl::enable_if_t<
-              eastl::is_convertible<U*, T*>::value>>
-  Nonnull(Nonnull<U>&& aRight) {
+            typename = eastl::enable_if_t<eastl::is_convertible<U*, T*>::value>>
+  Nonnull(Nonnull<U>&& aRight)
+  {
     TRACE_NI_NONNULL("MOVE constructor<U>");
     niAssertMsg(aRight.mRefPtr != nullptr,
                 "Nonnull copy constructor, Nonnull<U> can't be null.");
@@ -107,7 +113,8 @@ struct Nonnull
     aRight.mRefPtr = NULL;
   }
 
-  ~Nonnull() {
+  ~Nonnull()
+  {
     // mRefPtr can be nulled by the move operator
     if (mRefPtr != NULL) {
       ni::Release(mRefPtr);
@@ -115,7 +122,8 @@ struct Nonnull
   }
 
   // Copy operator
-  Nonnull& operator = (const Nonnull<T>& aRight) {
+  Nonnull& operator=(const Nonnull<T>& aRight)
+  {
     TRACE_NI_NONNULL("COPY operator=");
     if (mRefPtr != aRight.mRefPtr) {
       if (mRefPtr) {
@@ -130,9 +138,9 @@ struct Nonnull
   }
 
   template <typename U,
-            typename = eastl::enable_if_t<
-              eastl::is_convertible<U*, T*>::value>>
-  Nonnull& operator = (const Nonnull<U>& aRight) {
+            typename = eastl::enable_if_t<eastl::is_convertible<U*, T*>::value>>
+  Nonnull& operator=(const Nonnull<U>& aRight)
+  {
     TRACE_NI_NONNULL("COPY(U) operator=");
     if (mRefPtr != aRight.mRefPtr) {
       if (mRefPtr) {
@@ -147,7 +155,8 @@ struct Nonnull
   }
 
   // Move operator
-  Nonnull& operator = (Nonnull<T>&& aRight) {
+  Nonnull& operator=(Nonnull<T>&& aRight)
+  {
     TRACE_NI_NONNULL("MOVE operator=");
     if (mRefPtr != aRight.mRefPtr) {
       if (mRefPtr) {
@@ -162,9 +171,9 @@ struct Nonnull
   }
 
   template <typename U,
-            typename = eastl::enable_if_t<
-              eastl::is_convertible<U*, T*>::value>>
-  Nonnull& operator = (Nonnull<U>&& aRight) {
+            typename = eastl::enable_if_t<eastl::is_convertible<U*, T*>::value>>
+  Nonnull& operator=(Nonnull<U>&& aRight)
+  {
     TRACE_NI_NONNULL("MOVE(U) operator=");
     if (mRefPtr != aRight.mRefPtr) {
       if (mRefPtr) {
@@ -179,65 +188,75 @@ struct Nonnull
   }
 
   // Casting to a non_null pointer.
-  operator non_null_t () const {
+  operator non_null_t() const
+  {
     return non_null();
   }
 
   // Casting to a T* pointer.
-  operator T* () const {
+  operator T*() const
+  {
     return mRefPtr;
   }
 
   // Casting to a non_null<const T*> pointer
-  template <
-    typename U = T,
-    typename eastl::enable_if<!eastl::is_const<U>::value,int>::type* = nullptr>
-  operator non_null_const_t () const {
+  template <typename U = T, typename eastl::enable_if<
+                              !eastl::is_const<U>::value, int>::type* = nullptr>
+  operator non_null_const_t() const
+  {
     return non_null_const();
   }
 
   // Casting to a const T* pointer.
-  template <
-    typename U = T,
-    typename eastl::enable_if<!eastl::is_const<U>::value,int>::type* = nullptr>
-  operator const T* () const {
+  template <typename U = T, typename eastl::enable_if<
+                              !eastl::is_const<U>::value, int>::type* = nullptr>
+  operator const T*() const
+  {
     return const_cast<const T*>(mRefPtr);
   }
 
   // Dereference operator
-  T& operator * () const {
+  T& operator*() const
+  {
     niDebugAssert(mRefPtr != nullptr);
     return *mRefPtr;
   }
 
   // Arrow operator, allow to use regular C syntax to access members of class.
-  T* operator -> (void) const {
+  T* operator->(void) const
+  {
     niDebugAssert(mRefPtr != nullptr);
     return mRefPtr;
   }
 
-  non_null_t non_null() const {
+  non_null_t non_null() const
+  {
     niDebugAssert(mRefPtr != nullptr);
-    return niCCast(astl::non_null<T*>&,mRefPtr);
+    return niCCast(astl::non_null<T*>&, mRefPtr);
   }
-  non_null_const_t non_null_const() const {
+  non_null_const_t non_null_const() const
+  {
     niDebugAssert(mRefPtr != nullptr);
-    return niCCast(astl::non_null<const T*>&,mRefPtr);
+    return niCCast(astl::non_null<const T*>&, mRefPtr);
   }
 
-  T* raw_ptr() const {
+  T* raw_ptr() const
+  {
     return const_cast<T*>(mRefPtr);
   }
 
   // Conversion operator to non_null<U*> where U is a base of T
-  template <typename U, typename = eastl::enable_if_t<eastl::is_base_of<U, T>::value>>
-  operator astl::non_null<U*>() const {
+  template <typename U,
+            typename = eastl::enable_if_t<eastl::is_base_of<U, T>::value>>
+  operator astl::non_null<U*>() const
+  {
     return astl::as_non_null((U*)mRefPtr);
   }
 
   struct tUnsafeUncheckedInitializer {
     explicit tUnsafeUncheckedInitializer(T* aPointer)
-        : _maybe_null_ptr(aPointer) {
+        : _maybe_null_ptr(aPointer)
+    {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
 #ifdef _DEBUG
@@ -248,7 +267,8 @@ struct Nonnull
 
     template <typename U>
     explicit tUnsafeUncheckedInitializer(Ptr<U>& aPtr)
-        : _maybe_null_ptr(aPtr.raw_ptr()) {
+        : _maybe_null_ptr(aPtr.raw_ptr())
+    {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
 #ifdef _DEBUG
@@ -258,7 +278,8 @@ struct Nonnull
     }
     template <typename U>
     explicit tUnsafeUncheckedInitializer(Ptr<U>&& aPtr)
-        : _maybe_null_ptr(aPtr.raw_ptr()) {
+        : _maybe_null_ptr(aPtr.raw_ptr())
+    {
       aPtr.mPtr = NULL;
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
@@ -269,7 +290,8 @@ struct Nonnull
 
     template <typename U>
     explicit tUnsafeUncheckedInitializer(QPtr<U>& aPtr)
-        : _maybe_null_ptr(aPtr.raw_ptr()) {
+        : _maybe_null_ptr(aPtr.raw_ptr())
+    {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
 #ifdef _DEBUG
@@ -279,7 +301,8 @@ struct Nonnull
     }
     template <typename U>
     explicit tUnsafeUncheckedInitializer(QPtr<U>&& aPtr)
-        : _maybe_null_ptr(aPtr.raw_ptr()) {
+        : _maybe_null_ptr(aPtr.raw_ptr())
+    {
       aPtr.mPtr = NULL;
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
@@ -290,7 +313,9 @@ struct Nonnull
 
     template <typename U>
     explicit tUnsafeUncheckedInitializer(const WeakPtr<U>& aPtr)
-        : _maybe_null_ptr((T*)aPtr.template Deref<typename T::IUnknownBaseType>()) {
+        : _maybe_null_ptr(
+            (T*)aPtr.template Deref<typename T::IUnknownBaseType>())
+    {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
 #ifdef _DEBUG
@@ -299,12 +324,12 @@ struct Nonnull
       }
     }
 
-    ~tUnsafeUncheckedInitializer() {
+    ~tUnsafeUncheckedInitializer()
+    {
 #ifdef _DEBUG
       if (_maybe_null_ptr) {
-        niDebugAssertMsg(
-          _maybe_null_ptr->GetNumRefs() == _initialNumRef,
-          "Invalid NumRef");
+        niDebugAssertMsg(_maybe_null_ptr->GetNumRefs() == _initialNumRef,
+                         "Invalid NumRef");
       }
 #endif
     }
@@ -317,15 +342,19 @@ struct Nonnull
    private:
     tUnsafeUncheckedInitializer() = delete;
     tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&) = delete;
-    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&) = delete;
+    tUnsafeUncheckedInitializer& operator=(const tUnsafeUncheckedInitializer&) =
+      delete;
     tUnsafeUncheckedInitializer(const tUnsafeUncheckedInitializer&&) = delete;
-    tUnsafeUncheckedInitializer& operator = (const tUnsafeUncheckedInitializer&&) = delete;
+    tUnsafeUncheckedInitializer& operator=(
+      const tUnsafeUncheckedInitializer&&) = delete;
   };
-  Nonnull(tUnsafeUncheckedInitializer&& aRight) {
+  Nonnull(tUnsafeUncheckedInitializer&& aRight)
+  {
     TRACE_NI_NONNULL("explicit tUnsafeUncheckedInitializer MOVE constructor")
     mRefPtr = aRight._maybe_null_ptr;
   }
-  Nonnull& operator = (tUnsafeUncheckedInitializer&& aRight) {
+  Nonnull& operator=(tUnsafeUncheckedInitializer&& aRight)
+  {
     TRACE_NI_NONNULL("tUnsafeUncheckedInitializer MOVE operator=")
     if (mRefPtr) {
       ni::Release(mRefPtr);
@@ -336,10 +365,10 @@ struct Nonnull
 
  private:
   Nonnull() = delete;
-  Nonnull& operator = (T* newp) = delete;
+  Nonnull& operator=(T* newp) = delete;
 
   // To confuse the compiler if someone tries to delete the object
-  operator void* () const;
+  operator void*() const;
 
   // Cannot be non_null because we allow mRefPtr to be set to NULL on move
   T* mRefPtr;
@@ -347,143 +376,209 @@ struct Nonnull
 
 niCAssert(sizeof(Nonnull<iUnknown>) == sizeof(iUnknown*));
 
-template<class T, class U> inline bool operator==(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator==(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() == b.raw_ptr();
 }
-template<class T, class U> inline bool operator!=(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator!=(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() != b.raw_ptr();
 }
-template<class T, class U> inline bool operator<(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() < b.raw_ptr();
 }
-template<class T, class U> inline bool operator>(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() > b.raw_ptr();
 }
-template<class T, class U> inline bool operator<=(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<=(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() <= b.raw_ptr();
 }
-template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>=(Nonnull<T> const& a, Nonnull<U> const& b)
+{
   return a.raw_ptr() >= b.raw_ptr();
 }
 
-template<class T, class U> inline bool operator==(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator==(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() == b.raw_ptr();
 }
-template<class T, class U> inline bool operator!=(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator!=(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() != b.raw_ptr();
 }
-template<class T, class U> inline bool operator<(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() < b.raw_ptr();
 }
-template<class T, class U> inline bool operator>(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() > b.raw_ptr();
 }
-template<class T, class U> inline bool operator<=(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<=(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() <= b.raw_ptr();
 }
-template<class T, class U> inline bool operator>=(Ptr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>=(Ptr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() >= b.raw_ptr();
 }
 
-template<class T, class U> inline bool operator==(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator==(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() == b.ptr();
 }
-template<class T, class U> inline bool operator!=(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator!=(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() != b.ptr();
 }
-template<class T, class U> inline bool operator<(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator<(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() < b.ptr();
 }
-template<class T, class U> inline bool operator>(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator>(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() > b.ptr();
 }
-template<class T, class U> inline bool operator<=(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator<=(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() <= b.ptr();
 }
-template<class T, class U> inline bool operator>=(Nonnull<T> const& a, Ptr<U> const& b) {
+template <class T, class U>
+inline bool operator>=(Nonnull<T> const& a, Ptr<U> const& b)
+{
   return a.raw_ptr() >= b.ptr();
 }
 
-template<class T, class U> inline bool operator==(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator==(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() == b.raw_ptr();
 }
-template<class T, class U> inline bool operator!=(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator!=(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() != b.raw_ptr();
 }
-template<class T, class U> inline bool operator<(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() < b.raw_ptr();
 }
-template<class T, class U> inline bool operator>(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() > b.raw_ptr();
 }
-template<class T, class U> inline bool operator<=(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator<=(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() <= b.raw_ptr();
 }
-template<class T, class U> inline bool operator>=(QPtr<T> const& a, Nonnull<U> const& b) {
+template <class T, class U>
+inline bool operator>=(QPtr<T> const& a, Nonnull<U> const& b)
+{
   return a.ptr() >= b.raw_ptr();
 }
 
-template<class T, class U> inline bool operator==(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator==(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() == b.ptr();
 }
-template<class T, class U> inline bool operator!=(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator!=(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() != b.ptr();
 }
-template<class T, class U> inline bool operator<(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator<(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() < b.ptr();
 }
-template<class T, class U> inline bool operator>(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator>(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() > b.ptr();
 }
-template<class T, class U> inline bool operator<=(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator<=(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() <= b.ptr();
 }
-template<class T, class U> inline bool operator>=(Nonnull<T> const& a, QPtr<U> const& b) {
+template <class T, class U>
+inline bool operator>=(Nonnull<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() >= b.ptr();
 }
 
 template <typename T, typename... Args>
-inline EA_CONSTEXPR ni::Nonnull<T> MakeNonnull(Args&&... args) {
+inline EA_CONSTEXPR ni::Nonnull<T> MakeNonnull(Args&&... args)
+{
   return ni::Nonnull<T>(niNew T(eastl::forward<Args>(args)...));
 }
 
 template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(T* p) {
-  return ni::Nonnull<T>{p};
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(T* p)
+{
+  return ni::Nonnull<T>{ p };
 }
 
 template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(Ptr<T>&& p) {
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(Ptr<T>&& p)
+{
   return p.non_null();
 }
 
 template <typename T>
-inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(QPtr<T>&& p) {
+inline EA_CONSTEXPR ni::Nonnull<T> AsNonnull(QPtr<T>&& p)
+{
   return p.non_null();
 }
 
 /**@}*/
 /**@}*/
-}; // End of ni
+}; // namespace ni
 
 namespace astl {
 
-template<typename T>
-astl::non_null<T*> as_non_null(const ni::Nonnull<T>& v) {
+template <typename T>
+astl::non_null<T*> as_non_null(const ni::Nonnull<T>& v)
+{
   return v.non_null();
 }
 
-}
+} // namespace astl
 
 namespace eastl {
 
 template <typename T>
-struct hash<ni::Nonnull<T> > {
-  size_t operator()(const ni::Nonnull<T>& v) const {
+struct hash<ni::Nonnull<T>> {
+  size_t operator()(const ni::Nonnull<T>& v) const
+  {
     return eastl::hash<T*>{}(v.raw_ptr());
   }
 };
 
-}
+} // namespace eastl
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __REF_H_E82A7EBA_7FCF_2845_98FF_920CC296C3CF__

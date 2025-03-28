@@ -10,7 +10,7 @@
 namespace EA {
 namespace StdC {
 
-}} // namespace EA::StdC
+}
+} // namespace EA
 
-
-#endif  // EASTDC_EAPROCESS_H
+#endif // EASTDC_EAPROCESS_H

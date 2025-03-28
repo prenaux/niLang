@@ -18,15 +18,14 @@ namespace ni {
 //! A simple hash function from Robert Sedgwicks Algorithms in C book.
 inline tU32 Hash_RS(tU8* str, tU32 len)
 {
-  tU32 b    = 378551;
-  tU32 a    = 63689;
+  tU32 b = 378551;
+  tU32 a = 63689;
   tU32 hash = 0;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = hash * a + (*str);
-    a    = a * b;
+    a = a * b;
   }
 
   return (hash & 0x7FFFFFFF);
@@ -37,10 +36,9 @@ inline tU32 Hash_RS(tU8* str, tU32 len)
 inline tU32 Hash_JS(tU8* str, tU32 len)
 {
   tU32 hash = 1315423911;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash ^= ((hash << 5) + (*str) + (hash >> 2));
   }
 
@@ -54,20 +52,18 @@ inline tU32 Hash_JS(tU8* str, tU32 len)
 inline tU32 Hash_PJW(tU8* str, tU32 len)
 {
   tU32 BitsInUnsignedInt = (tU32)(sizeof(tU32) * 8);
-  tU32 ThreeQuarters     = (tU32)((BitsInUnsignedInt  * 3) / 4);
-  tU32 OneEighth         = (tU32)(BitsInUnsignedInt / 8);
-  tU32 HighBits          = (tU32)(0xFFFFFFFF) << (BitsInUnsignedInt - OneEighth);
-  tU32 hash              = 0;
-  tU32 test              = 0;
-  tU32 i                 = 0;
+  tU32 ThreeQuarters = (tU32)((BitsInUnsignedInt * 3) / 4);
+  tU32 OneEighth = (tU32)(BitsInUnsignedInt / 8);
+  tU32 HighBits = (tU32)(0xFFFFFFFF) << (BitsInUnsignedInt - OneEighth);
+  tU32 hash = 0;
+  tU32 test = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = (hash << OneEighth) + (*str);
 
-    if((test = hash & HighBits)  != 0)
-    {
-      hash = (( hash ^ (test >> ThreeQuarters)) & (~HighBits));
+    if ((test = hash & HighBits) != 0) {
+      hash = ((hash ^ (test >> ThreeQuarters)) & (~HighBits));
     }
   }
 
@@ -80,14 +76,12 @@ inline tU32 Hash_PJW(tU8* str, tU32 len)
 inline tU32 Hash_ELF(tU8* str, tU32 len)
 {
   tU32 hash = 0;
-  tU32 x    = 0;
-  tU32 i    = 0;
+  tU32 x = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = (hash << 4) + (*str);
-    if((x = hash & 0xF0000000L) != 0)
-    {
+    if ((x = hash & 0xF0000000L) != 0) {
       hash ^= (x >> 24);
       hash &= ~x;
     }
@@ -104,10 +98,9 @@ inline tU32 Hash_BKDR(tU8* str, tU32 len)
 {
   tU32 seed = 131; // 31 131 1313 13131 131313 etc..
   tU32 hash = 0;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = (hash * seed) + (*str);
   }
 
@@ -122,10 +115,9 @@ inline tU32 Hash_BKDR(tU8* str, tU32 len)
 inline tU32 Hash_SDBM(tU8* str, tU32 len)
 {
   tU32 hash = 0;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = (*str) + (hash << 6) + (hash << 16) - hash;
   }
 
@@ -139,10 +131,9 @@ inline tU32 Hash_SDBM(tU8* str, tU32 len)
 inline tU32 Hash_DJB(tU8* str, tU32 len)
 {
   tU32 hash = 5381;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = ((hash << 5) + hash) + (*str);
   }
 
@@ -155,10 +146,9 @@ inline tU32 Hash_DJB(tU8* str, tU32 len)
 inline tU32 Hash_DEK(tU8* str, tU32 len)
 {
   tU32 hash = len;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
+  for (i = 0; i < len; str++, i++) {
     hash = ((hash << 5) ^ (hash >> 27)) ^ (*str);
   }
   return (hash & 0x7FFFFFFF);
@@ -176,54 +166,55 @@ inline tU32 Hash_DEK(tU8* str, tU32 len)
 inline tU32 Hash_AP(tU8* str, tU32 len)
 {
   tU32 hash = 0;
-  tU32 i    = 0;
+  tU32 i = 0;
 
-  for(i = 0; i < len; str++, i++)
-  {
-    hash ^= ((i & 1) == 0) ? (  (hash <<  7) ^ (*str) ^ (hash >> 3)) :
-        (~((hash << 11) ^ (*str) ^ (hash >> 5)));
+  for (i = 0; i < len; str++, i++) {
+    hash ^= ((i & 1) == 0) ? ((hash << 7) ^ (*str) ^ (hash >> 3))
+                           : (~((hash << 11) ^ (*str) ^ (hash >> 5)));
   }
 
   return (hash & 0x7FFFFFFF);
 }
 
 ///////////////////////////////////////////////
-inline tU32 HashVec2(const tF32 v[2]) {
-  const unsigned int * h = (const unsigned int *)(&v[0]);
+inline tU32 HashVec2(const tF32 v[2])
+{
+  const unsigned int* h = (const unsigned int*)(&v[0]);
   // the multipliers are prime numbers
-  unsigned int f = (h[0] + h[1]*11)&0x7fffffff;     // avoid problems with +-0
-  return (f>>22)^(f>>12)^(f);
+  unsigned int f = (h[0] + h[1] * 11) & 0x7fffffff; // avoid problems with +-0
+  return (f >> 22) ^ (f >> 12) ^ (f);
 }
 
 ///////////////////////////////////////////////
-inline tU32 HashVec3(const tF32 v[3]) {
-  const unsigned int * h = (const unsigned int *)(&v[0]);
+inline tU32 HashVec3(const tF32 v[3])
+{
+  const unsigned int* h = (const unsigned int*)(&v[0]);
   // the multipliers are prime numbers
-  unsigned int f = (h[0] + h[1]*11 - (h[2]*17))&0x7fffffff;     // avoid problems with +-0
-  return (f>>22)^(f>>12)^(f);
+  unsigned int f =
+    (h[0] + h[1] * 11 - (h[2] * 17)) & 0x7fffffff; // avoid problems with +-0
+  return (f >> 22) ^ (f >> 12) ^ (f);
 }
 
 ///////////////////////////////////////////////
-inline tU32 HashVec4(const tF32 v[4]) {
-  const unsigned int * h = (const unsigned int *)(&v[0]);
+inline tU32 HashVec4(const tF32 v[4])
+{
+  const unsigned int* h = (const unsigned int*)(&v[0]);
   // the multipliers are prime numbers
-  unsigned int f = h[0]*1 + h[1]*11 + h[2]*17 + h[3]*19;
-  return (f>>22)^(f>>12)^(f);
+  unsigned int f = h[0] * 1 + h[1] * 11 + h[2] * 17 + h[3] * 19;
+  return (f >> 22) ^ (f >> 12) ^ (f);
 }
 
 ///////////////////////////////////////////////
-inline tU32 HashMatrix(const tF32 v[16]) {
-  tU32 rows[4] = {
-    HashVec4(&v[0]),
-    HashVec4(&v[4]),
-    HashVec4(&v[8]),
-    HashVec4(&v[12])
-  };
-  return Hash_AP((tU8*)&rows[0],sizeof(rows));
+inline tU32 HashMatrix(const tF32 v[16])
+{
+  tU32 rows[4] = { HashVec4(&v[0]), HashVec4(&v[4]), HashVec4(&v[8]),
+                   HashVec4(&v[12]) };
+  return Hash_AP((tU8*)&rows[0], sizeof(rows));
 }
 
 //! Compute a 16-bit hash for a GUID.
-static inline ni::tU16 HashUUID(const tUUID& aUUID) {
+static inline ni::tU16 HashUUID(const tUUID& aUUID)
+{
   ni::tU16 c0, c1;
   ni::tU8* next_uuid;
 
@@ -291,16 +282,17 @@ static inline ni::tU16 HashUUID(const tUUID& aUUID) {
   return (ni::tU16)((y * 256) + x);
 }
 
-}
+} // namespace ni
 
 namespace eastl {
 ASTL_TEMPLATE_NULL
 struct hash<ni::tUUID> {
-  __forceinline size_t operator()(const ni::tUUID& __x) const {
+  __forceinline size_t operator()(const ni::tUUID& __x) const
+  {
     return ni::HashUUID(__x);
   }
 };
-}
+} // namespace eastl
 
 /**@}*/
 /**@}*/

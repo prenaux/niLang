@@ -22,7 +22,7 @@ typedef voidp gzFile;
   can be checked to distinguish the two cases (if errno is zero, the
   zlib error is Z_MEM_ERROR).  */
 
-gzFile gzdopen  OF((ni::iFileBase* fd, const char *mode, bool abA25Z));
+gzFile gzdopen OF((ni::iFileBase * fd, const char* mode, bool abA25Z));
 
 /*
   gzdopen() associates a gzFile with the file descriptor fd.  File
@@ -44,7 +44,7 @@ int gzsetparams OF((gzFile file, int level, int strategy));
   opened for writing.
 */
 
-int    gzread  OF((gzFile file, voidp buf, unsigned len));
+int gzread OF((gzFile file, voidp buf, unsigned len));
 /*
   Reads the given number of uncompressed bytes from the compressed file.
   If the input file was not in gzip format, gzread copies the given number
@@ -52,22 +52,21 @@ int    gzread  OF((gzFile file, voidp buf, unsigned len));
   gzread returns the number of uncompressed bytes actually read (0 for
   end of file, -1 for error). */
 
-int    gzwrite OF((gzFile file,
-                   const voidp buf, unsigned len));
+int gzwrite OF((gzFile file, const voidp buf, unsigned len));
 /*
   Writes the given number of uncompressed bytes into the compressed file.
   gzwrite returns the number of uncompressed bytes actually written
   (0 in case of error).
 */
 
-int gzputs OF((gzFile file, const char *s));
+int gzputs OF((gzFile file, const char* s));
 /*
   Writes the given null-terminated string to the compressed file, excluding
   the terminating null character.
   gzputs returns the number of characters written, or -1 in case of error.
 */
 
-char * gzgets OF((gzFile file, char *buf, int len));
+char* gzgets OF((gzFile file, char* buf, int len));
 /*
   Reads bytes from the compressed file until len-1 characters are read, or
   a newline character is read and transferred to buf, or an end-of-file
@@ -76,19 +75,19 @@ char * gzgets OF((gzFile file, char *buf, int len));
   gzgets returns buf, or Z_NULL in case of error.
 */
 
-int    gzputc OF((gzFile file, int c));
+int gzputc OF((gzFile file, int c));
 /*
   Writes c, converted to an unsigned char, into the compressed file.
   gzputc returns the value that was written, or -1 in case of error.
 */
 
-int    gzgetc OF((gzFile file));
+int gzgetc OF((gzFile file));
 /*
   Reads one byte from the compressed file. gzgetc returns this byte
   or -1 in case of end of file or error.
 */
 
-int    gzflush OF((gzFile file, int flush));
+int gzflush OF((gzFile file, int flush));
 /*
   Flushes all pending output into the compressed file. The parameter
   flush is as in the deflate() function. The return value is the zlib
@@ -98,8 +97,7 @@ int    gzflush OF((gzFile file, int flush));
   degrade compression.
 */
 
-z_off_t    gzseek OF((gzFile file,
-                      z_off_t offset, int whence));
+z_off_t gzseek OF((gzFile file, z_off_t offset, int whence));
 /*
   Sets the starting position for the next gzread or gzwrite on the
   given compressed file. The offset represents a number of bytes in the
@@ -116,14 +114,14 @@ z_off_t    gzseek OF((gzFile file,
   would be before the current position.
 */
 
-int    gzrewind OF((gzFile file));
+int gzrewind OF((gzFile file));
 /*
   Rewinds the given file. This function is supported only for reading.
 
   gzrewind(file) is equivalent to (int)gzseek(file, 0L, SEEK_SET)
 */
 
-z_off_t    gztell OF((gzFile file));
+z_off_t gztell OF((gzFile file));
 /*
   Returns the starting position for the next gzread or gzwrite on the
   given compressed file. This position represents a number of bytes in the
@@ -138,14 +136,14 @@ int gzeof OF((gzFile file));
   input stream, otherwise zero.
 */
 
-int    gzclose OF((gzFile file));
+int gzclose OF((gzFile file));
 /*
   Flushes all pending output if necessary, closes the compressed file
   and deallocates all the (de)compression state. The return value is the zlib
   error number (see function gzerror below).
 */
 
-const char * gzerror OF((gzFile file, int *errnum));
+const char* gzerror OF((gzFile file, int* errnum));
 /*
   Returns the error message for the last error which occurred on the
   given compressed file. errnum is set to zlib error number. If an
@@ -153,7 +151,6 @@ const char * gzerror OF((gzFile file, int *errnum));
   errnum is set to Z_ERRNO and the application may consult errno
   to get the exact error code.
 */
-
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __GZIO_44925116_H__

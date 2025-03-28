@@ -65,14 +65,14 @@ struct iRunnableQueue : public iUnknown {
 
 //! Message handler interface.
 //! {DispatchWrapperCreate=iMessageHandler_CreateDispatchWrapper}
-struct iMessageHandler : public iUnknown
-{
+struct iMessageHandler : public iUnknown {
   niDeclareInterfaceUUID(iMessageHandler,0xa38a4904,0x29bf,0x462a,0x9e,0x84,0xba,0xf9,0x0e,0xdd,0x6d,0xc3);
   //! Get the message handler's owner thread. That is the thread where HandleMessage will be called.
   //! {Property}{Optional}
   virtual tU64 __stdcall GetThreadID() const = 0;
   //! Called when a message should be handled.
-  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA,
+                                       const Var& avarB) = 0;
 };
 
 //! Message handler list.
@@ -81,13 +81,12 @@ typedef SinkList<iMessageHandler> tMessageHandlerSinkLst;
 struct sMessageDesc {
   Ptr<iMessageHandler> mptrHandler;
   tU32 mnMsg;
-  Var  mvarA;
-  Var  mvarB;
+  Var mvarA;
+  Var mvarB;
 };
 
 //! Message description interface.
-struct iMessageDesc : public iUnknown
-{
+struct iMessageDesc : public iUnknown {
   niDeclareInterfaceUUID(iMessageDesc,0xeba551c4,0x82a5,0x4269,0xac,0x3e,0xa1,0x75,0xf5,0xa0,0x4f,0xfd);
   //! Get the message handler.
   //! {Property}
@@ -118,7 +117,8 @@ struct iMessageQueue : public iUnknown {
   //! Queue a message.
   //! \return eFalse if the queue is full or if the message handler's thread
   //!         is not the same as the message queue's thread, else eTrue.
-  virtual tBool __stdcall Add(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual tBool __stdcall Add(iMessageHandler* apHandler, tU32 anMsg,
+                              const Var& avarA, const Var& avarB) = 0;
   //! Retrieves, but does not remove, the head of this queue, or returns
   //! eFalse if this queue is empty or if called from another thread than the
   //! owner thread.
@@ -147,8 +147,7 @@ struct iMessageQueue : public iUnknown {
 //! computation. Methods are provided to check if the computation is
 //! complete, to wait for its completion, and to retrieve the result
 //! of the computation.
-struct iFuture : public iUnknown
-{
+struct iFuture : public iUnknown {
   niDeclareInterfaceUUID(iFuture,0xca4f4d13,0x5556,0x4177,0xbb,0x7f,0x41,0x85,0x5a,0x40,0x93,0xac);
   //! Cancel the task associated with the future.
   virtual void __stdcall Cancel() = 0;
@@ -169,8 +168,7 @@ struct iFuture : public iUnknown
 };
 
 //! Future value.
-struct iFutureValue : public iFuture
-{
+struct iFutureValue : public iFuture {
   niDeclareInterfaceUUID(iFutureValue,0xb79d1f47,0x0f71,0x495a,0x8d,0x23,0x55,0x50,0xce,0x57,0x6a,0x59);
   //! Sets and signal the future.
   //! {Property}
@@ -265,10 +263,12 @@ struct iConcurrent : public iUnknown {
   virtual tU64 __stdcall GetCurrentThreadID() const = 0;
 
   //! Create a runnable queue for the specified thread.
-  virtual iRunnableQueue* __stdcall CreateRunnableQueue(tU64 aThreadID, tU32 aMaxItems) = 0;
+  virtual iRunnableQueue* __stdcall CreateRunnableQueue(tU64 aThreadID,
+                                                        tU32 aMaxItems) = 0;
 
   //! Create a cooperative executor.
-  virtual iExecutor* __stdcall CreateExecutorCooperative(tU64 aThreadID, tU32 aMaxItems) = 0;
+  virtual iExecutor* __stdcall CreateExecutorCooperative(tU64 aThreadID,
+                                                         tU32 aMaxItems) = 0;
 
   //! Create an immediate executor.
   virtual iExecutor* __stdcall CreateExecutorImmediate() = 0;
@@ -309,15 +309,19 @@ struct iConcurrent : public iUnknown {
   virtual iFutureValue* __stdcall CreateFutureValue() = 0;
 
   //! Create a message desc object.
-  virtual Ptr<iMessageDesc> __stdcall CreateMessageDesc(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual Ptr<iMessageDesc> __stdcall CreateMessageDesc(
+    iMessageHandler* apHandler, tU32 anMsg, const Var& avarA,
+    const Var& avarB) = 0;
 
   //! Create a message queue for the specified thread.
   //! \remark Only one message queue can be created per thread, subsequent calls to create a queue for the same thread will fail.
-  virtual Ptr<iMessageQueue> __stdcall CreateMessageQueue(tU64 anThreadID, tU32 aMaxItems) = 0;
+  virtual Ptr<iMessageQueue> __stdcall CreateMessageQueue(tU64 anThreadID,
+                                                          tU32 aMaxItems) = 0;
 
   //! Get the message queue associated with the specified thread.
   //! {Property}
-  virtual Ptr<iMessageQueue> __stdcall GetMessageQueue(tU64 anThreadID) const = 0;
+  virtual Ptr<iMessageQueue> __stdcall GetMessageQueue(
+    tU64 anThreadID) const = 0;
 
   //! Send a message to the specified message handler.
   //! \remark If the handler's thread is the same as the current thread then
@@ -327,57 +331,80 @@ struct iConcurrent : public iUnknown {
   //! \return eTrue if the message as been added to the handler's thread
   //!         message queue or if the handler has been called
   //!         immediatly. Otherwise returns eFalse.
-  virtual tBool __stdcall SendMessage(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual tBool __stdcall SendMessage(iMessageHandler* apHandler, tU32 anMsg,
+                                      const Var& avarA, const Var& avarB) = 0;
 
   //! Queue a message in the messge queue of the message handler's thread.
   //! \return eTrue if the message as been added to the handler's thread
   //!         message queue. Otherwise returns eFalse.
-  virtual tBool __stdcall QueueMessage(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual tBool __stdcall QueueMessage(iMessageHandler* apHandler, tU32 anMsg,
+                                       const Var& avarA, const Var& avarB) = 0;
 };
 
 niExportFunc(iConcurrent*) GetConcurrent();
 
-niExportFunc(ni::iUnknown*) New_niLang_Concurrent(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niLang_Concurrent(const ni::Var&,
+                                                  const ni::Var&);
 
 ///////////////////////////////////////////////
-inline tBool __stdcall SendMessage(iMessageHandler* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
-  return GetConcurrent()->SendMessage(apMT,anID,avarA,avarB);
+inline tBool __stdcall SendMessage(iMessageHandler* apMT, tU32 anID,
+                                   const Var& avarA = (Var&)niVarNull,
+                                   const Var& avarB = (Var&)niVarNull)
+{
+  return GetConcurrent()->SendMessage(apMT, anID, avarA, avarB);
 }
 
 ///////////////////////////////////////////////
-inline tBool __stdcall SendMessages(tMessageHandlerSinkLst* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
-  if (!apMT) return eFalse;
-  niLoopSink(iMessageHandler,it,apMT) {
-    if (!GetConcurrent()->SendMessage(it->_Value().non_null(),anID,avarA,avarB))
+inline tBool __stdcall SendMessages(tMessageHandlerSinkLst* apMT, tU32 anID,
+                                    const Var& avarA = (Var&)niVarNull,
+                                    const Var& avarB = (Var&)niVarNull)
+{
+  if (!apMT)
+    return eFalse;
+  niLoopSink(iMessageHandler, it, apMT)
+  {
+    if (!GetConcurrent()->SendMessage(it->_Value().non_null(), anID, avarA,
+                                      avarB))
       return eFalse;
   }
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-inline tBool __stdcall QueueMessage(iMessageHandler* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
-  return GetConcurrent()->QueueMessage(apMT,anID,avarA,avarB);
+inline tBool __stdcall QueueMessage(iMessageHandler* apMT, tU32 anID,
+                                    const Var& avarA = (Var&)niVarNull,
+                                    const Var& avarB = (Var&)niVarNull)
+{
+  return GetConcurrent()->QueueMessage(apMT, anID, avarA, avarB);
 }
 
 ///////////////////////////////////////////////
-inline tBool __stdcall QueueMessages(tMessageHandlerSinkLst* apMT, tU32 anID, const Var& avarA = (Var&)niVarNull, const Var& avarB = (Var&)niVarNull) {
-  if (!apMT) return eFalse;
-  niLoopSink(iMessageHandler,it,apMT) {
-    if (!GetConcurrent()->QueueMessage(it->_Value().non_null(),anID,avarA,avarB))
+inline tBool __stdcall QueueMessages(tMessageHandlerSinkLst* apMT, tU32 anID,
+                                     const Var& avarA = (Var&)niVarNull,
+                                     const Var& avarB = (Var&)niVarNull)
+{
+  if (!apMT)
+    return eFalse;
+  niLoopSink(iMessageHandler, it, apMT)
+  {
+    if (!GetConcurrent()->QueueMessage(it->_Value().non_null(), anID, avarA,
+                                       avarB))
       return eFalse;
   }
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-inline Ptr<iMessageQueue> GetOrCreateMessageQueue(tU64 anThreadID, tU32 aMaxItems = ~0) {
+inline Ptr<iMessageQueue> GetOrCreateMessageQueue(tU64 anThreadID,
+                                                  tU32 aMaxItems = ~0)
+{
   Ptr<iMessageQueue> mq = ni::GetConcurrent()->GetMessageQueue(anThreadID);
   if (mq.IsOK())
     return mq;
-  mq = ni::GetConcurrent()->CreateMessageQueue(anThreadID,aMaxItems);
+  mq = ni::GetConcurrent()->CreateMessageQueue(anThreadID, aMaxItems);
   return mq;
 }
 
 /**@}*/
-}
+} // namespace ni
 #endif // __ICONCURRENT_H_C9263DE3_7687_4E07_A410_06B9C9F2637F__

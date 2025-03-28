@@ -2,42 +2,42 @@
 	<namespace name="ni">
 		<enum name="eExpressionVariableType">
 			<comments desc="Expression variables types. "/>
-			<value name="eExpressionVariableType_Float" value="0 ">
+			<value name="eExpressionVariableType_Float" value="0">
 				<comments desc="Real number variable type. Constructors: -x, x, x.y, -x.y "/>
 			</value>
-			<value name="eExpressionVariableType_Vec2" value="1 ">
+			<value name="eExpressionVariableType_Vec2" value="1">
 				<comments desc="2D vector variable type. Constructors: Vec2() "/>
 			</value>
-			<value name="eExpressionVariableType_Vec3" value="2 ">
+			<value name="eExpressionVariableType_Vec3" value="2">
 				<comments desc="3D vector variable type. Constructors: Vec3(), RGB() "/>
 			</value>
-			<value name="eExpressionVariableType_Vec4" value="3 ">
+			<value name="eExpressionVariableType_Vec4" value="3">
 				<comments desc="4D vector variable type. Constructors: Vec4(), RGBA(), Quat(), Plane() "/>
 			</value>
-			<value name="eExpressionVariableType_Matrix" value="4 ">
+			<value name="eExpressionVariableType_Matrix" value="4">
 				<comments desc="Matrix variable type. Constructors: Matrix() "/>
 			</value>
-			<value name="eExpressionVariableType_String" value="5 ">
+			<value name="eExpressionVariableType_String" value="5">
 				<comments desc="String type. Constructors: &quot;string&quot;, &apos;string&apos; "/>
 			</value>
 		</enum>
 		<enum name="eExpressionVariableFlags">
 			<comments desc="Expression variables flags. "/>
-			<value name="eExpressionVariableFlags_Default" value="0 ">
+			<value name="eExpressionVariableFlags_Default" value="0">
 				<comments desc="Default flags value. "/>
 			</value>
-			<value name="eExpressionVariableFlags_Reserved" value="niBit ( 0 ) ">
+			<value name="eExpressionVariableFlags_Reserved" value="niBit(0)">
 				<comments desc="Variable is reserved. ">
 					<remark text="Reserved variables cant be removed. "/>
 				</comments>
 			</value>
-			<value name="eExpressionVariableFlags_Constant" value="niBit ( 1 ) ">
+			<value name="eExpressionVariableFlags_Constant" value="niBit(1)">
 				<comments desc="Constant variable, read-only. "/>
 			</value>
-			<value name="eExpressionVariableFlags_Color" value="niBit ( 2 ) ">
+			<value name="eExpressionVariableFlags_Color" value="niBit(2)">
 				<comments desc="Variable is the result of a color function. "/>
 			</value>
-			<value name="eExpressionVariableFlags_Quat" value="niBit ( 3 ) ">
+			<value name="eExpressionVariableFlags_Quat" value="niBit(3)">
 				<comments desc="Variable is the result of a quaternion function. "/>
 			</value>
 		</enum>

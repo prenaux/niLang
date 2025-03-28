@@ -6,99 +6,116 @@
 
 #ifdef niNoSocket
 namespace ni {
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4FromString(const char* aAddress) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4FromString(
+  const char* aAddress)
+{
   niError("Not implemented.");
   return NULL;
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort)
+{
   niError("Not implemented.");
   return NULL;
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4ROFromString(const char* aAddress) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4ROFromString(
+  const char* aAddress)
+{
   niError("Not implemented.");
   return NULL;
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort)
+{
   niError("Not implemented.");
   return NULL;
 }
-}
+} // namespace ni
 #else
 
-#include "API/niLang/Utils/RemoteAddress.h"
-#include "API/niLang/Utils/UnknownImpl.h"
+  #include "API/niLang/Utils/RemoteAddress.h"
+  #include "API/niLang/Utils/UnknownImpl.h"
 
-#ifdef niWindows
-#include <winsock2.h>
-#ifdef niPragmaCommentLib
-#pragma comment(lib,"Ws2_32.lib")
-#endif
-#elif defined niPosix
-// Posix
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#endif
+  #ifdef niWindows
+    #include <winsock2.h>
+    #ifdef niPragmaCommentLib
+      #pragma comment(lib, "Ws2_32.lib")
+    #endif
+  #elif defined niPosix
+    // Posix
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <netdb.h>
+  #endif
 
 using namespace ni;
 
 //! Remote address IPv4 template implementation.
-class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInherit1,iRemoteAddress,iToString>
-{
+class cRemoteAddressIPv4
+    : public ImplRC<iRemoteAddressIPv4, eImplFlags_DontInherit1, iRemoteAddress,
+                    iToString> {
   niBeginClass(cRemoteAddressIPv4);
 
  public:
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4() {
+  cRemoteAddressIPv4()
+  {
     ZeroMembers();
   }
 
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4(const achar* aaszAddress) {
+  cRemoteAddressIPv4(const achar* aaszAddress)
+  {
     ZeroMembers();
     SetAddressString(aaszAddress);
   }
 
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4(tU32 anIP, tU32 anPort) {
+  cRemoteAddressIPv4(tU32 anIP, tU32 anPort)
+  {
     ZeroMembers();
     SetHost(anIP);
     SetPort(anPort);
   }
 
   ///////////////////////////////////////////////
-  ~cRemoteAddressIPv4() {
+  ~cRemoteAddressIPv4()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
-    memset(&_addr,0,sizeof(_addr));
+  void __stdcall ZeroMembers()
+  {
+    memset(&_addr, 0, sizeof(_addr));
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = INADDR_ANY;
     _addr.sin_port = 0;
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iRemoteAddress* __stdcall Clone() const {
+  virtual iRemoteAddress* __stdcall Clone() const
+  {
     cRemoteAddressIPv4* pNew = niNew cRemoteAddressIPv4();
     pNew->_addr = _addr;
     return pNew;
   }
 
   ///////////////////////////////////////////////
-  virtual tI32 __stdcall Compare(iRemoteAddress* apAddr) {
-    if (!niIsOK(apAddr)) return 1;  // error, greater...
+  virtual tI32 __stdcall Compare(iRemoteAddress* apAddr)
+  {
+    if (!niIsOK(apAddr))
+      return 1; // error, greater...
     if (GetType() != apAddr->GetType())
       return GetType() > apAddr->GetType() ? 1 : -1;
     Ptr<iRemoteAddressIPv4> ra = ni::QueryInterface<iRemoteAddressIPv4>(apAddr);
@@ -113,12 +130,14 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
   }
 
   ///////////////////////////////////////////////
-  virtual eRemoteAddressType __stdcall GetType() const {
+  virtual eRemoteAddressType __stdcall GetType() const
+  {
     return eRemoteAddressType_IPv4;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SetAddressString(const achar* aaszAddress) {
+  virtual tBool __stdcall SetAddressString(const achar* aaszAddress)
+  {
     // resolve the address
     cString cstrAddress;
     cString cstrPort;
@@ -128,13 +147,13 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
     while (*p) {
       tU32 cur = StrGetNext(p);
       if (cur == ':') {
-        const tU32 next = StrGetNext(p+1);
+        const tU32 next = StrGetNext(p + 1);
         if (StrIsDigit(next)) {
           cur = next;
           bInPort = eTrue;
-          ++p;    // skip the ':' char
+          ++p; // skip the ':' char
         }
-        else if (StrNICmp(p,"://",3) == 0) {
+        else if (StrNICmp(p, "://", 3) == 0) {
           cstrAddress.Clear();
           p += 3; // skip "://"
         }
@@ -151,12 +170,13 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
     if (cstrPort.IsNotEmpty())
       SetPort(cstrPort.Long());
 
-    if (cstrAddress.IsNotEmpty())
-    {
+    if (cstrAddress.IsNotEmpty()) {
       if ((cstrAddress.Len() >= 7) && // min ip length is 7 chars : 0.0.0.0
           (cstrAddress[0] >= '0' && cstrAddress[0] <= '9') &&
-          ((cstrAddress[1] >= '0' && cstrAddress[1] <= '9') || cstrAddress[1] == '.') &&
-          ((cstrAddress[2] >= '0' && cstrAddress[2] <= '9') || cstrAddress[2] == '.'))
+          ((cstrAddress[1] >= '0' && cstrAddress[1] <= '9') ||
+           cstrAddress[1] == '.') &&
+          ((cstrAddress[2] >= '0' && cstrAddress[2] <= '9') ||
+           cstrAddress[2] == '.'))
       { // 127.0.0.1 address type
         _addr.sin_addr.s_addr = inet_addr(cstrAddress.Chars());
       }
@@ -169,13 +189,12 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
       else if (cstrAddress == "broadcast") {
         _addr.sin_addr.s_addr = INADDR_BROADCAST;
       }
-      else
-      { // www.address.xxx address type
-#ifdef niPosix
+      else { // www.address.xxx address type
+  #ifdef niPosix
         struct hostent* h;
-#else
+  #else
         HOSTENT* h;
-#endif
+  #endif
         h = gethostbyname(cstrAddress.Chars());
         if (!h) {
           // ERROR
@@ -195,13 +214,12 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
   }
 
   ///////////////////////////////////////////////
-  virtual cString __stdcall GetAddressString() const {
+  virtual cString __stdcall GetAddressString() const
+  {
     tU32 ip = GetHost();
     cString str;
-    str << (tU32)niFourCCA(ip) << _A(".")
-        << (tU32)niFourCCB(ip) << _A(".")
-        << (tU32)niFourCCC(ip) << _A(".")
-        << (tU32)niFourCCD(ip);
+    str << (tU32)niFourCCA(ip) << _A(".") << (tU32)niFourCCB(ip) << _A(".")
+        << (tU32)niFourCCC(ip) << _A(".") << (tU32)niFourCCD(ip);
     tU32 port = GetPort();
     if (port)
       str << _A(":") << port;
@@ -209,20 +227,24 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall GetIsNull() const {
+  virtual tBool __stdcall GetIsNull() const
+  {
     return _addr.sin_addr.s_addr == 0;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetPort(tU32 anPort) {
+  virtual void __stdcall SetPort(tU32 anPort)
+  {
     _addr.sin_port = niSwapBE16((tU16)anPort);
   }
-  virtual tU32 __stdcall GetPort() const {
+  virtual tU32 __stdcall GetPort() const
+  {
     return niSwapBE16(_addr.sin_port);
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetHost(tU32 anFourCC) {
+  virtual void __stdcall SetHost(tU32 anFourCC)
+  {
     if (anFourCC == eRemoteAddressIPv4Reserved_Any) {
       _addr.sin_family = AF_INET;
       _addr.sin_addr.s_addr = INADDR_ANY;
@@ -236,34 +258,39 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
       _addr.sin_addr.s_addr = anFourCC;
     }
   }
-  virtual tU32 __stdcall GetHost() const {
+  virtual tU32 __stdcall GetHost() const
+  {
     switch (_addr.sin_addr.s_addr) {
-      case INADDR_ANY:    return eRemoteAddressIPv4Reserved_Any;
-      case INADDR_BROADCAST:  return eRemoteAddressIPv4Reserved_Broadcast;
-      default:        return _addr.sin_addr.s_addr;
+    case INADDR_ANY: return eRemoteAddressIPv4Reserved_Any;
+    case INADDR_BROADCAST: return eRemoteAddressIPv4Reserved_Broadcast;
+    default: return _addr.sin_addr.s_addr;
     }
   }
 
   ///////////////////////////////////////////////
-  cString __stdcall GetHostName() const {
+  cString __stdcall GetHostName() const
+  {
     struct in_addr in;
-    struct hostent * hostEntry;
+    struct hostent* hostEntry;
     in.s_addr = _addr.sin_addr.s_addr;
-    hostEntry = gethostbyaddr ((char *) & in, sizeof (struct in_addr), AF_INET);
+    hostEntry = gethostbyaddr((char*)&in, sizeof(struct in_addr), AF_INET);
     if (hostEntry == NULL)
       return AZEROSTR;
-    return cString(hostEntry -> h_name);
+    return cString(hostEntry->h_name);
   }
 
   ///////////////////////////////////////////////
-  void SetSockAddrIn(sockaddr_in* apSockAddrIn) {
+  void SetSockAddrIn(sockaddr_in* apSockAddrIn)
+  {
     _addr = *apSockAddrIn;
   }
-  const sockaddr_in* GetSockAddrIn() const {
+  const sockaddr_in* GetSockAddrIn() const
+  {
     return &_addr;
   }
 
-  cString __stdcall ToString() const {
+  cString __stdcall ToString() const
+  {
     return GetAddressString();
   }
 
@@ -272,36 +299,56 @@ class cRemoteAddressIPv4 : public ImplRC<iRemoteAddressIPv4,eImplFlags_DontInher
 };
 
 //! Read-only remote address IPv4 template implementation.
-class cRemoteAddressIPv4RO : public cRemoteAddressIPv4
-{
+class cRemoteAddressIPv4RO : public cRemoteAddressIPv4 {
  public:
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4RO(const achar* aaszAddress) : cRemoteAddressIPv4(aaszAddress) {}
+  cRemoteAddressIPv4RO(const achar* aaszAddress)
+      : cRemoteAddressIPv4(aaszAddress)
+  {
+  }
   ///////////////////////////////////////////////
-  cRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) : cRemoteAddressIPv4(anIP,anPort) {}
+  cRemoteAddressIPv4RO(tU32 anIP, tU32 anPort)
+      : cRemoteAddressIPv4(anIP, anPort)
+  {
+  }
 
-  virtual tBool __stdcall SetAddressString(const achar* aaszAddress) { return eFalse; }
-  virtual void __stdcall SetHost(tU32 anFourCC) {}
-  virtual void __stdcall SetPort(tU32 anPort) {}
+  virtual tBool __stdcall SetAddressString(const achar* aaszAddress)
+  {
+    return eFalse;
+  }
+  virtual void __stdcall SetHost(tU32 anFourCC)
+  {
+  }
+  virtual void __stdcall SetPort(tU32 anPort)
+  {
+  }
 };
 
-niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(sockaddr_in* apSockAddrIn) {
+niExportFunc(iRemoteAddressIPv4*) CreateRemoteAddressIPv4FromSockAddr(
+  sockaddr_in* apSockAddrIn)
+{
   Ptr<cRemoteAddressIPv4> ip = niNew cRemoteAddressIPv4();
   ip->SetSockAddrIn(apSockAddrIn);
   return ip.GetRawAndSetNull();
 }
 
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4FromString(const char* aAddress) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4FromString(
+  const char* aAddress)
+{
   return niNew cRemoteAddressIPv4(aAddress);
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort) {
-  return niNew cRemoteAddressIPv4(anIP,anPort);
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort)
+{
+  return niNew cRemoteAddressIPv4(anIP, anPort);
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4ROFromString(const char* aAddress) {
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4ROFromString(
+  const char* aAddress)
+{
   return niNew cRemoteAddressIPv4RO(aAddress);
 }
-iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) {
-  return niNew cRemoteAddressIPv4RO(anIP,anPort);
+iRemoteAddressIPv4* cLang::CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort)
+{
+  return niNew cRemoteAddressIPv4RO(anIP, anPort);
 }
 
 #endif

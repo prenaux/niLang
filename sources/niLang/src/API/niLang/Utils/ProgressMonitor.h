@@ -30,16 +30,13 @@ namespace ni {
 
  */
 struct sProgressMonitor {
-  sProgressMonitor(
-    const achar* aName,
-    tInt aTotal,
-    tInt aStepMinSeconds = 3,
-    tInt aStepSeconds = 10)
+  sProgressMonitor(const achar* aName, tInt aTotal, tInt aStepMinSeconds = 3,
+                   tInt aStepSeconds = 10)
   {
     _name = aName;
-    _total = ni::Max(aTotal,0);
-    _stepMinSeconds = _nextMinSeconds = ni::Max(aStepMinSeconds,1);
-    _stepSeconds =  _nextSeconds = ni::Max(aStepSeconds,1);
+    _total = ni::Max(aTotal, 0);
+    _stepMinSeconds = _nextMinSeconds = ni::Max(aStepMinSeconds, 1);
+    _stepSeconds = _nextSeconds = ni::Max(aStepSeconds, 1);
 
     if (_total == 0) {
       _stepPercent = ni::TypeMax<tInt>();
@@ -58,21 +55,25 @@ struct sProgressMonitor {
     }
   }
 
-  virtual void Log(const achar* msg) {
+  virtual void Log(const achar* msg)
+  {
     niLog(Info, msg);
   }
 
-  tInt GetTotal() const {
+  tInt GetTotal() const
+  {
     __sync_lock();
     return _total;
   }
 
-  tInt GetCount() const {
+  tInt GetCount() const
+  {
     __sync_lock();
     return _count;
   }
 
-  tInt Count() {
+  tInt Count()
+  {
     __sync_lock();
     const tInt ret = ++_count;
     const tInt currSeconds = (tInt)_stopwatch.GetSeconds();
@@ -87,7 +88,8 @@ struct sProgressMonitor {
     return ret;
   }
 
-  void Done() {
+  void Done()
+  {
     _Update("Done");
   }
 
@@ -104,7 +106,8 @@ struct sProgressMonitor {
   tInt _nextSeconds = 0;
   tInt _nextMinSeconds = 0;
 
-  void _Update(const achar* aStatus) {
+  void _Update(const achar* aStatus)
+  {
     __sync_lock();
     const tInt currSeconds = (tInt)_stopwatch.GetSeconds();
     _nextSeconds = currSeconds + _stepSeconds;
@@ -115,19 +118,16 @@ struct sProgressMonitor {
     if (elapsed == 0)
       rate = "infinity";
     else
-      rate.Set((tInt) (_count * 1000L / (double) elapsed));
+      rate.Set((tInt)(_count * 1000L / (double)elapsed));
     if (_total > 0) {
       _nextCount = _count + _stepPercent;
-      Log(niFmt(
-        "%s: %s %d / %d items (%2.2f%%) in %.1fs (%g/sec)",
-        _name, aStatus,
-        _count, _total, (100.0 * _count / _total),
-        _stopwatch.GetSeconds(), rate));
-    } else {
-      Log(niFmt(
-        "%s: %s %d items in %.1fs (%g/sec)",
-        _name, aStatus, _count,
-        _stopwatch.GetSeconds(), rate));
+      Log(niFmt("%s: %s %d / %d items (%2.2f%%) in %.1fs (%g/sec)", _name,
+                aStatus, _count, _total, (100.0 * _count / _total),
+                _stopwatch.GetSeconds(), rate));
+    }
+    else {
+      Log(niFmt("%s: %s %d items in %.1fs (%g/sec)", _name, aStatus, _count,
+                _stopwatch.GetSeconds(), rate));
     }
   }
 };
@@ -135,5 +135,5 @@ struct sProgressMonitor {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __PROGRESSMONITOR_H_DA57A257_FA2C_DA4C_9727_E320480D802B__

@@ -42,9 +42,11 @@ enum eJsonType {
 struct iJsonParserSink : public iUnknown {
   niDeclareInterfaceUUID(iJsonParserSink,0xa565aba5,0x71af,0x4045,0xa9,0x99,0xf8,0xef,0x4c,0x05,0x5c,0xfa);
   //! Called when a parsing error occured.
-  virtual void __stdcall OnJsonParserSink_Error(const achar* aaszReason, tU32 anLine, tU32 anCol) = 0;
+  virtual void __stdcall OnJsonParserSink_Error(const achar* aaszReason,
+                                                tU32 anLine, tU32 anCol) = 0;
   //! Called when a value is parsed
-  virtual void __stdcall OnJsonParserSink_Value(eJsonType aType, const achar* aValue) = 0;
+  virtual void __stdcall OnJsonParserSink_Value(eJsonType aType,
+                                                const achar* aValue) = 0;
 };
 
 //! Json writer sink interface.
@@ -53,7 +55,8 @@ struct iJsonWriterSink : public iUnknown {
   //! Called when there's a writting error.
   virtual void __stdcall OnJsonWriterSink_Error(const achar* aaszReason) = 0;
   //! Called when to write a value.
-  virtual tBool __stdcall OnJsonWriterSink_Write(eJsonType aValue, const achar* aaszString) = 0;
+  virtual tBool __stdcall OnJsonWriterSink_Write(eJsonType aValue,
+                                                 const achar* aaszString) = 0;
 };
 
 //! Json writer interface.
@@ -85,24 +88,32 @@ struct iJsonWriter : public iUnknown {
   virtual tBool __stdcall ValueNull() = 0;
 
   //! Write a string property in the current object.
-  virtual tBool __stdcall ObjectString(const achar* aName, const achar* aStr) = 0;
+  virtual tBool __stdcall ObjectString(const achar* aName,
+                                       const achar* aStr) = 0;
   //! Write a number property in the current object.
-  virtual tBool __stdcall ObjectNumber(const achar* aName, const achar* aStr) = 0;
+  virtual tBool __stdcall ObjectNumber(const achar* aName,
+                                       const achar* aStr) = 0;
   //! Write a boolean property in the current object.
   virtual tBool __stdcall ObjectBool(const achar* aName, tBool abValue) = 0;
   //! Write a null property in the current object.
   virtual tBool __stdcall ObjectNull(const achar* aName) = 0;
 };
 
-niExportFunc(ni::tBool) JsonParseFile(ni::iFile* apFile, ni::iJsonParserSink* apSink);
-niExportFunc(ni::tBool) JsonParseString(const ni::cString& aString, ni::iJsonParserSink* apSink);
-niExportFunc(ni::iJsonWriter*) CreateJsonSinkWriter(ni::iJsonWriterSink* apSink, ni::tBool abPrettyPrint);
-niExportFunc(ni::iJsonWriter*) CreateJsonFileWriter(ni::iFile* apFile, ni::tBool abPrettyPrint);
-niExportFunc(ni::tBool) JsonParseFileToDataTable(ni::iFile* apFile, ni::iDataTable* apDT);
-niExportFunc(ni::tBool) JsonParseStringToDataTable(const ni::cString& aString, ni::iDataTable* apDT);
+niExportFunc(ni::tBool) JsonParseFile(ni::iFile* apFile,
+                                      ni::iJsonParserSink* apSink);
+niExportFunc(ni::tBool) JsonParseString(const ni::cString& aString,
+                                        ni::iJsonParserSink* apSink);
+niExportFunc(ni::iJsonWriter*) CreateJsonSinkWriter(ni::iJsonWriterSink* apSink,
+                                                    ni::tBool abPrettyPrint);
+niExportFunc(ni::iJsonWriter*) CreateJsonFileWriter(ni::iFile* apFile,
+                                                    ni::tBool abPrettyPrint);
+niExportFunc(ni::tBool) JsonParseFileToDataTable(ni::iFile* apFile,
+                                                 ni::iDataTable* apDT);
+niExportFunc(ni::tBool) JsonParseStringToDataTable(const ni::cString& aString,
+                                                   ni::iDataTable* apDT);
 
 /**@}*/
-}
+} // namespace ni
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // niMinFeatures

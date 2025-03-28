@@ -48,13 +48,17 @@ using namespace ni;
 #if defined(STRICTUNZIP) || defined(STRICTZIPUNZIP)
 /* like the STRICT of WIN32, we define a pointer that cannot be converted
    from (void*) without cast */
-typedef struct TagunzFile__ { int unused; } unzFile__;
-typedef unzFile__ *unzFile;
+typedef struct TagunzFile__ {
+  int unused;
+} unzFile__;
+typedef unzFile__* unzFile;
 #else
 typedef voidp unzFile;
 #endif
 
-niExportFunc(int) niUnzip_StringFileNameCompare(const char* fileName1, const char* fileName2, int iCaseSensitivity);
+niExportFunc(int) niUnzip_StringFileNameCompare(const char* fileName1,
+                                                const char* fileName2,
+                                                int iCaseSensitivity);
 /*
   Compare two filename (fileName1,fileName2).
   If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
@@ -63,7 +67,6 @@ niExportFunc(int) niUnzip_StringFileNameCompare(const char* fileName1, const cha
   If iCaseSenisivity = 0, case sensitivity is defaut of your operating system
   (like 1 on Unix, 2 on Windows)
 */
-
 
 niExportFunc(unzFile) niUnzip_Open(ni::iFile*);
 /*
@@ -84,22 +87,19 @@ niExportFunc(int) niUnzip_Close(unzFile file);
   return UNZ_OK if there is no problem. */
 
 niExportFunc(int) niUnzip_GetGlobalInfo(unzFile file,
-                         unz_global_info *pglobal_info);
+                                        unz_global_info* pglobal_info);
 /*
   Write info about the ZipFile in the *pglobal_info structure.
   No preparation of the structure is needed
   return UNZ_OK if there is no problem. */
 
-
-niExportFunc(int) niUnzip_GetGlobalComment(unzFile file,
-                            char *szComment,
-                            unsigned long uSizeBuf);
+niExportFunc(int) niUnzip_GetGlobalComment(unzFile file, char* szComment,
+                                           unsigned long uSizeBuf);
 /*
   Get the global comment string of the ZipFile, in the szComment buffer.
   uSizeBuf is the size of the szComment buffer.
   return the number of byte copied or an error code <0
 */
-
 
 /***************************************************************************/
 /* Unzip package allow you browse the directory of the zipfile */
@@ -117,11 +117,11 @@ niExportFunc(int) niUnzip_GoToNextFile(unzFile file);
   return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
 */
 
-niExportFunc(int) niUnzip_LocateFile(unzFile file,
-                      const char *szFileName,
-                      int iCaseSensitivity);
+niExportFunc(int) niUnzip_LocateFile(unzFile file, const char* szFileName,
+                                     int iCaseSensitivity);
 
-niExportFunc(int) niUnzip_LocateFileMy(unzFile file, unsigned long num, unsigned long pos);
+niExportFunc(int) niUnzip_LocateFileMy(unzFile file, unsigned long num,
+                                       unsigned long pos);
 /*
   Try locate the file szFileName in the zipfile.
   For the iCaseSensitivity signification, see unzStringFileNameCompare
@@ -131,15 +131,11 @@ niExportFunc(int) niUnzip_LocateFileMy(unzFile file, unsigned long num, unsigned
   UNZ_END_OF_LIST_OF_FILE if the file is not found
 */
 
-
-niExportFunc(int) niUnzip_GetCurrentFileInfo(unzFile file,
-                              unz_file_info *pfile_info,
-                              char *szFileName,
-                              unsigned long fileNameBufferSize,
-                              void *extraField,
-                              unsigned long extraFieldBufferSize,
-                              char *szComment,
-                              unsigned long commentBufferSize);
+niExportFunc(int) niUnzip_GetCurrentFileInfo(
+  unzFile file, unz_file_info* pfile_info, char* szFileName,
+  unsigned long fileNameBufferSize, void* extraField,
+  unsigned long extraFieldBufferSize, char* szComment,
+  unsigned long commentBufferSize);
 /*
   Get Info about the current file
   if pfile_info!=NULL, the *pfile_info structure will contain somes info about
@@ -170,10 +166,8 @@ niExportFunc(int) niUnzip_CloseCurrentFile(unzFile file);
   Return UNZ_CRCERROR if all the file was read but the CRC is not good
 */
 
-
-niExportFunc(int) niUnzip_ReadCurrentFile(unzFile file,
-                           voidp buf,
-                           unsigned len);
+niExportFunc(int) niUnzip_ReadCurrentFile(unzFile file, voidp buf,
+                                          unsigned len);
 /*
   Read bytes from the current file (opened by unzOpenCurrentFile)
   buf contain buffer where data must be copied
@@ -195,9 +189,8 @@ niExportFunc(int) niUnzip_eof(unzFile file);
   return 1 if the end of file was reached, 0 elsewhere
 */
 
-niExportFunc(int) niUnzip_GetLocalExtrafield(unzFile file,
-                              voidp buf,
-                              unsigned len);
+niExportFunc(int) niUnzip_GetLocalExtrafield(unzFile file, voidp buf,
+                                             unsigned len);
 /*
   Read extra field from the current file (opened by unzOpenCurrentFile)
   This is the local-header version of the extra field (sometimes, there is

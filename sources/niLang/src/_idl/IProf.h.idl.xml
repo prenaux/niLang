@@ -2,16 +2,16 @@
 	<namespace name="ni">
 		<enum name="eProfilerReportMode">
 			<comments desc="Profiler report modes "/>
-			<value name="eProfilerReportMode_SelfTime" value="0 ">
+			<value name="eProfilerReportMode_SelfTime" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eProfilerReportMode_HierTime" value="1 ">
+			<value name="eProfilerReportMode_HierTime" value="1">
 				<comments desc=""/>
 			</value>
-			<value name="eProfilerReportMode_CallGraph" value="2 ">
+			<value name="eProfilerReportMode_CallGraph" value="2">
 				<comments desc=""/>
 			</value>
-			<value name="eProfilerReportMode_Last" value="3 ">
+			<value name="eProfilerReportMode_Last" value="3">
 				<comments desc=""/>
 			</value>
 		</enum>

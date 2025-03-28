@@ -14,16 +14,20 @@ namespace ni {
 
 // Utility userdata class.
 template <typename BASE>
-class cUserdata : public BASE
-{
-  typedef astl::hstring_hash_map<Ptr<iUnknown> > tHashMap;
+class cUserdata : public BASE {
+  typedef astl::hstring_hash_map<Ptr<iUnknown>> tHashMap;
 
  public:
-  cUserdata () {}
-  ~cUserdata  () {}
+  cUserdata()
+  {
+  }
+  ~cUserdata()
+  {
+  }
 
   //! Set a userdata.
-  virtual tBool __stdcall SetUserdata(iHString* ahspID, iUnknown* apUserdata) {
+  virtual tBool __stdcall SetUserdata(iHString* ahspID, iUnknown* apUserdata)
+  {
     tHashMap::iterator it = mUserdata.find(ahspID);
     if (!niIsOK(apUserdata)) {
       if (it != mUserdata.end()) {
@@ -36,28 +40,34 @@ class cUserdata : public BASE
         it->second = apUserdata;
       }
       else {
-        astl::upsert(mUserdata,ahspID,apUserdata);
+        astl::upsert(mUserdata, ahspID, apUserdata);
       }
       return eTrue;
     }
   }
 
   //! Get a userdata.
-  virtual iUnknown* __stdcall GetUserdata(iHString* ahspID) const {
+  virtual iUnknown* __stdcall GetUserdata(iHString* ahspID) const
+  {
     tHashMap::const_iterator it = mUserdata.find(ahspID);
-    if (it == mUserdata.end()) return NULL;
+    if (it == mUserdata.end())
+      return NULL;
     return it->second;
   }
 
   //! Get the number of userdata.
-  virtual tSize __stdcall GetNumUserdata() const {
+  virtual tSize __stdcall GetNumUserdata() const
+  {
     return mUserdata.size();
   }
 
   //! Get the name of the user data at the specified index.
-  virtual iHString* __stdcall GetUserdataName(tU32 anIndex) const {
+  virtual iHString* __stdcall GetUserdataName(tU32 anIndex) const
+  {
     tU32 nCount = 0;
-    for (tHashMap::const_iterator it = mUserdata.begin(); it != mUserdata.end(); ++it, ++nCount) {
+    for (tHashMap::const_iterator it = mUserdata.begin(); it != mUserdata.end();
+         ++it, ++nCount)
+    {
       if (nCount == anIndex) {
         return it->first;
       }
@@ -66,9 +76,12 @@ class cUserdata : public BASE
   }
 
   //! Get the userdata at the specified index.
-  virtual iUnknown* __stdcall GetUserdataFromIndex(tU32 anIndex) const {
+  virtual iUnknown* __stdcall GetUserdataFromIndex(tU32 anIndex) const
+  {
     tU32 nCount = 0;
-    for (tHashMap::const_iterator it = mUserdata.begin(); it != mUserdata.end(); ++it, ++nCount) {
+    for (tHashMap::const_iterator it = mUserdata.begin(); it != mUserdata.end();
+         ++it, ++nCount)
+    {
       if (nCount == anIndex) {
         return it->second;
       }
@@ -77,11 +90,11 @@ class cUserdata : public BASE
   }
 
  private:
-  tHashMap  mUserdata;
+  tHashMap mUserdata;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __USERDATA_51546720_H__

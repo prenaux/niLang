@@ -8,8 +8,8 @@ namespace astl {
 
 ASTL_RAW_ALLOCATOR_IMPL(list);
 
-template <typename T, ASTL_TMPL_PARAM_ALLOCATOR(_Alloc,T,list)>
-using list = eastl::list<T,_Alloc>;
+template <typename T, ASTL_TMPL_PARAM_ALLOCATOR(_Alloc, T, list)>
+using list = eastl::list<T, _Alloc>;
 
-}  // namespace astl
+} // namespace astl
 #endif // __LIST_H_033B4714_1794_3140_93F1_62ACDB301F07__

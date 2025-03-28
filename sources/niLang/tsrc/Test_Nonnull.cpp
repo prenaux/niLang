@@ -2,8 +2,8 @@
 
 #if _DEBUG
 void Test_Nonnull_Trace(const char* msg);
-#define TRACE_NI_NONNULL(X) Test_Nonnull_Trace("ni::Nonnull " X);
-#define TRACE_ASTL_NON_NULL(X) Test_Nonnull_Trace("astl::non_null " X);
+  #define TRACE_NI_NONNULL(X) Test_Nonnull_Trace("ni::Nonnull " X);
+  #define TRACE_ASTL_NON_NULL(X) Test_Nonnull_Trace("astl::non_null " X);
 #endif
 
 #include "stdafx.h"
@@ -44,18 +44,20 @@ using namespace ni;
    fixes the issue. That's probably the best solution.
 
 */
-void _DumpStack(const achar* aName) {
+void _DumpStack(const achar* aName)
+{
   if (aName) {
-    niLog(Debug,aName);
+    niLog(Debug, aName);
   }
   cString r;
-  ni_stack_get_current(r,NULL,0);
-  niLog(Warning,r);
+  ni_stack_get_current(r, NULL, 0);
+  niLog(Warning, r);
 }
 #define DUMP_STACK(NAME) //_DumpStack(NAME)
 
-void Test_Nonnull_Trace(const char* msg) {
-  niLog(Debug,msg);
+void Test_Nonnull_Trace(const char* msg)
+{
+  niLog(Debug, msg);
   DUMP_STACK(NULL);
 }
 
@@ -69,24 +71,28 @@ struct sAddRefReleaseCounter {
 };
 
 struct sTestItem : public ImplRC<iUnknown> {
-  sTestItem(const achar* aName, sAddRefReleaseCounter* apAddRefReleaseCounter = NULL)
+  sTestItem(const achar* aName,
+            sAddRefReleaseCounter* apAddRefReleaseCounter = NULL)
       : _name(aName)
       , _addRefReleaseCounter(apAddRefReleaseCounter)
   {
     // niDebugFmt(("... sTestItem"));
   }
-  ~sTestItem() {
+  ~sTestItem()
+  {
     // niDebugFmt(("... ~sTestItem"));
   }
 
-  virtual tI32 __stdcall AddRef() {
+  virtual tI32 __stdcall AddRef()
+  {
     if (_addRefReleaseCounter) {
       ++_addRefReleaseCounter->_numAddRef;
     }
     DUMP_STACK("AddRef");
     niImpl_AddRef();
   }
-  virtual tI32 __stdcall Release() {
+  virtual tI32 __stdcall Release()
+  {
     if (_addRefReleaseCounter) {
       ++_addRefReleaseCounter->_numRelease;
     }
@@ -98,19 +104,24 @@ struct sTestItem : public ImplRC<iUnknown> {
   sAddRefReleaseCounter* _addRefReleaseCounter;
 };
 
-QPtr<sTestItem> CreateTestItem(const achar* aName, sAddRefReleaseCounter* aCounter) {
-  niCheck(niStringIsOK(aName),NULL);
-  return ni::MakePtr<sTestItem>(aName,aCounter);
+QPtr<sTestItem> CreateTestItem(const achar* aName,
+                               sAddRefReleaseCounter* aCounter)
+{
+  niCheck(niStringIsOK(aName), NULL);
+  return ni::MakePtr<sTestItem>(aName, aCounter);
 }
 
-ni::cString TestNonnull(astl::non_null<sTestItem*> v) {
+ni::cString TestNonnull(astl::non_null<sTestItem*> v)
+{
   return v->_name;
 }
-ni::cString TestNonnullConst(astl::non_null<sTestItem const*> v) {
+ni::cString TestNonnullConst(astl::non_null<sTestItem const*> v)
+{
   return v->_name;
 }
 
-TEST_FIXTURE(FNonnull,non_null) {
+TEST_FIXTURE(FNonnull, non_null)
+{
   int value = 123;
   astl::non_null<int*> v = astl::as_non_null(&value);
   CHECK_EQUAL(value, *v);
@@ -118,18 +129,20 @@ TEST_FIXTURE(FNonnull,non_null) {
   CHECK_EQUAL(456, *v);
 }
 
-TEST_FIXTURE(FNonnull,non_null_hash_set) {
+TEST_FIXTURE(FNonnull, non_null_hash_set)
+{
   int a = 123;
   int b = 456;
 
-  astl::hash_set<astl::non_null<const int*> > hashedSet;
+  astl::hash_set<astl::non_null<const int*>> hashedSet;
   hashedSet.insert(astl::as_non_null(&a));
   hashedSet.insert(astl::as_non_null(&b));
   CHECK(astl::contains(hashedSet, astl::as_non_null(&a)));
   CHECK(astl::contains(hashedSet, astl::as_non_null(&b)));
 }
 
-TEST_FIXTURE(FNonnull,shared_non_null) {
+TEST_FIXTURE(FNonnull, shared_non_null)
+{
   astl::shared_non_null<int> u = astl::make_shared_non_null<int>(123);
   CHECK_EQUAL(123, *u);
   astl::shared_non_null<int> v = astl::make_shared_non_null<int>(123);
@@ -160,7 +173,8 @@ TEST_FIXTURE(FNonnull,shared_non_null) {
   CHECK_EQUAL(123, *v);
 }
 
-TEST_FIXTURE(FNonnull,unique_non_null) {
+TEST_FIXTURE(FNonnull, unique_non_null)
+{
   astl::unique_non_null<int> u = astl::make_unique_non_null<int>(123);
   CHECK_EQUAL(123, *u);
   astl::unique_non_null<int> v = astl::make_unique_non_null<int>(123);
@@ -193,7 +207,8 @@ TEST_FIXTURE(FNonnull,unique_non_null) {
   CHECK_EQUAL(123, *v);
 }
 
-TEST_FIXTURE(FNonnull,base) {
+TEST_FIXTURE(FNonnull, base)
+{
   Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
   CHECK_EQUAL(1, itemA->GetNumRefs());
@@ -208,7 +223,8 @@ TEST_FIXTURE(FNonnull,base) {
 #endif
 }
 
-TEST_FIXTURE(FNonnull,RefCount) {
+TEST_FIXTURE(FNonnull, RefCount)
+{
   sAddRefReleaseCounter counterA;
   sAddRefReleaseCounter counterB;
   sAddRefReleaseCounter counterC;
@@ -221,7 +237,7 @@ TEST_FIXTURE(FNonnull,RefCount) {
     Nonnull<sTestItem> nnC = ni::MakeNonnull<sTestItem>("itemC", &counterC);
     CHECK_EQUAL(1, nnC->GetNumRefs());
     {
-      Nonnull<sTestItem> nnA = ni::Nonnull<sTestItem>{itemA.raw_ptr()};
+      Nonnull<sTestItem> nnA = ni::Nonnull<sTestItem>{ itemA.raw_ptr() };
       CHECK_NOT_EQUAL(nullptr, (sTestItem*&)nnA);
       CHECK_EQUAL(2, itemA.raw_ptr()->GetNumRefs());
       CHECK_EQUAL(1, itemB.raw_ptr()->GetNumRefs());
@@ -243,12 +259,12 @@ TEST_FIXTURE(FNonnull,RefCount) {
     CHECK_EQUAL(1, nnC->GetNumRefs());
   }
 
-  niDebugFmt(("... itemA numAddRef: %d, numRelease: %d",
-              counterA._numAddRef, counterA._numRelease));
-  niDebugFmt(("... itemB numAddRef: %d, numRelease: %d",
-              counterB._numAddRef, counterB._numRelease));
-  niDebugFmt(("... itemC numAddRef: %d, numRelease: %d",
-              counterC._numAddRef, counterC._numRelease));
+  niDebugFmt(("... itemA numAddRef: %d, numRelease: %d", counterA._numAddRef,
+              counterA._numRelease));
+  niDebugFmt(("... itemB numAddRef: %d, numRelease: %d", counterB._numAddRef,
+              counterB._numRelease));
+  niDebugFmt(("... itemC numAddRef: %d, numRelease: %d", counterC._numAddRef,
+              counterC._numRelease));
   CHECK_EQUAL(2, counterA._numAddRef);
   CHECK_EQUAL(2, counterA._numRelease);
   CHECK_EQUAL(2, counterB._numAddRef);
@@ -257,7 +273,8 @@ TEST_FIXTURE(FNonnull,RefCount) {
   CHECK_EQUAL(2, counterC._numRelease);
 }
 
-TEST_FIXTURE(FNonnull,move) {
+TEST_FIXTURE(FNonnull, move)
+{
   Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
   CHECK_NOT_EQUAL(nullptr, (sTestItem*&)itemA);
 
@@ -270,7 +287,8 @@ TEST_FIXTURE(FNonnull,move) {
   CHECK_EQUAL(_ASTR("fooItem"), itemA2->_name);
 }
 
-TEST_FIXTURE(FNonnull,maybe) {
+TEST_FIXTURE(FNonnull, maybe)
+{
   {
     Ptr<sTestItem> itemA = ni::MakeNonnull<sTestItem>("fooItem");
     CHECK(itemA.has_value());
@@ -298,11 +316,12 @@ TEST_FIXTURE(FNonnull,maybe) {
   }
 }
 
-TEST_FIXTURE(FNonnull,hash_set) {
+TEST_FIXTURE(FNonnull, hash_set)
+{
   Nonnull<sTestItem> itemA = ni::MakeNonnull<sTestItem>("itemA");
   Nonnull<sTestItem> itemB = ni::MakeNonnull<sTestItem>("itemB");
 
-  astl::hash_set<ni::Nonnull<sTestItem> > hashedSet;
+  astl::hash_set<ni::Nonnull<sTestItem>> hashedSet;
   hashedSet.insert(itemA);
   hashedSet.insert(itemB);
   CHECK(astl::contains(hashedSet, itemA));
@@ -310,8 +329,7 @@ TEST_FIXTURE(FNonnull,hash_set) {
 }
 
 ni::cString Test_niCheckNonnull_AddRefReleaseCounter(
-  sAddRefReleaseCounter& counter,
-  const tI32 expectedAddRef,
+  sAddRefReleaseCounter& counter, const tI32 expectedAddRef,
   const tI32 expectedRelease)
 {
   cString err;
@@ -327,11 +345,12 @@ ni::cString Test_niCheckNonnull_AddRefReleaseCounter(
 }
 
 template <typename T>
-ni::cString Test_niCheckNonnull(Nonnull<T>& r, const achar* aName) {
+ni::cString Test_niCheckNonnull(Nonnull<T>& r, const achar* aName)
+{
   if (r.raw_ptr() == nullptr)
     return _ASTR("UnexpectedNull");
   if (!r->_name.Eq(aName))
-    return _ASTR(niFmt("sTestItem_WrongName:%s = %s",aName,r->_name));
+    return _ASTR(niFmt("sTestItem_WrongName:%s = %s", aName, r->_name));
   if (r.raw_ptr()) {
     if (r->GetNumRefs() != 1)
       return _ASTR(niFmt("sTestItem_InvalidRefCount:%d", r->GetNumRefs()));
@@ -342,39 +361,47 @@ ni::cString Test_niCheckNonnull(Nonnull<T>& r, const achar* aName) {
   return _ASTR("HasValue");
 }
 
-ni::cString Test_niCheckNonnull_RawNullPtr(sAddRefReleaseCounter* aCounter) {
+ni::cString Test_niCheckNonnull_RawNullPtr(sAddRefReleaseCounter* aCounter)
+{
   niUnused(aCounter);
-  Nonnull<sTestItem> r = niCheckNonnull(r,(sTestItem*)nullptr,_ASTR("IsNull"));
-  return Test_niCheckNonnull(r,NULL);
+  Nonnull<sTestItem> r =
+    niCheckNonnull(r, (sTestItem*)nullptr, _ASTR("IsNull"));
+  return Test_niCheckNonnull(r, NULL);
 }
 
 ni::cString Test_niCheckNonnull_Create(const achar* aName,
-                                       sAddRefReleaseCounter* aCounter) {
-  Nonnull<sTestItem> r = niCheckNonnull(r,CreateTestItem(aName,aCounter),_ASTR("IsNull"));
-  return Test_niCheckNonnull(r,aName);
+                                       sAddRefReleaseCounter* aCounter)
+{
+  Nonnull<sTestItem> r =
+    niCheckNonnull(r, CreateTestItem(aName, aCounter), _ASTR("IsNull"));
+  return Test_niCheckNonnull(r, aName);
 }
 
 ni::cString Test_niCheckNonnull_FromPtr(const achar* aName,
-                                        sAddRefReleaseCounter* aCounter) {
-  Nonnull<sTestItem> r = CreateTestItem("dummy",NULL).non_null();
+                                        sAddRefReleaseCounter* aCounter)
+{
+  Nonnull<sTestItem> r = CreateTestItem("dummy", NULL).non_null();
   {
-    QPtr<sTestItem> p = CreateTestItem(aName,aCounter);
-    r = niCheckNonnull(r,p,_ASTR("IsNull"));
+    QPtr<sTestItem> p = CreateTestItem(aName, aCounter);
+    r = niCheckNonnull(r, p, _ASTR("IsNull"));
   }
-  return Test_niCheckNonnull(r,aName);
+  return Test_niCheckNonnull(r, aName);
 }
 
-ni::cString Test_niCheckNonnull_CreateWeakPtr(
-  const achar* aName,sAddRefReleaseCounter* aCounter) {
-  Nonnull<sTestItem> r = niCheckNonnull(r,WeakPtr<sTestItem>(CreateTestItem(aName,aCounter)),_ASTR("IsNull"));
-  return Test_niCheckNonnull(r,aName);
+ni::cString Test_niCheckNonnull_CreateWeakPtr(const achar* aName,
+                                              sAddRefReleaseCounter* aCounter)
+{
+  Nonnull<sTestItem> r = niCheckNonnull(
+    r, WeakPtr<sTestItem>(CreateTestItem(aName, aCounter)), _ASTR("IsNull"));
+  return Test_niCheckNonnull(r, aName);
 }
 
-ni::cString Test_niCheckNonnull_FromWeakPtr(
-  const achar* aName, sAddRefReleaseCounter* aCounter) {
-  Nonnull<sTestItem> r = CreateTestItem("dummy",NULL).non_null();
+ni::cString Test_niCheckNonnull_FromWeakPtr(const achar* aName,
+                                            sAddRefReleaseCounter* aCounter)
+{
+  Nonnull<sTestItem> r = CreateTestItem("dummy", NULL).non_null();
   {
-    QPtr<sTestItem> p = CreateTestItem(aName,aCounter);
+    QPtr<sTestItem> p = CreateTestItem(aName, aCounter);
     if (p.has_value()) {
       if (p.raw_ptr()->GetNumRefs() != 1)
         return _ASTR("InvalidNumRef_p_1");
@@ -384,111 +411,140 @@ ni::cString Test_niCheckNonnull_FromWeakPtr(
       if (p.raw_ptr()->GetNumRefs() != 1)
         return _ASTR("InvalidNumRef_w_1");
     }
-    r = niCheckNonnull(r,w,_ASTR("IsNull"));
+    r = niCheckNonnull(r, w, _ASTR("IsNull"));
   }
-  return Test_niCheckNonnull(r,aName);
+  return Test_niCheckNonnull(r, aName);
 }
 
 //
 // Run with:
 //   hamx :niLang Run_Test_niLang BUILD=da FIXTURE="FNonnull,niCheckNonnull*"
 //
-TEST_FIXTURE(FNonnull,niCheckNonnull_MacroVariants) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_MacroVariants)
+{
   // this test only test that the macros compile correctly
-  Nonnull<sTestItem> a = niCheckNonnull(a,ni::MakePtr<sTestItem>("a"),;);
+  Nonnull<sTestItem> a = niCheckNonnull(a, ni::MakePtr<sTestItem>("a"), ;);
   niUnused(a);
-  Nonnull<sTestItem> b = niCheckNonnullMsg(b,ni::MakePtr<sTestItem>("b"),niFmt("Can't create b."),;);
+  Nonnull<sTestItem> b = niCheckNonnullMsg(
+    b, ni::MakePtr<sTestItem>("b"), niFmt("Can't create b."), ;);
   niUnused(b);
-  Nonnull<sTestItem> c = niCheckNonnullSilent(c,ni::MakePtr<sTestItem>("c"),;);
+  Nonnull<sTestItem> c =
+    niCheckNonnullSilent(c, ni::MakePtr<sTestItem>("c"), ;);
   niUnused(c);
   Nonnull<sTestItem> d = AsNonnull(ni::MakePtr<sTestItem>("d"));
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_HasValue) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_HasValue)
+{
   // Should be HasValue
   {
     sAddRefReleaseCounter createCounter;
-    CHECK_EQUAL(_ASTR("HasValue"), Test_niCheckNonnull_Create("Foobar", &createCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(createCounter,1,1));
+    CHECK_EQUAL(_ASTR("HasValue"),
+                Test_niCheckNonnull_Create("Foobar", &createCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(createCounter, 1, 1));
   }
   {
     sAddRefReleaseCounter fromPtrCounter;
-    CHECK_EQUAL(_ASTR("HasValue"), Test_niCheckNonnull_FromPtr("Foobar",&fromPtrCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter,2,2));
+    CHECK_EQUAL(_ASTR("HasValue"),
+                Test_niCheckNonnull_FromPtr("Foobar", &fromPtrCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter, 2, 2));
   }
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_IsNull) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_IsNull)
+{
   // Should be IsNull
   {
     sAddRefReleaseCounter nullCreateCounter;
-    CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_Create(AZEROSTR,&nullCreateCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(nullCreateCounter,0,0));
+    CHECK_EQUAL(_ASTR("IsNull"),
+                Test_niCheckNonnull_Create(AZEROSTR, &nullCreateCounter));
+    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(
+                               nullCreateCounter, 0, 0));
   }
   {
     sAddRefReleaseCounter nullFromPtrCounter;
-    CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_FromPtr(AZEROSTR,&nullFromPtrCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(nullFromPtrCounter,0,0));
+    CHECK_EQUAL(_ASTR("IsNull"),
+                Test_niCheckNonnull_FromPtr(AZEROSTR, &nullFromPtrCounter));
+    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(
+                               nullFromPtrCounter, 0, 0));
   }
   {
     sAddRefReleaseCounter rawNullPtr;
     CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_RawNullPtr(&rawNullPtr));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(rawNullPtr,0,0));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(rawNullPtr, 0, 0));
   }
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_WeakPtr_HasValue) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_WeakPtr_HasValue)
+{
   {
     sAddRefReleaseCounter createCounter;
-    CHECK_EQUAL(_ASTR("HasValue"), Test_niCheckNonnull_CreateWeakPtr(
-      "Foobar", &createCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(createCounter,2,2));
+    CHECK_EQUAL(_ASTR("HasValue"),
+                Test_niCheckNonnull_CreateWeakPtr("Foobar", &createCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(createCounter, 2, 2));
   }
   {
     sAddRefReleaseCounter fromPtrCounter;
-    CHECK_EQUAL(_ASTR("HasValue"), Test_niCheckNonnull_FromWeakPtr("Foobar",&fromPtrCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter,2,2));
+    CHECK_EQUAL(_ASTR("HasValue"),
+                Test_niCheckNonnull_FromWeakPtr("Foobar", &fromPtrCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter, 2, 2));
   }
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_WeakPtr_IsNull) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_WeakPtr_IsNull)
+{
   {
     sAddRefReleaseCounter createCounter;
-    CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_CreateWeakPtr(
-      NULL, &createCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(createCounter,0,0));
+    CHECK_EQUAL(_ASTR("IsNull"),
+                Test_niCheckNonnull_CreateWeakPtr(NULL, &createCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(createCounter, 0, 0));
   }
   {
     sAddRefReleaseCounter fromPtrCounter;
-    CHECK_EQUAL(_ASTR("IsNull"), Test_niCheckNonnull_FromWeakPtr(NULL,&fromPtrCounter));
-    CHECK_EQUAL(_ASTR("OK"), Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter,0,0));
+    CHECK_EQUAL(_ASTR("IsNull"),
+                Test_niCheckNonnull_FromWeakPtr(NULL, &fromPtrCounter));
+    CHECK_EQUAL(_ASTR("OK"),
+                Test_niCheckNonnull_AddRefReleaseCounter(fromPtrCounter, 0, 0));
   }
 }
 
-astl::shared_ptr<cString> CreateSharedString(const achar* aName) {
+astl::shared_ptr<cString> CreateSharedString(const achar* aName)
+{
   if (!niStringIsOK(aName))
     return nullptr;
   return astl::make_shared<cString>(_ASTR(aName));
 }
 
-ni::cString Test_niCheckNonnull_shared_ptr(const achar* aName) {
-  astl::shared_non_null<cString> r = niCheckNonnull(r,CreateSharedString(aName),_ASTR("is_null"));
-  return _ASTR(niFmt("is_string:%s",*r));
+ni::cString Test_niCheckNonnull_shared_ptr(const achar* aName)
+{
+  astl::shared_non_null<cString> r =
+    niCheckNonnull(r, CreateSharedString(aName), _ASTR("is_null"));
+  return _ASTR(niFmt("is_string:%s", *r));
 }
 
-ni::cString Test_niCheckNonnull_weak_ptr(const achar* aName) {
+ni::cString Test_niCheckNonnull_weak_ptr(const achar* aName)
+{
   astl::shared_ptr<cString> mystr = CreateSharedString(aName);
   astl::weak_ptr<cString> weakstr = mystr;
-  astl::shared_non_null<cString> r = niCheckNonnull(r,weakstr.lock(),_ASTR("is_null"));
-  return _ASTR(niFmt("is_string:%s",*r));
+  astl::shared_non_null<cString> r =
+    niCheckNonnull(r, weakstr.lock(), _ASTR("is_null"));
+  return _ASTR(niFmt("is_string:%s", *r));
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_shared_ptr) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_shared_ptr)
+{
   CHECK_EQUAL(_ASTR("is_string:Foo"), Test_niCheckNonnull_shared_ptr("Foo"));
   CHECK_EQUAL(_ASTR("is_null"), Test_niCheckNonnull_shared_ptr(NULL));
 }
 
-TEST_FIXTURE(FNonnull,niCheckNonnull_weak_ptr) {
+TEST_FIXTURE(FNonnull, niCheckNonnull_weak_ptr)
+{
   CHECK_EQUAL(_ASTR("is_string:Foo"), Test_niCheckNonnull_weak_ptr("Foo"));
   CHECK_EQUAL(_ASTR("is_null"), Test_niCheckNonnull_weak_ptr(NULL));
 }

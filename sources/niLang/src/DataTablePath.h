@@ -18,13 +18,14 @@ typedef Ptr<cDataTablePathOp> tDataTablePathOpPtr;
 //! Data table path operation list.
 typedef astl::list<tDataTablePathOpPtr> tDataTablePathOpPtrCLst;
 //! Data table path operation list iterator.
-typedef tDataTablePathOpPtrCLst::iterator     tDataTablePathOpPtrCLstIt;
+typedef tDataTablePathOpPtrCLst::iterator tDataTablePathOpPtrCLstIt;
 //! Data table path operation list const iterator.
 typedef tDataTablePathOpPtrCLst::const_iterator tDataTablePathOpPtrCLstCIt;
 //! Data table path operation list reverse iterator.
 typedef tDataTablePathOpPtrCLst::reverse_iterator tDataTablePathOpPtrCLstRIt;
 //! Data table path operation list const reverse iterator.
-typedef tDataTablePathOpPtrCLst::const_reverse_iterator tDataTablePathOpPtrCLstCRIt;
+typedef tDataTablePathOpPtrCLst::const_reverse_iterator
+  tDataTablePathOpPtrCLstCRIt;
 
 //! DataTable path interface smart pointer.
 typedef Ptr<cDataTablePath> tDataTablePathPtr;
@@ -33,8 +34,7 @@ typedef Ptr<cDataTablePath> tDataTablePathPtr;
 // cDataTablePathOp declaration.
 
 //! DataTable path result type.
-enum eDataTablePathResultType
-{
+enum eDataTablePathResultType {
   //! Data table path result type, no result.
   eDataTablePathResultType_None = 0,
   //! Data table path result type, data table.
@@ -46,8 +46,7 @@ enum eDataTablePathResultType
 };
 
 //! DataTable path operations.
-enum eDataTablePathOp
-{
+enum eDataTablePathOp {
   //! Path operation, root.
   eDataTablePathOp_Root = 0,
   //! Path operation, current.
@@ -65,8 +64,7 @@ enum eDataTablePathOp
 };
 
 //! DataTable path operation interface.
-class cDataTablePathOp : public ImplRC<iUnknown>
-{
+class cDataTablePathOp : public ImplRC<iUnknown> {
   niBeginClass(cDataTablePathOp);
 
  public:
@@ -89,8 +87,8 @@ class cDataTablePathOp : public ImplRC<iUnknown>
   const cString& __stdcall GetValue() const;
 
  public:
-  eDataTablePathOp  mOp;
-  cString             mstrValue;
+  eDataTablePathOp mOp;
+  cString mstrValue;
   Ptr<iRegex> mptrRegex;
 
   niEndClass(cDataTablePathOp);
@@ -100,8 +98,7 @@ class cDataTablePathOp : public ImplRC<iUnknown>
 // cDataTablePath declaration.
 
 //! DataTable path implementation.
-class cDataTablePath : public ImplRC<iUnknown>
-{
+class cDataTablePath : public ImplRC<iUnknown> {
   niBeginClass(cDataTablePath);
 
  public:
@@ -125,16 +122,17 @@ class cDataTablePath : public ImplRC<iUnknown>
   iDataTable* __stdcall GetResultDataTable() const;
   tU32 __stdcall GetResultPropertyIndex() const;
   void __stdcall ClearResult();
-  cString __stdcall GetRootPathToDataTable(iDataTable* apDT, tU32 anPropIndex) const;
+  cString __stdcall GetRootPathToDataTable(iDataTable* apDT,
+                                           tU32 anPropIndex) const;
   tBool __stdcall CreatePathInDataTable(iDataTable* apDT, tBool abCompletlyNew);
   //// iDataTablePath /////////////////////////////
 
  private:
-  Ptr<iHString>     mhspPath;
-  eDataTablePathResultType  mResultType;
-  Ptr<iDataTable>   mptrResultDataTable;
-  tU32            mnResultIndex;
-  tDataTablePathOpPtrCLst     mlstOps;
+  Ptr<iHString> mhspPath;
+  eDataTablePathResultType mResultType;
+  Ptr<iDataTable> mptrResultDataTable;
+  tU32 mnResultIndex;
+  tDataTablePathOpPtrCLst mlstOps;
 
   niEndClass(cDataTablePath);
 };

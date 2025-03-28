@@ -25,41 +25,41 @@
 #define H_6B9572DA_A64B_49E6_B234_051480991C89
 
 #ifndef __cplusplus
-#error "It's not going to compile without a C++ compiler..."
+  #error "It's not going to compile without a C++ compiler..."
 #endif
 
 #include <niLang/Types.h>
 
 #if defined niLinux
-// NOTE: niLang: We defined this here to keep our sanity since we might
-// include it in multiple places. Getting the right combo here + library +
-// compiler + linker flags is a *lot* harder than it seems, dont mess with the
-// things that relate to getting a stacktrace unless you truely know what
-// you're doing.
-// #define BACKWARD_HAS_BFD 1
-#define BACKWARD_HAS_DW 1
-#define BACKWARD_HAS_UNWIND 1
+  // NOTE: niLang: We defined this here to keep our sanity since we might
+  // include it in multiple places. Getting the right combo here + library +
+  // compiler + linker flags is a *lot* harder than it seems, dont mess with the
+  // things that relate to getting a stacktrace unless you truely know what
+  // you're doing.
+  // #define BACKWARD_HAS_BFD 1
+  #define BACKWARD_HAS_DW 1
+  #define BACKWARD_HAS_UNWIND 1
 #endif
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunqualified-std-cast-call"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunqualified-std-cast-call"
 #endif
 
 #if defined(BACKWARD_CXX11)
 #elif defined(BACKWARD_CXX98)
 #else
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1800)
-#define BACKWARD_CXX11
-#define BACKWARD_ATLEAST_CXX11
-#define BACKWARD_ATLEAST_CXX98
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
-#define BACKWARD_ATLEAST_CXX17
-#endif
-#else
-#define BACKWARD_CXX98
-#define BACKWARD_ATLEAST_CXX98
-#endif
+  #if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1800)
+    #define BACKWARD_CXX11
+    #define BACKWARD_ATLEAST_CXX11
+    #define BACKWARD_ATLEAST_CXX98
+    #if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+      #define BACKWARD_ATLEAST_CXX17
+    #endif
+  #else
+    #define BACKWARD_CXX98
+    #define BACKWARD_ATLEAST_CXX98
+  #endif
 #endif
 
 // You can define one of the following (or leave it to the auto-detection):
@@ -81,15 +81,15 @@
 #elif defined(BACKWARD_SYSTEM_UNKNOWN)
 #elif defined(BACKWARD_SYSTEM_WINDOWS)
 #else
-#if defined(__linux) || defined(__linux__)
-#define BACKWARD_SYSTEM_LINUX
-#elif defined(__APPLE__)
-#define BACKWARD_SYSTEM_DARWIN
-#elif defined(_WIN32)
-#define BACKWARD_SYSTEM_WINDOWS
-#else
-#define BACKWARD_SYSTEM_UNKNOWN
-#endif
+  #if defined(__linux) || defined(__linux__)
+    #define BACKWARD_SYSTEM_LINUX
+  #elif defined(__APPLE__)
+    #define BACKWARD_SYSTEM_DARWIN
+  #elif defined(_WIN32)
+    #define BACKWARD_SYSTEM_WINDOWS
+  #else
+    #define BACKWARD_SYSTEM_UNKNOWN
+  #endif
 #endif
 
 #define NOINLINE __attribute__((noinline))
@@ -113,338 +113,348 @@
 
 #if defined(BACKWARD_SYSTEM_LINUX)
 
-// On linux, backtrace can back-trace or "walk" the stack using the following
-// libraries:
-//
-// #define BACKWARD_HAS_UNWIND 1
-//  - unwind comes from libgcc, but I saw an equivalent inside clang itself.
-//  - with unwind, the stacktrace is as accurate as it can possibly be, since
-//  this is used by the C++ runtime in gcc/clang for stack unwinding on
-//  exception.
-//  - normally libgcc is already linked to your program by default.
-//
-// #define BACKWARD_HAS_LIBUNWIND 1
-//  - libunwind provides, in some cases, a more accurate stacktrace as it knows
-//  to decode signal handler frames and lets us edit the context registers when
-//  unwinding, allowing stack traces over bad function references.
-//
-// #define BACKWARD_HAS_BACKTRACE == 1
-//  - backtrace seems to be a little bit more portable than libunwind, but on
-//  linux, it uses unwind anyway, but abstract away a tiny information that is
-//  sadly really important in order to get perfectly accurate stack traces.
-//  - backtrace is part of the (e)glib library.
-//
-// The default is:
-// #define BACKWARD_HAS_UNWIND == 1
-//
-// Note that only one of the define should be set to 1 at a time.
-//
-#if BACKWARD_HAS_UNWIND == 1
-#elif BACKWARD_HAS_LIBUNWIND == 1
-#elif BACKWARD_HAS_BACKTRACE == 1
-#else
-#undef BACKWARD_HAS_UNWIND
-#define BACKWARD_HAS_UNWIND 1
-#undef BACKWARD_HAS_LIBUNWIND
-#define BACKWARD_HAS_LIBUNWIND 0
-#undef BACKWARD_HAS_BACKTRACE
-#define BACKWARD_HAS_BACKTRACE 0
-#endif
+  // On linux, backtrace can back-trace or "walk" the stack using the following
+  // libraries:
+  //
+  // #define BACKWARD_HAS_UNWIND 1
+  //  - unwind comes from libgcc, but I saw an equivalent inside clang itself.
+  //  - with unwind, the stacktrace is as accurate as it can possibly be, since
+  //  this is used by the C++ runtime in gcc/clang for stack unwinding on
+  //  exception.
+  //  - normally libgcc is already linked to your program by default.
+  //
+  // #define BACKWARD_HAS_LIBUNWIND 1
+  //  - libunwind provides, in some cases, a more accurate stacktrace as it knows
+  //  to decode signal handler frames and lets us edit the context registers when
+  //  unwinding, allowing stack traces over bad function references.
+  //
+  // #define BACKWARD_HAS_BACKTRACE == 1
+  //  - backtrace seems to be a little bit more portable than libunwind, but on
+  //  linux, it uses unwind anyway, but abstract away a tiny information that is
+  //  sadly really important in order to get perfectly accurate stack traces.
+  //  - backtrace is part of the (e)glib library.
+  //
+  // The default is:
+  // #define BACKWARD_HAS_UNWIND == 1
+  //
+  // Note that only one of the define should be set to 1 at a time.
+  //
+  #if BACKWARD_HAS_UNWIND == 1
+  #elif BACKWARD_HAS_LIBUNWIND == 1
+  #elif BACKWARD_HAS_BACKTRACE == 1
+  #else
+    #undef BACKWARD_HAS_UNWIND
+    #define BACKWARD_HAS_UNWIND 1
+    #undef BACKWARD_HAS_LIBUNWIND
+    #define BACKWARD_HAS_LIBUNWIND 0
+    #undef BACKWARD_HAS_BACKTRACE
+    #define BACKWARD_HAS_BACKTRACE 0
+  #endif
 
-// On linux, backward can extract detailed information about a stack trace
-// using one of the following libraries:
-//
-// #define BACKWARD_HAS_DW 1
-//  - libdw gives you the most juicy details out of your stack traces:
-//    - object filename
-//    - function name
-//    - source filename
-//    - line and column numbers
-//    - source code snippet (assuming the file is accessible)
-//    - variable names (if not optimized out)
-//    - variable values (not supported by backward-cpp)
-//  - You need to link with the lib "dw":
-//    - apt-get install libdw-dev
-//    - g++/clang++ -ldw ...
-//
-// #define BACKWARD_HAS_BFD 1
-//  - With libbfd, you get a fair amount of details:
-//    - object filename
-//    - function name
-//    - source filename
-//    - line numbers
-//    - source code snippet (assuming the file is accessible)
-//  - You need to link with the lib "bfd":
-//    - apt-get install binutils-dev
-//    - g++/clang++ -lbfd ...
-//
-// #define BACKWARD_HAS_DWARF 1
-//  - libdwarf gives you the most juicy details out of your stack traces:
-//    - object filename
-//    - function name
-//    - source filename
-//    - line and column numbers
-//    - source code snippet (assuming the file is accessible)
-//    - variable names (if not optimized out)
-//    - variable values (not supported by backward-cpp)
-//  - You need to link with the lib "dwarf":
-//    - apt-get install libdwarf-dev
-//    - g++/clang++ -ldwarf ...
-//
-// #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
-//  - backtrace provides minimal details for a stack trace:
-//    - object filename
-//    - function name
-//  - backtrace is part of the (e)glib library.
-//
-// The default is:
-// #define BACKWARD_HAS_BACKTRACE_SYMBOL == 1
-//
-// Note that only one of the define should be set to 1 at a time.
-//
-#if BACKWARD_HAS_DW == 1
-#elif BACKWARD_HAS_BFD == 1
-#elif BACKWARD_HAS_DWARF == 1
-#elif BACKWARD_HAS_BACKTRACE_SYMBOL == 1
-#else
-#undef BACKWARD_HAS_DW
-#define BACKWARD_HAS_DW 0
-#undef BACKWARD_HAS_BFD
-#define BACKWARD_HAS_BFD 0
-#undef BACKWARD_HAS_DWARF
-#define BACKWARD_HAS_DWARF 0
-#undef BACKWARD_HAS_BACKTRACE_SYMBOL
-#define BACKWARD_HAS_BACKTRACE_SYMBOL 1
-#endif
+  // On linux, backward can extract detailed information about a stack trace
+  // using one of the following libraries:
+  //
+  // #define BACKWARD_HAS_DW 1
+  //  - libdw gives you the most juicy details out of your stack traces:
+  //    - object filename
+  //    - function name
+  //    - source filename
+  //    - line and column numbers
+  //    - source code snippet (assuming the file is accessible)
+  //    - variable names (if not optimized out)
+  //    - variable values (not supported by backward-cpp)
+  //  - You need to link with the lib "dw":
+  //    - apt-get install libdw-dev
+  //    - g++/clang++ -ldw ...
+  //
+  // #define BACKWARD_HAS_BFD 1
+  //  - With libbfd, you get a fair amount of details:
+  //    - object filename
+  //    - function name
+  //    - source filename
+  //    - line numbers
+  //    - source code snippet (assuming the file is accessible)
+  //  - You need to link with the lib "bfd":
+  //    - apt-get install binutils-dev
+  //    - g++/clang++ -lbfd ...
+  //
+  // #define BACKWARD_HAS_DWARF 1
+  //  - libdwarf gives you the most juicy details out of your stack traces:
+  //    - object filename
+  //    - function name
+  //    - source filename
+  //    - line and column numbers
+  //    - source code snippet (assuming the file is accessible)
+  //    - variable names (if not optimized out)
+  //    - variable values (not supported by backward-cpp)
+  //  - You need to link with the lib "dwarf":
+  //    - apt-get install libdwarf-dev
+  //    - g++/clang++ -ldwarf ...
+  //
+  // #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
+  //  - backtrace provides minimal details for a stack trace:
+  //    - object filename
+  //    - function name
+  //  - backtrace is part of the (e)glib library.
+  //
+  // The default is:
+  // #define BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  //
+  // Note that only one of the define should be set to 1 at a time.
+  //
+  #if BACKWARD_HAS_DW == 1
+  #elif BACKWARD_HAS_BFD == 1
+  #elif BACKWARD_HAS_DWARF == 1
+  #elif BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #else
+    #undef BACKWARD_HAS_DW
+    #define BACKWARD_HAS_DW 0
+    #undef BACKWARD_HAS_BFD
+    #define BACKWARD_HAS_BFD 0
+    #undef BACKWARD_HAS_DWARF
+    #define BACKWARD_HAS_DWARF 0
+    #undef BACKWARD_HAS_BACKTRACE_SYMBOL
+    #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
+  #endif
 
-#include <cxxabi.h>
-#include <fcntl.h>
-#ifdef __ANDROID__
-//		Old Android API levels define _Unwind_Ptr in both link.h and
-// unwind.h 		Rename the one in link.h as we are not going to be using
-// it
-#define _Unwind_Ptr _Unwind_Ptr_Custom
-#include <link.h>
-#undef _Unwind_Ptr
-#else
-#include <link.h>
-#endif
-#if defined(__ppc__) || defined(__powerpc) || defined(__powerpc__) ||        \
+  #include <cxxabi.h>
+  #include <fcntl.h>
+  #ifdef __ANDROID__
+    //		Old Android API levels define _Unwind_Ptr in both link.h and
+    // unwind.h 		Rename the one in link.h as we are not going to be using
+    // it
+    #define _Unwind_Ptr _Unwind_Ptr_Custom
+    #include <link.h>
+    #undef _Unwind_Ptr
+  #else
+    #include <link.h>
+  #endif
+  #if defined(__ppc__) || defined(__powerpc) || defined(__powerpc__) || \
     defined(__POWERPC__)
-// Linux kernel header required for the struct pt_regs definition
-// to access the NIP (Next Instruction Pointer) register value
-#include <asm/ptrace.h>
-#endif
-#include <signal.h>
-#include <sys/stat.h>
-#include <syscall.h>
-#include <unistd.h>
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#include <dlfcn.h>
-#undef _GNU_SOURCE
-#else
-#include <dlfcn.h>
-#endif
+    // Linux kernel header required for the struct pt_regs definition
+    // to access the NIP (Next Instruction Pointer) register value
+    #include <asm/ptrace.h>
+  #endif
+  #include <signal.h>
+  #include <sys/stat.h>
+  #include <syscall.h>
+  #include <unistd.h>
+  #ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+    #include <dlfcn.h>
+    #undef _GNU_SOURCE
+  #else
+    #include <dlfcn.h>
+  #endif
 
-#if BACKWARD_HAS_BFD == 1
-//              NOTE: defining PACKAGE{,_VERSION} is required before including
-//                    bfd.h on some platforms, see also:
-//                    https://sourceware.org/bugzilla/show_bug.cgi?id=14243
-#ifndef PACKAGE
-#define PACKAGE
-#endif
-#ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION
-#endif
-#include <bfd.h>
-#endif
+  #if BACKWARD_HAS_BFD == 1
+    //              NOTE: defining PACKAGE{,_VERSION} is required before including
+    //                    bfd.h on some platforms, see also:
+    //                    https://sourceware.org/bugzilla/show_bug.cgi?id=14243
+    #ifndef PACKAGE
+      #define PACKAGE
+    #endif
+    #ifndef PACKAGE_VERSION
+      #define PACKAGE_VERSION
+    #endif
+    #include <bfd.h>
+  #endif
 
-#if BACKWARD_HAS_DW == 1
-#include <dwarf.h>
-#include <elfutils/libdw.h>
-#include <elfutils/libdwfl.h>
-#endif
+  #if BACKWARD_HAS_DW == 1
+    #include <dwarf.h>
+    #include <elfutils/libdw.h>
+    #include <elfutils/libdwfl.h>
+  #endif
 
-#if BACKWARD_HAS_DWARF == 1
-#include <algorithm>
-#include <dwarf.h>
-#include <libdwarf.h>
-#include <libelf.h>
-#include <map>
-#endif
+  #if BACKWARD_HAS_DWARF == 1
+    #include <algorithm>
+    #include <dwarf.h>
+    #include <libdwarf.h>
+    #include <libelf.h>
+    #include <map>
+  #endif
 
-#if (BACKWARD_HAS_BACKTRACE == 1) || (BACKWARD_HAS_BACKTRACE_SYMBOL == 1)
-// then we shall rely on backtrace
-#include <execinfo.h>
-#endif
+  #if (BACKWARD_HAS_BACKTRACE == 1) || (BACKWARD_HAS_BACKTRACE_SYMBOL == 1)
+    // then we shall rely on backtrace
+    #include <execinfo.h>
+  #endif
 
 #endif // defined(BACKWARD_SYSTEM_LINUX)
 
 #if defined(BACKWARD_SYSTEM_DARWIN)
-// On Darwin, backtrace can back-trace or "walk" the stack using the following
-// libraries:
-//
-// #define BACKWARD_HAS_UNWIND 1
-//  - unwind comes from libgcc, but I saw an equivalent inside clang itself.
-//  - with unwind, the stacktrace is as accurate as it can possibly be, since
-//  this is used by the C++ runtime in gcc/clang for stack unwinding on
-//  exception.
-//  - normally libgcc is already linked to your program by default.
-//
-// #define BACKWARD_HAS_LIBUNWIND 1
-//  - libunwind comes from clang, which implements an API compatible version.
-//  - libunwind provides, in some cases, a more accurate stacktrace as it knows
-//  to decode signal handler frames and lets us edit the context registers when
-//  unwinding, allowing stack traces over bad function references.
-//
-// #define BACKWARD_HAS_BACKTRACE == 1
-//  - backtrace is available by default, though it does not produce as much
-//  information as another library might.
-//
-// The default is:
-// #define BACKWARD_HAS_UNWIND == 1
-//
-// Note that only one of the define should be set to 1 at a time.
-//
-#if BACKWARD_HAS_UNWIND == 1
-#elif BACKWARD_HAS_BACKTRACE == 1
-#elif BACKWARD_HAS_LIBUNWIND == 1
-#else
-#undef BACKWARD_HAS_UNWIND
-#define BACKWARD_HAS_UNWIND 1
-#undef BACKWARD_HAS_BACKTRACE
-#define BACKWARD_HAS_BACKTRACE 0
-#undef BACKWARD_HAS_LIBUNWIND
-#define BACKWARD_HAS_LIBUNWIND 0
-#endif
+  // On Darwin, backtrace can back-trace or "walk" the stack using the following
+  // libraries:
+  //
+  // #define BACKWARD_HAS_UNWIND 1
+  //  - unwind comes from libgcc, but I saw an equivalent inside clang itself.
+  //  - with unwind, the stacktrace is as accurate as it can possibly be, since
+  //  this is used by the C++ runtime in gcc/clang for stack unwinding on
+  //  exception.
+  //  - normally libgcc is already linked to your program by default.
+  //
+  // #define BACKWARD_HAS_LIBUNWIND 1
+  //  - libunwind comes from clang, which implements an API compatible version.
+  //  - libunwind provides, in some cases, a more accurate stacktrace as it knows
+  //  to decode signal handler frames and lets us edit the context registers when
+  //  unwinding, allowing stack traces over bad function references.
+  //
+  // #define BACKWARD_HAS_BACKTRACE == 1
+  //  - backtrace is available by default, though it does not produce as much
+  //  information as another library might.
+  //
+  // The default is:
+  // #define BACKWARD_HAS_UNWIND == 1
+  //
+  // Note that only one of the define should be set to 1 at a time.
+  //
+  #if BACKWARD_HAS_UNWIND == 1
+  #elif BACKWARD_HAS_BACKTRACE == 1
+  #elif BACKWARD_HAS_LIBUNWIND == 1
+  #else
+    #undef BACKWARD_HAS_UNWIND
+    #define BACKWARD_HAS_UNWIND 1
+    #undef BACKWARD_HAS_BACKTRACE
+    #define BACKWARD_HAS_BACKTRACE 0
+    #undef BACKWARD_HAS_LIBUNWIND
+    #define BACKWARD_HAS_LIBUNWIND 0
+  #endif
 
-// On Darwin, backward can extract detailed information about a stack trace
-// using one of the following libraries:
-//
-// #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
-//  - backtrace provides minimal details for a stack trace:
-//    - object filename
-//    - function name
-//
-// The default is:
-// #define BACKWARD_HAS_BACKTRACE_SYMBOL == 1
-//
-#if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
-#else
-#undef BACKWARD_HAS_BACKTRACE_SYMBOL
-#define BACKWARD_HAS_BACKTRACE_SYMBOL 1
-#endif
+  // On Darwin, backward can extract detailed information about a stack trace
+  // using one of the following libraries:
+  //
+  // #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
+  //  - backtrace provides minimal details for a stack trace:
+  //    - object filename
+  //    - function name
+  //
+  // The default is:
+  // #define BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  //
+  #if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #else
+    #undef BACKWARD_HAS_BACKTRACE_SYMBOL
+    #define BACKWARD_HAS_BACKTRACE_SYMBOL 1
+  #endif
 
-#include <cxxabi.h>
-#include <fcntl.h>
-#include <pthread.h>
-#include <signal.h>
-#include <sys/stat.h>
-#include <unistd.h>
+  #include <cxxabi.h>
+  #include <fcntl.h>
+  #include <pthread.h>
+  #include <signal.h>
+  #include <sys/stat.h>
+  #include <unistd.h>
 
-#if (BACKWARD_HAS_BACKTRACE == 1) || (BACKWARD_HAS_BACKTRACE_SYMBOL == 1)
-#include <execinfo.h>
-#endif
+  #if (BACKWARD_HAS_BACKTRACE == 1) || (BACKWARD_HAS_BACKTRACE_SYMBOL == 1)
+    #include <execinfo.h>
+  #endif
 #endif // defined(BACKWARD_SYSTEM_DARWIN)
 
 #if defined(BACKWARD_SYSTEM_WINDOWS)
 
-#include <condition_variable>
-#include <mutex>
-#include <thread>
+  #include <condition_variable>
+  #include <mutex>
+  #include <thread>
 
-#include <basetsd.h>
+  #include <basetsd.h>
 
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
-#include <winnt.h>
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+  #include <windows.h>
+  #include <winnt.h>
 
-#include <psapi.h>
-#include <signal.h>
+  #include <psapi.h>
+  #include <signal.h>
 
-#ifndef __clang__
-#undef NOINLINE
-#define NOINLINE __declspec(noinline)
-#endif
+  #ifndef __clang__
+    #undef NOINLINE
+    #define NOINLINE __declspec(noinline)
+  #endif
 
-#ifdef _MSC_VER
-#pragma comment(lib, "psapi.lib")
-#pragma comment(lib, "dbghelp.lib")
-#endif
+  #ifdef _MSC_VER
+    #pragma comment(lib, "psapi.lib")
+    #pragma comment(lib, "dbghelp.lib")
+  #endif
 
-// Comment / packing is from stackoverflow:
-// https://stackoverflow.com/questions/6205981/windows-c-stack-trace-from-a-running-app/28276227#28276227
-// Some versions of imagehlp.dll lack the proper packing directives themselves
-// so we need to do it.
-#pragma pack(push, before_imagehlp, 8)
-#include <imagehlp.h>
-#pragma pack(pop, before_imagehlp)
+  // Comment / packing is from stackoverflow:
+  // https://stackoverflow.com/questions/6205981/windows-c-stack-trace-from-a-running-app/28276227#28276227
+  // Some versions of imagehlp.dll lack the proper packing directives themselves
+  // so we need to do it.
+  #pragma pack(push, before_imagehlp, 8)
+  #include <imagehlp.h>
+  #pragma pack(pop, before_imagehlp)
 
-// TODO maybe these should be undefined somewhere else?
-#undef BACKWARD_HAS_UNWIND
-#undef BACKWARD_HAS_BACKTRACE
-#if BACKWARD_HAS_PDB_SYMBOL == 1
-#else
-#undef BACKWARD_HAS_PDB_SYMBOL
-#define BACKWARD_HAS_PDB_SYMBOL 1
-#endif
+  // TODO maybe these should be undefined somewhere else?
+  #undef BACKWARD_HAS_UNWIND
+  #undef BACKWARD_HAS_BACKTRACE
+  #if BACKWARD_HAS_PDB_SYMBOL == 1
+  #else
+    #undef BACKWARD_HAS_PDB_SYMBOL
+    #define BACKWARD_HAS_PDB_SYMBOL 1
+  #endif
 
 #endif
 
 #if BACKWARD_HAS_UNWIND == 1
 
-#include <unwind.h>
-// while gcc's unwind.h defines something like that:
-//  extern _Unwind_Ptr _Unwind_GetIP (struct _Unwind_Context *);
-//  extern _Unwind_Ptr _Unwind_GetIPInfo (struct _Unwind_Context *, int *);
-//
-// clang's unwind.h defines something like this:
-//  uintptr_t _Unwind_GetIP(struct _Unwind_Context* __context);
-//
-// Even if the _Unwind_GetIPInfo can be linked to, it is not declared, worse we
-// cannot just redeclare it because clang's unwind.h doesn't define _Unwind_Ptr
-// anyway.
-//
-// Luckily we can play on the fact that the guard macros have a different name:
-#ifdef __CLANG_UNWIND_H
-// In fact, this function still comes from libgcc (on my different linux boxes,
-// clang links against libgcc).
-#include <inttypes.h>
-extern "C" uintptr_t _Unwind_GetIPInfo(_Unwind_Context *, int *);
-#endif
+  #include <unwind.h>
+  // while gcc's unwind.h defines something like that:
+  //  extern _Unwind_Ptr _Unwind_GetIP (struct _Unwind_Context *);
+  //  extern _Unwind_Ptr _Unwind_GetIPInfo (struct _Unwind_Context *, int *);
+  //
+  // clang's unwind.h defines something like this:
+  //  uintptr_t _Unwind_GetIP(struct _Unwind_Context* __context);
+  //
+  // Even if the _Unwind_GetIPInfo can be linked to, it is not declared, worse we
+  // cannot just redeclare it because clang's unwind.h doesn't define _Unwind_Ptr
+  // anyway.
+  //
+  // Luckily we can play on the fact that the guard macros have a different name:
+  #ifdef __CLANG_UNWIND_H
+    // In fact, this function still comes from libgcc (on my different linux boxes,
+    // clang links against libgcc).
+    #include <inttypes.h>
+extern "C" uintptr_t _Unwind_GetIPInfo(_Unwind_Context*, int*);
+  #endif
 
 #endif // BACKWARD_HAS_UNWIND == 1
 
 #if BACKWARD_HAS_LIBUNWIND == 1
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
+  #define UNW_LOCAL_ONLY
+  #include <libunwind.h>
 #endif // BACKWARD_HAS_LIBUNWIND == 1
 
 #ifdef BACKWARD_ATLEAST_CXX11
-#include <unordered_map>
-#include <utility> // for std::swap
+  #include <unordered_map>
+  #include <utility> // for std::swap
 namespace backward {
 namespace details {
-template <typename K, typename V> struct hashtable {
+template <typename K, typename V>
+struct hashtable {
   typedef std::unordered_map<K, V> type;
 };
 using std::move;
 } // namespace details
 } // namespace backward
 #else // NOT BACKWARD_ATLEAST_CXX11
-#define nullptr NULL
-#define override
-#include <map>
+  #define nullptr NULL
+  #define override
+  #include <map>
 namespace backward {
 namespace details {
-template <typename K, typename V> struct hashtable {
+template <typename K, typename V>
+struct hashtable {
   typedef std::map<K, V> type;
 };
-template <typename T> const T &move(const T &v) { return v; }
-template <typename T> T &move(T &v) { return v; }
+template <typename T>
+const T& move(const T& v)
+{
+  return v;
+}
+template <typename T>
+T& move(T& v)
+{
+  return v;
+}
 } // namespace details
 } // namespace backward
 #endif // BACKWARD_ATLEAST_CXX11
@@ -477,7 +487,7 @@ typedef windows_tag current_tag;
 #elif defined(BACKWARD_SYSTEM_UNKNOWN)
 typedef unknown_tag current_tag;
 #else
-#error "May I please get my system defines?"
+  #error "May I please get my system defines?"
 #endif
 } // namespace system_tag
 
@@ -488,150 +498,217 @@ struct libbfd;
 struct libdwarf;
 struct backtrace_symbol;
 
-#if BACKWARD_HAS_DW == 1
+  #if BACKWARD_HAS_DW == 1
 typedef libdw current;
-#elif BACKWARD_HAS_BFD == 1
+  #elif BACKWARD_HAS_BFD == 1
 typedef libbfd current;
-#elif BACKWARD_HAS_DWARF == 1
+  #elif BACKWARD_HAS_DWARF == 1
 typedef libdwarf current;
-#elif BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #elif BACKWARD_HAS_BACKTRACE_SYMBOL == 1
 typedef backtrace_symbol current;
-#else
-#error "You shall not pass, until you know what you want."
-#endif
+  #else
+    #error "You shall not pass, until you know what you want."
+  #endif
 #elif defined(BACKWARD_SYSTEM_DARWIN)
 struct backtrace_symbol;
 
-#if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
 typedef backtrace_symbol current;
-#else
-#error "You shall not pass, until you know what you want."
-#endif
+  #else
+    #error "You shall not pass, until you know what you want."
+  #endif
 #elif defined(BACKWARD_SYSTEM_WINDOWS)
 struct pdb_symbol;
-#if BACKWARD_HAS_PDB_SYMBOL == 1
+  #if BACKWARD_HAS_PDB_SYMBOL == 1
 typedef pdb_symbol current;
-#else
-#error "You shall not pass, until you know what you want."
-#endif
+  #else
+    #error "You shall not pass, until you know what you want."
+  #endif
 #endif
 } // namespace trace_resolver_tag
 
 namespace details {
 
-template <typename T> struct rm_ptr { typedef T type; };
-
-template <typename T> struct rm_ptr<T *> { typedef T type; };
-
-template <typename T> struct rm_ptr<const T *> { typedef const T type; };
-
-template <typename R, typename T, R (*F)(T)> struct deleter {
-  template <typename U> void operator()(U &ptr) const { (*F)(ptr); }
+template <typename T>
+struct rm_ptr {
+  typedef T type;
 };
 
-template <typename T> struct default_delete {
-  void operator()(T &ptr) const { delete ptr; }
+template <typename T>
+struct rm_ptr<T*> {
+  typedef T type;
 };
 
-template <typename T, typename Deleter = deleter<void, void *, &::free> >
+template <typename T>
+struct rm_ptr<const T*> {
+  typedef const T type;
+};
+
+template <typename R, typename T, R (*F)(T)>
+struct deleter {
+  template <typename U>
+  void operator()(U& ptr) const
+  {
+    (*F)(ptr);
+  }
+};
+
+template <typename T>
+struct default_delete {
+  void operator()(T& ptr) const
+  {
+    delete ptr;
+  }
+};
+
+template <typename T, typename Deleter = deleter<void, void*, &::free>>
 class handle {
   struct dummy;
   T _val;
   bool _empty;
 
 #ifdef BACKWARD_ATLEAST_CXX11
-  handle(const handle &) = delete;
-  handle &operator=(const handle &) = delete;
+  handle(const handle&) = delete;
+  handle& operator=(const handle&) = delete;
 #endif
 
-public:
-  ~handle() {
+ public:
+  ~handle()
+  {
     if (!_empty) {
       Deleter()(_val);
     }
   }
 
-  explicit handle() : _val(), _empty(true) {}
-  explicit handle(T val) : _val(val), _empty(false) {
+  explicit handle()
+      : _val()
+      , _empty(true)
+  {
+  }
+  explicit handle(T val)
+      : _val(val)
+      , _empty(false)
+  {
     if (!_val)
       _empty = true;
   }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-  handle(handle &&from) : _empty(true) { swap(from); }
-  handle &operator=(handle &&from) {
+  handle(handle&& from)
+      : _empty(true)
+  {
+    swap(from);
+  }
+  handle& operator=(handle&& from)
+  {
     swap(from);
     return *this;
   }
 #else
-  explicit handle(const handle &from) : _empty(true) {
+  explicit handle(const handle& from)
+      : _empty(true)
+  {
     // some sort of poor man's move semantic.
-    swap(const_cast<handle &>(from));
+    swap(const_cast<handle&>(from));
   }
-  handle &operator=(const handle &from) {
+  handle& operator=(const handle& from)
+  {
     // some sort of poor man's move semantic.
-    swap(const_cast<handle &>(from));
+    swap(const_cast<handle&>(from));
     return *this;
   }
 #endif
 
-  void reset(T new_val) {
+  void reset(T new_val)
+  {
     handle tmp(new_val);
     swap(tmp);
   }
 
-  void update(T new_val) {
+  void update(T new_val)
+  {
     _val = new_val;
     _empty = !static_cast<bool>(new_val);
   }
 
-  operator const dummy *() const {
+  operator const dummy*() const
+  {
     if (_empty) {
       return nullptr;
     }
-    return reinterpret_cast<const dummy *>(_val);
+    return reinterpret_cast<const dummy*>(_val);
   }
-  T get() { return _val; }
-  T release() {
+  T get()
+  {
+    return _val;
+  }
+  T release()
+  {
     _empty = true;
     return _val;
   }
-  void swap(handle &b) {
+  void swap(handle& b)
+  {
     using std::swap;
     swap(b._val, _val);     // can throw, we are safe here.
     swap(b._empty, _empty); // should not throw: if you cannot swap two
     // bools without throwing... It's a lost cause anyway!
   }
 
-  T &operator->() { return _val; }
-  const T &operator->() const { return _val; }
+  T& operator->()
+  {
+    return _val;
+  }
+  const T& operator->() const
+  {
+    return _val;
+  }
 
-  typedef typename rm_ptr<T>::type &ref_t;
-  typedef const typename rm_ptr<T>::type &const_ref_t;
-  ref_t operator*() { return *_val; }
-  const_ref_t operator*() const { return *_val; }
-  ref_t operator[](size_t idx) { return _val[idx]; }
+  typedef typename rm_ptr<T>::type& ref_t;
+  typedef const typename rm_ptr<T>::type& const_ref_t;
+  ref_t operator*()
+  {
+    return *_val;
+  }
+  const_ref_t operator*() const
+  {
+    return *_val;
+  }
+  ref_t operator[](size_t idx)
+  {
+    return _val[idx];
+  }
 
   // Watch out, we've got a badass over here
-  T *operator&() {
+  T* operator&()
+  {
     _empty = false;
     return &_val;
   }
 };
 
 // Default demangler implementation (do nothing).
-template <typename TAG> struct demangler_impl {
-  static std::string demangle(const char *funcname) { return funcname; }
+template <typename TAG>
+struct demangler_impl {
+  static std::string demangle(const char* funcname)
+  {
+    return funcname;
+  }
 };
 
 #if defined(BACKWARD_SYSTEM_LINUX) || defined(BACKWARD_SYSTEM_DARWIN)
 
-template <> struct demangler_impl<system_tag::current_tag> {
-  demangler_impl() : _demangle_buffer_length(0) {}
+template <>
+struct demangler_impl<system_tag::current_tag> {
+  demangler_impl()
+      : _demangle_buffer_length(0)
+  {
+  }
 
-  std::string demangle(const char *funcname) {
+  std::string demangle(const char* funcname)
+  {
     using namespace details;
-    char *result = abi::__cxa_demangle(funcname, _demangle_buffer.get(),
+    char* result = abi::__cxa_demangle(funcname, _demangle_buffer.get(),
                                        &_demangle_buffer_length, nullptr);
     if (result) {
       _demangle_buffer.update(result);
@@ -640,8 +717,8 @@ template <> struct demangler_impl<system_tag::current_tag> {
     return funcname;
   }
 
-private:
-  details::handle<char *> _demangle_buffer;
+ private:
+  details::handle<char*> _demangle_buffer;
   size_t _demangle_buffer_length;
 };
 
@@ -657,7 +734,8 @@ struct demangler : public demangler_impl<system_tag::current_tag> {};
 //   "/a/b/c"        --> ["/a/b/c"]
 //   "/a/b/c:/d/e/f" --> ["/a/b/c","/d/e/f"]
 //   etc.
-inline std::vector<std::string> split_source_prefixes(const std::string &s) {
+inline std::vector<std::string> split_source_prefixes(const std::string& s)
+{
   std::vector<std::string> out;
   size_t last = 0;
   size_t next = 0;
@@ -677,12 +755,20 @@ inline std::vector<std::string> split_source_prefixes(const std::string &s) {
 /*************** A TRACE ***************/
 
 struct Trace {
-  void *addr;
+  void* addr;
   size_t idx;
 
-  Trace() : addr(nullptr), idx(0) {}
+  Trace()
+      : addr(nullptr)
+      , idx(0)
+  {
+  }
 
-  explicit Trace(void *_addr, size_t _idx) : addr(_addr), idx(_idx) {}
+  explicit Trace(void* _addr, size_t _idx)
+      : addr(_addr)
+      , idx(_idx)
+  {
+  }
 };
 
 struct ResolvedTrace : public Trace {
@@ -693,14 +779,22 @@ struct ResolvedTrace : public Trace {
     unsigned line;
     unsigned col;
 
-    SourceLoc() : line(0), col(0) {}
+    SourceLoc()
+        : line(0)
+        , col(0)
+    {
+    }
 
-    bool operator==(const SourceLoc &b) const {
+    bool operator==(const SourceLoc& b) const
+    {
       return function == b.function && filename == b.filename &&
              line == b.line && col == b.col;
     }
 
-    bool operator!=(const SourceLoc &b) const { return !(*this == b); }
+    bool operator!=(const SourceLoc& b) const
+    {
+      return !(*this == b);
+    }
   };
 
   // In which binary object this trace is located.
@@ -722,43 +816,80 @@ struct ResolvedTrace : public Trace {
   typedef std::vector<SourceLoc> source_locs_t;
   source_locs_t inliners;
 
-  ResolvedTrace() : Trace() {}
-  ResolvedTrace(const Trace &mini_trace) : Trace(mini_trace) {}
+  ResolvedTrace()
+      : Trace()
+  {
+  }
+  ResolvedTrace(const Trace& mini_trace)
+      : Trace(mini_trace)
+  {
+  }
 };
 
 /*************** STACK TRACE ***************/
 
 // default implemention.
-template <typename TAG> class StackTraceImpl {
-public:
-  size_t size() const { return 0; }
-  Trace operator[](size_t) const { return Trace(); }
-  size_t load_here(size_t = 0) { return 0; }
-  size_t load_from(void *, size_t = 0, void * = nullptr, void * = nullptr) {
+template <typename TAG>
+class StackTraceImpl {
+ public:
+  size_t size() const
+  {
     return 0;
   }
-  size_t thread_id() const { return 0; }
-  void skip_n_firsts(size_t) {}
-  void *const *begin() const { return nullptr; }
+  Trace operator[](size_t) const
+  {
+    return Trace();
+  }
+  size_t load_here(size_t = 0)
+  {
+    return 0;
+  }
+  size_t load_from(void*, size_t = 0, void* = nullptr, void* = nullptr)
+  {
+    return 0;
+  }
+  size_t thread_id() const
+  {
+    return 0;
+  }
+  void skip_n_firsts(size_t)
+  {
+  }
+  void* const* begin() const
+  {
+    return nullptr;
+  }
 };
 
 class StackTraceImplBase {
-public:
+ public:
   StackTraceImplBase()
-      : _thread_id(0), _skip(0), _context(nullptr), _error_addr(nullptr) {}
+      : _thread_id(0)
+      , _skip(0)
+      , _context(nullptr)
+      , _error_addr(nullptr)
+  {
+  }
 
-  size_t thread_id() const { return _thread_id; }
+  size_t thread_id() const
+  {
+    return _thread_id;
+  }
 
-  void skip_n_firsts(size_t n) { _skip = n; }
+  void skip_n_firsts(size_t n)
+  {
+    _skip = n;
+  }
 
-protected:
-  void load_thread_info() {
+ protected:
+  void load_thread_info()
+  {
 #ifdef BACKWARD_SYSTEM_LINUX
-#ifndef __ANDROID__
+  #ifndef __ANDROID__
     _thread_id = static_cast<size_t>(syscall(SYS_gettid));
-#else
+  #else
     _thread_id = static_cast<size_t>(gettid());
-#endif
+  #endif
     if (_thread_id == static_cast<size_t>(getpid())) {
       // If the thread is the main one, let's hide that.
       // I like to keep little secret sometimes.
@@ -773,52 +904,72 @@ protected:
 #endif
   }
 
-  void set_context(void *context) { _context = context; }
-  void *context() const { return _context; }
+  void set_context(void* context)
+  {
+    _context = context;
+  }
+  void* context() const
+  {
+    return _context;
+  }
 
-  void set_error_addr(void *error_addr) { _error_addr = error_addr; }
-  void *error_addr() const { return _error_addr; }
+  void set_error_addr(void* error_addr)
+  {
+    _error_addr = error_addr;
+  }
+  void* error_addr() const
+  {
+    return _error_addr;
+  }
 
-  size_t skip_n_firsts() const { return _skip; }
+  size_t skip_n_firsts() const
+  {
+    return _skip;
+  }
 
-private:
+ private:
   size_t _thread_id;
   size_t _skip;
-  void *_context;
-  void *_error_addr;
+  void* _context;
+  void* _error_addr;
 };
 
 class StackTraceImplHolder : public StackTraceImplBase {
-public:
-  size_t size() const {
+ public:
+  size_t size() const
+  {
     return (_stacktrace.size() >= skip_n_firsts())
-               ? _stacktrace.size() - skip_n_firsts()
-               : 0;
+             ? _stacktrace.size() - skip_n_firsts()
+             : 0;
   }
-  Trace operator[](size_t idx) const {
+  Trace operator[](size_t idx) const
+  {
     if (idx >= size()) {
       return Trace();
     }
     return Trace(_stacktrace[idx + skip_n_firsts()], idx);
   }
-  void *const *begin() const {
+  void* const* begin() const
+  {
     if (size()) {
       return &_stacktrace[skip_n_firsts()];
     }
     return nullptr;
   }
 
-protected:
-  std::vector<void *> _stacktrace;
+ protected:
+  std::vector<void*> _stacktrace;
 };
 
 #if BACKWARD_HAS_UNWIND == 1
 
 namespace details {
 
-template <typename F> class Unwinder {
-public:
-  size_t operator()(F &f, size_t depth) {
+template <typename F>
+class Unwinder {
+ public:
+  size_t operator()(F& f, size_t depth)
+  {
     _f = &f;
     _index = -1;
     _depth = depth;
@@ -826,22 +977,25 @@ public:
     if (_index == -1) {
       // _Unwind_Backtrace has failed to obtain any backtraces
       return 0;
-    } else {
+    }
+    else {
       return static_cast<size_t>(_index);
     }
   }
 
-private:
-  F *_f;
+ private:
+  F* _f;
   ni::tOffset _index;
   size_t _depth;
 
-  static _Unwind_Reason_Code backtrace_trampoline(_Unwind_Context *ctx,
-                                                  void *self) {
-    return (static_cast<Unwinder *>(self))->backtrace(ctx);
+  static _Unwind_Reason_Code backtrace_trampoline(_Unwind_Context* ctx,
+                                                  void* self)
+  {
+    return (static_cast<Unwinder*>(self))->backtrace(ctx);
   }
 
-  _Unwind_Reason_Code backtrace(_Unwind_Context *ctx) {
+  _Unwind_Reason_Code backtrace(_Unwind_Context* ctx)
+  {
     if (_index >= 0 && static_cast<size_t>(_index) >= _depth)
       return _URC_END_OF_STACK;
 
@@ -854,21 +1008,24 @@ private:
       if (ip == 0) {
         ip = std::numeric_limits<uintptr_t>::max(); // set it to 0xffff... (as
                                                     // from casting 0-1)
-      } else {
+      }
+      else {
         ip -= 1; // else just normally decrement it (no overflow/underflow will
                  // happen)
       }
     }
 
     if (_index >= 0) { // ignore first frame.
-      (*_f)(static_cast<size_t>(_index), reinterpret_cast<void *>(ip));
+      (*_f)(static_cast<size_t>(_index), reinterpret_cast<void*>(ip));
     }
     _index += 1;
     return _URC_NO_REASON;
   }
 };
 
-template <typename F> size_t unwind(F f, size_t depth) {
+template <typename F>
+size_t unwind(F f, size_t depth)
+{
   Unwinder<F> unwinder;
   return unwinder(f, depth);
 }
@@ -877,10 +1034,11 @@ template <typename F> size_t unwind(F f, size_t depth) {
 
 template <>
 class StackTraceImpl<system_tag::current_tag> : public StackTraceImplHolder {
-public:
+ public:
   NOINLINE
-  size_t load_here(size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_here(size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     load_thread_info();
     set_context(context);
     set_error_addr(error_addr);
@@ -893,8 +1051,9 @@ public:
     skip_n_firsts(0);
     return size();
   }
-  size_t load_from(void *addr, size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_from(void* addr, size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     load_here(depth + 8, context, error_addr);
 
     for (size_t i = 0; i < _stacktrace.size(); ++i) {
@@ -908,12 +1067,18 @@ public:
     return size();
   }
 
-private:
+ private:
   struct callback {
-    StackTraceImpl &self;
-    callback(StackTraceImpl &_self) : self(_self) {}
+    StackTraceImpl& self;
+    callback(StackTraceImpl& _self)
+        : self(_self)
+    {
+    }
 
-    void operator()(size_t idx, void *addr) { self._stacktrace[idx] = addr; }
+    void operator()(size_t idx, void* addr)
+    {
+      self._stacktrace[idx] = addr;
+    }
   };
 };
 
@@ -921,10 +1086,11 @@ private:
 
 template <>
 class StackTraceImpl<system_tag::current_tag> : public StackTraceImplHolder {
-public:
+ public:
   __attribute__((noinline)) size_t load_here(size_t depth = 32,
-                                             void *_context = nullptr,
-                                             void *_error_addr = nullptr) {
+                                             void* _context = nullptr,
+                                             void* _error_addr = nullptr)
+  {
     set_context(_context);
     set_error_addr(_error_addr);
     load_thread_info();
@@ -945,28 +1111,30 @@ public:
     // the rest
 
     if (context()) {
-      ucontext_t *uctx = reinterpret_cast<ucontext_t *>(context());
-#ifdef REG_RIP         // x86_64
+      ucontext_t* uctx = reinterpret_cast<ucontext_t*>(context());
+  #ifdef REG_RIP         // x86_64
       if (uctx->uc_mcontext.gregs[REG_RIP] ==
-          reinterpret_cast<greg_t>(error_addr())) {
+          reinterpret_cast<greg_t>(error_addr()))
+      {
         uctx->uc_mcontext.gregs[REG_RIP] =
-            *reinterpret_cast<size_t *>(uctx->uc_mcontext.gregs[REG_RSP]);
+          *reinterpret_cast<size_t*>(uctx->uc_mcontext.gregs[REG_RSP]);
       }
       _stacktrace[index] =
-          reinterpret_cast<void *>(uctx->uc_mcontext.gregs[REG_RIP]);
+        reinterpret_cast<void*>(uctx->uc_mcontext.gregs[REG_RIP]);
       ++index;
-      ctx = *reinterpret_cast<unw_context_t *>(uctx);
-#elif defined(REG_EIP) // x86_32
+      ctx = *reinterpret_cast<unw_context_t*>(uctx);
+  #elif defined(REG_EIP) // x86_32
       if (uctx->uc_mcontext.gregs[REG_EIP] ==
-          reinterpret_cast<greg_t>(error_addr())) {
+          reinterpret_cast<greg_t>(error_addr()))
+      {
         uctx->uc_mcontext.gregs[REG_EIP] =
-            *reinterpret_cast<size_t *>(uctx->uc_mcontext.gregs[REG_ESP]);
+          *reinterpret_cast<size_t*>(uctx->uc_mcontext.gregs[REG_ESP]);
       }
       _stacktrace[index] =
-          reinterpret_cast<void *>(uctx->uc_mcontext.gregs[REG_EIP]);
+        reinterpret_cast<void*>(uctx->uc_mcontext.gregs[REG_EIP]);
       ++index;
-      ctx = *reinterpret_cast<unw_context_t *>(uctx);
-#elif defined(__arm__)
+      ctx = *reinterpret_cast<unw_context_t*>(uctx);
+  #elif defined(__arm__)
       // libunwind uses its own context type for ARM unwinding.
       // Copy the registers from the signal handler's context so we can
       // unwind
@@ -991,13 +1159,14 @@ public:
       // If we have crashed in the PC use the LR instead, as this was
       // a bad function dereference
       if (reinterpret_cast<unsigned long>(error_addr()) ==
-          uctx->uc_mcontext.arm_pc) {
+          uctx->uc_mcontext.arm_pc)
+      {
         ctx.regs[UNW_ARM_R15] =
-            uctx->uc_mcontext.arm_lr - sizeof(unsigned long);
+          uctx->uc_mcontext.arm_lr - sizeof(unsigned long);
       }
-      _stacktrace[index] = reinterpret_cast<void *>(ctx.regs[UNW_ARM_R15]);
+      _stacktrace[index] = reinterpret_cast<void*>(ctx.regs[UNW_ARM_R15]);
       ++index;
-#elif defined(__APPLE__) && defined(__x86_64__)
+  #elif defined(__APPLE__) && defined(__x86_64__)
       unw_getcontext(&ctx);
       // OS X's implementation of libunwind uses its own context object
       // so we need to convert the passed context to libunwind's format
@@ -1025,34 +1194,36 @@ public:
       // dereference The caller's address is pointed to by %rsp, so we
       // dereference that value and set it to be the next frame's IP.
       if (uctx->uc_mcontext->__ss.__rip ==
-          reinterpret_cast<__uint64_t>(error_addr())) {
+          reinterpret_cast<__uint64_t>(error_addr()))
+      {
         ctx.data[16] =
-            *reinterpret_cast<__uint64_t *>(uctx->uc_mcontext->__ss.__rsp);
+          *reinterpret_cast<__uint64_t*>(uctx->uc_mcontext->__ss.__rsp);
       }
-      _stacktrace[index] = reinterpret_cast<void *>(ctx.data[16]);
+      _stacktrace[index] = reinterpret_cast<void*>(ctx.data[16]);
       ++index;
-#elif defined(__APPLE__)
+  #elif defined(__APPLE__)
       unw_getcontext(&ctx)
-          // TODO: Convert the ucontext_t to libunwind's unw_context_t like
-          // we do in 64 bits
-          if (ctx.uc_mcontext->__ss.__eip ==
-              reinterpret_cast<greg_t>(error_addr())) {
+        // TODO: Convert the ucontext_t to libunwind's unw_context_t like
+        // we do in 64 bits
+        if (ctx.uc_mcontext->__ss.__eip ==
+            reinterpret_cast<greg_t>(error_addr()))
+      {
         ctx.uc_mcontext->__ss.__eip = ctx.uc_mcontext->__ss.__esp;
       }
-      _stacktrace[index] =
-          reinterpret_cast<void *>(ctx.uc_mcontext->__ss.__eip);
+      _stacktrace[index] = reinterpret_cast<void*>(ctx.uc_mcontext->__ss.__eip);
       ++index;
-#endif
+  #endif
     }
 
     unw_cursor_t cursor;
     if (context()) {
-#if defined(UNW_INIT_SIGNAL_FRAME)
+  #if defined(UNW_INIT_SIGNAL_FRAME)
       result = unw_init_local2(&cursor, &ctx, UNW_INIT_SIGNAL_FRAME);
-#else
+  #else
       result = unw_init_local(&cursor, &ctx);
-#endif
-    } else {
+  #endif
+    }
+    else {
       unw_getcontext(&ctx);
       ;
       result = unw_init_local(&cursor, &ctx);
@@ -1066,7 +1237,7 @@ public:
     while (index <= depth && unw_step(&cursor) > 0) {
       result = unw_get_reg(&cursor, UNW_REG_IP, &ip);
       if (result == 0) {
-        _stacktrace[index] = reinterpret_cast<void *>(--ip);
+        _stacktrace[index] = reinterpret_cast<void*>(--ip);
         ++index;
       }
     }
@@ -1077,14 +1248,15 @@ public:
     return size();
   }
 
-  size_t load_from(void *addr, size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_from(void* addr, size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     load_here(depth + 8, context, error_addr);
 
     for (size_t i = 0; i < _stacktrace.size(); ++i) {
       if (_stacktrace[i] == addr) {
         skip_n_firsts(i);
-        _stacktrace[i] = (void *)((uintptr_t)_stacktrace[i]);
+        _stacktrace[i] = (void*)((uintptr_t)_stacktrace[i]);
         break;
       }
     }
@@ -1098,10 +1270,11 @@ public:
 
 template <>
 class StackTraceImpl<system_tag::current_tag> : public StackTraceImplHolder {
-public:
+ public:
   NOINLINE
-  size_t load_here(size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_here(size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     set_context(context);
     set_error_addr(error_addr);
     load_thread_info();
@@ -1115,14 +1288,15 @@ public:
     return size();
   }
 
-  size_t load_from(void *addr, size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_from(void* addr, size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     load_here(depth + 8, context, error_addr);
 
     for (size_t i = 0; i < _stacktrace.size(); ++i) {
       if (_stacktrace[i] == addr) {
         skip_n_firsts(i);
-        _stacktrace[i] = (void *)((uintptr_t)_stacktrace[i] + 1);
+        _stacktrace[i] = (void*)((uintptr_t)_stacktrace[i] + 1);
         break;
       }
     }
@@ -1136,16 +1310,26 @@ public:
 
 template <>
 class StackTraceImpl<system_tag::current_tag> : public StackTraceImplHolder {
-public:
+ public:
   // We have to load the machine type from the image info
   // So we first initialize the resolver, and it tells us this info
-  void set_machine_type(DWORD machine_type) { machine_type_ = machine_type; }
-  void set_context(CONTEXT *ctx) { ctx_ = ctx; }
-  void set_thread_handle(HANDLE handle) { thd_ = handle; }
+  void set_machine_type(DWORD machine_type)
+  {
+    machine_type_ = machine_type;
+  }
+  void set_context(CONTEXT* ctx)
+  {
+    ctx_ = ctx;
+  }
+  void set_thread_handle(HANDLE handle)
+  {
+    thd_ = handle;
+  }
 
   NOINLINE
-  size_t load_here(size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_here(size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     set_context(static_cast<CONTEXT*>(context));
     set_error_addr(error_addr);
     CONTEXT localCtx; // used when no context is provided
@@ -1172,22 +1356,22 @@ public:
     s.AddrStack.Mode = AddrModeFlat;
     s.AddrFrame.Mode = AddrModeFlat;
     s.AddrPC.Mode = AddrModeFlat;
-#ifdef _M_X64
+  #ifdef _M_X64
     s.AddrPC.Offset = ctx_->Rip;
     s.AddrStack.Offset = ctx_->Rsp;
     s.AddrFrame.Offset = ctx_->Rbp;
-#else
+  #else
     s.AddrPC.Offset = ctx_->Eip;
     s.AddrStack.Offset = ctx_->Esp;
     s.AddrFrame.Offset = ctx_->Ebp;
-#endif
+  #endif
 
     if (!machine_type_) {
-#ifdef _M_X64
+  #ifdef _M_X64
       machine_type_ = IMAGE_FILE_MACHINE_AMD64;
-#else
+  #else
       machine_type_ = IMAGE_FILE_MACHINE_I386;
-#endif
+  #endif
     }
 
     for (;;) {
@@ -1200,7 +1384,7 @@ public:
       if (s.AddrReturn.Offset == 0)
         break;
 
-      _stacktrace.push_back(reinterpret_cast<void *>(s.AddrPC.Offset));
+      _stacktrace.push_back(reinterpret_cast<void*>(s.AddrPC.Offset));
 
       if (size() >= depth)
         break;
@@ -1209,8 +1393,9 @@ public:
     return size();
   }
 
-  size_t load_from(void *addr, size_t depth = 32, void *context = nullptr,
-                   void *error_addr = nullptr) {
+  size_t load_from(void* addr, size_t depth = 32, void* context = nullptr,
+                   void* error_addr = nullptr)
+  {
     load_here(depth + 8, context, error_addr);
 
     for (size_t i = 0; i < _stacktrace.size(); ++i) {
@@ -1224,10 +1409,10 @@ public:
     return size();
   }
 
-private:
+ private:
   DWORD machine_type_ = 0;
   HANDLE thd_ = 0;
-  CONTEXT *ctx_ = nullptr;
+  CONTEXT* ctx_ = nullptr;
 };
 
 #endif
@@ -1237,34 +1422,45 @@ class StackTrace : public StackTraceImpl<system_tag::current_tag> {};
 /*************** TRACE RESOLVER ***************/
 
 class TraceResolverImplBase {
-public:
-  virtual ~TraceResolverImplBase() {}
+ public:
+  virtual ~TraceResolverImplBase()
+  {
+  }
 
-  virtual void load_addresses(void *const*addresses, int address_count) {
+  virtual void load_addresses(void* const* addresses, int address_count)
+  {
     (void)addresses;
     (void)address_count;
   }
 
-  template <class ST> void load_stacktrace(ST &st) {
+  template <class ST>
+  void load_stacktrace(ST& st)
+  {
     load_addresses(st.begin(), static_cast<int>(st.size()));
   }
 
-  virtual ResolvedTrace resolve(ResolvedTrace t) { return t; }
+  virtual ResolvedTrace resolve(ResolvedTrace t)
+  {
+    return t;
+  }
 
-protected:
-  std::string demangle(const char *funcname) {
+ protected:
+  std::string demangle(const char* funcname)
+  {
     return _demangler.demangle(funcname);
   }
 
-private:
+ private:
   details::demangler _demangler;
 };
 
-template <typename TAG> class TraceResolverImpl;
+template <typename TAG>
+class TraceResolverImpl;
 
 #ifdef BACKWARD_SYSTEM_UNKNOWN
 
-template <> class TraceResolverImpl<system_tag::unknown_tag>
+template <>
+class TraceResolverImpl<system_tag::unknown_tag>
     : public TraceResolverImplBase {};
 
 #endif
@@ -1272,10 +1468,14 @@ template <> class TraceResolverImpl<system_tag::unknown_tag>
 #ifdef BACKWARD_SYSTEM_LINUX
 
 class TraceResolverLinuxBase : public TraceResolverImplBase {
-public:
+ public:
   TraceResolverLinuxBase()
-      : argv0_(get_argv0()), exec_path_(read_symlink("/proc/self/exe")) {}
-  std::string resolve_exec_path(Dl_info &symbol_info) const {
+      : argv0_(get_argv0())
+      , exec_path_(read_symlink("/proc/self/exe"))
+  {
+  }
+  std::string resolve_exec_path(Dl_info& symbol_info) const
+  {
     // mutates symbol_info.dli_fname to be filename to open and returns filename
     // to display
     if (symbol_info.dli_fname == argv0_) {
@@ -1293,35 +1493,39 @@ public:
       // should go for the original executable file path.
       symbol_info.dli_fname = "/proc/self/exe";
       return exec_path_;
-    } else {
+    }
+    else {
       return symbol_info.dli_fname;
     }
   }
 
-private:
+ private:
   std::string argv0_;
   std::string exec_path_;
 
-  static std::string get_argv0() {
+  static std::string get_argv0()
+  {
     std::string argv0;
     std::ifstream ifs("/proc/self/cmdline");
     std::getline(ifs, argv0, '\0');
     return argv0;
   }
 
-  static std::string read_symlink(std::string const &symlink_path) {
+  static std::string read_symlink(std::string const& symlink_path)
+  {
     std::string path;
     path.resize(100);
 
     while (true) {
       ni::tOffset len =
-          ::readlink(symlink_path.c_str(), &*path.begin(), path.size());
+        ::readlink(symlink_path.c_str(), &*path.begin(), path.size());
       if (len < 0) {
         return "";
       }
       if (static_cast<size_t>(len) == path.size()) {
         path.resize(path.size() * 2);
-      } else {
+      }
+      else {
         path.resize(static_cast<std::string::size_type>(len));
         break;
       }
@@ -1331,24 +1535,27 @@ private:
   }
 };
 
-template <typename STACKTRACE_TAG> class TraceResolverLinuxImpl;
+template <typename STACKTRACE_TAG>
+class TraceResolverLinuxImpl;
 
-#if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #if BACKWARD_HAS_BACKTRACE_SYMBOL == 1
 
 template <>
 class TraceResolverLinuxImpl<trace_resolver_tag::backtrace_symbol>
     : public TraceResolverLinuxBase {
-public:
-  void load_addresses(void *const*addresses, int address_count) override {
+ public:
+  void load_addresses(void* const* addresses, int address_count) override
+  {
     if (address_count == 0) {
       return;
     }
     _symbols.reset(backtrace_symbols(addresses, address_count));
   }
 
-  ResolvedTrace resolve(ResolvedTrace trace) override {
-    char *filename = _symbols[trace.idx];
-    char *funcname = filename;
+  ResolvedTrace resolve(ResolvedTrace trace) override
+  {
+    char* filename = _symbols[trace.idx];
+    char* funcname = filename;
     while (*funcname && *funcname != '(') {
       funcname += 1;
     }
@@ -1358,7 +1565,7 @@ public:
 
     if (*funcname) { // if it's not end of string (e.g. from last frame ip==0)
       funcname += 1;
-      char *funcname_end = funcname;
+      char* funcname_end = funcname;
       while (*funcname_end && *funcname_end != ')' && *funcname_end != '+') {
         funcname_end += 1;
       }
@@ -1369,21 +1576,25 @@ public:
     return trace;
   }
 
-private:
-  details::handle<char **> _symbols;
+ private:
+  details::handle<char**> _symbols;
 };
 
-#endif // BACKWARD_HAS_BACKTRACE_SYMBOL == 1
+  #endif // BACKWARD_HAS_BACKTRACE_SYMBOL == 1
 
-#if BACKWARD_HAS_BFD == 1
+  #if BACKWARD_HAS_BFD == 1
 
 template <>
 class TraceResolverLinuxImpl<trace_resolver_tag::libbfd>
     : public TraceResolverLinuxBase {
-public:
-  TraceResolverLinuxImpl() : _bfd_loaded(false) {}
+ public:
+  TraceResolverLinuxImpl()
+      : _bfd_loaded(false)
+  {
+  }
 
-  ResolvedTrace resolve(ResolvedTrace trace) override {
+  ResolvedTrace resolve(ResolvedTrace trace) override
+  {
     Dl_info symbol_info;
 
     // trace.addr is a virtual address in memory pointing to some code.
@@ -1413,7 +1624,7 @@ public:
     }
 
     trace.object_filename = resolve_exec_path(symbol_info);
-    bfd_fileobject *fobj;
+    bfd_fileobject* fobj;
     // Before rushing to resolution need to ensure the executable
     // file still can be used. For that compare inode numbers of
     // what is stored by the executable's file path, and in the
@@ -1434,13 +1645,15 @@ public:
     struct stat dli_stat;
     if (stat(trace.object_filename.c_str(), &obj_stat) == 0 &&
         stat(symbol_info.dli_fname, &dli_stat) == 0 &&
-        obj_stat.st_ino == dli_stat.st_ino) {
+        obj_stat.st_ino == dli_stat.st_ino)
+    {
       // The executable file, and the shared object containing the
       // address are the same file. Safe to use the original path.
       // this is preferable. Libbfd will search for stripped debug
       // symbols in the same directory.
       fobj = load_object_with_bfd(trace.object_filename);
-    } else{
+    }
+    else {
       // The original object file was *deleted*! The only hope is
       // that the debug symbols are either inside the shared
       // object file, or are in the same directory, and this is
@@ -1454,7 +1667,7 @@ public:
       }
     }
 
-    find_sym_result *details_selected; // to be filled.
+    find_sym_result* details_selected; // to be filled.
 
     // trace.addr is the next instruction to be executed after returning
     // from the nested stack frame. In C++ this usually relate to the next
@@ -1462,10 +1675,10 @@ public:
     // frame. This is not usually what you want to see when printing out a
     // stacktrace...
     find_sym_result details_call_site =
-        find_symbol_details(fobj, trace.addr, symbol_info.dli_fbase);
+      find_symbol_details(fobj, trace.addr, symbol_info.dli_fbase);
     details_selected = &details_call_site;
 
-#if BACKWARD_HAS_UNWIND == 0
+    #if BACKWARD_HAS_UNWIND == 0
     // ...this is why we also try to resolve the symbol that is right
     // before the return address. If we are lucky enough, we will get the
     // line of the function that was called. But if the code is optimized,
@@ -1474,13 +1687,13 @@ public:
     // tail-call optimization (among other things that I don't even know
     // or cannot even dream about with my tiny limited brain).
     find_sym_result details_adjusted_call_site = find_symbol_details(
-        fobj, (void *)(uintptr_t(trace.addr) - 1), symbol_info.dli_fbase);
+      fobj, (void*)(uintptr_t(trace.addr) - 1), symbol_info.dli_fbase);
 
     // In debug mode, we should always get the right thing(TM).
     if (details_call_site.found && details_adjusted_call_site.found) {
       // Ok, we assume that details_adjusted_call_site is a better estimation.
       details_selected = &details_adjusted_call_site;
-      trace.addr = (void *)(uintptr_t(trace.addr) - 1);
+      trace.addr = (void*)(uintptr_t(trace.addr) - 1);
     }
 
     if (details_selected == &details_call_site && details_call_site.found) {
@@ -1488,9 +1701,9 @@ public:
       // internal state in BFD... so we can call backtrace_inliners
       // thereafter...
       details_call_site =
-          find_symbol_details(fobj, trace.addr, symbol_info.dli_fbase);
+        find_symbol_details(fobj, trace.addr, symbol_info.dli_fbase);
     }
-#endif // BACKWARD_HAS_UNWIND
+    #endif // BACKWARD_HAS_UNWIND
 
     if (details_selected->found) {
       if (details_selected->filename) {
@@ -1519,7 +1732,7 @@ public:
       // calls along the way up to the initial call site.
       trace.inliners = backtrace_inliners(fobj, *details_selected);
 
-#if 0
+    #if 0
 			if (trace.inliners.size() == 0) {
 				// Maybe the trace was not inlined... or maybe it was and we
 				// are lacking the debug information. Let's try to make the
@@ -1561,20 +1774,19 @@ public:
 					}
 				}
 			}
-#endif
+    #endif
     }
 
     return trace;
   }
 
-private:
+ private:
   bool _bfd_loaded;
 
-  typedef details::handle<bfd *,
-                          details::deleter<bfd_boolean, bfd *, &bfd_close> >
-      bfd_handle_t;
+  typedef details::handle<bfd*, details::deleter<bfd_boolean, bfd*, &bfd_close>>
+    bfd_handle_t;
 
-  typedef details::handle<asymbol **> bfd_symtab_t;
+  typedef details::handle<asymbol**> bfd_symtab_t;
 
   struct bfd_fileobject {
     bfd_handle_t handle;
@@ -1586,7 +1798,8 @@ private:
   typedef details::hashtable<std::string, bfd_fileobject>::type fobj_bfd_map_t;
   fobj_bfd_map_t _fobj_bfd_map;
 
-  bfd_fileobject *load_object_with_bfd(const std::string &filename_object) {
+  bfd_fileobject* load_object_with_bfd(const std::string& filename_object)
+  {
     using namespace details;
 
     if (!_bfd_loaded) {
@@ -1601,7 +1814,7 @@ private:
     }
 
     // this new object is empty for now.
-    bfd_fileobject *r = &_fobj_bfd_map[filename_object];
+    bfd_fileobject* r = &_fobj_bfd_map[filename_object];
 
     // we do the work temporary in this one;
     bfd_handle_t bfd_handle;
@@ -1621,10 +1834,11 @@ private:
       return r; // that's what happen when you forget to compile in debug.
     }
 
-    ni::tOffset symtab_storage_size = bfd_get_symtab_upper_bound(bfd_handle.get());
+    ni::tOffset symtab_storage_size =
+      bfd_get_symtab_upper_bound(bfd_handle.get());
 
     ni::tOffset dyn_symtab_storage_size =
-        bfd_get_dynamic_symtab_upper_bound(bfd_handle.get());
+      bfd_get_dynamic_symtab_upper_bound(bfd_handle.get());
 
     if (symtab_storage_size <= 0 && dyn_symtab_storage_size <= 0) {
       return r; // weird, is the file is corrupted?
@@ -1634,16 +1848,16 @@ private:
     ni::tOffset symcount = 0, dyn_symcount = 0;
 
     if (symtab_storage_size > 0) {
-      symtab.reset(static_cast<bfd_symbol **>(
-          malloc(static_cast<size_t>(symtab_storage_size))));
+      symtab.reset(static_cast<bfd_symbol**>(
+        malloc(static_cast<size_t>(symtab_storage_size))));
       symcount = bfd_canonicalize_symtab(bfd_handle.get(), symtab.get());
     }
 
     if (dyn_symtab_storage_size > 0) {
-      dynamic_symtab.reset(static_cast<bfd_symbol **>(
-          malloc(static_cast<size_t>(dyn_symtab_storage_size))));
-      dyn_symcount = bfd_canonicalize_dynamic_symtab(bfd_handle.get(),
-                                                     dynamic_symtab.get());
+      dynamic_symtab.reset(static_cast<bfd_symbol**>(
+        malloc(static_cast<size_t>(dyn_symtab_storage_size))));
+      dyn_symcount =
+        bfd_canonicalize_dynamic_symtab(bfd_handle.get(), dynamic_symtab.get());
     }
 
     if (symcount <= 0 && dyn_symcount <= 0) {
@@ -1658,21 +1872,22 @@ private:
 
   struct find_sym_result {
     bool found;
-    const char *filename;
-    const char *funcname;
+    const char* filename;
+    const char* funcname;
     unsigned int line;
   };
 
   struct find_sym_context {
-    TraceResolverLinuxImpl *self;
-    bfd_fileobject *fobj;
-    void *addr;
-    void *base_addr;
+    TraceResolverLinuxImpl* self;
+    bfd_fileobject* fobj;
+    void* addr;
+    void* base_addr;
     find_sym_result result;
   };
 
-  find_sym_result find_symbol_details(bfd_fileobject *fobj, void *addr,
-                                      void *base_addr) {
+  find_sym_result find_symbol_details(bfd_fileobject* fobj, void* addr,
+                                      void* base_addr)
+  {
     find_sym_context context;
     context.self = this;
     context.fobj = fobj;
@@ -1680,40 +1895,42 @@ private:
     context.base_addr = base_addr;
     context.result.found = false;
     bfd_map_over_sections(fobj->handle.get(), &find_in_section_trampoline,
-                          static_cast<void *>(&context));
+                          static_cast<void*>(&context));
     return context.result;
   }
 
-  static void find_in_section_trampoline(bfd *, asection *section, void *data) {
-    find_sym_context *context = static_cast<find_sym_context *>(data);
+  static void find_in_section_trampoline(bfd*, asection* section, void* data)
+  {
+    find_sym_context* context = static_cast<find_sym_context*>(data);
     context->self->find_in_section(
-        reinterpret_cast<bfd_vma>(context->addr),
-        reinterpret_cast<bfd_vma>(context->base_addr), context->fobj, section,
-        context->result);
+      reinterpret_cast<bfd_vma>(context->addr),
+      reinterpret_cast<bfd_vma>(context->base_addr), context->fobj, section,
+      context->result);
   }
 
-  void find_in_section(bfd_vma addr, bfd_vma base_addr, bfd_fileobject *fobj,
-                       asection *section, find_sym_result &result) {
+  void find_in_section(bfd_vma addr, bfd_vma base_addr, bfd_fileobject* fobj,
+                       asection* section, find_sym_result& result)
+  {
     if (result.found)
       return;
 
-#ifdef bfd_get_section_flags
+    #ifdef bfd_get_section_flags
     if ((bfd_get_section_flags(fobj->handle.get(), section) & SEC_ALLOC) == 0)
-#else
+    #else
     if ((bfd_section_flags(section) & SEC_ALLOC) == 0)
-#endif
+    #endif
       return; // a debug section is never loaded automatically.
 
-#ifdef bfd_get_section_vma
+    #ifdef bfd_get_section_vma
     bfd_vma sec_addr = bfd_get_section_vma(fobj->handle.get(), section);
-#else
+    #else
     bfd_vma sec_addr = bfd_section_vma(section);
-#endif
-#ifdef bfd_get_section_size
+    #endif
+    #ifdef bfd_get_section_size
     bfd_size_type size = bfd_get_section_size(section);
-#else
+    #else
     bfd_size_type size = bfd_section_size(section);
-#endif
+    #endif
 
     // are we in the boundaries of the section?
     if (addr < sec_addr || addr >= sec_addr + size) {
@@ -1723,28 +1940,29 @@ private:
       }
     }
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
-#endif
+    #if defined(__clang__)
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+    #endif
     if (!result.found && fobj->symtab) {
       result.found = bfd_find_nearest_line(
-          fobj->handle.get(), section, fobj->symtab.get(), addr - sec_addr,
-          &result.filename, &result.funcname, &result.line);
+        fobj->handle.get(), section, fobj->symtab.get(), addr - sec_addr,
+        &result.filename, &result.funcname, &result.line);
     }
 
     if (!result.found && fobj->dynamic_symtab) {
       result.found = bfd_find_nearest_line(
-          fobj->handle.get(), section, fobj->dynamic_symtab.get(),
-          addr - sec_addr, &result.filename, &result.funcname, &result.line);
+        fobj->handle.get(), section, fobj->dynamic_symtab.get(),
+        addr - sec_addr, &result.filename, &result.funcname, &result.line);
     }
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+    #if defined(__clang__)
+      #pragma clang diagnostic pop
+    #endif
   }
 
-  ResolvedTrace::source_locs_t
-  backtrace_inliners(bfd_fileobject *fobj, find_sym_result previous_result) {
+  ResolvedTrace::source_locs_t backtrace_inliners(
+    bfd_fileobject* fobj, find_sym_result previous_result)
+  {
     // This function can be called ONLY after a SUCCESSFUL call to
     // find_symbol_details. The state is global to the bfd_handle.
     ResolvedTrace::source_locs_t results;
@@ -1753,8 +1971,7 @@ private:
       result.found = bfd_find_inliner_info(fobj->handle.get(), &result.filename,
                                            &result.funcname, &result.line);
 
-      if (result
-              .found) /* and not (
+      if (result.found) /* and not (
                             cstrings_eq(previous_result.filename,
                          result.filename) and
                          cstrings_eq(previous_result.funcname, result.funcname)
@@ -1776,24 +1993,29 @@ private:
     return results;
   }
 
-  bool cstrings_eq(const char *a, const char *b) {
+  bool cstrings_eq(const char* a, const char* b)
+  {
     if (!a || !b) {
       return false;
     }
     return strcmp(a, b) == 0;
   }
 };
-#endif // BACKWARD_HAS_BFD == 1
+  #endif // BACKWARD_HAS_BFD == 1
 
-#if BACKWARD_HAS_DW == 1
+  #if BACKWARD_HAS_DW == 1
 
 template <>
 class TraceResolverLinuxImpl<trace_resolver_tag::libdw>
     : public TraceResolverLinuxBase {
-public:
-  TraceResolverLinuxImpl() : _dwfl_handle_initialized(false) {}
+ public:
+  TraceResolverLinuxImpl()
+      : _dwfl_handle_initialized(false)
+  {
+  }
 
-  ResolvedTrace resolve(ResolvedTrace trace) override {
+  ResolvedTrace resolve(ResolvedTrace trace) override
+  {
     using namespace details;
 
     Dwarf_Addr trace_addr = reinterpret_cast<Dwarf_Addr>(trace.addr);
@@ -1828,11 +2050,11 @@ public:
     // find the module (binary object) that contains the trace's address.
     // This is not using any debug information, but the addresses ranges of
     // all the currently loaded binary object.
-    Dwfl_Module *mod = dwfl_addrmodule(_dwfl_handle.get(), trace_addr);
+    Dwfl_Module* mod = dwfl_addrmodule(_dwfl_handle.get(), trace_addr);
     if (mod) {
       // now that we found it, lets get the name of it, this will be the
       // full path to the running binary or one of the loaded library.
-      const char *module_name = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
+      const char* module_name = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
       if (module_name) {
         trace.object_filename = module_name;
       }
@@ -1841,7 +2063,7 @@ public:
       // symbol corresponding to the function (mangled) containing the
       // address. If the code corresponding to the address was inlined,
       // this is the name of the out-most inliner function.
-      const char *sym_name = dwfl_module_addrname(mod, trace_addr);
+      const char* sym_name = dwfl_module_addrname(mod, trace_addr);
       if (sym_name) {
         trace.object_function = demangle(sym_name);
       }
@@ -1854,9 +2076,9 @@ public:
     // to the location of the compilation unit DIE in .debug_info and
     // return it.
     Dwarf_Addr mod_bias = 0;
-    Dwarf_Die *cudie = dwfl_module_addrdie(mod, trace_addr, &mod_bias);
+    Dwarf_Die* cudie = dwfl_module_addrdie(mod, trace_addr, &mod_bias);
 
-#if 1
+    #if 1
     if (!cudie) {
       // Sadly clang does not generate the section .debug_aranges, thus
       // dwfl_module_addrdie will fail early. Clang doesn't either set
@@ -1870,17 +2092,17 @@ public:
       // note that this is probably badly inefficient.
       while ((cudie = dwfl_module_nextcu(mod, cudie, &mod_bias))) {
         Dwarf_Die die_mem;
-        Dwarf_Die *fundie =
-            find_fundie_by_pc(cudie, trace_addr - mod_bias, &die_mem);
+        Dwarf_Die* fundie =
+          find_fundie_by_pc(cudie, trace_addr - mod_bias, &die_mem);
         if (fundie) {
           break;
         }
       }
     }
-#endif
+    #endif
 
-//#define BACKWARD_I_DO_NOT_RECOMMEND_TO_ENABLE_THIS_HORRIBLE_PIECE_OF_CODE
-#ifdef BACKWARD_I_DO_NOT_RECOMMEND_TO_ENABLE_THIS_HORRIBLE_PIECE_OF_CODE
+    //#define BACKWARD_I_DO_NOT_RECOMMEND_TO_ENABLE_THIS_HORRIBLE_PIECE_OF_CODE
+    #ifdef BACKWARD_I_DO_NOT_RECOMMEND_TO_ENABLE_THIS_HORRIBLE_PIECE_OF_CODE
     if (!cudie) {
       // If it's still not enough, lets dive deeper in the shit, and try
       // to save the world again: for every compilation unit, we will
@@ -1888,7 +2110,7 @@ public:
       // find our address in it.
 
       Dwarf_Addr cfi_bias;
-      Dwarf_CFI *cfi_cache = dwfl_module_eh_cfi(mod, &cfi_bias);
+      Dwarf_CFI* cfi_cache = dwfl_module_eh_cfi(mod, &cfi_bias);
 
       Dwarf_Addr bias;
       while ((cudie = dwfl_module_nextcu(mod, cudie, &bias))) {
@@ -1900,7 +2122,7 @@ public:
           // the table and lookup for the address into the .eh_frame
           // section.
 
-          handle<Dwarf_Frame *> frame;
+          handle<Dwarf_Frame*> frame;
           dwarf_cfi_addrframe(cfi_cache, trace_addr - cfi_bias, &frame);
           if (frame) {
             break;
@@ -1908,7 +2130,7 @@ public:
         }
       }
     }
-#endif
+    #endif
 
     if (!cudie) {
       return trace; // this time we lost the game :/
@@ -1918,10 +2140,10 @@ public:
     // to load the corresponding section in .debug_line (if not already
     // loaded) and hopefully find the source location mapped to our
     // address.
-    Dwarf_Line *srcloc = dwarf_getsrc_die(cudie, trace_addr - mod_bias);
+    Dwarf_Line* srcloc = dwarf_getsrc_die(cudie, trace_addr - mod_bias);
 
     if (srcloc) {
-      const char *srcfile = dwarf_linesrc(srcloc, 0, 0);
+      const char* srcfile = dwarf_linesrc(srcloc, 0, 0);
       if (srcfile) {
         trace.source.filename = srcfile;
       }
@@ -1942,20 +2164,21 @@ public:
     return trace;
   }
 
-private:
-  typedef details::handle<Dwfl *, details::deleter<void, Dwfl *, &dwfl_end> >
-      dwfl_handle_t;
-  details::handle<Dwfl_Callbacks *, details::default_delete<Dwfl_Callbacks *> >
-      _dwfl_cb;
+ private:
+  typedef details::handle<Dwfl*, details::deleter<void, Dwfl*, &dwfl_end>>
+    dwfl_handle_t;
+  details::handle<Dwfl_Callbacks*, details::default_delete<Dwfl_Callbacks*>>
+    _dwfl_cb;
   dwfl_handle_t _dwfl_handle;
   bool _dwfl_handle_initialized;
 
   // defined here because in C++98, template function cannot take locally
   // defined types... grrr.
   struct inliners_search_cb {
-    void operator()(Dwarf_Die *die) {
+    void operator()(Dwarf_Die* die)
+    {
       switch (dwarf_tag(die)) {
-        const char *name;
+        const char* name;
       case DW_TAG_subprogram:
         if ((name = dwarf_diename(die))) {
           trace.source.function = name;
@@ -1983,11 +2206,15 @@ private:
         break;
       };
     }
-    ResolvedTrace &trace;
-    inliners_search_cb(ResolvedTrace &t) : trace(t) {}
+    ResolvedTrace& trace;
+    inliners_search_cb(ResolvedTrace& t)
+        : trace(t)
+    {
+    }
   };
 
-  static bool die_has_pc(Dwarf_Die *die, Dwarf_Addr pc) {
+  static bool die_has_pc(Dwarf_Die* die, Dwarf_Addr pc)
+  {
     Dwarf_Addr low, high;
 
     // continuous range
@@ -1997,7 +2224,7 @@ private:
       }
       if (dwarf_highpc(die, &high) != 0) {
         Dwarf_Attribute attr_mem;
-        Dwarf_Attribute *attr = dwarf_attr(die, DW_AT_high_pc, &attr_mem);
+        Dwarf_Attribute* attr = dwarf_attr(die, DW_AT_high_pc, &attr_mem);
         Dwarf_Word value;
         if (dwarf_formudata(attr, &value) != 0) {
           return false;
@@ -2018,13 +2245,14 @@ private:
     return false;
   }
 
-  static Dwarf_Die *find_fundie_by_pc(Dwarf_Die *parent_die, Dwarf_Addr pc,
-                                      Dwarf_Die *result) {
+  static Dwarf_Die* find_fundie_by_pc(Dwarf_Die* parent_die, Dwarf_Addr pc,
+                                      Dwarf_Die* result)
+  {
     if (dwarf_child(parent_die, result) != 0) {
       return 0;
     }
 
-    Dwarf_Die *die = result;
+    Dwarf_Die* die = result;
     do {
       switch (dwarf_tag(die)) {
       case DW_TAG_subprogram:
@@ -2042,7 +2270,7 @@ private:
         // function are not necessarily at the first level, but
         // might be nested inside a namespace, structure etc.
         Dwarf_Die die_mem;
-        Dwarf_Die *indie = find_fundie_by_pc(die, pc, &die_mem);
+        Dwarf_Die* indie = find_fundie_by_pc(die, pc, &die_mem);
         if (indie) {
           *result = die_mem;
           return result;
@@ -2053,15 +2281,16 @@ private:
   }
 
   template <typename CB>
-  static bool deep_first_search_by_pc(Dwarf_Die *parent_die, Dwarf_Addr pc,
-                                      CB cb) {
+  static bool deep_first_search_by_pc(Dwarf_Die* parent_die, Dwarf_Addr pc,
+                                      CB cb)
+  {
     Dwarf_Die die_mem;
     if (dwarf_child(parent_die, &die_mem) != 0) {
       return false;
     }
 
     bool branch_has_pc = false;
-    Dwarf_Die *die = &die_mem;
+    Dwarf_Die* die = &die_mem;
     do {
       bool declaration = false;
       Dwarf_Attribute attr_mem;
@@ -2084,7 +2313,8 @@ private:
     return branch_has_pc;
   }
 
-  static const char *die_call_file(Dwarf_Die *die) {
+  static const char* die_call_file(Dwarf_Die* die)
+  {
     Dwarf_Attribute attr_mem;
     Dwarf_Word file_idx = 0;
 
@@ -2095,12 +2325,12 @@ private:
     }
 
     Dwarf_Die die_mem;
-    Dwarf_Die *cudie = dwarf_diecu(die, &die_mem, 0, 0);
+    Dwarf_Die* cudie = dwarf_diecu(die, &die_mem, 0, 0);
     if (!cudie) {
       return 0;
     }
 
-    Dwarf_Files *files = 0;
+    Dwarf_Files* files = 0;
     size_t nfiles;
     dwarf_getsrcfiles(cudie, &files, &nfiles);
     if (!files) {
@@ -2110,33 +2340,37 @@ private:
     return dwarf_filesrc(files, file_idx, 0, 0);
   }
 };
-#endif // BACKWARD_HAS_DW == 1
+  #endif // BACKWARD_HAS_DW == 1
 
-#if BACKWARD_HAS_DWARF == 1
+  #if BACKWARD_HAS_DWARF == 1
 
 template <>
 class TraceResolverLinuxImpl<trace_resolver_tag::libdwarf>
     : public TraceResolverLinuxBase {
-public:
-  TraceResolverLinuxImpl() : _dwarf_loaded(false) {}
+ public:
+  TraceResolverLinuxImpl()
+      : _dwarf_loaded(false)
+  {
+  }
 
-  ResolvedTrace resolve(ResolvedTrace trace) override {
+  ResolvedTrace resolve(ResolvedTrace trace) override
+  {
     // trace.addr is a virtual address in memory pointing to some code.
     // Let's try to find from which loaded object it comes from.
     // The loaded object can be yourself btw.
 
     Dl_info symbol_info;
     int dladdr_result = 0;
-#if defined(__GLIBC__)
-    link_map *link_map;
+    #if defined(__GLIBC__)
+    link_map* link_map;
     // We request the link map so we can get information about offsets
     dladdr_result =
-        dladdr1(trace.addr, &symbol_info, reinterpret_cast<void **>(&link_map),
-                RTLD_DL_LINKMAP);
-#else
+      dladdr1(trace.addr, &symbol_info, reinterpret_cast<void**>(&link_map),
+              RTLD_DL_LINKMAP);
+    #else
     // Android doesn't have dladdr1. Don't use the linker map.
     dladdr_result = dladdr(trace.addr, &symbol_info);
-#endif
+    #endif
     if (!dladdr_result) {
       return trace; // dat broken trace...
     }
@@ -2168,19 +2402,19 @@ public:
     }
 
     trace.object_filename = resolve_exec_path(symbol_info);
-    dwarf_fileobject &fobj = load_object_with_dwarf(symbol_info.dli_fname);
+    dwarf_fileobject& fobj = load_object_with_dwarf(symbol_info.dli_fname);
     if (!fobj.dwarf_handle) {
       return trace; // sad, we couldn't load the object :(
     }
 
-#if defined(__GLIBC__)
+    #if defined(__GLIBC__)
     // Convert the address to a module relative one by looking at
     // the module's loading address in the link map
     Dwarf_Addr address = reinterpret_cast<uintptr_t>(trace.addr) -
                          reinterpret_cast<uintptr_t>(link_map->l_addr);
-#else
+    #else
     Dwarf_Addr address = reinterpret_cast<uintptr_t>(trace.addr);
-#endif
+    #endif
 
     if (trace.object_function.empty()) {
       symbol_cache_t::iterator it = fobj.symbol_cache.lower_bound(address);
@@ -2205,7 +2439,7 @@ public:
     // libdwarf doesn't give us direct access to its objects, it always
     // allocates a copy for the caller. We keep that copy alive in a cache
     // and we deallocate it later when it's no longer required.
-    die_cache_entry &die_object = get_die_cache(fobj, die);
+    die_cache_entry& die_object = get_die_cache(fobj, die);
     if (die_object.isEmpty())
       return trace; // We have no line section for this DIE
 
@@ -2218,11 +2452,13 @@ public:
           // but the address does not match it means that
           // the address is below the range of the DIE. Give up.
           return trace;
-        } else {
+        }
+        else {
           --it;
         }
       }
-    } else {
+    }
+    else {
       return trace; // We didn't find the address.
     }
 
@@ -2231,7 +2467,7 @@ public:
     Dwarf_Line line = die_object.line_buffer[it->second];
     Dwarf_Error error = DW_DLE_NE;
 
-    char *filename;
+    char* filename;
     if (dwarf_linesrc(line, &filename, &error) == DW_DLV_OK) {
       trace.source.filename = std::string(filename);
       dwarf_dealloc(fobj.dwarf_handle.get(), filename, DW_DLA_STRING);
@@ -2240,13 +2476,15 @@ public:
     Dwarf_Unsigned number = 0;
     if (dwarf_lineno(line, &number, &error) == DW_DLV_OK) {
       trace.source.line = number;
-    } else {
+    }
+    else {
       trace.source.line = 0;
     }
 
     if (dwarf_lineoff_b(line, &number, &error) == DW_DLV_OK) {
       trace.source.col = number;
-    } else {
+    }
+    else {
       trace.source.col = 0;
     }
 
@@ -2259,23 +2497,24 @@ public:
     return trace;
   }
 
-public:
-  static int close_dwarf(Dwarf_Debug dwarf) {
+ public:
+  static int close_dwarf(Dwarf_Debug dwarf)
+  {
     return dwarf_finish(dwarf, NULL);
   }
 
-private:
+ private:
   bool _dwarf_loaded;
 
-  typedef details::handle<int, details::deleter<int, int, &::close> >
-      dwarf_file_t;
+  typedef details::handle<int, details::deleter<int, int, &::close>>
+    dwarf_file_t;
 
-  typedef details::handle<Elf *, details::deleter<int, Elf *, &elf_end> >
-      dwarf_elf_t;
+  typedef details::handle<Elf*, details::deleter<int, Elf*, &elf_end>>
+    dwarf_elf_t;
 
   typedef details::handle<Dwarf_Debug,
-                          details::deleter<int, Dwarf_Debug, &close_dwarf> >
-      dwarf_handle_t;
+                          details::deleter<int, Dwarf_Debug, &close_dwarf>>
+    dwarf_handle_t;
 
   typedef std::map<Dwarf_Addr, int> die_linemap_t;
 
@@ -2284,18 +2523,25 @@ private:
   struct die_cache_entry {
     die_specmap_t spec_section;
     die_linemap_t line_section;
-    Dwarf_Line *line_buffer;
+    Dwarf_Line* line_buffer;
     Dwarf_Signed line_count;
     Dwarf_Line_Context line_context;
 
-    inline bool isEmpty() {
+    inline bool isEmpty()
+    {
       return line_buffer == NULL || line_count == 0 || line_context == NULL ||
              line_section.empty();
     }
 
-    die_cache_entry() : line_buffer(0), line_count(0), line_context(0) {}
+    die_cache_entry()
+        : line_buffer(0)
+        , line_count(0)
+        , line_context(0)
+    {
+    }
 
-    ~die_cache_entry() {
+    ~die_cache_entry()
+    {
       if (line_context) {
         dwarf_srclines_dealloc_b(line_context);
       }
@@ -2314,21 +2560,23 @@ private:
 
     // Die cache
     die_cache_t die_cache;
-    die_cache_entry *current_cu;
+    die_cache_entry* current_cu;
   };
 
   typedef details::hashtable<std::string, dwarf_fileobject>::type
-      fobj_dwarf_map_t;
+    fobj_dwarf_map_t;
   fobj_dwarf_map_t _fobj_dwarf_map;
 
-  static bool cstrings_eq(const char *a, const char *b) {
+  static bool cstrings_eq(const char* a, const char* b)
+  {
     if (!a || !b) {
       return false;
     }
     return strcmp(a, b) == 0;
   }
 
-  dwarf_fileobject &load_object_with_dwarf(const std::string &filename_object) {
+  dwarf_fileobject& load_object_with_dwarf(const std::string& filename_object)
+  {
 
     if (!_dwarf_loaded) {
       // Set the ELF library operating version
@@ -2342,7 +2590,7 @@ private:
     }
 
     // this new object is empty for now
-    dwarf_fileobject &r = _fobj_dwarf_map[filename_object];
+    dwarf_fileobject& r = _fobj_dwarf_map[filename_object];
 
     dwarf_file_t file_handle;
     file_handle.reset(open(filename_object.c_str(), O_RDONLY));
@@ -2359,7 +2607,7 @@ private:
       return r;
     }
 
-    const char *e_ident = elf_getident(elf_handle.get(), 0);
+    const char* e_ident = elf_getident(elf_handle.get(), 0);
     if (!e_ident) {
       return r;
     }
@@ -2378,78 +2626,82 @@ private:
     }
 
     std::string debuglink;
-    // Iterate through the ELF sections to try to get a gnu_debuglink
-    // note and also to cache the symbol table.
-    // We go the preprocessor way to avoid having to create templated
-    // classes or using gelf (which might throw a compiler error if 64 bit
-    // is not supported
-#define ELF_GET_DATA(ARCH)                                                     \
-  Elf_Scn *elf_section = 0;                                                    \
-  Elf_Data *elf_data = 0;                                                      \
-  Elf##ARCH##_Shdr *section_header = 0;                                        \
-  Elf_Scn *symbol_section = 0;                                                 \
-  size_t symbol_count = 0;                                                     \
-  size_t symbol_strings = 0;                                                   \
-  Elf##ARCH##_Sym *symbol = 0;                                                 \
-  const char *section_name = 0;                                                \
+        // Iterate through the ELF sections to try to get a gnu_debuglink
+        // note and also to cache the symbol table.
+        // We go the preprocessor way to avoid having to create templated
+        // classes or using gelf (which might throw a compiler error if 64 bit
+        // is not supported
+    #define ELF_GET_DATA(ARCH)                                                 \
+      Elf_Scn* elf_section = 0;                                                \
+      Elf_Data* elf_data = 0;                                                  \
+      Elf##ARCH##_Shdr* section_header = 0;                                    \
+      Elf_Scn* symbol_section = 0;                                             \
+      size_t symbol_count = 0;                                                 \
+      size_t symbol_strings = 0;                                               \
+      Elf##ARCH##_Sym* symbol = 0;                                             \
+      const char* section_name = 0;                                            \
                                                                                \
-  while ((elf_section = elf_nextscn(elf_handle.get(), elf_section)) != NULL) { \
-    section_header = elf##ARCH##_getshdr(elf_section);                         \
-    if (section_header == NULL) {                                              \
-      return r;                                                                \
-    }                                                                          \
+      while ((elf_section = elf_nextscn(elf_handle.get(), elf_section)) !=     \
+             NULL) {                                                           \
+        section_header = elf##ARCH##_getshdr(elf_section);                     \
+        if (section_header == NULL) {                                          \
+          return r;                                                            \
+        }                                                                      \
                                                                                \
-    if ((section_name = elf_strptr(elf_handle.get(), shdrstrndx,               \
-                                   section_header->sh_name)) == NULL) {        \
-      return r;                                                                \
-    }                                                                          \
+        if ((section_name = elf_strptr(elf_handle.get(), shdrstrndx,           \
+                                       section_header->sh_name)) == NULL)      \
+        {                                                                      \
+          return r;                                                            \
+        }                                                                      \
                                                                                \
-    if (cstrings_eq(section_name, ".gnu_debuglink")) {                         \
-      elf_data = elf_getdata(elf_section, NULL);                               \
-      if (elf_data && elf_data->d_size > 0) {                                  \
-        debuglink =                                                            \
-            std::string(reinterpret_cast<const char *>(elf_data->d_buf));      \
+        if (cstrings_eq(section_name, ".gnu_debuglink")) {                     \
+          elf_data = elf_getdata(elf_section, NULL);                           \
+          if (elf_data && elf_data->d_size > 0) {                              \
+            debuglink =                                                        \
+              std::string(reinterpret_cast<const char*>(elf_data->d_buf));     \
+          }                                                                    \
+        }                                                                      \
+                                                                               \
+        switch (section_header->sh_type) {                                     \
+        case SHT_SYMTAB:                                                       \
+          symbol_section = elf_section;                                        \
+          symbol_count = section_header->sh_size / section_header->sh_entsize; \
+          symbol_strings = section_header->sh_link;                            \
+          break;                                                               \
+                                                                               \
+        /* We use .dynsyms as a last resort, we prefer .symtab */              \
+        case SHT_DYNSYM:                                                       \
+          if (!symbol_section) {                                               \
+            symbol_section = elf_section;                                      \
+            symbol_count =                                                     \
+              section_header->sh_size / section_header->sh_entsize;            \
+            symbol_strings = section_header->sh_link;                          \
+          }                                                                    \
+          break;                                                               \
+        }                                                                      \
       }                                                                        \
-    }                                                                          \
                                                                                \
-    switch (section_header->sh_type) {                                         \
-    case SHT_SYMTAB:                                                           \
-      symbol_section = elf_section;                                            \
-      symbol_count = section_header->sh_size / section_header->sh_entsize;     \
-      symbol_strings = section_header->sh_link;                                \
-      break;                                                                   \
-                                                                               \
-    /* We use .dynsyms as a last resort, we prefer .symtab */                  \
-    case SHT_DYNSYM:                                                           \
-      if (!symbol_section) {                                                   \
-        symbol_section = elf_section;                                          \
-        symbol_count = section_header->sh_size / section_header->sh_entsize;   \
-        symbol_strings = section_header->sh_link;                              \
-      }                                                                        \
-      break;                                                                   \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  if (symbol_section && symbol_count && symbol_strings) {                      \
-    elf_data = elf_getdata(symbol_section, NULL);                              \
-    symbol = reinterpret_cast<Elf##ARCH##_Sym *>(elf_data->d_buf);             \
-    for (size_t i = 0; i < symbol_count; ++i) {                                \
-      int type = ELF##ARCH##_ST_TYPE(symbol->st_info);                         \
-      if (type == STT_FUNC && symbol->st_value > 0) {                          \
-        r.symbol_cache[symbol->st_value] = std::string(                        \
-            elf_strptr(elf_handle.get(), symbol_strings, symbol->st_name));    \
-      }                                                                        \
-      ++symbol;                                                                \
-    }                                                                          \
-  }
+      if (symbol_section && symbol_count && symbol_strings) {                  \
+        elf_data = elf_getdata(symbol_section, NULL);                          \
+        symbol = reinterpret_cast<Elf##ARCH##_Sym*>(elf_data->d_buf);          \
+        for (size_t i = 0; i < symbol_count; ++i) {                            \
+          int type = ELF##ARCH##_ST_TYPE(symbol->st_info);                     \
+          if (type == STT_FUNC && symbol->st_value > 0) {                      \
+            r.symbol_cache[symbol->st_value] = std::string(                    \
+              elf_strptr(elf_handle.get(), symbol_strings, symbol->st_name));  \
+          }                                                                    \
+          ++symbol;                                                            \
+        }                                                                      \
+      }
 
     if (e_ident[EI_CLASS] == ELFCLASS32) {
       ELF_GET_DATA(32)
-    } else if (e_ident[EI_CLASS] == ELFCLASS64) {
-      // libelf might have been built without 64 bit support
-#if __LIBELF64
+    }
+    else if (e_ident[EI_CLASS] == ELFCLASS64) {
+          // libelf might have been built without 64 bit support
+    #if __LIBELF64
       ELF_GET_DATA(64)
-#endif
+    #endif
     }
 
     if (!debuglink.empty()) {
@@ -2495,7 +2747,8 @@ private:
     return r;
   }
 
-  die_cache_entry &get_die_cache(dwarf_fileobject &fobj, Dwarf_Die die) {
+  die_cache_entry& get_die_cache(dwarf_fileobject& fobj, Dwarf_Die die)
+  {
     Dwarf_Error error = DW_DLE_NE;
 
     // Get the die offset, we use it as the cache key
@@ -2511,7 +2764,7 @@ private:
       return it->second;
     }
 
-    die_cache_entry &de = fobj.die_cache[die_offset];
+    die_cache_entry& de = fobj.die_cache[die_offset];
     fobj.current_cu = &de;
 
     Dwarf_Addr line_addr;
@@ -2532,17 +2785,19 @@ private:
 
     // Get the line context for the DIE
     if (dwarf_srclines_b(die, 0, &table_count, &de.line_context, &error) ==
-        DW_DLV_OK) {
+        DW_DLV_OK)
+    {
       // Get the source lines for this line context, to be deallocated
       // later
       if (dwarf_srclines_from_linecontext(de.line_context, &de.line_buffer,
-                                          &de.line_count,
-                                          &error) == DW_DLV_OK) {
+                                          &de.line_count, &error) == DW_DLV_OK)
+      {
 
         // Add all the addresses to our map
         for (int i = 0; i < de.line_count; i++) {
           if (dwarf_lineaddr(de.line_buffer[i], &line_addr, &error) !=
-              DW_DLV_OK) {
+              DW_DLV_OK)
+          {
             line_addr = 0;
           }
           de.line_section.insert(std::pair<Dwarf_Addr, int>(line_addr, i));
@@ -2569,21 +2824,25 @@ private:
         dwarf_tag(current_die, &tag_value, &error);
 
         if (tag_value == DW_TAG_subprogram ||
-            tag_value == DW_TAG_inlined_subroutine) {
+            tag_value == DW_TAG_inlined_subroutine)
+        {
 
           Dwarf_Bool has_attr = 0;
           if (dwarf_hasattr(current_die, DW_AT_specification, &has_attr,
-                            &error) == DW_DLV_OK) {
+                            &error) == DW_DLV_OK)
+          {
             if (has_attr) {
               Dwarf_Attribute attr_mem;
               if (dwarf_attr(current_die, DW_AT_specification, &attr_mem,
-                             &error) == DW_DLV_OK) {
+                             &error) == DW_DLV_OK)
+              {
                 Dwarf_Off spec_offset = 0;
-                if (dwarf_formref(attr_mem, &spec_offset, &error) ==
-                    DW_DLV_OK) {
+                if (dwarf_formref(attr_mem, &spec_offset, &error) == DW_DLV_OK)
+                {
                   Dwarf_Off spec_die_offset;
                   if (dwarf_dieoffset(current_die, &spec_die_offset, &error) ==
-                      DW_DLV_OK) {
+                      DW_DLV_OK)
+                  {
                     de.spec_section[spec_offset] = spec_die_offset;
                   }
                 }
@@ -2596,7 +2855,8 @@ private:
         int result = dwarf_siblingof(dwarf, current_die, &sibling_die, &error);
         if (result == DW_DLV_ERROR) {
           break;
-        } else if (result == DW_DLV_NO_ENTRY) {
+        }
+        else if (result == DW_DLV_NO_ENTRY) {
           break;
         }
 
@@ -2612,7 +2872,8 @@ private:
   }
 
   static Dwarf_Die get_referenced_die(Dwarf_Debug dwarf, Dwarf_Die die,
-                                      Dwarf_Half attr, bool global) {
+                                      Dwarf_Half attr, bool global)
+  {
     Dwarf_Error error = DW_DLE_NE;
     Dwarf_Attribute attr_mem;
 
@@ -2622,7 +2883,8 @@ private:
       int result = 0;
       if (global) {
         result = dwarf_global_formref(attr_mem, &offset, &error);
-      } else {
+      }
+      else {
         result = dwarf_formref(attr_mem, &offset, &error);
       }
 
@@ -2637,14 +2899,15 @@ private:
   }
 
   static std::string get_referenced_die_name(Dwarf_Debug dwarf, Dwarf_Die die,
-                                             Dwarf_Half attr, bool global) {
+                                             Dwarf_Half attr, bool global)
+  {
     Dwarf_Error error = DW_DLE_NE;
     std::string value;
 
     Dwarf_Die found_die = get_referenced_die(dwarf, die, attr, global);
 
     if (found_die) {
-      char *name;
+      char* name;
       if (dwarf_diename(found_die, &name, &error) == DW_DLV_OK) {
         if (name) {
           value = std::string(name);
@@ -2659,14 +2922,16 @@ private:
 
   // Returns a spec DIE linked to the passed one. The caller should
   // deallocate the DIE
-  static Dwarf_Die get_spec_die(dwarf_fileobject &fobj, Dwarf_Die die) {
+  static Dwarf_Die get_spec_die(dwarf_fileobject& fobj, Dwarf_Die die)
+  {
     Dwarf_Debug dwarf = fobj.dwarf_handle.get();
     Dwarf_Error error = DW_DLE_NE;
     Dwarf_Off die_offset;
     if (fobj.current_cu &&
-        dwarf_die_CU_offset(die, &die_offset, &error) == DW_DLV_OK) {
+        dwarf_die_CU_offset(die, &die_offset, &error) == DW_DLV_OK)
+    {
       die_specmap_t::iterator it =
-          fobj.current_cu->spec_section.find(die_offset);
+        fobj.current_cu->spec_section.find(die_offset);
 
       // If we have a DIE that completes the current one, check if
       // that one has the pc we are looking for
@@ -2683,7 +2948,8 @@ private:
                               DW_AT_abstract_origin, true);
   }
 
-  static bool die_has_pc(dwarf_fileobject &fobj, Dwarf_Die die, Dwarf_Addr pc) {
+  static bool die_has_pc(dwarf_fileobject& fobj, Dwarf_Die die, Dwarf_Addr pc)
+  {
     Dwarf_Addr low_pc = 0, high_pc = 0;
     Dwarf_Half high_pc_form = 0;
     Dwarf_Form_Class return_class;
@@ -2700,7 +2966,8 @@ private:
       has_lowpc = true;
 
       if (dwarf_highpc_b(die, &high_pc, &high_pc_form, &return_class, &error) ==
-          DW_DLV_OK) {
+          DW_DLV_OK)
+      {
         // We do have a high pc. In DWARF 4+ this is an offset from the
         // low pc, but in earlier versions it's an absolute address.
 
@@ -2714,7 +2981,8 @@ private:
         // is in that range
         return pc >= low_pc && pc < high_pc;
       }
-    } else {
+    }
+    else {
       // Reset the low_pc, in case dwarf_lowpc failing set it to some
       // undefined value.
       low_pc = 0;
@@ -2730,17 +2998,19 @@ private:
 
       Dwarf_Off offset;
       if (dwarf_global_formref(attr, &offset, &error) == DW_DLV_OK) {
-        Dwarf_Ranges *ranges;
+        Dwarf_Ranges* ranges;
         Dwarf_Signed ranges_count = 0;
         Dwarf_Unsigned byte_count = 0;
 
         if (dwarf_get_ranges_a(dwarf, offset, die, &ranges, &ranges_count,
-                               &byte_count, &error) == DW_DLV_OK) {
+                               &byte_count, &error) == DW_DLV_OK)
+        {
           has_ranges = ranges_count != 0;
           for (int i = 0; i < ranges_count; i++) {
             if (ranges[i].dwr_addr1 != 0 &&
                 pc >= ranges[i].dwr_addr1 + low_pc &&
-                pc < ranges[i].dwr_addr2 + low_pc) {
+                pc < ranges[i].dwr_addr2 + low_pc)
+            {
               result = true;
               break;
             }
@@ -2769,7 +3039,8 @@ private:
     return result;
   }
 
-  static void get_type(Dwarf_Debug dwarf, Dwarf_Die die, std::string &type) {
+  static void get_type(Dwarf_Debug dwarf, Dwarf_Die die, std::string& type)
+  {
     Dwarf_Error error = DW_DLE_NE;
 
     Dwarf_Die child = 0;
@@ -2782,16 +3053,18 @@ private:
       dwarf_dealloc(dwarf, child, DW_DLA_DIE);
     }
 
-    char *name;
+    char* name;
     if (dwarf_diename(die, &name, &error) == DW_DLV_OK) {
       type.insert(0, std::string(name));
       dwarf_dealloc(dwarf, name, DW_DLA_STRING);
-    } else {
+    }
+    else {
       type.insert(0, "<unknown>");
     }
   }
 
-  static std::string get_type_by_signature(Dwarf_Debug dwarf, Dwarf_Die die) {
+  static std::string get_type_by_signature(Dwarf_Debug dwarf, Dwarf_Die die)
+  {
     Dwarf_Error error = DW_DLE_NE;
 
     Dwarf_Sig8 signature;
@@ -2814,7 +3087,8 @@ private:
     bool found = false;
 
     while (dwarf_next_cu_header_d(dwarf, 0, 0, 0, 0, 0, 0, 0, &tu_signature, 0,
-                                  &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                  &next_cu_header, 0, &error) == DW_DLV_OK)
+    {
 
       if (strncmp(signature.signature, tu_signature.signature, 8) == 0) {
         Dwarf_Die type_cu_die = 0;
@@ -2832,13 +3106,15 @@ private:
 
     if (found) {
       while (dwarf_next_cu_header_d(dwarf, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                    &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                    &next_cu_header, 0, &error) == DW_DLV_OK)
+      {
         // Reset the cu header state. Unfortunately, libdwarf's
         // next_cu_header API keeps its own iterator per Dwarf_Debug
         // that can't be reset. We need to keep fetching elements until
         // the end.
       }
-    } else {
+    }
+    else {
       // If we couldn't resolve the type just print out the signature
       std::ostringstream string_stream;
       string_stream << "<0x" << std::hex << std::setfill('0');
@@ -2860,7 +3136,11 @@ private:
     std::string text;
 
     type_context_t()
-        : is_const(false), is_typedef(false), has_type(false), has_name(false) {
+        : is_const(false)
+        , is_typedef(false)
+        , has_type(false)
+        , has_name(false)
+    {
     }
   };
 
@@ -2868,9 +3148,10 @@ private:
   // and then all specifiers (like const or pointer) in a chain of DW_AT_type
   // DIEs. Call this function recursively until we get a complete type
   // string.
-  static void set_parameter_string(dwarf_fileobject &fobj, Dwarf_Die die,
-                                   type_context_t &context) {
-    char *name;
+  static void set_parameter_string(dwarf_fileobject& fobj, Dwarf_Die die,
+                                   type_context_t& context)
+  {
+    char* name;
     Dwarf_Error error = DW_DLE_NE;
 
     // typedefs contain also the base type, so we skip it and only
@@ -2883,7 +3164,8 @@ private:
         context.text.insert(0, std::string(name));
         dwarf_dealloc(fobj.dwarf_handle.get(), name, DW_DLA_STRING);
       }
-    } else {
+    }
+    else {
       context.is_typedef = false;
       context.has_type = true;
       if (context.is_const) {
@@ -2904,14 +3186,14 @@ private:
       case DW_TAG_class_type:
       case DW_TAG_enumeration_type:
         context.has_type = true;
-        if (dwarf_hasattr(die, DW_AT_signature, &has_attr, &error) ==
-            DW_DLV_OK) {
+        if (dwarf_hasattr(die, DW_AT_signature, &has_attr, &error) == DW_DLV_OK)
+        {
           // If we have a signature it means the type is defined
           // in .debug_types, so we need to load the DIE pointed
           // at by the signature and resolve it
           if (has_attr) {
             std::string type =
-                get_type_by_signature(fobj.dwarf_handle.get(), die);
+              get_type_by_signature(fobj.dwarf_handle.get(), die);
             if (context.is_const)
               type.insert(0, "const ");
 
@@ -2925,24 +3207,12 @@ private:
           context.is_typedef = (tag == DW_TAG_enumeration_type);
         }
         break;
-      case DW_TAG_const_type:
-        next_type_is_const = true;
-        break;
-      case DW_TAG_pointer_type:
-        context.text.insert(0, "*");
-        break;
-      case DW_TAG_reference_type:
-        context.text.insert(0, "&");
-        break;
-      case DW_TAG_restrict_type:
-        context.text.insert(0, "restrict ");
-        break;
-      case DW_TAG_rvalue_reference_type:
-        context.text.insert(0, "&&");
-        break;
-      case DW_TAG_volatile_type:
-        context.text.insert(0, "volatile ");
-        break;
+      case DW_TAG_const_type: next_type_is_const = true; break;
+      case DW_TAG_pointer_type: context.text.insert(0, "*"); break;
+      case DW_TAG_reference_type: context.text.insert(0, "&"); break;
+      case DW_TAG_restrict_type: context.text.insert(0, "restrict "); break;
+      case DW_TAG_rvalue_reference_type: context.text.insert(0, "&&"); break;
+      case DW_TAG_volatile_type: context.text.insert(0, "volatile "); break;
       case DW_TAG_typedef:
         // Propagate the const-ness to the next type
         // as typedefs are linked to its base type
@@ -2950,15 +3220,9 @@ private:
         context.is_typedef = true;
         context.has_type = true;
         break;
-      case DW_TAG_base_type:
-        context.has_type = true;
-        break;
-      case DW_TAG_formal_parameter:
-        context.has_name = true;
-        break;
-      default:
-        is_keyword = false;
-        break;
+      case DW_TAG_base_type: context.has_type = true; break;
+      case DW_TAG_formal_parameter: context.has_name = true; break;
+      default: is_keyword = false; break;
       }
     }
 
@@ -2969,7 +3233,7 @@ private:
     context.is_const = next_type_is_const;
 
     Dwarf_Die ref =
-        get_referenced_die(fobj.dwarf_handle.get(), die, DW_AT_type, true);
+      get_referenced_die(fobj.dwarf_handle.get(), die, DW_AT_type, true);
     if (ref) {
       set_parameter_string(fobj, ref, context);
       dwarf_dealloc(fobj.dwarf_handle.get(), ref, DW_DLA_DIE);
@@ -2982,9 +3246,10 @@ private:
   }
 
   // Resolve the function return type and parameters
-  static void set_function_parameters(std::string &function_name,
-                                      std::vector<std::string> &ns,
-                                      dwarf_fileobject &fobj, Dwarf_Die die) {
+  static void set_function_parameters(std::string& function_name,
+                                      std::vector<std::string>& ns,
+                                      dwarf_fileobject& fobj, Dwarf_Die die)
+  {
     Dwarf_Debug dwarf = fobj.dwarf_handle.get();
     Dwarf_Error error = DW_DLE_NE;
     Dwarf_Die current_die = 0;
@@ -3011,7 +3276,7 @@ private:
     // See if we have a function return type. It can be either on the
     // current die or in its spec one (usually true for inlined functions)
     std::string return_type =
-        get_referenced_die_name(dwarf, die, DW_AT_type, true);
+      get_referenced_die_name(dwarf, die, DW_AT_type, true);
     if (return_type.empty()) {
       return_type = get_referenced_die_name(dwarf, spec_die, DW_AT_type, true);
     }
@@ -3032,7 +3297,8 @@ private:
           bool is_artificial = false;
           Dwarf_Attribute attr_mem;
           if (dwarf_attr(current_die, DW_AT_artificial, &attr_mem, &error) ==
-              DW_DLV_OK) {
+              DW_DLV_OK)
+          {
             Dwarf_Bool flag = 0;
             if (dwarf_formflag(attr_mem, &flag, &error) == DW_DLV_OK) {
               is_artificial = flag != 0;
@@ -3046,7 +3312,8 @@ private:
 
             if (parameters.empty()) {
               parameters.append("(");
-            } else {
+            }
+            else {
               parameters.append(", ");
             }
             parameters.append(context.text);
@@ -3056,7 +3323,8 @@ private:
         int result = dwarf_siblingof(dwarf, current_die, &sibling_die, &error);
         if (result == DW_DLV_ERROR) {
           break;
-        } else if (result == DW_DLV_NO_ENTRY) {
+        }
+        else if (result == DW_DLV_NO_ENTRY) {
           break;
         }
 
@@ -3082,7 +3350,8 @@ private:
   // defined here because in C++98, template function cannot take locally
   // defined types... grrr.
   struct inliners_search_cb {
-    void operator()(Dwarf_Die die, std::vector<std::string> &ns) {
+    void operator()(Dwarf_Die die, std::vector<std::string>& ns)
+    {
       Dwarf_Error error = DW_DLE_NE;
       Dwarf_Half tag_value;
       Dwarf_Attribute attr_mem;
@@ -3091,22 +3360,23 @@ private:
       dwarf_tag(die, &tag_value, &error);
 
       switch (tag_value) {
-        char *name;
+        char* name;
       case DW_TAG_subprogram:
         if (!trace.source.function.empty())
           break;
         if (dwarf_diename(die, &name, &error) == DW_DLV_OK) {
           trace.source.function = std::string(name);
           dwarf_dealloc(dwarf, name, DW_DLA_STRING);
-        } else {
+        }
+        else {
           // We don't have a function name in this DIE.
           // Check if there is a referenced non-defining
           // declaration.
           trace.source.function =
-              get_referenced_die_name(dwarf, die, DW_AT_abstract_origin, true);
+            get_referenced_die_name(dwarf, die, DW_AT_abstract_origin, true);
           if (trace.source.function.empty()) {
             trace.source.function =
-                get_referenced_die_name(dwarf, die, DW_AT_specification, true);
+              get_referenced_die_name(dwarf, die, DW_AT_specification, true);
           }
         }
 
@@ -3124,14 +3394,16 @@ private:
           details::demangler demangler;
 
           if (dwarf_attr(die, DW_AT_linkage_name, &attr_mem, &error) !=
-              DW_DLV_OK) {
+              DW_DLV_OK)
+          {
             if (dwarf_attr(die, DW_AT_MIPS_linkage_name, &attr_mem, &error) !=
-                DW_DLV_OK) {
+                DW_DLV_OK)
+            {
               break;
             }
           }
 
-          char *linkage;
+          char* linkage;
           if (dwarf_formstring(attr_mem, &linkage, &error) == DW_DLV_OK) {
             trace.object_function = demangler.demangle(linkage);
             dwarf_dealloc(dwarf, linkage, DW_DLA_STRING);
@@ -3146,13 +3418,14 @@ private:
         if (dwarf_diename(die, &name, &error) == DW_DLV_OK) {
           sloc.function = std::string(name);
           dwarf_dealloc(dwarf, name, DW_DLA_STRING);
-        } else {
+        }
+        else {
           // We don't have a name for this inlined DIE, it could
           // be that there is an abstract origin instead.
           // Get the DW_AT_abstract_origin value, which is a
           // reference to the source DIE and try to get its name
           sloc.function =
-              get_referenced_die_name(dwarf, die, DW_AT_abstract_origin, true);
+            get_referenced_die_name(dwarf, die, DW_AT_abstract_origin, true);
         }
 
         set_function_parameters(sloc.function, ns, fobj, die);
@@ -3169,8 +3442,8 @@ private:
           dwarf_dealloc(dwarf, attr_mem, DW_DLA_ATTR);
         }
 
-        if (dwarf_attr(die, DW_AT_call_column, &attr_mem, &error) ==
-            DW_DLV_OK) {
+        if (dwarf_attr(die, DW_AT_call_column, &attr_mem, &error) == DW_DLV_OK)
+        {
           if (dwarf_formudata(attr_mem, &number, &error) == DW_DLV_OK) {
             sloc.col = number;
           }
@@ -3181,16 +3454,21 @@ private:
         break;
       };
     }
-    ResolvedTrace &trace;
-    dwarf_fileobject &fobj;
+    ResolvedTrace& trace;
+    dwarf_fileobject& fobj;
     Dwarf_Die cu_die;
-    inliners_search_cb(ResolvedTrace &t, dwarf_fileobject &f, Dwarf_Die c)
-        : trace(t), fobj(f), cu_die(c) {}
+    inliners_search_cb(ResolvedTrace& t, dwarf_fileobject& f, Dwarf_Die c)
+        : trace(t)
+        , fobj(f)
+        , cu_die(c)
+    {
+    }
   };
 
-  static Dwarf_Die find_fundie_by_pc(dwarf_fileobject &fobj,
+  static Dwarf_Die find_fundie_by_pc(dwarf_fileobject& fobj,
                                      Dwarf_Die parent_die, Dwarf_Addr pc,
-                                     Dwarf_Die result) {
+                                     Dwarf_Die result)
+  {
     Dwarf_Die current_die = 0;
     Dwarf_Error error = DW_DLE_NE;
     Dwarf_Debug dwarf = fobj.dwarf_handle.get();
@@ -3214,7 +3492,8 @@ private:
       bool declaration = false;
       Dwarf_Attribute attr_mem;
       if (dwarf_attr(current_die, DW_AT_declaration, &attr_mem, &error) ==
-          DW_DLV_OK) {
+          DW_DLV_OK)
+      {
         Dwarf_Bool flag = 0;
         if (dwarf_formflag(attr_mem, &flag, &error) == DW_DLV_OK) {
           declaration = flag != 0;
@@ -3238,7 +3517,8 @@ private:
       int res = dwarf_siblingof(dwarf, current_die, &sibling_die, &error);
       if (res == DW_DLV_ERROR) {
         return NULL;
-      } else if (res == DW_DLV_NO_ENTRY) {
+      }
+      else if (res == DW_DLV_NO_ENTRY) {
         break;
       }
 
@@ -3253,9 +3533,10 @@ private:
   }
 
   template <typename CB>
-  static bool deep_first_search_by_pc(dwarf_fileobject &fobj,
+  static bool deep_first_search_by_pc(dwarf_fileobject& fobj,
                                       Dwarf_Die parent_die, Dwarf_Addr pc,
-                                      std::vector<std::string> &ns, CB cb) {
+                                      std::vector<std::string>& ns, CB cb)
+  {
     Dwarf_Die current_die = 0;
     Dwarf_Debug dwarf = fobj.dwarf_handle.get();
     Dwarf_Error error = DW_DLE_NE;
@@ -3272,15 +3553,17 @@ private:
       Dwarf_Half tag;
       if (dwarf_tag(current_die, &tag, &error) == DW_DLV_OK) {
         if (tag == DW_TAG_namespace || tag == DW_TAG_class_type) {
-          char *ns_name = NULL;
+          char* ns_name = NULL;
           if (dwarf_diename(current_die, &ns_name, &error) == DW_DLV_OK) {
             if (ns_name) {
               ns.push_back(std::string(ns_name));
-            } else {
+            }
+            else {
               ns.push_back("<unknown>");
             }
             dwarf_dealloc(dwarf, ns_name, DW_DLA_STRING);
-          } else {
+          }
+          else {
             ns.push_back("<unknown>");
           }
           has_namespace = true;
@@ -3291,7 +3574,8 @@ private:
       Dwarf_Attribute attr_mem;
       if (tag != DW_TAG_class_type &&
           dwarf_attr(current_die, DW_AT_declaration, &attr_mem, &error) ==
-              DW_DLV_OK) {
+            DW_DLV_OK)
+      {
         Dwarf_Bool flag = 0;
         if (dwarf_formflag(attr_mem, &flag, &error) == DW_DLV_OK) {
           declaration = flag != 0;
@@ -3318,7 +3602,8 @@ private:
       int result = dwarf_siblingof(dwarf, current_die, &sibling_die, &error);
       if (result == DW_DLV_ERROR) {
         return false;
-      } else if (result == DW_DLV_NO_ENTRY) {
+      }
+      else if (result == DW_DLV_NO_ENTRY) {
         break;
       }
 
@@ -3341,7 +3626,8 @@ private:
   }
 
   static std::string die_call_file(Dwarf_Debug dwarf, Dwarf_Die die,
-                                   Dwarf_Die cu_die) {
+                                   Dwarf_Die cu_die)
+  {
     Dwarf_Attribute attr_mem;
     Dwarf_Error error = DW_DLE_NE;
     Dwarf_Unsigned file_index;
@@ -3358,12 +3644,14 @@ private:
         return file;
       }
 
-      char **srcfiles = 0;
+      char** srcfiles = 0;
       Dwarf_Signed file_count = 0;
       if (dwarf_srcfiles(cu_die, &srcfiles, &file_count, &error) == DW_DLV_OK) {
-        if (file_count > 0 && file_index <= static_cast<Dwarf_Unsigned>(file_count)) {
+        if (file_count > 0 &&
+            file_index <= static_cast<Dwarf_Unsigned>(file_count))
+        {
           file = std::string(srcfiles[file_index - 1]);
-	}
+        }
 
         // Deallocate all strings!
         for (int i = 0; i < file_count; ++i) {
@@ -3375,19 +3663,20 @@ private:
     return file;
   }
 
-  Dwarf_Die find_die(dwarf_fileobject &fobj, Dwarf_Addr addr) {
+  Dwarf_Die find_die(dwarf_fileobject& fobj, Dwarf_Addr addr)
+  {
     // Let's get to work! First see if we have a debug_aranges section so
     // we can speed up the search
 
     Dwarf_Debug dwarf = fobj.dwarf_handle.get();
     Dwarf_Error error = DW_DLE_NE;
-    Dwarf_Arange *aranges;
+    Dwarf_Arange* aranges;
     Dwarf_Signed arange_count;
 
     Dwarf_Die returnDie;
     bool found = false;
-    if (dwarf_get_aranges(dwarf, &aranges, &arange_count, &error) !=
-        DW_DLV_OK) {
+    if (dwarf_get_aranges(dwarf, &aranges, &arange_count, &error) != DW_DLV_OK)
+    {
       aranges = NULL;
     }
 
@@ -3395,18 +3684,20 @@ private:
       // We have aranges. Get the one where our address is.
       Dwarf_Arange arange;
       if (dwarf_get_arange(aranges, arange_count, addr, &arange, &error) ==
-          DW_DLV_OK) {
+          DW_DLV_OK)
+      {
 
         // We found our address. Get the compilation-unit DIE offset
         // represented by the given address range.
         Dwarf_Off cu_die_offset;
         if (dwarf_get_cu_die_offset(arange, &cu_die_offset, &error) ==
-            DW_DLV_OK) {
+            DW_DLV_OK)
+        {
           // Get the DIE at the offset returned by the aranges search.
           // We set is_info to 1 to specify that the offset is from
           // the .debug_info section (and not .debug_types)
           int dwarf_result =
-              dwarf_offdie_b(dwarf, cu_die_offset, 1, &returnDie, &error);
+            dwarf_offdie_b(dwarf, cu_die_offset, 1, &returnDie, &error);
 
           found = dwarf_result == DW_DLV_OK;
         }
@@ -3425,14 +3716,16 @@ private:
 
     while (!found &&
            dwarf_next_cu_header_d(dwarf, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                  &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                  &next_cu_header, 0, &error) == DW_DLV_OK)
+    {
 
       if (returnDie)
         dwarf_dealloc(dwarf, returnDie, DW_DLA_DIE);
 
       if (dwarf_siblingof(dwarf, 0, &returnDie, &error) == DW_DLV_OK) {
         if ((dwarf_tag(returnDie, &tag, &error) == DW_DLV_OK) &&
-            tag == DW_TAG_compile_unit) {
+            tag == DW_TAG_compile_unit)
+        {
           if (die_has_pc(fobj, returnDie, addr)) {
             found = true;
           }
@@ -3442,7 +3735,8 @@ private:
 
     if (found) {
       while (dwarf_next_cu_header_d(dwarf, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                    &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                    &next_cu_header, 0, &error) == DW_DLV_OK)
+      {
         // Reset the cu header state. Libdwarf's next_cu_header API
         // keeps its own iterator per Dwarf_Debug that can't be reset.
         // We need to keep fetching elements until the end.
@@ -3456,7 +3750,8 @@ private:
     // Try again by looking at all DIEs in all compilation units.
     Dwarf_Die cudie;
     while (dwarf_next_cu_header_d(dwarf, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                  &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                  &next_cu_header, 0, &error) == DW_DLV_OK)
+    {
       if (dwarf_siblingof(dwarf, 0, &cudie, &error) == DW_DLV_OK) {
         Dwarf_Die die_mem = 0;
         Dwarf_Die resultDie = find_fundie_by_pc(fobj, cudie, addr, die_mem);
@@ -3470,7 +3765,8 @@ private:
 
     if (found) {
       while (dwarf_next_cu_header_d(dwarf, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                                    &next_cu_header, 0, &error) == DW_DLV_OK) {
+                                    &next_cu_header, 0, &error) == DW_DLV_OK)
+      {
         // Reset the cu header state. Libdwarf's next_cu_header API
         // keeps its own iterator per Dwarf_Debug that can't be reset.
         // We need to keep fetching elements until the end.
@@ -3484,7 +3780,7 @@ private:
     return NULL;
   }
 };
-#endif // BACKWARD_HAS_DWARF == 1
+  #endif // BACKWARD_HAS_DWARF == 1
 
 template <>
 class TraceResolverImpl<system_tag::linux_tag>
@@ -3494,23 +3790,26 @@ class TraceResolverImpl<system_tag::linux_tag>
 
 #ifdef BACKWARD_SYSTEM_DARWIN
 
-template <typename STACKTRACE_TAG> class TraceResolverDarwinImpl;
+template <typename STACKTRACE_TAG>
+class TraceResolverDarwinImpl;
 
 template <>
 class TraceResolverDarwinImpl<trace_resolver_tag::backtrace_symbol>
     : public TraceResolverImplBase {
-public:
-  void load_addresses(void *const*addresses, int address_count) override {
+ public:
+  void load_addresses(void* const* addresses, int address_count) override
+  {
     if (address_count == 0) {
       return;
     }
     _symbols.reset(backtrace_symbols(addresses, address_count));
   }
 
-  ResolvedTrace resolve(ResolvedTrace trace) override {
+  ResolvedTrace resolve(ResolvedTrace trace) override
+  {
     // parse:
     // <n>  <file>  <addr>  <mangled-name> + <offset>
-    char *filename = _symbols[trace.idx];
+    char* filename = _symbols[trace.idx];
 
     // skip "<n>  "
     while (*filename && *filename != ' ')
@@ -3519,7 +3818,7 @@ public:
       filename++;
 
     // find start of <mangled-name> from end (<file> may contain a space)
-    char *p = filename + strlen(filename) - 1;
+    char* p = filename + strlen(filename) - 1;
     // skip to start of " + <offset>"
     while (p > filename && *p != ' ')
       p--;
@@ -3529,12 +3828,12 @@ public:
       p--;
     while (p > filename && *p == ' ')
       p--;
-    char *funcname_end = p + 1;
+    char* funcname_end = p + 1;
 
     // skip to start of "<manged-name>"
     while (p > filename && *p != ' ')
       p--;
-    char *funcname = p + 1;
+    char* funcname = p + 1;
 
     // skip to start of "  <addr>  "
     while (p > filename && *p == ' ')
@@ -3545,15 +3844,15 @@ public:
       p--;
 
     // skip "<file>", handling the case where it contains a
-    char *filename_end = p + 1;
+    char* filename_end = p + 1;
     if (p == filename) {
       // something went wrong, give up
       filename_end = filename + strlen(filename);
       funcname = filename_end;
     }
     trace.object_filename.assign(
-        filename, filename_end); // ok even if filename_end is the ending \0
-                                 // (then we assign entire string)
+      filename, filename_end); // ok even if filename_end is the ending \0
+                               // (then we assign entire string)
 
     if (*funcname) { // if it's not end of string
       *funcname_end = '\0';
@@ -3566,8 +3865,8 @@ public:
     return trace;
   }
 
-private:
-  details::handle<char **> _symbols;
+ private:
+  details::handle<char**> _symbols;
 };
 
 template <>
@@ -3585,7 +3884,7 @@ class TraceResolverImpl<system_tag::darwin_tag>
 struct module_data {
   std::string image_name;
   std::string module_name;
-  void *base_address;
+  void* base_address;
   DWORD load_size;
 };
 
@@ -3593,10 +3892,14 @@ class get_mod_info {
   HANDLE process;
   static const int buffer_length = 4096;
 
-public:
-  get_mod_info(HANDLE h) : process(h) {}
+ public:
+  get_mod_info(HANDLE h)
+      : process(h)
+  {
+  }
 
-  module_data operator()(HMODULE module) {
+  module_data operator()(HMODULE module)
+  {
     module_data ret;
     char temp[buffer_length];
     MODULEINFO mi;
@@ -3617,10 +3920,12 @@ public:
   }
 };
 
-template <> class TraceResolverImpl<system_tag::windows_tag>
+template <>
+class TraceResolverImpl<system_tag::windows_tag>
     : public TraceResolverImplBase {
-public:
-  TraceResolverImpl() {
+ public:
+  TraceResolverImpl()
+  {
 
     HANDLE process = GetCurrentProcess();
 
@@ -3631,17 +3936,17 @@ public:
     DWORD symOptions = SymGetOptions();
     symOptions |= SYMOPT_LOAD_LINES | SYMOPT_UNDNAME;
     SymSetOptions(symOptions);
-    EnumProcessModules(process, &module_handles[0],
-                       static_cast<DWORD>(module_handles.size() * sizeof(HMODULE)),
-		       &cbNeeded);
+    EnumProcessModules(
+      process, &module_handles[0],
+      static_cast<DWORD>(module_handles.size() * sizeof(HMODULE)), &cbNeeded);
     module_handles.resize(cbNeeded / sizeof(HMODULE));
-    EnumProcessModules(process, &module_handles[0],
-                       static_cast<DWORD>(module_handles.size() * sizeof(HMODULE)),
-		       &cbNeeded);
+    EnumProcessModules(
+      process, &module_handles[0],
+      static_cast<DWORD>(module_handles.size() * sizeof(HMODULE)), &cbNeeded);
     std::transform(module_handles.begin(), module_handles.end(),
                    std::back_inserter(modules), get_mod_info(process));
-    void *base = modules[0].base_address;
-    IMAGE_NT_HEADERS *h = ImageNtHeader(base);
+    void* base = modules[0].base_address;
+    IMAGE_NT_HEADERS* h = ImageNtHeader(base);
     image_type = h->FileHeader.Machine;
   }
 
@@ -3653,7 +3958,8 @@ public:
 
   DWORD64 displacement;
 
-  ResolvedTrace resolve(ResolvedTrace t) override {
+  ResolvedTrace resolve(ResolvedTrace t) override
+  {
     HANDLE process = GetCurrentProcess();
 
     char name[256];
@@ -3668,10 +3974,11 @@ public:
       DWORD dw = GetLastError();
 
       if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                             FORMAT_MESSAGE_FROM_SYSTEM |
-                             FORMAT_MESSAGE_IGNORE_INSERTS,
+                           FORMAT_MESSAGE_FROM_SYSTEM |
+                           FORMAT_MESSAGE_IGNORE_INSERTS,
                          NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                         (char*)&lpMsgBuf, 0, NULL)) {
+                         (char*)&lpMsgBuf, 0, NULL))
+      {
         std::fprintf(stderr, "%s\n", lpMsgBuf);
         LocalFree(lpMsgBuf);
       }
@@ -3696,9 +4003,12 @@ public:
     return t;
   }
 
-  DWORD machine_type() const { return image_type; }
+  DWORD machine_type() const
+  {
+    return image_type;
+  }
 
-private:
+ private:
   DWORD image_type;
 };
 
@@ -3709,15 +4019,18 @@ class TraceResolver : public TraceResolverImpl<system_tag::current_tag> {};
 /*************** CODE SNIPPET ***************/
 
 class SourceFile {
-public:
-  typedef std::vector<std::pair<unsigned, std::string> > lines_t;
+ public:
+  typedef std::vector<std::pair<unsigned, std::string>> lines_t;
 
-  SourceFile() {}
-  SourceFile(const std::string &path) {
+  SourceFile()
+  {
+  }
+  SourceFile(const std::string& path)
+  {
     // 1. If BACKWARD_CXX_SOURCE_PREFIXES is set then assume it contains
     //    a colon-separated list of path prefixes.  Try prepending each
     //    to the given path until a valid file is found.
-    const std::vector<std::string> &prefixes = get_paths_from_env_variable();
+    const std::vector<std::string>& prefixes = get_paths_from_env_variable();
     for (size_t i = 0; i < prefixes.size(); ++i) {
       // Double slashes (//) should not be a problem.
       std::string new_path = prefixes[i] + '/' + path;
@@ -3730,9 +4043,13 @@ public:
       _file.reset(new std::ifstream(path.c_str()));
     }
   }
-  bool is_open() const { return _file->is_open(); }
+  bool is_open() const
+  {
+    return _file->is_open();
+  }
 
-  lines_t &get_lines(unsigned line_start, unsigned line_count, lines_t &lines) {
+  lines_t& get_lines(unsigned line_start, unsigned line_count, lines_t& lines)
+  {
     using namespace std;
     // This function make uses of the dumbest algo ever:
     //	1) seek(0)
@@ -3759,7 +4076,10 @@ public:
     // but look, I will reuse it two times!
     // What a good boy am I.
     struct isspace {
-      bool operator()(char c) { return std::isspace(c); }
+      bool operator()(char c)
+      {
+        return std::isspace(c);
+      }
     };
 
     bool started = false;
@@ -3777,12 +4097,13 @@ public:
     }
 
     lines.erase(
-        std::find_if(lines.rbegin(), lines.rend(), not_isempty()).base(),
-        lines.end());
+      std::find_if(lines.rbegin(), lines.rend(), not_isempty()).base(),
+      lines.end());
     return lines;
   }
 
-  lines_t get_lines(unsigned line_start, unsigned line_count) {
+  lines_t get_lines(unsigned line_start, unsigned line_count)
+  {
     lines_t lines;
     return get_lines(line_start, line_count, lines);
   }
@@ -3790,33 +4111,47 @@ public:
   // there is no find_if_not in C++98, lets do something crappy to
   // workaround.
   struct not_isspace {
-    bool operator()(char c) { return !std::isspace(c); }
+    bool operator()(char c)
+    {
+      return !std::isspace(c);
+    }
   };
   // and define this one here because C++98 is not happy with local defined
   // struct passed to template functions, fuuuu.
   struct not_isempty {
-    bool operator()(const lines_t::value_type &p) {
+    bool operator()(const lines_t::value_type& p)
+    {
       return !(std::find_if(p.second.begin(), p.second.end(), not_isspace()) ==
                p.second.end());
     }
   };
 
-  void swap(SourceFile &b) { _file.swap(b._file); }
+  void swap(SourceFile& b)
+  {
+    _file.swap(b._file);
+  }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-  SourceFile(SourceFile &&from) : _file(nullptr) { swap(from); }
-  SourceFile &operator=(SourceFile &&from) {
+  SourceFile(SourceFile&& from)
+      : _file(nullptr)
+  {
+    swap(from);
+  }
+  SourceFile& operator=(SourceFile&& from)
+  {
     swap(from);
     return *this;
   }
 #else
-  explicit SourceFile(const SourceFile &from) {
+  explicit SourceFile(const SourceFile& from)
+  {
     // some sort of poor man's move semantic.
-    swap(const_cast<SourceFile &>(from));
+    swap(const_cast<SourceFile&>(from));
   }
-  SourceFile &operator=(const SourceFile &from) {
+  SourceFile& operator=(const SourceFile& from)
+  {
     // some sort of poor man's move semantic.
-    swap(const_cast<SourceFile &>(from));
+    swap(const_cast<SourceFile&>(from));
     return *this;
   }
 #endif
@@ -3824,65 +4159,73 @@ public:
   // Allow adding to paths gotten from BACKWARD_CXX_SOURCE_PREFIXES after loading the
   // library; this can be useful when the library is loaded when the locations are unknown
   // Warning: Because this edits the static paths variable, it is *not* intrinsiclly thread safe
-  static void add_paths_to_env_variable_impl(const std::string & to_add) {
+  static void add_paths_to_env_variable_impl(const std::string& to_add)
+  {
     get_mutable_paths_from_env_variable().push_back(to_add);
   }
 
-private:
-  details::handle<std::ifstream *, details::default_delete<std::ifstream *> >
-      _file;
+ private:
+  details::handle<std::ifstream*, details::default_delete<std::ifstream*>>
+    _file;
 
-  static std::vector<std::string> get_paths_from_env_variable_impl() {
+  static std::vector<std::string> get_paths_from_env_variable_impl()
+  {
     std::vector<std::string> paths;
-    const char *prefixes_str = std::getenv("BACKWARD_CXX_SOURCE_PREFIXES");
+    const char* prefixes_str = std::getenv("BACKWARD_CXX_SOURCE_PREFIXES");
     if (prefixes_str && prefixes_str[0]) {
       paths = details::split_source_prefixes(prefixes_str);
     }
     return paths;
   }
 
-  static std::vector<std::string> &get_mutable_paths_from_env_variable() {
-    static volatile std::vector<std::string> paths = get_paths_from_env_variable_impl();
+  static std::vector<std::string>& get_mutable_paths_from_env_variable()
+  {
+    static volatile std::vector<std::string> paths =
+      get_paths_from_env_variable_impl();
     return const_cast<std::vector<std::string>&>(paths);
   }
 
-  static const std::vector<std::string> &get_paths_from_env_variable() {
+  static const std::vector<std::string>& get_paths_from_env_variable()
+  {
     return get_mutable_paths_from_env_variable();
   }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-  SourceFile(const SourceFile &) = delete;
-  SourceFile &operator=(const SourceFile &) = delete;
+  SourceFile(const SourceFile&) = delete;
+  SourceFile& operator=(const SourceFile&) = delete;
 #endif
 };
 
 class SnippetFactory {
-public:
+ public:
   typedef SourceFile::lines_t lines_t;
 
-  lines_t get_snippet(const std::string &filename, unsigned line_start,
-                      unsigned context_size) {
+  lines_t get_snippet(const std::string& filename, unsigned line_start,
+                      unsigned context_size)
+  {
 
-    SourceFile &src_file = get_src_file(filename);
+    SourceFile& src_file = get_src_file(filename);
     unsigned start = line_start - context_size / 2;
     return src_file.get_lines(start, context_size);
   }
 
-  lines_t get_combined_snippet(const std::string &filename_a, unsigned line_a,
-                               const std::string &filename_b, unsigned line_b,
-                               unsigned context_size) {
-    SourceFile &src_file_a = get_src_file(filename_a);
-    SourceFile &src_file_b = get_src_file(filename_b);
+  lines_t get_combined_snippet(const std::string& filename_a, unsigned line_a,
+                               const std::string& filename_b, unsigned line_b,
+                               unsigned context_size)
+  {
+    SourceFile& src_file_a = get_src_file(filename_a);
+    SourceFile& src_file_b = get_src_file(filename_b);
 
     lines_t lines =
-        src_file_a.get_lines(line_a - context_size / 4, context_size / 2);
+      src_file_a.get_lines(line_a - context_size / 4, context_size / 2);
     src_file_b.get_lines(line_b - context_size / 4, context_size / 2, lines);
     return lines;
   }
 
-  lines_t get_coalesced_snippet(const std::string &filename, unsigned line_a,
-                                unsigned line_b, unsigned context_size) {
-    SourceFile &src_file = get_src_file(filename);
+  lines_t get_coalesced_snippet(const std::string& filename, unsigned line_a,
+                                unsigned line_b, unsigned context_size)
+  {
+    SourceFile& src_file = get_src_file(filename);
 
     using std::max;
     using std::min;
@@ -3898,16 +4241,17 @@ public:
     return lines;
   }
 
-private:
+ private:
   typedef details::hashtable<std::string, SourceFile>::type src_files_t;
   src_files_t _src_files;
 
-  SourceFile &get_src_file(const std::string &filename) {
+  SourceFile& get_src_file(const std::string& filename)
+  {
     src_files_t::iterator it = _src_files.find(filename);
     if (it != _src_files.end()) {
       return it->second;
     }
-    SourceFile &new_src_file = _src_files[filename];
+    SourceFile& new_src_file = _src_files[filename];
     new_src_file = SourceFile(filename);
     return new_src_file;
   }
@@ -3916,55 +4260,83 @@ private:
 /*************** PRINTER ***************/
 
 namespace ColorMode {
-enum type { automatic, never, always };
-}
+enum type {
+  automatic,
+  never,
+  always
+};
+} // namespace ColorMode
 
 class cfile_streambuf : public std::streambuf {
-public:
-  cfile_streambuf(FILE *_sink) : sink(_sink) {}
-  int_type underflow() override { return traits_type::eof(); }
-  int_type overflow(int_type ch) override {
+ public:
+  cfile_streambuf(FILE* _sink)
+      : sink(_sink)
+  {
+  }
+  int_type underflow() override
+  {
+    return traits_type::eof();
+  }
+  int_type overflow(int_type ch) override
+  {
     if (traits_type::not_eof(ch) && fputc(ch, sink) != EOF) {
       return ch;
     }
     return traits_type::eof();
   }
 
-  std::streamsize xsputn(const char_type *s, std::streamsize count) override {
+  std::streamsize xsputn(const char_type* s, std::streamsize count) override
+  {
     return static_cast<std::streamsize>(
-        fwrite(s, sizeof *s, static_cast<size_t>(count), sink));
+      fwrite(s, sizeof *s, static_cast<size_t>(count), sink));
   }
 
 #ifdef BACKWARD_ATLEAST_CXX11
-public:
-  cfile_streambuf(const cfile_streambuf &) = delete;
-  cfile_streambuf &operator=(const cfile_streambuf &) = delete;
+ public:
+  cfile_streambuf(const cfile_streambuf&) = delete;
+  cfile_streambuf& operator=(const cfile_streambuf&) = delete;
 #else
-private:
-  cfile_streambuf(const cfile_streambuf &);
-  cfile_streambuf &operator=(const cfile_streambuf &);
+ private:
+  cfile_streambuf(const cfile_streambuf&);
+  cfile_streambuf& operator=(const cfile_streambuf&);
 #endif
 
-private:
-  FILE *sink;
+ private:
+  FILE* sink;
   std::vector<char> buffer;
 };
 
 #ifdef BACKWARD_SYSTEM_LINUX
 
 namespace Color {
-enum type { yellow = 33, purple = 35, reset = 39 };
+enum type {
+  yellow = 33,
+  purple = 35,
+  reset = 39
+};
 } // namespace Color
 
 class Colorize {
-public:
-  Colorize(std::ostream &os) : _os(os), _reset(false), _enabled(false) {}
+ public:
+  Colorize(std::ostream& os)
+      : _os(os)
+      , _reset(false)
+      , _enabled(false)
+  {
+  }
 
-  void activate(ColorMode::type mode) { _enabled = mode == ColorMode::always; }
+  void activate(ColorMode::type mode)
+  {
+    _enabled = mode == ColorMode::always;
+  }
 
-  void activate(ColorMode::type mode, FILE *fp) { activate(mode, fileno(fp)); }
+  void activate(ColorMode::type mode, FILE* fp)
+  {
+    activate(mode, fileno(fp));
+  }
 
-  void set_color(Color::type ccode) {
+  void set_color(Color::type ccode)
+  {
     if (!_enabled)
       return;
 
@@ -3974,19 +4346,21 @@ public:
     _reset = (ccode != Color::reset);
   }
 
-  ~Colorize() {
+  ~Colorize()
+  {
     if (_reset) {
       set_color(Color::reset);
     }
   }
 
-private:
-  void activate(ColorMode::type mode, int fd) {
+ private:
+  void activate(ColorMode::type mode, int fd)
+  {
     activate(mode == ColorMode::automatic && isatty(fd) ? ColorMode::always
                                                         : mode);
   }
 
-  std::ostream &_os;
+  std::ostream& _os;
   bool _reset;
   bool _enabled;
 };
@@ -3994,21 +4368,33 @@ private:
 #else // ndef BACKWARD_SYSTEM_LINUX
 
 namespace Color {
-enum type { yellow = 0, purple = 0, reset = 0 };
+enum type {
+  yellow = 0,
+  purple = 0,
+  reset = 0
+};
 } // namespace Color
 
 class Colorize {
-public:
-  Colorize(std::ostream &) {}
-  void activate(ColorMode::type) {}
-  void activate(ColorMode::type, FILE *) {}
-  void set_color(Color::type) {}
+ public:
+  Colorize(std::ostream&)
+  {
+  }
+  void activate(ColorMode::type)
+  {
+  }
+  void activate(ColorMode::type, FILE*)
+  {
+  }
+  void set_color(Color::type)
+  {
+  }
 };
 
 #endif // BACKWARD_SYSTEM_LINUX
 
 class Printer {
-public:
+ public:
   bool snippet;
   ColorMode::type color_mode;
   bool address;
@@ -4018,11 +4404,19 @@ public:
   bool reverse;
 
   Printer()
-      : snippet(true), color_mode(ColorMode::automatic), address(false),
-        object(false), inliner_context_size(5), trace_context_size(7),
-        reverse(true) {}
+      : snippet(true)
+      , color_mode(ColorMode::automatic)
+      , address(false)
+      , object(false)
+      , inliner_context_size(5)
+      , trace_context_size(7)
+      , reverse(true)
+  {
+  }
 
-  template <typename ST> FILE *print(ST &st, FILE *fp = stderr) {
+  template <typename ST>
+  FILE* print(ST& st, FILE* fp = stderr)
+  {
     cfile_streambuf obuf(fp);
     std::ostream os(&obuf);
     Colorize colorize(os);
@@ -4031,7 +4425,9 @@ public:
     return fp;
   }
 
-  template <typename ST> std::ostream &print(ST &st, std::ostream &os) {
+  template <typename ST>
+  std::ostream& print(ST& st, std::ostream& os)
+  {
     Colorize colorize(os);
     colorize.activate(color_mode);
     print_stacktrace(st, os, colorize);
@@ -4039,7 +4435,8 @@ public:
   }
 
   template <typename IT>
-  FILE *print(IT begin, IT end, FILE *fp = stderr, size_t thread_id = 0) {
+  FILE* print(IT begin, IT end, FILE* fp = stderr, size_t thread_id = 0)
+  {
     cfile_streambuf obuf(fp);
     std::ostream os(&obuf);
     Colorize colorize(os);
@@ -4049,29 +4446,34 @@ public:
   }
 
   template <typename IT>
-  std::ostream &print(IT begin, IT end, std::ostream &os,
-                      size_t thread_id = 0) {
+  std::ostream& print(IT begin, IT end, std::ostream& os, size_t thread_id = 0)
+  {
     Colorize colorize(os);
     colorize.activate(color_mode);
     print_stacktrace(begin, end, os, thread_id, colorize);
     return os;
   }
 
-  TraceResolver const &resolver() const { return _resolver; }
+  TraceResolver const& resolver() const
+  {
+    return _resolver;
+  }
 
-private:
+ private:
   TraceResolver _resolver;
   SnippetFactory _snippets;
 
   template <typename ST>
-  void print_stacktrace(ST &st, std::ostream &os, Colorize &colorize) {
+  void print_stacktrace(ST& st, std::ostream& os, Colorize& colorize)
+  {
     print_header(os, st.thread_id());
     _resolver.load_stacktrace(st);
-    if ( reverse ) {
+    if (reverse) {
       for (size_t trace_idx = st.size(); trace_idx > 0; --trace_idx) {
         print_trace(os, _resolver.resolve(st[trace_idx - 1]), colorize);
       }
-    } else {
+    }
+    else {
       for (size_t trace_idx = 0; trace_idx < st.size(); ++trace_idx) {
         print_trace(os, _resolver.resolve(st[trace_idx]), colorize);
       }
@@ -4079,15 +4481,17 @@ private:
   }
 
   template <typename IT>
-  void print_stacktrace(IT begin, IT end, std::ostream &os, size_t thread_id,
-                        Colorize &colorize) {
+  void print_stacktrace(IT begin, IT end, std::ostream& os, size_t thread_id,
+                        Colorize& colorize)
+  {
     print_header(os, thread_id);
     for (; begin != end; ++begin) {
       print_trace(os, *begin, colorize);
     }
   }
 
-  void print_header(std::ostream &os, size_t thread_id) {
+  void print_header(std::ostream& os, size_t thread_id)
+  {
     os << "Stack trace (most recent call last)";
     if (thread_id) {
       os << " in thread " << thread_id;
@@ -4095,8 +4499,9 @@ private:
     os << ":\n";
   }
 
-  void print_trace(std::ostream &os, const ResolvedTrace &trace,
-                   Colorize &colorize) {
+  void print_trace(std::ostream& os, const ResolvedTrace& trace,
+                   Colorize& colorize)
+  {
     os << "#" << std::left << std::setw(2) << trace.idx << std::right;
     bool already_indented = true;
 
@@ -4107,12 +4512,13 @@ private:
     }
 
     for (size_t inliner_idx = trace.inliners.size(); inliner_idx > 0;
-         --inliner_idx) {
+         --inliner_idx)
+    {
       if (!already_indented) {
         os << "   ";
       }
-      const ResolvedTrace::SourceLoc &inliner_loc =
-          trace.inliners[inliner_idx - 1];
+      const ResolvedTrace::SourceLoc& inliner_loc =
+        trace.inliners[inliner_idx - 1];
       print_source_loc(os, " | ", inliner_loc);
       if (snippet) {
         print_snippet(os, "    | ", inliner_loc, colorize, Color::purple,
@@ -4133,10 +4539,11 @@ private:
     }
   }
 
-  void print_snippet(std::ostream &os, const char *indent,
-                     const ResolvedTrace::SourceLoc &source_loc,
-                     Colorize &colorize, Color::type color_code,
-                     int context_size) {
+  void print_snippet(std::ostream& os, const char* indent,
+                     const ResolvedTrace::SourceLoc& source_loc,
+                     Colorize& colorize, Color::type color_code,
+                     int context_size)
+  {
     using namespace std;
     typedef SnippetFactory::lines_t lines_t;
 
@@ -4147,7 +4554,8 @@ private:
       if (it->first == source_loc.line) {
         colorize.set_color(color_code);
         os << indent << ">";
-      } else {
+      }
+      else {
         os << indent << " ";
       }
       os << std::setw(4) << it->first << ": " << it->second << "\n";
@@ -4157,9 +4565,10 @@ private:
     }
   }
 
-  void print_source_loc(std::ostream &os, const char *indent,
-                        const ResolvedTrace::SourceLoc &source_loc,
-                        void *addr = nullptr) {
+  void print_source_loc(std::ostream& os, const char* indent,
+                        const ResolvedTrace::SourceLoc& source_loc,
+                        void* addr = nullptr)
+  {
     os << indent << "Source \"" << source_loc.filename << "\", line "
        << source_loc.line << ", in " << source_loc.function;
 
@@ -4175,8 +4584,9 @@ private:
 #if defined(BACKWARD_SYSTEM_LINUX) || defined(BACKWARD_SYSTEM_DARWIN)
 
 class SignalHandling {
-public:
-  static std::vector<int> make_default_signals() {
+ public:
+  static std::vector<int> make_default_signals()
+  {
     const int posix_signals[] = {
       // Signals for which the default action is "Core".
       SIGABRT, // Abort signal from abort(3)
@@ -4190,21 +4600,22 @@ public:
       SIGTRAP, // Trace/breakpoint trap
       SIGXCPU, // CPU time limit exceeded (4.2BSD)
       SIGXFSZ, // File size limit exceeded (4.2BSD)
-#if defined(BACKWARD_SYSTEM_DARWIN)
+  #if defined(BACKWARD_SYSTEM_DARWIN)
       SIGEMT, // emulation instruction executed
-#endif
+  #endif
     };
     return std::vector<int>(posix_signals,
                             posix_signals +
-                                sizeof posix_signals / sizeof posix_signals[0]);
+                              sizeof posix_signals / sizeof posix_signals[0]);
   }
 
-  SignalHandling(const std::vector<int> &posix_signals = make_default_signals())
-      : _loaded(false) {
+  SignalHandling(const std::vector<int>& posix_signals = make_default_signals())
+      : _loaded(false)
+  {
     bool success = true;
 
     const size_t stack_size = 1024 * 1024 * 8;
-    _stack_content.reset(static_cast<char *>(malloc(stack_size)));
+    _stack_content.reset(static_cast<char*>(malloc(stack_size)));
     if (_stack_content) {
       stack_t ss;
       ss.ss_sp = _stack_content.get();
@@ -4213,7 +4624,8 @@ public:
       if (sigaltstack(&ss, nullptr) < 0) {
         success = false;
       }
-    } else {
+    }
+    else {
       success = false;
     }
 
@@ -4221,17 +4633,17 @@ public:
       struct sigaction action;
       memset(&action, 0, sizeof action);
       action.sa_flags =
-          static_cast<int>(SA_SIGINFO | SA_ONSTACK | SA_NODEFER | SA_RESETHAND);
+        static_cast<int>(SA_SIGINFO | SA_ONSTACK | SA_NODEFER | SA_RESETHAND);
       sigfillset(&action.sa_mask);
       sigdelset(&action.sa_mask, posix_signals[i]);
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
-#endif
+  #if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+  #endif
       action.sa_sigaction = &sig_handler;
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
+  #if defined(__clang__)
+    #pragma clang diagnostic pop
+  #endif
 
       int r = sigaction(posix_signals[i], &action, nullptr);
       if (r < 0)
@@ -4241,70 +4653,76 @@ public:
     _loaded = success;
   }
 
-  bool loaded() const { return _loaded; }
+  bool loaded() const
+  {
+    return _loaded;
+  }
 
-  static void handleSignal(int, siginfo_t *info, void *_ctx) {
-    ucontext_t *uctx = static_cast<ucontext_t *>(_ctx);
+  static void handleSignal(int, siginfo_t* info, void* _ctx)
+  {
+    ucontext_t* uctx = static_cast<ucontext_t*>(_ctx);
 
     StackTrace st;
-    void *error_addr = nullptr;
-#ifdef REG_RIP // x86_64
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.gregs[REG_RIP]);
-#elif defined(REG_EIP) // x86_32
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.gregs[REG_EIP]);
-#elif defined(__arm__)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.arm_pc);
-#elif defined(__aarch64__)
+    void* error_addr = nullptr;
+  #ifdef REG_RIP // x86_64
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.gregs[REG_RIP]);
+  #elif defined(REG_EIP) // x86_32
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.gregs[REG_EIP]);
+  #elif defined(__arm__)
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.arm_pc);
+  #elif defined(__aarch64__)
     #if defined(__APPLE__)
-      error_addr = reinterpret_cast<void *>(uctx->uc_mcontext->__ss.__pc);
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext->__ss.__pc);
     #else
-      error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.pc);
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.pc);
     #endif
-#elif defined(__mips__)
-    error_addr = reinterpret_cast<void *>(
-        reinterpret_cast<struct sigcontext *>(&uctx->uc_mcontext)->sc_pc);
-#elif defined(__ppc__) || defined(__powerpc) || defined(__powerpc__) ||        \
+  #elif defined(__mips__)
+    error_addr = reinterpret_cast<void*>(
+      reinterpret_cast<struct sigcontext*>(&uctx->uc_mcontext)->sc_pc);
+  #elif defined(__ppc__) || defined(__powerpc) || defined(__powerpc__) || \
     defined(__POWERPC__)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.regs->nip);
-#elif defined(__riscv)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.__gregs[REG_PC]);
-#elif defined(__s390x__)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext.psw.addr);
-#elif defined(__APPLE__) && defined(__x86_64__)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext->__ss.__rip);
-#elif defined(__APPLE__)
-    error_addr = reinterpret_cast<void *>(uctx->uc_mcontext->__ss.__eip);
-#else
-#warning ":/ sorry, ain't know no nothing none not of your architecture!"
-#endif
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.regs->nip);
+  #elif defined(__riscv)
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.__gregs[REG_PC]);
+  #elif defined(__s390x__)
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext.psw.addr);
+  #elif defined(__APPLE__) && defined(__x86_64__)
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext->__ss.__rip);
+  #elif defined(__APPLE__)
+    error_addr = reinterpret_cast<void*>(uctx->uc_mcontext->__ss.__eip);
+  #else
+    #warning ":/ sorry, ain't know no nothing none not of your architecture!"
+  #endif
     if (error_addr) {
-      st.load_from(error_addr, 32, reinterpret_cast<void *>(uctx),
+      st.load_from(error_addr, 32, reinterpret_cast<void*>(uctx),
                    info->si_addr);
-    } else {
-      st.load_here(32, reinterpret_cast<void *>(uctx), info->si_addr);
+    }
+    else {
+      st.load_here(32, reinterpret_cast<void*>(uctx), info->si_addr);
     }
 
     Printer printer;
     printer.address = true;
     printer.print(st, stderr);
 
-#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 700) || \
+  #if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 700) || \
     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
     psiginfo(info, nullptr);
-#else
+  #else
     (void)info;
-#endif
+  #endif
   }
 
-private:
-  details::handle<char *> _stack_content;
+ private:
+  details::handle<char*> _stack_content;
   bool _loaded;
 
-#ifdef __GNUC__
+  #ifdef __GNUC__
   __attribute__((noreturn))
-#endif
+  #endif
   static void
-  sig_handler(int signo, siginfo_t *info, void *_ctx) {
+  sig_handler(int signo, siginfo_t* info, void* _ctx)
+  {
     handleSignal(signo, info, _ctx);
 
     // try to forward the signal.
@@ -4321,10 +4739,10 @@ private:
 #ifdef BACKWARD_SYSTEM_WINDOWS
 
 class SignalHandling {
-public:
-  SignalHandling(const std::vector<int> & = std::vector<int>())
+ public:
+  SignalHandling(const std::vector<int>& = std::vector<int>())
       : reporter_thread_([]() {
-          /* We handle crashes in a utility thread:
+        /* We handle crashes in a utility thread:
             backward structures and some Windows functions called here
             need stack space, which we do not have when we encounter a
             stack overflow.
@@ -4332,34 +4750,39 @@ public:
             we create a utility thread at startup, which waits until a
             crash happens or the program exits normally. */
 
-          {
-            std::unique_lock<std::mutex> lk(mtx());
-            cv().wait(lk, [] { return crashed() != crash_status::running; });
-          }
-          if (crashed() == crash_status::crashed) {
-            handle_stacktrace(skip_recs());
-          }
-          {
-            std::unique_lock<std::mutex> lk(mtx());
-            crashed() = crash_status::ending;
-          }
-          cv().notify_one();
-        }) {
+        {
+          std::unique_lock<std::mutex> lk(mtx());
+          cv().wait(lk, [] { return crashed() != crash_status::running; });
+        }
+        if (crashed() == crash_status::crashed) {
+          handle_stacktrace(skip_recs());
+        }
+        {
+          std::unique_lock<std::mutex> lk(mtx());
+          crashed() = crash_status::ending;
+        }
+        cv().notify_one();
+      })
+  {
     SetUnhandledExceptionFilter(crash_handler);
 
     signal(SIGABRT, signal_handler);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 
     std::set_terminate(&terminator);
-#ifndef BACKWARD_ATLEAST_CXX17
+  #ifndef BACKWARD_ATLEAST_CXX17
     std::set_unexpected(&terminator);
-#endif
+  #endif
     _set_purecall_handler(&terminator);
     _set_invalid_parameter_handler(&invalid_parameter_handler);
   }
-  bool loaded() const { return true; }
+  bool loaded() const
+  {
+    return true;
+  }
 
-  ~SignalHandling() {
+  ~SignalHandling()
+  {
     {
       std::unique_lock<std::mutex> lk(mtx());
       crashed() = crash_status::normal_exit;
@@ -4370,30 +4793,40 @@ public:
     reporter_thread_.join();
   }
 
-private:
-  static CONTEXT *ctx() {
+ private:
+  static CONTEXT* ctx()
+  {
     static CONTEXT data;
     return &data;
   }
 
-  enum class crash_status { running, crashed, normal_exit, ending };
+  enum class crash_status {
+    running,
+    crashed,
+    normal_exit,
+    ending
+  };
 
-  static crash_status &crashed() {
+  static crash_status& crashed()
+  {
     static crash_status data;
     return data;
   }
 
-  static std::mutex &mtx() {
+  static std::mutex& mtx()
+  {
     static std::mutex data;
     return data;
   }
 
-  static std::condition_variable &cv() {
+  static std::condition_variable& cv()
+  {
     static std::condition_variable data;
     return data;
   }
 
-  static HANDLE &thread_handle() {
+  static HANDLE& thread_handle()
+  {
     static HANDLE handle;
     return handle;
   }
@@ -4402,54 +4835,60 @@ private:
 
   // TODO: how not to hardcode these?
   static const constexpr int signal_skip_recs =
-#ifdef __clang__
-      // With clang, RtlCaptureContext also captures the stack frame of the
-      // current function Below that, there are 3 internal Windows functions
-      4
-#else
-      // With MSVC cl, RtlCaptureContext misses the stack frame of the current
-      // function The first entries during StackWalk are the 3 internal Windows
-      // functions
-      3
-#endif
-      ;
+  #ifdef __clang__
+    // With clang, RtlCaptureContext also captures the stack frame of the
+    // current function Below that, there are 3 internal Windows functions
+    4
+  #else
+    // With MSVC cl, RtlCaptureContext misses the stack frame of the current
+    // function The first entries during StackWalk are the 3 internal Windows
+    // functions
+    3
+  #endif
+    ;
 
-  static int &skip_recs() {
+  static int& skip_recs()
+  {
     static int data;
     return data;
   }
 
-  static inline void terminator() {
+  static inline void terminator()
+  {
     crash_handler(signal_skip_recs);
     abort();
   }
 
-  static inline void signal_handler(int) {
+  static inline void signal_handler(int)
+  {
     crash_handler(signal_skip_recs);
     abort();
   }
 
-  static inline void __cdecl invalid_parameter_handler(const wchar_t *,
-                                                       const wchar_t *,
-                                                       const wchar_t *,
-                                                       unsigned int,
-                                                       uintptr_t) {
+  static inline void __cdecl invalid_parameter_handler(const wchar_t*,
+                                                       const wchar_t*,
+                                                       const wchar_t*,
+                                                       unsigned int, uintptr_t)
+  {
     crash_handler(signal_skip_recs);
     abort();
   }
 
-  NOINLINE static LONG WINAPI crash_handler(EXCEPTION_POINTERS *info) {
+  NOINLINE static LONG WINAPI crash_handler(EXCEPTION_POINTERS* info)
+  {
     // The exception info supplies a trace from exactly where the issue was,
     // no need to skip records
     crash_handler(0, info->ContextRecord);
     return EXCEPTION_CONTINUE_SEARCH;
   }
 
-  NOINLINE static void crash_handler(int skip, CONTEXT *ct = nullptr) {
+  NOINLINE static void crash_handler(int skip, CONTEXT* ct = nullptr)
+  {
 
     if (ct == nullptr) {
       RtlCaptureContext(ctx());
-    } else {
+    }
+    else {
       memcpy(ctx(), ct, sizeof(CONTEXT));
     }
     DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
@@ -4471,7 +4910,8 @@ private:
     }
   }
 
-  static void handle_stacktrace(int skip_frames = 0) {
+  static void handle_stacktrace(int skip_frames = 0)
+  {
     // printer creates the TraceResolver, which can supply us a machine type
     // for stack walking. Without this, StackTrace can only guess using some
     // macros.
@@ -4495,10 +4935,18 @@ private:
 #ifdef BACKWARD_SYSTEM_UNKNOWN
 
 class SignalHandling {
-public:
-  SignalHandling(const std::vector<int> & = std::vector<int>()) {}
-  bool init() { return false; }
-  bool loaded() { return false; }
+ public:
+  SignalHandling(const std::vector<int>& = std::vector<int>())
+  {
+  }
+  bool init()
+  {
+    return false;
+  }
+  bool loaded()
+  {
+    return false;
+  }
 };
 
 #endif // BACKWARD_SYSTEM_UNKNOWN
@@ -4506,7 +4954,7 @@ public:
 } // namespace backward
 
 #if defined(__clang__)
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
 #endif
 
 #endif /* H_GUARD */

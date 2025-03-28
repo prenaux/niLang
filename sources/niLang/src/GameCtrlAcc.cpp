@@ -13,7 +13,8 @@ cGameCtrlAcc::cGameCtrlAcc()
 }
 
 ///////////////////////////////////////////////
-cGameCtrlAcc::~cGameCtrlAcc() {
+cGameCtrlAcc::~cGameCtrlAcc()
+{
 }
 
 void cGameCtrlAcc::ZeroMembers()
@@ -31,38 +32,46 @@ tBool __stdcall cGameCtrlAcc::IsOK() const
   return eTrue;
 }
 
-tU32 __stdcall cGameCtrlAcc::GetIndex() const {
+tU32 __stdcall cGameCtrlAcc::GetIndex() const
+{
   return 0;
 }
 
-tBool __stdcall cGameCtrlAcc::GetIsConnected() const {
+tBool __stdcall cGameCtrlAcc::GetIsConnected() const
+{
   return eTrue;
 }
 
-const achar*  __stdcall cGameCtrlAcc::GetName() const {
+const achar* __stdcall cGameCtrlAcc::GetName() const
+{
   return "Accelerometer";
 }
 
-tU32  __stdcall cGameCtrlAcc::GetNumAxis() const {
+tU32 __stdcall cGameCtrlAcc::GetNumAxis() const
+{
   return 3;
 }
 
-tU32  __stdcall cGameCtrlAcc::GetNumButtons() const {
+tU32 __stdcall cGameCtrlAcc::GetNumButtons() const
+{
   return 0;
 }
 
-tBool __stdcall cGameCtrlAcc::Update() {
+tBool __stdcall cGameCtrlAcc::Update()
+{
   return eFalse;
 }
 
-tF32  __stdcall cGameCtrlAcc::GetButton(tU32 ulButton) {
+tF32 __stdcall cGameCtrlAcc::GetButton(tU32 ulButton)
+{
   return 0.0f;
 }
-tF32  __stdcall cGameCtrlAcc::GetAxis(eGameCtrlAxis axis) {
+tF32 __stdcall cGameCtrlAcc::GetAxis(eGameCtrlAxis axis)
+{
   switch (axis) {
-    case eGameCtrlAxis_LX: return mvAxis.x;
-    case eGameCtrlAxis_LY: return mvAxis.y;
-    case eGameCtrlAxis_LZ: return mvAxis.z;
+  case eGameCtrlAxis_LX: return mvAxis.x;
+  case eGameCtrlAxis_LY: return mvAxis.y;
+  case eGameCtrlAxis_LZ: return mvAxis.z;
   }
   return 0.0f;
 }
@@ -74,4 +83,4 @@ tBool __stdcall cGameCtrlAcc::UpdateFromState(const sVec4f& state)
   return eFalse;
 }
 
-}
+} // namespace ni

@@ -23,7 +23,8 @@ enum eParseTypeDescFlags {
   eParseTypeDescFlags_Name = niBit(0),
   eParseTypeDescFlags_Type = niBit(1),
   eParseTypeDescFlags_Flags = niBit(2),
-  eParseTypeDescFlags_All = eParseTypeDescFlags_Name|eParseTypeDescFlags_Type|eParseTypeDescFlags_Flags
+  eParseTypeDescFlags_All = eParseTypeDescFlags_Name |
+                            eParseTypeDescFlags_Type | eParseTypeDescFlags_Flags
 };
 
 //! Parse type description flags type.
@@ -31,8 +32,7 @@ typedef tU32 tParseTypeDescFlags;
 
 ///////////////////////////////////////////////
 template <typename T, typename TSTR>
-static inline void ParseTypeDescTpl(const T* aaszInput,
-                                    TSTR* apstrOutName,
+static inline void ParseTypeDescTpl(const T* aaszInput, TSTR* apstrOutName,
                                     TSTR* apstrOutType,
                                     astl::vector<TSTR>* apvFlags)
 {
@@ -107,12 +107,17 @@ static inline void ParseTypeDescTpl(const T* aaszInput,
   }
 }
 
-static inline void ParseTypeDescEx(const achar* aaszInput, cString* apOutName, cString* apOutType, astl::vector<cString>* apOutFlags) {
-  ParseTypeDescTpl(aaszInput,apOutName,apOutType,apOutFlags);
+static inline void ParseTypeDescEx(const achar* aaszInput, cString* apOutName,
+                                   cString* apOutType,
+                                   astl::vector<cString>* apOutFlags)
+{
+  ParseTypeDescTpl(aaszInput, apOutName, apOutType, apOutFlags);
 }
 
 template <typename T, typename TSTR>
-static inline void ParseKeyValueTpl(const T* aaszInput, TSTR* apKey, TSTR* apVal) {
+static inline void ParseKeyValueTpl(const T* aaszInput, TSTR* apKey,
+                                    TSTR* apVal)
+{
   cString cur;
   const achar* p = aaszInput;
 
@@ -142,17 +147,23 @@ static inline void ParseKeyValueTpl(const T* aaszInput, TSTR* apKey, TSTR* apVal
   }
 }
 
-static inline void ParseKeyValueEx(const achar* aaszInput, cString* apKey, cString* apVal) {
-  ParseKeyValueTpl(aaszInput,apKey,apVal);
+static inline void ParseKeyValueEx(const achar* aaszInput, cString* apKey,
+                                   cString* apVal)
+{
+  ParseKeyValueTpl(aaszInput, apKey, apVal);
 }
 
 template <typename MAPTYPE>
-static inline void __stdcall ParseTypeToMap(MAPTYPE& aOut, const achar* aaszType, cString* apOutName = NULL, cString* apOutType = NULL) {
+static inline void __stdcall ParseTypeToMap(MAPTYPE& aOut,
+                                            const achar* aaszType,
+                                            cString* apOutName = NULL,
+                                            cString* apOutType = NULL)
+{
   astl::vector<cString> vProps;
-  ParseTypeDescEx(aaszType,apOutName,apOutType,&vProps);
+  ParseTypeDescEx(aaszType, apOutName, apOutType, &vProps);
   for (tU32 i = 0; i < vProps.size(); ++i) {
     cString strKey, strVal;
-    ParseKeyValueEx(vProps[i].Chars(),&strKey,&strVal);
+    ParseKeyValueEx(vProps[i].Chars(), &strKey, &strVal);
     if (strKey.IsNotEmpty()) {
       aOut[strKey] = strVal;
     }
@@ -160,15 +171,16 @@ static inline void __stdcall ParseTypeToMap(MAPTYPE& aOut, const achar* aaszType
 }
 
 #ifdef __IDATATABLE_15270737_H__
-static inline iDataTable* __stdcall ParseTypeToDT(const achar* aaszType) {
+static inline iDataTable* __stdcall ParseTypeToDT(const achar* aaszType)
+{
   Ptr<iDataTable> ptrDTBase = ni::CreateDataTable(AZEROSTR);
   astl::vector<cString> vProps;
-  ParseTypeDescEx(aaszType,NULL,NULL,&vProps);
+  ParseTypeDescEx(aaszType, NULL, NULL, &vProps);
   for (tU32 i = 0; i < vProps.size(); ++i) {
     cString strKey, strVal;
-    ParseKeyValueEx(vProps[i].Chars(),&strKey,&strVal);
+    ParseKeyValueEx(vProps[i].Chars(), &strKey, &strVal);
     if (strKey.IsNotEmpty()) {
-      ptrDTBase->SetString(strKey.Chars(),strVal.Chars());
+      ptrDTBase->SetString(strKey.Chars(), strVal.Chars());
     }
   }
   return ptrDTBase.GetRawAndSetNull();
@@ -178,5 +190,5 @@ static inline iDataTable* __stdcall ParseTypeToDT(const achar* aaszType) {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __PARSETYPE_H_A194FF1F_4A0D_49FB_BB2D_1CD14712E923__

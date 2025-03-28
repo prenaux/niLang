@@ -14,8 +14,7 @@ namespace ni {
  */
 
 //! Text encoding formats.
-enum eTextEncodingFormat
-{
+enum eTextEncodingFormat {
   //! Text encoding format header is unknown/invalid.
   eTextEncodingFormat_Unknown = eInvalidHandle,
   //! UTF8 encoding.
@@ -35,19 +34,19 @@ enum eTextEncodingFormat
   eTextEncodingFormat_BitStream = 6,
 
 #if niUCharSize == 4
-  //! Platform Unicode/WChar encoding.
-#  ifdef niLittleEndian
+    //! Platform Unicode/WChar encoding.
+  #ifdef niLittleEndian
   eTextEncodingFormat_Unicode = eTextEncodingFormat_UTF32LE,
-#  else
+  #else
   eTextEncodingFormat_Unicode = eTextEncodingFormat_UTF32BE,
-#  endif
+  #endif
 #elif niUCharSize == 2
-  //! Platform Unicode/WChar encoding.
-#  ifdef niLittleEndian
+    //! Platform Unicode/WChar encoding.
+  #ifdef niLittleEndian
   eTextEncodingFormat_Unicode = eTextEncodingFormat_UTF16LE,
-#  else
+  #else
   eTextEncodingFormat_Unicode = eTextEncodingFormat_UTF16BE,
-#  endif
+  #endif
 #elif niUCharSize == 1
   eTextEncodingFormat_Unicode = eTextEncodingFormat_UTF8,
 #endif
@@ -60,18 +59,17 @@ enum eTextEncodingFormat
 
 //! Callback interface used by the FileEnum() method of the iLang interface.
 //{DispatchWrapper}
-struct iFileEnumSink : public iUnknown
-{
+struct iFileEnumSink : public iUnknown {
   niDeclareInterfaceUUID(iFileEnumSink,0x0298d5b5,0xb4e5,0x4975,0x91,0xbf,0x50,0x14,0x83,0x4a,0xc9,0x5c);
-  virtual tBool __stdcall OnFound(const achar* aszFile, tU32 aFileAttrs, tI64 anFileSize) = 0;
+  virtual tBool __stdcall OnFound(const achar* aszFile, tU32 aFileAttrs,
+                                  tI64 anFileSize) = 0;
 };
 
 //! Serialization ID fourCC
 const tU32 kfccSerializedObject = niFourCC('S','E','Z','O');
 
 //! File flags.
-enum eFileFlags
-{
+enum eFileFlags {
   //! File can be read.
   eFileFlags_Read = niBit(0),
   //! File can be written.
@@ -105,11 +103,10 @@ enum eFileFlags
   eFileFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 //! File flags.
-typedef tU32  tFileFlags;
+typedef tU32 tFileFlags;
 
 //! Base file interface.
-struct iFileBase : public iUnknown
-{
+struct iFileBase : public iUnknown {
   niDeclareInterfaceUUID(iFileBase,0x49c35546,0x8a90,0x4650,0x98,0xaa,0x2e,0x7c,0x68,0x45,0xab,0xc0);
 
   //! Get the file flags.
@@ -164,8 +161,7 @@ struct iFileBase : public iUnknown
 };
 
 //! File interface.
-struct iFile : public iUnknown
-{
+struct iFile : public iUnknown {
   niDeclareInterfaceUUID(iFile,0xac326eae,0x8870,0x4f15,0xb8,0x93,0x30,0xe8,0x32,0x60,0x0f,0x3c);
 
   //########################################################################################
@@ -239,7 +235,8 @@ struct iFile : public iUnknown
   //! Set the memory buffer to use with this file.
   //! \return eFalse if the file doesnt support this operation, else eTrue.
   //! \remark Only for base file that implement iFileMemory.
-  virtual tBool __stdcall SetMemPtr(tPtr apMem, tSize anSize, tBool abFree, tBool abKeepHere) = 0;
+  virtual tBool __stdcall SetMemPtr(tPtr apMem, tSize anSize, tBool abFree,
+                                    tBool abKeepHere) = 0;
   //! Reset the file. Put it at the begining, and set the memory size to 0
   //! if it's a dynamic memory file.
   //! \remark Only for base file that implement iFileMemory.
@@ -292,31 +289,31 @@ struct iFile : public iUnknown
 
   //! Read a 32 bits float and move the file pointer forward of 4 bytes.
   //! \return a 32 bits float.
-  virtual tF32  __stdcall ReadF32() = 0;
+  virtual tF32 __stdcall ReadF32() = 0;
   //! Read a 64 bits float and move the file pointer forward of 8 bytes.
   //! \return a 64 bits float.
-  virtual tF64  __stdcall ReadF64() = 0;
+  virtual tF64 __stdcall ReadF64() = 0;
   //! Read a single byte (8 bits integer) and move the file pointer forward of 1 byte.
   //! \return a 8 bits integer.
   virtual tU8 __stdcall Read8() = 0;
   //! Read a 16 bits little endian interger and move the file pointer forward of 2 bytes.
   //! \return a 16 bits little endian interger.
-  virtual tU16  __stdcall ReadLE16() = 0;
+  virtual tU16 __stdcall ReadLE16() = 0;
   //! Read a 16 bits big endian interger and move the file pointer forward of 2 bytes.
   //! \return a big endian 16 bits integer.
-  virtual tU16  __stdcall ReadBE16() = 0;
+  virtual tU16 __stdcall ReadBE16() = 0;
   //! Read a 32 bits little endian interger and move the file pointer forward of 4 bytes.
   //! \return a 32 bits little endian interger.
-  virtual tU32  __stdcall ReadLE32() = 0;
+  virtual tU32 __stdcall ReadLE32() = 0;
   //! Read a 32 bits big endian interger and move the file pointer forward of 4 bytes.
   //! \return a big endian 32 bits integer.
-  virtual tU32  __stdcall ReadBE32() = 0;
+  virtual tU32 __stdcall ReadBE32() = 0;
   //! Read a 64 bits little endian interger and move the file pointer forward of 8 bytes.
   //! \return a 64 bits little endian interger.
-  virtual tU64  __stdcall ReadLE64() = 0;
+  virtual tU64 __stdcall ReadLE64() = 0;
   //! Read a 64 bits big endian interger and move the file pointer forward of 8 bytes.
   //! \return a big endian 64 bits integer.
-  virtual tU64  __stdcall ReadBE64() = 0;
+  virtual tU64 __stdcall ReadBE64() = 0;
   //! Read a 32 bits float array and move the file pointer forward of 4 bytes * anNumElements.
   //! \return the size read in bytes.
   //! {NoAutomation}
@@ -395,35 +392,43 @@ struct iFile : public iUnknown
   //! Write a 32 bits float array and move the file pointer forward of 4 bytes * anNumElements.
   //! \return the number of bytes effectivly written in the file.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteF32Array(const tF32* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteF32Array(const tF32* apIn,
+                                        tU32 anNumElements) = 0;
   //! Write a 64 bits float and move the file pointer forward of 8 bytes * anNumElements.
   //! \return the number of bytes effectivly written in the file.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteF64Array(const tF64* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteF64Array(const tF64* apIn,
+                                        tU32 anNumElements) = 0;
   //! Write a little endian 16 bits integer and move the file pointer forward of 2 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteLE16Array(const tU16* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteLE16Array(const tU16* apIn,
+                                         tU32 anNumElements) = 0;
   //! Write a big endian 16 bits integer and move the file pointer forward of 2 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteBE16Array(const tU16* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteBE16Array(const tU16* apIn,
+                                         tU32 anNumElements) = 0;
   //! Write a little endian 32 bits integer and move the file pointer forward of 4 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteLE32Array(const tU32* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteLE32Array(const tU32* apIn,
+                                         tU32 anNumElements) = 0;
   //! Write a big endian 32 bits integer and move the file pointer forward of 4 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteBE32Array(const tU32* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteBE32Array(const tU32* apIn,
+                                         tU32 anNumElements) = 0;
   //! Write a little endian 64 bits integer and move the file pointer forward of 8 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteLE64Array(const tU64* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteLE64Array(const tU64* apIn,
+                                         tU32 anNumElements) = 0;
   //! Write a big endian 64 bits integer and move the file pointer forward of 8 bytes * anNumElements.
   //! \return the number of bytes effectivly written.
   //! {NoAutomation}
-  virtual tSize __stdcall WriteBE64Array(const tU64* apIn, tU32 anNumElements) = 0;
+  virtual tSize __stdcall WriteBE64Array(const tU64* apIn,
+                                         tU32 anNumElements) = 0;
   //! @}
 
   //########################################################################################
@@ -438,7 +443,9 @@ struct iFile : public iUnknown
   //! Read text file header.
   virtual tBool __stdcall BeginTextFileRead(tBool abSeekSetZero = eTrue) = 0;
   //! Write text file header.
-  virtual tBool __stdcall BeginTextFileWrite(eTextEncodingFormat aFormat = eTextEncodingFormat_UTF8, tBool abSeekSetZero = eTrue) = 0;
+  virtual tBool __stdcall BeginTextFileWrite(
+    eTextEncodingFormat aFormat = eTextEncodingFormat_UTF8,
+    tBool abSeekSetZero = eTrue) = 0;
 
   //! Read a string.
   virtual cString __stdcall ReadString() = 0;
@@ -458,13 +465,16 @@ struct iFile : public iUnknown
   //! Read a string line.
   virtual cString __stdcall ReadStringLineEx(eTextEncodingFormat aFmt) = 0;
   //! Write a string.
-  virtual tSize __stdcall WriteStringEx(eTextEncodingFormat aFmt, const achar* aaszString) = 0;
+  virtual tSize __stdcall WriteStringEx(eTextEncodingFormat aFmt,
+                                        const achar* aaszString) = 0;
   //! Write a string with a end zero.
-  virtual tSize __stdcall WriteStringZEx(eTextEncodingFormat aFmt, const achar* aaszString) = 0;
+  virtual tSize __stdcall WriteStringZEx(eTextEncodingFormat aFmt,
+                                         const achar* aaszString) = 0;
   //! Read a character with the current encoding.
   virtual tU32 __stdcall ReadCharEx(eTextEncodingFormat aFmt) = 0;
   //! Write a character with the current encoding.
-  virtual tSize __stdcall WriteCharEx(eTextEncodingFormat aFmt, tU32 anChar) = 0;
+  virtual tSize __stdcall WriteCharEx(eTextEncodingFormat aFmt,
+                                      tU32 anChar) = 0;
   //! @}
 
   //########################################################################################
@@ -472,56 +482,58 @@ struct iFile : public iUnknown
   //########################################################################################
   //! @{
 
-  virtual void  __stdcall BeginWriteBits() = 0;
+  virtual void __stdcall BeginWriteBits() = 0;
   virtual tSize __stdcall EndWriteBits() = 0;
   virtual tBool __stdcall IsWriteBitsBegan() = 0;
-  virtual void  __stdcall WriteBit(tBool abBit) = 0;
-  virtual void  __stdcall WriteBits(tPtr apData, tU32 anBits, tBool abInvertBytesOrder) = 0;
-  virtual void  __stdcall WriteBits8(tU8 anData, tU32 anBits) = 0;
-  virtual void  __stdcall WriteBits16(tU16 anData, tU32 anBits) = 0;
-  virtual void  __stdcall WriteBits32(tU32 anData, tU32 anBits) = 0;
-  virtual void  __stdcall WriteBits64(tU64 anData, tU32 anBits) = 0;
-  virtual void  __stdcall BeginReadBits() = 0;
+  virtual void __stdcall WriteBit(tBool abBit) = 0;
+  virtual void __stdcall WriteBits(tPtr apData, tU32 anBits,
+                                   tBool abInvertBytesOrder) = 0;
+  virtual void __stdcall WriteBits8(tU8 anData, tU32 anBits) = 0;
+  virtual void __stdcall WriteBits16(tU16 anData, tU32 anBits) = 0;
+  virtual void __stdcall WriteBits32(tU32 anData, tU32 anBits) = 0;
+  virtual void __stdcall WriteBits64(tU64 anData, tU32 anBits) = 0;
+  virtual void __stdcall BeginReadBits() = 0;
   virtual tSize __stdcall EndReadBits() = 0;
   virtual tBool __stdcall IsReadBitsBegan() = 0;
   virtual tBool __stdcall ReadBit() = 0;
-  virtual void  __stdcall ReadBits(tPtr apData, tU32 anBits, tBool abInvertBytesOrder) = 0;
-  virtual tU8   __stdcall ReadBitsU8(tU32 anBits) = 0;
-  virtual tU16  __stdcall ReadBitsU16(tU32 anBits) = 0;
-  virtual tU32  __stdcall ReadBitsU32(tU32 anBits) = 0;
-  virtual tU64  __stdcall ReadBitsU64(tU32 anBits) = 0;
-  virtual tI8   __stdcall ReadBitsI8(tU32 anBits) = 0;
-  virtual tI16  __stdcall ReadBitsI16(tU32 anBits) = 0;
-  virtual tI32  __stdcall ReadBitsI32(tU32 anBits) = 0;
-  virtual tI64  __stdcall ReadBitsI64(tU32 anBits) = 0;
-  virtual tU32  __stdcall GetMinNumBitsU32(tU32 anNumber) = 0;
-  virtual tU32  __stdcall GetMinNumBitsI32(tI32 anNumber) = 0;
-  virtual tU32  __stdcall GetMinNumBitsU64(tU64 anNumber) = 0;
-  virtual tU32  __stdcall GetMinNumBitsI64(tI64 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU64(tU64 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU48(tU64 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU32(tU32 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU24(tU32 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU16(tU16 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedU8(tU8 anNumber) = 0;
-  virtual tU64  __stdcall ReadBitsPackedU64() = 0;
-  virtual tU64  __stdcall ReadBitsPackedU48() = 0;
-  virtual tU32  __stdcall ReadBitsPackedU32() = 0;
-  virtual tU32  __stdcall ReadBitsPackedU24() = 0;
-  virtual tU16  __stdcall ReadBitsPackedU16() = 0;
-  virtual tU8   __stdcall ReadBitsPackedU8() = 0;
-  virtual void  __stdcall WriteBitsPackedI64(tI64 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedI48(tI64 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedI32(tI32 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedI24(tI32 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedI16(tI16 anNumber) = 0;
-  virtual void  __stdcall WriteBitsPackedI8(tI8 anNumber) = 0;
-  virtual tI64  __stdcall ReadBitsPackedI64() = 0;
-  virtual tI64  __stdcall ReadBitsPackedI48() = 0;
-  virtual tI32  __stdcall ReadBitsPackedI32() = 0;
-  virtual tI32  __stdcall ReadBitsPackedI24() = 0;
-  virtual tI16  __stdcall ReadBitsPackedI16() = 0;
-  virtual tI8   __stdcall ReadBitsPackedI8() = 0;
+  virtual void __stdcall ReadBits(tPtr apData, tU32 anBits,
+                                  tBool abInvertBytesOrder) = 0;
+  virtual tU8 __stdcall ReadBitsU8(tU32 anBits) = 0;
+  virtual tU16 __stdcall ReadBitsU16(tU32 anBits) = 0;
+  virtual tU32 __stdcall ReadBitsU32(tU32 anBits) = 0;
+  virtual tU64 __stdcall ReadBitsU64(tU32 anBits) = 0;
+  virtual tI8 __stdcall ReadBitsI8(tU32 anBits) = 0;
+  virtual tI16 __stdcall ReadBitsI16(tU32 anBits) = 0;
+  virtual tI32 __stdcall ReadBitsI32(tU32 anBits) = 0;
+  virtual tI64 __stdcall ReadBitsI64(tU32 anBits) = 0;
+  virtual tU32 __stdcall GetMinNumBitsU32(tU32 anNumber) = 0;
+  virtual tU32 __stdcall GetMinNumBitsI32(tI32 anNumber) = 0;
+  virtual tU32 __stdcall GetMinNumBitsU64(tU64 anNumber) = 0;
+  virtual tU32 __stdcall GetMinNumBitsI64(tI64 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU64(tU64 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU48(tU64 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU32(tU32 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU24(tU32 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU16(tU16 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedU8(tU8 anNumber) = 0;
+  virtual tU64 __stdcall ReadBitsPackedU64() = 0;
+  virtual tU64 __stdcall ReadBitsPackedU48() = 0;
+  virtual tU32 __stdcall ReadBitsPackedU32() = 0;
+  virtual tU32 __stdcall ReadBitsPackedU24() = 0;
+  virtual tU16 __stdcall ReadBitsPackedU16() = 0;
+  virtual tU8 __stdcall ReadBitsPackedU8() = 0;
+  virtual void __stdcall WriteBitsPackedI64(tI64 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedI48(tI64 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedI32(tI32 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedI24(tI32 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedI16(tI16 anNumber) = 0;
+  virtual void __stdcall WriteBitsPackedI8(tI8 anNumber) = 0;
+  virtual tI64 __stdcall ReadBitsPackedI64() = 0;
+  virtual tI64 __stdcall ReadBitsPackedI48() = 0;
+  virtual tI32 __stdcall ReadBitsPackedI32() = 0;
+  virtual tI32 __stdcall ReadBitsPackedI24() = 0;
+  virtual tI16 __stdcall ReadBitsPackedI16() = 0;
+  virtual tI8 __stdcall ReadBitsPackedI8() = 0;
   virtual cString __stdcall ReadBitsString() = 0;
   virtual tSize __stdcall WriteBitsString(const achar* aaszIn) = 0;
   //! @}
@@ -554,9 +566,11 @@ struct iFile : public iUnknown
   //! @{
 
   //! Reads the specified number of bytes and return them encoded as a string.
-  virtual cString __stdcall ReadRawToString(eRawToStringEncoding aFormat, tInt anNumBytes) = 0;
+  virtual cString __stdcall ReadRawToString(eRawToStringEncoding aFormat,
+                                            tInt anNumBytes) = 0;
   //! Write bytes encoded in a string.
-  virtual tInt __stdcall WriteRawFromString(eRawToStringEncoding aFormat, const achar* aaszString) = 0;
+  virtual tInt __stdcall WriteRawFromString(eRawToStringEncoding aFormat,
+                                            const achar* aaszString) = 0;
 
   //! Reads a line of text that potentially use quotes " and escaped quotes ""
   //! & \" to join a single 'line' with embedded newlines inside.
@@ -566,8 +580,7 @@ struct iFile : public iUnknown
 };
 
 //! Memory file.
-struct iFileMemory : public iUnknown
-{
+struct iFileMemory : public iUnknown {
   niDeclareInterfaceUUID(iFileMemory,0x8d0af9a2,0x1c6f,0x4f50,0xb0,0x62,0x33,0xf4,0x97,0x40,0x28,0xf2);
 
   //! Get the base pointer.
@@ -578,7 +591,8 @@ struct iFileMemory : public iUnknown
   virtual tPtr __stdcall GetStop() const = 0;
   //! Set the memory buffer to use with this file.
   //! \return eFalse if the file doesnt support this operation, else eTrue.
-  virtual tBool __stdcall SetMemPtr(tPtr apMem, tSize anSize, tBool abFree, tBool abKeepHere) = 0;
+  virtual tBool __stdcall SetMemPtr(tPtr apMem, tSize anSize, tBool abFree,
+                                    tBool abKeepHere) = 0;
   //! Reset the file. Put it at the begining, and set the memory size to 0 if it's a dynamic
   //! memory file.
   virtual void __stdcall Reset() = 0;
@@ -599,8 +613,7 @@ struct iURLFileHandler : public iUnknown {
 };
 
 //! Buffer encoder
-struct iBufferEncoder : public iUnknown
-{
+struct iBufferEncoder : public iUnknown {
   niDeclareInterfaceUUID(iBufferEncoder,0x5e522b3f,0x32d1,0x4968,0x81,0x62,0xa1,0x04,0x2f,0xa4,0x77,0x86);
   //! Get the encoder's buffer marker.
   virtual tU32 __stdcall EncodeMarker() const = 0;
@@ -608,12 +621,12 @@ struct iBufferEncoder : public iUnknown
   virtual tSize __stdcall EncodeMaxDestSize(tU32 anSrcSize) = 0;
   //! Encodes the specified data buffer in the specified output buffer.
   //! \return 0 on encoding error.
-  virtual tSize __stdcall EncodeBuffer(tPtr apDest, tSize anDestSize, tPtr apSrc, tSize anSrcSize) = 0;
+  virtual tSize __stdcall EncodeBuffer(tPtr apDest, tSize anDestSize,
+                                       tPtr apSrc, tSize anSrcSize) = 0;
 };
 
 //! Buffer decoder
-struct iBufferDecoder : public iUnknown
-{
+struct iBufferDecoder : public iUnknown {
   niDeclareInterfaceUUID(iBufferDecoder,0xfe58c80f,0x8878,0x4537,0x9f,0x70,0x6d,0xb7,0x7f,0x64,0x1a,0x58);
   //! Get the decoder's buffer marker.
   virtual tU32 __stdcall DecodeMarker() const = 0;
@@ -621,27 +634,54 @@ struct iBufferDecoder : public iUnknown
   virtual tSize __stdcall DecodeMaxDestSize(tU32 anSrcSize) = 0;
   //! Decodes the specified data buffer in the specified output buffer.
   //! \return 0 on decoding error.
-  virtual tSize __stdcall DecodeBuffer(tPtr apDest, tSize anDestSize, tPtr apSrc, tSize anSrcSize) = 0;
+  virtual tSize __stdcall DecodeBuffer(tPtr apDest, tSize anDestSize,
+                                       tPtr apSrc, tSize anSrcSize) = 0;
 };
 
-niExportFunc(ni::iFileBase*) CreateFileBaseBufferEncoder(ni::iFileBase* apBase, ni::iBufferEncoder* apEnc);
-niExportFunc(ni::iFileBase*) CreateFileBaseBufferDecoder(ni::iFileBase* apBase, ni::iBufferDecoder* apDec, ni::tSize aDecSize);
-niExportFunc(ni::iFile*) CreateFileBufferEncoder(ni::iFileBase* apBase, ni::iBufferEncoder* apEnc);
-niExportFunc(ni::iFile*) CreateFileBufferDecoder(ni::iFileBase* apBase, ni::iBufferDecoder* apDec, ni::tSize aDecSize);
-niExportFunc(ni::tSize) FileBufferEncode(ni::iBufferEncoder* apEnc, ni::iFile* apSrc, ni::tSize anSrcSize, ni::iFile* apDest);
-niExportFunc(ni::tSize) FileBufferDecode(ni::iBufferDecoder* apDec, ni::iFile* apSrc, ni::tSize anSrcSize, ni::iFile* apDest, ni::tSize anDestSize);
+niExportFunc(ni::iFileBase*) CreateFileBaseBufferEncoder(
+  ni::iFileBase* apBase, ni::iBufferEncoder* apEnc);
+niExportFunc(ni::iFileBase*) CreateFileBaseBufferDecoder(
+  ni::iFileBase* apBase, ni::iBufferDecoder* apDec, ni::tSize aDecSize);
+niExportFunc(ni::iFile*) CreateFileBufferEncoder(ni::iFileBase* apBase,
+                                                 ni::iBufferEncoder* apEnc);
+niExportFunc(ni::iFile*) CreateFileBufferDecoder(ni::iFileBase* apBase,
+                                                 ni::iBufferDecoder* apDec,
+                                                 ni::tSize aDecSize);
+niExportFunc(ni::tSize) FileBufferEncode(ni::iBufferEncoder* apEnc,
+                                         ni::iFile* apSrc, ni::tSize anSrcSize,
+                                         ni::iFile* apDest);
+niExportFunc(ni::tSize) FileBufferDecode(ni::iBufferDecoder* apDec,
+                                         ni::iFile* apSrc, ni::tSize anSrcSize,
+                                         ni::iFile* apDest,
+                                         ni::tSize anDestSize);
 
 niExportFunc(ni::iFile*) CreateFile(ni::iFileBase* apBase);
 niExportFunc(ni::iFileBase*) CreateFileBaseWriteDummy();
 niExportFunc(ni::iFile*) CreateFileWriteDummy();
-niExportFunc(ni::iFileBase*) CreateFileBaseMemory(ni::tPtr pMem, ni::tSize nSize, ni::tBool bFree, const ni::achar* aszPath);
-niExportFunc(ni::iFile*) CreateFileMemory(ni::tPtr pMem, ni::tSize nSize, ni::tBool bFree, const ni::achar* aszPath);
-niExportFunc(ni::iFileBase*) CreateFileBaseMemoryAlloc(ni::tSize nSize, const ni::achar* aszPath);
-niExportFunc(ni::iFile*) CreateFileMemoryAlloc(ni::tSize nSize, const ni::achar* aszPath);
-niExportFunc(ni::iFileBase*) CreateFileBaseDynamicMemory(ni::tSize anSize, const ni::achar* aszPath);
-niExportFunc(ni::iFile*) CreateFileDynamicMemory(ni::tSize anSize, const ni::achar* aszPath);
-niExportFunc(ni::iFileBase*) CreateFileBaseWindow(ni::iFileBase* apBase, ni::tI64 anBase, ni::tI64 anSize, const ni::achar* aaszPath, ni::tBool abAutoSeekSet);
-niExportFunc(ni::iFile*) CreateFileWindow(ni::iFileBase* apBase, ni::tI64 anBase, ni::tI64 anSize, const ni::achar* aaszPath, ni::tBool abAutoSeekSet);
+niExportFunc(ni::iFileBase*) CreateFileBaseMemory(ni::tPtr pMem,
+                                                  ni::tSize nSize,
+                                                  ni::tBool bFree,
+                                                  const ni::achar* aszPath);
+niExportFunc(ni::iFile*) CreateFileMemory(ni::tPtr pMem, ni::tSize nSize,
+                                          ni::tBool bFree,
+                                          const ni::achar* aszPath);
+niExportFunc(ni::iFileBase*) CreateFileBaseMemoryAlloc(
+  ni::tSize nSize, const ni::achar* aszPath);
+niExportFunc(ni::iFile*) CreateFileMemoryAlloc(ni::tSize nSize,
+                                               const ni::achar* aszPath);
+niExportFunc(ni::iFileBase*) CreateFileBaseDynamicMemory(
+  ni::tSize anSize, const ni::achar* aszPath);
+niExportFunc(ni::iFile*) CreateFileDynamicMemory(ni::tSize anSize,
+                                                 const ni::achar* aszPath);
+niExportFunc(ni::iFileBase*) CreateFileBaseWindow(ni::iFileBase* apBase,
+                                                  ni::tI64 anBase,
+                                                  ni::tI64 anSize,
+                                                  const ni::achar* aaszPath,
+                                                  ni::tBool abAutoSeekSet);
+niExportFunc(ni::iFile*) CreateFileWindow(ni::iFileBase* apBase,
+                                          ni::tI64 anBase, ni::tI64 anSize,
+                                          const ni::achar* aaszPath,
+                                          ni::tBool abAutoSeekSet);
 
 /**
  * Provides a buffer which directly access the file's memory if its a memory
@@ -658,7 +698,8 @@ struct sReadBufferFromFile {
   tPtr _memory;
   tSize _size;
   tSize _readSize;
-  sReadBufferFromFile(iFile* apFile, tSize anSize) {
+  sReadBufferFromFile(iFile* apFile, tSize anSize)
+  {
     niAssert(niIsOK(apFile));
     if (!niIsOK(apFile)) {
       _size = 0;
@@ -667,7 +708,7 @@ struct sReadBufferFromFile {
     }
     _size = anSize;
     if (apFile->GetIsMemory() &&
-        ((apFile->GetHere()+anSize) < apFile->GetStop()))
+        ((apFile->GetHere() + anSize) < apFile->GetStop()))
     {
       _ownedMemory = NULL;
       _memory = apFile->GetHere();
@@ -675,19 +716,32 @@ struct sReadBufferFromFile {
       _readSize = _size;
     }
     else {
-      _ownedMemory = _memory = niTMalloc(tU8,_size);
+      _ownedMemory = _memory = niTMalloc(tU8, _size);
       ni::MemSet(_memory, 0, _size);
       _readSize = apFile->ReadRaw(_memory, _size);
     }
     niAssert(_memory);
   }
-  ~sReadBufferFromFile() {
+  ~sReadBufferFromFile()
+  {
     niSafeFree(_ownedMemory);
   }
-  const tPtr begin() const { return _memory; }
-  const tSize size() const { return _size; }
-  const tSize readSize() const { return _readSize; }
-  const tBool readAll() const { return _readSize && (_readSize >= _size); }
+  const tPtr begin() const
+  {
+    return _memory;
+  }
+  const tSize size() const
+  {
+    return _size;
+  }
+  const tSize readSize() const
+  {
+    return _readSize;
+  }
+  const tBool readAll() const
+  {
+    return _readSize && (_readSize >= _size);
+  }
 };
 
 /**
@@ -707,22 +761,24 @@ struct sWriteBufferToFile {
   tPtr _ownedMemory;
   tPtr _memory;
   tSize _size;
-  sWriteBufferToFile(iFile* apFile, tSize anSize) {
+  sWriteBufferToFile(iFile* apFile, tSize anSize)
+  {
     niAssert(niIsOK(apFile));
     _file = apFile;
     _size = anSize;
     if (apFile->GetIsMemory() &&
-        ((apFile->GetHere()+anSize) < apFile->GetStop()))
+        ((apFile->GetHere() + anSize) < apFile->GetStop()))
     {
       _ownedMemory = NULL;
       _memory = apFile->GetHere();
     }
     else {
-      _ownedMemory = _memory = niTMalloc(tU8,_size);
+      _ownedMemory = _memory = niTMalloc(tU8, _size);
     }
     niAssert(_memory);
   }
-  ~sWriteBufferToFile() {
+  ~sWriteBufferToFile()
+  {
     commit(-1);
   }
 
@@ -730,7 +786,8 @@ struct sWriteBufferToFile {
   //! be called successfuly once. Its automatically called by the destructor
   //! but its recommended to commit manually and check that all the data have
   //! been written.
-  tSize commit(tInt aCommitSize) {
+  tSize commit(tInt aCommitSize)
+  {
     if (!_file.IsOK()) {
       return 0;
     }
@@ -751,11 +808,19 @@ struct sWriteBufferToFile {
     _file = NULL;
     return r;
   }
-  tPtr begin() { niAssert(_file.IsOK()); return _memory; }
-  tSize size() const { niAssert(_file.IsOK()); return _size; }
+  tPtr begin()
+  {
+    niAssert(_file.IsOK());
+    return _memory;
+  }
+  tSize size() const
+  {
+    niAssert(_file.IsOK());
+    return _size;
+  }
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __NIIFILE_H__

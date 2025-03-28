@@ -14,13 +14,13 @@
  * @{
  */
 
-EA_DISABLE_CLANG_WARNING(-Wc++23-extensions);
+EA_DISABLE_CLANG_WARNING(-Wc++ 23 - extensions);
 
 namespace ni {
 namespace vmbind {
 
 // Base param_traits template with read/write operations
-template<typename T>
+template <typename T>
 struct param_traits {
   static constexpr tType type = eType_Variant;
   static constexpr const char* type_name = "Var";
@@ -28,31 +28,37 @@ struct param_traits {
 
 // Macro to declare param_traits for basic types
 #define DECLARE_VMBIND_PARAM_TRAITS(TYPE, VM_TYPE, TYPE_NAME) \
-  template<> struct param_traits<TYPE> {                      \
+  template <>                                                 \
+  struct param_traits<TYPE> {                                 \
     static constexpr tType type = VM_TYPE;                    \
     static constexpr const char* type_name = TYPE_NAME;       \
-    static void read(const Var& aVar, TYPE* value) {          \
+    static void read(const Var& aVar, TYPE* value)            \
+    {                                                         \
       vmcall::BufRead(aVar, value);                           \
     }                                                         \
-    static void write(Var& aVar, TYPE* value) {               \
+    static void write(Var& aVar, TYPE* value)                 \
+    {                                                         \
       vmcall::BufWrite(aVar, value);                          \
     }                                                         \
   }
 
 // Macro to declare param_traits for enum types
-#define DECLARE_VMBIND_PARAM_ENUM_TRAITS(TYPE, VM_TYPE, TYPE_NAME)  \
-  template<> struct param_traits<TYPE> {                            \
-    static constexpr tType type = VM_TYPE;                          \
-    static constexpr const char* type_name = TYPE_NAME;             \
-    static void read(const Var& aVar, TYPE* value) {                \
-      ni::tU32 tmpVal = 0;                                          \
-      ni::vmcall::BufRead(aVar,&tmpVal);                            \
-      *value = (TYPE)tmpVal;                                        \
-    }                                                               \
-    static void write(Var& aVar, TYPE* value) {                     \
-      ni::tU32 tmpVal = *value;                                     \
-      vmcall::BufWrite(aVar, &tmpVal);                              \
-    }                                                               \
+#define DECLARE_VMBIND_PARAM_ENUM_TRAITS(TYPE, VM_TYPE, TYPE_NAME) \
+  template <>                                                      \
+  struct param_traits<TYPE> {                                      \
+    static constexpr tType type = VM_TYPE;                         \
+    static constexpr const char* type_name = TYPE_NAME;            \
+    static void read(const Var& aVar, TYPE* value)                 \
+    {                                                              \
+      ni::tU32 tmpVal = 0;                                         \
+      ni::vmcall::BufRead(aVar, &tmpVal);                          \
+      *value = (TYPE)tmpVal;                                       \
+    }                                                              \
+    static void write(Var& aVar, TYPE* value)                      \
+    {                                                              \
+      ni::tU32 tmpVal = *value;                                    \
+      vmcall::BufWrite(aVar, &tmpVal);                             \
+    }                                                              \
   }
 
 DECLARE_VMBIND_PARAM_TRAITS(ni::tI8, eType_I8, "tI8");
@@ -79,64 +85,74 @@ DECLARE_VMBIND_PARAM_TRAITS(ni::sColor4ub, eType_U32, "sColor4ub");
 DECLARE_VMBIND_PARAM_TRAITS(ni::tUUID, eType_UUID, "tUUID");
 
 // Specialization for interface pointers
-template<typename T>
+template <typename T>
 struct param_traits<T*> {
   static constexpr tType type = eType_IUnknownPtr;
   static constexpr const char* type_name = "iUnknown*";
 
-  static void read(const Var& aVar, T** value) {
+  static void read(const Var& aVar, T** value)
+  {
     if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<T>>) {
       vmcall::BufReadIntf<T>(aVar, value);
-    } else {
+    }
+    else {
       vmcall::BufRead(aVar, value);
     }
   }
 
-  static void write(Var& aVar, T** value) {
+  static void write(Var& aVar, T** value)
+  {
     if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<T>>) {
       vmcall::BufWriteIntf<T>(aVar, value);
-    } else {
+    }
+    else {
       vmcall::BufWrite(aVar, value);
     }
   }
 };
 
 // Specialization for const interface pointers
-template<typename T>
+template <typename T>
 struct param_traits<const T*> {
   static constexpr tType type = eType_IUnknownPtr;
   static constexpr const char* type_name = "const iUnknown*";
 
-  static void read(const Var& aVar, const T** value) {
+  static void read(const Var& aVar, const T** value)
+  {
     if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<T>>) {
       vmcall::BufReadIntf<T>(aVar, const_cast<T**>(value));
-    } else {
+    }
+    else {
       vmcall::BufRead(aVar, value);
     }
   }
 
-  static void write(Var& aVar, const T** value) {
+  static void write(Var& aVar, const T** value)
+  {
     if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<T>>) {
       vmcall::BufWriteIntf<T>(aVar, value);
-    } else {
+    }
+    else {
       vmcall::BufWrite(aVar, value);
     }
   }
 };
 
 // Specialization for Ptr<T>
-template<typename T>
+template <typename T>
 struct param_traits<Ptr<T>> {
   static constexpr tType type = eType_IUnknownPtr;
   static constexpr const char* type_name = "Ptr<T>";
 
-  static void read(const Var& aVar, Ptr<T>* value) {
+  static void read(const Var& aVar, Ptr<T>* value)
+  {
     T* ptr = nullptr;
     vmcall::BufReadIntf<T>(aVar, &ptr);
     *value = ptr;
   }
 
-  static void write(Var& aVar, Ptr<T>* value) {
+  static void write(Var& aVar, Ptr<T>* value)
+  {
     vmcall::BufWriteIntf<T>(aVar, value);
   }
 };
@@ -150,19 +166,24 @@ DECLARE_VMBIND_PARAM_TRAITS(ni::tIntPtr, eType_IntPtr, "tIntPtr");
 #endif
 
 // Check if type has _GetInterfaceUUID
-template<typename T>
+template <typename T>
 concept HasInterfaceUUID = requires(T) {
-  { T::_GetInterfaceUUID() } -> astl::same_as<const tUUID&>;
+  {
+    T::_GetInterfaceUUID()
+  } -> astl::same_as<const tUUID&>;
 };
 
-template<typename T>
+template <typename T>
 concept HasInterfaceID = requires(T) {
-  { T::_GetInterfaceID() } -> astl::same_as<const ni::achar*>;
+  {
+    T::_GetInterfaceID()
+  } -> astl::same_as<const ni::achar*>;
 };
 
 // Simple helper to get UUID
-template<typename T>
-const tUUID* get_interface_uuid() {
+template <typename T>
+const tUUID* get_interface_uuid()
+{
   if constexpr (HasInterfaceUUID<astl::remove_pointer_t<T>>) {
     return &astl::remove_pointer_t<T>::_GetInterfaceUUID();
   }
@@ -171,8 +192,9 @@ const tUUID* get_interface_uuid() {
   }
 }
 
-template<typename T>
-const achar* get_type_name() {
+template <typename T>
+const achar* get_type_name()
+{
   if constexpr (HasInterfaceID<astl::remove_pointer_t<T>>) {
     return astl::remove_pointer_t<T>::_GetInterfaceID();
   }
@@ -182,41 +204,47 @@ const achar* get_type_name() {
 }
 
 // Helper for parameter definitions
-template<typename... Args>
+template <typename... Args>
 struct param_def_gen {
   static constexpr size_t param_count = sizeof...(Args);
 
-  static constexpr const sParameterDef* make_param_defs(const achar* const* names) {
+  static constexpr const sParameterDef* make_param_defs(
+    const achar* const* names)
+  {
     if constexpr (sizeof...(Args) == 0) {
       return nullptr;
-    } else {
-      static const sParameterDef params[] = {
-        sParameterDef{
-          nullptr,  // name will be set later if needed
-          param_traits<Args>::type,
-          get_interface_uuid<Args>(),
-          get_type_name<Args>()
-        }...
-      };
+    }
+    else {
+      static const sParameterDef params[] = { sParameterDef{
+        nullptr, // name will be set later if needed
+        param_traits<Args>::type, get_interface_uuid<Args>(),
+        get_type_name<Args>() }... };
       return params;
     }
   }
 };
 
 // Static function wrapper
-template<typename Ret, typename... Args>
+template <typename Ret, typename... Args>
 struct static_wrapper {
   using function_type = Ret (*)(Args...);
   using args_tuple = eastl::tuple<std::remove_cvref_t<Args>...>;
 
-  template<size_t... Is>
-  static tInt call_impl(const Var* aArgs, args_tuple& args, astl::index_sequence<Is...>) {
-    (param_traits<astl::remove_cvref_t<astl::tuple_element_t<Is, astl::tuple<Args...>>>>::read(
-      aArgs[Is], &astl::get<Is>(args)), ...);
+  template <size_t... Is>
+  static tInt call_impl(const Var* aArgs, args_tuple& args,
+                        astl::index_sequence<Is...>)
+  {
+    (param_traits<astl::remove_cvref_t<
+       astl::tuple_element_t<Is, astl::tuple<Args...>>>>::read(aArgs[Is],
+                                                               &astl::get<Is>(
+                                                                 args)),
+     ...);
     return eVMRet_OK;
   }
 
-  static tInt call(iUnknown* apThis, const Var* aArgs, tU32 aNumArgs, Var* apRet) {
+  static tInt call(iUnknown* apThis, const Var* aArgs, tU32 aNumArgs,
+                   Var* apRet)
+  {
     if (aNumArgs != sizeof...(Args))
       return eVMRet_InvalidArgCount;
 
@@ -230,13 +258,17 @@ struct static_wrapper {
     // Call function
     if constexpr (astl::is_void_v<Ret>) {
       astl::apply(function, args);
-      if (apRet) apRet->SetNull();
-    } else {
+      if (apRet)
+        apRet->SetNull();
+    }
+    else {
       auto result = astl::apply(function, args);
       if (apRet) {
-        if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<Ret>>) {
+        if constexpr (astl::is_base_of_v<iUnknown, astl::remove_pointer_t<Ret>>)
+        {
           param_traits<Ret>::write(*apRet, &result);
-        } else {
+        }
+        else {
           param_traits<Ret>::write(*apRet, &result);
         }
       }
@@ -245,78 +277,84 @@ struct static_wrapper {
     return eVMRet_OK;
   }
 
-  static sMethodDef make_method_def(const achar* name, function_type f, tType aRetFlags) {
+  static sMethodDef make_method_def(const achar* name, function_type f,
+                                    tType aRetFlags)
+  {
     function = f;
-    return {
-      name,
-      param_traits<Ret>::type|aRetFlags,
-      get_interface_uuid<Ret>(),
-      get_type_name<Ret>(),
-      sizeof...(Args),
-      param_def_gen<Args...>::make_param_defs(nullptr),
-      &call
-    };
+    return { name,
+             param_traits<Ret>::type | aRetFlags,
+             get_interface_uuid<Ret>(),
+             get_type_name<Ret>(),
+             sizeof...(Args),
+             param_def_gen<Args...>::make_param_defs(nullptr),
+             &call };
   }
 
  private:
   static function_type function;
 };
 
-template<typename Ret, typename... Args>
-typename static_wrapper<Ret, Args...>::function_type static_wrapper<Ret, Args...>::function;
+template <typename Ret, typename... Args>
+typename static_wrapper<Ret, Args...>::function_type
+  static_wrapper<Ret, Args...>::function;
 
 // Static registration helper
 class static_registrar {
  private:
-  template<typename R, typename... Args>
-  static sMethodDef make_static_impl(const achar* name, R(*func)(Args...), tType aRetFlags) {
+  template <typename R, typename... Args>
+  static sMethodDef make_static_impl(const achar* name, R (*func)(Args...),
+                                     tType aRetFlags)
+  {
     return static_wrapper<R, Args...>::make_method_def(name, func, aRetFlags);
   }
 
  public:
-  template<auto Function>
-  static sMethodDef make_static(const achar* name, tType aRetFlags = 0) {
+  template <auto Function>
+  static sMethodDef make_static(const achar* name, tType aRetFlags = 0)
+  {
     return make_static_impl(name, Function, aRetFlags);
   }
 };
 
 // Method wrapper for class methods
-template<typename Class, typename Ret, typename... Args>
+template <typename Class, typename Ret, typename... Args>
 struct method_wrapper {
   using method_type = Ret (Class::*)(Args...);
   using const_method_type = Ret (Class::*)(Args...) const;
   using args_tuple = eastl::tuple<std::remove_cvref_t<Args>...>;
 
   // Non-const version
-  static sMethodDef make_method_def(const achar* name, method_type m, tType aRetFlags) {
+  static sMethodDef make_method_def(const achar* name, method_type m,
+                                    tType aRetFlags)
+  {
     method = m;
-    return {
-      name,
-      param_traits<Ret>::type|aRetFlags,
-      get_interface_uuid<Ret>(),
-      get_type_name<Ret>(),
-      sizeof...(Args),
-      param_def_gen<Args...>::make_param_defs(nullptr),
-      &call
-    };
+    return { name,
+             param_traits<Ret>::type | aRetFlags,
+             get_interface_uuid<Ret>(),
+             get_type_name<Ret>(),
+             sizeof...(Args),
+             param_def_gen<Args...>::make_param_defs(nullptr),
+             &call };
   }
 
   // Const version
-  static sMethodDef make_method_def(const achar* name, const_method_type m, tType aRetFlags) {
+  static sMethodDef make_method_def(const achar* name, const_method_type m,
+                                    tType aRetFlags)
+  {
     const_method = m;
     is_const = true;
-    return {
-      name,
-      param_traits<Ret>::type|aRetFlags,
-      get_interface_uuid<Ret>(),
-      get_type_name<Ret>(),
-      sizeof...(Args),
-      param_def_gen<Args...>::make_param_defs(nullptr),
-      &call
-    };
+    return { name,
+             param_traits<Ret>::type | aRetFlags,
+             get_interface_uuid<Ret>(),
+             get_type_name<Ret>(),
+             sizeof...(Args),
+             param_def_gen<Args...>::make_param_defs(nullptr),
+             &call };
   }
 
-  static tInt call(iUnknown* apThis, const Var* aArgs, tU32 aNumArgs, Var* apRet) {
+  static tInt call(iUnknown* apThis, const Var* aArgs, tU32 aNumArgs,
+                   Var* apRet)
+  {
     if (aNumArgs != sizeof...(Args))
       return eVMRet_InvalidArgCount;
 
@@ -331,23 +369,36 @@ struct method_wrapper {
     // Call method (handle both const and non-const)
     if constexpr (astl::is_void_v<Ret>) {
       if (is_const) {
-        astl::apply([_this](auto&&... args) {
-          (_this->*const_method)(astl::forward<decltype(args)>(args)...);
-        }, args);
-      } else {
-        astl::apply([_this](auto&&... args) {
-          (_this->*method)(astl::forward<decltype(args)>(args)...);
-        }, args);
+        astl::apply(
+          [_this](auto&&... args) {
+            (_this->*const_method)(astl::forward<decltype(args)>(args)...);
+          },
+          args);
       }
-      if (apRet) apRet->SetNull();
-    } else {
-      auto result = is_const ?
-          astl::apply([_this](auto&&... args) {
-            return (_this->*const_method)(astl::forward<decltype(args)>(args)...);
-          }, args) :
-          astl::apply([_this](auto&&... args) {
-            return (_this->*method)(astl::forward<decltype(args)>(args)...);
-          }, args);
+      else {
+        astl::apply(
+          [_this](auto&&... args) {
+            (_this->*method)(astl::forward<decltype(args)>(args)...);
+          },
+          args);
+      }
+      if (apRet)
+        apRet->SetNull();
+    }
+    else {
+      auto result =
+        is_const
+          ? astl::apply(
+              [_this](auto&&... args) {
+                return (_this->*const_method)(
+                  astl::forward<decltype(args)>(args)...);
+              },
+              args)
+          : astl::apply(
+              [_this](auto&&... args) {
+                return (_this->*method)(astl::forward<decltype(args)>(args)...);
+              },
+              args);
       if (apRet) {
         param_traits<Ret>::write(*apRet, &result);
       }
@@ -361,56 +412,69 @@ struct method_wrapper {
   static const_method_type const_method;
   static bool is_const;
 
-  template<size_t... Is>
-  static tInt call_impl(const Var* aArgs, args_tuple& args, astl::index_sequence<Is...>) {
-    (param_traits<astl::remove_cvref_t<Args>>::read(aArgs[Is], &astl::get<Is>(args)), ...);
+  template <size_t... Is>
+  static tInt call_impl(const Var* aArgs, args_tuple& args,
+                        astl::index_sequence<Is...>)
+  {
+    (param_traits<astl::remove_cvref_t<Args>>::read(aArgs[Is],
+                                                    &astl::get<Is>(args)),
+     ...);
     return eVMRet_OK;
   }
 };
 
-template<typename Class, typename Ret, typename... Args>
+template <typename Class, typename Ret, typename... Args>
 typename method_wrapper<Class, Ret, Args...>::method_type
-method_wrapper<Class, Ret, Args...>::method;
+  method_wrapper<Class, Ret, Args...>::method;
 
-template<typename Class, typename Ret, typename... Args>
+template <typename Class, typename Ret, typename... Args>
 typename method_wrapper<Class, Ret, Args...>::const_method_type
-method_wrapper<Class, Ret, Args...>::const_method;
+  method_wrapper<Class, Ret, Args...>::const_method;
 
-template<typename Class, typename Ret, typename... Args>
+template <typename Class, typename Ret, typename... Args>
 bool method_wrapper<Class, Ret, Args...>::is_const = false;
 
-template<typename Class>
+template <typename Class>
 class interface_def {
   astl::vector<sMethodDef> methods;
   astl::vector<const tUUID*> parents;
 
  private:
   // Non-const member function
-  template<typename R, typename... Args>
-  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...), tType aRetFlags = 0) {
-    return method_wrapper<Class, R, Args...>::make_method_def(name, m, aRetFlags);
+  template <typename R, typename... Args>
+  static sMethodDef make_method(const achar* name, R (Class::*m)(Args...),
+                                tType aRetFlags = 0)
+  {
+    return method_wrapper<Class, R, Args...>::make_method_def(name, m,
+                                                              aRetFlags);
   }
 
   // Const member function
-  template<typename R, typename... Args>
-  static sMethodDef make_method(const achar* name, R(Class::*m)(Args...) const, tType aRetFlags = 0) {
-    return method_wrapper<Class, R, Args...>::make_method_def(name, m, aRetFlags);
+  template <typename R, typename... Args>
+  static sMethodDef make_method(const achar* name, R (Class::*m)(Args...) const,
+                                tType aRetFlags = 0)
+  {
+    return method_wrapper<Class, R, Args...>::make_method_def(name, m,
+                                                              aRetFlags);
   }
 
  public:
-  template<auto Method>
-  interface_def& method(const achar* name, tType aRetFlags = 0) {
+  template <auto Method>
+  interface_def& method(const achar* name, tType aRetFlags = 0)
+  {
     methods.push_back(make_method(name, Method, aRetFlags));
     return *this;
   }
 
-  template<typename Parent>
-  interface_def& parent() {
+  template <typename Parent>
+  interface_def& parent()
+  {
     parents.push_back(&Parent::_GetInterfaceUUID());
     return *this;
   }
 
-  const sInterfaceDef& build() {
+  const sInterfaceDef& build()
+  {
     // Create static storage for our vectors' contents
     static astl::vector<sMethodDef> stored_methods = astl::move(methods);
     static astl::vector<const sMethodDef*> method_ptrs;
@@ -418,7 +482,7 @@ class interface_def {
 
     // Build method pointer array
     method_ptrs.clear();
-    for(auto& method : stored_methods) {
+    for (auto& method : stored_methods) {
       method_ptrs.push_back(&method);
     }
 
@@ -429,7 +493,7 @@ class interface_def {
       stored_parents.data(),
       (tU32)method_ptrs.size(),
       method_ptrs.data(),
-      nullptr  // No dispatch wrapper
+      nullptr // No dispatch wrapper
     };
 
     return def;

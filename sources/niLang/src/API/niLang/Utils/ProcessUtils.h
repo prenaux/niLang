@@ -5,9 +5,9 @@
 #include "../IOSProcess.h"
 
 #ifdef niWindows
-#define niExeExtension ".exe"
+  #define niExeExtension ".exe"
 #else
-#define niExeExtension ""
+  #define niExeExtension ""
 #endif
 
 namespace ni {
@@ -19,21 +19,28 @@ namespace ni {
  */
 
 struct sRunProcessResult {
-  sRunProcessResult() : succeeded(0), exitCode(-1) {}
+  sRunProcessResult()
+      : succeeded(0)
+      , exitCode(-1)
+  {
+  }
   tI32 succeeded;
   tI32 exitCode;
   cString strStdout;
 };
 
-inline sRunProcessResult RunProcess(iOSProcessManager* apProcMan, const achar* aaszCmd,
-                                    iFile* apStdOut = NULL, ThreadMutex* apSyncStdOutMutex = NULL,
+inline sRunProcessResult RunProcess(iOSProcessManager* apProcMan,
+                                    const achar* aaszCmd,
+                                    iFile* apStdOut = NULL,
+                                    ThreadMutex* apSyncStdOutMutex = NULL,
                                     tU32 anTimeoutMs = eInvalidHandle)
 {
   sRunProcessResult res;
   niCheckIsOK(apProcMan, res);
 
-  Ptr<iOSProcess> proc = apProcMan->SpawnProcess(aaszCmd, eOSProcessSpawnFlags_StdFiles);
-  niCheckIsOK(proc,res);
+  Ptr<iOSProcess> proc =
+    apProcMan->SpawnProcess(aaszCmd, eOSProcessSpawnFlags_StdFiles);
+  niCheckIsOK(proc, res);
 
   for (;;) {
     Ptr<iFile> procStdOut = proc->GetFile(eOSProcessFile_StdOut);
@@ -70,5 +77,5 @@ inline sRunProcessResult RunProcess(iOSProcessManager* apProcMan, const achar* a
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __PROCESSUTILS_H_19DABF7F_719B_4E37_8DE8_ABA02E9B15F5__

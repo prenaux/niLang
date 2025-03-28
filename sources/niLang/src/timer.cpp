@@ -18,14 +18,15 @@
 //
 #if defined niUseStdHighResolutionClock
 
-#include <chrono>
+  #include <chrono>
 
 namespace ni {
-niExportFunc(tF64) TimerInSeconds() {
+niExportFunc(tF64) TimerInSeconds()
+{
   static const auto _start = std::chrono::high_resolution_clock::now();
-	return (std::chrono::high_resolution_clock::now() - _start).count() / 1e9;
+  return (std::chrono::high_resolution_clock::now() - _start).count() / 1e9;
 }
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -33,30 +34,34 @@ niExportFunc(tF64) TimerInSeconds() {
 //
 //----------------------------------------------------------------------------
 #elif defined __JSCC__
-#include <emscripten/emscripten.h>
+  #include <emscripten/emscripten.h>
 
 namespace ni {
-niExportFunc(tF64) TimerInSeconds() {
-	return emscripten_get_now() / 1000.0;
+niExportFunc(tF64) TimerInSeconds()
+{
+  return emscripten_get_now() / 1000.0;
 }
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
 // Section: OSX
 //
 //----------------------------------------------------------------------------
-#elif defined(__APPLE_CC__) && defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && !defined __IOS__ && !defined __IPHONE_OS_VERSION_MIN_REQUIRED
+#elif defined(__APPLE_CC__) && defined(__APPLE__) &&        \
+  defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && \
+  !defined __IOS__ && !defined __IPHONE_OS_VERSION_MIN_REQUIRED
 
 niExportFunc(uint64_t) __niMach_TimerNano();
 
 namespace ni {
 
-niExportFunc(tF64) TimerInSeconds() {
+niExportFunc(tF64) TimerInSeconds()
+{
   return (tF64)__niMach_TimerNano() / 1e9;
 }
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -65,16 +70,17 @@ niExportFunc(tF64) TimerInSeconds() {
 //----------------------------------------------------------------------------
 #elif defined niPosix
 
-#include <time.h>
-#include <unistd.h>
-#include <sys/time.h>
-#if 0
-#include "API/niLang/STL/run_once.h"
-#endif
+  #include <time.h>
+  #include <unistd.h>
+  #include <sys/time.h>
+  #if 0
+    #include "API/niLang/STL/run_once.h"
+  #endif
 
 namespace ni {
 
-niExportFunc(tF64) TimerInSeconds() {
+niExportFunc(tF64) TimerInSeconds()
+{
   static const bool clock_gettime_available = []() {
     struct timespec ts;
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
@@ -85,7 +91,7 @@ niExportFunc(tF64) TimerInSeconds() {
     }
   }();
 
-#if 0
+  #if 0
   niRunOnce {
     if (clock_gettime_available) {
       niLog(Info, "TimerInSeconds: using clock_gettime with CLOCK_MONOTONIC.");
@@ -94,7 +100,7 @@ niExportFunc(tF64) TimerInSeconds() {
       niLog(Info, "TimerInSeconds: using gettimeofday (CLOCK_MONOTONIC not available).");
     }
   };
-#endif
+  #endif
 
   if (clock_gettime_available) {
     struct timespec ts;
@@ -106,10 +112,10 @@ niExportFunc(tF64) TimerInSeconds() {
   gettimeofday(&currentTime, 0);
   tU64 const dsecs = currentTime.tv_sec;
   tU64 const dus = currentTime.tv_usec;
-  return ((tF64)(dsecs*1000000 + dus)) / 1e6;
+  return ((tF64)(dsecs * 1000000 + dus)) / 1e6;
 }
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -117,11 +123,11 @@ niExportFunc(tF64) TimerInSeconds() {
 //
 //----------------------------------------------------------------------------
 #elif defined niWin32
-#include "API/niLang/Platforms/Win32/Win32_Redef.h"
-#include <mmsystem.h>
-#ifdef niPragmaCommentLib
-#pragma comment(lib,"winmm.lib")
-#endif
+  #include "API/niLang/Platforms/Win32/Win32_Redef.h"
+  #include <mmsystem.h>
+  #ifdef niPragmaCommentLib
+    #pragma comment(lib, "winmm.lib")
+  #endif
 
 namespace ni {
 
@@ -131,27 +137,29 @@ static LARGE_INTEGER mStart;
 static LARGE_INTEGER mFreq;
 static DWORD mTimerMask = 0;
 
-static void _Start() {
+static void _Start()
+{
   if (mTimerMask == 0) { // find the lowest core this process uses
     DWORD_PTR procMask;
     DWORD_PTR sysMask;
-    ::GetProcessAffinityMask(::GetCurrentProcess(),&procMask,&sysMask);
+    ::GetProcessAffinityMask(::GetCurrentProcess(), &procMask, &sysMask);
     mTimerMask = 1;
     while ((mTimerMask & procMask) == 0) {
       mTimerMask <<= 1;
     }
   }
   HANDLE thread = ::GetCurrentThread();
-  DWORD oldMask = ::SetThreadAffinityMask(thread,mTimerMask);
+  DWORD oldMask = ::SetThreadAffinityMask(thread, mTimerMask);
   ::QueryPerformanceFrequency(&mFreq);
   ::QueryPerformanceCounter(&mStart);
   mStartTick = ::GetTickCount();
-  ::SetThreadAffinityMask(thread,oldMask);
+  ::SetThreadAffinityMask(thread, oldMask);
 
   mLastTime = 0;
 }
 
-static LONGLONG _GetMicroseconds() {
+static LONGLONG _GetMicroseconds()
+{
   static bool _isStarted = false;
   if (!_isStarted) {
     _isStarted = true;
@@ -160,9 +168,9 @@ static LONGLONG _GetMicroseconds() {
 
   LARGE_INTEGER curTime;
   HANDLE thread = GetCurrentThread();
-  DWORD oldMask = SetThreadAffinityMask(thread,mTimerMask);
+  DWORD oldMask = SetThreadAffinityMask(thread, mTimerMask);
   QueryPerformanceCounter(&curTime);
-  SetThreadAffinityMask(thread,oldMask);
+  SetThreadAffinityMask(thread, oldMask);
 
   LONGLONG newTime = curTime.QuadPart - mStart.QuadPart;
 
@@ -171,7 +179,8 @@ static LONGLONG _GetMicroseconds() {
   tU32 check = GetTickCount() - mStartTick;
   tI32 msOff = (tI32)(newTicks - check);
   if (msOff < -100 || msOff > 100) {
-    LONGLONG adjust = ni::Min(msOff * mFreq.QuadPart / 1000, newTime - mLastTime);
+    LONGLONG adjust =
+      ni::Min(msOff * mFreq.QuadPart / 1000, newTime - mLastTime);
     mStart.QuadPart += adjust;
     newTime -= adjust;
   }
@@ -181,11 +190,12 @@ static LONGLONG _GetMicroseconds() {
   return 1000000 * newTime / mFreq.QuadPart;
 }
 
-niExportFunc(tF64) TimerInSeconds() {
+niExportFunc(tF64) TimerInSeconds()
+{
   return (double)_GetMicroseconds() / 1e6;
 }
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -194,7 +204,7 @@ niExportFunc(tF64) TimerInSeconds() {
 //----------------------------------------------------------------------------
 #else
 
-#error "Unknown platform for Timer implementation."
+  #error "Unknown platform for Timer implementation."
 
 #endif
 
@@ -205,25 +215,28 @@ niExportFunc(tF64) TimerInSeconds() {
 //----------------------------------------------------------------------------
 using namespace ni;
 
-const tF64 _kfMinFrameTime = 1.0/1000.0;
-const tF64 _kfMaxFrameTime = 1.0/1.0;
+const tF64 _kfMinFrameTime = 1.0 / 1000.0;
+const tF64 _kfMaxFrameTime = 1.0 / 1.0;
 
-void __stdcall cLang::ResetFrameTime() {
+void __stdcall cLang::ResetFrameTime()
+{
   mfTotalFrameTime = 0;
   mfAvgCounter = 0;
-  mfFrameTime = 1.0/60.0;
+  mfFrameTime = 1.0 / 60.0;
   mnFrameNumber = 0;
   mnAverageFPSCounter = 0;
   mnAverageFPS = 0;
   mfLastElapsedTime = 0;
 }
-tBool __stdcall cLang::UpdateFrameTime(const tF64 afElapsedTime) {
+tBool __stdcall cLang::UpdateFrameTime(const tF64 afElapsedTime)
+{
   if (mnFrameNumber == 0) {
     // first frame, no valid frame time yet
-    mfFrameTime = 1.0/60.0;
+    mfFrameTime = 1.0 / 60.0;
   }
   else {
-    mfFrameTime = ni::Clamp(afElapsedTime-mfLastElapsedTime, _kfMinFrameTime, _kfMaxFrameTime);
+    mfFrameTime = ni::Clamp(afElapsedTime - mfLastElapsedTime, _kfMinFrameTime,
+                            _kfMaxFrameTime);
   }
 
   mfLastElapsedTime = afElapsedTime;
@@ -242,23 +255,29 @@ tBool __stdcall cLang::UpdateFrameTime(const tF64 afElapsedTime) {
 
   return eTrue;
 }
-tF64 __stdcall cLang::GetTotalFrameTime() const {
+tF64 __stdcall cLang::GetTotalFrameTime() const
+{
   return mfTotalFrameTime;
 }
-tF64 __stdcall cLang::GetFrameTime() const {
+tF64 __stdcall cLang::GetFrameTime() const
+{
   return mfFrameTime;
 }
-tU32 __stdcall cLang::GetFrameNumber() const {
+tU32 __stdcall cLang::GetFrameNumber() const
+{
   return mnFrameNumber;
 }
-tF32 __stdcall cLang::GetFrameRate() const {
+tF32 __stdcall cLang::GetFrameRate() const
+{
   return ni::FInvert(mfFrameTime);
 }
-tU32 __stdcall cLang::GetAverageFrameRate() const {
+tU32 __stdcall cLang::GetAverageFrameRate() const
+{
   return mnAverageFPS;
 }
 
 ///////////////////////////////////////////////
-tF64 cLang::TimerInSeconds() const {
+tF64 cLang::TimerInSeconds() const
+{
   return ni::TimerInSeconds();
 }

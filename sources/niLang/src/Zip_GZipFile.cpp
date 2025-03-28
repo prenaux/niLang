@@ -4,7 +4,7 @@
 #include "Zip_GZipFile.h"
 
 #ifndef niEmbedded
-#include "API/niLang/StringDef.h"
+  #include "API/niLang/StringDef.h"
 
 using namespace ni;
 
@@ -15,16 +15,16 @@ using namespace ni;
 cGZipFile::cGZipFile(iFileBase* apFile, tU32 aulCompressionMode, bool abA25Z)
 {
   ZeroMembers();
-  niCheck(niIsOK(apFile),;);
+  niCheck(niIsOK(apFile), ;);
 
   tFileFlags fileFlags = apFile->GetFileFlags();
 
   cString strMode;
-  if (niFlagTest(fileFlags,eFileFlags_Append))
+  if (niFlagTest(fileFlags, eFileFlags_Append))
     strMode.Format("ab%d", aulCompressionMode);
-  else if (niFlagTest(fileFlags,eFileFlags_Write))
+  else if (niFlagTest(fileFlags, eFileFlags_Write))
     strMode.Format("wb%d", (int)aulCompressionMode);
-  else if (niFlagTest(fileFlags,eFileFlags_Read))
+  else if (niFlagTest(fileFlags, eFileFlags_Read))
     strMode = "rb";
 
   mpFP = gzdopen(apFile, strMode.Chars(), abA25Z);
@@ -32,17 +32,18 @@ cGZipFile::cGZipFile(iFileBase* apFile, tU32 aulCompressionMode, bool abA25Z)
     return;
   }
 
-  if (!niFlagTest(fileFlags,eFileOpenMode_Write)) {
+  if (!niFlagTest(fileFlags, eFileOpenMode_Write)) {
     char tmp[16];
-    int r = gzread(mpFP,tmp,16);
+    int r = gzread(mpFP, tmp, 16);
     if (r <= 0) {
       int errnum;
-      niError(niFmt(_A("Can't validate read the zip stream : %s."),cString(gzerror(mpFP,&errnum)).Chars()));
+      niError(niFmt(_A("Can't validate read the zip stream : %s."),
+                    cString(gzerror(mpFP, &errnum)).Chars()));
       gzclose(mpFP);
       mpFP = NULL;
       return;
     }
-    gzseek(mpFP,0,SEEK_SET);
+    gzseek(mpFP, 0, SEEK_SET);
   }
 
   mstrPath = apFile->GetSourcePath();
@@ -84,19 +85,19 @@ tBool cGZipFile::SeekSet(tI64 offset)
 }
 
 ///////////////////////////////////////////////
-tSize cGZipFile::ReadRaw(void *pOut, tSize nSize)
+tSize cGZipFile::ReadRaw(void* pOut, tSize nSize)
 {
   return gzread(mpFP, pOut, nSize);
 }
 
 ///////////////////////////////////////////////
-tSize cGZipFile::WriteRaw(const void *pOut, tSize nSize)
+tSize cGZipFile::WriteRaw(const void* pOut, tSize nSize)
 {
   return gzwrite(mpFP, (voidp)pOut, nSize);
 }
 
 ///////////////////////////////////////////////
-tI64  cGZipFile::Tell()
+tI64 cGZipFile::Tell()
 {
   return gztell(mpFP);
 }
@@ -108,7 +109,7 @@ tI64 cGZipFile::GetSize() const
     tU8 buffer[2048];
     tI64 nPos = niThis(cGZipFile)->Tell();
     while (1) {
-      tU64 read = niThis(cGZipFile)->ReadRaw(buffer,sizeof(buffer));
+      tU64 read = niThis(cGZipFile)->ReadRaw(buffer, sizeof(buffer));
       niThis(cGZipFile)->mnSize += read;
       if (read != sizeof(buffer))
         break;

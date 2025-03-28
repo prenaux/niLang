@@ -2,17 +2,18 @@
 
 #ifndef niNoThreads
 
-#ifdef niWindows
-#include "API/niLang/Platforms/Win32/Win32_Redef.h"
-#include <process.h>
+  #ifdef niWindows
+    #include "API/niLang/Platforms/Win32/Win32_Redef.h"
+    #include <process.h>
 
-niExportFunc(void*) MyWin32CreateEvent(int bManualReset,int bInitialState) {
-  return ::CreateEventW(NULL,bManualReset,bInitialState,NULL);
+niExportFunc(void*) MyWin32CreateEvent(int bManualReset, int bInitialState)
+{
+  return ::CreateEventW(NULL, bManualReset, bInitialState, NULL);
 }
-#endif
+  #endif
 
-#include "API/niLang/STL/utils.h"
-#include "API/niLang/StringDef.h"
+  #include "API/niLang/STL/utils.h"
+  #include "API/niLang/StringDef.h"
 
 using namespace ni;
 
@@ -21,9 +22,9 @@ struct ThreadImpl;
 static ThreadMutex _threadListMutex;
 static astl::vector<ThreadImpl*> _threadList;
 
-struct ThreadImpl : public ImplRC<iThread>
-{
-  ThreadImpl() {
+struct ThreadImpl : public ImplRC<iThread> {
+  ThreadImpl()
+  {
     mnID = eInvalidHandle;
     mHandle = NULL;
     mpfnBaseThreadProc = NULL;
@@ -33,18 +34,20 @@ struct ThreadImpl : public ImplRC<iThread>
       _threadList.push_back(this);
     }
   }
-  ~ThreadImpl() {
+  ~ThreadImpl()
+  {
     Close();
     {
       AutoThreadLock lock(_threadListMutex);
-      bool r = astl::find_erase(_threadList,this);
+      bool r = astl::find_erase(_threadList, this);
       niAssert(r);
       niUnused(r);
     }
   }
 
   //! Starts the thread.
-  tBool __stdcall Start(tpfnBaseThreadProc apfnBaseThreadProc, void* apData) {
+  tBool __stdcall Start(tpfnBaseThreadProc apfnBaseThreadProc, void* apData)
+  {
     if (mHandle) {
       niAssertUnreachable("Thread already started.");
       return eFalse;
@@ -53,40 +56,42 @@ struct ThreadImpl : public ImplRC<iThread>
     mnID = eInvalidHandle;
     mpfnBaseThreadProc = apfnBaseThreadProc;
     mpData = apData;
-#ifdef niWindows
-    mHandle = _beginthreadex(NULL,0,_RunThread,(LPVOID)this,CREATE_SUSPENDED,
-                             (unsigned int*)&mnID);
+  #ifdef niWindows
+    mHandle = _beginthreadex(NULL, 0, _RunThread, (LPVOID)this,
+                             CREATE_SUSPENDED, (unsigned int*)&mnID);
     if (mHandle == 0) {
       niAssertUnreachable("Can't create thread.");
       return eFalse;
     }
     ::ResumeThread((HANDLE)mHandle);
-#else
+  #else
     pthread_attr_t type;
     int r = pthread_attr_init(&type);
-    niAssertMsg(r==0,_A("Can't init pthread attributes."));
+    niAssertMsg(r == 0, _A("Can't init pthread attributes."));
     niUnused(r);
-    pthread_attr_setdetachstate(&type,PTHREAD_CREATE_JOINABLE);
+    pthread_attr_setdetachstate(&type, PTHREAD_CREATE_JOINABLE);
     mThreadProcCompletedEvent.Reset();
-    r = pthread_create(&mHandle,&type,_RunThread,(void*)this);
+    r = pthread_create(&mHandle, &type, _RunThread, (void*)this);
     if (r != 0) {
       niAssertUnreachable("Can't create pthread.");
       return eFalse;
     }
     // wait for the ID to be set
-    niPanicAssertMsg(mThreadProcCompletedEvent.Wait(5000), "Thread didn't start in time.");
+    niPanicAssertMsg(mThreadProcCompletedEvent.Wait(5000),
+                     "Thread didn't start in time.");
     niAssert(mnID != eInvalidHandle);
-#endif
+  #endif
     return eTrue;
   }
 
   //! Close the thread handle and allow it to be restarted. Does not
   //! garantee that the thread actually finished.
-  void __stdcall Close() {
+  void __stdcall Close()
+  {
     if (mHandle) {
-#ifdef niWindows
+  #ifdef niWindows
       CloseHandle((HANDLE)mHandle);
-#endif
+  #endif
       mHandle = 0;
       mpData = NULL;
       mpfnBaseThreadProc = NULL;
@@ -94,37 +99,39 @@ struct ThreadImpl : public ImplRC<iThread>
   }
 
   //! Check whether the thread has been closed.
-  tBool __stdcall IsClosed() const {
+  tBool __stdcall IsClosed() const
+  {
     return mHandle == 0;
   }
 
   //! Wait for the thread to finish and then close it.
   //! \return eFalse if the timeout expired, eTrue if the thread has
   //!         been closed or is already closed.
-  tBool __stdcall Join(tU32 anTimeout) {
+  tBool __stdcall Join(tU32 anTimeout)
+  {
     if (mHandle) {
       if (anTimeout == eInvalidHandle) {
-#ifdef niWindows
+  #ifdef niWindows
         ::WaitForSingleObject((HANDLE)mHandle, INFINITE);
-#else
+  #else
         void* lpv;
-        pthread_join(mHandle,&lpv);
-#endif
+        pthread_join(mHandle, &lpv);
+  #endif
       }
       else {
-#ifdef niWindows
-        if (::WaitForSingleObject((HANDLE)mHandle,anTimeout) == WAIT_TIMEOUT) {
+  #ifdef niWindows
+        if (::WaitForSingleObject((HANDLE)mHandle, anTimeout) == WAIT_TIMEOUT) {
           return eFalse;
         }
-#else
+  #else
         if (!mThreadProcCompletedEvent.Wait(anTimeout)) {
           // thread didn't complete in time...
           return eFalse;
         }
         // thread ended, join it now...
         void* lpv;
-        pthread_join(mHandle,&lpv);
-#endif
+        pthread_join(mHandle, &lpv);
+  #endif
       }
       Close();
     }
@@ -132,173 +139,193 @@ struct ThreadImpl : public ImplRC<iThread>
   }
 
   //! Kill the thread immediatly.
-  void __stdcall Kill() {
-    if (!mHandle) return;
-#ifdef niWindows
-    // warning C6258: Using TerminateThread does not allow proper thread clean up
-#if defined _LINT && _MSC_VER >= 1600
-#pragma warning ( disable : 6258 )
-#endif
-    TerminateThread((HANDLE)mHandle,eInvalidHandle);
-#if defined _LINT && _MSC_VER >= 1600
-#pragma warning ( default : 6258 )
-#endif
-#else
-    pthread_kill(mHandle,SIGKILL);
-#endif
+  void __stdcall Kill()
+  {
+    if (!mHandle)
+      return;
+  #ifdef niWindows
+        // warning C6258: Using TerminateThread does not allow proper thread clean up
+    #if defined _LINT && _MSC_VER >= 1600
+      #pragma warning(disable : 6258)
+    #endif
+    TerminateThread((HANDLE)mHandle, eInvalidHandle);
+    #if defined _LINT && _MSC_VER >= 1600
+      #pragma warning(default : 6258)
+    #endif
+  #else
+    pthread_kill(mHandle, SIGKILL);
+  #endif
   }
 
   //! Check whether the thread is currently running.
-  tBool __stdcall GetIsAlive() const {
+  tBool __stdcall GetIsAlive() const
+  {
     if (!mHandle)
       return ni::eFalse;
-#ifdef niWindows
+  #ifdef niWindows
     unsigned long code = eInvalidHandle;
     ::GetExitCodeThread((HANDLE)mHandle, &code);
     return (code == STILL_ACTIVE);
-#else
+  #else
     return ni::eTrue;
-#endif
+  #endif
   }
 
   //! Return the thread's id.
-  tU64 __stdcall GetThreadID() const {
+  tU64 __stdcall GetThreadID() const
+  {
     return mnID;
   }
 
   //! Set the thread's priority.
-  void __stdcall SetPriority(tI32 aPriority) {
-#ifdef niWindows
+  void __stdcall SetPriority(tI32 aPriority)
+  {
+  #ifdef niWindows
     switch (aPriority) {
-      case 0: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_LOWEST); break;
-      case 1: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_BELOW_NORMAL); break;
-      case 2: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_IDLE); break;
-      case 3: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_NORMAL); break;
-      case 4: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_ABOVE_NORMAL); break;
-      case 5: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_HIGHEST);  break;
-      case 6: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_TIME_CRITICAL);  break;
+    case 0: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_LOWEST); break;
+    case 1:
+      ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_BELOW_NORMAL);
+      break;
+    case 2: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_IDLE); break;
+    case 3: ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_NORMAL); break;
+    case 4:
+      ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_ABOVE_NORMAL);
+      break;
+    case 5:
+      ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_HIGHEST);
+      break;
+    case 6:
+      ::SetThreadPriority((HANDLE)mHandle, THREAD_PRIORITY_TIME_CRITICAL);
+      break;
     }
-#endif
+  #endif
   }
 
   //! Get the thread's priority.
-  tI32 __stdcall GetPriority() const {
-#ifdef niWindows
+  tI32 __stdcall GetPriority() const
+  {
+  #ifdef niWindows
     int priority = ::GetThreadPriority((HANDLE)mHandle);
     if (priority <= THREAD_PRIORITY_BELOW_NORMAL) {
       return 0;
     }
-    else if(priority <= THREAD_PRIORITY_BELOW_NORMAL) {
+    else if (priority <= THREAD_PRIORITY_BELOW_NORMAL) {
       return 1;
     }
-    else if(priority <= THREAD_PRIORITY_IDLE) {
+    else if (priority <= THREAD_PRIORITY_IDLE) {
       return 2;
     }
-    else if(priority <= THREAD_PRIORITY_NORMAL) {
+    else if (priority <= THREAD_PRIORITY_NORMAL) {
       return 3;
     }
-    else if(priority <= THREAD_PRIORITY_ABOVE_NORMAL) {
+    else if (priority <= THREAD_PRIORITY_ABOVE_NORMAL) {
       return 4;
     }
-    else if(priority <= THREAD_PRIORITY_HIGHEST) {
+    else if (priority <= THREAD_PRIORITY_HIGHEST) {
       return 5;
     }
-    else if(priority <= THREAD_PRIORITY_TIME_CRITICAL) {
+    else if (priority <= THREAD_PRIORITY_TIME_CRITICAL) {
       return 6;
     }
     niAssertUnreachable("Unknown Windows thread priority.");
-#endif
+  #endif
     return 3;
   }
 
  private:
-#ifdef niWindows
+  #ifdef niWindows
   tIntPtr mHandle;
-#else
+  #else
   pthread_t mHandle;
   ThreadEvent mThreadProcCompletedEvent;
-#endif
+  #endif
   tU64 mnID;
   tpfnBaseThreadProc mpfnBaseThreadProc;
   void* mpData;
 
-#ifdef niWindows
+  #ifdef niWindows
   static UINT WINAPI _RunThread(LPVOID data)
-#else
+  #else
   static void* _RunThread(void* data)
-#endif
+  #endif
   {
     tIntPtr r;
-#if !defined niWindows
+  #if !defined niWindows
     { // WeakPtr scope BEGIN. The scope is important to not leak the WeakPtr
       // since pthread_exit will exit this function without calling any
       // destructor.
       WeakPtr<ThreadImpl> wImpl = (ThreadImpl*)data;
-#endif
+  #endif
       {
         ThreadImpl* pBase = (ThreadImpl*)data;
         niAssert(pBase->IsOK());
-#ifdef niWindows
+  #ifdef niWindows
         niAssert(pBase->mnID == ThreadGetCurrentThreadID());
-#else
-        pBase->mnID = ThreadGetCurrentThreadID();
-        pBase->mThreadProcCompletedEvent.Signal(); // signal for Start
-#endif
+  #else
+      pBase->mnID = ThreadGetCurrentThreadID();
+      pBase->mThreadProcCompletedEvent.Signal(); // signal for Start
+  #endif
         niAssert(pBase->mpfnBaseThreadProc != NULL);
         r = pBase->mpfnBaseThreadProc(pBase->mpData);
       }
-#ifdef niWindows
+  #ifdef niWindows
       return (UINT)r;
-#else
-      QPtr<ThreadImpl> impl = wImpl;
-      if (impl.IsOK()) {
-        impl->mThreadProcCompletedEvent.Signal(); // signal for Join
-      }
-    } // WeakPtr scope end
+  #else
+    QPtr<ThreadImpl> impl = wImpl;
+    if (impl.IsOK()) {
+      impl->mThreadProcCompletedEvent.Signal(); // signal for Join
+    }
+  } // WeakPtr scope end
 
-    // XXX: We should not call pthread_exit just before return, as it is
-    //      automatically called when the function exits. Calling pthread_exit
-    //      result in a double-free bug when called here. pthread_exit should
-    //      only be called to exit a thread early - although getting to a return
-    //      is always a better choice if possible since its essentially the
-    //      equivalent of the exit() method for a process.
-    return (void*)r;
-#endif
+  // XXX: We should not call pthread_exit just before return, as it is
+  //      automatically called when the function exits. Calling pthread_exit
+  //      result in a double-free bug when called here. pthread_exit should
+  //      only be called to exit a thread early - although getting to a return
+  //      is always a better choice if possible since its essentially the
+  //      equivalent of the exit() method for a process.
+  return (void*)r;
+  #endif
+    }
+  };
+
+  niExportFunc(iThread*) ni_create_thread()
+  {
+    return niNew ThreadImpl();
   }
-};
-
-niExportFunc(iThread*) ni_create_thread() {
-  return niNew ThreadImpl();
-}
-niExportFunc(tU32) ni_get_num_threads() {
-  AutoThreadLock lock(_threadListMutex);
-  return _threadList.size();
-}
-niExportFunc(iThread*) ni_get_thread(tU32 anIndex) {
-  AutoThreadLock lock(_threadListMutex);
-  niAssert(anIndex < _threadList.size());
-  if (anIndex >= _threadList.size()) return NULL;
-  return _threadList[anIndex];
-}
-niExportFunc(void) ni_join_all_threads() {
-  astl::vector<Ptr<ThreadImpl> > allThreads;
+  niExportFunc(tU32) ni_get_num_threads()
   {
     AutoThreadLock lock(_threadListMutex);
-    niLoop(i,_threadList.size()) {
-      allThreads.push_back(_threadList[i]);
-    }
+    return _threadList.size();
   }
-  if (!allThreads.empty()) {
-    niWarning(niFmt("Joining '%d' left over thread.",allThreads.size()));
-    niLoop(i,allThreads.size()) {
-      niWarning(niFmt("Joining thread '%p'",allThreads[i]->GetThreadID()));
-      if (!allThreads[i]->Join(3000)) {
-        niWarning(niFmt("Joining thread '%p' timed out, killing it.",allThreads[i]->GetThreadID()));
-        allThreads[i]->Kill();
+  niExportFunc(iThread*) ni_get_thread(tU32 anIndex)
+  {
+    AutoThreadLock lock(_threadListMutex);
+    niAssert(anIndex < _threadList.size());
+    if (anIndex >= _threadList.size())
+      return NULL;
+    return _threadList[anIndex];
+  }
+  niExportFunc(void) ni_join_all_threads()
+  {
+    astl::vector<Ptr<ThreadImpl>> allThreads;
+    {
+      AutoThreadLock lock(_threadListMutex);
+      niLoop (i, _threadList.size()) {
+        allThreads.push_back(_threadList[i]);
       }
     }
-    niWarning("Joined all threads.");
+    if (!allThreads.empty()) {
+      niWarning(niFmt("Joining '%d' left over thread.", allThreads.size()));
+      niLoop (i, allThreads.size()) {
+        niWarning(niFmt("Joining thread '%p'", allThreads[i]->GetThreadID()));
+        if (!allThreads[i]->Join(3000)) {
+          niWarning(niFmt("Joining thread '%p' timed out, killing it.",
+                          allThreads[i]->GetThreadID()));
+          allThreads[i]->Kill();
+        }
+      }
+      niWarning("Joined all threads.");
+    }
   }
-}
 
 #endif

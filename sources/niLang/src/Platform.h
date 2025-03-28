@@ -9,65 +9,84 @@
 
 #ifndef niNoProcess
 
-#include "API/niLang/IOSProcess.h"
+  #include "API/niLang/IOSProcess.h"
 
-#if defined(niWindows)
-#include "API/niLang/Platforms/Win32/Win32_Redef.h"
-#include <tlhelp32.h>
-#elif defined(niPosix)
-#include <dirent.h>
-#include <limits.h>
-#include <sys/types.h>
-#endif
+  #if defined(niWindows)
+    #include "API/niLang/Platforms/Win32/Win32_Redef.h"
+    #include <tlhelp32.h>
+  #elif defined(niPosix)
+    #include <dirent.h>
+    #include <limits.h>
+    #include <sys/types.h>
+  #endif
 
-#include "API/niLang/STL/string.h"
-#include "API/niLang/STL/vector.h"
+  #include "API/niLang/STL/string.h"
+  #include "API/niLang/STL/vector.h"
 
-#if defined(niWindows)
+  #if defined(niWindows)
 typedef PROCESSENTRY32W ProcessEntry;
-#elif defined(niPosix)
+  #elif defined(niPosix)
 // TODO(port): we should not rely on a Win32 structure.
 struct ProcessEntry {
   int pid;
   int ppid;
   char szExeFile[NAME_MAX + 1];
 };
-#endif
+  #endif
 
-#if defined(niOSX) || defined niIOS
+  #if defined(niOSX) || defined niIOS
 struct kinfo_proc;
-#endif
+  #endif
 
 namespace base {
-//----------------------------------------------------------------------------
-//
-// Section: Process
-//
-//----------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
+  //
+  // Section: Process
+  //
+  //----------------------------------------------------------------------------
 
-// ProcessHandle is a platform specific type which represents the underlying OS
-// handle to a process.
-#if defined(niWindows)
+  // ProcessHandle is a platform specific type which represents the underlying OS
+  // handle to a process.
+  #if defined(niWindows)
 typedef HANDLE ProcessHandle;
-#elif defined(niPosix)
+  #elif defined(niPosix)
 // On POSIX, our ProcessHandle will just be the PID.
 typedef int ProcessHandle;
-#endif
+  #endif
 
 class Process {
  public:
-  Process() : process_(0), last_working_set_size_(0), pid_() {}
-  explicit Process(ProcessHandle handle, int pid) :
-      process_(handle), pid_(pid), last_working_set_size_(0) {}
+  Process()
+      : process_(0)
+      , last_working_set_size_(0)
+      , pid_()
+  {
+  }
+  explicit Process(ProcessHandle handle, int pid)
+      : process_(handle)
+      , pid_(pid)
+      , last_working_set_size_(0)
+  {
+  }
 
   // A handle to the current process.
   static Process Current();
 
   // Get/Set the handle for this process. The handle will be 0 if the process
   // is no longer running.
-  ProcessHandle handle() const { return process_; }
-  int pid() const { return pid_; }
-  void set_handle(ProcessHandle handle, int pid) { process_ = handle; pid_ = pid; }
+  ProcessHandle handle() const
+  {
+    return process_;
+  }
+  int pid() const
+  {
+    return pid_;
+  }
+  void set_handle(ProcessHandle handle, int pid)
+  {
+    process_ = handle;
+    pid_ = pid;
+  }
 
   // Is the this process the current process.
   bool is_current() const;
@@ -96,8 +115,8 @@ class Process {
 // installers.
 enum {
   PROCESS_END_NORMAL_TERMINATON = 0,
-  PROCESS_END_KILLED_BY_USER    = 1,
-  PROCESS_END_PROCESS_WAS_HUNG  = 2
+  PROCESS_END_KILLED_BY_USER = 1,
+  PROCESS_END_PROCESS_WAS_HUNG = 2
 };
 
 // Returns the id of the current process.
@@ -109,15 +128,15 @@ ni::cString GetProcessExePathFromPid(ni::tIntPtr pid);
 // Get the parent process of the specified process.
 ni::tIntPtr GetParentProcessFromPid(ni::tIntPtr pid);
 
-#if defined(niPosix)
+  #if defined(niPosix)
 // Sets all file descriptors to close on exec except for stdin, stdout
 // and stderr.
 void SetAllFDsToCloseOnExec();
-#endif
+  #endif
 
-// For platforms where ProcessHandle != PID
-#ifdef niWindows
-#define niProcessProcessHandleNotPID
+  // For platforms where ProcessHandle != PID
+  #ifdef niWindows
+    #define niProcessProcessHandleNotPID
 ProcessHandle GetCurrentProcessHandle();
 // Converts a PID to a process handle. This handle must be closed by
 // CloseProcessHandle when you are done with it.
@@ -126,9 +145,9 @@ ProcessHandle OpenProcessHandle(int pid);
 void CloseProcessHandle(ProcessHandle process);
 // on other OS's the process handle is the same as the PID
 int GetProcIdFromHandle(ProcessHandle process);
-#endif
+  #endif
 
-#if defined(niWindows)
+  #if defined(niWindows)
 // Runs the given application name with the given command line. Normally, the
 // first command line argument should be the path to the process, and don't
 // forget to quote it.
@@ -161,13 +180,11 @@ int GetProcIdFromHandle(ProcessHandle process);
 // CREATE_UNICODE_ENVIRONMENT.
 //
 
-bool LaunchApp(const ni::achar* aaszCmdLine,
-               HANDLE hStdin, HANDLE hStdout, HANDLE hStderr,
-               const ni::achar* aaszWorkDir,
-               const WCHAR* apEnv,
+bool LaunchApp(const ni::achar* aaszCmdLine, HANDLE hStdin, HANDLE hStdout,
+               HANDLE hStderr, const ni::achar* aaszWorkDir, const WCHAR* apEnv,
                ProcessHandle* process_handle,
                ni::tOSProcessSpawnFlags aSpawnFlags);
-#elif defined(niPosix)
+  #elif defined(niPosix)
 // Runs the application specified in argv[0] with the command line argv.
 // Before launching all FDs open in the parent process will be marked as
 // close-on-exec.  |fds_to_remap| defines a mapping of src fd->dest fd to
@@ -178,12 +195,12 @@ bool LaunchApp(const ni::achar* aaszCmdLine,
 //
 // Note that the first argument in argv must point to the filename,
 // and must be fully specified.
-typedef astl::vector<astl::pair<int, int> > file_handle_mapping_vector;
+typedef astl::vector<astl::pair<int, int>> file_handle_mapping_vector;
 bool LaunchApp(const astl::vector<astl::string>& argv,
                const file_handle_mapping_vector& fds_to_remap,
                ProcessHandle* process_handle,
                const astl::vector<ni::cString>& aEnvs);
-#endif
+  #endif
 
 // Used to filter processes by process ID.
 class ProcessFilter {
@@ -191,7 +208,9 @@ class ProcessFilter {
   // Returns true to indicate set-inclusion and false otherwise.  This method
   // should not have side-effects and should be idempotent.
   virtual bool Includes(ni::tI32 pid, ni::tI32 parent_pid) const = 0;
-  virtual ~ProcessFilter() { }
+  virtual ~ProcessFilter()
+  {
+  }
 };
 
 // Returns the number of processes on the machine that are running from the
@@ -213,9 +232,9 @@ bool KillProcesses(const astl::string& executable_name, int exit_code,
 // for the process to be actually terminated before returning.
 // Returns true if this is successful, false otherwise.
 bool KillProcess(ProcessHandle process, int exit_code, bool wait);
-#if defined(niWindows)
+  #if defined(niWindows)
 bool KillProcessById(DWORD process_id, int exit_code, bool wait);
-#endif
+  #endif
 
 // Get the termination status (exit code) of the process and return true if the
 // status indicates the process crashed.  It is an error to call this if the
@@ -226,20 +245,19 @@ bool DidProcessCrash(ProcessHandle handle);
 // signaled then puts the exit code in |exit_code|; otherwise it's considered
 // a failure. On Windows |exit_code| is always filled. Returns true on success,
 // and closes |handle| in any case.
-bool WaitForExitCode(ProcessHandle handle, int* exit_code, int wait_milliseconds);
+bool WaitForExitCode(ProcessHandle handle, int* exit_code,
+                     int wait_milliseconds);
 
 // Wait for all the processes based on the named executable to exit.  If filter
 // is non-null, then only processes selected by the filter are waited on.
 // Returns after all processes have exited or wait_milliseconds have expired.
 // Returns true if all the processes exited, false otherwise.
 bool WaitForProcessesToExit(const astl::string& executable_name,
-                            int wait_milliseconds,
-                            const ProcessFilter* filter);
+                            int wait_milliseconds, const ProcessFilter* filter);
 
 // Wait for a single process to exit. Return true if it exited cleanly within
 // the given time limit.
-bool WaitForSingleProcess(ProcessHandle handle,
-                          int wait_milliseconds);
+bool WaitForSingleProcess(ProcessHandle handle, int wait_milliseconds);
 
 // Waits a certain amount of time (can be 0) for all the processes with a given
 // executable name to exit, then kills off any of them that are still around.
@@ -248,8 +266,7 @@ bool WaitForSingleProcess(ProcessHandle handle,
 // any processes needed to be killed, true if they all exited cleanly within
 // the wait_milliseconds delay.
 bool CleanupProcesses(const astl::string& executable_name,
-                      int wait_milliseconds,
-                      int exit_code,
+                      int wait_milliseconds, int exit_code,
                       const ProcessFilter* filter);
 
 // This class provides a way to iterate through the list of processes
@@ -283,23 +300,23 @@ class NamedProcessIterator {
 
   astl::string executable_name_;
 
-#if defined(niWindows)
+  #if defined(niWindows)
   HANDLE snapshot_;
   bool started_iteration_;
-#elif defined(niOSX) || defined niIOS
+  #elif defined(niOSX) || defined niIOS
   astl::vector<kinfo_proc> kinfo_procs_;
   size_t index_of_kinfo_proc_;
-#elif defined(niPosix)
-  DIR *procfs_dir_;
-#endif
+  #elif defined(niPosix)
+  DIR* procfs_dir_;
+  #endif
   ProcessEntry entry_;
   const ProcessFilter* filter_;
 
   niClassNoCopyAssign(NamedProcessIterator);
 };
 
-}  // namespace base
+} // namespace base
 
 #endif // niNoProcess
 
-#endif  // BASE_PROCESS_H_
+#endif // BASE_PROCESS_H_

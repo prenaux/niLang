@@ -32,17 +32,18 @@ enum eXmlParserNodeType {
 struct iXmlParserSink : public iUnknown {
   niDeclareInterfaceUUID(iXmlParserSink,0x061d5946,0xbb2f,0x4f8c,0x9b,0x67,0xa5,0xc3,0x42,0x63,0x59,0x71);
   virtual tBool __stdcall OnXmlParserSink_Node(
-      eXmlParserNodeType aType, const ni::achar* aNameOrData) = 0;
+    eXmlParserNodeType aType, const ni::achar* aNameOrData) = 0;
   virtual tBool __stdcall OnXmlParserSink_Attribute(
-      const ni::achar* aName,
-      const ni::achar* aValue) = 0;
+    const ni::achar* aName, const ni::achar* aValue) = 0;
 };
 
-niExportFunc(ni::tBool) XmlParseFile(ni::iFile* apFile, ni::iXmlParserSink* apSink);
-niExportFunc(ni::tBool) XmlParseString(const ni::cString& aString, ni::iXmlParserSink* apSink);
+niExportFunc(ni::tBool) XmlParseFile(ni::iFile* apFile,
+                                     ni::iXmlParserSink* apSink);
+niExportFunc(ni::tBool) XmlParseString(const ni::cString& aString,
+                                       ni::iXmlParserSink* apSink);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // niMinFeatures
 #endif // __IXML_H_6C5A488C_B1AB_4EE5_B0C3_3E8C3E04D61C__

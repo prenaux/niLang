@@ -52,13 +52,15 @@ niExportFunc(tF64) ni_prng_next_f64(int4* aPRNG);
 //!         and false are produced with (approximately) equal probability.
 niExportFunc(tBool) ni_prng_next_bool(int4* aPRNG);
 //! Get the next bytes prn of the specified PRNG.
-niExportFunc(void) ni_prng_next_bytes(int4* aPRNG, tPtr apBytes, tSize anNumBytes);
+niExportFunc(void) ni_prng_next_bytes(int4* aPRNG, tPtr apBytes,
+                                      tSize anNumBytes);
 
 //! Get the default/global prng.
 niExportFunc(int4*) ni_prng_global();
 
 //! Computes a 64bit seed from the specified string.
-niExportFunc(tU64) ni_prng_seed_from_string(const achar* aString, const tI32 aStrLen = 0);
+niExportFunc(tU64) ni_prng_seed_from_string(const achar* aString,
+                                            const tI32 aStrLen = 0);
 
 //! Get random bytes from a secure random entropy source.
 //! \return eFalse if we can't get bytes from a secure random entropy source.
@@ -67,61 +69,72 @@ niExportFunc(tU64) ni_prng_seed_from_string(const achar* aString, const tI32 aSt
 niExportFunc(tBool) RandSecureGetBytes(tPtr apOutput, tSize anSize);
 
 //! Seed a random number generator.
-inline void RandSeed(tU64 aSeed, int4* aPRNG = ni_prng_global()) {
-  ni_prng_seed(aPRNG,aSeed);
+inline void RandSeed(tU64 aSeed, int4* aPRNG = ni_prng_global())
+{
+  ni_prng_seed(aPRNG, aSeed);
 }
 
 //! Return a random boolean
-inline tBool RandBool(int4* aPRNG = ni_prng_global()) {
+inline tBool RandBool(int4* aPRNG = ni_prng_global())
+{
   return ni_prng_next_bool(aPRNG);
 }
 
 //! Return a random bytes
-inline void RandBytes(tPtr apBytes, tSize anNumBytes, int4* aPRNG = ni_prng_global()) {
+inline void RandBytes(tPtr apBytes, tSize anNumBytes,
+                      int4* aPRNG = ni_prng_global())
+{
   ni_prng_next_bytes(aPRNG, apBytes, anNumBytes);
 }
 
 //! Return a random integer in the range [-TypeMin(tI32) ; TypeMax(tI32)]
-inline tI32 RandInt(int4* aPRNG = ni_prng_global()) {
+inline tI32 RandInt(int4* aPRNG = ni_prng_global())
+{
   return ni_prng_next_i32(aPRNG);
 }
 
 //! Return a random integer in the range [-TypeMin(tI64) ; TypeMax(tI64)]
-inline tI64 RandInt64(int4* aPRNG = ni_prng_global()) {
+inline tI64 RandInt64(int4* aPRNG = ni_prng_global())
+{
   return ni_prng_next_i64(aPRNG);
 }
 
 //! Return a random integer in the range [ aMin ; aMax ].
-inline tI32 RandIntRange(tI32 aMin, tI32 aMax, int4* aPRNG = ni_prng_global()) {
+inline tI32 RandIntRange(tI32 aMin, tI32 aMax, int4* aPRNG = ni_prng_global())
+{
   const tI64 r = ni_prng_next_i32(aPRNG) + (tI64)TypeMax<tI32>();
-  const tI64 q = (r % ((aMax-aMin)+1)) + aMin;
+  const tI64 q = (r % ((aMax - aMin) + 1)) + aMin;
   return (tI32)q;
 }
 
 //! Return a random float in the range [-1 ; 1]
-inline tF64 RandSignedFloat(int4* aPRNG = ni_prng_global()) {
+inline tF64 RandSignedFloat(int4* aPRNG = ni_prng_global())
+{
   return (ni_prng_next_f64(aPRNG) * 2.0) - 1.0;
 }
 
 //! Return a random float in the range [0 ; 1]
-inline tF64 RandFloat(int4* aPRNG = ni_prng_global()) {
+inline tF64 RandFloat(int4* aPRNG = ni_prng_global())
+{
   return ni_prng_next_f64(aPRNG);
 }
 
 //! Return a random float in the specified range.
-inline tF64 RandFloatRange(tF64 aMin, tF64 aMax, int4* aPRNG = ni_prng_global()) {
-  const tF64 size = aMax-aMin;
+inline tF64 RandFloatRange(tF64 aMin, tF64 aMax, int4* aPRNG = ni_prng_global())
+{
+  const tF64 size = aMax - aMin;
   return (ni_prng_next_f64(aPRNG) * size) + aMin;
 }
 
 //! Return a random number with a normal distribution.
-inline tF32 RandNormal(tF32 sigma, int4* aPRNG = ni_prng_global()) {
+inline tF32 RandNormal(tF32 sigma, int4* aPRNG = ni_prng_global())
+{
   constexpr float ONE_OVER_SIGMA_EXP = (1.0f / 0.7975f);
   float y;
 
   do {
     y = (float)-log(ni_prng_next_f64(aPRNG));
-  } while (ni_prng_next_f64(aPRNG) > exp(-(y - 1.0f)*(y - 1.0f)*0.5f));
+  } while (ni_prng_next_f64(aPRNG) > exp(-(y - 1.0f) * (y - 1.0f) * 0.5f));
 
   if (ni_prng_next_bool(aPRNG)) {
     return y * sigma * ONE_OVER_SIGMA_EXP;
@@ -132,26 +145,25 @@ inline tF32 RandNormal(tF32 sigma, int4* aPRNG = ni_prng_global()) {
 }
 
 ///////////////////////////////////////////////
-inline tU32 RandColorA(tU8 aA, int4* aPRNG = ni_prng_global()) {
-  return ULColorBuild(
-      ni::RandIntRange(0,255,aPRNG),
-      ni::RandIntRange(0,255,aPRNG),
-      ni::RandIntRange(0,255,aPRNG),
-      aA);
+inline tU32 RandColorA(tU8 aA, int4* aPRNG = ni_prng_global())
+{
+  return ULColorBuild(ni::RandIntRange(0, 255, aPRNG),
+                      ni::RandIntRange(0, 255, aPRNG),
+                      ni::RandIntRange(0, 255, aPRNG), aA);
 }
 
 ///////////////////////////////////////////////
-inline tU32 RandColorAf(tF32 aA, int4* aPRNG = ni_prng_global()) {
+inline tU32 RandColorAf(tF32 aA, int4* aPRNG = ni_prng_global())
+{
   return ULColorBuild(
-      ni::RandIntRange(0,255,aPRNG),
-      ni::RandIntRange(0,255,aPRNG),
-      ni::RandIntRange(0,255,aPRNG),
-      tU8(tU32(aA*255.0f)&0xFF));
+    ni::RandIntRange(0, 255, aPRNG), ni::RandIntRange(0, 255, aPRNG),
+    ni::RandIntRange(0, 255, aPRNG), tU8(tU32(aA * 255.0f) & 0xFF));
 }
 
 ///////////////////////////////////////////////
-inline tU32 RandColor(int4* aPRNG = ni_prng_global()) {
-  return RandColorA((tU8)ni::RandIntRange(0,255,aPRNG));
+inline tU32 RandColor(int4* aPRNG = ni_prng_global())
+{
+  return RandColorA((tU8)ni::RandIntRange(0, 255, aPRNG));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -179,46 +191,57 @@ struct sRandEngineTpl {
   // \remark No default seed value as its unsafe,
   //         ni_prng_get_seed_from_secure_source() is the best option in
   //         general.
-  explicit sRandEngineTpl(tU64 anSeed) {
+  explicit sRandEngineTpl(tU64 anSeed)
+  {
     this->seed(anSeed);
   }
 
   sRandEngineTpl(const sRandEngineTpl& other)
-      : _prng_state(other._prng_state) {}
+      : _prng_state(other._prng_state)
+  {
+  }
 
-  sRandEngineTpl& operator = (const sRandEngineTpl& other) {
+  sRandEngineTpl& operator=(const sRandEngineTpl& other)
+  {
     _prng_state = other._prng_state;
     return *this;
   }
 
-  void seed(tU64 anSeed) {
+  void seed(tU64 anSeed)
+  {
     ni_prng_seed(&_prng_state, anSeed);
   }
 
-  result_type operator()() {
+  result_type operator()()
+  {
     return _next();
   }
 
-  void discard(tSize aCount) {
+  void discard(tSize aCount)
+  {
     // TODO: this can probably be done better using ni_prng_next_bytes
-    niLoop(i,aCount) {
+    niLoop (i, aCount) {
       _next();
     }
   }
 
-  static constexpr result_type min() {
+  static constexpr result_type min()
+  {
     return ni::TypeMin<result_type>();
   }
 
-  static constexpr result_type max() {
+  static constexpr result_type max()
+  {
     return ni::TypeMax<result_type>();
   }
 
-  friend bool operator==(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs) {
+  friend bool operator==(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs)
+  {
     return lhs._prng_state == rhs._prng_state;
   }
 
-  friend bool operator!=(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs) {
+  friend bool operator!=(const sRandEngineTpl& lhs, const sRandEngineTpl& rhs)
+  {
     return !(lhs == rhs);
   }
 
@@ -228,59 +251,72 @@ struct sRandEngineTpl {
 };
 
 template <>
-inline tI32 sRandEngineTpl<tI32>::_next() {
+inline tI32 sRandEngineTpl<tI32>::_next()
+{
   return ni_prng_next_i32(&_prng_state);
 }
 template <>
-inline tU32 sRandEngineTpl<tU32>::_next() {
+inline tU32 sRandEngineTpl<tU32>::_next()
+{
   return (tU32)ni_prng_next_i32(&_prng_state);
 }
 
 template <>
-inline tI64 sRandEngineTpl<tI64>::_next() {
+inline tI64 sRandEngineTpl<tI64>::_next()
+{
   return ni_prng_next_i64(&_prng_state);
 }
 template <>
-inline tU64 sRandEngineTpl<tU64>::_next() {
+inline tU64 sRandEngineTpl<tU64>::_next()
+{
   return (tU64)ni_prng_next_i64(&_prng_state);
 }
 
 template <>
-inline tF32 sRandEngineTpl<tF32>::_next() {
+inline tF32 sRandEngineTpl<tF32>::_next()
+{
   return static_cast<tF32>(ni_prng_next_f64(&_prng_state));
 }
 template <>
-inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::min() {
+inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::min()
+{
   return 0.0f;
 }
 template <>
-inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::max() {
+inline constexpr sRandEngineTpl<tF32>::result_type sRandEngineTpl<tF32>::max()
+{
   return 1.0f;
 }
 
 template <>
-inline tF64 sRandEngineTpl<tF64>::_next() {
+inline tF64 sRandEngineTpl<tF64>::_next()
+{
   return ni_prng_next_f64(&_prng_state);
 }
 template <>
-inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::min() {
+inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::min()
+{
   return 0.0;
 }
 template <>
-inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::max() {
+inline constexpr sRandEngineTpl<tF64>::result_type sRandEngineTpl<tF64>::max()
+{
   return 1.0;
 }
 
 template <>
-inline tBool sRandEngineTpl<tBool>::_next() {
+inline tBool sRandEngineTpl<tBool>::_next()
+{
   return ni_prng_next_bool(&_prng_state);
 }
 template <>
-inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::min() {
+inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::min()
+{
   return eFalse;
 }
 template <>
-inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::max() {
+inline constexpr sRandEngineTpl<tBool>::result_type sRandEngineTpl<tBool>::max()
+{
   return eTrue;
 }
 
@@ -292,5 +328,5 @@ typedef sRandEngineTpl<tBool> tRandEngineBool;
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __RANDOM_15007279_H__

@@ -7,7 +7,7 @@
 #include <float.h>
 
 #ifdef __cplusplus
-#include <niLang/STL/limits.h>
+  #include <niLang/STL/limits.h>
 #endif
 
 namespace ni {
@@ -20,103 +20,126 @@ namespace ni {
 //  Fast Floats
 //
 //===========================================================================
-__forceinline tU32 _FloatIR(tF32 x) {
+__forceinline tU32 _FloatIR(tF32 x)
+{
   return ((ni::tU32&)(x));
 }
-__forceinline tI32 _FloatSIR(tF32 x) {
+__forceinline tI32 _FloatSIR(tF32 x)
+{
   return ((ni::tI32&)(x));
 }
-__forceinline tF32 _FloatFR(tU32 x) {
+__forceinline tF32 _FloatFR(tU32 x)
+{
   return ((ni::tF32&)(x));
 }
 
 //! Integer representation of a floating-point value.
-#define niFloatIR(x)          (ni::_FloatIR(x))
+#define niFloatIR(x) (ni::_FloatIR(x))
 
 //! Signed integer representation of a floating-point value.
-#define niFloatSIR(x)         (ni::_FloatSIR(x))
+#define niFloatSIR(x) (ni::_FloatSIR(x))
 
 //! Absolute integer representation of a floating-point value
-#define niFloatAIR(x)         (niFloatIR(x)&0x7fffffff)
+#define niFloatAIR(x) (niFloatIR(x) & 0x7fffffff)
 
 //! Floating-point representation of an integer value.
-#define niFloatFR(x)          (ni::_FloatFR(x))
+#define niFloatFR(x) (ni::_FloatFR(x))
 
 //! Integer-based comparison of a floating point value.
 //! Don't use it blindly, it can be faster or slower than the FPU comparison, depends on the context.
-#define niFloatIsNegative(x)  (niFloatIR(x)&0x80000000)
+#define niFloatIsNegative(x) (niFloatIR(x) & 0x80000000)
 
 //! Check if float is zero
-#define niFloatIsZero(x)      (niFloatIR(x)==0)
+#define niFloatIsZero(x) (niFloatIR(x) == 0)
 
 //! Check whether the specified number if not a valid floating point number (NaN).
 #ifdef niPosix
-#define niFloatIsNaN(x) isnan(x)
+  #define niFloatIsNaN(x) isnan(x)
 #else
-#define niFloatIsNaN(x) _isnan(x)
+  #define niFloatIsNaN(x) _isnan(x)
 #endif
 
 #ifdef __cplusplus
-template<typename T> inline T TypeNaN() { ; /*error*/ }
-template<typename T> inline T TypeInfinity() { ; /*error*/ }
+template <typename T>
+inline T TypeNaN()
+{
+  ; /*error*/
+}
+template <typename T>
+inline T TypeInfinity()
+{
+  ; /*error*/
+}
 
-template<> inline tF32 TypeNaN<tF32>() {
+template <>
+inline tF32 TypeNaN<tF32>()
+{
   return eastl::numeric_limits<tF32>::quiet_NaN();
 }
-template<> inline tF64 TypeNaN<tF64>() {
+template <>
+inline tF64 TypeNaN<tF64>()
+{
   return eastl::numeric_limits<tF64>::quiet_NaN();
 }
 
-template<> inline tF32 TypeInfinity<tF32>() {
+template <>
+inline tF32 TypeInfinity<tF32>()
+{
   return eastl::numeric_limits<tF32>::infinity();
 }
-template<> inline tF64 TypeInfinity<tF64>() {
+template <>
+inline tF64 TypeInfinity<tF64>()
+{
   return eastl::numeric_limits<tF64>::infinity();
 }
 
-__forceinline bool IsNaN(const tF64 num) {
+__forceinline bool IsNaN(const tF64 num)
+{
   return num != num;
 }
-__forceinline bool IsNaN(const tF32 num) {
+__forceinline bool IsNaN(const tF32 num)
+{
   return num != num;
 }
 
-__forceinline bool IsInfinity(const tF32 num) {
+__forceinline bool IsInfinity(const tF32 num)
+{
   return IsNaN(num - num);
 }
-__forceinline bool IsInfinity(const tF64 num) {
+__forceinline bool IsInfinity(const tF64 num)
+{
   return IsNaN(num - num);
 }
 
-__forceinline bool IsFinite(const tF32 d) {
-#ifdef niMSVC
+__forceinline bool IsFinite(const tF32 d)
+{
+  #ifdef niMSVC
   return _finite(d);
-#elif defined niIOS \
-  || defined niJSCC \
-  || defined niQNX \
-  || (defined niOSX && defined niARM64)
+  #elif defined niIOS || defined niJSCC || defined niQNX || \
+    (defined niOSX && defined niARM64)
   return ((d) >= -FLT_MAX && (d) <= FLT_MAX);
-#else
+  #else
   return finite(d);
-#endif
+  #endif
 }
-__forceinline bool IsFinite(const tF64 d) {
-#ifdef niMSVC
+__forceinline bool IsFinite(const tF64 d)
+{
+  #ifdef niMSVC
   return _finite(d);
-#elif defined niIOS \
-  || defined niJSCC \
-  || defined niQNX \
-  || (defined niOSX && defined niARM64)
+  #elif defined niIOS || defined niJSCC || defined niQNX || \
+    (defined niOSX && defined niARM64)
   return ((d) >= -DBL_MAX && (d) <= DBL_MAX);
-#else
+  #else
   return finite(d);
-#endif
+  #endif
 }
 
-__forceinline tF32 InfiniteToZero(tF32 x) {
+__forceinline tF32 InfiniteToZero(tF32 x)
+{
   return IsFinite(x) ? x : 0.0f;
 }
-__forceinline tF64 InfiniteToZero(tF64 x) {
+__forceinline tF64 InfiniteToZero(tF64 x)
+{
   return IsFinite(x) ? x : 0.0;
 }
 #endif
@@ -144,7 +167,7 @@ __forceinline unsigned char FloatNormToByte(float a)
 //! Don't use it blindy, it can be faster or slower than the FPU comparison, depends on the context.
 __forceinline tF32 FloatAbs(tF32 x)
 {
-  tU32 FloatBits = niFloatIR(x)&0x7fffffff;
+  tU32 FloatBits = niFloatIR(x) & 0x7fffffff;
   return niFloatFR(FloatBits);
 }
 
@@ -263,7 +286,7 @@ __forceinline void FloatSinCos(const tF32 x, tF32& sine, tF32& cosine)
 
 inline unsigned char FloatNormToByte(float a)
 {
-  return (unsigned char)(a*255.0f);
+  return (unsigned char)(a * 255.0f);
 }
 
 inline tF32 FloatAbs(tF32 x)
@@ -278,12 +301,12 @@ inline tF32 FloatSqrt(tF32 square)
 
 inline int FloatToIntNearest(double x)
 {
-  return (int)ni::Floor(x+0.5);
+  return (int)ni::Floor(x + 0.5);
 }
 
 inline int FloatToIntNearestX(double x)
 {
-  return (int)ni::Floor(x+0.5);
+  return (int)ni::Floor(x + 0.5);
 }
 
 inline int FloatToIntFloor(double x)
@@ -296,7 +319,8 @@ inline int FloatToIntCeil(double x)
   return (int)ni::Ceil(x);
 }
 
-inline void FloatSinCos(const tF32 x, tF32& sine, tF32& cosine) {
+inline void FloatSinCos(const tF32 x, tF32& sine, tF32& cosine)
+{
   sine = ni::Sin(x);
   cosine = ni::Cos(x);
 }
@@ -341,12 +365,12 @@ niCAssert(sizeof(tF64) == sizeof(tU64));
  * Constant expressions in C can't refer to consts, unfortunately, so #define
  * these rather than use |const tU64|.
  */
-#define NI_DOUBLE_SIGN_BIT          0x8000000000000000ULL
-#define NI_DOUBLE_EXPONENT_BITS     0x7ff0000000000000ULL
-#define NI_DOUBLE_SIGNIFICAND_BITS  0x000fffffffffffffULL
+#define NI_DOUBLE_SIGN_BIT 0x8000000000000000ULL
+#define NI_DOUBLE_EXPONENT_BITS 0x7ff0000000000000ULL
+#define NI_DOUBLE_SIGNIFICAND_BITS 0x000fffffffffffffULL
 
-#define NI_DOUBLE_EXPONENT_BIAS   1023
-#define NI_DOUBLE_EXPONENT_SHIFT  52
+#define NI_DOUBLE_EXPONENT_BIAS 1023
+#define NI_DOUBLE_EXPONENT_SHIFT 52
 
 // sign bit doesn't overlap exponent bits
 niCAssert((NI_DOUBLE_SIGN_BIT & NI_DOUBLE_EXPONENT_BITS) == 0);
@@ -373,8 +397,7 @@ union NiDoublePun {
 };
 
 /** Determines whether a tF64 is NaN. */
-static __forceinline int
-DoubleIsNaN(tF64 d)
+static __forceinline int DoubleIsNaN(tF64 d)
 {
   union NiDoublePun pun;
   pun.d = d;
@@ -384,12 +407,11 @@ DoubleIsNaN(tF64 d)
    * least one non-zero bit.
    */
   return (pun.u & NI_DOUBLE_EXPONENT_BITS) == NI_DOUBLE_EXPONENT_BITS &&
-      (pun.u & NI_DOUBLE_SIGNIFICAND_BITS) != 0;
+         (pun.u & NI_DOUBLE_SIGNIFICAND_BITS) != 0;
 }
 
 /** Determines whether a tF64 is +Infinity or -Infinity. */
-static __forceinline int
-DoubleIsInfinite(tF64 d)
+static __forceinline int DoubleIsInfinite(tF64 d)
 {
   union NiDoublePun pun;
   pun.d = d;
@@ -399,8 +421,7 @@ DoubleIsInfinite(tF64 d)
 }
 
 /** Determines whether a tF64 is not NaN or infinite. */
-static __forceinline int
-DoubleIsFinite(tF64 d)
+static __forceinline int DoubleIsFinite(tF64 d)
 {
   union NiDoublePun pun;
   pun.d = d;
@@ -416,8 +437,7 @@ DoubleIsFinite(tF64 d)
  * Determines whether a tF64 is negative.  It is an error to call this method
  * on a tF64 which is NaN.
  */
-static __forceinline int
-DoubleIsNegative(tF64 d)
+static __forceinline int DoubleIsNegative(tF64 d)
 {
   union NiDoublePun pun;
   pun.d = d;
@@ -429,8 +449,7 @@ DoubleIsNegative(tF64 d)
 }
 
 /** Determines whether a tF64 represents -0. */
-static __forceinline int
-DoubleIsNegativeZero(tF64 d)
+static __forceinline int DoubleIsNegativeZero(tF64 d)
 {
   union NiDoublePun pun;
   pun.d = d;
@@ -450,12 +469,11 @@ static __forceinline int DoubleGetExponent(tF64 d)
    * actual value.  Subtract the bias to retrieve the actual exponent.
    */
   return (int)((pun.u & NI_DOUBLE_EXPONENT_BITS) >> NI_DOUBLE_EXPONENT_SHIFT) -
-      NI_DOUBLE_EXPONENT_BIAS;
+         NI_DOUBLE_EXPONENT_BIAS;
 }
 
 /** Returns +Infinity. */
-static __forceinline tF64
-DoublePositiveInfinity()
+static __forceinline tF64 DoublePositiveInfinity()
 {
   union NiDoublePun pun;
 
@@ -468,8 +486,7 @@ DoublePositiveInfinity()
 }
 
 /** Returns -Infinity. */
-static __forceinline tF64
-DoubleNegativeInfinity()
+static __forceinline tF64 DoubleNegativeInfinity()
 {
   union NiDoublePun pun;
 
@@ -482,8 +499,7 @@ DoubleNegativeInfinity()
 }
 
 /** Constructs a NaN value with the specified sign bit and significand bits. */
-static __forceinline tF64
-DoubleGetSpecificNaN(int signbit, tU64 significand)
+static __forceinline tF64 DoubleGetSpecificNaN(int signbit, tU64 significand)
 {
   union NiDoublePun pun;
 
@@ -491,9 +507,8 @@ DoubleGetSpecificNaN(int signbit, tU64 significand)
   niAssert((significand & ~NI_DOUBLE_SIGNIFICAND_BITS) == 0);
   niAssert(significand & NI_DOUBLE_SIGNIFICAND_BITS);
 
-  pun.u = (signbit ? NI_DOUBLE_SIGN_BIT : 0) |
-      NI_DOUBLE_EXPONENT_BITS |
-      significand;
+  pun.u =
+    (signbit ? NI_DOUBLE_SIGN_BIT : 0) | NI_DOUBLE_EXPONENT_BITS | significand;
   niAssert(DoubleIsNaN(pun.d));
   return pun.d;
 }
@@ -502,13 +517,13 @@ DoubleGetSpecificNaN(int signbit, tU64 significand)
  * Computes a NaN value.  Do not use this method if you depend upon a particular
  * NaN value being returned.
  */
-static __forceinline tF64
-DoubleNaN()
+static __forceinline tF64 DoubleNaN()
 {
   return DoubleGetSpecificNaN(0, 0xfffffffffffffULL);
 }
 
-static __forceinline tF64 DoubleMaxValue() {
+static __forceinline tF64 DoubleMaxValue()
+{
   return 1.7976931348623157E+308;
 }
 
@@ -555,9 +570,8 @@ niExportFunc(char*) DoubleToString(char* aBuffer, tSize aBufferSize,
                                    const char* aNaNSymbol = "NaN",
                                    char aExponentCharacter = 'e');
 
-niExportFunc(char*) DoubleToStringRadix(
-    char* aBuffer, tSize aBufferSize,
-    tF64 aNumber, tI32 aRadix);
+niExportFunc(char*) DoubleToStringRadix(char* aBuffer, tSize aBufferSize,
+                                        tF64 aNumber, tI32 aRadix);
 
 niExportFunc(char*) DoubleToStringEcma(char* aBuffer, tSize aBufferSize,
                                        tF64 aNumber, tI32 aRadix);
@@ -580,32 +594,32 @@ enum eStringToDoubleFlags {
   eStringToDoubleFlags_TrailingSpaces = 16,
   eStringToDoubleFlags_SpacesAfterSign = 32,
   eStringToDoubleFlags_TrailingEPlusMinus = 64,
-  eStringToDoubleFlags_Default = eStringToDoubleFlags_Hex|eStringToDoubleFlags_TrailingJunk|eStringToDoubleFlags_TrailingEPlusMinus|eStringToDoubleFlags_LeadingSpaces|eStringToDoubleFlags_TrailingSpaces|eStringToDoubleFlags_SpacesAfterSign
+  eStringToDoubleFlags_Default =
+    eStringToDoubleFlags_Hex | eStringToDoubleFlags_TrailingJunk |
+    eStringToDoubleFlags_TrailingEPlusMinus |
+    eStringToDoubleFlags_LeadingSpaces | eStringToDoubleFlags_TrailingSpaces |
+    eStringToDoubleFlags_SpacesAfterSign
 };
 
 //! \see ni::eStringToDoubleFlags
 typedef tU32 tStringToDoubleFlags;
 
-niExportFunc(tF64) StringToDouble(const char* aBuffer,
-                                  tSize aBufferSize = 0,
-                                  tInt* apProcessedCharactersCount = NULL,
-                                  tStringToDoubleFlags aFlags = eStringToDoubleFlags_Default,
-                                  tF64 aEmptyStringValue = 0,
-                                  tF64 aInvalidStringValue = DoubleNaN(),
-                                  const char* aInfinitySymbol = "Infinity",
-                                  const char* aNaNSymbol = "NaN");
+niExportFunc(tF64) StringToDouble(
+  const char* aBuffer, tSize aBufferSize = 0,
+  tInt* apProcessedCharactersCount = NULL,
+  tStringToDoubleFlags aFlags = eStringToDoubleFlags_Default,
+  tF64 aEmptyStringValue = 0, tF64 aInvalidStringValue = DoubleNaN(),
+  const char* aInfinitySymbol = "Infinity", const char* aNaNSymbol = "NaN");
 
-niExportFunc(tF32) StringToFloat(const char* aBuffer,
-                                 tSize aBufferSize = 0,
-                                 tInt* apProcessedCharactersCount = NULL,
-                                 tStringToDoubleFlags aFlags = eStringToDoubleFlags_Default,
-                                 tF64 aEmptyStringValue = 0,
-                                 tF64 aInvalidStringValue = DoubleNaN(),
-                                 const char* aInfinitySymbol = "Infinity",
-                                 const char* aNaNSymbol = "NaN");
+niExportFunc(tF32) StringToFloat(
+  const char* aBuffer, tSize aBufferSize = 0,
+  tInt* apProcessedCharactersCount = NULL,
+  tStringToDoubleFlags aFlags = eStringToDoubleFlags_Default,
+  tF64 aEmptyStringValue = 0, tF64 aInvalidStringValue = DoubleNaN(),
+  const char* aInfinitySymbol = "Infinity", const char* aNaNSymbol = "NaN");
 #endif
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __MATHFLOAT_44024344_H__

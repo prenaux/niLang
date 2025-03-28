@@ -13,20 +13,20 @@
 #include <niLang/Utils/ObjModelImpl.h>
 
 #ifdef USE_NICRT
-#ifdef niMSVC
-#pragma niNote("## Using ni CRT")
-#pragma comment(linker, "/nodefaultlib")
-#endif
+  #ifdef niMSVC
+    #pragma niNote("## Using ni CRT")
+    #pragma comment(linker, "/nodefaultlib")
+  #endif
 #endif
 
 #ifndef _DEBUG
 
-#ifdef niConfig_MinModuleDefSize
-#pragma niNote("Minimum Size ModuleDef")
-#ifdef niMSVC
-#pragma optimize("s",on)
-#endif
-#endif
+  #ifdef niConfig_MinModuleDefSize
+    #pragma niNote("Minimum Size ModuleDef")
+    #ifdef niMSVC
+      #pragma optimize("s", on)
+    #endif
+  #endif
 
 #endif
 
@@ -36,11 +36,10 @@
 #include <niLang/Utils/CrashReport.h>
 
 // Meant to be called in a Modules's ModuleDef GetModule() implementation
-#define niModuleDefImpl_GetModule_Register()    \
-  niCrashReport_ModuleInstall();
+#define niModuleDefImpl_GetModule_Register() niCrashReport_ModuleInstall();
 
 #ifdef niWindows
-#include "../Platforms/Win32/Win32_DelayLoadImpl.h"
+  #include "../Platforms/Win32/Win32_DelayLoadImpl.h"
 #endif
 
 /**@}*/

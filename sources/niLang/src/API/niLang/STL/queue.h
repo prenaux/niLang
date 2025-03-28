@@ -9,8 +9,9 @@ namespace astl {
 
 ASTL_RAW_ALLOCATOR_IMPL(queue);
 
-template <class _Tp, class _Sequence = astl::deque<_Tp,ASTL_ALLOCATOR(_Tp,queue)> >
+template <class _Tp,
+          class _Sequence = astl::deque<_Tp, ASTL_ALLOCATOR(_Tp, queue)>>
 using queue = eastl::queue<_Tp, _Sequence>;
 
-}  // namespace astl
+} // namespace astl
 #endif /* ASTL_QUEUE */

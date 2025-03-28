@@ -2,12 +2,12 @@
 
 using namespace ni;
 
-struct FFileMemory {
-};
+struct FFileMemory {};
 
-TEST_FIXTURE(FFileMemory,EmptyString) {
-  QPtr<iFile> fp = ni::CreateFileDynamicMemory(0,"--string--");
-  fp->BeginTextFileWrite(eTextEncodingFormat_Native,eTrue);
+TEST_FIXTURE(FFileMemory, EmptyString)
+{
+  QPtr<iFile> fp = ni::CreateFileDynamicMemory(0, "--string--");
+  fp->BeginTextFileWrite(eTextEncodingFormat_Native, eTrue);
   fp->WriteString("");
   fp->SeekSet(0);
   fp->BeginTextFileRead(eTrue);

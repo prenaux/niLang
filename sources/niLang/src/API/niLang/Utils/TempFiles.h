@@ -22,15 +22,19 @@ struct sTempFiles {
   cString _tempDir;
   astl::vector<cString> _tempFilesCollector;
 
-  sTempFiles(tBool abDeleteTempFilesOnDestruct) : _deleteTempFilesOnDestruct(abDeleteTempFilesOnDestruct) {
+  sTempFiles(tBool abDeleteTempFilesOnDestruct)
+      : _deleteTempFilesOnDestruct(abDeleteTempFilesOnDestruct)
+  {
   }
-  ~sTempFiles() {
+  ~sTempFiles()
+  {
     if (_deleteTempFilesOnDestruct) {
       DeleteTempFiles();
     }
   }
 
-  const achar* GetTempDir() {
+  const achar* GetTempDir()
+  {
     __sync_lock();
     if (!_tempDir.empty())
       return _tempDir.Chars();
@@ -38,7 +42,9 @@ struct sTempFiles {
     {
       cPath pathTemp;
       pathTemp.SetDirectory(GetLang()->GetProperty("ni.dirs.temp").Chars());
-      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),eFileAttrFlags_AllDirectories)) {
+      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),
+                                  eFileAttrFlags_AllDirectories))
+      {
         _tempDir = pathTemp.GetPath();
         return _tempDir.Chars();
       }
@@ -47,7 +53,9 @@ struct sTempFiles {
     {
       cPath pathTemp;
       pathTemp.SetDirectory(GetLang()->GetEnv("TEMP").Chars());
-      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),eFileAttrFlags_AllDirectories)) {
+      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),
+                                  eFileAttrFlags_AllDirectories))
+      {
         _tempDir = pathTemp.GetPath();
         return _tempDir.Chars();
       }
@@ -56,7 +64,9 @@ struct sTempFiles {
     {
       cPath pathTemp;
       pathTemp.SetDirectory(GetLang()->GetEnv("TMP").Chars());
-      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),eFileAttrFlags_AllDirectories)) {
+      if (GetRootFS()->FileExists(pathTemp.GetPath().Chars(),
+                                  eFileAttrFlags_AllDirectories))
+      {
         _tempDir = pathTemp.GetPath();
         return _tempDir.Chars();
       }
@@ -80,19 +90,23 @@ struct sTempFiles {
     }
   }
 
-  cString GetNewTempFilePath(const achar* aExt, const achar* aName) {
+  cString GetNewTempFilePath(const achar* aExt, const achar* aName)
+  {
     __sync_lock();
     cPath pathFile;
     pathFile.SetDirectory(GetTempDir());
-    pathFile.SetFile((_ASTR(niStringIsOK(aName) ? aName : "_temp_") + sUUID(GetLang()->CreateGlobalUUID()).ToString()).Chars());
+    pathFile.SetFile((_ASTR(niStringIsOK(aName) ? aName : "_temp_") +
+                      sUUID(GetLang()->CreateGlobalUUID()).ToString())
+                       .Chars());
     pathFile.SetExtension(niStringIsOK(aExt) ? aExt : "tmp");
     _tempFilesCollector.push_back(pathFile.GetPath());
     return pathFile.GetPath();
   }
 
-  void DeleteTempFiles() {
+  void DeleteTempFiles()
+  {
     __sync_lock();
-    niLoop(i, _tempFilesCollector.size()) {
+    niLoop (i, _tempFilesCollector.size()) {
       GetRootFS()->FileDelete(_tempFilesCollector[i].Chars());
     }
   }
@@ -101,5 +115,5 @@ struct sTempFiles {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __TEMPFILES_H_EAE428FB_5516_4A3D_9C58_B3DB78FEC99E__

@@ -20,12 +20,29 @@ using namespace ni;
 //----------------------------------------------------------------------------
 struct sFutureImmediate : public ImplRC<iFuture> {
   Var mValue;
-  sFutureImmediate(const Var& aValue) : mValue(aValue) {}
-  void __stdcall Cancel() {}
-  tBool __stdcall GetIsDone() const { return eTrue; }
-  tBool __stdcall GetIsCancelled() const { return eFalse; }
-  tBool __stdcall Wait(tU32 anMs) { return eTrue; }
-  Var __stdcall GetValue() const { return mValue; }
+  sFutureImmediate(const Var& aValue)
+      : mValue(aValue)
+  {
+  }
+  void __stdcall Cancel()
+  {
+  }
+  tBool __stdcall GetIsDone() const
+  {
+    return eTrue;
+  }
+  tBool __stdcall GetIsCancelled() const
+  {
+    return eFalse;
+  }
+  tBool __stdcall Wait(tU32 anMs)
+  {
+    return eTrue;
+  }
+  Var __stdcall GetValue() const
+  {
+    return mValue;
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -33,7 +50,8 @@ struct sFutureImmediate : public ImplRC<iFuture> {
 // Section: sFutureValue
 //
 //----------------------------------------------------------------------------
-struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture> {
+struct sFutureValue
+    : public ImplRC<iFutureValue, eImplFlags_DontInherit1, iFuture> {
   Var mValue;
   SyncCounter mCanceled;
 #if !defined niNoThreads
@@ -54,28 +72,33 @@ struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture
 #endif
   }
 
-  void __stdcall Cancel() {
+  void __stdcall Cancel()
+  {
     mCanceled.Set(1);
   }
-  tBool __stdcall GetIsCancelled() const {
+  tBool __stdcall GetIsCancelled() const
+  {
     return mCanceled.Get() != 0;
   }
 
-  tBool __stdcall GetIsDone() const {
+  tBool __stdcall GetIsDone() const
+  {
 #if !defined niNoThreads
     return meventSet.Wait(0);
 #else
     return mbIsSet;
 #endif
   }
-  tBool __stdcall Wait(tU32 anMs) {
+  tBool __stdcall Wait(tU32 anMs)
+  {
 #if !defined niNoThreads
     return meventSet.Wait(anMs);
 #else
     return mbIsSet;
 #endif
   }
-  Var __stdcall GetValue() const {
+  Var __stdcall GetValue() const
+  {
     if (!GetIsDone())
       return niVarNull;
 #if !defined niNoThreads
@@ -83,7 +106,8 @@ struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture
 #endif
     return mValue;
   }
-  void __stdcall SetValue(const Var& aValue) {
+  void __stdcall SetValue(const Var& aValue)
+  {
 #if !defined niNoThreads
     __sync_lock();
 #endif
@@ -94,7 +118,8 @@ struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture
     mbIsSet = eTrue;
 #endif
   }
-  void __stdcall Reset() {
+  void __stdcall Reset()
+  {
 #if !defined niNoThreads
     __sync_lock();
 #endif
@@ -114,23 +139,39 @@ struct sFutureValue : public ImplRC<iFutureValue,eImplFlags_DontInherit1,iFuture
 //
 //----------------------------------------------------------------------------
 struct sExecutorImmediate : public ImplRC<iExecutor> {
-  tBool __stdcall Execute(iRunnable* aRunnable) {
+  tBool __stdcall Execute(iRunnable* aRunnable)
+  {
     niAssert(niIsOK(aRunnable));
     aRunnable->Run();
     return eTrue;
   }
-  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable) {
+  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable)
+  {
     niAssert(niIsOK(aRunnable));
     return niNew sFutureImmediate(aRunnable->Run());
   }
-  tBool __stdcall Shutdown(tU32) { return eTrue; }
-  tBool __stdcall ShutdownNow(tU32) { return eTrue; }
-  tBool __stdcall GetIsShutdown() const { return eTrue; }
-  tBool __stdcall GetIsTerminated() const { return eTrue; }
-  tU32 __stdcall Update(tU32) {
+  tBool __stdcall Shutdown(tU32)
+  {
+    return eTrue;
+  }
+  tBool __stdcall ShutdownNow(tU32)
+  {
+    return eTrue;
+  }
+  tBool __stdcall GetIsShutdown() const
+  {
+    return eTrue;
+  }
+  tBool __stdcall GetIsTerminated() const
+  {
+    return eTrue;
+  }
+  tU32 __stdcall Update(tU32)
+  {
     return 0;
   }
-  void __stdcall InterruptUpdate() niImpl {
+  void __stdcall InterruptUpdate() niImpl
+  {
   }
 };
 
@@ -142,7 +183,7 @@ struct sExecutorImmediate : public ImplRC<iExecutor> {
 struct RunnableQueue : public ImplRC<iRunnableQueue> {
   __sync_mutex();
   const tU32 _maxItems;
-  astl::deque<Ptr<iRunnable> > _queue;
+  astl::deque<Ptr<iRunnable>> _queue;
   tBool _canAdd;
 #if !defined niNoThreads
   const tU64 _threadID;
@@ -156,13 +197,16 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
       , _threadID(aThreadID)
       , _hasRunnable(eTrue)
 #endif
-  {}
+  {
+  }
 
-  ~RunnableQueue() {
+  ~RunnableQueue()
+  {
     Invalidate();
   }
 
-  tU64 __stdcall GetThreadID() const {
+  tU64 __stdcall GetThreadID() const
+  {
 #if !defined niNoThreads
     return _threadID;
 #else
@@ -170,30 +214,34 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
 #endif
   }
 
-  tU32 __stdcall GetSize() const {
+  tU32 __stdcall GetSize() const
+  {
     __sync_lock();
     return (tU32)_queue.size();
   }
 
-  tBool __stdcall IsEmpty() const {
+  tBool __stdcall IsEmpty() const
+  {
     __sync_lock();
     return _queue.empty();
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     __sync_lock();
     _canAdd = eFalse;
     _queue.clear();
   }
 
-  tBool __stdcall Add(iRunnable* aRunnable) {
-    niCheckIsOK(aRunnable,eFalse);
+  tBool __stdcall Add(iRunnable* aRunnable)
+  {
+    niCheckIsOK(aRunnable, eFalse);
     niAssert(niIsOK(aRunnable));
     __sync_lock();
     if (!_canAdd)
       return eFalse;
     // queue full ?
-    niAssert(_queue.size() < (_maxItems-1));
+    niAssert(_queue.size() < (_maxItems - 1));
     if (_queue.size() >= _maxItems) {
       niError("Too many items in RunnableQueue, item dropped.");
       return eFalse;
@@ -206,7 +254,8 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
     return eTrue;
   }
 
-  Ptr<iRunnable> __stdcall Peek() {
+  Ptr<iRunnable> __stdcall Peek()
+  {
     __sync_lock();
 #if !defined niNoThreads
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
@@ -220,7 +269,8 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
     return r;
   }
 
-  Ptr<iRunnable> __stdcall Poll() {
+  Ptr<iRunnable> __stdcall Poll()
+  {
     __sync_lock();
 #if !defined niNoThreads
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
@@ -242,7 +292,8 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
     return r;
   }
 
-  tBool __stdcall WaitForRunnable(tU32 anTimeOut) {
+  tBool __stdcall WaitForRunnable(tU32 anTimeOut)
+  {
 #if defined niNoThreads
     return eFalse;
 #else
@@ -255,7 +306,8 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
   }
 
 #if !defined niNoThreads
-  Ptr<iRunnable> __stdcall _StealPoll() {
+  Ptr<iRunnable> __stdcall _StealPoll()
+  {
     __sync_lock();
     _hasRunnable.Reset();
     if (_queue.empty())
@@ -272,28 +324,33 @@ struct RunnableQueue : public ImplRC<iRunnableQueue> {
 // Section: MessageDesc
 //
 //----------------------------------------------------------------------------
-struct sMessageDescImpl : public ImplRC<iMessageDesc>
-{
+struct sMessageDescImpl : public ImplRC<iMessageDesc> {
   sMessageDesc _desc;
 
-  sMessageDescImpl() {
+  sMessageDescImpl()
+  {
     _desc.mnMsg = 0;
   }
 
-  sMessageDescImpl(const sMessageDesc& aDesc) {
+  sMessageDescImpl(const sMessageDesc& aDesc)
+  {
     _desc = aDesc;
   }
 
-  virtual iMessageHandler* __stdcall GetHandler() const niImpl {
+  virtual iMessageHandler* __stdcall GetHandler() const niImpl
+  {
     return _desc.mptrHandler;
   }
-  virtual tU32 __stdcall GetID() const {
+  virtual tU32 __stdcall GetID() const
+  {
     return _desc.mnMsg;
   }
-   virtual const Var& __stdcall GetA() const {
+  virtual const Var& __stdcall GetA() const
+  {
     return _desc.mvarA;
   }
-  virtual const Var& __stdcall GetB() const {
+  virtual const Var& __stdcall GetB() const
+  {
     return _desc.mvarB;
   }
 };
@@ -319,12 +376,15 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
       , _maxItems(aMaxItems)
       , _threadID(aThreadID)
       , _hasMessage(eTrue)
-  {}
-  ~MessageQueue() {
+  {
+  }
+  ~MessageQueue()
+  {
     Invalidate();
   }
 
-  void __stdcall Invalidate() niImpl {
+  void __stdcall Invalidate() niImpl
+  {
     __sync_lock();
     if (_canAdd) {
       _canAdd = eFalse;
@@ -333,26 +393,31 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     }
   }
 
-  tU64 __stdcall GetThreadID() const {
+  tU64 __stdcall GetThreadID() const
+  {
     return _threadID;
   }
 
-  tU32 __stdcall GetSize() const {
+  tU32 __stdcall GetSize() const
+  {
     __sync_lock();
     return (tU32)_queue.size();
   }
 
-  tBool __stdcall IsEmpty() const {
+  tBool __stdcall IsEmpty() const
+  {
     __sync_lock();
     return _queue.empty();
   }
 
-  __forceinline tBool __stdcall _Add(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) {
+  __forceinline tBool __stdcall _Add(iMessageHandler* apHandler, tU32 anMsg,
+                                     const Var& avarA, const Var& avarB)
+  {
     __sync_lock();
     if (!_canAdd)
       return eFalse;
     // queue full ?
-    niAssert(_queue.size() < (_maxItems-1));
+    niAssert(_queue.size() < (_maxItems - 1));
     if (_queue.size() >= _maxItems) {
       niError("Too many items in MessageQueue, item dropped.");
       return eFalse;
@@ -368,12 +433,15 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return eTrue;
   }
 
-  tBool __stdcall Add(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) {
-    niCheckIsOK(apHandler,eFalse);
-    return _Add(apHandler,anMsg,avarA,avarB);
+  tBool __stdcall Add(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA,
+                      const Var& avarB)
+  {
+    niCheckIsOK(apHandler, eFalse);
+    return _Add(apHandler, anMsg, avarA, avarB);
   }
 
-  tBool __stdcall Peek(sMessageDesc* apMessageDesc) {
+  tBool __stdcall Peek(sMessageDesc* apMessageDesc)
+  {
     __sync_lock();
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
@@ -387,7 +455,8 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return eTrue;
   }
 
-  Ptr<iMessageDesc> __stdcall PeekDesc() {
+  Ptr<iMessageDesc> __stdcall PeekDesc()
+  {
     sMessageDesc desc;
     if (Peek(&desc)) {
       return niNew sMessageDescImpl(desc);
@@ -395,7 +464,8 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return NULL;
   }
 
-  tBool __stdcall Poll(sMessageDesc* apMessageDesc) {
+  tBool __stdcall Poll(sMessageDesc* apMessageDesc)
+  {
     __sync_lock();
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
@@ -415,7 +485,8 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return eTrue;
   }
 
-  Ptr<iMessageDesc> __stdcall PollDesc() {
+  Ptr<iMessageDesc> __stdcall PollDesc()
+  {
     sMessageDesc desc;
     if (Poll(&desc)) {
       return niNew sMessageDescImpl(desc);
@@ -423,7 +494,8 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return NULL;
   }
 
-  tBool __stdcall PollAndDispatch() {
+  tBool __stdcall PollAndDispatch()
+  {
     sMessageDesc msg;
     if (!Poll(&msg)) {
       return eFalse;
@@ -433,7 +505,8 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
     return eTrue;
   }
 
-  tBool __stdcall WaitForMessage(tU32 anTimeOut) {
+  tBool __stdcall WaitForMessage(tU32 anTimeOut)
+  {
     niAssert(_threadID == ni::ThreadGetCurrentThreadID());
     if (_threadID != ni::ThreadGetCurrentThreadID()) {
       return eFalse;
@@ -449,44 +522,53 @@ struct MessageQueue : public ImplRC<iMessageQueue> {
 //----------------------------------------------------------------------------
 struct ExecutorCooperative;
 
-struct sFutureCooperativeRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
+struct sFutureCooperativeRunnable
+    : public ImplRC<iFuture, eImplFlags_Default, iRunnable> {
   __sync_mutex();
   Ptr<ExecutorCooperative> mptrExecutor;
   Ptr<iRunnable> mptrRunnable;
   Var mRet;
   tBool mbIsDone;
 
-  sFutureCooperativeRunnable(ExecutorCooperative* apExecutor, iRunnable* apRunnable) {
+  sFutureCooperativeRunnable(ExecutorCooperative* apExecutor,
+                             iRunnable* apRunnable)
+  {
     niAssert(niIsOK(apRunnable));
     mptrExecutor = apExecutor;
     mptrRunnable = apRunnable;
     mbIsDone = eFalse;
   }
-  ~sFutureCooperativeRunnable() {
+  ~sFutureCooperativeRunnable()
+  {
     Invalidate();
   }
 
-  void __stdcall Cancel() {
+  void __stdcall Cancel()
+  {
     __sync_lock();
     mptrRunnable = NULL;
     mptrExecutor = NULL;
   }
 
-  tBool __stdcall GetIsCancelled() const {
+  tBool __stdcall GetIsCancelled() const
+  {
     return !mptrRunnable.IsOK();
   }
 
-  tBool __stdcall GetIsDone() const {
+  tBool __stdcall GetIsDone() const
+  {
     return mbIsDone;
   }
 
-  Var __stdcall GetValue() const {
+  Var __stdcall GetValue() const
+  {
     if (!GetIsDone())
       return niVarNull;
     return mRet;
   }
 
-  Var __stdcall Run() {
+  Var __stdcall Run()
+  {
     Ptr<iRunnable> toRun = mptrRunnable;
     if (toRun.IsOK()) {
       mRet = toRun->Run();
@@ -504,47 +586,55 @@ struct sFutureCooperativeRunnable : public ImplRC<iFuture,eImplFlags_Default,iRu
 //
 //----------------------------------------------------------------------------
 struct ExecutorCooperative : public ImplRC<iExecutor> {
-  ni::SyncCounter    _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
+  ni::SyncCounter _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
   Ptr<RunnableQueue> _queue;
-  tBool              _interruptedUpdate = eFalse;
+  tBool _interruptedUpdate = eFalse;
 
   ExecutorCooperative(tU64 aThreadID, tU32 aMaxItems)
   {
-    RUNNABLE_QUEUE_TRACE(("ExecutorCooperative, created for thread %d, with max %d items in queue",
-                          aThreadID,aMaxItems));
-    _queue = niNew RunnableQueue(aThreadID,aMaxItems);
+    RUNNABLE_QUEUE_TRACE(
+      ("ExecutorCooperative, created for thread %d, with max %d items in queue",
+       aThreadID, aMaxItems));
+    _queue = niNew RunnableQueue(aThreadID, aMaxItems);
   }
 
-  ~ExecutorCooperative() {
+  ~ExecutorCooperative()
+  {
     Invalidate();
   }
 
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     return eTrue;
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     ShutdownNow(eInvalidHandle);
   }
 
-  ni::tBool __stdcall Execute(iRunnable* aRunnable) {
-    niCheckIsOK(aRunnable,eFalse);
+  ni::tBool __stdcall Execute(iRunnable* aRunnable)
+  {
+    niCheckIsOK(aRunnable, eFalse);
     if (_shutdownMode.Get() != 0)
       return eFalse;
     return _queue->Add(aRunnable);
   }
 
-  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable) {
-    niCheckIsOK(aRunnable,NULL);
+  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable)
+  {
+    niCheckIsOK(aRunnable, NULL);
     if (_shutdownMode.Get() != 0)
       return NULL;
-    Ptr<sFutureCooperativeRunnable> futureRun = niNew sFutureCooperativeRunnable(this,aRunnable);
+    Ptr<sFutureCooperativeRunnable> futureRun =
+      niNew sFutureCooperativeRunnable(this, aRunnable);
     if (!_queue->Add(futureRun))
       return NULL;
     return Ptr<iFuture>(futureRun);
   }
 
-  tBool __stdcall Shutdown(tU32 anTimeOut) {
+  tBool __stdcall Shutdown(tU32 anTimeOut)
+  {
     if (_shutdownMode.Get() == 0) {
       _shutdownMode.Set(1);
       Update(anTimeOut);
@@ -553,7 +643,8 @@ struct ExecutorCooperative : public ImplRC<iExecutor> {
     return eTrue;
   }
 
-  tBool __stdcall ShutdownNow(tU32 anTimeOut) {
+  tBool __stdcall ShutdownNow(tU32 anTimeOut)
+  {
     if (_shutdownMode.Get() != 2) {
       _shutdownMode.Set(2);
       _queue->Invalidate();
@@ -561,15 +652,18 @@ struct ExecutorCooperative : public ImplRC<iExecutor> {
     return eTrue;
   }
 
-  tBool __stdcall GetIsShutdown() const {
+  tBool __stdcall GetIsShutdown() const
+  {
     return _shutdownMode.Get() != 0;
   }
 
-  tBool __stdcall GetIsTerminated() const {
+  tBool __stdcall GetIsTerminated() const
+  {
     return _shutdownMode.Get() != 0;
   }
 
-  ni::tU32 __stdcall Update(tU32 anTimeSliceMs) {
+  ni::tU32 __stdcall Update(tU32 anTimeSliceMs)
+  {
     ExecutorCooperative* _this = this;
 
     Ptr<RunnableQueue> queue = _this->_queue;
@@ -583,7 +677,8 @@ struct ExecutorCooperative : public ImplRC<iExecutor> {
     for (;;) {
       Ptr<iRunnable> r = queue->Poll();
       if (!r.IsOK() || (_this->_shutdownMode.Get() == 2)) {
-        RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(): break, empty queue."));
+        RUNNABLE_QUEUE_TRACE(
+          ("ExecutorCooperative::Update(): break, empty queue."));
         break;
       }
 
@@ -600,25 +695,29 @@ struct ExecutorCooperative : public ImplRC<iExecutor> {
 
       timerElapsed = ni::TimerInSeconds() - timerStart;
       if (timerElapsed >= timeSlice) {
-        RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(): break, time slice exceeded."));
+        RUNNABLE_QUEUE_TRACE(
+          ("ExecutorCooperative::Update(): break, time slice exceeded."));
         break;
       }
     }
 
     if (numExecuted > 0) {
-      RUNNABLE_QUEUE_TRACE(("ExecutorCooperative::Update(%d, slice:%g, elapsed: %g): executed %d runnable in %d ms.",
-                            anTimeSliceMs, timeSlice, timerElapsed, numExecuted, timerElapsed));
+      RUNNABLE_QUEUE_TRACE((
+        "ExecutorCooperative::Update(%d, slice:%g, elapsed: %g): executed %d runnable in %d ms.",
+        anTimeSliceMs, timeSlice, timerElapsed, numExecuted, timerElapsed));
     }
 
     return (tU32)((ni::TimerInSeconds() - timerStart) * 1000.0);
   }
 
-  void __stdcall InterruptUpdate() niImpl {
+  void __stdcall InterruptUpdate() niImpl
+  {
     this->_interruptedUpdate = eTrue;
   }
 };
 
-tBool __stdcall sFutureCooperativeRunnable::Wait(tU32 anMs) {
+tBool __stdcall sFutureCooperativeRunnable::Wait(tU32 anMs)
+{
   tU32 execTime = 0;
   while ((!mbIsDone) && (execTime < anMs)) {
     Ptr<ExecutorCooperative> executor;
@@ -641,7 +740,7 @@ tBool __stdcall sFutureCooperativeRunnable::Wait(tU32 anMs) {
 //----------------------------------------------------------------------------
 #if !defined niNoThreads
 
-struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
+struct sFutureRunnable : public ImplRC<iFuture, eImplFlags_Default, iRunnable> {
   Var mRet;
   Ptr<iRunnable> mptrRunnable;
   mutable ThreadEvent meventRan;
@@ -653,24 +752,31 @@ struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
     mptrRunnable = apRunnable;
   }
 
-  void __stdcall Cancel() {
+  void __stdcall Cancel()
+  {
     mptrRunnable = NULL;
   }
-  tBool __stdcall GetIsCancelled() const {
+  tBool __stdcall GetIsCancelled() const
+  {
     return !mptrRunnable.IsOK();
   }
-  tBool __stdcall GetIsDone() const {
+  tBool __stdcall GetIsDone() const
+  {
     return meventRan.Wait(0);
   }
-  tBool __stdcall Wait(tU32 anMs) {
+  tBool __stdcall Wait(tU32 anMs)
+  {
     return meventRan.Wait(anMs);
   }
-  Var __stdcall GetValue() const {
-    if (!GetIsDone()) return niVarNull;
+  Var __stdcall GetValue() const
+  {
+    if (!GetIsDone())
+      return niVarNull;
     return mRet;
   }
 
-  Var __stdcall Run() {
+  Var __stdcall Run()
+  {
     {
       Ptr<iRunnable> toRun = mptrRunnable;
       if (toRun.IsOK()) {
@@ -694,43 +800,48 @@ struct sFutureRunnable : public ImplRC<iFuture,eImplFlags_Default,iRunnable> {
 static tpfnConcurrentThreadCallback _pfnConcurrentThreadStart = NULL;
 static tpfnConcurrentThreadCallback _pfnConcurrentThreadEnd = NULL;
 
-niExportFunc(void) ConcurrentSetThreadStartEndCallbacks(tpfnConcurrentThreadCallback apfnStart, tpfnConcurrentThreadCallback apfnEnd) {
+niExportFunc(void) ConcurrentSetThreadStartEndCallbacks(
+  tpfnConcurrentThreadCallback apfnStart, tpfnConcurrentThreadCallback apfnEnd)
+{
   _pfnConcurrentThreadStart = apfnStart;
   _pfnConcurrentThreadEnd = apfnEnd;
 }
 
 struct ExecutorThreadPool : public ImplRC<iExecutor> {
-  tSyncInt         _doneCount;
-  ni::SyncCounter  _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
-  ThreadEvent      _event;
-  const ni::tU32  _numThreads;
+  tSyncInt _doneCount;
+  ni::SyncCounter _shutdownMode; // 0, continue ; 1, shutdown ; 2, shutdown now
+  ThreadEvent _event;
+  const ni::tU32 _numThreads;
   struct sThread {
-    Ptr<iThread>       thread;
+    Ptr<iThread> thread;
     Ptr<RunnableQueue> queue;
-    ni::SyncCounter    isBusy;
-    ni::SyncCounter    numExecuted;
+    ni::SyncCounter isBusy;
+    ni::SyncCounter numExecuted;
   };
-  sThread*         _threads;
+  sThread* _threads;
 
   ExecutorThreadPool(ni::tU32 anNumThreads)
-      : _numThreads(ni::Clamp<ni::tU32>(anNumThreads,1,64))
+      : _numThreads(ni::Clamp<ni::tU32>(anNumThreads, 1, 64))
       , _event(eTrue)
   {
-    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, created with %d queues",_numThreads));
-    SYNC_WRITE(&_doneCount,0);
+    RUNNABLE_QUEUE_TRACE(
+      ("ExecutorThreadPool, created with %d queues", _numThreads));
+    SYNC_WRITE(&_doneCount, 0);
     _threads = new sThread[_numThreads];
-    niLoop(i,_numThreads) {
-      SYNC_WRITE(&_doneCount,i);
+    niLoop (i, _numThreads) {
+      SYNC_WRITE(&_doneCount, i);
       _threads[i].thread = ni_create_thread();
-      _threads[i].thread->Start(_Run,(void*)this);
-      niPanicAssertMsg(_event.Wait(5000), "_Run should initialize the current queue.");
+      _threads[i].thread->Start(_Run, (void*)this);
+      niPanicAssertMsg(_event.Wait(5000),
+                       "_Run should initialize the current queue.");
       _event.Reset();
     }
-    SYNC_WRITE(&_doneCount,0);
+    SYNC_WRITE(&_doneCount, 0);
   }
 
-  ~ExecutorThreadPool() {
-    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, destructor.",(tIntPtr)this));
+  ~ExecutorThreadPool()
+  {
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, destructor.", (tIntPtr)this));
     Invalidate();
     if (_threads) {
       delete[] _threads;
@@ -738,12 +849,14 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     }
   }
 
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     return eTrue;
   }
 
-  void __stdcall Invalidate() {
-    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, invalidate.",(tIntPtr)this));
+  void __stdcall Invalidate()
+  {
+    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool %p, invalidate.", (tIntPtr)this));
     if (_shutdownMode.Get() != 2) {
       // Auto shutdown, not great in general, SleepMs to prevent race
       // conditions with IsAlive on Windows because all the threads are
@@ -754,11 +867,13 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     ShutdownNow(eInvalidHandle);
   }
 
-  tU32 __stdcall _GetMostAvailableQueue() const {
+  tU32 __stdcall _GetMostAvailableQueue() const
+  {
     tU32 mostAvailQueueCost = ni::TypeMax<tU32>();
     tInt index = 0;
-    niLoop(i, _numThreads) {
-      tU32 qCost = _threads[i].queue->GetSize() + ((_threads[i].isBusy.Get() != 0)?1:0);
+    niLoop (i, _numThreads) {
+      tU32 qCost = _threads[i].queue->GetSize() +
+                   ((_threads[i].isBusy.Get() != 0) ? 1 : 0);
       if (qCost < mostAvailQueueCost) {
         mostAvailQueueCost = qCost;
         index = i;
@@ -767,11 +882,13 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     return index;
   }
 
-  tU32 __stdcall _GetLeastAvailableQueue() const {
+  tU32 __stdcall _GetLeastAvailableQueue() const
+  {
     tU32 leastAvailQueueCost = 0;
-    tInt index = _numThreads-1;
-    niLoopr(i, _numThreads) {
-      tU32 qCost = _threads[i].queue->GetSize() + ((_threads[i].isBusy.Get() != 0)?1:0);
+    tInt index = _numThreads - 1;
+    niLoopr (i, _numThreads) {
+      tU32 qCost = _threads[i].queue->GetSize() +
+                   ((_threads[i].isBusy.Get() != 0) ? 1 : 0);
       if (qCost > leastAvailQueueCost) {
         leastAvailQueueCost = qCost;
         index = i;
@@ -780,20 +897,26 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     return index;
   }
 
-  Ptr<iRunnable> __stdcall _StealRunnable(const tU64 aThreadID) {
+  Ptr<iRunnable> __stdcall _StealRunnable(const tU64 aThreadID)
+  {
     const tU32 leastAvailQueue = _GetLeastAvailableQueue();
     niUnused(leastAvailQueue);
-    EXECUTOR_STEAL_TRACE(("ExecutorThreadPool, thread %p trying to steal task from queue %d with %d tasks.", aThreadID, leastAvailQueue, _threads[leastAvailQueue].queue->GetSize()));
+    EXECUTOR_STEAL_TRACE((
+      "ExecutorThreadPool, thread %p trying to steal task from queue %d with %d tasks.",
+      aThreadID, leastAvailQueue, _threads[leastAvailQueue].queue->GetSize()));
     Ptr<iRunnable> r = _threads[_GetLeastAvailableQueue()].queue->_StealPoll();
     if (r.IsOK()) {
-      EXECUTOR_STEAL_TRACE(("ExecutorThreadPool, thread %p stole task from queue %d.", aThreadID, leastAvailQueue));
+      EXECUTOR_STEAL_TRACE(
+        ("ExecutorThreadPool, thread %p stole task from queue %d.", aThreadID,
+         leastAvailQueue));
       return r;
     }
     return NULL;
   }
 
-  ni::tBool __stdcall Execute(iRunnable* aRunnable) {
-    niCheckIsOK(aRunnable,eFalse);
+  ni::tBool __stdcall Execute(iRunnable* aRunnable)
+  {
+    niCheckIsOK(aRunnable, eFalse);
     if (_shutdownMode.Get() != 0)
       return eFalse;
     tU32 mostAvailableQueue = _GetMostAvailableQueue();
@@ -804,8 +927,9 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     return r;
   }
 
-  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable) {
-    niCheckIsOK(aRunnable,NULL);
+  Ptr<iFuture> __stdcall Submit(iRunnable* aRunnable)
+  {
+    niCheckIsOK(aRunnable, NULL);
     if (_shutdownMode.Get() != 0)
       return NULL;
     tU32 mostAvailableQueue = _GetMostAvailableQueue();
@@ -818,13 +942,15 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     return Ptr<iFuture>(futureRun);
   }
 
-  tBool __stdcall Shutdown(tU32 anTimeOut) {
+  tBool __stdcall Shutdown(tU32 anTimeOut)
+  {
     if (_shutdownMode.Get() == 0) {
       _shutdownMode.Set(1);
     }
     if (_threads) {
-      niLoop(i,_numThreads) {
-        RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, Shutdown signal queue %d",i));
+      niLoop (i, _numThreads) {
+        RUNNABLE_QUEUE_TRACE(
+          ("ExecutorThreadPool, Shutdown signal queue %d", i));
         if (!_threads[i].thread->GetIsAlive()) {
           _IncDoneCountForShutdown();
         }
@@ -837,14 +963,15 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     return _event.Wait(anTimeOut);
   }
 
-  tBool __stdcall ShutdownNow(tU32 anTimeOut) {
+  tBool __stdcall ShutdownNow(tU32 anTimeOut)
+  {
     if (_shutdownMode.Get() == 2) {
       // Already shutdown...
       return eTrue;
     }
     _shutdownMode.Set(2);
     if (_threads) {
-      niLoop(i,_numThreads) {
+      niLoop (i, _numThreads) {
         // RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, ShutdownNow signal queue %d, thread is alive %d, is busy %d.", i, _threads[i].thread->GetIsAlive(), _threads[i].isBusy.Get()));
         if (!_threads[i].thread->GetIsAlive()) {
           _IncDoneCountForShutdown();
@@ -854,26 +981,32 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
         }
       }
     }
-    RUNNABLE_QUEUE_TRACE(("ExecutorThreadPool, ShutdownNow waiting for queues"));
+    RUNNABLE_QUEUE_TRACE(
+      ("ExecutorThreadPool, ShutdownNow waiting for queues"));
     return _event.Wait(anTimeOut);
   }
 
-  tBool __stdcall GetIsShutdown() const {
+  tBool __stdcall GetIsShutdown() const
+  {
     return _shutdownMode.Get() != 0;
   }
 
-  tBool __stdcall GetIsTerminated() const {
+  tBool __stdcall GetIsTerminated() const
+  {
     return niThis(ExecutorThreadPool)->_event.Wait(0);
   }
 
-  tU32 __stdcall Update(tU32) {
+  tU32 __stdcall Update(tU32)
+  {
     return 0;
   }
 
-  void __stdcall InterruptUpdate() niImpl {
+  void __stdcall InterruptUpdate() niImpl
+  {
   }
 
-  void _IncDoneCountForShutdown() {
+  void _IncDoneCountForShutdown()
+  {
     const int doneCount = SYNC_INCREMENT(&this->_doneCount);
     if (doneCount == (tI32)this->_numThreads) {
       RUNNABLE_QUEUE_TRACE(("... SIGNAL DONE ..."));
@@ -881,15 +1014,16 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     }
   }
 
-  static ni::tIntPtr _Run(void* apData) {
+  static ni::tIntPtr _Run(void* apData)
+  {
     ExecutorThreadPool* _this = (ExecutorThreadPool*)apData;
     const tU64 threadID = ni::ThreadGetCurrentThreadID();
     const int queueIndex = SYNC_READ(&_this->_doneCount);
-    Ptr<RunnableQueue> queue = niNew RunnableQueue(threadID,~0);
+    Ptr<RunnableQueue> queue = niNew RunnableQueue(threadID, ~0);
     sThread* thread = &_this->_threads[queueIndex];
     thread->queue = queue;
     _this->_event.Signal();
-    RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], thread started.",queueIndex));
+    RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], thread started.", queueIndex));
 
     if (_pfnConcurrentThreadStart) {
       _pfnConcurrentThreadStart(threadID);
@@ -900,8 +1034,9 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
       queue->WaitForRunnable(eInvalidHandle);
       queue->_hasRunnable.Reset();
       if (_this->_shutdownMode.Get() == 2) {
-        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], skipped %d runnable in the shutdown.",
-                              queueIndex, queue->GetSize()));
+        RUNNABLE_QUEUE_TRACE(
+          ("RunnableQueue[%d], skipped %d runnable in the shutdown.",
+           queueIndex, queue->GetSize()));
         queue->Invalidate();
         break;
       }
@@ -932,7 +1067,8 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
       thread->isBusy.Set(0);
 
       if (_this->_shutdownMode.Get() != 0) {
-        RUNNABLE_QUEUE_TRACE(("RunnableQueue[%d], shutdown %d", _this->_shutdownMode.Get()));
+        RUNNABLE_QUEUE_TRACE(
+          ("RunnableQueue[%d], shutdown %d", _this->_shutdownMode.Get()));
         break;
       }
     }
@@ -942,14 +1078,15 @@ struct ExecutorThreadPool : public ImplRC<iExecutor> {
     }
 
     _this->_IncDoneCountForShutdown();
-    RUNNABLE_QUEUE_TRACE(
-        ("RunnableQueue[%d], thread ended, executed %d runnable. %d thread closed.",
-         queueIndex, thread->numExecuted.Get(), _this->_doneCount));
+    RUNNABLE_QUEUE_TRACE((
+      "RunnableQueue[%d], thread ended, executed %d runnable. %d thread closed.",
+      queueIndex, thread->numExecuted.Get(), _this->_doneCount));
     return 0;
   }
 };
 
-iExecutor* New_ExecutorThreadPool(tI32 anNumThreads) {
+iExecutor* New_ExecutorThreadPool(tI32 anNumThreads)
+{
   if (anNumThreads <= 0) {
     anNumThreads = _ASTR(ni::GetLang()->GetProperty("ni.cpu.count")).Long();
   }
@@ -972,15 +1109,17 @@ struct sThreadRun : public ImplRC<iFuture> {
   Var mRet;
   SyncCounter mIsStarted;
 
-  sThreadRun(iRunnable* apRunnable) {
+  sThreadRun(iRunnable* apRunnable)
+  {
     mptrRunnable = apRunnable;
     mThread = ni_create_thread();
     // This is not correct, the _ThreadProc holds a reference to this and could
     // release it before the holder takes a reference to the object
     // _Start();
   }
-  ~sThreadRun() {
-#if 0
+  ~sThreadRun()
+  {
+  #if 0
     if (mThread->GetIsAlive()) {
       niWarning(
         niFmt("ThreadRun future %p destroyed in thread '%d' while its thread '%d' is still alive.",
@@ -988,19 +1127,22 @@ struct sThreadRun : public ImplRC<iFuture> {
               ni::ThreadGetCurrentThreadID(),
               mThread->GetThreadID()));
     }
-#endif
+  #endif
     // Close only closes the thread handle it doesnt stop the thread.
     mThread->Close();
   }
 
-  __forceinline void _Start() {
+  __forceinline void _Start()
+  {
     if (mIsStarted.Get() == 0 && mIsStarted.Inc() == 1) {
-      mThread->Start(_ThreadProc,(void*)this);
-      niPanicAssertMsg(meventStarted.Wait(5000), "_ThreadProc should have started.");
+      mThread->Start(_ThreadProc, (void*)this);
+      niPanicAssertMsg(meventStarted.Wait(5000),
+                       "_ThreadProc should have started.");
     }
   }
 
-  tI32 __stdcall AddRef() {
+  tI32 __stdcall AddRef()
+  {
     tI32 r = BaseImpl::AddRef();
     // Start only on the first add ref, we must make sure their is a valid
     // root reference to the object before we can start it to avoid it
@@ -1009,21 +1151,33 @@ struct sThreadRun : public ImplRC<iFuture> {
     return r;
   }
 
-  void __stdcall Cancel() { }
-  tBool __stdcall GetIsCancelled() const { return eFalse; }
-  tBool __stdcall GetIsDone() const { return niThis(sThreadRun)->Wait(0); }
-  tBool __stdcall Wait(tU32 anMs) {
+  void __stdcall Cancel()
+  {
+  }
+  tBool __stdcall GetIsCancelled() const
+  {
+    return eFalse;
+  }
+  tBool __stdcall GetIsDone() const
+  {
+    return niThis(sThreadRun)->Wait(0);
+  }
+  tBool __stdcall Wait(tU32 anMs)
+  {
     // niDebugFmt(("Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
     tBool b = mThread->Join(anMs);
     // niDebugFmt(("... Done Waiting for %p in %d",(void*)this,ni::ThreadGetCurrentThreadID()));
     return b;
   }
-  Var __stdcall GetValue() const {
-    if (!GetIsDone()) return niVarNull;
+  Var __stdcall GetValue() const
+  {
+    if (!GetIsDone())
+      return niVarNull;
     return mRet;
   }
 
-  static tIntPtr _ThreadProc(void* apData) {
+  static tIntPtr _ThreadProc(void* apData)
+  {
     const tU64 threadID = ni::ThreadGetCurrentThreadID();
     if (_pfnConcurrentThreadStart) {
       _pfnConcurrentThreadStart(threadID);
@@ -1056,7 +1210,7 @@ struct sConcurrent : public ImplRC<iConcurrent> {
   const tU64 _mainThreadID;
   Ptr<iExecutor> _mainExecutor;
   __sync_mutex_(mqs);
-  typedef astl::map<tU64,MessageQueue*> tMQMap;
+  typedef astl::map<tU64, MessageQueue*> tMQMap;
   tMQMap _mqs;
 
 #if !defined niNoThreads
@@ -1064,17 +1218,22 @@ struct sConcurrent : public ImplRC<iConcurrent> {
   Ptr<iExecutor> _ioExecutor;
 #endif
 
-  sConcurrent() : _mainThreadID(ni::ThreadGetCurrentThreadID()) {
+  sConcurrent()
+      : _mainThreadID(ni::ThreadGetCurrentThreadID())
+  {
   }
-  ~sConcurrent() {
+  ~sConcurrent()
+  {
     Invalidate();
   }
 
-  virtual void __stdcall Invalidate() niImpl {
+  virtual void __stdcall Invalidate() niImpl
+  {
     {
       __sync_lock_(mqs);
       if (!_mqs.empty()) {
-        niWarning(niFmt("Concurrent still has %d message queues.", _mqs.size()));
+        niWarning(
+          niFmt("Concurrent still has %d message queues.", _mqs.size()));
       }
     }
 
@@ -1096,35 +1255,44 @@ struct sConcurrent : public ImplRC<iConcurrent> {
     }
   }
 
-  virtual tU64 __stdcall GetMainThreadID() const {
+  virtual tU64 __stdcall GetMainThreadID() const
+  {
     return _mainThreadID;
   }
-  virtual tU64 __stdcall GetCurrentThreadID() const {
+  virtual tU64 __stdcall GetCurrentThreadID() const
+  {
     return ni::ThreadGetCurrentThreadID();
   }
 
-  virtual Ptr<iFuture> __stdcall ThreadRun(iRunnable* apRunnable) {
+  virtual Ptr<iFuture> __stdcall ThreadRun(iRunnable* apRunnable)
+  {
 #if defined niNoThreads
     return NULL;
 #else
-    niCheckIsOK(apRunnable,NULL);
+    niCheckIsOK(apRunnable, NULL);
     return niNew sThreadRun(apRunnable);
 #endif
   }
 
-  virtual iRunnableQueue* __stdcall CreateRunnableQueue(tU64 aThreadID, tU32 aMaxItems) {
-    return niNew RunnableQueue(aThreadID,aMaxItems);
+  virtual iRunnableQueue* __stdcall CreateRunnableQueue(tU64 aThreadID,
+                                                        tU32 aMaxItems)
+  {
+    return niNew RunnableQueue(aThreadID, aMaxItems);
   }
 
-  virtual iExecutor* __stdcall CreateExecutorImmediate() {
+  virtual iExecutor* __stdcall CreateExecutorImmediate()
+  {
     return niNew sExecutorImmediate();
   }
 
-  virtual iExecutor* __stdcall CreateExecutorCooperative(tU64 aThreadID, tU32 aMaxItems) {
-    return niNew ExecutorCooperative(aThreadID,aMaxItems);
+  virtual iExecutor* __stdcall CreateExecutorCooperative(tU64 aThreadID,
+                                                         tU32 aMaxItems)
+  {
+    return niNew ExecutorCooperative(aThreadID, aMaxItems);
   }
 
-  virtual iExecutor* __stdcall CreateExecutorThreadPool(tI32 anNumThreads) {
+  virtual iExecutor* __stdcall CreateExecutorThreadPool(tI32 anNumThreads)
+  {
 #if defined niNoThreads
     return NULL;
 #else
@@ -1132,44 +1300,49 @@ struct sConcurrent : public ImplRC<iConcurrent> {
 #endif
   }
 
-  virtual iExecutor* __stdcall GetExecutorMain() {
+  virtual iExecutor* __stdcall GetExecutorMain()
+  {
     if (!_mainExecutor.IsOK()) {
-      _mainExecutor = CreateExecutorCooperative(_mainThreadID,~0);
+      _mainExecutor = CreateExecutorCooperative(_mainThreadID, ~0);
     }
     return _mainExecutor;
   }
 
-  virtual iExecutor* __stdcall GetExecutorCPU() {
+  virtual iExecutor* __stdcall GetExecutorCPU()
+  {
 #if defined niNoThreads
     return GetExecutorMain();
 #else
     if (!_cpuExecutor.IsOK()) {
-      _cpuExecutor = CreateExecutorThreadPool(
-          ni::Max(1,
-                  _ASTR(ni::GetLang()->GetProperty("ni.cpu.count")).Long()/2));
+      _cpuExecutor = CreateExecutorThreadPool(ni::Max(
+        1, _ASTR(ni::GetLang()->GetProperty("ni.cpu.count")).Long() / 2));
     }
     return _cpuExecutor;
 #endif
   }
 
-  virtual iExecutor* __stdcall GetExecutorIO() {
+  virtual iExecutor* __stdcall GetExecutorIO()
+  {
 #if defined niNoThreads
     return GetExecutorMain();
 #else
     if (!_ioExecutor.IsOK()) {
-      _ioExecutor = CreateExecutorThreadPool(
-          ni::Max(1,
-                  _ASTR(ni::GetLang()->GetProperty("ni.cpu.count")).Long()*2));
+      _ioExecutor = CreateExecutorThreadPool(ni::Max(
+        1, _ASTR(ni::GetLang()->GetProperty("ni.cpu.count")).Long() * 2));
     }
     return _ioExecutor;
 #endif
   }
 
-  virtual iFutureValue* __stdcall CreateFutureValue() {
+  virtual iFutureValue* __stdcall CreateFutureValue()
+  {
     return niNew sFutureValue();
   }
 
-  virtual Ptr<iMessageDesc> __stdcall CreateMessageDesc(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) niImpl {
+  virtual Ptr<iMessageDesc> __stdcall CreateMessageDesc(
+    iMessageHandler* apHandler, tU32 anMsg, const Var& avarA,
+    const Var& avarB) niImpl
+  {
     sMessageDescImpl* pDesc = niNew sMessageDescImpl();
     sMessageDesc& desc = pDesc->_desc;
     desc.mptrHandler = apHandler;
@@ -1179,19 +1352,24 @@ struct sConcurrent : public ImplRC<iConcurrent> {
     return pDesc;
   }
 
-  virtual Ptr<iMessageQueue> __stdcall CreateMessageQueue(tU64 anThreadID, tU32 aMaxItems) niImpl {
+  virtual Ptr<iMessageQueue> __stdcall CreateMessageQueue(tU64 anThreadID,
+                                                          tU32 aMaxItems) niImpl
+  {
     __sync_lock_(mqs);
     if (_mqs.find(anThreadID) != _mqs.end()) {
-      niError(niFmt("MessageQueue already created for thread '%d'.", anThreadID));
+      niError(
+        niFmt("MessageQueue already created for thread '%d'.", anThreadID));
       return NULL;
     }
-    Ptr<MessageQueue> mq = niNew MessageQueue(anThreadID,aMaxItems);
+    Ptr<MessageQueue> mq = niNew MessageQueue(anThreadID, aMaxItems);
     niAssert(niIsOK(mq));
-    astl::upsert(_mqs,mq->_threadID,mq.ptr());
+    astl::upsert(_mqs, mq->_threadID, mq.ptr());
     return (Ptr<iMessageQueue>&)mq;
   }
 
-  virtual Ptr<iMessageQueue> __stdcall GetMessageQueue(tU64 anThreadID) const niImpl {
+  virtual Ptr<iMessageQueue> __stdcall GetMessageQueue(
+    tU64 anThreadID) const niImpl
+  {
     __sync_lock_(mqs);
     tMQMap::const_iterator it = _mqs.find(anThreadID);
     if (it == _mqs.end())
@@ -1199,56 +1377,60 @@ struct sConcurrent : public ImplRC<iConcurrent> {
     return it->second;
   }
 
-  virtual tBool __stdcall SendMessage(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) niImpl {
-    niCheckIsOK(apHandler,eFalse);
+  virtual tBool __stdcall SendMessage(iMessageHandler* apHandler, tU32 anMsg,
+                                      const Var& avarA, const Var& avarB) niImpl
+  {
+    niCheckIsOK(apHandler, eFalse);
     const tU64 handlerThreadID = apHandler->GetThreadID();
     if (handlerThreadID == ni::eInvalidHandle ||
         handlerThreadID == ni::ThreadGetCurrentThreadID())
     {
       // handle the message...
-      apHandler->HandleMessage(anMsg,avarA,avarB);
+      apHandler->HandleMessage(anMsg, avarA, avarB);
       return eTrue;
     }
     else {
-      return _QueueMessage(handlerThreadID,apHandler,anMsg,avarA,avarB);
+      return _QueueMessage(handlerThreadID, apHandler, anMsg, avarA, avarB);
     }
   }
 
   //! Queue a message in the messge queue of the message handler's thread.
   //! \return eTrue if the message as been added to the handler's thread
   //!         message queue. Otherwise returns eFalse.
-  virtual tBool __stdcall QueueMessage(iMessageHandler* apHandler, tU32 anMsg, const Var& avarA, const Var& avarB) niImpl {
-    niCheckIsOK(apHandler,eFalse);
+  virtual tBool __stdcall QueueMessage(iMessageHandler* apHandler, tU32 anMsg,
+                                       const Var& avarA,
+                                       const Var& avarB) niImpl
+  {
+    niCheckIsOK(apHandler, eFalse);
     const tU64 handlerThreadID = apHandler->GetThreadID();
-    return _QueueMessage(handlerThreadID,apHandler,anMsg,avarA,avarB);
+    return _QueueMessage(handlerThreadID, apHandler, anMsg, avarA, avarB);
   }
 
-  inline tBool __stdcall _QueueMessage(
-      const tU64 handlerThreadID,
-      iMessageHandler* apHandler,
-      tU32 anMsg, const Var& avarA, const Var& avarB)
+  inline tBool __stdcall _QueueMessage(const tU64 handlerThreadID,
+                                       iMessageHandler* apHandler, tU32 anMsg,
+                                       const Var& avarA, const Var& avarB)
   {
     __sync_lock_(mqs);
     tMQMap::iterator it = _mqs.find(handlerThreadID);
     if (it == _mqs.end()) {
       niError(niFmt("No message queue for thread '%d' to queue message '%s'.",
-                    handlerThreadID,
-                    MessageID_ToString(anMsg),
-                    avarA, avarB));
+                    handlerThreadID, MessageID_ToString(anMsg), avarA, avarB));
       return eFalse;
     }
     // queue the message
-    return it->second->_Add(apHandler,anMsg,avarA,avarB);
+    return it->second->_Add(apHandler, anMsg, avarA, avarB);
   }
 
-  void _Unregister_MessageQueue(MessageQueue* mq) {
+  void _Unregister_MessageQueue(MessageQueue* mq)
+  {
     __sync_lock_(mqs);
     niAssert(niIsOK(mq));
     niAssert(_mqs.find(mq->_threadID) != _mqs.end());
-    astl::map_erase(_mqs,mq->_threadID);
+    astl::map_erase(_mqs, mq->_threadID);
   }
 
-  Ptr<MessageQueue> _Find_MessageQueue(tU64 anThreadID) {
+  Ptr<MessageQueue> _Find_MessageQueue(tU64 anThreadID)
+  {
     __sync_lock_(mqs);
     tMQMap::const_iterator it = _mqs.find(anThreadID);
     if (it == _mqs.end())
@@ -1257,7 +1439,8 @@ struct sConcurrent : public ImplRC<iConcurrent> {
   }
 };
 
-static sConcurrent* _GetConcurrent() {
+static sConcurrent* _GetConcurrent()
+{
   static Ptr<sConcurrent> _ptrConcurrent;
   if (!_ptrConcurrent.IsOK()) {
     _ptrConcurrent = niNew sConcurrent();
@@ -1265,21 +1448,25 @@ static sConcurrent* _GetConcurrent() {
   return _ptrConcurrent;
 }
 
-static void _Unregister_MessageQueue(MessageQueue* mq) {
+static void _Unregister_MessageQueue(MessageQueue* mq)
+{
   _GetConcurrent()->_Unregister_MessageQueue(mq);
 }
 
 namespace ni {
 
-niExportFunc(iConcurrent*) GetConcurrent() {
+niExportFunc(iConcurrent*) GetConcurrent()
+{
   return _GetConcurrent();
 }
 
-niExportFunc(iUnknown*) New_niLang_Concurrent(const Var& avarA, const Var& avarB) {
+niExportFunc(iUnknown*) New_niLang_Concurrent(const Var& avarA,
+                                              const Var& avarB)
+{
   return _GetConcurrent();
 }
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -1288,24 +1475,32 @@ niExportFunc(iUnknown*) New_niLang_Concurrent(const Var& avarA, const Var& avarB
 //----------------------------------------------------------------------------
 
 static const ni::sParameterDef iMessageHandler_HandleMessage_Parameters[3] = {
-	{ "anMsg", ni::eTypeFlags_Constant|ni::eType_U32, NULL, "const tU32" },
-	{ "avarA", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" },
-	{ "avarB", ni::eTypeFlags_Constant|ni::eType_Variant|ni::eTypeFlags_Pointer, NULL, "const Var&" }
+  { "anMsg", ni::eTypeFlags_Constant | ni::eType_U32, NULL, "const tU32" },
+  { "avarA",
+    ni::eTypeFlags_Constant | ni::eType_Variant | ni::eTypeFlags_Pointer, NULL,
+    "const Var&" },
+  { "avarB",
+    ni::eTypeFlags_Constant | ni::eType_Variant | ni::eTypeFlags_Pointer, NULL,
+    "const Var&" }
 };
 static const ni::sMethodDef iMessageHandler_HandleMessage = {
-	"HandleMessage",
-	0|ni::eType_Null, NULL, "void",
-	3, iMessageHandler_HandleMessage_Parameters
+  "HandleMessage",
+  0 | ni::eType_Null,
+  NULL,
+  "void",
+  3,
+  iMessageHandler_HandleMessage_Parameters
 #if !defined niConfig_NoXCALL
-  , NULL
+  ,
+  NULL
 #endif
 };
 static const ni::sMethodDef* Methods_iMessageHandler[] = {
   &iMessageHandler_HandleMessage
 };
 
-struct niHidden iMessageHandler_DispatchWrapper : public ImplAggregate<ni::iMessageHandler>
-{
+struct niHidden iMessageHandler_DispatchWrapper
+    : public ImplAggregate<ni::iMessageHandler> {
   const tU64 _threadID;
 
   iMessageHandler_DispatchWrapper(ni::iDispatch* apDispatch)
@@ -1314,45 +1509,54 @@ struct niHidden iMessageHandler_DispatchWrapper : public ImplAggregate<ni::iMess
     mprotected_pAggregateParent = apDispatch;
   }
 
-  ~iMessageHandler_DispatchWrapper() {
+  ~iMessageHandler_DispatchWrapper()
+  {
   }
 
-  ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
+  ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID)
+  {
     if (aIID == niGetInterfaceUUID(iMessageHandler))
       return this;
     return mprotected_pAggregateParent->QueryInterface(aIID);
   }
-  void __stdcall ListInterfaces(ni::iMutableCollection* apLst, ni::tU32 anFlags) const {
+  void __stdcall ListInterfaces(ni::iMutableCollection* apLst,
+                                ni::tU32 anFlags) const
+  {
     apLst->Add(niGetInterfaceUUID(iMessageHandler));
-    mprotected_pAggregateParent->ListInterfaces(apLst,anFlags);
+    mprotected_pAggregateParent->ListInterfaces(apLst, anFlags);
   }
 
   // Method (0): GetThreadID
-  tU64 __stdcall GetThreadID() const {
+  tU64 __stdcall GetThreadID() const
+  {
     return _threadID;
   }
 
   // Method (1): HandleMessage
-  void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA, const Var& avarB)
+  void __stdcall HandleMessage(const tU32 anMsg, const Var& avarA,
+                               const Var& avarB)
   {
     niAssert(ni::ThreadGetCurrentThreadID() == _threadID);
     ni::Var _params_[3];
     _params_[0] = anMsg;
     _params_[1] = avarA;
     _params_[2] = avarB;
-    ((iDispatch*)mprotected_pAggregateParent)->CallMethod(
-        &iMessageHandler_HandleMessage, 0,
-        _params_, niCountOf(_params_), NULL);
+    ((iDispatch*)mprotected_pAggregateParent)
+      ->CallMethod(&iMessageHandler_HandleMessage, 0, _params_,
+                   niCountOf(_params_), NULL);
   }
 };
 
 namespace ni {
-ni::iUnknown* iMessageHandler_CreateDispatchWrapper(ni::iDispatch* apDispatch) {
+ni::iUnknown* iMessageHandler_CreateDispatchWrapper(ni::iDispatch* apDispatch)
+{
   niAssert(niIsOK(apDispatch));
-  if (!apDispatch->InitializeMethods(Methods_iMessageHandler,niCountOf(Methods_iMessageHandler))) {
+  if (!apDispatch->InitializeMethods(Methods_iMessageHandler,
+                                     niCountOf(Methods_iMessageHandler)))
+  {
     niError(niFmt("Can't initialize dispatch methods for iMessageHandler."));
     return NULL;
   }
   return niNew iMessageHandler_DispatchWrapper(apDispatch);
 }
-}
+} // namespace ni

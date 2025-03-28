@@ -15,9 +15,9 @@ namespace ni {
  */
 
 #if !defined niNoUnsafePtr
-#define niQPtr_HasUnsafeAPI
+  #define niQPtr_HasUnsafeAPI
 #else
-#define niQPtr_NoUnsafeAPI
+  #define niQPtr_NoUnsafeAPI
 #endif
 
 /**
@@ -48,163 +48,211 @@ struct QPtr {
   // Can be used as input parameter to specify an optional iUnknown object.
   typedef const QPtr<T>& in_type_t;
 
-  QPtr() : mPtr(NULL) {}
-  QPtr(const T* aP) {
+  QPtr()
+      : mPtr(NULL)
+  {
+  }
+  QPtr(const T* aP)
+  {
     mPtr = niConstCast(T*, aP);
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
-  QPtr(const Ptr<T>& aP) {
+  QPtr(const Ptr<T>& aP)
+  {
     mPtr = niConstCast(T*, aP.raw_ptr());
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
-  QPtr(Ptr<T>&& aP) {
+  QPtr(Ptr<T>&& aP)
+  {
     mPtr = aP.mPtr;
     aP.mPtr = NULL;
   }
 
-  QPtr(const QPtr<T>& aP) {
+  QPtr(const QPtr<T>& aP)
+  {
     mPtr = aP.mPtr;
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
-  QPtr(QPtr<T>&& aP) {
+  QPtr(QPtr<T>&& aP)
+  {
     mPtr = aP.mPtr;
     aP.mPtr = NULL;
   }
 
-  QPtr(const Nonnull<T>& aP) {
+  QPtr(const Nonnull<T>& aP)
+  {
     mPtr = niConstCast(T*, aP.raw_ptr());
     ni::AddRef(mPtr);
   }
 
-  QPtr(const astl::non_null<T*>& aP) {
+  QPtr(const astl::non_null<T*>& aP)
+  {
     mPtr = niConstCast(T*, aP.raw_ptr());
     ni::AddRef(mPtr);
   }
 
-  QPtr(const Var& aV) {
+  QPtr(const Var& aV)
+  {
     mPtr = VarQueryInterface<T>(aV);
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const U* aP) {
+  QPtr(const U* aP)
+  {
     mPtr = niConstCast(U*, aP);
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const Ptr<U>& aP) {
+  QPtr(const Ptr<U>& aP)
+  {
     mPtr = niConstCast(U*, aP.raw_ptr());
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(Ptr<U>&& aP) {
+  QPtr(Ptr<U>&& aP)
+  {
     mPtr = aP.mPtr;
     aP.mPtr = NULL;
   }
 
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const QPtr<U>& aP) {
+  QPtr(const QPtr<U>& aP)
+  {
     mPtr = aP.mPtr;
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(QPtr<U>&& aP) {
+  QPtr(QPtr<U>&& aP)
+  {
     mPtr = aP.mPtr;
     aP.mPtr = NULL;
   }
 
   template <typename U,
             eastl::enable_if_t<eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const Nonnull<U>& aP) {
+  QPtr(const Nonnull<U>& aP)
+  {
     mPtr = niConstCast(U*, aP.raw_ptr());
     ni::AddRef(mPtr);
   }
 
   template <typename U,
             eastl::enable_if_t<!eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const U* aP) {
+  QPtr(const U* aP)
+  {
     mPtr = ni::QueryInterface<tInterface>(aP);
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
   template <typename U,
             eastl::enable_if_t<!eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const Ptr<U>& aP) {
+  QPtr(const Ptr<U>& aP)
+  {
     mPtr = (T*)ni::QueryInterface<tInterface>(aP.ptr());
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
   template <typename U,
             eastl::enable_if_t<!eastl::is_convertible_v<U*, T*>, bool> = true>
-  QPtr(const Nonnull<U>& aP) {
+  QPtr(const Nonnull<U>& aP)
+  {
     mPtr = (T*)ni::QueryInterface<tInterface>(aP.raw_ptr());
-    if (mPtr) ni::AddRef(mPtr);
+    if (mPtr)
+      ni::AddRef(mPtr);
   }
 
-  QPtr(const WeakPtr<T>& aP) {
+  QPtr(const WeakPtr<T>& aP)
+  {
     mPtr = (T*)aP.Deref();
     if (mPtr) {
       ni::AddRef(mPtr);
     }
   }
   template <typename S>
-  QPtr(const WeakPtr<S>& aP) {
+  QPtr(const WeakPtr<S>& aP)
+  {
     mPtr = (T*)aP.template Deref<tInterface>();
     if (mPtr) {
       ni::AddRef(mPtr);
     }
   }
 
-  ~QPtr() {
-    if (mPtr) ni::Release(mPtr);
+  ~QPtr()
+  {
+    if (mPtr)
+      ni::Release(mPtr);
   }
 
   // Assignment operator
-  QPtr& operator=(const QPtr& newp) {
+  QPtr& operator=(const QPtr& newp)
+  {
     this->Swap(newp.mPtr);
     return *this;
   }
-  QPtr& operator=(const T* newp) {
+  QPtr& operator=(const T* newp)
+  {
     this->Swap(newp);
     return *this;
   }
-  QPtr& operator=(const Nonnull<T>& newp) {
+  QPtr& operator=(const Nonnull<T>& newp)
+  {
     this->Swap(newp.raw_ptr());
     return *this;
   }
 
   // Check whether the pointer holds a valid object.
-  bool IsOK() const { return mPtr != NULL && mPtr->IsOK(); }
+  bool IsOK() const
+  {
+    return mPtr != NULL && mPtr->IsOK();
+  }
 
 #if defined niQPtr_HasUnsafeAPI
   // Casting to a normal pointer.
-  operator T*() const { return mPtr; }
+  operator T*() const
+  {
+    return mPtr;
+  }
 
   // Dereference operator
-  T& operator*() const {
+  T& operator*() const
+  {
     niAssert(IsOK());
     return *mPtr;
   }
 
   // Arrow operator, allow to use regular C syntax to access members of class.
-  T* operator->(void) const {
+  T* operator->(void) const
+  {
     niAssert(IsOK());
     return mPtr;
   }
 #endif
 
   // Replace pointer.
-  void Swap(const T* apPointer) {
+  void Swap(const T* apPointer)
+  {
     T* newp = (T*)apPointer;
     if (newp != mPtr) {
-      if (newp) ni::AddRef(newp);
-      if (mPtr) ni::Release(mPtr);
+      if (newp)
+        ni::AddRef(newp);
+      if (mPtr)
+        ni::Release(mPtr);
     }
     mPtr = newp;
   }
@@ -213,8 +261,10 @@ struct QPtr {
   //! Null the smart pointer and return it's contained pointer.
   //! \remark This method makes sure that the pointer returned is not released.
   //!     It can return zero reference objects.
-  T* GetRawAndSetNull() {
-    if (!mPtr) return NULL;
+  T* GetRawAndSetNull()
+  {
+    if (!mPtr)
+      return NULL;
     T* rawPtr = mPtr;
     rawPtr->SetNumRefs(rawPtr->GetNumRefs() + 1000);
     *this = NULL;
@@ -224,29 +274,50 @@ struct QPtr {
 #endif
 
   // shared_ptr like accessors
-  T* ptr() const { return mPtr; }
-  T** ptrptr() const { return &mPtr; }
+  T* ptr() const
+  {
+    return mPtr;
+  }
+  T** ptrptr() const
+  {
+    return &mPtr;
+  }
 
-  void swap(T* newp) { this->Swap(newp); }
+  void swap(T* newp)
+  {
+    this->Swap(newp);
+  }
 
-  tBool is_null() const { return mPtr == nullptr; }
-  tBool has_value() const { return mPtr != nullptr; }
+  tBool is_null() const
+  {
+    return mPtr == nullptr;
+  }
+  tBool has_value() const
+  {
+    return mPtr != nullptr;
+  }
 
-  ni::Nonnull<T>& non_null() const {
+  ni::Nonnull<T>& non_null() const
+  {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<T>&, *this);
   }
-  ni::Nonnull<const T>& non_null_const() const {
+  ni::Nonnull<const T>& non_null_const() const
+  {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<const T>&, *this);
   }
 
-  ni::Nonnull<T>& value() const {
+  ni::Nonnull<T>& value() const
+  {
     niPanicAssert(mPtr != nullptr);
     return niCCast(Nonnull<T>&, *this);
   }
 
-  T* raw_ptr() const { return const_cast<T*>(mPtr); }
+  T* raw_ptr() const
+  {
+    return const_cast<T*>(mPtr);
+  }
 
  private:
   // Prevent if (PTR), if (!PTR), if (PTR == 0/NULL), if (PTR != 0/NULL)
@@ -282,47 +353,56 @@ QPtr<T> operator+(std::ptrdiff_t, const QPtr<T>&) = delete;
 
 ///
 template <class T, class U>
-inline bool operator==(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator==(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() == b.raw_ptr();
 }
 template <class T, class U>
-inline bool operator!=(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator!=(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() != b.raw_ptr();
 }
 template <class T, class U>
-inline bool operator<(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator<(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() < b.raw_ptr();
 }
 template <class T, class U>
-inline bool operator>(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator>(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() > b.raw_ptr();
 }
 template <class T, class U>
-inline bool operator<=(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator<=(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() <= b.raw_ptr();
 }
 template <class T, class U>
-inline bool operator>=(QPtr<T> const& a, QPtr<U> const& b) {
+inline bool operator>=(QPtr<T> const& a, QPtr<U> const& b)
+{
   return a.raw_ptr() >= b.raw_ptr();
 }
 
 template <typename T>
-__forceinline bool IsOK(QPtr<T> const& a) {
+__forceinline bool IsOK(QPtr<T> const& a)
+{
   return a.IsOK();
 }
 
 template <typename T>
-__forceinline bool IsNullPtr(QPtr<T> const& a) {
+__forceinline bool IsNullPtr(QPtr<T> const& a)
+{
   return (a.raw_ptr() == nullptr);
 }
 
 template <typename T, typename... Args>
-inline EA_CONSTEXPR ni::QPtr<T> MakeQPtr(Args&&... args) {
+inline EA_CONSTEXPR ni::QPtr<T> MakeQPtr(Args&&... args)
+{
   return ni::QPtr<T>(niNew T(eastl::forward<Args>(args)...));
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}  // namespace ni
-#endif  // __QPTR_776684_H__
+} // namespace ni
+#endif // __QPTR_776684_H__

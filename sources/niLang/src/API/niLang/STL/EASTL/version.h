@@ -7,7 +7,7 @@
 
 #include "EABase/eabase.h"
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once
+  #pragma once
 #endif
 
 #include "internal/config.h"

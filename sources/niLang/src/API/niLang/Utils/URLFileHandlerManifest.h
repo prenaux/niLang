@@ -12,21 +12,26 @@ namespace ni {
 struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
  private:
   tBool mbManifsetInitialized;
-  typedef astl::map<cString,cString> tManifestMap;
+  typedef astl::map<cString, cString> tManifestMap;
   tManifestMap mmapFilesManifest;
 
  public:
-  URLFileHandler_Manifest() : mbManifsetInitialized(eFalse) {
+  URLFileHandler_Manifest()
+      : mbManifsetInitialized(eFalse)
+  {
   }
 
-  ~URLFileHandler_Manifest() {
+  ~URLFileHandler_Manifest()
+  {
   }
 
-  void LoadManifest(const char* aManifestPath) {
+  void LoadManifest(const char* aManifestPath)
+  {
     Ptr<iFile> fpManifest = this->URLOpen(aManifestPath);
     if (fpManifest.IsOK()) {
       TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, FOUND: %d, %d",
-                                 (tIntPtr)this, fpManifest->GetSize(), fpManifest->Tell()));
+                                 (tIntPtr)this, fpManifest->GetSize(),
+                                 fpManifest->Tell()));
 
       do {
         cString fileName = fpManifest->ReadStringLine().After("Name: ");
@@ -40,7 +45,8 @@ struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
           fileName = StringURLGetPath(fileName.Chars());
         }
 
-        TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, '%s' = %s", (tIntPtr)this, fileName, keyName));
+        TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, '%s' = %s",
+                                   (tIntPtr)this, fileName, keyName));
 
         // add to the manifest
         mmapFilesManifest[fileName] = keyName;
@@ -51,7 +57,8 @@ struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
     }
   }
 
-  cString GetPathFromURL(const achar* aURL) const {
+  cString GetPathFromURL(const achar* aURL) const
+  {
     if (!mbManifsetInitialized) {
       niThis(URLFileHandler_Manifest)->mbManifsetInitialized = eTrue;
       niThis(URLFileHandler_Manifest)->LoadManifest("MANIFEST/Files.mf");
@@ -62,20 +69,26 @@ struct URLFileHandler_Manifest : public ImplRC<iURLFileHandler> {
       StrMakeStdPath(path.data());
       tManifestMap::const_iterator it = mmapFilesManifest.find(path);
       if (it != mmapFilesManifest.end()) {
-        TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, TRANSLATED '%s' -> '%s'", (tIntPtr)this, aURL, it->second));
+        TRACE_URLHANDLER_MANIFEST(
+          ("... URLHANDLER MANIFEST %p, TRANSLATED '%s' -> '%s'", (tIntPtr)this,
+           aURL, it->second));
         path = it->second;
       }
       else {
-        TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, COULDNT FIND '%s'", (tIntPtr)this, aURL));
+        TRACE_URLHANDLER_MANIFEST(
+          ("... URLHANDLER MANIFEST %p, COULDNT FIND '%s'", (tIntPtr)this,
+           aURL));
       }
     }
     else {
-      TRACE_URLHANDLER_MANIFEST(("... URLHANDLER MANIFEST %p, NOT TRANSLATED '%s'", (tIntPtr)this, aURL));
+      TRACE_URLHANDLER_MANIFEST(
+        ("... URLHANDLER MANIFEST %p, NOT TRANSLATED '%s'", (tIntPtr)this,
+         aURL));
     }
 
     return path;
   }
 };
 
-}
+} // namespace ni
 #endif // __URLHANDLERMANIFEST_H_717267A8_D672_40A4_ADBB_CD27296AA55C__

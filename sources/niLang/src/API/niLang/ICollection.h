@@ -52,7 +52,8 @@ struct iCollection : public iUnknown {
   //! Returns true if this collection contains the specified key.
   virtual tBool __stdcall Contains(const Var& aVar) const = 0;
   //! Returns true if this collection contains all of the elements in the specified collection.
-  virtual tBool __stdcall ContainsAll(const iCollection* apCollection) const = 0;
+  virtual tBool __stdcall ContainsAll(
+    const iCollection* apCollection) const = 0;
 
   //! Returns an iterator over the elements in this collection.
   virtual iIterator* __stdcall Iterator() const = 0;
@@ -126,5 +127,5 @@ struct iMutableCollection : public iCollection {
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ICOLLECTION_H_EC13D733_C7E7_4E18_BDDA_F61DFEE721D3__

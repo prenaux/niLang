@@ -104,28 +104,27 @@ namespace ni {
 //      !a?c    a, ac, ab, abb, acb, a.foo    abc, a.c, azc
 //
 
-
-#define FPAT_QUOTE      _A('`')   // Quotes a special char
-#define FPAT_DEL        _A('/')   // Path delimiter
-#define FPAT_DEL2       _A('\\')    // Path delimiter
-#define FPAT_NOT        _A('!')   // Exclusion
-#define FPAT_ANY        _A('?')   // Any one char
-#define FPAT_ANY2       _A('~')   // Any one char
-#define FPAT_CLOS       _A('*')   // Zero or more chars
-#define FPAT_SUB        _A('^')     // Zero or more nondelimiters
-#define FPAT_SET_L      _A('[')   // Set/range open bracket
-#define FPAT_SET_R      _A(']')   // Set/range close bracket
-#define FPAT_SET_NOT    _A('!')   // Set exclusion
-#define FPAT_SET_AHRU   _A('-')   // Set range of chars
+#define FPAT_QUOTE _A('`')    // Quotes a special char
+#define FPAT_DEL _A('/')      // Path delimiter
+#define FPAT_DEL2 _A('\\')    // Path delimiter
+#define FPAT_NOT _A('!')      // Exclusion
+#define FPAT_ANY _A('?')      // Any one char
+#define FPAT_ANY2 _A('~')     // Any one char
+#define FPAT_CLOS _A('*')     // Zero or more chars
+#define FPAT_SUB _A('^')      // Zero or more nondelimiters
+#define FPAT_SET_L _A('[')    // Set/range open bracket
+#define FPAT_SET_R _A(']')    // Set/range close bracket
+#define FPAT_SET_NOT _A('!')  // Set exclusion
+#define FPAT_SET_AHRU _A('-') // Set range of chars
 
 #ifndef FPAT_DELIM
-#define FPAT_DELIM       1
+  #define FPAT_DELIM 1
 #endif
 #ifndef FPAT_LOWER
-#define FPAT_LOWER( c )  ni::StrToLower(c)
+  #define FPAT_LOWER(c) ni::StrToLower(c)
 #endif
 #ifndef FPAT_CHAR
-#define FPAT_CHAR ni::achar
+  #define FPAT_CHAR ni::achar
 #endif
 
 ///////////////////////////////////////////////
@@ -149,57 +148,53 @@ niExportFunc(int) afilepattern_isvalid(const FPAT_CHAR* pat)
     return (0);
 
   // Verify that the pattern is valid
-  for (len = 0; pat[len] != _A('\0'); len++)
-  {
-    switch (pat[len])
-    {
-      case FPAT_SET_L:
-        // Char set
-        len++;
-        if (pat[len] == FPAT_SET_NOT)
-          len++;              // Set negation
+  for (len = 0; pat[len] != _A('\0'); len++) {
+    switch (pat[len]) {
+    case FPAT_SET_L:
+      // Char set
+      len++;
+      if (pat[len] == FPAT_SET_NOT)
+        len++; // Set negation
 
-        while (pat[len] != FPAT_SET_R)
-        {
+      while (pat[len] != FPAT_SET_R) {
+        if (pat[len] == FPAT_QUOTE)
+          len++; // Quoted char
+        if (pat[len] == _A('\0'))
+          return (0); // Missing closing bracket
+        len++;
+
+        if (pat[len] == FPAT_SET_AHRU) {
+          // Char range
+          len++;
           if (pat[len] == FPAT_QUOTE)
-            len++;          // Quoted char
+            len++; // Quoted char
           if (pat[len] == _A('\0'))
             return (0); // Missing closing bracket
           len++;
-
-          if (pat[len] == FPAT_SET_AHRU)
-          {
-            // Char range
-            len++;
-            if (pat[len] == FPAT_QUOTE)
-              len++;      // Quoted char
-            if (pat[len] == _A('\0'))
-              return (0);     // Missing closing bracket
-            len++;
-          }
-
-          if (pat[len] == _A('\0'))
-            return (0); // Missing closing bracket
         }
-        break;
 
-      case FPAT_QUOTE:
-        // Quoted char
-        len++;
         if (pat[len] == _A('\0'))
-          return (0);     // Missing quoted char
-        break;
+          return (0); // Missing closing bracket
+      }
+      break;
 
-      case FPAT_NOT:
-        // Negated pattern
-        len++;
-        if (pat[len] == _A('\0'))
-          return (0);     // Missing subpattern
-        break;
+    case FPAT_QUOTE:
+      // Quoted char
+      len++;
+      if (pat[len] == _A('\0'))
+        return (0); // Missing quoted char
+      break;
 
-      default:
-        // Valid character
-        break;
+    case FPAT_NOT:
+      // Negated pattern
+      len++;
+      if (pat[len] == _A('\0'))
+        return (0); // Missing subpattern
+      break;
+
+    default:
+      // Valid character
+      break;
     }
   }
 
@@ -219,7 +214,8 @@ niExportFunc(int) afilepattern_isvalid(const FPAT_CHAR* pat)
 //  string.
 //
 //  Some non-empty patterns ( e.g., "" ) will match an empty filename ( "" ).
-niExportFunc(int) afilepattern_submatch(const FPAT_CHAR* pat, const FPAT_CHAR* fname)
+niExportFunc(int) afilepattern_submatch(const FPAT_CHAR* pat,
+                                        const FPAT_CHAR* fname)
 {
   int fch;
   int pch;
@@ -228,147 +224,141 @@ niExportFunc(int) afilepattern_submatch(const FPAT_CHAR* pat, const FPAT_CHAR* f
   int lo, hi;
 
   // Attempt to match subpattern against subfilename
-  while (*pat != _A('\0'))
-  {
+  while (*pat != _A('\0')) {
     fch = *fname;
     pch = *pat;
     pat++;
 
-    switch (pch)
-    {
-      case FPAT_ANY:
-      case FPAT_ANY2:
-        // Match a single char
+    switch (pch) {
+    case FPAT_ANY:
+    case FPAT_ANY2:
+      // Match a single char
 #if FPAT_DELIM
-        if (fch == FPAT_DEL || fch == FPAT_DEL2 || fch == _A('\0'))
-          return (0);
-#else
-        if (fch == _A('\0'))
-          return (0);
-#endif
-        fname++;
-        break;
-
-      case FPAT_CLOS:
-        // Match zero or more chars
-        i = 0;
-#if FPAT_DELIM
-        while (fname[i] != _A('\0') && fname[i] != FPAT_DEL && fname[i] != FPAT_DEL2)
-          i++;
-#else
-        while (fname[i] != _A('\0'))
-          i++;
-#endif
-        while (i >= 0)
-        {
-          if (afilepattern_submatch(pat, fname + i))
-            return (1);
-          i--;
-        }
+      if (fch == FPAT_DEL || fch == FPAT_DEL2 || fch == _A('\0'))
         return (0);
-
-      case FPAT_SUB:
-        // Match zero or more chars
-        i = 0;
-        while (fname[i] != _A('\0') &&
-#if FPAT_DELIM
-               fname[i] != FPAT_DEL && fname[i] != FPAT_DEL2 &&
-#endif
-               fname[i] != _A('.'))
-          i++;
-        while (i >= 0)
-        {
-          if (afilepattern_submatch(pat, fname + i))
-            return (1);
-          i--;
-        }
+#else
+      if (fch == _A('\0'))
         return (0);
+#endif
+      fname++;
+      break;
 
-      case FPAT_QUOTE:
-        // Match a quoted char
-        pch = *pat;
-        if (FPAT_LOWER(fch) != FPAT_LOWER(pch) || pch == _A('\0'))
-          return (0);
-        fname++;
+    case FPAT_CLOS:
+      // Match zero or more chars
+      i = 0;
+#if FPAT_DELIM
+      while (fname[i] != _A('\0') && fname[i] != FPAT_DEL &&
+             fname[i] != FPAT_DEL2)
+        i++;
+#else
+      while (fname[i] != _A('\0'))
+        i++;
+#endif
+      while (i >= 0) {
+        if (afilepattern_submatch(pat, fname + i))
+          return (1);
+        i--;
+      }
+      return (0);
+
+    case FPAT_SUB:
+      // Match zero or more chars
+      i = 0;
+      while (fname[i] != _A('\0') &&
+#if FPAT_DELIM
+             fname[i] != FPAT_DEL && fname[i] != FPAT_DEL2 &&
+#endif
+             fname[i] != _A('.'))
+        i++;
+      while (i >= 0) {
+        if (afilepattern_submatch(pat, fname + i))
+          return (1);
+        i--;
+      }
+      return (0);
+
+    case FPAT_QUOTE:
+      // Match a quoted char
+      pch = *pat;
+      if (FPAT_LOWER(fch) != FPAT_LOWER(pch) || pch == _A('\0'))
+        return (0);
+      fname++;
+      pat++;
+      break;
+
+    case FPAT_SET_L:
+      // Match char set/range
+      yes = 1;
+      if (*pat == FPAT_SET_NOT) {
         pat++;
-        break;
+        yes = 0; // Set negation
+      }
 
-      case FPAT_SET_L:
-        // Match char set/range
-        yes = 1;
-        if (*pat == FPAT_SET_NOT)
-        {
+      // Look for [ s ], [ - ], [ abc ], [ a-c ]
+      match = !yes;
+      while (*pat != FPAT_SET_R && *pat != _A('\0')) {
+        if (*pat == FPAT_QUOTE)
+          pat++; // Quoted char
+
+        if (*pat == _A('\0'))
+          break;
+        lo = *pat++;
+        hi = lo;
+
+        if (*pat == FPAT_SET_AHRU) {
+          // Range
           pat++;
-          yes = 0;      // Set negation
-        }
 
-        // Look for [ s ], [ - ], [ abc ], [ a-c ]
-        match = !yes;
-        while (*pat != FPAT_SET_R && *pat != _A('\0'))
-        {
           if (*pat == FPAT_QUOTE)
-            pat++;          // Quoted char
+            pat++; // Quoted char
 
           if (*pat == _A('\0'))
             break;
-          lo = *pat++;
-          hi = lo;
-
-          if (*pat == FPAT_SET_AHRU)
-          {
-            // Range
-            pat++;
-
-            if (*pat == FPAT_QUOTE)
-              pat++;      // Quoted char
-
-            if (*pat == _A('\0'))
-              break;
-            hi = *pat++;
-          }
-
-          if (*pat == _A('\0'))
-            break;
-
-          // Compare character to set range
-          if (FPAT_LOWER(fch) >= FPAT_LOWER(lo) &&
-              FPAT_LOWER(fch) <= FPAT_LOWER(hi))
-            match = yes;
+          hi = *pat++;
         }
 
-        if (!match)
-          return (0);
-
         if (*pat == _A('\0'))
-          return (0);     // Missing closing bracket
+          break;
 
-        fname++;
-        pat++;
-        break;
+        // Compare character to set range
+        if (FPAT_LOWER(fch) >= FPAT_LOWER(lo) &&
+            FPAT_LOWER(fch) <= FPAT_LOWER(hi))
+          match = yes;
+      }
 
-      case FPAT_NOT:
-        // Match only if rest of pattern does not match
-        if (*pat == _A('\0'))
-          return (0);     // Missing subpattern
-        i = afilepattern_submatch(pat, fname);
-        return !i;
+      if (!match)
+        return (0);
+
+      if (*pat == _A('\0'))
+        return (0); // Missing closing bracket
+
+      fname++;
+      pat++;
+      break;
+
+    case FPAT_NOT:
+      // Match only if rest of pattern does not match
+      if (*pat == _A('\0'))
+        return (0); // Missing subpattern
+      i = afilepattern_submatch(pat, fname);
+      return !i;
 
 #if FPAT_DELIM
-      case FPAT_DEL:
-      case FPAT_DEL2:
-        // Match path delimiter char
-        if (fch != FPAT_DEL && fch != FPAT_DEL2)
-          return (0);
-        fname++;
-        break;
+    case FPAT_DEL:
+    case FPAT_DEL2:
+      // Match path delimiter char
+      if (fch != FPAT_DEL && fch != FPAT_DEL2)
+        return (0);
+      fname++;
+      break;
 #endif
 
-      default:
-        // Match a ( non-null ) char exactly
-        if (FPAT_LOWER(fch) != FPAT_LOWER(pch))
-          return (0);
-        fname++;
-        break;
+    default:
+      // Match a ( non-null ) char exactly
+      if (FPAT_LOWER(fch) != FPAT_LOWER(pch))
+        return (0);
+      fname++;
+      break;
     }
   }
 
@@ -379,7 +369,6 @@ niExportFunc(int) afilepattern_submatch(const FPAT_CHAR* pat, const FPAT_CHAR* f
   // Successful match
   return (1);
 }
-
 
 ///////////////////////////////////////////////
 //  Attempts to match pattern 'pat' to filename 'fname'.
@@ -403,7 +392,8 @@ niExportFunc(int) afilepattern_submatch(const FPAT_CHAR* pat, const FPAT_CHAR* f
 //  Upper and lower case letters are treated the same ; alphabetic
 //  characters are converted to lower case before matching occurs.
 //  Conversion to lower case is dependent upon the current locale setting.
-niExportFunc(int) afilepattern_match(const FPAT_CHAR* pat, const FPAT_CHAR* fname)
+niExportFunc(int) afilepattern_match(const FPAT_CHAR* pat,
+                                     const FPAT_CHAR* fname)
 {
   int rc;
 
@@ -420,7 +410,7 @@ niExportFunc(int) afilepattern_match(const FPAT_CHAR* pat, const FPAT_CHAR* fnam
 
   // Attempt to match pattern against filename
   if (fname[0] == _A('\0'))
-    return (pat[0] == _A('\0'));    // Special case
+    return (pat[0] == _A('\0')); // Special case
   rc = afilepattern_submatch(pat, fname);
 
   return (rc);
@@ -452,7 +442,8 @@ niExportFunc(int) afilepattern_match(const FPAT_CHAR* pat, const FPAT_CHAR* fnam
 //
 // See also
 //  afilepattern_match().
-niExportFunc(int) afilepattern_matchn(const FPAT_CHAR* pat, const FPAT_CHAR* fname)
+niExportFunc(int) afilepattern_matchn(const FPAT_CHAR* pat,
+                                      const FPAT_CHAR* fname)
 {
   int rc;
 
@@ -473,41 +464,46 @@ niExportFunc(int) afilepattern_matchn(const FPAT_CHAR* pat, const FPAT_CHAR* fna
 
 class cFilePatternRegex : public ImplRC<ni::iRegex> {
  public:
-  cFilePatternRegex(const achar* aaszPattern, const achar* aaszPatSplitSep) {
+  cFilePatternRegex(const achar* aaszPattern, const achar* aaszPatSplitSep)
+  {
     cString str = aaszPattern;
     if (niIsStringOK(aaszPatSplitSep)) {
       astl::vector<cString> split;
-      StringSplit(str,aaszPatSplitSep,&split);
-      niLoop(i,split.size()) {
+      StringSplit(str, aaszPatSplitSep, &split);
+      niLoop (i, split.size()) {
         const achar* p = split[i].Chars();
-        if (*p == '!') ++p;
+        if (*p == '!')
+          ++p;
         if (afilepattern_isvalid(p))
           _vPatterns.push_back(split[i]);
       }
     }
     else {
       const achar* p = str.Chars();
-      if (*p == '!') ++p;
+      if (*p == '!')
+        ++p;
       if (afilepattern_isvalid(p))
         _vPatterns.push_back(str);
     }
   }
 
-  virtual const ni::achar* __stdcall GetImplType() const {
+  virtual const ni::achar* __stdcall GetImplType() const
+  {
     return _A("FilePattern");
   }
 
-  virtual tBool __stdcall DoesMatch(const achar* aaszString) const {
-    niLoop(i,_vPatterns.size()) {
+  virtual tBool __stdcall DoesMatch(const achar* aaszString) const
+  {
+    niLoop (i, _vPatterns.size()) {
       const achar* p = _vPatterns[i].Chars();
       if (*p == '!') {
         ++p;
-        if (afilepattern_match(p,aaszString)) {
+        if (afilepattern_match(p, aaszString)) {
           return eFalse;
         }
       }
       else {
-        if (afilepattern_match(p,aaszString)) {
+        if (afilepattern_match(p, aaszString)) {
           return eTrue;
         }
       }
@@ -519,16 +515,20 @@ class cFilePatternRegex : public ImplRC<ni::iRegex> {
   astl::vector<cString> _vPatterns;
 };
 
-niExportFunc(ni::iRegex*) CreateFilePatternRegex(const ni::achar* aaszPattern, const ni::achar* aaszPatSplitSep) {
-  niCheckSilent(niStringIsOK(aaszPattern),NULL);
-  return niNew ni::cFilePatternRegex(aaszPattern,aaszPatSplitSep);
+niExportFunc(ni::iRegex*) CreateFilePatternRegex(
+  const ni::achar* aaszPattern, const ni::achar* aaszPatSplitSep)
+{
+  niCheckSilent(niStringIsOK(aaszPattern), NULL);
+  return niNew ni::cFilePatternRegex(aaszPattern, aaszPatSplitSep);
 }
 
-niExportFunc(iUnknown*) New_niLang_FilePatternRegex(const Var& avarA, const Var& avarB) {
+niExportFunc(iUnknown*) New_niLang_FilePatternRegex(const Var& avarA,
+                                                    const Var& avarB)
+{
   cString regex = VarGetString(avarA);
   cString sep = VarGetString(avarB);
-  ni::Ptr<iRegex> ptrRegex = CreateFilePatternRegex(regex.Chars(),sep.Chars());
+  ni::Ptr<iRegex> ptrRegex = CreateFilePatternRegex(regex.Chars(), sep.Chars());
   return ptrRegex.GetRawAndSetNull();
 }
 
-}
+} // namespace ni

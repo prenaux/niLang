@@ -4,14 +4,13 @@
  * Copyright (c) Electronic Arts Inc. All rights reserved.
  *---------------------------------------------------------------------------*/
 
-
 #ifndef INCLUDED_eaunits_h
 #define INCLUDED_eaunits_h
 
 #include "eabase.h"
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
+  #pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
 #endif
 
 // Defining common SI unit macros.
@@ -37,7 +36,7 @@
 #define EA_GIGABYTE(x) (size_t(x) * 1000 * 1000 * 1000)
 #define EA_TERABYTE(x) (size_t(x) * 1000 * 1000 * 1000 * 1000)
 #define EA_PETABYTE(x) (size_t(x) * 1000 * 1000 * 1000 * 1000 * 1000)
-#define EA_EXABYTE(x)  (size_t(x) * 1000 * 1000 * 1000 * 1000 * 1000 * 1000)
+#define EA_EXABYTE(x) (size_t(x) * 1000 * 1000 * 1000 * 1000 * 1000 * 1000)
 
 // Binary SI units
 #define EA_KIBIBYTE(x) (size_t(x) * 1024)
@@ -48,7 +47,3 @@
 #define EA_EXBIBYTE(x) (size_t(x) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024)
 
 #endif // INCLUDED_earesult_H
-
-
-
-

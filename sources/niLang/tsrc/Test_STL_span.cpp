@@ -6,13 +6,14 @@ using namespace ni;
 
 struct ASTL_span {};
 
-template <typename T, tSize N> EA_NODISCARD
-constexpr auto slide(astl::span<T,N> s, tSize offset, tSize width) {
+template <typename T, tSize N>
+EA_NODISCARD constexpr auto slide(astl::span<T, N> s, tSize offset, tSize width)
+{
   return s.subspan(offset, offset + width <= s.size() ? width : 0U);
 }
 
-template <typename T, tSize N> EA_NODISCARD
-ni::cString ToString(const astl::span<T,N>& seq)
+template <typename T, tSize N>
+EA_NODISCARD ni::cString ToString(const astl::span<T, N>& seq)
 {
   ni::cString r;
   for (const auto& elem : seq)
@@ -24,19 +25,20 @@ ni::cString ToString(const astl::span<T,N>& seq)
   return r;
 }
 
-TEST_FIXTURE(ASTL_span,c_array) {
-  constexpr int a[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-  constexpr auto b = astl::array<int,3> { 8, 7, 6 };
+TEST_FIXTURE(ASTL_span, c_array)
+{
+  constexpr int a[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+  constexpr auto b = astl::array<int, 3>{ 8, 7, 6 };
   static_assert(b[1] == 7);
 
   astl::vector<ni::cString> r;
-  for (tSize offset{}; ; ++offset) {
-    static constexpr tSize width{6};
+  for (tSize offset{};; ++offset) {
+    static constexpr tSize width{ 6 };
     auto s = slide(astl::make_span(a), offset, width);
     if (s.empty())
       break;
     r.push_back(ToString(s));
-    niPrintln(niFmt("... r[%d]: %s", r.size()-1, r.back()));
+    niPrintln(niFmt("... r[%d]: %s", r.size() - 1, r.back()));
   }
 
   CHECK_EQUAL(_ASTR("0 1 2 3 4 5"), r[0]);
@@ -76,18 +78,19 @@ TEST_FIXTURE(ASTL_span,c_array) {
   }
 }
 
-TEST_FIXTURE(ASTL_span,astl_array) {
-  astl::array<int,9> a = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-  astl::array<int,3> b = { 8, 7, 6 };
+TEST_FIXTURE(ASTL_span, astl_array)
+{
+  astl::array<int, 9> a = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+  astl::array<int, 3> b = { 8, 7, 6 };
 
   astl::vector<ni::cString> r;
-  for (tSize offset{}; ; ++offset) {
-    static constexpr tSize width{6};
+  for (tSize offset{};; ++offset) {
+    static constexpr tSize width{ 6 };
     auto s = slide(astl::make_span(a), offset, width);
     if (s.empty())
       break;
     r.push_back(ToString(s));
-    niPrintln(niFmt("... r[%d]: %s", r.size()-1, r.back()));
+    niPrintln(niFmt("... r[%d]: %s", r.size() - 1, r.back()));
   }
 
   CHECK_EQUAL(_ASTR("0 1 2 3 4 5"), r[0]);
@@ -127,18 +130,19 @@ TEST_FIXTURE(ASTL_span,astl_array) {
   }
 }
 
-TEST_FIXTURE(ASTL_span,vector) {
+TEST_FIXTURE(ASTL_span, vector)
+{
   astl::vector<int> a = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
   astl::vector<int> b = { 8, 7, 6 };
 
   astl::vector<ni::cString> r;
-  for (tSize offset{}; ; ++offset) {
-    static constexpr tSize width{6};
+  for (tSize offset{};; ++offset) {
+    static constexpr tSize width{ 6 };
     auto s = slide(astl::make_span(a), offset, width);
     if (s.empty())
       break;
     r.push_back(ToString(s));
-    niPrintln(niFmt("... r[%d]: %s", r.size()-1, r.back()));
+    niPrintln(niFmt("... r[%d]: %s", r.size() - 1, r.back()));
   }
 
   CHECK_EQUAL(_ASTR("0 1 2 3 4 5"), r[0]);
@@ -178,12 +182,13 @@ TEST_FIXTURE(ASTL_span,vector) {
   }
 }
 
-TEST_FIXTURE(ASTL_span,subspan) {
-  constexpr int data[] { 0, 1, 2, 3, 4, 5, 6 };
-  auto span = astl::span<const int> { data, 4 };
+TEST_FIXTURE(ASTL_span, subspan)
+{
+  constexpr int data[]{ 0, 1, 2, 3, 4, 5, 6 };
+  auto span = astl::span<const int>{ data, 4 };
 
   ni::cString r;
-  for (auto offset{0U}; offset != span.size(); ++offset) {
+  for (auto offset{ 0U }; offset != span.size(); ++offset) {
     r << span.subspan(offset).front() << " ";
   }
   r.Remove();

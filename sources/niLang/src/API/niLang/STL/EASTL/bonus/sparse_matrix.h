@@ -2,16 +2,14 @@
 // Copyright (c) Electronic Arts Inc. All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // *** Note ***
-// This implementation is incomplete. 
+// This implementation is incomplete.
 //
-// Additionally, this current implementation is not yet entirely in line with 
+// Additionally, this current implementation is not yet entirely in line with
 // EASTL conventions and thus may appear a little out of place to the observant.
 // The goal is to bring thus file up to current standards in a future version.
 ///////////////////////////////////////////////////////////////////////////////
-
 
 // To do:
 // Remove forward declarations of classes.
@@ -21,9 +19,8 @@
 // Remove mpRow from sparse_matrix_row_iterator.
 // Remove mpMatrix from iterators.
 
-
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements a sparse matrix, which is a 2 dimensional array of 
+// This file implements a sparse matrix, which is a 2 dimensional array of
 // cells of an arbitrary type T. It is useful for situations where you need
 // to store data in a very sparse way. The cost of storing an individual cell
 // is higher than with a 2D array (or vector of vectors), but if the array is
@@ -31,20 +28,19 @@
 // cells faster than a regular 2D array, as only used cells are stored.
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef EASTL_SPARSE_MATRIX_H
 #define EASTL_SPARSE_MATRIX_H
 
 #if 0
 
-#include "../internal/config.h"
-#include "../map.h"
-#include "../utility.h"
-#include "../functional.h"
+  #include "../internal/config.h"
+  #include "../map.h"
+  #include "../utility.h"
+  #include "../functional.h"
 
-#if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
-#endif
+  #if defined(EA_PRAGMA_ONCE_SUPPORTED)
+    #pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
+  #endif
 
 
 
@@ -596,10 +592,10 @@ namespace eastl
 	template <typename T, typename Allocator>
 	bool matrix_row<T>::GetMatrixCol(int nCol, cell_type*& pCell)
 	{
-		#if EASTL_ASSERT_ENABLED
+  #if EASTL_ASSERT_ENABLED
 			int nPreviousCol(sparse_matrix<T, Allocator>::kRowColIndexNone);
 			EASTL_ASSERT((nCol < kSparseMatrixIntMax / 2) && (nCol > kSparseMatrixIntMin / 2));
-		#endif
+  #endif
 
 		typename CellMap::iterator it(mCellRow.find(nCol));
 
@@ -1564,18 +1560,3 @@ namespace eastl
 #endif
 
 #endif // Header include guard
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

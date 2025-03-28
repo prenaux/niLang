@@ -23,19 +23,22 @@ static achar const* _URL[] = {
 
 struct FHashedDir {
   Ptr<ni::iFileSystem> hashedFS;
-  FHashedDir() {
-    cString dir = UnitTest::GetTestOutputFilePath("FHashedDir",_hashedDir);
+  FHashedDir()
+  {
+    cString dir = UnitTest::GetTestOutputFilePath("FHashedDir", _hashedDir);
     ni::GetRootFS()->FileMakeDir(dir.Chars());
     Ptr<iFileSystem> baseFS = ni::GetLang()->CreateFileSystemDir(
-      dir.Chars(),
-      eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete);
+      dir.Chars(), eFileSystemRightsFlags_Read | eFileSystemRightsFlags_Write |
+                     eFileSystemRightsFlags_Create |
+                     eFileSystemRightsFlags_Delete);
     hashedFS = ni::GetLang()->CreateFileSystemHashed(baseFS.ptr());
   }
 };
 
-TEST_FIXTURE(FHashedDir, GetAbsolutePath) {
+TEST_FIXTURE(FHashedDir, GetAbsolutePath)
+{
   niDebugFmt(("... hashedFS baseContainer: %s", hashedFS->GetBaseContainer()));
-  niLoop(i, niCountOf(_URL)) {
+  niLoop (i, niCountOf(_URL)) {
     cPath path = _URL[i];
     cPath absPath = hashedFS->GetAbsolutePath(_URL[i]).Chars();
     niDebugFmt(("... URL%d: %s -> %s", i, path.GetPath(), absPath.GetPath()));
@@ -51,23 +54,29 @@ TEST_FIXTURE(FHashedDir, GetAbsolutePath) {
   niDebugFmt(("... HASH1: %s", hash1));
   niDebugFmt(("... HASH2: %s", hash2));
   niDebugFmt(("... HASH3: %s", hash3));
-  CHECK_EQUAL(_ASTR("84bd8a5e2b52e6a93984ecb611860db21478f178"), cPath(hash1.Chars()).GetFileNoExt());
-  CHECK_EQUAL(cPath(hash1.Chars()).GetFileNoExt(), cPath(hash2.Chars()).GetFileNoExt());
-  CHECK_EQUAL(cPath(hash2.Chars()).GetFileNoExt(), cPath(hash3.Chars()).GetFileNoExt());
+  CHECK_EQUAL(_ASTR("84bd8a5e2b52e6a93984ecb611860db21478f178"),
+              cPath(hash1.Chars()).GetFileNoExt());
+  CHECK_EQUAL(cPath(hash1.Chars()).GetFileNoExt(),
+              cPath(hash2.Chars()).GetFileNoExt());
+  CHECK_EQUAL(cPath(hash2.Chars()).GetFileNoExt(),
+              cPath(hash3.Chars()).GetFileNoExt());
 }
 
-TEST_FIXTURE(FHashedDir, FileOpen) {
+TEST_FIXTURE(FHashedDir, FileOpen)
+{
   cString fileName = "test|file:withsome\\wierd/char";
   // fileName += ni::ToString(ni::RandInt());
   fileName += ".txt";
   niDebugFmt(("... fileName: %s", fileName));
   {
-    Ptr<iFile> fpWrite = hashedFS->FileOpen(fileName.Chars(), eFileOpenMode_Write);
+    Ptr<iFile> fpWrite =
+      hashedFS->FileOpen(fileName.Chars(), eFileOpenMode_Write);
     niDebugFmt(("... fpWrite: %s", fpWrite->GetSourcePath()));
     fpWrite->WriteString("This is some test text");
   }
   {
-    Ptr<iFile> fpRead = hashedFS->FileOpen(fileName.Chars(), eFileOpenMode_Read);
+    Ptr<iFile> fpRead =
+      hashedFS->FileOpen(fileName.Chars(), eFileOpenMode_Read);
     niDebugFmt(("... fpRead: %s", fpRead->GetSourcePath()));
     const cString read = fpRead->ReadString();
     niDebugFmt(("... read: %s", read));

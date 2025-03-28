@@ -15,12 +15,11 @@ ASTL_RAW_ALLOCATOR_IMPL(HashTable);
 // Also the current implementation if used for SQTable doesn't work very well, probably
 // some issues with Erase, or something. Didn't go further tracking down the problem
 // since its not faster than the hash_map...
-template <typename tKey, typename tVal,
-          typename tHashFun = astl::hash<tKey>,
-          typename tEqFun = astl::equal_to<tKey> >
+template <typename tKey, typename tVal, typename tHashFun = astl::hash<tKey>,
+          typename tEqFun = astl::equal_to<tKey>>
 struct HashTable {
  private:
-  HashTable& operator = (const HashTable&);
+  HashTable& operator=(const HashTable&);
 
  public:
   static const tU32 knMinPower2 = 4;
@@ -30,76 +29,88 @@ struct HashTable {
   // typedef sObjectPtrHash   tHashFun;
   // typedef sObjectPtrEq     tEqFun;
 
-  struct sHashNode : public astl::pair<tKey,tVal> {
+  struct sHashNode : public astl::pair<tKey, tVal> {
     sHashNode* next;
     tBool used;
-    sHashNode() {
+    sHashNode()
+    {
       next = NULL;
       used = eFalse;
     }
   };
-  typedef ASTL_ALLOCATOR(sHashNode,HashTable) tAlloc;
+  typedef ASTL_ALLOCATOR(sHashNode, HashTable) tAlloc;
 
   sHashNode* mpFirstFree;
   sHashNode* mpNodes;
-  tU32   mnNumNodes;
-  tU32   mnUsedNodes;
+  tU32 mnNumNodes;
+  tU32 mnUsedNodes;
 
-  static inline const sHashNode& _NullNode() {
+  static inline const sHashNode& _NullNode()
+  {
     static sHashNode _nullNode;
     return _nullNode;
   }
 
-  static inline tBool _IsEqKey(const tKey& aLeft, const tKey& aRight) {
-    return tEqFun()(aLeft,aRight);
+  static inline tBool _IsEqKey(const tKey& aLeft, const tKey& aRight)
+  {
+    return tEqFun()(aLeft, aRight);
   }
-  inline tSize _HashKey(const tKey& aKey) const {
-    return tHashFun()(aKey) & (mnNumNodes-1);
+  inline tSize _HashKey(const tKey& aKey) const
+  {
+    return tHashFun()(aKey) & (mnNumNodes - 1);
   }
 
-  HashTable() {
+  HashTable()
+  {
     mnUsedNodes = 0;
     _AllocNodes(knMinPower2);
   }
-  ~HashTable() {
+  ~HashTable()
+  {
     if (mpNodes) {
-      _FreeNodes(mpNodes,mnNumNodes);
+      _FreeNodes(mpNodes, mnNumNodes);
       mpNodes = NULL;
     }
   }
 
-  static sHashNode* _AllocateNodes(tU32 anNumNodes) {
-    sHashNode* nodes = (sHashNode*)tAlloc::raw_allocator::allocate(anNumNodes * sizeof(sHashNode));
-    niLoop(i,anNumNodes) {
-      new(&nodes[i]) sHashNode;
+  static sHashNode* _AllocateNodes(tU32 anNumNodes)
+  {
+    sHashNode* nodes = (sHashNode*)tAlloc::raw_allocator::allocate(
+      anNumNodes * sizeof(sHashNode));
+    niLoop (i, anNumNodes) {
+      new (&nodes[i]) sHashNode;
     }
     return nodes;
   }
-  static void _FreeNodes(sHashNode* apNodes, tU32 anNumNodes) {
-    niLoop(i,anNumNodes) {
+  static void _FreeNodes(sHashNode* apNodes, tU32 anNumNodes)
+  {
+    niLoop (i, anNumNodes) {
       apNodes[i].~sHashNode();
     }
-    tAlloc::raw_allocator::deallocate(apNodes,sizeof(sHashNode)*anNumNodes);
+    tAlloc::raw_allocator::deallocate(apNodes, sizeof(sHashNode) * anNumNodes);
   }
 
-  void _AllocNodes(tU32 anNumNodes) {
+  void _AllocNodes(tU32 anNumNodes)
+  {
     mnNumNodes = anNumNodes;
     mpNodes = _AllocateNodes(anNumNodes);
-    mpFirstFree = &mpNodes[mnNumNodes-1];
+    mpFirstFree = &mpNodes[mnNumNodes - 1];
   }
 
   //! Resize the table
-  void _Resize(tBool abForce) {
+  void _Resize(tBool abForce)
+  {
     sHashNode* const pPrevNodes = mpNodes;
-    const tU32 nPrevSize = (mnNumNodes < knMinPower2) ? knMinPower2 : mnNumNodes;
+    const tU32 nPrevSize =
+      (mnNumNodes < knMinPower2) ? knMinPower2 : mnNumNodes;
     const tU32 nPrevUsedNodes = mnUsedNodes;
     // More that 3/4 ?
-    if (nPrevUsedNodes >= (nPrevSize-(nPrevSize/4))) {
-      _AllocNodes(nPrevSize*2);
+    if (nPrevUsedNodes >= (nPrevSize - (nPrevSize / 4))) {
+      _AllocNodes(nPrevSize * 2);
     }
     // Less than 1/4 ?
-    else if (nPrevUsedNodes < (nPrevSize/4) && (nPrevSize > knMinPower2)) {
-      _AllocNodes(nPrevSize/2);
+    else if (nPrevUsedNodes < (nPrevSize / 4) && (nPrevSize > knMinPower2)) {
+      _AllocNodes(nPrevSize / 2);
     }
     // Forced...
     else if (abForce) {
@@ -111,18 +122,19 @@ struct HashTable {
     }
 
     mnUsedNodes = 0;
-    niLoop(i,nPrevSize) {
+    niLoop (i, nPrevSize) {
       sHashNode& n = pPrevNodes[i];
       if (n.used) {
-        Insert(n.first,n.second);
+        Insert(n.first, n.second);
       }
     }
 
-    _FreeNodes(pPrevNodes,nPrevSize);
+    _FreeNodes(pPrevNodes, nPrevSize);
   }
 
   //! Return first used node at specified index
-  sHashNode* NodeAt(tU32 anIndex) {
+  sHashNode* NodeAt(tU32 anIndex)
+  {
     while (anIndex < mnNumNodes) {
       if (mpNodes[anIndex].used) {
         return (sHashNode*)&mpNodes[anIndex];
@@ -133,11 +145,12 @@ struct HashTable {
   }
 
   //! Find node matching the specified key using the key's hash as starting point
-  sHashNode* _FindNode(const tKey& aKey, tSize aHash) {
+  sHashNode* _FindNode(const tKey& aKey, tSize aHash)
+  {
     niAssert(aHash < mnNumNodes);
     sHashNode* n = &mpNodes[aHash];
     do {
-      if (_IsEqKey(n->first,aKey))
+      if (_IsEqKey(n->first, aKey))
         return n;
       n = n->next;
     } while (n);
@@ -145,30 +158,35 @@ struct HashTable {
   }
 
   //! Find node pointing to the specified key
-  sHashNode* FindNode(const tKey& aKey) {
-    return _FindNode(aKey,_HashKey(aKey));
+  sHashNode* FindNode(const tKey& aKey)
+  {
+    return _FindNode(aKey, _HashKey(aKey));
   }
 
   //! Find node pointing to the specified key
-  const sHashNode* FindNode(const tKey& aKey) const {
-    return ((HashTable*)this)->_FindNode(aKey,_HashKey(aKey));
+  const sHashNode* FindNode(const tKey& aKey) const
+  {
+    return ((HashTable*)this)->_FindNode(aKey, _HashKey(aKey));
   }
 
   //! [] operator
-  const tVal& operator [] (const tKey& aKey) const {
+  const tVal& operator[](const tKey& aKey) const
+  {
     return FindNode(aKey)->second;
   }
-  tVal& operator [] (const tKey& aKey) {
+  tVal& operator[](const tKey& aKey)
+  {
     sHashNode* n = FindNode(aKey);
     if (!n) {
-      n = Insert(aKey,tVal());
+      n = Insert(aKey, tVal());
     }
     return n->second;
   }
 
   //! Erase the specifed key.
-  tBool Erase(const tKey& aKey) {
-    sHashNode* n = _FindNode(aKey,_HashKey(aKey));
+  tBool Erase(const tKey& aKey)
+  {
+    sHashNode* n = _FindNode(aKey, _HashKey(aKey));
     if (n) {
       niAssert(mnUsedNodes > 0);
       sHashNode* pNext = n->next;
@@ -182,9 +200,10 @@ struct HashTable {
   }
 
   //! Set existing value
-  tBool Set(const tKey& aKey, const tVal& aVal) {
+  tBool Set(const tKey& aKey, const tVal& aVal)
+  {
     tSize hash = _HashKey(aKey);
-    sHashNode* n = _FindNode(aKey,hash);
+    sHashNode* n = _FindNode(aKey, hash);
     if (n) {
       n->first = aVal;
       return eTrue;
@@ -193,9 +212,10 @@ struct HashTable {
   }
 
   //! Set existing value, or add it if it doesn't already exist
-  sHashNode* Insert(const tKey& aKey, const tVal& aVal) {
+  sHashNode* Insert(const tKey& aKey, const tVal& aVal)
+  {
     const tSize hash = _HashKey(aKey);
-    sHashNode* n = _FindNode(aKey,hash);
+    sHashNode* n = _FindNode(aKey, hash);
     if (n) {
       n->second = aVal;
       return n;
@@ -251,12 +271,13 @@ struct HashTable {
 
     // Cannot decrement anymore, resize and retry...
     _Resize(eTrue);
-    return Insert(aKey,aVal);
+    return Insert(aKey, aVal);
   }
 
   //! Clear the content of the table
-  void Clear() {
-    niLoop(i,mnNumNodes) {
+  void Clear()
+  {
+    niLoop (i, mnNumNodes) {
       mpNodes[i] = _NullNode();
     }
     mnUsedNodes = 0;
@@ -264,76 +285,99 @@ struct HashTable {
   }
 
   //! Returns the number of nodes used
-  tU32 GetSize() const {
+  tU32 GetSize() const
+  {
     return mnUsedNodes;
   }
 
   class iterator {
     HashTable* mpTable;
-    tU32       mnIndex;
+    tU32 mnIndex;
     friend struct HashTable;
 
    public:
-    iterator(HashTable* apTable = NULL, tU32 anIndex = 0) : mpTable(apTable), mnIndex(anIndex) {}
+    iterator(HashTable* apTable = NULL, tU32 anIndex = 0)
+        : mpTable(apTable)
+        , mnIndex(anIndex)
+    {
+    }
 
-    bool operator == (const iterator& rhs) const { return (mnIndex == rhs.mnIndex); }
-    bool operator != (const iterator& rhs) const { return (mnIndex != rhs.mnIndex); }
+    bool operator==(const iterator& rhs) const
+    {
+      return (mnIndex == rhs.mnIndex);
+    }
+    bool operator!=(const iterator& rhs) const
+    {
+      return (mnIndex != rhs.mnIndex);
+    }
 
-    iterator& operator ++ () {
+    iterator& operator++()
+    {
       ++mnIndex;
       return *this;
     }
-    iterator operator ++ (int) {
+    iterator operator++(int)
+    {
       iterator temp = *this;
       ++mnIndex;
       return temp;
     }
-    iterator& operator -- () {
+    iterator& operator--()
+    {
       --mnIndex;
       return *this;
     }
-    iterator operator -- (int) {
+    iterator operator--(int)
+    {
       iterator temp = *this;
       --mnIndex;
       return temp;
     }
 
-    sHashNode* getHashNode() const {
+    sHashNode* getHashNode() const
+    {
       sHashNode* n = ((HashTable*)mpTable)->NodeAt(mnIndex);
       niAssert(n != NULL);
       return n;
     }
-    sHashNode* operator -> () const {
+    sHashNode* operator->() const
+    {
       return getHashNode();
     }
   };
 
   typedef iterator const_iterator;
 
-  iterator begin() const {
-    return iterator((HashTable*)this,0);
+  iterator begin() const
+  {
+    return iterator((HashTable*)this, 0);
   }
-  iterator end() const {
-    return iterator((HashTable*)this,mnUsedNodes);
+  iterator end() const
+  {
+    return iterator((HashTable*)this, mnUsedNodes);
   }
 
-  size_t size() const {
+  size_t size() const
+  {
     return GetSize();
   }
-  bool empty() const {
+  bool empty() const
+  {
     return mnUsedNodes == 0;
   }
-  bool erase(iterator& it) {
+  bool erase(iterator& it)
+  {
     niAssert(it.mpTable == this);
     niAssert(it != end());
     return !!Erase(it.getHashNode()->first);
   }
-  void clear() {
+  void clear()
+  {
     this->Clear();
   }
 };
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -344,26 +388,26 @@ namespace {
 
 const ni::tU32 kNumTests = 100;
 
-typedef astl::map<ni::cString,ni::tU32> tMap;
-typedef astl::hash_map<ni::cString,ni::tU32> tHMap;
+typedef astl::map<ni::cString, ni::tU32> tMap;
+typedef astl::hash_map<ni::cString, ni::tU32> tHMap;
 
-template<typename MAP>
-bool test_str_insert(MAP& map, const ni::tU32 numTest = kNumTests) {
-  niLoop(i,numTest) {
-    map[niFmt(_A("%d"),i)] = i;
+template <typename MAP>
+bool test_str_insert(MAP& map, const ni::tU32 numTest = kNumTests)
+{
+  niLoop (i, numTest) {
+    map[niFmt(_A("%d"), i)] = i;
   }
   return true;
 }
-template<typename MAP>
-bool test_str_lookup(MAP& map) {
+template <typename MAP>
+bool test_str_lookup(MAP& map)
+{
   ni::RandSeed(123);
-  niLoop(i,kNumTests) {
-    ni::tU32 k = ni::RandIntRange(0,(ni::tI32)kNumTests-1);
-    ni::cString str = niFmt(_A("%d"),k);
+  niLoop (i, kNumTests) {
+    ni::tU32 k = ni::RandIntRange(0, (ni::tI32)kNumTests - 1);
+    ni::cString str = niFmt(_A("%d"), k);
     if (map[str] != k) {
-      niDebugFmt((_A("[%s] Expected %d, got %d\n"),
-                  str.Chars(),
-                  k,map[str]));
+      niDebugFmt((_A("[%s] Expected %d, got %d\n"), str.Chars(), k, map[str]));
       return false;
     }
   }
@@ -372,102 +416,111 @@ bool test_str_lookup(MAP& map) {
 
 struct ASTL_map {};
 
-TEST_FIXTURE(ASTL_map,hashmap_str_time) {
+TEST_FIXTURE(ASTL_map, hashmap_str_time)
+{
   tHMap map;
   TEST_TIMING_BEGIN(Insert)
-      CHECK_EQUAL(true,test_str_insert(map));
+  CHECK_EQUAL(true, test_str_insert(map));
   TEST_TIMING_END()
-      TEST_TIMING_BEGIN(Lookup)
-      CHECK_EQUAL(true,test_str_lookup(map));
+  TEST_TIMING_BEGIN(Lookup)
+  CHECK_EQUAL(true, test_str_lookup(map));
   TEST_TIMING_END()
-      CHECK_EQUAL(10,map["10"]);
-  CHECK_EQUAL(20,map["20"]);
-  CHECK_EQUAL(30,map["30"]);
+  CHECK_EQUAL(10, map["10"]);
+  CHECK_EQUAL(20, map["20"]);
+  CHECK_EQUAL(30, map["30"]);
 }
 
-TEST_FIXTURE(ASTL_map,map_str_time) {
+TEST_FIXTURE(ASTL_map, map_str_time)
+{
   tMap map;
   //  map.reserve(kNumTests);
   TEST_TIMING_BEGIN(Insert)
-      CHECK_EQUAL(true,test_str_insert(map));
+  CHECK_EQUAL(true, test_str_insert(map));
   TEST_TIMING_END()
-      TEST_TIMING_BEGIN(Lookup)
-      CHECK_EQUAL(true,test_str_lookup(map));
+  TEST_TIMING_BEGIN(Lookup)
+  CHECK_EQUAL(true, test_str_lookup(map));
   TEST_TIMING_END()
-      CHECK_EQUAL(10,map["10"]);
-  CHECK_EQUAL(20,map["20"]);
-  CHECK_EQUAL(30,map["30"]);
+  CHECK_EQUAL(10, map["10"]);
+  CHECK_EQUAL(20, map["20"]);
+  CHECK_EQUAL(30, map["30"]);
 }
 
-TEST_FIXTURE(ASTL_map,HashTable_str_time) {
-  ni::HashTable<ni::cString,ni::tU32> map;
+TEST_FIXTURE(ASTL_map, HashTable_str_time)
+{
+  ni::HashTable<ni::cString, ni::tU32> map;
   TEST_TIMING_BEGIN(Insert)
-      CHECK_EQUAL(true,test_str_insert(map));
+  CHECK_EQUAL(true, test_str_insert(map));
   TEST_TIMING_END();
   TEST_TIMING_BEGIN(Lookup)
-      CHECK_EQUAL(true,test_str_lookup(map));
+  CHECK_EQUAL(true, test_str_lookup(map));
   TEST_TIMING_END();
-  CHECK_EQUAL(10,map["10"]);
-  CHECK_EQUAL(20,map["20"]);
-  CHECK_EQUAL(30,map["30"]);
+  CHECK_EQUAL(10, map["10"]);
+  CHECK_EQUAL(20, map["20"]);
+  CHECK_EQUAL(30, map["30"]);
 }
 
-TEST_FIXTURE(ASTL_map,map_insert) {
-  astl::map<ni::cString,ni::tInt> map;
+TEST_FIXTURE(ASTL_map, map_insert)
+{
+  astl::map<ni::cString, ni::tInt> map;
   astl::upsert(map, _ASTR("a"), 1);
   CHECK_EQUAL(1, map["a"]);
   astl::upsert(map, _ASTR("a"), 2);
   CHECK_EQUAL(2, map["a"]);
 }
 
-
-TEST_FIXTURE(ASTL_map,map_construct) {
-  astl::map<ni::cString,ni::tInt> map = { {"a",1}, {"b",2} };
+TEST_FIXTURE(ASTL_map, map_construct)
+{
+  astl::map<ni::cString, ni::tInt> map = { { "a", 1 }, { "b", 2 } };
   CHECK_EQUAL(1, map["a"]);
   CHECK_EQUAL(2, map["b"]);
 }
 
-TEST_FIXTURE(ASTL_map,hmap_construct) {
-  astl::hash_map<ni::cString,ni::tInt> hmap = { {"a",1}, {"b",2} };
+TEST_FIXTURE(ASTL_map, hmap_construct)
+{
+  astl::hash_map<ni::cString, ni::tInt> hmap = { { "a", 1 }, { "b", 2 } };
   CHECK_EQUAL(1, hmap["a"]);
   CHECK_EQUAL(2, hmap["b"]);
 }
 
-TEST_FIXTURE(ASTL_map,get_default) {
+TEST_FIXTURE(ASTL_map, get_default)
+{
   {
-    astl::map<ni::cString,ni::tInt> map = { {"a",1}, {"b",2} };
+    astl::map<ni::cString, ni::tInt> map = { { "a", 1 }, { "b", 2 } };
     CHECK_EQUAL(1, map["a"]);
     CHECK_EQUAL(2, map["b"]);
 
-    CHECK_EQUAL(1,astl::get_default(map,"a",ni::eInvalidHandle));
-    CHECK_EQUAL(ni::eInvalidHandle,astl::get_default(map,"weee",ni::eInvalidHandle));
+    CHECK_EQUAL(1, astl::get_default(map, "a", ni::eInvalidHandle));
+    CHECK_EQUAL(ni::eInvalidHandle,
+                astl::get_default(map, "weee", ni::eInvalidHandle));
   }
 
   {
-    astl::hash_map<ni::cString,ni::tInt> hmap = { {"a",1}, {"b",2} };
+    astl::hash_map<ni::cString, ni::tInt> hmap = { { "a", 1 }, { "b", 2 } };
     CHECK_EQUAL(1, hmap["a"]);
     CHECK_EQUAL(2, hmap["b"]);
 
-    CHECK_EQUAL(1,astl::get_default(hmap,"a",ni::eInvalidHandle));
-    CHECK_EQUAL(ni::eInvalidHandle,astl::get_default(hmap,"weee",ni::eInvalidHandle));
+    CHECK_EQUAL(1, astl::get_default(hmap, "a", ni::eInvalidHandle));
+    CHECK_EQUAL(ni::eInvalidHandle,
+                astl::get_default(hmap, "weee", ni::eInvalidHandle));
   }
 
   {
-    astl::map<ni::cString,ni::cString> map = { {"a","A"}, {"b","B"} };
+    astl::map<ni::cString, ni::cString> map = { { "a", "A" }, { "b", "B" } };
     CHECK_EQUAL(_ASTR("A"), map["a"]);
     CHECK_EQUAL(_ASTR("B"), map["b"]);
 
-    CHECK_EQUAL(_ASTR("A"),astl::get_default(map,"a",""));
-    CHECK_EQUAL(_ASTR(""),astl::get_default(map,"weee",""));
+    CHECK_EQUAL(_ASTR("A"), astl::get_default(map, "a", ""));
+    CHECK_EQUAL(_ASTR(""), astl::get_default(map, "weee", ""));
   }
 
   {
-    astl::hash_map<ni::cString,ni::tInt> hmap = { {"a",1}, {"b",2} };
+    astl::hash_map<ni::cString, ni::tInt> hmap = { { "a", 1 }, { "b", 2 } };
     CHECK_EQUAL(1, hmap["a"]);
     CHECK_EQUAL(2, hmap["b"]);
 
-    CHECK_EQUAL(1,astl::get_default(hmap,"a",ni::eInvalidHandle));
-    CHECK_EQUAL(ni::eInvalidHandle,astl::get_default(hmap,"weee",ni::eInvalidHandle));
+    CHECK_EQUAL(1, astl::get_default(hmap, "a", ni::eInvalidHandle));
+    CHECK_EQUAL(ni::eInvalidHandle,
+                astl::get_default(hmap, "weee", ni::eInvalidHandle));
   }
 }
 

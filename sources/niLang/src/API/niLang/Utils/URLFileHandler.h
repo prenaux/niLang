@@ -9,48 +9,69 @@
 namespace ni {
 
 ///////////////////////////////////////////////
-static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(iFileSystem* apFS, tBool abManifest = eFalse) {
-  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)(abManifest ?
-      niCreateInstance(niLang,URLFileHandlerManifestFileSystem,apFS,niVarNull) :
-      niCreateInstance(niLang,URLFileHandlerFileSystem,apFS,niVarNull));
-  niCheckIsOK(fileHandler,NULL);
+static inline Ptr<iURLFileHandler> CreateURLFileHandlerFileSystem(
+  iFileSystem* apFS, tBool abManifest = eFalse)
+{
+  Ptr<iURLFileHandler> fileHandler =
+    (iURLFileHandler*)(abManifest
+                         ? niCreateInstance(niLang,
+                                            URLFileHandlerManifestFileSystem,
+                                            apFS, niVarNull)
+                         : niCreateInstance(niLang, URLFileHandlerFileSystem,
+                                            apFS, niVarNull));
+  niCheckIsOK(fileHandler, NULL);
   return fileHandler;
 }
 
 ///////////////////////////////////////////////
-static inline Ptr<iURLFileHandler> CreateURLFileHandlerDir(const achar* aDir, tBool abManifest = eFalse, tFileSystemRightsFlags aFlags = eFileSystemRightsFlags_IOOnly) {
+static inline Ptr<iURLFileHandler> CreateURLFileHandlerDir(
+  const achar* aDir, tBool abManifest = eFalse,
+  tFileSystemRightsFlags aFlags = eFileSystemRightsFlags_IOOnly)
+{
   cString absDir = ni::GetRootFS()->GetAbsolutePath(aDir);
   if (!ni::GetRootFS()->FileExists(absDir.Chars(), eFileAttrFlags_Directory)) {
     niError(niFmt("Can't find directory '%s' at abs path '%s'.", aDir, aDir));
     return NULL;
   }
 
-  Ptr<iFileSystem> fileSystem = ni::GetLang()->CreateFileSystemDir(absDir.Chars(), aFlags);
-  niCheckIsOK(fileSystem,NULL);
+  Ptr<iFileSystem> fileSystem =
+    ni::GetLang()->CreateFileSystemDir(absDir.Chars(), aFlags);
+  niCheckIsOK(fileSystem, NULL);
 
-  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)(abManifest ?
-      niCreateInstance(niLang,URLFileHandlerManifestFileSystem,fileSystem,niVarNull) :
-      niCreateInstance(niLang,URLFileHandlerFileSystem,fileSystem,niVarNull));
-  niCheckIsOK(fileHandler,NULL);
+  Ptr<iURLFileHandler> fileHandler =
+    (iURLFileHandler*)(abManifest
+                         ? niCreateInstance(niLang,
+                                            URLFileHandlerManifestFileSystem,
+                                            fileSystem, niVarNull)
+                         : niCreateInstance(niLang, URLFileHandlerFileSystem,
+                                            fileSystem, niVarNull));
+  niCheckIsOK(fileHandler, NULL);
   return fileHandler;
 }
 
 ///////////////////////////////////////////////
-static inline Ptr<iURLFileHandler> CreateURLFileHandlerZip(iFile* apZipFile) {
-  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(niLang,URLFileHandlerZip,apZipFile,niVarNull);
-  niCheckIsOK(fileHandler,NULL);
+static inline Ptr<iURLFileHandler> CreateURLFileHandlerZip(iFile* apZipFile)
+{
+  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(
+    niLang, URLFileHandlerZip, apZipFile, niVarNull);
+  niCheckIsOK(fileHandler, NULL);
   return fileHandler;
 }
 
 ///////////////////////////////////////////////
-static inline Ptr<iURLFileHandler> CreateURLFileHandlerPrefixed(iURLFileHandler* apFileHandler, const achar* aPrefix) {
-  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(niLang,URLFileHandlerPrefixed,apFileHandler,aPrefix);
-  niCheckIsOK(fileHandler,NULL);
+static inline Ptr<iURLFileHandler> CreateURLFileHandlerPrefixed(
+  iURLFileHandler* apFileHandler, const achar* aPrefix)
+{
+  Ptr<iURLFileHandler> fileHandler = (iURLFileHandler*)niCreateInstance(
+    niLang, URLFileHandlerPrefixed, apFileHandler, aPrefix);
+  niCheckIsOK(fileHandler, NULL);
   return fileHandler;
 }
 
 ///////////////////////////////////////////////
-static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aToolkitName, const achar* aModuleName) {
+static inline void RegisterModuleDataDirDefaultURLFileHandler(
+  const achar* aToolkitName, const achar* aModuleName)
+{
   const cString instanceName = niFmt("URLFileHandler.%s", aModuleName);
   if (ni::GetLang()->GetGlobalInstance(instanceName.Chars())) {
     return;
@@ -59,10 +80,9 @@ static inline void RegisterModuleDataDirDefaultURLFileHandler(const achar* aTool
   Ptr<iURLFileHandler> fileHandler = CreateURLFileHandlerDir(dir.Chars());
   niPanicAssertMsg(
     fileHandler.IsOK(),
-    niFmt("Can't create the file handler for the data directory '%s' of the module '%s::%s', check that the '$WORK/%s/data/%s' folder exists.",
-          dir,
-          aToolkitName, aModuleName,
-          aToolkitName, aModuleName));
+    niFmt(
+      "Can't create the file handler for the data directory '%s' of the module '%s::%s', check that the '$WORK/%s/data/%s' folder exists.",
+      dir, aToolkitName, aModuleName, aToolkitName, aModuleName));
   ni::GetLang()->SetGlobalInstance(instanceName.Chars(), fileHandler);
   return;
 }

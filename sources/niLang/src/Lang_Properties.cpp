@@ -1,20 +1,20 @@
 #include "Lang.h"
 
 #if defined niWin32
-#  ifdef niWindows
-#    include <windows.h>
-#  endif
-#  include <process.h>
+  #ifdef niWindows
+    #include <windows.h>
+  #endif
+  #include <process.h>
 #elif defined niLinux || defined niQNX
-#  include <unistd.h>
+  #include <unistd.h>
 #elif defined niOSX || defined niIOS
-#  include <sys/param.h>
-#  include <sys/sysctl.h>
+  #include <sys/param.h>
+  #include <sys/sysctl.h>
 #elif defined niJSCC
-#  include <limits.h>
-#  include <unistd.h>
+  #include <limits.h>
+  #include <unistd.h>
 #else
-#  error "Unknown platform."
+  #error "Unknown platform."
 #endif
 
 #include "FileFd.h"
@@ -34,12 +34,13 @@ cString _AppleGetInfoPlistPropertyValue(const achar* aProperty);
 static constexpr const char* _kniAppDirName = ".niApp";
 
 ///////////////////////////////////////////////
-static ni::tI32 _GetNumProcessors() {
+static ni::tI32 _GetNumProcessors()
+{
   unsigned int numProcessors = 1;
 #if defined niWinDesktop
   {
     SYSTEM_INFO SysInfo;
-    ZeroMemory(&SysInfo, sizeof (SYSTEM_INFO));
+    ZeroMemory(&SysInfo, sizeof(SYSTEM_INFO));
     GetSystemInfo(&SysInfo);
     numProcessors = SysInfo.dwNumberOfProcessors;
   }
@@ -57,7 +58,7 @@ static ni::tI32 _GetNumProcessors() {
     size_t len = sizeof(numProcessors);
     /* set the mib for hw.ncpu */
     mib[0] = CTL_HW;
-    mib[1] = HW_AVAILCPU;  // alternatively, try HW_NCPU;
+    mib[1] = HW_AVAILCPU; // alternatively, try HW_NCPU;
     /* get the number of CPUs from the system */
     sysctl(mib, 2, &numProcessors, &len, NULL, 0);
     if (numProcessors < 1) {
@@ -71,20 +72,22 @@ static ni::tI32 _GetNumProcessors() {
 #elif defined niJSCC
   numProcessors = 1;
 #else
-#  error "Unknown platform."
+  #error "Unknown platform."
 #endif
   return numProcessors;
 }
 
 ///////////////////////////////////////////////
-niExportFunc(achar*) FixSystemDir(achar* aaszOutput, const achar* aaszBuffer, const achar* aaszToCreate, tBool abCreate) {
+niExportFunc(achar*) FixSystemDir(achar* aaszOutput, const achar* aaszBuffer,
+                                  const achar* aaszToCreate, tBool abCreate)
+{
   achar tmp[AMAX_PATH] = AZEROSTR;
   if (!aaszBuffer || !aaszOutput)
     return NULL;
-  StrCat(tmp,aaszBuffer);
+  StrCat(tmp, aaszBuffer);
   StrPutPathSep(tmp);
   if (niIsStringOK(aaszToCreate)) {
-    StrCat(tmp,aaszToCreate);
+    StrCat(tmp, aaszToCreate);
     StrPutPathSep(tmp);
     if (abCreate) {
       if (!ni::GetRootFS()->FileMakeDir(tmp)) {
@@ -92,51 +95,56 @@ niExportFunc(achar*) FixSystemDir(achar* aaszOutput, const achar* aaszBuffer, co
       }
     }
   }
-  StrFixPath(aaszOutput,tmp,AMAX_SIZE);
+  StrFixPath(aaszOutput, tmp, AMAX_SIZE);
   return aaszOutput;
 }
 
 ///////////////////////////////////////////////
-static achar* _GetHomeDir(achar* aaszOutput) {
-#  if defined niIOS || defined niOSX
-  achar buffer[AMAX_PATH] = {0};
+static achar* _GetHomeDir(achar* aaszOutput)
+{
+#if defined niIOS || defined niOSX
+  achar buffer[AMAX_PATH] = { 0 };
   _AppleGetDirHome(buffer);
-  return FixSystemDir(aaszOutput,buffer,NULL,eFalse);
-#  elif defined niWinDesktop
-  achar buffer[AMAX_PATH] = {0};
-  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, SHGFP_TYPE_DEFAULT, buffer);
+  return FixSystemDir(aaszOutput, buffer, NULL, eFalse);
+#elif defined niWinDesktop
+  achar buffer[AMAX_PATH] = { 0 };
+  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+                                               SHGFP_TYPE_DEFAULT, buffer);
   if (!res) {
     return NULL;
   }
-  return FixSystemDir(aaszOutput,buffer,NULL,eFalse);
-#  else
+  return FixSystemDir(aaszOutput, buffer, NULL, eFalse);
+#else
   cString strHome = agetenv(_A("HOME"));
   if (strHome.empty())
     return NULL;
-  return FixSystemDir(aaszOutput,strHome.Chars(),NULL,eFalse);
-#  endif
+  return FixSystemDir(aaszOutput, strHome.Chars(), NULL, eFalse);
+#endif
 }
 
 ///////////////////////////////////////////////
-static achar* _GetDownloadsDir(achar* aaszOutput) {
+static achar* _GetDownloadsDir(achar* aaszOutput)
+{
 #if defined niIOS || defined niOSX
-  achar buffer[AMAX_PATH] = {0};
+  achar buffer[AMAX_PATH] = { 0 };
   _AppleGetDirDownloads(buffer);
-  return FixSystemDir(aaszOutput,buffer,NULL,eFalse);
+  return FixSystemDir(aaszOutput, buffer, NULL, eFalse);
 #elif defined niWinDesktop
-  achar buffer[AMAX_PATH] = {0};
-  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, SHGFP_TYPE_DEFAULT, buffer);
+  achar buffer[AMAX_PATH] = { 0 };
+  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+                                               SHGFP_TYPE_DEFAULT, buffer);
   if (!res) {
     return NULL;
   }
-  return FixSystemDir(aaszOutput,buffer,"Downloads",eTrue);
+  return FixSystemDir(aaszOutput, buffer, "Downloads", eTrue);
 #else
   return NULL;
 #endif
 }
 
 ///////////////////////////////////////////////
-static achar* _GetTempDir(achar* aaszOutput) {
+static achar* _GetTempDir(achar* aaszOutput)
+{
   // macOS: not using the system provided temp dir because the path is random
   // and its impossible to find when we need it for debugging
 #if 0 && (defined niIOS || defined niOSX)
@@ -149,46 +157,49 @@ static achar* _GetTempDir(achar* aaszOutput) {
 }
 
 ///////////////////////////////////////////////
-static achar* _GetDocumentsDir(achar* aaszOutput) {
+static achar* _GetDocumentsDir(achar* aaszOutput)
+{
 #if defined niIOS || defined niOSX
-  achar buffer[AMAX_PATH] = {0};
+  achar buffer[AMAX_PATH] = { 0 };
   _AppleGetDirDocs(buffer);
-  return FixSystemDir(aaszOutput,buffer,NULL,eFalse);
+  return FixSystemDir(aaszOutput, buffer, NULL, eFalse);
 #elif defined niWinDesktop
-  achar buffer[AMAX_PATH] = {0};
+  achar buffer[AMAX_PATH] = { 0 };
   // CSIDL_PROFILE: %USERPROFILE%
   // CSIDL_PERSONAL: %MYDOCUMENTS%
-  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_DEFAULT, buffer);
+  BOOL res = ni::Windows::utf8_SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL,
+                                               SHGFP_TYPE_DEFAULT, buffer);
   if (!res) {
     return NULL;
   }
-  return FixSystemDir(aaszOutput,buffer,NULL,eFalse);
+  return FixSystemDir(aaszOutput, buffer, NULL, eFalse);
 #else
   return NULL;
 #endif
 }
 
 ///////////////////////////////////////////////
-static cString _FindWorkDir(const achar* aaszBinDir) {
+static cString _FindWorkDir(const achar* aaszBinDir)
+{
   cString v;
 
 #if defined niOSX || defined niIOS
-#if defined niOSX
-  if (StrEndsWithI(aaszBinDir,"macos/"))
-#endif
+  #if defined niOSX
+  if (StrEndsWithI(aaszBinDir, "macos/"))
+  #endif
   {
     v = aaszBinDir;
-#ifdef niOSX
+  #ifdef niOSX
     v << "../Resources/";
-#else
+  #else
     v << "/";
-#endif
+  #endif
     // GetLang()->MessageBox(NULL, "BLA V", v.Chars(), eOSMessageBoxFlags_Ok);
     if (ni::DirExists(v.Chars())) {
       return ni::GetRootFS()->GetAbsolutePath(v.Chars());
     }
     else {
-      niPanicUnreachable(niFmt("Cant find macOS Resources directory '%s'.",v));
+      niPanicUnreachable(niFmt("Cant find macOS Resources directory '%s'.", v));
       return AZEROSTR;
     }
   }
@@ -210,7 +221,9 @@ static cString _FindWorkDir(const achar* aaszBinDir) {
 }
 
 ///////////////////////////////////////////////
-static tBool _ParseCmdLineProperties(tStringCMap* props, const achar* aaszCmdLine) {
+static tBool _ParseCmdLineProperties(tStringCMap* props,
+                                     const achar* aaszCmdLine)
+{
   if (!niStringIsOK(aaszCmdLine))
     return eTrue;
   // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
@@ -229,20 +242,20 @@ static tBool _ParseCmdLineProperties(tStringCMap* props, const achar* aaszCmdLin
     const tU32 c = it.next();
     if (prevChar == '-') {
       switch (c) {
-        case '-': // -- is a synonym for -D
-        case 'D': {
-          cString pname = CmdLineStrCharItReadFile(it,'=');
-          cString pvalue = CmdLineStrCharItReadFile(it);
-          (*props)[pname] = pvalue;
-          break;
-        }
+      case '-': // -- is a synonym for -D
+      case 'D': {
+        cString pname = CmdLineStrCharItReadFile(it, '=');
+        cString pvalue = CmdLineStrCharItReadFile(it);
+        (*props)[pname] = pvalue;
+        break;
+      }
       }
       prevChar = 0;
     }
     else if (StrIsSpace(c)) {
       continue;
     }
-    else  {
+    else {
       prevChar = c;
       if (prevChar != '-') {
         it.prior();
@@ -277,9 +290,10 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
     (*props)["ni.loa.linker"] = niLinker;
     (*props)["ni.loa.os"] = niOS;
 #ifdef niJNI
-#if !defined _BUILD_JNI
-#error "C++ compiler DEFINE flags inconsistency: niJNI defined but _BUILD_JNI isnt defined."
-#endif
+  #if !defined _BUILD_JNI
+    #error \
+      "C++ compiler DEFINE flags inconsistency: niJNI defined but _BUILD_JNI isnt defined."
+  #endif
     (*props)["ni.loa.arch"] = niCPUArch "j";
 #else
     (*props)["ni.loa.arch"] = niCPUArch;
@@ -311,7 +325,7 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
     }
 
     if (_GetDocumentsDir(tmp)) {
-      (*props)["ni.dirs.documents"] =  tmp;
+      (*props)["ni.dirs.documents"] = tmp;
     }
     else {
       if (props->Contains(_ASTR("ni.dirs.home"))) {
@@ -324,7 +338,7 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
     }
 
     if (_GetDownloadsDir(tmp)) {
-      (*props)["ni.dirs.downloads"] =  tmp;
+      (*props)["ni.dirs.downloads"] = tmp;
     }
     else {
       if (props->Contains(_ASTR("ni.dirs.home"))) {
@@ -365,7 +379,7 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
   }
 
   //---- Command line -----------------------------------------
-  _ParseCmdLineProperties(props,ni::GetCurrentOSProcessCmdLine());
+  _ParseCmdLineProperties(props, ni::GetCurrentOSProcessCmdLine());
 }
 
 //----------------------------------------------------------------------------
@@ -373,22 +387,25 @@ void cLang::_InitDefaultSystemProperties(tStringCMap* props)
 // Section: cLang
 //
 //----------------------------------------------------------------------------
-#define CHECK_SYSTEM_PROPERTIES()               \
-  niAssert(mptrSystemProperties.IsOK());
+#define CHECK_SYSTEM_PROPERTIES() niAssert(mptrSystemProperties.IsOK());
 
-const tStringCMap* __stdcall cLang::GetProperties() const {
+const tStringCMap* __stdcall cLang::GetProperties() const
+{
   CHECK_SYSTEM_PROPERTIES();
   return mptrSystemProperties;
 }
-tBool __stdcall cLang::HasProperty(const achar* aaszName) const {
+tBool __stdcall cLang::HasProperty(const achar* aaszName) const
+{
   CHECK_SYSTEM_PROPERTIES();
   return mptrSystemProperties->Contains(_ASTR(aaszName));
 }
-void __stdcall cLang::SetProperty(const achar* aaszName, const achar* aaszValue) {
+void __stdcall cLang::SetProperty(const achar* aaszName, const achar* aaszValue)
+{
   CHECK_SYSTEM_PROPERTIES();
   (*mptrSystemProperties)[aaszName] = aaszValue;
 }
-cString __stdcall cLang::GetProperty(const achar* aaszName) const {
+cString __stdcall cLang::GetProperty(const achar* aaszName) const
+{
   CHECK_SYSTEM_PROPERTIES();
   return (*mptrSystemProperties)[aaszName];
 }

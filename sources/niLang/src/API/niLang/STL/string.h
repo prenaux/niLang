@@ -9,11 +9,12 @@ namespace astl {
 typedef ni::cString string;
 
 template <typename T>
-inline ni::cString to_string(const T& v) {
+inline ni::cString to_string(const T& v)
+{
   ni::cString o;
   o << v;
   return o;
 }
 
-}
+} // namespace astl
 #endif // __STRING_H_3D75768D_9830_404B_9A9F_C41957BFF980__

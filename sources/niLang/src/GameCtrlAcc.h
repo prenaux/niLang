@@ -9,8 +9,7 @@
 
 namespace ni {
 
-class cGameCtrlAcc : public ImplRC<iGameCtrl>
-{
+class cGameCtrlAcc : public ImplRC<iGameCtrl> {
   niBeginClass(cGameCtrlAcc);
 
  public:
@@ -27,28 +26,39 @@ class cGameCtrlAcc : public ImplRC<iGameCtrl>
   //// iGameCtrl /////////////////////////////
   tU32 __stdcall GetIndex() const niImpl;
   tBool __stdcall GetIsConnected() const niImpl;
-  const achar*  __stdcall GetName() const niImpl;
-  tU32  __stdcall GetNumAxis() const niImpl;
-  tU32  __stdcall GetNumButtons() const niImpl;
+  const achar* __stdcall GetName() const niImpl;
+  tU32 __stdcall GetNumAxis() const niImpl;
+  tU32 __stdcall GetNumButtons() const niImpl;
   tBool __stdcall Update() niImpl;
-  tF32  __stdcall GetButton(tU32 ulButton) niImpl;
-  tF32  __stdcall GetAxis(eGameCtrlAxis axis) niImpl;
-  tBool __stdcall GetCanVibrate() const niImpl { return eFalse; }
-  void __stdcall Vibrate(const sVec2f& aSpeed) niImpl {}
-  tBool __stdcall GetHasBattery() const { return eFalse; }
-  tF32 __stdcall GetBatteryLevel() const { return 1.0f; }
+  tF32 __stdcall GetButton(tU32 ulButton) niImpl;
+  tF32 __stdcall GetAxis(eGameCtrlAxis axis) niImpl;
+  tBool __stdcall GetCanVibrate() const niImpl
+  {
+    return eFalse;
+  }
+  void __stdcall Vibrate(const sVec2f& aSpeed) niImpl
+  {
+  }
+  tBool __stdcall GetHasBattery() const
+  {
+    return eFalse;
+  }
+  tF32 __stdcall GetBatteryLevel() const
+  {
+    return 1.0f;
+  }
   //// iGameCtrl /////////////////////////////
 
   tBool __stdcall UpdateFromState(const sVec4f& state);
 
  private:
-  sVec3f            mvAxis;
+  sVec3f mvAxis;
 
   niEndClass(cGameCtrlAcc);
 };
 
 cGameCtrlAcc* __stdcall GetGenericGameCtrlAcc();
 
-}
+} // namespace ni
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __OSACCDRIVER_H_5E908DA1_9935_DF11_973D_83A5CB5A39F2__

@@ -13,8 +13,9 @@ namespace ni {
  */
 
 struct sOSXGLConfig {
-  sOSXGLConfig() {
-    ni::MemZero((tPtr)this,sizeof(sOSXGLConfig));
+  sOSXGLConfig()
+  {
+    ni::MemZero((tPtr)this, sizeof(sOSXGLConfig));
     colorBits = 24;
     alphaBits = 8;
     depthBits = 24;
@@ -41,7 +42,8 @@ struct sOSXGLConfig {
 niExportFunc(tBool) osxglIsStarted();
 niExportFunc(tBool) osxglStartup(void);
 niExportFunc(void) osxglShutdown(void);
-niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglConfig);
+niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow,
+                                       sOSXGLConfig* nsglConfig);
 niExportFunc(void) osxglDestroyContext(iOSWindow* apWindow);
 niExportFunc(tBool) osxglHasContext(iOSWindow* apWindow);
 niExportFunc(void) osxglMakeContextCurrent(iOSWindow* apWindow);
@@ -54,5 +56,5 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow);
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-} // namespace ni { namespace niOSX {
+} // namespace ni
 #endif // __OSXGL_895464_NARF_123_H__

@@ -39,22 +39,24 @@ ni::tBool __stdcall cDataTableReadStack::IsOK() const
 }
 
 ///////////////////////////////////////////////
-ni::iDataTable * cDataTableReadStack::GetTop() const
+ni::iDataTable* cDataTableReadStack::GetTop() const
 {
   return mStack.top();
 }
 
 ///////////////////////////////////////////////
-const achar * cDataTableReadStack::GetName() const
+const achar* cDataTableReadStack::GetName() const
 {
-  if (!niIsOK(STACK_TOP)) return AZEROSTR;
+  if (!niIsOK(STACK_TOP))
+    return AZEROSTR;
   return STACK_TOP->GetName();
 }
 
 ///////////////////////////////////////////////
 tU32 cDataTableReadStack::GetNumChildren() const
 {
-  if (!niIsOK(STACK_TOP)) return 0;
+  if (!niIsOK(STACK_TOP))
+    return 0;
   return STACK_TOP->GetNumChildren();
 }
 
@@ -77,13 +79,14 @@ tBool cDataTableReadStack::PushChildFail(tU32 anIndex)
     return eFalse;
   }
   Ptr<iDataTable> dt = STACK_TOP->GetChildFromIndex(anIndex);
-  if (!dt.IsOK()) return eFalse;
+  if (!dt.IsOK())
+    return eFalse;
   mStack.push(dt);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableReadStack::Push(const achar *aaszName)
+tBool cDataTableReadStack::Push(const achar* aaszName)
 {
   if (!niIsOK(STACK_TOP)) {
     mStack.push(NULL);
@@ -95,9 +98,10 @@ tBool cDataTableReadStack::Push(const achar *aaszName)
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableReadStack::PushFail(const achar *aaszName)
+tBool cDataTableReadStack::PushFail(const achar* aaszName)
 {
-  if (!niIsOK(STACK_TOP)) return eFalse;
+  if (!niIsOK(STACK_TOP))
+    return eFalse;
   Ptr<iDataTable> dt = STACK_TOP->GetChild(aaszName);
   if (!dt.IsOK()) {
     return eFalse;
@@ -107,7 +111,9 @@ tBool cDataTableReadStack::PushFail(const achar *aaszName)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cDataTableReadStack::PushEx(const achar* aaszName, const achar* aaszProp, const achar* aaszVal)
+tBool __stdcall cDataTableReadStack::PushEx(const achar* aaszName,
+                                            const achar* aaszProp,
+                                            const achar* aaszVal)
 {
   if (!niIsOK(STACK_TOP)) {
     mStack.push(NULL);
@@ -116,7 +122,9 @@ tBool __stdcall cDataTableReadStack::PushEx(const achar* aaszName, const achar* 
 
   for (tU32 i = 0; i < STACK_TOP->GetNumChildren(); ++i) {
     iDataTable* pDT = STACK_TOP->GetChildFromIndex(i);
-    if (ni::StrEq(pDT->GetName(),aaszName) && ni::StrEq(pDT->GetString(aaszProp).Chars(),aaszVal)) {
+    if (ni::StrEq(pDT->GetName(), aaszName) &&
+        ni::StrEq(pDT->GetString(aaszProp).Chars(), aaszVal))
+    {
       mStack.push(pDT);
       return eTrue;
     }
@@ -127,7 +135,9 @@ tBool __stdcall cDataTableReadStack::PushEx(const achar* aaszName, const achar* 
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cDataTableReadStack::PushFailEx(const achar* aaszName, const achar* aaszProp, const achar* aaszVal)
+tBool __stdcall cDataTableReadStack::PushFailEx(const achar* aaszName,
+                                                const achar* aaszProp,
+                                                const achar* aaszVal)
 {
   if (!niIsOK(STACK_TOP)) {
     return eFalse;
@@ -135,7 +145,9 @@ tBool __stdcall cDataTableReadStack::PushFailEx(const achar* aaszName, const ach
 
   for (tU32 i = 0; i < STACK_TOP->GetNumChildren(); ++i) {
     iDataTable* pDT = STACK_TOP->GetChildFromIndex(i);
-    if (ni::StrEq(pDT->GetName(),aaszName) && ni::StrEq(pDT->GetString(aaszProp).Chars(),aaszVal)) {
+    if (ni::StrEq(pDT->GetName(), aaszName) &&
+        ni::StrEq(pDT->GetString(aaszProp).Chars(), aaszVal))
+    {
       mStack.push(pDT);
       return eTrue;
     }
@@ -154,24 +166,28 @@ tBool cDataTableReadStack::Pop()
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableReadStack::RemoveProperty(const achar *aaszName)
+tBool cDataTableReadStack::RemoveProperty(const achar* aaszName)
 {
-  if (!niIsOK(STACK_TOP)) return eFalse;
+  if (!niIsOK(STACK_TOP))
+    return eFalse;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
-  if (nIndex == eInvalidHandle) return eFalse;
+  if (nIndex == eInvalidHandle)
+    return eFalse;
   return STACK_TOP->RemovePropertyFromIndex(nIndex);
 }
 
 ///////////////////////////////////////////////
-cString cDataTableReadStack::GetString(const achar *aaszName) const
+cString cDataTableReadStack::GetString(const achar* aaszName) const
 {
-  return GetStringDefault(aaszName,AZEROSTR);
+  return GetStringDefault(aaszName, AZEROSTR);
 }
 
 ///////////////////////////////////////////////
-cString cDataTableReadStack::GetStringDefault(const achar *aaszName, const achar *v) const
+cString cDataTableReadStack::GetStringDefault(const achar* aaszName,
+                                              const achar* v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -180,15 +196,17 @@ cString cDataTableReadStack::GetStringDefault(const achar *aaszName, const achar
 }
 
 ///////////////////////////////////////////////
-tHStringPtr cDataTableReadStack::GetHString(const achar *aaszName) const
+tHStringPtr cDataTableReadStack::GetHString(const achar* aaszName) const
 {
-  return GetHStringDefault(aaszName,_H(AZEROSTR));
+  return GetHStringDefault(aaszName, _H(AZEROSTR));
 }
 
 ///////////////////////////////////////////////
-tHStringPtr cDataTableReadStack::GetHStringDefault(const achar *aaszName, iHString *v) const
+tHStringPtr cDataTableReadStack::GetHStringDefault(const achar* aaszName,
+                                                   iHString* v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -197,15 +215,16 @@ tHStringPtr cDataTableReadStack::GetHStringDefault(const achar *aaszName, iHStri
 }
 
 ///////////////////////////////////////////////
-tI64 cDataTableReadStack::GetInt(const achar *aaszName) const
+tI64 cDataTableReadStack::GetInt(const achar* aaszName) const
 {
-  return GetIntDefault(aaszName,0);
+  return GetIntDefault(aaszName, 0);
 }
 
 ///////////////////////////////////////////////
-tI64 cDataTableReadStack::GetIntDefault(const achar *aaszName, tI64 v) const
+tI64 cDataTableReadStack::GetIntDefault(const achar* aaszName, tI64 v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -214,15 +233,16 @@ tI64 cDataTableReadStack::GetIntDefault(const achar *aaszName, tI64 v) const
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableReadStack::GetBool(const achar *aaszName) const
+tBool cDataTableReadStack::GetBool(const achar* aaszName) const
 {
-  return GetBoolDefault(aaszName,eFalse);
+  return GetBoolDefault(aaszName, eFalse);
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableReadStack::GetBoolDefault(const achar *aaszName, tBool v) const
+tBool cDataTableReadStack::GetBoolDefault(const achar* aaszName, tBool v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -231,15 +251,16 @@ tBool cDataTableReadStack::GetBoolDefault(const achar *aaszName, tBool v) const
 }
 
 ///////////////////////////////////////////////
-tF64 cDataTableReadStack::GetFloat(const achar *aaszName) const
+tF64 cDataTableReadStack::GetFloat(const achar* aaszName) const
 {
-  return GetFloatDefault(aaszName,0.0f);
+  return GetFloatDefault(aaszName, 0.0f);
 }
 
 ///////////////////////////////////////////////
-tF64 cDataTableReadStack::GetFloatDefault(const achar *aaszName, tF64 v) const
+tF64 cDataTableReadStack::GetFloatDefault(const achar* aaszName, tF64 v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -248,15 +269,17 @@ tF64 cDataTableReadStack::GetFloatDefault(const achar *aaszName, tF64 v) const
 }
 
 ///////////////////////////////////////////////
-sVec2f cDataTableReadStack::GetVec2(const achar *aaszName) const
+sVec2f cDataTableReadStack::GetVec2(const achar* aaszName) const
 {
-  return GetVec2Default(aaszName,sVec2f::Zero());
+  return GetVec2Default(aaszName, sVec2f::Zero());
 }
 
 ///////////////////////////////////////////////
-sVec2f cDataTableReadStack::GetVec2Default(const achar *aaszName, const sVec2f &v) const
+sVec2f cDataTableReadStack::GetVec2Default(const achar* aaszName,
+                                           const sVec2f& v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -265,15 +288,17 @@ sVec2f cDataTableReadStack::GetVec2Default(const achar *aaszName, const sVec2f &
 }
 
 ///////////////////////////////////////////////
-sVec3f cDataTableReadStack::GetVec3(const achar *aaszName) const
+sVec3f cDataTableReadStack::GetVec3(const achar* aaszName) const
 {
-  return GetVec3Default(aaszName,sVec3f::Zero());
+  return GetVec3Default(aaszName, sVec3f::Zero());
 }
 
 ///////////////////////////////////////////////
-sVec3f cDataTableReadStack::GetVec3Default(const achar *aaszName, const sVec3f &v) const
+sVec3f cDataTableReadStack::GetVec3Default(const achar* aaszName,
+                                           const sVec3f& v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -282,15 +307,17 @@ sVec3f cDataTableReadStack::GetVec3Default(const achar *aaszName, const sVec3f &
 }
 
 ///////////////////////////////////////////////
-sVec4f cDataTableReadStack::GetVec4(const achar *aaszName) const
+sVec4f cDataTableReadStack::GetVec4(const achar* aaszName) const
 {
-  return GetVec4Default(aaszName,sVec4f::Zero());
+  return GetVec4Default(aaszName, sVec4f::Zero());
 }
 
 ///////////////////////////////////////////////
-sVec4f cDataTableReadStack::GetVec4Default(const achar *aaszName, const sVec4f &v) const
+sVec4f cDataTableReadStack::GetVec4Default(const achar* aaszName,
+                                           const sVec4f& v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -299,27 +326,29 @@ sVec4f cDataTableReadStack::GetVec4Default(const achar *aaszName, const sVec4f &
 }
 
 ///////////////////////////////////////////////
-sVec3f cDataTableReadStack::GetCol3(const achar *aaszName) const
+sVec3f cDataTableReadStack::GetCol3(const achar* aaszName) const
 {
-  return GetVec3Default(aaszName,sVec3f::One());
+  return GetVec3Default(aaszName, sVec3f::One());
 }
 
 ///////////////////////////////////////////////
-sVec4f cDataTableReadStack::GetCol4(const achar *aaszName) const
+sVec4f cDataTableReadStack::GetCol4(const achar* aaszName) const
 {
-  return GetVec4Default(aaszName,sVec4f::One());
+  return GetVec4Default(aaszName, sVec4f::One());
 }
 
 ///////////////////////////////////////////////
-sMatrixf cDataTableReadStack::GetMatrix(const achar *aaszName) const
+sMatrixf cDataTableReadStack::GetMatrix(const achar* aaszName) const
 {
-  return GetMatrixDefault(aaszName,sMatrixf::Identity());
+  return GetMatrixDefault(aaszName, sMatrixf::Identity());
 }
 
 ///////////////////////////////////////////////
-sMatrixf cDataTableReadStack::GetMatrixDefault(const achar *aaszName, const sMatrixf &v) const
+sMatrixf cDataTableReadStack::GetMatrixDefault(const achar* aaszName,
+                                               const sMatrixf& v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -328,15 +357,17 @@ sMatrixf cDataTableReadStack::GetMatrixDefault(const achar *aaszName, const sMat
 }
 
 ///////////////////////////////////////////////
-iUnknown * cDataTableReadStack::GetIUnknown(const achar *aaszName) const
+iUnknown* cDataTableReadStack::GetIUnknown(const achar* aaszName) const
 {
-  return GetIUnknownDefault(aaszName,NULL);
+  return GetIUnknownDefault(aaszName, NULL);
 }
 
 ///////////////////////////////////////////////
-iUnknown * cDataTableReadStack::GetIUnknownDefault(const achar *aaszName, iHString *v) const
+iUnknown* cDataTableReadStack::GetIUnknownDefault(const achar* aaszName,
+                                                  iHString* v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
@@ -345,18 +376,24 @@ iUnknown * cDataTableReadStack::GetIUnknownDefault(const achar *aaszName, iHStri
 }
 
 ///////////////////////////////////////////////
-tU32 cDataTableReadStack::GetEnum(const achar *aaszName, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) const
+tU32 cDataTableReadStack::GetEnum(const achar* aaszName,
+                                  const sEnumDef* apEnumDef,
+                                  tEnumToStringFlags aFlags) const
 {
-  return GetEnumDefault(aaszName,apEnumDef,aFlags,0);
+  return GetEnumDefault(aaszName, apEnumDef, aFlags, 0);
 }
 
 ///////////////////////////////////////////////
-tU32 cDataTableReadStack::GetEnumDefault(const achar *aaszName, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 v) const
+tU32 cDataTableReadStack::GetEnumDefault(const achar* aaszName,
+                                         const sEnumDef* apEnumDef,
+                                         tEnumToStringFlags aFlags,
+                                         tU32 v) const
 {
-  if (!niIsOK(STACK_TOP)) return v;
+  if (!niIsOK(STACK_TOP))
+    return v;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
   if (nIndex == eInvalidHandle) {
     return v;
   }
-  return STACK_TOP->GetEnumFromIndex(nIndex,apEnumDef,aFlags);
+  return STACK_TOP->GetEnumFromIndex(nIndex, apEnumDef, aFlags);
 }

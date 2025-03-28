@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 #include "Types.h"
 #if niMinFeatures(15)
-#include "IToString.h"
+  #include "IToString.h"
 
 namespace ni {
 
@@ -20,8 +20,7 @@ static const tU32 knCryptoKDFCryptMaxLen = 128;
 static const tU32 knCryptoKDFSaltMaxLen = 128;
 
 //! Crypto random number generator.
-struct iCryptoRand : public iUnknown
-{
+struct iCryptoRand : public iUnknown {
   niDeclareInterfaceUUID(iCryptoRand,0x3215a36e,0x7a27,0x4cd2,0x99,0xe3,0xfe,0x95,0x5f,0x94,0xea,0x3a);
 
   virtual void __stdcall SetEntropyLength(tSize anEntropyLen) = 0;
@@ -36,13 +35,14 @@ struct iCryptoRand : public iUnknown
 
   virtual tSize __stdcall RandFile(iFile* apFile, tSize anOutLen) = 0;
   virtual tSize __stdcall RandRaw(tPtr apOut, tSize anOutLen) = 0;
-  virtual tI64  __stdcall RandInt() = 0;
-  virtual tF64  __stdcall RandFloat() = 0;
+  virtual tI64 __stdcall RandInt() = 0;
+  virtual tF64 __stdcall RandFloat() = 0;
   virtual tUUID __stdcall RandUUID() = 0;
 };
 
 niExportFunc(iCryptoRand*) GetCryptoRand();
-niExportFunc(ni::iUnknown*) New_niLang_CryptoRand(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niLang_CryptoRand(const ni::Var&,
+                                                  const ni::Var&);
 
 //! Generates a blowfish salt for CryptoKDFCrypt.
 //! \param apRand is the random number generator that will be used to generate the salt data.
@@ -61,7 +61,8 @@ niExportFunc(ni::iUnknown*) New_niLang_CryptoRand(const ni::Var&,const ni::Var&)
 //!         - 7 rounds, 57 hash/s,  121yrs for [a-z], 123457yrs for [A-Za-z0-9]
 //!         - 6 rounds, 112 hash/s,  62yrs for [a-z],  62831yrs for [A-Za-z0-9]
 //!         - 5 rounds, 211 hash/s,  33yrs for [a-z],  33351yrs for [A-Za-z0-9]
-niExportFunc(achar*) CryptoKDFGenSaltBlowfish(iCryptoRand* apRand, tU32 aRounds, achar* aaszOutput);
+niExportFunc(achar*) CryptoKDFGenSaltBlowfish(iCryptoRand* apRand, tU32 aRounds,
+                                              achar* aaszOutput);
 
 //! Calculates a bcrypt-style hash of password. When storing a new password,
 //! you need to use CryptKDFGenSalt*() to generate a new salt value. To check a
@@ -72,24 +73,36 @@ niExportFunc(achar*) CryptoKDFGenSaltBlowfish(iCryptoRand* apRand, tU32 aRounds,
 //! \param aaszOutput is the where the encrypted result will be output, should be a buffer of knCryptoKDFCryptMaxLen bytes.
 //! \return aaszOutput if successful else NULL.
 //! \remark This method is designed to mirror exactly postgres's crypt(aKey, aSalt) function.
-niExportFunc(achar*) CryptoKDFCrypt(const achar* aaszKey, const achar* aaszSalt, achar* aaszOutput);
+niExportFunc(achar*) CryptoKDFCrypt(const achar* aaszKey, const achar* aaszSalt,
+                                    achar* aaszOutput);
 
 //! Verify a RSA Signature. The payload's digest is computed as SHA256 and then RSA PCKS1 is used
 //! to verify that the signature is valid.
-niExportFunc(tBool) CryptoSigVerify(const char* signatureHex, const char* publicKeyPEM, const char* payload);
+niExportFunc(tBool) CryptoSigVerify(const char* signatureHex,
+                                    const char* publicKeyPEM,
+                                    const char* payload);
 
 // Generate a keyed hash value using the HMAC method.
-niExportFunc(ni::iFile*) CryptoHmacSignature(const char* aAlgo, ni::iFile* apOutput, ni::iFile* apPayload, ni::tSize aPayloadSize, const char* aSecret, ni::eRawToStringEncoding aSecretFormat);
+niExportFunc(ni::iFile*) CryptoHmacSignature(
+  const char* aAlgo, ni::iFile* apOutput, ni::iFile* apPayload,
+  ni::tSize aPayloadSize, const char* aSecret,
+  ni::eRawToStringEncoding aSecretFormat);
 
 struct iCrypto : public iUnknown {
   niDeclareInterfaceUUID(iCrypto,0xe3352941,0xf1e7,0x4e62,0x99,0x7d,0x4e,0xbb,0xf7,0xbd,0x47,0x7e);
 
   //! Compute the hash of the specified string. Does not include the end zero.
-  virtual cString __stdcall Digest(const achar* aaszData, const achar* aType, eRawToStringEncoding aEncoding = eRawToStringEncoding_Hex) = 0;
+  virtual cString __stdcall Digest(
+    const achar* aaszData, const achar* aType,
+    eRawToStringEncoding aEncoding = eRawToStringEncoding_Hex) = 0;
   //! Compute the hash of the specified data.
-  virtual cString __stdcall DigestRaw(const tPtr apData, tSize anSize, const achar* aType, eRawToStringEncoding aEncoding) = 0;
+  virtual cString __stdcall DigestRaw(const tPtr apData, tSize anSize,
+                                      const achar* aType,
+                                      eRawToStringEncoding aEncoding) = 0;
   //! Compute the hash of the specified data read from the specified file.
-  virtual cString __stdcall DigestFile(iFile* apFile, tSize anSize, const achar* aType, eRawToStringEncoding aEncoding) = 0;
+  virtual cString __stdcall DigestFile(iFile* apFile, tSize anSize,
+                                       const achar* aType,
+                                       eRawToStringEncoding aEncoding) = 0;
 
   //! Create a new random number generator.
   virtual iCryptoRand* __stdcall CreateRand() = 0;
@@ -99,23 +112,28 @@ struct iCrypto : public iUnknown {
 
   //! Generate a salt for KDFCrypt. \see CryptoKDFGenSaltBlowfish
   //! \remark If apRand is NULL the default random number generator is used.
-  virtual cString __stdcall KDFGenSaltBlowfish(iCryptoRand* apRand, tU32 aRounds) = 0;
+  virtual cString __stdcall KDFGenSaltBlowfish(iCryptoRand* apRand,
+                                               tU32 aRounds) = 0;
   //! Calculates a crypt(3)-style hash of password. \see CryptoKDFCrypt
   virtual cString __stdcall KDFCrypt(const achar* aKey, const achar* aSalt) = 0;
 
   //! Verify a RSA signature for a specified payload.
-  virtual tBool __stdcall SigVerify(const achar* signatureHex, const achar* publicKeyPEM, const achar* payload) = 0;
+  virtual tBool __stdcall SigVerify(const achar* signatureHex,
+                                    const achar* publicKeyPEM,
+                                    const achar* payload) = 0;
 
   //! Generate a keyed hash value using the HMAC method.
-  virtual ni::iFile* __stdcall HmacSignature(const achar* aAlgo, ni::iFile* apOutput, ni::iFile* apPayload, ni::tSize aPayloadSize, const achar* aSecret, ni::eRawToStringEncoding aSecretFormat) = 0;
+  virtual ni::iFile* __stdcall HmacSignature(
+    const achar* aAlgo, ni::iFile* apOutput, ni::iFile* apPayload,
+    ni::tSize aPayloadSize, const achar* aSecret,
+    ni::eRawToStringEncoding aSecretFormat) = 0;
 };
 
 niExportFunc(iCrypto*) GetCrypto();
-niExportFunc(ni::iUnknown*) New_niLang_Crypto(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niLang_Crypto(const ni::Var&, const ni::Var&);
 
 //! Secure hash interface.
-struct iCryptoHash : public iUnknown
-{
+struct iCryptoHash : public iUnknown {
   niDeclareInterfaceUUID(iCryptoHash,0xa299806d,0x929e,0x40e0,0xb6,0xb5,0xe8,0xaf,0x58,0x02,0x50,0xaf);
 
   //! Get the hash type.
@@ -132,7 +150,8 @@ struct iCryptoHash : public iUnknown
   //! Adds data to the hash calculation, from the current file position for size bytes.
   virtual tBool __stdcall Update(iFile* apFile, tI64 aSize) = 0;
   //! Adds data to the hash calculation, specifing a data range.
-  virtual tBool __stdcall UpdateBlock(iFile* apFile, tI64 aStart, tI64 aSize) = 0;
+  virtual tBool __stdcall UpdateBlock(iFile* apFile, tI64 aStart,
+                                      tI64 aSize) = 0;
   //! Adds raw data to the hash calculation.
   //! {NoAutomation}
   virtual tBool __stdcall UpdateRaw(tPtr apData, tSize aSize) = 0;
@@ -153,9 +172,10 @@ struct iCryptoHash : public iUnknown
 };
 
 /**@}*/
-}
+} // namespace ni
 
-niExportFunc(ni::iUnknown*) New_niLang_CryptoHash(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niLang_CryptoHash(const ni::Var&,
+                                                  const ni::Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // #if niMinFeatures(15)

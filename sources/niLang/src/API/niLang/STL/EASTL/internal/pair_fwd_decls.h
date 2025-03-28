@@ -7,10 +7,9 @@
 
 #include "config.h"
 
-namespace eastl
-{
-	template <typename T1, typename T2>
-	struct pair;
+namespace eastl {
+template <typename T1, typename T2>
+struct pair;
 }
 
 #endif // EASTL_PAIR_FWD_DECLS_H

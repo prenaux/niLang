@@ -7,16 +7,17 @@ namespace {
 struct FAccurateSleep {};
 
 struct sSleepData {
-  ni::tU32 sampleSize = 0; // how many times we tried to sleep
-  ni::tF64 target  = 0; // how much we aimed to sleep for
-  ni::tF64 meanerr = 0; // how much were we off on average
-  ni::tF64 stddev  = 0; // how big was the variance between calls
-  ni::tF64 minerr  = +INFINITY; // minimum error we had
-  ni::tF64 maxerr  = -INFINITY; // maximum error we had
+  ni::tU32 sampleSize = 0;     // how many times we tried to sleep
+  ni::tF64 target = 0;         // how much we aimed to sleep for
+  ni::tF64 meanerr = 0;        // how much were we off on average
+  ni::tF64 stddev = 0;         // how big was the variance between calls
+  ni::tF64 minerr = +INFINITY; // minimum error we had
+  ni::tF64 maxerr = -INFINITY; // maximum error we had
 };
 
-ni::iDataTable* ToDataTable(ni::iDataTable* apDT, const sSleepData& aData) {
-  niCheckIsOK(apDT,NULL);
+ni::iDataTable* ToDataTable(ni::iDataTable* apDT, const sSleepData& aData)
+{
+  niCheckIsOK(apDT, NULL);
   apDT->SetInt("sampleSize", aData.sampleSize);
   apDT->SetFloat("target", aData.target);
   apDT->SetFloat("meanerr", aData.meanerr);
@@ -27,8 +28,7 @@ ni::iDataTable* ToDataTable(ni::iDataTable* apDT, const sSleepData& aData) {
 }
 
 sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
-                            const ni::tF64 aSecs,
-                            const ni::tU32 aRuns)
+                            const ni::tF64 aSecs, const ni::tU32 aRuns)
 {
   sSleepData data;
   aSleep(aSecs); // do one cold run
@@ -42,7 +42,7 @@ sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
 
     ni::tF64 delta = elapsed - mean;
     mean += delta / i;
-    m2   += delta * (elapsed - mean);
+    m2 += delta * (elapsed - mean);
 
     const ni::tF64 error = elapsed - aSecs;
     data.maxerr = fmax(data.maxerr, error);
@@ -58,16 +58,15 @@ sSleepData _MeasureAccuracy(void (*aSleep)(ni::tF64 aSecs),
   return data;
 }
 
-TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
+TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse)
+{
   AUTO_WARNING_MODE();
 
-  sSleepData data = _MeasureAccuracy(ni::SleepSecsCoarse, 1.0/60.0, 60);
+  sSleepData data = _MeasureAccuracy(ni::SleepSecsCoarse, 1.0 / 60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-  dt->SetString("functionName","SleepSecsCoarse");
-  niDebugFmt(("... SleepOs: %s",
-              ni::DataTableToXML(
-                ToDataTable(dt,data),
-                ni::eFalse)));
+  dt->SetString("functionName", "SleepSecsCoarse");
+  niDebugFmt(
+    ("... SleepOs: %s", ni::DataTableToXML(ToDataTable(dt, data), ni::eFalse)));
 #ifdef niWindows
   // expect 20ms error max
   CHECK_LE(data.meanerr, 20e-3);
@@ -77,16 +76,15 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsCoarse) {
 #endif
 }
 
-TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
+TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin)
+{
   AUTO_WARNING_MODE();
 
-  sSleepData data = _MeasureAccuracy(ni::SleepSecsSpin, 1.0/60.0, 60);
+  sSleepData data = _MeasureAccuracy(ni::SleepSecsSpin, 1.0 / 60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-  dt->SetString("functionName","SleepSecsSpin");
+  dt->SetString("functionName", "SleepSecsSpin");
   niDebugFmt(("... SleepSpin: %s",
-              ni::DataTableToXML(
-                ToDataTable(dt,data),
-                ni::eFalse)));
+              ni::DataTableToXML(ToDataTable(dt, data), ni::eFalse)));
 #ifdef niWindows
   // expect 200us error max
   CHECK_LE(data.meanerr, 2e-4);
@@ -96,16 +94,15 @@ TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecsSpin) {
 #endif
 }
 
-TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs) {
+TEST_FIXTURE(FAccurateSleep, MeasureAccuracy_SleepSecs)
+{
   AUTO_WARNING_MODE();
 
-  sSleepData data = _MeasureAccuracy(ni::SleepSecs, 1.0/60.0, 60);
+  sSleepData data = _MeasureAccuracy(ni::SleepSecs, 1.0 / 60.0, 60);
   ni::Ptr<ni::iDataTable> dt = ni::CreateDataTable("sSleepData");
-  dt->SetString("functionName","SleepSecs (Precise)");
+  dt->SetString("functionName", "SleepSecs (Precise)");
   niDebugFmt(("... SleepPrecise: %s",
-              ni::DataTableToXML(
-                ToDataTable(dt,data),
-                ni::eFalse)));
+              ni::DataTableToXML(ToDataTable(dt, data), ni::eFalse)));
   // expect 20us error max
   CHECK_LE(data.meanerr, 2e-5);
 }

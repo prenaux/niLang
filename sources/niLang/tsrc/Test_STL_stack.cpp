@@ -5,7 +5,8 @@
 
 struct ASTL_stack {};
 
-TEST_FIXTURE(ASTL_stack,push) {
+TEST_FIXTURE(ASTL_stack, push)
+{
   astl::stack<ni::tInt> q;
   q.push(123);
   CHECK_EQUAL(q.size(), 1);

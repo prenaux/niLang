@@ -15,47 +15,49 @@ namespace ni {
  */
 
 //! UUID structure
-struct sUUID
-{
+struct sUUID {
   union {
-    tUUID    nUUID;
-    ni::tU8  nData[knUUIDSize];
+    tUUID nUUID;
+    ni::tU8 nData[knUUIDSize];
     struct {
       tU32 nData1;
       tU16 nData2;
       tU16 nData3;
-      tU8  nData4[8];
+      tU8 nData4[8];
     };
     struct {
       tU64 nDataHi;
       tU64 nDataLo;
     };
     struct {
-      tU32  nTimeLow;
-      tU16  nTimeMid;
-      tU16  nTimeHiAndVersion;
-      tU8   nClockReserved;
-      tU8   nClockLow;
-      tU8     nNodes[6];
+      tU32 nTimeLow;
+      tU16 nTimeMid;
+      tU16 nTimeHiAndVersion;
+      tU8 nClockReserved;
+      tU8 nClockLow;
+      tU8 nNodes[6];
     };
   };
 
-  sUUID() {
+  sUUID()
+  {
     niCAssert(sizeof(*this) == sizeof(tUUID));
     Reset();
   }
 
-  sUUID(const sUUID& aUUID) {
+  sUUID(const sUUID& aUUID)
+  {
     Copy(aUUID);
   }
 
-  sUUID(const tUUID& aUUID) {
+  sUUID(const tUUID& aUUID)
+  {
     nUUID = aUUID;
   }
 
-  sUUID(ni::tU32  anData1, ni::tU16 anData2, ni::tU16 anData3,
-        ni::tU8 anData4, ni::tU8 anData5, ni::tU8 anData6, ni::tU8 anData7,
-        ni::tU8 anData8, ni::tU8 anData9, ni::tU8 anData10, ni::tU8 anData11)
+  sUUID(ni::tU32 anData1, ni::tU16 anData2, ni::tU16 anData3, ni::tU8 anData4,
+        ni::tU8 anData5, ni::tU8 anData6, ni::tU8 anData7, ni::tU8 anData8,
+        ni::tU8 anData9, ni::tU8 anData10, ni::tU8 anData11)
   {
     nData1 = anData1;
     nData2 = anData2;
@@ -70,55 +72,69 @@ struct sUUID
     nData4[7] = anData11;
   }
 
-  explicit sUUID(const achar* aaszUUID) {
+  explicit sUUID(const achar* aaszUUID)
+  {
     FromString(aaszUUID);
   }
 
-  void __stdcall Reset() {
+  void __stdcall Reset()
+  {
     nUUID = kuuidZero;
   }
 
-  void __stdcall Copy(const sUUID& aRight) {
+  void __stdcall Copy(const sUUID& aRight)
+  {
     nUUID = aRight.nUUID;
   }
 
-  sUUID& __stdcall operator = (const sUUID& aRight) {
+  sUUID& __stdcall operator=(const sUUID& aRight)
+  {
     Copy(aRight);
     return *this;
   }
 
   //! tUUID cast operator.
-  operator const tUUID& () const {
+  operator const tUUID&() const
+  {
     return nUUID;
   }
 
-  ni::tI32 __stdcall Compare(const tUUID& aRight) const {
-    return UUIDCmp(nUUID,aRight);
+  ni::tI32 __stdcall Compare(const tUUID& aRight) const
+  {
+    return UUIDCmp(nUUID, aRight);
   }
 
-  ni::tBool __stdcall operator == (const tUUID& aRight) const {
-    return UUIDEq(nUUID,aRight);
+  ni::tBool __stdcall operator==(const tUUID& aRight) const
+  {
+    return UUIDEq(nUUID, aRight);
   }
-  ni::tBool __stdcall operator != (const tUUID& aRight) const {
-    return !UUIDEq(nUUID,aRight);
+  ni::tBool __stdcall operator!=(const tUUID& aRight) const
+  {
+    return !UUIDEq(nUUID, aRight);
   }
-  ni::tBool __stdcall operator > (const tUUID& aRight) const {
+  ni::tBool __stdcall operator>(const tUUID& aRight) const
+  {
     return Compare(aRight) > 0;
   }
-  ni::tBool __stdcall operator < (const tUUID& aRight) {
+  ni::tBool __stdcall operator<(const tUUID& aRight)
+  {
     return Compare(aRight) < 0;
   }
-  ni::tBool __stdcall operator >= (const tUUID& aRight) {
+  ni::tBool __stdcall operator>=(const tUUID& aRight)
+  {
     return Compare(aRight) >= 0;
   }
-  ni::tBool __stdcall operator <= (const tUUID& aRight) {
+  ni::tBool __stdcall operator<=(const tUUID& aRight)
+  {
     return Compare(aRight) <= 0;
   }
 
-  void __stdcall FromString(const achar* aaszUUID) {
-    nUUID = cString::_ToUUID(aaszUUID,ni::StrLen(aaszUUID));
+  void __stdcall FromString(const achar* aaszUUID)
+  {
+    nUUID = cString::_ToUUID(aaszUUID, ni::StrLen(aaszUUID));
   }
-  ni::cString __stdcall ToString() const {
+  ni::cString __stdcall ToString() const
+  {
     return ni::cString(nUUID);
   }
 };
@@ -126,5 +142,5 @@ struct sUUID
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __UUID_83193888_H__

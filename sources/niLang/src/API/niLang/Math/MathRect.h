@@ -20,8 +20,7 @@ namespace ni {
 
 //! Rect template class.
 template <typename T>
-struct sRect : public sVec4<T>
-{
+struct sRect : public sVec4<T> {
   typedef T tElement;
 
   sRect();
@@ -36,27 +35,61 @@ struct sRect : public sVec4<T>
   inline void __stdcall Set(const sVec2<T>& aTopLeft, T aWidth, T aHeight);
 
   //! Set the rectangle corners.
-  inline void __stdcall SetCorners(const sVec2<T>& aTopLeft, const sVec2<T>& aBottomRight);
+  inline void __stdcall SetCorners(const sVec2<T>& aTopLeft,
+                                   const sVec2<T>& aBottomRight);
   //! Set a rectangle corner. Adapt the others accordingly.
-  inline void __stdcall SetCorner(eRectCorners aCorner, const sVec2<T>& aCornerPos);
+  inline void __stdcall SetCorner(eRectCorners aCorner,
+                                  const sVec2<T>& aCornerPos);
   //! Get a rectangle corner.
   inline sVec2<T> __stdcall GetCorner(eRectCorners aCorner) const;
   //! Set the Top Left corner.
-  inline void __stdcall SetTopLeft(const sVec2<T>& v) { this->x = v.x; this->y = v.y; }
+  inline void __stdcall SetTopLeft(const sVec2<T>& v)
+  {
+    this->x = v.x;
+    this->y = v.y;
+  }
   //! Get the Top Left corner.
-  inline sVec2<T> __stdcall GetTopLeft() const { sVec2<T> v = {this->x,this->y}; return v; }
+  inline sVec2<T> __stdcall GetTopLeft() const
+  {
+    sVec2<T> v = { this->x, this->y };
+    return v;
+  }
   //! Set the Top Right corner.
-  inline void __stdcall SetTopRight(const sVec2<T>& v) { this->z = v.x; this->y = v.y; }
+  inline void __stdcall SetTopRight(const sVec2<T>& v)
+  {
+    this->z = v.x;
+    this->y = v.y;
+  }
   //! Get the Top Right corner.
-  inline sVec2<T> __stdcall GetTopRight() const { sVec2<T> v = {this->z,this->y}; return v; }
+  inline sVec2<T> __stdcall GetTopRight() const
+  {
+    sVec2<T> v = { this->z, this->y };
+    return v;
+  }
   //! Set the Bottom Right corner.
-  inline void __stdcall SetBottomRight(const sVec2<T>& v) { this->z = v.x; this->w = v.y; }
+  inline void __stdcall SetBottomRight(const sVec2<T>& v)
+  {
+    this->z = v.x;
+    this->w = v.y;
+  }
   //! Get the Bottom Right corner.
-  inline sVec2<T> __stdcall GetBottomRight() const { sVec2<T> v = {this->z,this->w}; return v; }
+  inline sVec2<T> __stdcall GetBottomRight() const
+  {
+    sVec2<T> v = { this->z, this->w };
+    return v;
+  }
   //! Set the Bottom Left corner.
-  inline void __stdcall SetBottomLeft(const sVec2<T>& v) { this->x = v.x; this->w = v.y; }
+  inline void __stdcall SetBottomLeft(const sVec2<T>& v)
+  {
+    this->x = v.x;
+    this->w = v.y;
+  }
   //! Get the Bottom Left corner.
-  inline sVec2<T> __stdcall GetBottomLeft() const { sVec2<T> v = {this->x,this->w}; return v; }
+  inline sVec2<T> __stdcall GetBottomLeft() const
+  {
+    sVec2<T> v = { this->x, this->w };
+    return v;
+  }
 
   //! Set the Left edge.
   inline void __stdcall SetLeft(T aV);
@@ -96,7 +129,8 @@ struct sRect : public sVec4<T>
   //! Move the rectangle to the given position (absolute movement).
   //! \param aPos indicates where to move to.
   //! \param aCorner is indicates the anchor point.
-  inline void __stdcall MoveTo(const sVec2<T>& aPos, eRectCorners aCorner = eRectCorners_TopLeft);
+  inline void __stdcall MoveTo(const sVec2<T>& aPos,
+                               eRectCorners aCorner = eRectCorners_TopLeft);
 
   //! Inflate the size of the rectangle.
   //! \remark Negative number will "deflate" the rectangle.
@@ -121,89 +155,99 @@ struct sRect : public sVec4<T>
   inline sRect __stdcall ClipRect(const sRect<T>& aRect) const;
 
   //! Get the center of the a frame with the specified borders.
-  inline sRect __stdcall ComputeFrameCenter(T Left, T Right, T Top, T Bottom) const;
+  inline sRect __stdcall ComputeFrameCenter(T Left, T Right, T Top,
+                                            T Bottom) const;
 
   //! Get the center of the a frame with the specified borders.
-  inline sRect __stdcall ComputeFrameCenter(const sVec4<T>& aFrameBorder) const {
-    return ComputeFrameCenter(aFrameBorder.Left(),aFrameBorder.Right(),aFrameBorder.Top(),aFrameBorder.Bottom());
+  inline sRect __stdcall ComputeFrameCenter(const sVec4<T>& aFrameBorder) const
+  {
+    return ComputeFrameCenter(aFrameBorder.Left(), aFrameBorder.Right(),
+                              aFrameBorder.Top(), aFrameBorder.Bottom());
   }
 
   //! Get the size of the Left frame border.
-  inline T __stdcall GetFrameLeftBorder(const sRect<T>& aFrame) const {
-    return aFrame.Left()-this->Left();
+  inline T __stdcall GetFrameLeftBorder(const sRect<T>& aFrame) const
+  {
+    return aFrame.Left() - this->Left();
   }
   //! Get the size of the Right frame border.
-  inline T __stdcall GetFrameRightBorder(const sRect<T>& aFrame) const {
-    return this->Right()-aFrame.Right();
+  inline T __stdcall GetFrameRightBorder(const sRect<T>& aFrame) const
+  {
+    return this->Right() - aFrame.Right();
   }
   //! Get the size of the Top frame border.
-  inline T __stdcall GetFrameTopBorder(const sRect<T>& aFrame) const {
-    return aFrame.Top()-this->Top();
+  inline T __stdcall GetFrameTopBorder(const sRect<T>& aFrame) const
+  {
+    return aFrame.Top() - this->Top();
   }
   //! Get the size of the Bottom frame border.
-  inline T __stdcall GetFrameBottomBorder(const sRect<T>& aFrame) const {
-    return this->Bottom()-aFrame.Bottom();
+  inline T __stdcall GetFrameBottomBorder(const sRect<T>& aFrame) const
+  {
+    return this->Bottom() - aFrame.Bottom();
   }
   //! Return a vector that contains the border sizes.
-  inline sVec4<T> __stdcall GetFrameBorder(const sRect<T>& aFrame) const {
-    return Vec4<T>(GetFrameLeftBorder(aFrame),
-                   GetFrameTopBorder(aFrame),
-                   GetFrameRightBorder(aFrame),
-                   GetFrameBottomBorder(aFrame));
+  inline sVec4<T> __stdcall GetFrameBorder(const sRect<T>& aFrame) const
+  {
+    return Vec4<T>(GetFrameLeftBorder(aFrame), GetFrameTopBorder(aFrame),
+                   GetFrameRightBorder(aFrame), GetFrameBottomBorder(aFrame));
   }
 
   //! += operator, move the rectangle.
-  inline sRect& __stdcall operator += (const sVec2<T>& v);
+  inline sRect& __stdcall operator+=(const sVec2<T>& v);
   //! += operator, move the rectangle.
-  inline sRect __stdcall operator + (const sVec2<T>& v) const;
+  inline sRect __stdcall operator+(const sVec2<T>& v) const;
 
   //! -= operator, move the rectangle.
-  inline sRect& __stdcall operator -= (const sVec2<T>& v);
+  inline sRect& __stdcall operator-=(const sVec2<T>& v);
   //! -= operator, move the rectangle.
-  inline sRect __stdcall operator - (const sVec2<T>& v) const;
+  inline sRect __stdcall operator-(const sVec2<T>& v) const;
 
   //! = operator, move the rectangle to the specified position, Top Left is the anchor corner.
-  inline sRect& __stdcall operator = (const sVec2<T>& v);
+  inline sRect& __stdcall operator=(const sVec2<T>& v);
 
-  static inline const sRect& __stdcall Null() {
-    static sRect _v(0,0);
+  static inline const sRect& __stdcall Null()
+  {
+    static sRect _v(0, 0);
     return _v;
   }
 
-  inline sRect<tI32> __stdcall ToInt() const {
-    return sRect<tI32>((tI32)GetLeft(),(tI32)GetTop(),
-                       (tU32)GetWidth(),(tI32)GetHeight());
+  inline sRect<tI32> __stdcall ToInt() const
+  {
+    return sRect<tI32>((tI32)GetLeft(), (tI32)GetTop(), (tU32)GetWidth(),
+                       (tI32)GetHeight());
   }
-  inline sRect<tF32> __stdcall ToFloat() const {
-    return sRect<tF32>((tF32)GetLeft(),(tF32)GetTop(),
-                       (tF32)GetWidth(),(tF32)GetHeight());
+  inline sRect<tF32> __stdcall ToFloat() const
+  {
+    return sRect<tF32>((tF32)GetLeft(), (tF32)GetTop(), (tF32)GetWidth(),
+                       (tF32)GetHeight());
   }
 
-  sRect<T> FitInto(const sRect<T>& aDestRect, const tBool abCenter = ni::eTrue) const {
+  sRect<T> FitInto(const sRect<T>& aDestRect,
+                   const tBool abCenter = ni::eTrue) const
+  {
     sRect<T> rect = aDestRect;
-    const sVec2<T> imgSize = {
-      this->GetWidth(),
-      this->GetHeight()
-    };
+    const sVec2<T> imgSize = { this->GetWidth(), this->GetHeight() };
     sVec2<T> size = imgSize;
     const T rectRatio = ni::FDiv(rect.GetHeight(), rect.GetWidth());
-    const T imgRatio = ni::FDiv(size.y,size.x);
-    size *= (imgRatio < rectRatio) ?
-        (rect.GetWidth() / size.x) :
-        (rect.GetHeight() / size.y);
+    const T imgRatio = ni::FDiv(size.y, size.x);
+    size *= (imgRatio < rectRatio) ? (rect.GetWidth() / size.x)
+                                   : (rect.GetHeight() / size.y);
     T xcenter = 0, ycenter = 0;
     if (abCenter) {
       xcenter = ((rect.GetWidth() - size.x) * ((T)(0.5)));
       ycenter = ((rect.GetHeight() - size.y) * ((T)(0.5)));
     }
-    return sRect<T>(rect.Left()+xcenter,rect.Top()+ycenter,size.x,size.y);
+    return sRect<T>(rect.Left() + xcenter, rect.Top() + ycenter, size.x,
+                    size.y);
   }
 
-  const tBool IsNull() const {
+  const tBool IsNull() const
+  {
     return *this == sRect<T>::Null();
   }
 
-  void Add(const sVec2<T>& aTL, const sVec2<T>& aBR) {
+  void Add(const sVec2<T>& aTL, const sVec2<T>& aBR)
+  {
     if (this->IsNull()) {
       *this = sRect<T>(aTL, aBR);
     }
@@ -218,25 +262,29 @@ struct sRect : public sVec4<T>
     }
   }
 
-  void Add(const sRect<T>& aRight) {
+  void Add(const sRect<T>& aRight)
+  {
     this->Add(aRight.GetTopLeft(), aRight.GetBottomRight());
   }
 
-  void Scale(const tF32 aScale) {
+  void Scale(const tF32 aScale)
+  {
     this->x *= aScale;
     this->y *= aScale;
     this->z *= aScale;
     this->w *= aScale;
   }
 
-  void Scale(const sVec2<T>& aScale) {
+  void Scale(const sVec2<T>& aScale)
+  {
     this->x *= aScale.x;
     this->y *= aScale.y;
     this->z *= aScale.x;
     this->w *= aScale.y;
   }
 
-  void Scale(const sVec4<T>& aScale) {
+  void Scale(const sVec4<T>& aScale)
+  {
     this->x *= aScale.x;
     this->y *= aScale.y;
     this->z *= aScale.z;
@@ -249,34 +297,43 @@ typedef sRect<tI32> sRecti;
 //! Float Rect.
 typedef sRect<tF32> sRectf;
 
-static inline sRectf Rectf(tF32 x, tF32 y, tF32 w, tF32 h) {
-  return sRectf(x,y,w,h);
+static inline sRectf Rectf(tF32 x, tF32 y, tF32 w, tF32 h)
+{
+  return sRectf(x, y, w, h);
 }
-static inline sRectf Rectf(tF32 w = 0, tF32 h = 0) {
-  return sRectf(0,0,w,h);
+static inline sRectf Rectf(tF32 w = 0, tF32 h = 0)
+{
+  return sRectf(0, 0, w, h);
 }
-static inline sRectf Rectf(tF32 x, tF32 y, const sVec2f& aSize) {
-  return sRectf(x,y,aSize.x,aSize.y);
+static inline sRectf Rectf(tF32 x, tF32 y, const sVec2f& aSize)
+{
+  return sRectf(x, y, aSize.x, aSize.y);
 }
-static inline sRectf Rectf(const sVec2f& aPos, const sVec2f& aSize) {
-  return sRectf(aPos.x,aPos.y,aSize.x,aSize.y);
+static inline sRectf Rectf(const sVec2f& aPos, const sVec2f& aSize)
+{
+  return sRectf(aPos.x, aPos.y, aSize.x, aSize.y);
 }
 
-static inline sRecti Recti(tI32 x, tI32 y, tI32 w, tI32 h) {
-  return sRecti(x,y,w,h);
+static inline sRecti Recti(tI32 x, tI32 y, tI32 w, tI32 h)
+{
+  return sRecti(x, y, w, h);
 }
-static inline sRecti Recti(tI32 w = 0, tI32 h = 0) {
-  return sRecti(0,0,w,h);
+static inline sRecti Recti(tI32 w = 0, tI32 h = 0)
+{
+  return sRecti(0, 0, w, h);
 }
-static inline sRecti Recti(tI32 x, tI32 y, const sVec2i& aSize) {
-  return sRecti(x,y,aSize.x,aSize.y);
+static inline sRecti Recti(tI32 x, tI32 y, const sVec2i& aSize)
+{
+  return sRecti(x, y, aSize.x, aSize.y);
 }
-static inline sRecti Recti(const sVec2i& aPos, const sVec2i& aSize) {
-  return sRecti(aPos.x,aPos.y,aSize.x,aSize.y);
+static inline sRecti Recti(const sVec2i& aPos, const sVec2i& aSize)
+{
+  return sRecti(aPos.x, aPos.y, aSize.x, aSize.y);
 }
 
 template <typename T>
-static inline sRect<T> CenterRect(const sRect<T>& aRect, const sVec2<T>& aSize) {
+static inline sRect<T> CenterRect(const sRect<T>& aRect, const sVec2<T>& aSize)
+{
   sRect<T> r = sRect<T>::Null();
   r.SetSize(aSize);
   r.MoveTo(Vec2<T>((aRect.GetWidth() - r.GetWidth()) / 2,
@@ -292,13 +349,15 @@ static inline sRect<T> CenterRect(const sRect<T>& aRect, const sVec2<T>& aSize) 
 //----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T>::sRect() {
+template <typename T>
+inline sRect<T>::sRect()
+{
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-sRect<T>::sRect(const sVec4<T>& avVec) {
+template <typename T>
+sRect<T>::sRect(const sVec4<T>& avVec)
+{
   this->Left() = avVec.Left();
   this->Right() = avVec.Right();
   this->Top() = avVec.Top();
@@ -306,28 +365,28 @@ sRect<T>::sRect(const sVec4<T>& avVec) {
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline sRect<T>::sRect(const sVec2<T>& aTopLeft, const sVec2<T>& aBottomRight)
 {
   SetCorners(aTopLeft, aBottomRight);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline sRect<T>::sRect(T aLeft, T aTop, T aWidth, T aHeight)
 {
   Set(aLeft, aTop, aWidth, aHeight);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline sRect<T>::sRect(const sVec2<T>& aTopLeft, T aWidth, T aHeight)
 {
   Set(aTopLeft, aWidth, aHeight);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void sRect<T>::Set(const sVec2<T>& aTopLeft, T aWidth, T aHeight)
 {
   this->SetTopLeft(aTopLeft);
@@ -336,7 +395,7 @@ inline void sRect<T>::Set(const sVec2<T>& aTopLeft, T aWidth, T aHeight)
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void sRect<T>::Set(T aLeft, T aTop, T aWidth, T aHeight)
 {
   this->Left() = aLeft;
@@ -346,118 +405,134 @@ inline void sRect<T>::Set(T aLeft, T aTop, T aWidth, T aHeight)
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetCorners(const sVec2<T>& aTopLeft, const sVec2<T>& aBottomRight)
+template <typename T>
+inline void sRect<T>::SetCorners(const sVec2<T>& aTopLeft,
+                                 const sVec2<T>& aBottomRight)
 {
   this->SetTopLeft(aTopLeft);
   this->SetBottomRight(aBottomRight);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 void sRect<T>::SetCorner(eRectCorners aCorner, const sVec2<T>& aCornerPos)
 {
   switch (aCorner) {
-    case eRectCorners_TopLeft: this->SetTopLeft(aCornerPos); break;
-    case eRectCorners_TopRight: this->SetTopRight(aCornerPos); break;
-    case eRectCorners_BottomRight: this->SetBottomRight(aCornerPos); break;
-    case eRectCorners_BottomLeft: this->SetBottomLeft(aCornerPos); break;
-    default: break;
+  case eRectCorners_TopLeft: this->SetTopLeft(aCornerPos); break;
+  case eRectCorners_TopRight: this->SetTopRight(aCornerPos); break;
+  case eRectCorners_BottomRight: this->SetBottomRight(aCornerPos); break;
+  case eRectCorners_BottomLeft: this->SetBottomLeft(aCornerPos); break;
+  default: break;
   }
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 sVec2<T> sRect<T>::GetCorner(eRectCorners aCorner) const
 {
   switch (aCorner) {
-    case eRectCorners_TopLeft:   return this->GetTopLeft();
-    case eRectCorners_TopRight:  return this->GetTopRight();
-    case eRectCorners_BottomRight: return this->GetBottomRight();
-    case eRectCorners_BottomLeft:  return this->GetBottomLeft();
-    default: break;
+  case eRectCorners_TopLeft: return this->GetTopLeft();
+  case eRectCorners_TopRight: return this->GetTopRight();
+  case eRectCorners_BottomRight: return this->GetBottomRight();
+  case eRectCorners_BottomLeft: return this->GetBottomLeft();
+  default: break;
   }
-  return Vec2<T>(0,0);
+  return Vec2<T>(0, 0);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetLeft(T aV) {
+template <typename T>
+inline void sRect<T>::SetLeft(T aV)
+{
   this->Left() = aV;
 }
-template<typename T>
-inline T sRect<T>::GetLeft() const {
+template <typename T>
+inline T sRect<T>::GetLeft() const
+{
   return this->Left();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetRight(T aV) {
+template <typename T>
+inline void sRect<T>::SetRight(T aV)
+{
   this->Right() = aV;
 }
-template<typename T>
-inline T sRect<T>::GetRight() const {
+template <typename T>
+inline T sRect<T>::GetRight() const
+{
   return this->Right();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetTop(T aV) {
+template <typename T>
+inline void sRect<T>::SetTop(T aV)
+{
   this->Top() = aV;
 }
-template<typename T>
-inline T sRect<T>::GetTop() const {
+template <typename T>
+inline T sRect<T>::GetTop() const
+{
   return this->Top();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetBottom(T aV) {
+template <typename T>
+inline void sRect<T>::SetBottom(T aV)
+{
   this->Bottom() = aV;
 }
-template<typename T>
-inline T sRect<T>::GetBottom() const {
+template <typename T>
+inline T sRect<T>::GetBottom() const
+{
   return this->Bottom();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-void sRect<T>::SetWidth(T aWidth) {
+template <typename T>
+void sRect<T>::SetWidth(T aWidth)
+{
   this->Right() = this->Left() + aWidth;
 }
-template<typename T>
-T sRect<T>::GetWidth() const {
+template <typename T>
+T sRect<T>::GetWidth() const
+{
   return this->Right() - this->Left();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-void sRect<T>::SetHeight(T aHeight) {
+template <typename T>
+void sRect<T>::SetHeight(T aHeight)
+{
   this->Bottom() = this->Top() + aHeight;
 }
-template<typename T>
-T sRect<T>::GetHeight() const {
+template <typename T>
+T sRect<T>::GetHeight() const
+{
   return this->Bottom() - this->Top();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline void sRect<T>::SetSize(T aWidth, T aHeight) {
+template <typename T>
+inline void sRect<T>::SetSize(T aWidth, T aHeight)
+{
   SetWidth(aWidth);
   SetHeight(aHeight);
 }
-template<typename T>
-inline void sRect<T>::SetSize(const sVec2<T>& aSize) {
+template <typename T>
+inline void sRect<T>::SetSize(const sVec2<T>& aSize)
+{
   SetWidth(aSize.x);
   SetHeight(aSize.y);
 }
-template<typename T>
-inline sVec2<T> sRect<T>::GetSize() const {
-  return Vec2<T>(GetWidth(),GetHeight());
+template <typename T>
+inline sVec2<T> sRect<T>::GetSize() const
+{
+  return Vec2<T>(GetWidth(), GetHeight());
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void sRect<T>::Move(const sVec2<T>& aMoveOffset)
 {
   this->Left() += aMoveOffset.x;
@@ -467,7 +542,7 @@ inline void sRect<T>::Move(const sVec2<T>& aMoveOffset)
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void sRect<T>::MoveTo(const sVec2<T>& aPos, eRectCorners aCorner)
 {
   Normalize();
@@ -475,37 +550,36 @@ inline void sRect<T>::MoveTo(const sVec2<T>& aPos, eRectCorners aCorner)
   T height = GetHeight();
   SetCorner(aCorner, aPos);
   switch (aCorner) {
-    case eRectCorners_TopLeft: {
-      SetSize(width, height);
-      break;
-    }
-    case eRectCorners_TopRight: {
-      SetSize(-width, height);
-      break;
-    }
-    case eRectCorners_BottomRight: {
-      SetSize(-width, -height);
-      break;
-    }
-    case eRectCorners_BottomLeft: {
-      SetSize(width, -height);
-      break;
-    }
-    default:
-      break;
+  case eRectCorners_TopLeft: {
+    SetSize(width, height);
+    break;
+  }
+  case eRectCorners_TopRight: {
+    SetSize(-width, height);
+    break;
+  }
+  case eRectCorners_BottomRight: {
+    SetSize(-width, -height);
+    break;
+  }
+  case eRectCorners_BottomLeft: {
+    SetSize(width, -height);
+    break;
+  }
+  default: break;
   }
   Normalize();
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void __stdcall sRect<T>::Inflate(const sVec2<T>& aV)
 {
-  SetSize(GetWidth()+aV.x,GetHeight()+aV.y);
+  SetSize(GetWidth() + aV.x, GetHeight() + aV.y);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void sRect<T>::Normalize()
 {
   if (this->Left() > this->Right())
@@ -516,32 +590,37 @@ inline void sRect<T>::Normalize()
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void __stdcall sRect<T>::SetCenter(const sVec2<T>& avPos)
 {
-  MoveTo(Vec2<T>(avPos.x-(GetWidth()/2),avPos.y-(GetHeight()/2)));
+  MoveTo(Vec2<T>(avPos.x - (GetWidth() / 2), avPos.y - (GetHeight() / 2)));
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline sVec2<T> sRect<T>::GetCenter() const
 {
-  return Vec2<T>(this->Left()+(GetWidth()/2), this->Top()+(GetHeight()/2));
+  return Vec2<T>(this->Left() + (GetWidth() / 2),
+                 this->Top() + (GetHeight() / 2));
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline tBool sRect<T>::IntersectRect(const sRect<T>& aRect) const
 {
-  if (aRect.Right() < this->Left()) return eFalse;
-  if (aRect.Bottom() < this->Top()) return eFalse;
-  if (aRect.Left() > this->Right()) return eFalse;
-  if (aRect.Top() > this->Bottom())  return eFalse;
+  if (aRect.Right() < this->Left())
+    return eFalse;
+  if (aRect.Bottom() < this->Top())
+    return eFalse;
+  if (aRect.Left() > this->Right())
+    return eFalse;
+  if (aRect.Top() > this->Bottom())
+    return eFalse;
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline tBool sRect<T>::Intersect(const sVec2<T>& aPoint) const
 {
   if (aPoint.x >= this->Left() && aPoint.x < this->Right() &&
@@ -552,36 +631,41 @@ inline tBool sRect<T>::Intersect(const sVec2<T>& aPoint) const
 }
 
 ///////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline sRect<T> sRect<T>::ClipRect(const sRect<T>& aRect) const
 {
   sRect<T> ret;
-  ret.Left() = aRect.Left()<this->Left()?this->Left():
-      (aRect.Left()>this->Right())?this->Right():aRect.Left();
-  ret.Right()=aRect.Right()<this->Left()?this->Left():
-      (aRect.Right()>this->Right())?this->Right():aRect.Right();
-  ret.Top()=aRect.Top()<this->Top()?this->Top():
-      (aRect.Top()>this->Bottom())?this->Bottom():aRect.Top();
-  ret.Bottom()=aRect.Bottom()<this->Top()?this->Top():
-      (aRect.Bottom()>this->Bottom())?this->Bottom():aRect.Bottom();
+  ret.Left() = aRect.Left() < this->Left()      ? this->Left()
+               : (aRect.Left() > this->Right()) ? this->Right()
+                                                : aRect.Left();
+  ret.Right() = aRect.Right() < this->Left()      ? this->Left()
+                : (aRect.Right() > this->Right()) ? this->Right()
+                                                  : aRect.Right();
+  ret.Top() = aRect.Top() < this->Top()        ? this->Top()
+              : (aRect.Top() > this->Bottom()) ? this->Bottom()
+                                               : aRect.Top();
+  ret.Bottom() = aRect.Bottom() < this->Top()        ? this->Top()
+                 : (aRect.Bottom() > this->Bottom()) ? this->Bottom()
+                                                     : aRect.Bottom();
   return ret;
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T> __stdcall sRect<T>::ComputeFrameCenter(T aLeft, T aRight, T aTop, T aBottom) const
+template <typename T>
+inline sRect<T> __stdcall sRect<T>::ComputeFrameCenter(T aLeft, T aRight,
+                                                       T aTop, T aBottom) const
 {
   sRect<T> r;
-  r.Left() = this->Left()+aLeft;
-  r.Right() = this->Right()-aRight;
-  r.Top() = this->Top()+aTop;
-  r.Bottom() = this->Bottom()-aBottom;
+  r.Left() = this->Left() + aLeft;
+  r.Right() = this->Right() - aRight;
+  r.Top() = this->Top() + aTop;
+  r.Bottom() = this->Bottom() - aBottom;
   return r;
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T>& sRect<T>::operator += (const sVec2<T>& v)
+template <typename T>
+inline sRect<T>& sRect<T>::operator+=(const sVec2<T>& v)
 {
   this->Left() += v.x;
   this->Top() += v.y;
@@ -591,15 +675,15 @@ inline sRect<T>& sRect<T>::operator += (const sVec2<T>& v)
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T> sRect<T>::operator + (const sVec2<T>& v) const
+template <typename T>
+inline sRect<T> sRect<T>::operator+(const sVec2<T>& v) const
 {
-  return sRect<T>(this->GetTopLeft()+v, this->GetBottomRight()+v);
+  return sRect<T>(this->GetTopLeft() + v, this->GetBottomRight() + v);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T>& sRect<T>::operator -= (const sVec2<T>& v)
+template <typename T>
+inline sRect<T>& sRect<T>::operator-=(const sVec2<T>& v)
 {
   this->Left() -= v.x;
   this->Top() -= v.y;
@@ -609,15 +693,15 @@ inline sRect<T>& sRect<T>::operator -= (const sVec2<T>& v)
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T> sRect<T>::operator - (const sVec2<T>& v) const
+template <typename T>
+inline sRect<T> sRect<T>::operator-(const sVec2<T>& v) const
 {
-  return sRect<T>(this->GetTopLeft()-v, this->GetBottomRight()-v);
+  return sRect<T>(this->GetTopLeft() - v, this->GetBottomRight() - v);
 }
 
 ///////////////////////////////////////////////
-template<typename T>
-inline sRect<T>& sRect<T>::operator = (const sVec2<T>& v)
+template <typename T>
+inline sRect<T>& sRect<T>::operator=(const sVec2<T>& v)
 {
   MoveTo(v);
   return *this;
@@ -626,5 +710,5 @@ inline sRect<T>& sRect<T>::operator = (const sVec2<T>& v)
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __MATHRECTANGLE_26862902_H__

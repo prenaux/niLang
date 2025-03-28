@@ -2,43 +2,43 @@
 	<namespace name="ni">
 		<enum name="eDataTablePropertyType">
 			<comments desc="Data table property types. "/>
-			<value name="eDataTablePropertyType_Unknown" value="eType_Null ">
+			<value name="eDataTablePropertyType_Unknown" value="eType_Null">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_String" value="eType_String ">
+			<value name="eDataTablePropertyType_String" value="eType_String">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Int" value="eType_I64 ">
+			<value name="eDataTablePropertyType_Int" value="eType_I64">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Int32" value="eType_I32 ">
+			<value name="eDataTablePropertyType_Int32" value="eType_I32">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Int64" value="eType_I64 ">
+			<value name="eDataTablePropertyType_Int64" value="eType_I64">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Bool" value="eType_I8 ">
+			<value name="eDataTablePropertyType_Bool" value="eType_I8">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Float" value="eType_F64 ">
+			<value name="eDataTablePropertyType_Float" value="eType_F64">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Float32" value="eType_F32 ">
+			<value name="eDataTablePropertyType_Float32" value="eType_F32">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Float64" value="eType_F64 ">
+			<value name="eDataTablePropertyType_Float64" value="eType_F64">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Vec2" value="eType_Vec2f ">
+			<value name="eDataTablePropertyType_Vec2" value="eType_Vec2f">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Vec3" value="eType_Vec3f ">
+			<value name="eDataTablePropertyType_Vec3" value="eType_Vec3f">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Vec4" value="eType_Vec4f ">
+			<value name="eDataTablePropertyType_Vec4" value="eType_Vec4f">
 				<comments desc=""/>
 			</value>
-			<value name="eDataTablePropertyType_Matrix" value="eType_Matrixf ">
+			<value name="eDataTablePropertyType_Matrix" value="eType_Matrixf">
 				<comments desc=""/>
 			</value>
 			<value name="eDataTablePropertyType_IUnknown" value="eType_IUnknown|eTypeFlags_Pointer">
@@ -47,22 +47,22 @@
 		</enum>
 		<enum name="eDataTableCopyFlags">
 			<comments desc="Data table copy mode. "/>
-			<value name="eDataTableCopyFlags_Default" value="0 ">
+			<value name="eDataTableCopyFlags_Default" value="0">
 				<comments desc="No special flags, will overwrite properties, and wont be recursive. "/>
 			</value>
-			<value name="eDataTableCopyFlags_Skip" value="niBit ( 0 ) ">
+			<value name="eDataTableCopyFlags_Skip" value="niBit(0)">
 				<comments desc="If a property is already in the destination it&apos;ll be left as is. "/>
 			</value>
-			<value name="eDataTableCopyFlags_Recursive" value="niBit ( 1 ) ">
+			<value name="eDataTableCopyFlags_Recursive" value="niBit(1)">
 				<comments desc="Recursive, children tables will be copied as well (and their own children). "/>
 			</value>
-			<value name="eDataTableCopyFlags_AppendAllChildren" value="niBit ( 2 ) ">
+			<value name="eDataTableCopyFlags_AppendAllChildren" value="niBit(2)">
 				<comments desc="All children of the source will be appended. By default children which are in the same sequential order and have the same name as the destination are merged. "/>
 			</value>
-			<value name="eDataTableCopyFlags_UniqueChild" value="niBit ( 3 ) ">
+			<value name="eDataTableCopyFlags_UniqueChild" value="niBit(3)">
 				<comments desc="Each child data table has a unique name. "/>
 			</value>
-			<value name="eDataTableCopyFlags_Clone" value="niBit ( 4 ) ">
+			<value name="eDataTableCopyFlags_Clone" value="niBit(4)">
 				<comments desc="Clone all appended children tables. "/>
 			</value>
 		</enum>

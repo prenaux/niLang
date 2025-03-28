@@ -12,9 +12,9 @@
 #include <stdio.h>
 
 #ifdef niWin32
-#include <io.h>
+  #include <io.h>
 #else
-#include "../Platforms/Unix/UnixFindFirst.h"
+  #include "../Platforms/Unix/UnixFindFirst.h"
 #endif
 
 namespace ni {
@@ -26,8 +26,7 @@ namespace ni {
  */
 
 //! Find file struct
-typedef struct sFindFile
-{
+typedef struct sFindFile {
 #ifdef niWin32
   struct _wfinddata_t mFD;
   achar mDirectory[AMAX_PATH];
@@ -62,64 +61,76 @@ niExportFunc(tI64) FindFile_FileSize(const sFindFile* apFF);
 niExportFunc(tFileAttrFlags) FindFile_FileAttribs(const sFindFile* apFF);
 
 //! Find file utility class
-struct FindFile
-{
+struct FindFile {
   //! Constructor
-  FindFile() {
+  FindFile()
+  {
     FindFile_Init(&mFF);
   }
 
   //! Destructor
-  ~FindFile() {
+  ~FindFile()
+  {
     Close();
   }
 
   //! Reset all file infos.
-  void __stdcall ResetFileInfos() {
+  void __stdcall ResetFileInfos()
+  {
     FindFile_ResetFileInfos(&mFF);
   }
 
   //! Get the handle.
-  inline tIntPtr __stdcall GetHandle() const {
+  inline tIntPtr __stdcall GetHandle() const
+  {
     return mFF.mHandle;
   }
 
   //! Find the first file matching the specified path.
-  tBool First(const achar* aaszPath) {
-    return FindFile_First(&mFF,aaszPath);
+  tBool First(const achar* aaszPath)
+  {
+    return FindFile_First(&mFF, aaszPath);
   }
   //! Find the next file matching the path.
-  tBool Next() {
+  tBool Next()
+  {
     return FindFile_Next(&mFF);
   }
   //! Close the current find.
-  tBool Close () {
+  tBool Close()
+  {
     return FindFile_Close(&mFF);
   }
 
   //! Get the directory name.
-  inline const achar* __stdcall DirName() const {
+  inline const achar* __stdcall DirName() const
+  {
     return FindFile_DirName(&mFF);
   }
 
   //! Get whether there's a file info available.
-  inline tBool __stdcall FileExists() const {
+  inline tBool __stdcall FileExists() const
+  {
     return FindFile_FileExists(&mFF);
   }
   //! Get the current file name.
-  inline const achar* __stdcall FileName() const {
+  inline const achar* __stdcall FileName() const
+  {
     return FindFile_FileName(&mFF);
   }
   //! Get the current file time.
-  inline tI64 __stdcall FileTime() const {
+  inline tI64 __stdcall FileTime() const
+  {
     return FindFile_FileUnixTimeSecs(&mFF);
   }
   //! Get the current file size.
-  inline tI64 __stdcall FileSize() const {
+  inline tI64 __stdcall FileSize() const
+  {
     return FindFile_FileSize(&mFF);
   }
   //! Get the current file attribs.
-  inline tFileAttrFlags __stdcall FileAttribs() const {
+  inline tFileAttrFlags __stdcall FileAttribs() const
+  {
     return FindFile_FileAttribs(&mFF);
   }
 
@@ -127,17 +138,17 @@ struct FindFile
 };
 
 //! File info structure
-struct sFileInfo
-{
-  tU32    count;
+struct sFileInfo {
+  tU32 count;
   cString name;
-  tI64    size;
-  time_t  time;
-  tU32    attribs;
-  sFileInfo() {
+  tI64 size;
+  time_t time;
+  tU32 attribs;
+  sFileInfo()
+  {
     count = 0;
     size = 0;
-    memset(&time,0,sizeof(time));
+    memset(&time, 0, sizeof(time));
     attribs = 0;
   }
 };
@@ -152,9 +163,12 @@ struct sFileInfo
 //! \remark You can specify a list of file patterns to further filer which
 //!         files are enumerated. Example: "/Users/foo/|*.txt|*.png|!_*".
 //!         Use '!' to negate the pattern and act as an exclusion filter.
-niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink* apSink, astl::vector<sFileInfo>* aFiles, tU32 anMax);
+niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs,
+                            iFileEnumSink* apSink,
+                            astl::vector<sFileInfo>* aFiles, tU32 anMax);
 
-static inline astl::vector<sFileInfo> FileEnum(const achar* aszFile) {
+static inline astl::vector<sFileInfo> FileEnum(const achar* aszFile)
+{
   astl::vector<sFileInfo> found;
   ni::FileEnum(aszFile, eFileAttrFlags_AllFiles, NULL, &found, 0);
   return found;
@@ -166,11 +180,12 @@ static inline astl::vector<sFileInfo> FileEnum(const achar* aszFile) {
 //! \remark We return a cPath object because we want to preserve the path if
 //!         we're going to use it directly and we have to use one anyway since
 //!         the FindFile API returns only the filename.
-static inline cPath FindFirstFilePath(const achar* aPath) {
+static inline cPath FindFirstFilePath(const achar* aPath)
+{
   FindFile ff;
   tBool found = ff.First(aPath);
   if (found) {
-    cPath path(ff.DirName(),ff.FileName());
+    cPath path(ff.DirName(), ff.FileName());
     return path;
   }
   else {
@@ -184,11 +199,12 @@ static inline cPath FindFirstFilePath(const achar* aPath) {
 //! \remark We return a cPath object because we want to preserve the path if
 //!         we're going to use it directly and we have to use one anyway since
 //!         the FindFile API returns only the filename.
-static inline cPath FindFirstDirPath(const achar* aPath) {
+static inline cPath FindFirstDirPath(const achar* aPath)
+{
   FindFile ff;
   tBool found = ff.First(aPath);
   if (found) {
-    cPath path(ff.DirName(),NULL);
+    cPath path(ff.DirName(), NULL);
     path.AddDirectoryBack(ff.FileName());
     return path;
   }

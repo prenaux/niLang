@@ -2,10 +2,8 @@
 // Copyright (c) Electronic Arts Inc. All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
-
 #include "internal/config.h"
 #include "allocator.h"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadMe
@@ -16,30 +14,27 @@
 // or you can modify the EASTL config.h file to redefine how allocators work.
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef EASTL_USER_DEFINED_ALLOCATOR // If the user hasn't declared that he has defined an allocator implementation elsewhere...
 
-	namespace eastl
-	{
+namespace eastl {
 
-		/// gDefaultAllocator
-		/// Default global allocator instance.
-		static allocator  gDefaultAllocator;
-		static allocator* gpDefaultAllocator = &gDefaultAllocator;
+/// gDefaultAllocator
+/// Default global allocator instance.
+static allocator gDefaultAllocator;
+static allocator* gpDefaultAllocator = &gDefaultAllocator;
 
-		EASTL_API allocator* GetDefaultAllocator()
-		{
-			return gpDefaultAllocator;
-		}
+EASTL_API allocator* GetDefaultAllocator()
+{
+  return gpDefaultAllocator;
+}
 
-		EASTL_API allocator* SetDefaultAllocator(allocator* pAllocator)
-		{
-			allocator* const pPrevAllocator = gpDefaultAllocator;
-			gpDefaultAllocator = pAllocator;
-			return pPrevAllocator;
-		}
+EASTL_API allocator* SetDefaultAllocator(allocator* pAllocator)
+{
+  allocator* const pPrevAllocator = gpDefaultAllocator;
+  gpDefaultAllocator = pAllocator;
+  return pPrevAllocator;
+}
 
-	} // namespace eastl
-
+} // namespace eastl
 
 #endif // EASTL_USER_DEFINED_ALLOCATOR

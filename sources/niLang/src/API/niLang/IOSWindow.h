@@ -12,192 +12,191 @@ namespace ni {
  */
 
 //! Key codes
-enum eKey
-{
-  eKey_Unknown      = 0x00,
-  eKey_Escape       = 0x01,
-  eKey_n1           = 0x02,
-  eKey_n2           = 0x03,
-  eKey_n3           = 0x04,
-  eKey_n4           = 0x05,
-  eKey_n5           = 0x06,
-  eKey_n6           = 0x07,
-  eKey_n7           = 0x08,
-  eKey_n8           = 0x09,
-  eKey_n9           = 0x0A,
-  eKey_n0           = 0x0B,
-  eKey_Minus        = 0x0C,             //! - on main keyboard
-  eKey_Equals       = 0x0D,
-  eKey_BackSpace    = 0x0E,             //! backspace
-  eKey_Tab          = 0x0F,
-  eKey_Q            = 0x10,
-  eKey_W            = 0x11,
-  eKey_E            = 0x12,
-  eKey_R            = 0x13,
-  eKey_T            = 0x14,
-  eKey_Y            = 0x15,
-  eKey_U            = 0x16,
-  eKey_I            = 0x17,
-  eKey_O            = 0x18,
-  eKey_P            = 0x19,
-  eKey_LBracket     = 0x1A,
-  eKey_RBracket     = 0x1B,
-  eKey_Enter        = 0x1C,             //! Enter on main keyboard
-  eKey_LControl     = 0x1D,
-  eKey_A            = 0x1E,
-  eKey_S            = 0x1F,
-  eKey_D            = 0x20,
-  eKey_F            = 0x21,
-  eKey_G            = 0x22,
-  eKey_H            = 0x23,
-  eKey_J            = 0x24,
-  eKey_K            = 0x25,
-  eKey_L            = 0x26,
-  eKey_Semicolon    = 0x27,
-  eKey_Apostrophe   = 0x28,
-  eKey_Grave        = 0x29,             //! accent grave
-  eKey_Tilde        = 0x29,             //! accent grave
-  eKey_LShift       = 0x2A,
-  eKey_BackSlash    = 0x2B,
-  eKey_Z            = 0x2C,
-  eKey_X            = 0x2D,
-  eKey_C            = 0x2E,
-  eKey_V            = 0x2F,
-  eKey_B            = 0x30,
-  eKey_N            = 0x31,
-  eKey_M            = 0x32,
-  eKey_Comma        = 0x33,
-  eKey_Period       = 0x34,             //! . on main keyboard
-  eKey_Slash        = 0x35,             //! / on main keyboard
-  eKey_RShift       = 0x36,
-  eKey_NumPadStar   = 0x37,             //! * on numeric keypad
-  eKey_LAlt         = 0x38,             //! left Alt
-  eKey_Space        = 0x39,
-  eKey_CapsLock     = 0x3A,
-  eKey_F1           = 0x3B,
-  eKey_F2           = 0x3C,
-  eKey_F3           = 0x3D,
-  eKey_F4           = 0x3E,
-  eKey_F5           = 0x3F,
-  eKey_F6           = 0x40,
-  eKey_F7           = 0x41,
-  eKey_F8           = 0x42,
-  eKey_F9           = 0x43,
-  eKey_F10          = 0x44,
-  eKey_NumLock      = 0x45,
-  eKey_Scroll       = 0x46,             //! Scroll Lock
-  eKey_NumPad7      = 0x47,
-  eKey_NumPad8      = 0x48,
-  eKey_NumPad9      = 0x49,
-  eKey_NumPadMinus  = 0x4A,             //! - on numeric keypad
-  eKey_NumPad4      = 0x4B,
-  eKey_NumPad5      = 0x4C,
-  eKey_NumPad6      = 0x4D,
-  eKey_NumPadPlus   = 0x4E,             //! + on numeric keypad
-  eKey_NumPad1      = 0x4F,
-  eKey_NumPad2      = 0x50,
-  eKey_NumPad3      = 0x51,
-  eKey_NumPad0      = 0x52,
-  eKey_NumPadPeriod = 0x53,             //! . on numeric keypad
-  eKey_OEM_102      = 0x56,             //! <> or \| on RT 102-key keyboard (Non-U.S.)
-  eKey_F11          = 0x57,
-  eKey_F12          = 0x58,
-  eKey_F13          = 0x64,             //!            (NEC PC98)
-  eKey_F14          = 0x65,             //!            (NEC PC98)
-  eKey_F15          = 0x66,             //!            (NEC PC98)
-  eKey_Kana         = 0x70,             //! (Japanese keyboard)
-  eKey_ABNT_C1      = 0x73,             //! /? on Brazilian keyboard
-  eKey_Convert      = 0x79,             //! (Japanese keyboard)
-  eKey_NoConvert    = 0x7B,             //! (Japanese keyboard)
-  eKey_Yen          = 0x7D,             //! (Japanese keyboard)
-  eKey_ABNT_C2      = 0x7E,             //! Numpad . on Brazilian keyboard
-  eKey_NumPadEquals = 0x8D,             //! = on numeric keypad (NEC PC98)
-  eKey_Circumflex   = 0x90,             //! Previous Track (eKey_CIRCUMFLEX on Japanese keyboard)
-  eKey_PrevTrack    = 0x90,             //! Previous Track (eKey_CIRCUMFLEX on Japanese keyboard)
-  eKey_AT           = 0x91,             //!            (NEC PC98)
-  eKey_Colon        = 0x92,             //!            (NEC PC98)
-  eKey_Underline    = 0x93,             //!            (NEC PC98)
-  eKey_Kanji        = 0x94,             //! (Japanese keyboard)
-  eKey_Stop         = 0x95,             //!            (NEC PC98)
-  eKey_AX           = 0x96,             //!            (Japan AX)
-  eKey_Unlabeled    = 0x97,             //!             (J3100)
-  eKey_NextTrack    = 0x99,             //! Next Track
-  eKey_NumPadEnter  = 0x9C,             //! Enter on numeric keypad
-  eKey_RControl     = 0x9D,
-  eKey_Mute         = 0xA0,             //! Mute
-  eKey_Calculator   = 0xA1,             //! Calculator
-  eKey_PlayPause    = 0xA2,             //! Play / Pause
-  eKey_MediaStop    = 0xA4,             //! Media Stop
-  eKey_VolumeDown   = 0xAE,             //! Volume -
-  eKey_VolumeUp     = 0xB0,             //! Volume +
-  eKey_WebHome      = 0xB2,             //! Web home
-  eKey_NumPadComma  = 0xB3,             //! , on numeric keypad (NEC PC98)
-  eKey_NumPadSlash  = 0xB5,             //! / on numeric keypad
-  eKey_SysRQ        = 0xB7,
-  eKey_PrintScreen  = 0xB7,
-  eKey_RAlt         = 0xB8,             //! right Alt
-  eKey_AltGr        = 0xB8,             //! right Alt
-  eKey_Pause        = 0xC5,             //! Pause
-  eKey_Home         = 0xC7,             //! Home on arrow keypad
-  eKey_Up           = 0xC8,             //! UpArrow on arrow keypad
-  eKey_PgUp         = 0xC9,             //! PgUp on arrow keypad
-  eKey_Left         = 0xCB,             //! LeftArrow on arrow keypad
-  eKey_Right        = 0xCD,             //! RightArrow on arrow keypad
-  eKey_End          = 0xCF,             //! End on arrow keypad
-  eKey_Down         = 0xD0,             //! DownArrow on arrow keypad
-  eKey_PgDn         = 0xD1,             //! PgDn on arrow keypad
-  eKey_Insert       = 0xD2,             //! Insert on arrow keypad
-  eKey_Delete       = 0xD3,             //! Delete on arrow keypad
-  eKey_LWin         = 0xDB,             //! Left Windows key
-  eKey_RWin         = 0xDC,             //! Right Windows key
-  eKey_Apps         = 0xDD,             //! AppMenu key
-  eKey_Power        = 0xDE,             //! System Power
-  eKey_Sleep        = 0xDF,             //! System Sleep
-  eKey_Wake         = 0xE3,             //! System Wake
-  eKey_WebSearch    = 0xE5,             //! Web Search
-  eKey_WebFavorites = 0xE6,             //! Web Favorites
-  eKey_WebRefresh   = 0xE7,             //! Web Refresh
-  eKey_WebStop      = 0xE8,             //! Web Stop
-  eKey_WebForward   = 0xE9,             //! Web Forward
-  eKey_WebBack      = 0xEA,             //! Web Back
-  eKey_MyComputer   = 0xEB,             //! My Computer
-  eKey_Mail         = 0xEC,             //! Mail
-  eKey_MediaSelect  = 0xED,             //! Media Select
-  eKey_Last         = 0xFF,             //! \internal
+enum eKey {
+  eKey_Unknown = 0x00,
+  eKey_Escape = 0x01,
+  eKey_n1 = 0x02,
+  eKey_n2 = 0x03,
+  eKey_n3 = 0x04,
+  eKey_n4 = 0x05,
+  eKey_n5 = 0x06,
+  eKey_n6 = 0x07,
+  eKey_n7 = 0x08,
+  eKey_n8 = 0x09,
+  eKey_n9 = 0x0A,
+  eKey_n0 = 0x0B,
+  eKey_Minus = 0x0C, //! - on main keyboard
+  eKey_Equals = 0x0D,
+  eKey_BackSpace = 0x0E, //! backspace
+  eKey_Tab = 0x0F,
+  eKey_Q = 0x10,
+  eKey_W = 0x11,
+  eKey_E = 0x12,
+  eKey_R = 0x13,
+  eKey_T = 0x14,
+  eKey_Y = 0x15,
+  eKey_U = 0x16,
+  eKey_I = 0x17,
+  eKey_O = 0x18,
+  eKey_P = 0x19,
+  eKey_LBracket = 0x1A,
+  eKey_RBracket = 0x1B,
+  eKey_Enter = 0x1C, //! Enter on main keyboard
+  eKey_LControl = 0x1D,
+  eKey_A = 0x1E,
+  eKey_S = 0x1F,
+  eKey_D = 0x20,
+  eKey_F = 0x21,
+  eKey_G = 0x22,
+  eKey_H = 0x23,
+  eKey_J = 0x24,
+  eKey_K = 0x25,
+  eKey_L = 0x26,
+  eKey_Semicolon = 0x27,
+  eKey_Apostrophe = 0x28,
+  eKey_Grave = 0x29, //! accent grave
+  eKey_Tilde = 0x29, //! accent grave
+  eKey_LShift = 0x2A,
+  eKey_BackSlash = 0x2B,
+  eKey_Z = 0x2C,
+  eKey_X = 0x2D,
+  eKey_C = 0x2E,
+  eKey_V = 0x2F,
+  eKey_B = 0x30,
+  eKey_N = 0x31,
+  eKey_M = 0x32,
+  eKey_Comma = 0x33,
+  eKey_Period = 0x34, //! . on main keyboard
+  eKey_Slash = 0x35,  //! / on main keyboard
+  eKey_RShift = 0x36,
+  eKey_NumPadStar = 0x37, //! * on numeric keypad
+  eKey_LAlt = 0x38,       //! left Alt
+  eKey_Space = 0x39,
+  eKey_CapsLock = 0x3A,
+  eKey_F1 = 0x3B,
+  eKey_F2 = 0x3C,
+  eKey_F3 = 0x3D,
+  eKey_F4 = 0x3E,
+  eKey_F5 = 0x3F,
+  eKey_F6 = 0x40,
+  eKey_F7 = 0x41,
+  eKey_F8 = 0x42,
+  eKey_F9 = 0x43,
+  eKey_F10 = 0x44,
+  eKey_NumLock = 0x45,
+  eKey_Scroll = 0x46, //! Scroll Lock
+  eKey_NumPad7 = 0x47,
+  eKey_NumPad8 = 0x48,
+  eKey_NumPad9 = 0x49,
+  eKey_NumPadMinus = 0x4A, //! - on numeric keypad
+  eKey_NumPad4 = 0x4B,
+  eKey_NumPad5 = 0x4C,
+  eKey_NumPad6 = 0x4D,
+  eKey_NumPadPlus = 0x4E, //! + on numeric keypad
+  eKey_NumPad1 = 0x4F,
+  eKey_NumPad2 = 0x50,
+  eKey_NumPad3 = 0x51,
+  eKey_NumPad0 = 0x52,
+  eKey_NumPadPeriod = 0x53, //! . on numeric keypad
+  eKey_OEM_102 = 0x56,      //! <> or \| on RT 102-key keyboard (Non-U.S.)
+  eKey_F11 = 0x57,
+  eKey_F12 = 0x58,
+  eKey_F13 = 0x64,          //!            (NEC PC98)
+  eKey_F14 = 0x65,          //!            (NEC PC98)
+  eKey_F15 = 0x66,          //!            (NEC PC98)
+  eKey_Kana = 0x70,         //! (Japanese keyboard)
+  eKey_ABNT_C1 = 0x73,      //! /? on Brazilian keyboard
+  eKey_Convert = 0x79,      //! (Japanese keyboard)
+  eKey_NoConvert = 0x7B,    //! (Japanese keyboard)
+  eKey_Yen = 0x7D,          //! (Japanese keyboard)
+  eKey_ABNT_C2 = 0x7E,      //! Numpad . on Brazilian keyboard
+  eKey_NumPadEquals = 0x8D, //! = on numeric keypad (NEC PC98)
+  eKey_Circumflex =
+    0x90, //! Previous Track (eKey_CIRCUMFLEX on Japanese keyboard)
+  eKey_PrevTrack =
+    0x90,            //! Previous Track (eKey_CIRCUMFLEX on Japanese keyboard)
+  eKey_AT = 0x91,    //!            (NEC PC98)
+  eKey_Colon = 0x92, //!            (NEC PC98)
+  eKey_Underline = 0x93,   //!            (NEC PC98)
+  eKey_Kanji = 0x94,       //! (Japanese keyboard)
+  eKey_Stop = 0x95,        //!            (NEC PC98)
+  eKey_AX = 0x96,          //!            (Japan AX)
+  eKey_Unlabeled = 0x97,   //!             (J3100)
+  eKey_NextTrack = 0x99,   //! Next Track
+  eKey_NumPadEnter = 0x9C, //! Enter on numeric keypad
+  eKey_RControl = 0x9D,
+  eKey_Mute = 0xA0,        //! Mute
+  eKey_Calculator = 0xA1,  //! Calculator
+  eKey_PlayPause = 0xA2,   //! Play / Pause
+  eKey_MediaStop = 0xA4,   //! Media Stop
+  eKey_VolumeDown = 0xAE,  //! Volume -
+  eKey_VolumeUp = 0xB0,    //! Volume +
+  eKey_WebHome = 0xB2,     //! Web home
+  eKey_NumPadComma = 0xB3, //! , on numeric keypad (NEC PC98)
+  eKey_NumPadSlash = 0xB5, //! / on numeric keypad
+  eKey_SysRQ = 0xB7,
+  eKey_PrintScreen = 0xB7,
+  eKey_RAlt = 0xB8,         //! right Alt
+  eKey_AltGr = 0xB8,        //! right Alt
+  eKey_Pause = 0xC5,        //! Pause
+  eKey_Home = 0xC7,         //! Home on arrow keypad
+  eKey_Up = 0xC8,           //! UpArrow on arrow keypad
+  eKey_PgUp = 0xC9,         //! PgUp on arrow keypad
+  eKey_Left = 0xCB,         //! LeftArrow on arrow keypad
+  eKey_Right = 0xCD,        //! RightArrow on arrow keypad
+  eKey_End = 0xCF,          //! End on arrow keypad
+  eKey_Down = 0xD0,         //! DownArrow on arrow keypad
+  eKey_PgDn = 0xD1,         //! PgDn on arrow keypad
+  eKey_Insert = 0xD2,       //! Insert on arrow keypad
+  eKey_Delete = 0xD3,       //! Delete on arrow keypad
+  eKey_LWin = 0xDB,         //! Left Windows key
+  eKey_RWin = 0xDC,         //! Right Windows key
+  eKey_Apps = 0xDD,         //! AppMenu key
+  eKey_Power = 0xDE,        //! System Power
+  eKey_Sleep = 0xDF,        //! System Sleep
+  eKey_Wake = 0xE3,         //! System Wake
+  eKey_WebSearch = 0xE5,    //! Web Search
+  eKey_WebFavorites = 0xE6, //! Web Favorites
+  eKey_WebRefresh = 0xE7,   //! Web Refresh
+  eKey_WebStop = 0xE8,      //! Web Stop
+  eKey_WebForward = 0xE9,   //! Web Forward
+  eKey_WebBack = 0xEA,      //! Web Back
+  eKey_MyComputer = 0xEB,   //! My Computer
+  eKey_Mail = 0xEC,         //! Mail
+  eKey_MediaSelect = 0xED,  //! Media Select
+  eKey_Last = 0xFF,         //! \internal
   //! \internal
   eKey_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Key modifier
 //! \remark Starts at bit 16 so that it can be or'ed with a eKey value
-enum eKeyMod
-{
-  eKeyMod_Control    = niBit(16),
-  eKeyMod_Shift      = niBit(17),
-  eKeyMod_Alt        = niBit(18),
-  eKeyMod_AltGr      = niBit(19),
-  eKeyMod_NumLock    = niBit(20),
-  eKeyMod_CapsLock   = niBit(21),
+enum eKeyMod {
+  eKeyMod_Control = niBit(16),
+  eKeyMod_Shift = niBit(17),
+  eKeyMod_Alt = niBit(18),
+  eKeyMod_AltGr = niBit(19),
+  eKeyMod_NumLock = niBit(20),
+  eKeyMod_CapsLock = niBit(21),
   eKeyMod_ScrollLock = niBit(22),
   //! \internal
   eKeyMod_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Pointer buttons
-enum ePointerButton
-{
-  ePointerButton_Bt0  = 0,
-  ePointerButton_Bt1  = 1,
-  ePointerButton_Bt2  = 2,
-  ePointerButton_Bt3  = 3,
-  ePointerButton_Bt4  = 4,
-  ePointerButton_Bt5  = 5,
-  ePointerButton_Bt6  = 6,
-  ePointerButton_Bt7  = 7,
+enum ePointerButton {
+  ePointerButton_Bt0 = 0,
+  ePointerButton_Bt1 = 1,
+  ePointerButton_Bt2 = 2,
+  ePointerButton_Bt3 = 3,
+  ePointerButton_Bt4 = 4,
+  ePointerButton_Bt5 = 5,
+  ePointerButton_Bt6 = 6,
+  ePointerButton_Bt7 = 7,
   ePointerButton_Last = 8,
 
-  ePointerButton_Left   = ePointerButton_Bt0,
-  ePointerButton_Right  = ePointerButton_Bt1,
+  ePointerButton_Left = ePointerButton_Bt0,
+  ePointerButton_Right = ePointerButton_Bt1,
   ePointerButton_Middle = ePointerButton_Bt2,
 
   //! \internal
@@ -205,18 +204,17 @@ enum ePointerButton
 };
 
 //! Pointer axis
-enum ePointerAxis
-{
+enum ePointerAxis {
   //! Pointer relative X axis.
-  ePointerAxis_X          = 0,
+  ePointerAxis_X = 0,
   //! Pointer relative Y axis.
-  ePointerAxis_Y          = 1,
+  ePointerAxis_Y = 1,
   //! Pointer relative Z axis.
-  ePointerAxis_Z          = 2,
+  ePointerAxis_Z = 2,
   //! Pointer absolute X/Y cursor position.
-  ePointerAxis_Absolute   = 3,
+  ePointerAxis_Absolute = 3,
   //! \internal
-  ePointerAxis_Last       = 4,
+  ePointerAxis_Last = 4,
   //! \internal
   ePointerAxis_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -343,8 +341,7 @@ enum eOSWindowMessage {
 };
 
 //! OS Window style.
-enum eOSWindowStyleFlags
-{
+enum eOSWindowStyleFlags {
   //! Regular window, with a title and the regular minimize, maximized, close buttons.
   eOSWindowStyleFlags_Regular = niBit(0),
   //! Overlay window, window without borders, buttons nor title.
@@ -361,9 +358,12 @@ enum eOSWindowStyleFlags
   //! \remark For mobile keep the screen on and fully bright when the window is visible.
   eOSWindowStyleFlags_FullBright = niBit(6),
   //! Fullscreen window, non-resizable overlay.
-  eOSWindowStyleFlags_FullScreen = eOSWindowStyleFlags_Overlay|eOSWindowStyleFlags_FixedSize,
+  eOSWindowStyleFlags_FullScreen =
+    eOSWindowStyleFlags_Overlay | eOSWindowStyleFlags_FixedSize,
   //! Fullscreen window, non-resizable overlay, doesn't appear in the taskbar.
-  eOSWindowStyleFlags_FullScreenNoTaskBar = eOSWindowStyleFlags_Toolbox|eOSWindowStyleFlags_FixedSize|eOSWindowStyleFlags_NoTitle,
+  eOSWindowStyleFlags_FullScreenNoTaskBar = eOSWindowStyleFlags_Toolbox |
+                                            eOSWindowStyleFlags_FixedSize |
+                                            eOSWindowStyleFlags_NoTitle,
   //! \internal
   eOSWindowStyleFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -371,8 +371,7 @@ enum eOSWindowStyleFlags
 typedef tU32 tOSWindowStyleFlags;
 
 //! OS Window create.
-enum eOSWindowCreateFlags
-{
+enum eOSWindowCreateFlags {
   //! The window's message pooling is done synchronously in iOSWindow::UpdateWindow().
   eOSWindowCreateFlags_NoThread = niBit(0),
   //! For CreateWindowEx, the handle passed is owned by the window object, meaning that the OS window will be destroyed when the window object is released.
@@ -386,8 +385,7 @@ enum eOSWindowCreateFlags
 typedef tU32 tOSWindowCreateFlags;
 
 //! OS Window show flags.
-enum eOSWindowShowFlags
-{
+enum eOSWindowShowFlags {
   //! Hide the window.
   eOSWindowShowFlags_Hide = niBit(0),
   //! Show the window and activate it.
@@ -407,8 +405,7 @@ enum eOSWindowShowFlags
 typedef tU32 tOSWindowShowFlags;
 
 //! OS Window ZOrder.
-enum eOSWindowZOrder
-{
+enum eOSWindowZOrder {
   //! Put the window below all others.
   eOSWindowZOrder_Bottom = 0,
   //! Normal ZOrder.
@@ -420,8 +417,7 @@ enum eOSWindowZOrder
 };
 
 //! OS Cursor
-enum eOSCursor
-{
+enum eOSCursor {
   //! No cursor.
   eOSCursor_None = 0,
   //! Arrow cursor.
@@ -447,8 +443,7 @@ enum eOSCursor
 };
 
 //! OS Monitor flags.
-enum eOSMonitorFlags
-{
+enum eOSMonitorFlags {
   //! Primary monitor.
   eOSMonitorFlags_Primary = niBit(0),
   //! \internal
@@ -458,8 +453,7 @@ enum eOSMonitorFlags
 typedef tU32 tOSMonitorFlags;
 
 //! OS Message box flags.
-enum eOSMessageBoxFlags
-{
+enum eOSMessageBoxFlags {
   //! Message box with one [OK] button.
   eOSMessageBoxFlags_Ok = niBit(0),
   //! Message box with a [OK] and a [CANCEL] button.
@@ -490,8 +484,7 @@ enum eOSMessageBoxFlags
 typedef tU32 tOSMessageBoxFlags;
 
 //! eOSMessageBoxReturn
-enum eOSMessageBoxReturn
-{
+enum eOSMessageBoxReturn {
   //! Message box couldn't be displayed.
   eOSMessageBoxReturn_Error = 0,
   //! Yes/Ok button pressed.
@@ -507,8 +500,7 @@ enum eOSMessageBoxReturn
 };
 
 //! OS Window switch reason.
-enum eOSWindowSwitchReason
-{
+enum eOSWindowSwitchReason {
   eOSWindowSwitchReason_Activated = 'a',
   eOSWindowSwitchReason_Deactivated = 'A',
   eOSWindowSwitchReason_LostFocus = 'f',
@@ -522,16 +514,14 @@ enum eOSWindowSwitchReason
 };
 
 //! A graphics API.
-struct iOSGraphicsAPI : public iUnknown
-{
+struct iOSGraphicsAPI : public iUnknown {
   niDeclareInterfaceUUID(iOSGraphicsAPI,0x0ec34553,0xc997,0x914c,0x81,0x21,0x7e,0xb3,0x16,0xd9,0xf0,0x4a);
 
   virtual const achar* __stdcall GetName() const = 0;
 };
 
 //! OS Window interface.
-struct iOSWindow : public iUnknown
-{
+struct iOSWindow : public iUnknown {
   niDeclareInterfaceUUID(iOSWindow,0x5f7dfadd,0x64b7,0x43f6,0xa4,0x27,0x41,0x56,0xcc,0x9b,0x2b,0x1a);
 
   //! Get the parent window if any.
@@ -674,7 +664,10 @@ struct iOSWindow : public iUnknown
   //! \return eTrue if the specified cursor size is supported, eFalse otherwise.
   //! \remark If eOSCursor_Custom is used as cursor type and no custom cursor as been
   //!         successfully initialized the Arrow cursor is used as fallback.
-  virtual tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth, tU32 anHeight, tU32 anHotSpotX, tU32 anHotSpotY, const tU32* apData) = 0;
+  virtual tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth,
+                                           tU32 anHeight, tU32 anHotSpotX,
+                                           tU32 anHotSpotY,
+                                           const tU32* apData) = 0;
   //! Get the custom cursor user id.
   //! {Property}
   //! \remark The id is always 0 when custom cursor initialization with valid apData failed.
@@ -789,7 +782,8 @@ struct iOSWindowGeneric : public iUnknown {
   //! \remark Send a series of eOSWindowMessage_KeyChar messages.
   virtual void __stdcall GenericInputString(const achar* aaszString) = 0;
   //! Send a message to the window.
-  virtual void __stdcall GenericSendMessage(tU32 anMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual void __stdcall GenericSendMessage(tU32 anMsg, const Var& avarA,
+                                            const Var& avarB) = 0;
 
   //! Set the window's content scale.
   //! {Property}
@@ -797,7 +791,8 @@ struct iOSWindowGeneric : public iUnknown {
 };
 
 niExportFunc(iOSWindow*) CreateGenericWindow();
-niExportFunc(iUnknown*) New_niLang_OSWindowGeneric(const Var& avarA, const Var& avarB);
+niExportFunc(iUnknown*) New_niLang_OSWindowGeneric(const Var& avarA,
+                                                   const Var& avarB);
 
 //! Windows window's sink.
 //! {NoAutomation}
@@ -805,7 +800,10 @@ struct iOSWindowWindowsSink : public iUnknown {
   niDeclareInterfaceUUID(iOSWindowWindowsSink,0xf667e760,0xbdd5,0x4b43,0xbd,0xd0,0x86,0x77,0x1c,0x86,0x8b,0xaf);
 
   //! Called when a message is received by the window, return TRUE to override the default implementation.
-  virtual tIntPtr __stdcall OnOSWindowWindowsSink_WndProc(tIntPtr hWnd, tU32 message, tIntPtr wParam, tIntPtr lParam) = 0;
+  virtual tIntPtr __stdcall OnOSWindowWindowsSink_WndProc(tIntPtr hWnd,
+                                                          tU32 message,
+                                                          tIntPtr wParam,
+                                                          tIntPtr lParam) = 0;
 };
 
 //! Windows window sink list.
@@ -817,13 +815,17 @@ struct iOSWindowWindows : public iUnknown {
   niDeclareInterfaceUUID(iOSWindowWindows,0x02a97e41,0x8797,0x4679,0x93,0x8a,0x85,0x0b,0x13,0x5a,0xa8,0x48);
 
   //! Get the window's sink list.
-  virtual tOSWindowWindowsSinkList* __stdcall GetWindowsWindowSinkList() const = 0;
+  virtual tOSWindowWindowsSinkList* __stdcall GetWindowsWindowSinkList()
+    const = 0;
 
   //! Translate a windows KEYDOWN/KEYUP message to a eKey code.
-  virtual ni::tU32 __stdcall WindowsTranslateKey(ni::tU32 wParam, ni::tU32 lParam, ni::tBool abDown) = 0;
+  virtual ni::tU32 __stdcall WindowsTranslateKey(ni::tU32 wParam,
+                                                 ni::tU32 lParam,
+                                                 ni::tBool abDown) = 0;
 
   //! Default window proc
-  virtual tIntPtr __stdcall WndProc(tIntPtr hWnd, tU32 message, tIntPtr wParam, tIntPtr lParam) = 0;
+  virtual tIntPtr __stdcall WndProc(tIntPtr hWnd, tU32 message, tIntPtr wParam,
+                                    tIntPtr lParam) = 0;
 };
 
 //! OSX window.
@@ -853,8 +855,7 @@ struct iOSWindowLinux : public iUnknown {
   virtual void* __stdcall GetScreenHandle() const = 0;
 };
 
-
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IOSWINDOW_H_6D7C42F3_D6B8_41FD_8AF2_0641803C9F5A__

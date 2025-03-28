@@ -2,18 +2,17 @@
 #include "API/niLang/Utils/Path.h"
 
 #if !defined niEmbedded
-#include "backward.hpp"
-#include "API/niLang/Utils/ThreadImpl.h"
-#define HAS_CODE_SNIPPET
+  #include "backward.hpp"
+  #include "API/niLang/Utils/ThreadImpl.h"
+  #define HAS_CODE_SNIPPET
 #endif
 
 namespace ni {
 
 #ifdef HAS_CODE_SNIPPET
-static ni::tBool _StackCatCodeSnippet(
-  cString& aOutput,
-  const std::string& aFileName, int aLine,
-  const achar* aIndent, tU32 aContextLines)
+static ni::tBool _StackCatCodeSnippet(cString& aOutput,
+                                      const std::string& aFileName, int aLine,
+                                      const achar* aIndent, tU32 aContextLines)
 {
   // TODO: This is meh, its a cache of all the source files it opened.
   static ThreadMutex _snippetFactoryLock;
@@ -26,7 +25,8 @@ static ni::tBool _StackCatCodeSnippet(
     for (auto it = lines.begin(); it != lines.end(); ++it) {
       if ((int)it->first == aLine) {
         aOutput << aIndent << ">";
-      } else {
+      }
+      else {
         aOutput << aIndent << " ";
       }
       aOutput << it->first << ": " << it->second.c_str() << "\n";
@@ -38,7 +38,11 @@ static ni::tBool _StackCatCodeSnippet(
 }
 #endif
 
-niExportFunc(void) _StackCatEntry(cString& aOutput, tInt frameIndex, const achar* file, tInt line, const achar* func, const achar* module, tIntPtr address, tBool abIncludeCodeSnippet) {
+niExportFunc(void) _StackCatEntry(cString& aOutput, tInt frameIndex,
+                                  const achar* file, tInt line,
+                                  const achar* func, const achar* module,
+                                  tIntPtr address, tBool abIncludeCodeSnippet)
+{
   aOutput.CatFormat("[%d]", frameIndex);
 
   const char* fileName;
@@ -83,16 +87,18 @@ niExportFunc(void) _StackCatEntry(cString& aOutput, tInt frameIndex, const achar
 #endif
 }
 
-}
+} // namespace ni
 
 #if defined niJSCC || defined niAndroid
 
 namespace ni {
 
-niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void*, int) {
+niExportFuncCPP(const cString&) ni_stack_get_current(cString& aOutput, void*,
+                                                     int)
+{
   aOutput << "--- NO STACK ---\n";
   return aOutput;
 }
 
-}
+} // namespace ni
 #endif

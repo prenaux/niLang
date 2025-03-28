@@ -12,8 +12,7 @@ struct iFile;
  */
 
 //! Remote address types.
-enum eRemoteAddressType
-{
+enum eRemoteAddressType {
   //! Unknown remote address type.
   eRemoteAddressType_Unknown = 0,
   //! IP v4 address type.
@@ -27,8 +26,7 @@ enum eRemoteAddressType
 };
 
 //! Remote address base interface.
-struct iRemoteAddress : public iUnknown
-{
+struct iRemoteAddress : public iUnknown {
   niDeclareInterfaceUUID(iRemoteAddress,0x3e076b8b,0x75a5,0x47c8,0x9e,0x7d,0x4a,0x4b,0xa4,0x53,0xdb,0x58);
 
   //! Clone the address.
@@ -66,8 +64,7 @@ struct iRemoteAddress : public iUnknown
 
 //! IPv4 remote address reserved values.
 /** These addresses are reserved for special usages. */
-enum eRemoteAddressIPv4Reserved
-{
+enum eRemoteAddressIPv4Reserved {
   //! Any address will do. Used by server/listener.
   eRemoteAddressIPv4Reserved_Any = 0,
   //! Address used to broadcast a packet.
@@ -83,8 +80,7 @@ enum eRemoteAddressIPv4Reserved
    - www.stuff.com:40000 (40000 is the port)<br>
    - "http://www.stuff.com:40000" (40000 is the port)<br>
 */
-struct iRemoteAddressIPv4 : public iRemoteAddress
-{
+struct iRemoteAddressIPv4 : public iRemoteAddress {
   niDeclareInterfaceUUID(iRemoteAddressIPv4,0xc7be5396,0x23f2,0x46b7,0xad,0xca,0xa0,0x9f,0x58,0xcc,0x94,0xe3);
 
   //! Set the ip address from a FOURCC code.
@@ -106,8 +102,7 @@ struct iRemoteAddressIPv4 : public iRemoteAddress
 };
 
 //! Socket protocols.
-enum eSocketProtocol
-{
+enum eSocketProtocol {
   //! Unknown protocol.
   eSocketProtocol_Unknown = 0,
   //! UDP protocol.
@@ -119,8 +114,7 @@ enum eSocketProtocol
 };
 
 //! Socket wait flags.
-enum eSocketWaitFlags
-{
+enum eSocketWaitFlags {
   //! No flags, failure/timeout.
   eSocketWaitFlags_None = 0,
   //! Wait for send.
@@ -134,8 +128,7 @@ enum eSocketWaitFlags
 };
 
 //! Socket Error codes
-enum eSocketErrno
-{
+enum eSocketErrno {
   //! No Error
   eSocketErrno_OK = 0,
   //! Generic 'unknown' error.
@@ -220,8 +213,7 @@ enum eSocketErrno
 };
 
 //! Socket buffer structure
-struct sSocketBuffer
-{
+struct sSocketBuffer {
 #ifdef niWindows
   tSize dataLength;
   void* data;
@@ -235,8 +227,7 @@ struct sSocketBuffer
 typedef tU32 tSocketWaitFlags;
 
 //! Network socket interface.
-struct iSocket : public iUnknown
-{
+struct iSocket : public iUnknown {
   niDeclareInterfaceUUID(iSocket,0x9262952d,0xf667,0x47a9,0x81,0x47,0x25,0xc5,0x9f,0xbb,0x36,0x7d);
 
   //! Get the socket's handle/descriptor.
@@ -313,10 +304,13 @@ struct iSocket : public iUnknown
   //! \return -1 if an error happen, else the number of bytes effectivly sent.
   //!     An error happen if the destination address cannot be found or is
   //!     invalid.
-  virtual tI32 __stdcall SendTo(iFile* apFile, tU32 anBytes, iRemoteAddress* pAddress) = 0;
+  virtual tI32 __stdcall SendTo(iFile* apFile, tU32 anBytes,
+                                iRemoteAddress* pAddress) = 0;
   //! Send the specified buffers to the specified address.
   //! {NoAutomation}
-  virtual tI32 __stdcall SendBuffers(const iRemoteAddress* apAddress, const sSocketBuffer* apBuffers, tSize anBufCount) = 0;
+  virtual tI32 __stdcall SendBuffers(const iRemoteAddress* apAddress,
+                                     const sSocketBuffer* apBuffers,
+                                     tSize anBufCount) = 0;
 
   //! Receive connected data.
   //! \param  apFile is where the received data will be stored.
@@ -334,14 +328,18 @@ struct iSocket : public iUnknown
   //!     invalid.
   //! \remark If no error happen, block until data are received.
   //! \remark Blocking on blocking sockets.
-  virtual tI32 __stdcall ReceiveFrom(iFile* apFile, iRemoteAddress* apAddress) = 0;
+  virtual tI32 __stdcall ReceiveFrom(iFile* apFile,
+                                     iRemoteAddress* apAddress) = 0;
   //! Receive buffers.
   //! {NoAutomation}
-  virtual tI32 __stdcall ReceiveBuffers(iRemoteAddress* apAddr, sSocketBuffer* apBuffers, tSize anBufCount) = 0;
+  virtual tI32 __stdcall ReceiveBuffers(iRemoteAddress* apAddr,
+                                        sSocketBuffer* apBuffers,
+                                        tSize anBufCount) = 0;
 
   //! Wait on the specified events.
   //! \return The event that stopped the waiting, or ni::eSocketWaitFlags_None if timeout.
-  virtual tSocketWaitFlags __stdcall Wait(tSocketWaitFlags aFlags, tU32 anTimeoutInMs = 0) = 0;
+  virtual tSocketWaitFlags __stdcall Wait(tSocketWaitFlags aFlags,
+                                          tU32 anTimeoutInMs = 0) = 0;
 
   //! Set the node name associated with the socket.
   //! {Property}
@@ -362,7 +360,8 @@ struct iSocket : public iUnknown
   //! \param anProbes the maximum number of times to retry the probe. Not supported on Windows.
   //! \remark If you don't want to set all the parameters, just set the parameter to 0.
   //! {Property}
-  virtual tBool __stdcall SetKeepAliveParameters(tU64 anTimeMS, tU64 anIntvl, tU32 anProbes) = 0;
+  virtual tBool __stdcall SetKeepAliveParameters(tU64 anTimeMS, tU64 anIntvl,
+                                                 tU32 anProbes) = 0;
   //! Get KEEPALIVE interval on the current socket, in milliseconds.
   //! \remark the interval to wait before retrying the probe after an initial failure to respond.
   //! {Property}
@@ -385,5 +384,5 @@ struct iSocket : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISOCKET_H_1BFFA368_8773_EF48_ACA6_B81C73C1A2D7__

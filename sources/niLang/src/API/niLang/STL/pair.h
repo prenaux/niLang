@@ -6,7 +6,7 @@
 namespace astl {
 
 template <typename K, typename V>
-using pair = eastl::pair<K,V>;
+using pair = eastl::pair<K, V>;
 
 using eastl::make_pair;
 

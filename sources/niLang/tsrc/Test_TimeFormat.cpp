@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "../src/API/niLang/Utils/CollectionImpl.h"
 
-struct FTimeFormat {
-};
+struct FTimeFormat {};
 
 using namespace ni;
 
-TEST_FIXTURE(FTimeFormat,Time) {
+TEST_FIXTURE(FTimeFormat, Time)
+{
   // 1604673928 seconds since Jan 01 1970. (UTC)
   // 11/06/2020 @ 2:45pm (UTC)
   // 2020-11-06T14:45:28+00:00 in ISO 8601
@@ -27,7 +27,8 @@ TEST_FIXTURE(FTimeFormat,Time) {
   CHECK_EQUAL(28, dt->GetSecond());
 }
 
-TEST_FIXTURE(FTimeFormat,FormatSingle) {
+TEST_FIXTURE(FTimeFormat, FormatSingle)
+{
   const iTime* t = ni::GetLang()->GetCurrentTime();
   niDebugFmt(("# YYYY    year          2011"));
   niDebugFmt(("%s", t->Format("YYYY")));
@@ -83,95 +84,109 @@ TEST_FIXTURE(FTimeFormat,FormatSingle) {
   niDebugFmt(("%s", t->Format("ss")));
 }
 
-TEST_FIXTURE(FTimeFormat,FormatSquareBrackets) {
+TEST_FIXTURE(FTimeFormat, FormatSquareBrackets)
+{
   const iTime* t = ni::GetLang()->GetCurrentTime();
   niDebugFmt(("Day at Hour AM/PM: %s", t->Format("dddd [at] hA")));
   niDebugFmt(("Day 你好 Hour AM/PM: %s", t->Format("dddd [你好] hA")));
-  niDebugFmt(("Day [nested [[brackets] should] work] Hour AM/PM: %s", t->Format("dddd [nested [[brackets] should] work] hA")));
-  niDebugFmt(("[At the start] Day Hour AM/PM: %s", t->Format("[At the start] dddd hA")));
-  niDebugFmt(("Day Hour AM/PM [At the end]: %s", t->Format("dddd hA [At the end]")));
-  niDebugFmt(("Day Hour AM/PM [At the end not closed: %s", t->Format("dddd hA [At the end not closed")));
+  niDebugFmt(("Day [nested [[brackets] should] work] Hour AM/PM: %s",
+              t->Format("dddd [nested [[brackets] should] work] hA")));
+  niDebugFmt(
+    ("[At the start] Day Hour AM/PM: %s", t->Format("[At the start] dddd hA")));
+  niDebugFmt(
+    ("Day Hour AM/PM [At the end]: %s", t->Format("dddd hA [At the end]")));
+  niDebugFmt(("Day Hour AM/PM [At the end not closed: %s",
+              t->Format("dddd hA [At the end not closed")));
 }
 
-TEST_FIXTURE(FTimeFormat,FormatStd) {
+TEST_FIXTURE(FTimeFormat, FormatStd)
+{
   const iTime* t = ni::GetLang()->GetCurrentTime();
-  niDebugFmt(("RFC1123 (Wed, 16 Feb 2011 03:34:56 Z): %s", t->Format("RFC1123")));
-  niDebugFmt(("RFC850 (Wednesday, 16-Feb-11 03:34:56 Z): %s", t->Format("RFC850")));
+  niDebugFmt(
+    ("RFC1123 (Wed, 16 Feb 2011 03:34:56 Z): %s", t->Format("RFC1123")));
+  niDebugFmt(
+    ("RFC850 (Wednesday, 16-Feb-11 03:34:56 Z): %s", t->Format("RFC850")));
   niDebugFmt(("ASCTIME (Wed Feb 16 03:34:56 2011): %s", t->Format("ASCTIME")));
   niDebugFmt(("ISO8601 (2014-09-08T08:02:17-05:00): %s", t->Format("ISO8601")));
 }
 
-TEST_FIXTURE(FTimeFormat,FormatSingleTimezone) {
+TEST_FIXTURE(FTimeFormat, FormatSingleTimezone)
+{
   const iTime* t = ni::GetLang()->GetCurrentTime();
   niDebugFmt(("Z: %s", t->Format("Z")));
   niDebugFmt(("ZZ: %s", t->Format("ZZ")));
 }
 
-TEST_FIXTURE(FTimeFormat,ParseSingleTimeZone) {
+TEST_FIXTURE(FTimeFormat, ParseSingleTimeZone)
+{
   Ptr<iTime> t = ni::GetLang()->GetCurrentTime()->Clone();
   {
-    const tI32 tz = t->ParseString("+0800","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("+0800", "%z")->GetTimeZone();
     niDebugFmt(("tz (+0800): %s", tz));
     CHECK_EQUAL(-28800, tz);
   }
   {
-    const tI32 tz = t->ParseString("+08:00","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("+08:00", "%z")->GetTimeZone();
     niDebugFmt(("tz (+08:00): %s", tz));
     CHECK_EQUAL(-28800, tz);
   }
   {
-    const tI32 tz = t->ParseString("+08","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("+08", "%z")->GetTimeZone();
     niDebugFmt(("tz (+08): %s", tz));
     CHECK_EQUAL(-28800, tz);
   }
   {
-    const tI32 tz = t->ParseString("-0800","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("-0800", "%z")->GetTimeZone();
     niDebugFmt(("tz (-0800): %s", tz));
     CHECK_EQUAL(28800, tz);
   }
   {
-    const tI32 tz = t->ParseString("-08:00","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("-08:00", "%z")->GetTimeZone();
     niDebugFmt(("tz (-08:00): %s", tz));
     CHECK_EQUAL(28800, tz);
   }
   {
-    const tI32 tz = t->ParseString("-08","%z")->GetTimeZone();
+    const tI32 tz = t->ParseString("-08", "%z")->GetTimeZone();
     niDebugFmt(("tz (-08): %s", tz));
     CHECK_EQUAL(28800, tz);
   }
 }
 
-TEST_FIXTURE(FTimeFormat,ParseISO8601) {
+TEST_FIXTURE(FTimeFormat, ParseISO8601)
+{
   Ptr<iTime> t = ni::GetLang()->GetCurrentTime()->Clone();
   {
-    cString strISO = t->ParseString("2016-07-24T14:38:47+08:00",NULL)->Format(NULL);
+    cString strISO =
+      t->ParseString("2016-07-24T14:38:47+08:00", NULL)->Format(NULL);
     niDebugFmt(("ISO8601: %s", strISO));
     CHECK_EQUAL(_ASTR("2016-07-24T14:38:47+08:00"), strISO);
   }
   {
-    cString strISO = t->ParseString("2016-07-24T14:38:47+0800",NULL)->Format(NULL);
+    cString strISO =
+      t->ParseString("2016-07-24T14:38:47+0800", NULL)->Format(NULL);
     niDebugFmt(("ISO8601: %s", strISO));
     CHECK_EQUAL(_ASTR("2016-07-24T14:38:47+08:00"), strISO);
   }
   {
-    cString strISO = t->ParseString("2016-07-24T06:38:47Z",NULL)->Format(NULL);
+    cString strISO = t->ParseString("2016-07-24T06:38:47Z", NULL)->Format(NULL);
     niDebugFmt(("ISO8601: %s", strISO));
     CHECK_EQUAL(_ASTR("2016-07-24T06:38:47Z"), strISO);
     CHECK_EQUAL(2016, t->GetYear());
-    CHECK_EQUAL( 7, t->GetMonth());
+    CHECK_EQUAL(7, t->GetMonth());
     CHECK_EQUAL(24, t->GetDay());
-    CHECK_EQUAL( 6, t->GetHour());
+    CHECK_EQUAL(6, t->GetHour());
     CHECK_EQUAL(38, t->GetMinute());
     CHECK_EQUAL(47, t->GetSecond());
     CHECK_EQUAL(0, t->GetTimeZone());
     CHECK_EQUAL(1469342327, t->GetUnixTimeSecs());
   }
   {
-    cString strISO = t->ParseString("2016-07-24T14:38:47+08",NULL)->Format(NULL);
+    cString strISO =
+      t->ParseString("2016-07-24T14:38:47+08", NULL)->Format(NULL);
     niDebugFmt(("ISO8601: %s", strISO));
     CHECK_EQUAL(_ASTR("2016-07-24T14:38:47+08:00"), strISO);
     CHECK_EQUAL(2016, t->GetYear());
-    CHECK_EQUAL( 7, t->GetMonth());
+    CHECK_EQUAL(7, t->GetMonth());
     CHECK_EQUAL(24, t->GetDay());
     CHECK_EQUAL(14, t->GetHour());
     CHECK_EQUAL(38, t->GetMinute());

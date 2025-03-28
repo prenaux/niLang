@@ -2,7 +2,8 @@
 #define __WIN32_DC_26053814_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
-namespace ni { namespace Windows {
+namespace ni {
+namespace Windows {
 /** \addtogroup niLang
  * @{
  */
@@ -28,27 +29,36 @@ namespace ni { namespace Windows {
 //   hfile.Close();
 class AutoHandle {
  public:
-  AutoHandle() : _handle(NULL) {
+  AutoHandle()
+      : _handle(NULL)
+  {
   }
 
-  explicit AutoHandle(HANDLE h) : _handle(NULL) {
+  explicit AutoHandle(HANDLE h)
+      : _handle(NULL)
+  {
     Set(h);
   }
 
-  AutoHandle(AutoHandle&& aRight) : _handle(aRight.Take()) {
+  AutoHandle(AutoHandle&& aRight)
+      : _handle(aRight.Take())
+  {
   }
 
-  ~AutoHandle() {
+  ~AutoHandle()
+  {
     Close();
   }
 
   // Use this instead of comparing to INVALID_HANDLE_VALUE to pick up our NULL
   // usage for errors.
-  bool IsValid() const {
+  bool IsValid() const
+  {
     return _handle != NULL;
   }
 
-  void Set(HANDLE new_handle) {
+  void Set(HANDLE new_handle)
+  {
     Close();
 
     // Windows is inconsistent about invalid handles, so we always use NULL
@@ -57,18 +67,21 @@ class AutoHandle {
     }
   }
 
-  HANDLE Get() const {
+  HANDLE Get() const
+  {
     return _handle;
   }
 
-  HANDLE Take() {
+  HANDLE Take()
+  {
     // transfers ownership away from this object
     HANDLE h = _handle;
     _handle = NULL;
     return h;
   }
 
-  void Close() {
+  void Close()
+  {
     if (_handle) {
       if (!::CloseHandle(_handle)) {
         niAssertUnreachable("Can't close handle.");
@@ -86,24 +99,34 @@ class AutoHandle {
 // CreateCompatibleDC.  For an HDC returned by GetDC, use ReleaseDC instead.
 class AutoHDC {
  public:
-  AutoHDC() : _hdc(NULL) { }
-  explicit AutoHDC(HDC h) : _hdc(h) { }
+  AutoHDC()
+      : _hdc(NULL)
+  {
+  }
+  explicit AutoHDC(HDC h)
+      : _hdc(h)
+  {
+  }
 
-  ~AutoHDC() {
+  ~AutoHDC()
+  {
     Close();
   }
 
-  HDC Get() const {
+  HDC Get() const
+  {
     return _hdc;
   }
 
-  void Set(HDC h) {
+  void Set(HDC h)
+  {
     Close();
     _hdc = h;
   }
 
  private:
-  void Close() {
+  void Close()
+  {
     if (_hdc)
       DeleteDC(_hdc);
   }
@@ -113,33 +136,44 @@ class AutoHDC {
 };
 
 // Like AutoHandle but for GDI objects.
-template<class T>
+template <class T>
 class AutoGDIObject {
  public:
-  AutoGDIObject() : _object(NULL) {}
-  explicit AutoGDIObject(T object) : _object(object) {}
+  AutoGDIObject()
+      : _object(NULL)
+  {
+  }
+  explicit AutoGDIObject(T object)
+      : _object(object)
+  {
+  }
 
-  ~AutoGDIObject() {
+  ~AutoGDIObject()
+  {
     Close();
   }
 
-  T Get() const {
+  T Get() const
+  {
     return _object;
   }
 
-  void Set(T object) {
+  void Set(T object)
+  {
     if (_object && object != _object)
       Close();
     _object = object;
   }
 
-  AutoGDIObject& operator=(T object) {
+  AutoGDIObject& operator=(T object)
+  {
     Set(object);
     return *this;
   }
 
  private:
-  void Close() {
+  void Close()
+  {
     if (_object) {
       DeleteObject(_object);
     }
@@ -155,20 +189,32 @@ typedef AutoGDIObject<HRGN> AutoHRGN;
 typedef AutoGDIObject<HFONT> AutoHFONT;
 
 // Like AutoHandle except for HGLOBAL.
-template<class T>
+template <class T>
 class AutoHGlobal {
  public:
-  explicit AutoHGlobal(HGLOBAL glob) : _glob(glob) {
+  explicit AutoHGlobal(HGLOBAL glob)
+      : _glob(glob)
+  {
     _data = static_cast<T*>(GlobalLock(_glob));
   }
-  ~AutoHGlobal() {
+  ~AutoHGlobal()
+  {
     GlobalUnlock(_glob);
   }
 
-  T* Get() { return _data; }
-  const T* Get() const { return _data; }
+  T* Get()
+  {
+    return _data;
+  }
+  const T* Get() const
+  {
+    return _data;
+  }
 
-  size_t Size() const { return GlobalSize(_glob); }
+  size_t Size() const
+  {
+    return GlobalSize(_glob);
+  }
 
  private:
   HGLOBAL _glob;
@@ -181,5 +227,6 @@ class AutoHGlobal {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}} // namespace ni { namespace Windows {
+} // namespace Windows
+} // namespace ni
 #endif // __WIN32_DC_26053814_H__

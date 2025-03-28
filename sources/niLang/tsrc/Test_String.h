@@ -31,27 +31,27 @@ enum eTestDataString {
   eTestDataString_Bug2_notzeroterminated = 16,
   eTestDataString_Last = 17,
 };
-extern "C" const ni::tU32   GetTestDataStringSize(ni::tU32 aString);
+extern "C" const ni::tU32 GetTestDataStringSize(ni::tU32 aString);
 extern "C" const ni::achar* GetTestDataString(ni::tU32 aString);
 extern "C" const ni::achar* GetTestDataStringName(ni::tU32 aString);
 
-static const ni::tU32 _knTestDataSize = sizeof(ni::achar)*180;
+static const ni::tU32 _knTestDataSize = sizeof(ni::achar) * 180;
 static const ni::tU32 _nUAigu = 0x000000F9;
-static const ni::tU32 _nHao   = 0x0000597D;
+static const ni::tU32 _nHao = 0x0000597D;
 static const ni::tU32 _nAlpha = 0x000003B1;
-static const ni::tU32 _nBeta  = 0x000003B2;
+static const ni::tU32 _nBeta = 0x000003B2;
 static const ni::tU32 _nEndTailSize = 3; // tail is 3 bytes = cba
 
 #ifdef niUnicode
-# if niUCharSize == 4
-#  define ASZ_TEST_STRING GetTestStringUTF32()
-# elif niUCharSize == 2
-#  define ASZ_TEST_STRING GetTestStringUTF16()
-# elif niUCharSize == 1
-#  define ASZ_TEST_STRING GetTestStringUTF8()
-# endif
+  #if niUCharSize == 4
+    #define ASZ_TEST_STRING GetTestStringUTF32()
+  #elif niUCharSize == 2
+    #define ASZ_TEST_STRING GetTestStringUTF16()
+  #elif niUCharSize == 1
+    #define ASZ_TEST_STRING GetTestStringUTF8()
+  #endif
 #else
-# define ASZ_TEST_STRING GetTestStringUTF8()
+  #define ASZ_TEST_STRING GetTestStringUTF8()
 #endif
 
 extern "C" const char* _MultiLineText;

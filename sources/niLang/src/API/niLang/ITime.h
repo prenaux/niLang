@@ -10,8 +10,7 @@ namespace ni {
  */
 
 //! Time zone enumeration
-enum eTimeZone
-{
+enum eTimeZone {
   //! Coordinated Universal Time  Europe  UTC
   eTimeZone_UTC = (tU32)0,
   //! Western European Time Europe  UTC
@@ -19,137 +18,137 @@ enum eTimeZone
   //! Greenwich Mean Time Europe  UTC
   eTimeZone_GMT = (tU32)0,
   //! Alpha Time Zone Military  UTC + 1 hour
-  eTimeZone_A = (tU32)+ 1 * 3600,
+  eTimeZone_A = (tU32) + 1 * 3600,
   //! Atlantic Daylight Time  North America UTC - 3 hours
-  eTimeZone_ADT = (tU32)- 3 * 3600,
+  eTimeZone_ADT = (tU32)-3 * 3600,
   //! Alaska Daylight Time  North America UTC - 8 hours
-  eTimeZone_AKDT  = (tU32)- 8 * 3600,
+  eTimeZone_AKDT = (tU32)-8 * 3600,
   //! Alaska Standard Time  North America UTC - 9 hours
-  eTimeZone_AKST  = (tU32)- 9 * 3600,
+  eTimeZone_AKST = (tU32)-9 * 3600,
   //! Atlantic Standard Time  North America UTC - 4 hours
-  eTimeZone_AST = (tU32)- 4 * 3600,
+  eTimeZone_AST = (tU32)-4 * 3600,
   //! Bravo Time Zone Military  UTC + 2 hours
-  eTimeZone_B = (tU32)+ 2 * 3600,
+  eTimeZone_B = (tU32) + 2 * 3600,
   //! British Summer Time Europe  UTC + 1 hour
-  eTimeZone_BST = (tU32)+ 1 * 3600,
+  eTimeZone_BST = (tU32) + 1 * 3600,
   //! Charlie Time Zone Military  UTC + 3 hours
-  eTimeZone_C = (tU32)+ 3 * 3600,
+  eTimeZone_C = (tU32) + 3 * 3600,
   //! Central Daylight Time North America UTC - 5 hours
-  eTimeZone_CDT = (tU32)- 5 * 3600,
+  eTimeZone_CDT = (tU32)-5 * 3600,
   //! Central European Daylight Time  Europe  UTC + 2 hours
-  eTimeZone_CEDT  = (tU32)+ 2 * 3600,
+  eTimeZone_CEDT = (tU32) + 2 * 3600,
   //! Central European Summer Time  Europe  UTC + 2 hours
-  eTimeZone_CEST  = (tU32)+ 2 * 3600,
+  eTimeZone_CEST = (tU32) + 2 * 3600,
   //! Central European Time Europe  UTC + 1 hour
-  eTimeZone_CET = (tU32)+ 1 * 3600,
+  eTimeZone_CET = (tU32) + 1 * 3600,
   //! Central Standard Time North America UTC - 6 hours
-  eTimeZone_CST = (tU32)- 6 * 3600,
+  eTimeZone_CST = (tU32)-6 * 3600,
   //! Delta Time Zone Military  UTC + 4 hours
-  eTimeZone_D = (tU32)+ 4 * 3600,
+  eTimeZone_D = (tU32) + 4 * 3600,
   //! Echo Time Zone  Military  UTC + 5 hours
-  eTimeZone_E = (tU32)+ 5 * 3600,
+  eTimeZone_E = (tU32) + 5 * 3600,
   //! Eastern Daylight Time North America UTC - 4 hours
-  eTimeZone_EDT = (tU32)- 4 * 3600,
+  eTimeZone_EDT = (tU32)-4 * 3600,
   //! Eastern European Daylight Time  Europe  UTC + 3 hours
-  eTimeZone_EEDT  = (tU32)+ 3 * 3600,
+  eTimeZone_EEDT = (tU32) + 3 * 3600,
   //! Eastern European Summer Time  Europe  UTC + 3 hours
-  eTimeZone_EEST  = (tU32)+ 3 * 3600,
+  eTimeZone_EEST = (tU32) + 3 * 3600,
   //! Eastern European Time Europe  UTC + 2 hours
-  eTimeZone_EET = (tU32)+ 2 * 3600,
+  eTimeZone_EET = (tU32) + 2 * 3600,
   //! Eastern Standard Time North America UTC - 5 hours
-  eTimeZone_EST = (tU32)- 5 * 3600,
+  eTimeZone_EST = (tU32)-5 * 3600,
   //! Foxtrot Time Zone Military  UTC + 6 hours
-  eTimeZone_F = (tU32)+ 6 * 3600,
+  eTimeZone_F = (tU32) + 6 * 3600,
   //! Golf Time Zone  Military  UTC + 7 hours
-  eTimeZone_G = (tU32)+ 7 * 3600,
+  eTimeZone_G = (tU32) + 7 * 3600,
   //! Hotel Time Zone Military  UTC + 8 hours
-  eTimeZone_H = (tU32)+ 8 * 3600,
+  eTimeZone_H = (tU32) + 8 * 3600,
   //! Heure Avancee de l'Atlantique North America UTC - 3 hours
-  eTimeZone_HAA = (tU32)- 3 * 3600,
+  eTimeZone_HAA = (tU32)-3 * 3600,
   //! Heure Avancee du Centre North America UTC - 5 hours
-  eTimeZone_HAC = (tU32)- 5 * 3600,
+  eTimeZone_HAC = (tU32)-5 * 3600,
   //! Hawaii-Aleutian Daylight Time North America UTC - 9 hours
-  eTimeZone_HADT  = (tU32)- 9 * 3600,
+  eTimeZone_HADT = (tU32)-9 * 3600,
   //! Heure Avancee de l'Est  North America UTC - 4 hours
-  eTimeZone_HAE = (tU32)- 4 * 3600,
+  eTimeZone_HAE = (tU32)-4 * 3600,
   //! Heure Avancee du Pacifique  North America UTC - 7 hours
-  eTimeZone_HAP = (tU32)- 7 * 3600,
+  eTimeZone_HAP = (tU32)-7 * 3600,
   //! Heure Avancee des Rocheuses North America UTC - 6 hours
-  eTimeZone_HAR = (tU32)- 6 * 3600,
+  eTimeZone_HAR = (tU32)-6 * 3600,
   //! Hawaii-Aleutian Standard Time North America UTC - 10 hours
-  eTimeZone_HAST  = (tU32)- 10 * 3600 - 1800,
+  eTimeZone_HAST = (tU32)-10 * 3600 - 1800,
   //! Heure Avancee de Terre-Neuve  North America UTC - 2:30 hours
-  eTimeZone_HAT = (tU32)- 2 * 3600 - 1800,
+  eTimeZone_HAT = (tU32)-2 * 3600 - 1800,
   //! Heure Avancee du Yukon  North America UTC - 8 hours
-  eTimeZone_HAY = (tU32)- 8 * 3600,
+  eTimeZone_HAY = (tU32)-8 * 3600,
   //! Heure Normale de l'Atlantique North America UTC - 4 hours
-  eTimeZone_HNA = (tU32)- 4 * 3600,
+  eTimeZone_HNA = (tU32)-4 * 3600,
   //! Heure Normale du Centre North America UTC - 6 hours
-  eTimeZone_HNC = (tU32)- 6 * 3600,
+  eTimeZone_HNC = (tU32)-6 * 3600,
   //! Heure Normale de l'Est  North America UTC - 5 hours
-  eTimeZone_HNE = (tU32)- 5 * 3600,
+  eTimeZone_HNE = (tU32)-5 * 3600,
   //! Heure Normale du Pacifique  North America UTC - 8 hours
-  eTimeZone_HNP = (tU32)- 8 * 3600,
+  eTimeZone_HNP = (tU32)-8 * 3600,
   //! Heure Normale des Rocheuses North America UTC - 7 hours
-  eTimeZone_HNR = (tU32)- 7 * 3600,
+  eTimeZone_HNR = (tU32)-7 * 3600,
   //! Heure Normale de Terre-Neuve  North America UTC - 3:30 hours
-  eTimeZone_HNT = (tU32)- 3 * 3600 - 1800,
+  eTimeZone_HNT = (tU32)-3 * 3600 - 1800,
   //! Heure Normale du Yukon  North America UTC - 9 hours
-  eTimeZone_HNY = (tU32)- 9 * 3600,
+  eTimeZone_HNY = (tU32)-9 * 3600,
   //! India Time Zone Military  UTC + 9 hours
-  eTimeZone_I = (tU32)+ 9 * 3600,
+  eTimeZone_I = (tU32) + 9 * 3600,
   //! Irish Summer Time Europe  UTC + 1 hour
-  eTimeZone_IST = (tU32)+ 1 * 3600,
+  eTimeZone_IST = (tU32) + 1 * 3600,
   //! Kilo Time Zone  Military  UTC + 10 hours
-  eTimeZone_K = (tU32)+ 10 * 3600,
+  eTimeZone_K = (tU32) + 10 * 3600,
   //! Lima Time Zone  Military  UTC + 11 hours
-  eTimeZone_L = (tU32)+ 11 * 3600,
+  eTimeZone_L = (tU32) + 11 * 3600,
   //! Mike Time Zone  Military  UTC + 12 hours
-  eTimeZone_M = (tU32)+ 12 * 3600,
+  eTimeZone_M = (tU32) + 12 * 3600,
   //! Mountain Daylight Time  North America UTC - 6 hours
-  eTimeZone_MDT = (tU32)- 6 * 3600,
+  eTimeZone_MDT = (tU32)-6 * 3600,
   //! Mitteleuroaische Sommerzeit Europe  UTC + 2 hours
-  eTimeZone_MESZ  = (tU32)+ 2 * 3600,
+  eTimeZone_MESZ = (tU32) + 2 * 3600,
   //! Mitteleuropaische Zeit  Europe  UTC + 1 hour
-  eTimeZone_MEZ = (tU32)+ 1 * 3600,
+  eTimeZone_MEZ = (tU32) + 1 * 3600,
   //! Mountain Standard Time  North America UTC - 7 hours
-  eTimeZone_MST = (tU32)- 7 * 3600,
+  eTimeZone_MST = (tU32)-7 * 3600,
   //! November Time Zone  Military  UTC - 1 hour
-  eTimeZone_N = (tU32)- 1 * 3600,
+  eTimeZone_N = (tU32)-1 * 3600,
   //! Newfoundland Daylight Time  North America UTC - 2:30 hours
-  eTimeZone_NDT = (tU32)- 2 * 3600 - 1800,
+  eTimeZone_NDT = (tU32)-2 * 3600 - 1800,
   //! Newfoundland Standard Time  North America UTC - 3:30 hours
-  eTimeZone_NST = (tU32)- 3 * 3600 - 1800,
+  eTimeZone_NST = (tU32)-3 * 3600 - 1800,
   //! Oscar Time Zone Military  UTC - 2 hours
-  eTimeZone_O = (tU32)- 2 * 3600,
+  eTimeZone_O = (tU32)-2 * 3600,
   //! Papa Time Zone  Military  UTC - 3 hours
-  eTimeZone_P = (tU32)- 3 * 3600,
+  eTimeZone_P = (tU32)-3 * 3600,
   //! Pacific Daylight Time North America UTC - 7 hours
-  eTimeZone_PDT = (tU32)- 7 * 3600,
+  eTimeZone_PDT = (tU32)-7 * 3600,
   //! Pacific Standard Time North America UTC - 8 hours
-  eTimeZone_PST = (tU32)- 8 * 3600,
+  eTimeZone_PST = (tU32)-8 * 3600,
   //! Quebec Time Zone  Military  UTC - 4 hours
-  eTimeZone_Q = (tU32)- 4 * 3600,
+  eTimeZone_Q = (tU32)-4 * 3600,
   //! Romeo Time Zone Military  UTC - 5 hours
-  eTimeZone_R = (tU32)- 5 * 3600,
+  eTimeZone_R = (tU32)-5 * 3600,
   //! Sierra Time Zone  Military  UTC - 6 hours
-  eTimeZone_S = (tU32)- 6 * 3600,
+  eTimeZone_S = (tU32)-6 * 3600,
   //! Tango Time Zone Military  UTC - 7 hours
-  eTimeZone_T = (tU32)- 7 * 3600,
+  eTimeZone_T = (tU32)-7 * 3600,
   //! Uniform Time Zone Military  UTC - 8 hours
-  eTimeZone_U = (tU32)- 8 * 3600,
+  eTimeZone_U = (tU32)-8 * 3600,
   //! Victor Time Zone  Military  UTC - 9 hours
-  eTimeZone_V = (tU32)- 9 * 3600,
+  eTimeZone_V = (tU32)-9 * 3600,
   //! Whiskey Time Zone Military  UTC - 10 hours
-  eTimeZone_W = (tU32)- 10 * 3600,
+  eTimeZone_W = (tU32)-10 * 3600,
   //! Western European Daylight Time  Europe  UTC + 1 hour
-  eTimeZone_WEDT  = (tU32)+ 1 * 3600,
+  eTimeZone_WEDT = (tU32) + 1 * 3600,
   //! Western European Summer Time  Europe  UTC + 1 hour
-  eTimeZone_WEST  = (tU32)+ 1 * 3600,
+  eTimeZone_WEST = (tU32) + 1 * 3600,
   //! X-ray Time Zone Military  UTC - 11 hours
-  eTimeZone_X = (tU32)- 11 * 3600,
+  eTimeZone_X = (tU32)-11 * 3600,
   //! Yankee Time Zone  Military  UTC - 12 hours
-  eTimeZone_Y = (tU32)- 12 * 3600,
+  eTimeZone_Y = (tU32)-12 * 3600,
   //! Zulu Time Zone  Military  UTC
   eTimeZone_Z = (tU32)0,
   //! \internal
@@ -163,17 +162,16 @@ const tI64 knTimeSecsPerMinute = 60;
 //! Internal format minutes per hour.
 const tI64 knTimeMinPerHour = 60;
 //! Internal format seconds per hour.
-const tI64 knTimeSecsPerHour = knTimeMinPerHour*knTimeSecsPerMinute;
+const tI64 knTimeSecsPerHour = knTimeMinPerHour * knTimeSecsPerMinute;
 //! Internal format hours per day.
 const tI64 knTimeHoursPerDay = 24;
 //! Internal format minutes per day.
-const tI64 knTimeMinPerDay = knTimeMinPerHour*knTimeHoursPerDay;
+const tI64 knTimeMinPerDay = knTimeMinPerHour * knTimeHoursPerDay;
 //! Internal format seconds per day.
-const tI64 knTimeSecsPerDay = knTimeMinPerDay*knTimeSecsPerMinute;
+const tI64 knTimeSecsPerDay = knTimeMinPerDay * knTimeSecsPerMinute;
 
 //! Time interface.
-struct iTime : public iUnknown
-{
+struct iTime : public iUnknown {
   niDeclareInterfaceUUID(iTime,0x2b3e468b,0x96fc,0x4abd,0x86,0x94,0x48,0x10,0xb3,0x17,0xd4,0x2d);
 
   //! Update the time class from the current system's time.
@@ -279,7 +277,8 @@ struct iTime : public iUnknown
   //!         %%    A % sign
   //!         ISO8601 or NULL or empty string, ISO8601 date time format, equivalent to: %FT%T%z & %Y-%m-%dT%H:%M:%S%z
   //! \return This time object.
-  virtual iTime* __stdcall ParseString(const achar* szString, const achar* aszFormat) = 0;
+  virtual iTime* __stdcall ParseString(const achar* szString,
+                                       const achar* aszFormat) = 0;
 
   //! Format time.
   //! \remark Format syntax:
@@ -325,9 +324,10 @@ struct iTime : public iUnknown
 niExportFunc(ni::iTime*) CreateTimeZero();
 niExportFunc(ni::iTime*) GetCurrentTime();
 // apTimeT must be a pointer to time_t variable.
-niExportFunc(ni::tBool) SetTimeFromTimeT(ni::iTime* apTime, const void* apTimeT);
+niExportFunc(ni::tBool) SetTimeFromTimeT(ni::iTime* apTime,
+                                         const void* apTimeT);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __TIME_20124180_H__

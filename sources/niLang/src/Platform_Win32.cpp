@@ -4,23 +4,24 @@ using namespace ni;
 
 #ifdef niWinDesktop
 
-#include "Lang.h"
-#include "FileFd.h"
-#include "API/niLang/IOSProcess.h"
-#include "API/niLang/Utils/CrashReport.h"
-#include "API/niLang/Utils/Path.h"
-#include "API/niLang/Utils/Sync.h"
-#include "API/niLang/STL/set.h"
-#include "API/niLang/StringDef.h"
-#include "API/niLang/Platforms/Win32/Win32_UTF.h"
-#include "API/niLang/Platforms/Win32/WinUI.h"
+  #include "Lang.h"
+  #include "FileFd.h"
+  #include "API/niLang/IOSProcess.h"
+  #include "API/niLang/Utils/CrashReport.h"
+  #include "API/niLang/Utils/Path.h"
+  #include "API/niLang/Utils/Sync.h"
+  #include "API/niLang/STL/set.h"
+  #include "API/niLang/StringDef.h"
+  #include "API/niLang/Platforms/Win32/Win32_UTF.h"
+  #include "API/niLang/Platforms/Win32/WinUI.h"
 
-#pragma comment(lib,"advapi32.lib")
+  #pragma comment(lib, "advapi32.lib")
 
-static tIntPtr      _nLastErr = 0;
-static cString      _strLastErr;
+static tIntPtr _nLastErr = 0;
+static cString _strLastErr;
 
-static tIntPtr __stdcall _GetLastErrorCode() {
+static tIntPtr __stdcall _GetLastErrorCode()
+{
   tIntPtr currErr = ::GetLastError();
   if (currErr != _nLastErr) {
     _nLastErr = currErr;
@@ -28,7 +29,8 @@ static tIntPtr __stdcall _GetLastErrorCode() {
   }
   return _nLastErr;
 }
-static const achar* _GetLastErrorMessage(const tIntPtr currErr) {
+static const achar* _GetLastErrorMessage(const tIntPtr currErr)
+{
   if (currErr != _nLastErr || _strLastErr.IsEmpty()) {
     if (currErr == S_OK) {
       _nLastErr = currErr;
@@ -36,21 +38,26 @@ static const achar* _GetLastErrorMessage(const tIntPtr currErr) {
     }
     else {
       LPVOID lpMsgBuf = NULL;
-      FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                    NULL, (DWORD)currErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
+      FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, (DWORD)currErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&lpMsgBuf, 0, NULL);
       _strLastErr = (LPCTSTR)lpMsgBuf;
       LocalFree(lpMsgBuf);
     }
   }
   return _strLastErr.Chars();
 }
-static const achar* _GetLastErrorMessage() {
+static const achar* _GetLastErrorMessage()
+{
   tIntPtr currErr = ::GetLastError();
   return _GetLastErrorMessage(currErr);
 }
 
 // Attach the output of the application to the parent console if there's one.
-static BOOL _AttachOutputToConsole(void) {
+static BOOL _AttachOutputToConsole(void)
+{
   // The console in Emacs capture the application's output, if we attach to
   // the parent process nothing is output in the emacs shell...
   if (agetenv("EMACS").IEq("t"))
@@ -83,7 +90,8 @@ static BOOL _AttachOutputToConsole(void) {
 
 // Send the "Enter" to the console to release the command prompt on the parent
 // console.
-static void _SendEnterKey(void) {
+static void _SendEnterKey(void)
+{
   INPUT ip;
 
   // Set up a generic keyboard event.
@@ -93,7 +101,7 @@ static void _SendEnterKey(void) {
   ip.ki.dwExtraInfo = 0;
 
   // Send the "Enter" key
-  ip.ki.wVk = 0x0D; // virtual-key code for the "Enter" key
+  ip.ki.wVk = 0x0D;  // virtual-key code for the "Enter" key
   ip.ki.dwFlags = 0; // 0 for key press
   SendInput(1, &ip, sizeof(INPUT));
 
@@ -104,21 +112,26 @@ static void _SendEnterKey(void) {
 
 static tBool _hasAttachedOutputToConsole = eFalse;
 
-niExportFunc(void) _niWinMainStartup() {
+niExportFunc(void) _niWinMainStartup()
+{
   _hasAttachedOutputToConsole = _AttachOutputToConsole();
 }
 
-niExportFunc(void) _niWinMainShutdown() {
+niExportFunc(void) _niWinMainShutdown()
+{
   // Send "enter" to release the application from the console. This is a
   // hack, but without it the console doesn't know that the application has
   // returned. The "enter" key is only sent if the console window is in focus.
-  if (_hasAttachedOutputToConsole && (GetConsoleWindow() == GetForegroundWindow())){
+  if (_hasAttachedOutputToConsole &&
+      (GetConsoleWindow() == GetForegroundWindow()))
+  {
     _hasAttachedOutputToConsole = eFalse;
     _SendEnterKey();
   }
 }
 
-static void _FatalError(const achar* aszMsg) {
+static void _FatalError(const achar* aszMsg)
+{
   if (::IsDebuggerPresent()) {
     ni_debug_break();
   }
@@ -134,7 +147,7 @@ static void _FatalError(const achar* aszMsg) {
     logMessage = niFmt(_A("[FATAL ERROR] App: %s\n%s\n"), appName, aszMsg);
     tIntPtr errCode = _GetLastErrorCode();
     if (errCode && errCode != 6) {
-      logMessage += niFmt(_A("--- OS Error (%d:%x) ---\n"),errCode,errCode);
+      logMessage += niFmt(_A("--- OS Error (%d:%x) ---\n"), errCode, errCode);
       logMessage += _GetLastErrorMessage();
     }
   }
@@ -144,27 +157,28 @@ static void _FatalError(const achar* aszMsg) {
     dialogMessage = logMessage;
 
     astl::vector<cString> logs;
-    ni_get_last_logs(&logs,300);
+    ni_get_last_logs(&logs, 300);
     if (!logs.empty()) {
-      dialogMessage += niFmt("--- Last %d logs ---\n",logs.size());
-      niLoop(i,logs.size()) {
+      dialogMessage += niFmt("--- Last %d logs ---\n", logs.size());
+      niLoop (i, logs.size()) {
         dialogMessage += logs[i];
       }
     }
   }
 
-  niLog(Error,logMessage);
+  niLog(Error, logMessage);
 
   if (ni_get_show_fatal_error_message_box()) {
-    WinUI::cTextDlg dlg(NULL, niFmt("%s Fatal Error", appName), dialogMessage.c_str());
+    WinUI::cTextDlg dlg(NULL, niFmt("%s Fatal Error", appName),
+                        dialogMessage.c_str());
     ni::sRecti rect = ni::GetLang()->GetMonitorRect(0);
     if (rect.GetWidth() > 100 && rect.GetHeight() > 100) {
-      dlg.SetSize(rect.GetWidth()/2,rect.GetHeight()/8*5);
+      dlg.SetSize(rect.GetWidth() / 2, rect.GetHeight() / 8 * 5);
     }
     dlg.DoModal(eTrue);
   }
 
-  ::TerminateProcess(::GetCurrentProcess(),0xDEADBEEF);
+  ::TerminateProcess(::GetCurrentProcess(), 0xDEADBEEF);
 }
 
 //----------------------------------------------------------------------------
@@ -174,89 +188,100 @@ static void _FatalError(const achar* aszMsg) {
 //----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-void cLang::_PlatformExit(tU32 aulErrorCode) {
+void cLang::_PlatformExit(tU32 aulErrorCode)
+{
   _niWinMainShutdown();
 
-#ifdef niMSVC
+  #ifdef niMSVC
   __try
-#endif
+  #endif
   {
     exit(aulErrorCode);
   }
-#ifdef niMSVC
-  __finally {
+  #ifdef niMSVC
+  __finally
+  {
     niPrintln("= Exception on Exit =");
-    ::TerminateProcess(::GetCurrentProcess(),0x4444);
+    ::TerminateProcess(::GetCurrentProcess(), 0x4444);
   }
-#endif
+  #endif
 }
-void cLang::FatalError(const achar* aszMsg) {
+void cLang::FatalError(const achar* aszMsg)
+{
   _FatalError(aszMsg);
 }
 
 ///////////////////////////////////////////////
-void cLang::SetEnv(const achar* aaszEnv, const achar* aaszValue) const {
+void cLang::SetEnv(const achar* aaszEnv, const achar* aaszValue) const
+{
   cString envStr;
   envStr = aaszEnv;
   envStr += _A("=");
   envStr += aaszValue;
   aputenv(envStr.Chars());
 }
-cString cLang::GetEnv(const achar* aaszEnv) const {
+cString cLang::GetEnv(const achar* aaszEnv) const
+{
   return agetenv(aaszEnv);
 }
 
 ///////////////////////////////////////////////
-niExportFunc(achar*) ni_get_exe_path(ni::achar* buffer) {
-  return ni::Windows::utf8_GetModuleFileName(NULL,buffer);
+niExportFunc(achar*) ni_get_exe_path(ni::achar* buffer)
+{
+  return ni::Windows::utf8_GetModuleFileName(NULL, buffer);
 }
 
-///////////////////////////////////////////////
-//
-// - AddDllDirectory requires Windows 8+ / KB2533623 on Windows 7.
-//     See: https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory
-//
-// - SetDllDirectoryW could be used instead on XP, it can be used as a "push/pop" before/after every call.
-//     See https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setdlldirectoryw
-//
-// Right now we use SetDllDirectoryW by default since its more compatible and
-// it doesnt require a first call to SetDefaultDllDirectories. Finally this is
-// needed only when we get a ERROR_MOD_NOT_FOUND which is not the common case.
-//
+  ///////////////////////////////////////////////
+  //
+  // - AddDllDirectory requires Windows 8+ / KB2533623 on Windows 7.
+  //     See: https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory
+  //
+  // - SetDllDirectoryW could be used instead on XP, it can be used as a "push/pop" before/after every call.
+  //     See https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setdlldirectoryw
+  //
+  // Right now we use SetDllDirectoryW by default since its more compatible and
+  // it doesnt require a first call to SetDefaultDllDirectories. Finally this is
+  // needed only when we get a ERROR_MOD_NOT_FOUND which is not the common case.
+  //
 
-// #define USE_ADD_DLL_DIRECTORY
-#define TRACE_ADD_DLL_DIR(MSG)  // niDebugFmt(MSG)
+  // #define USE_ADD_DLL_DIRECTORY
+  #define TRACE_ADD_DLL_DIR(MSG) // niDebugFmt(MSG)
 
-#ifdef USE_ADD_DLL_DIRECTORY
+  #ifdef USE_ADD_DLL_DIRECTORY
 struct sWindowDllLoaderDirectories {
   __sync_mutex();
   astl::set<cString> _addedDirs;
 
-  sWindowDllLoaderDirectories() {
-    ::SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS|LOAD_LIBRARY_SEARCH_USER_DIRS);
+  sWindowDllLoaderDirectories()
+  {
+    ::SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS |
+                               LOAD_LIBRARY_SEARCH_USER_DIRS);
   }
 
-  void addDllDir(const ni::achar* aName) {
+  void addDllDir(const ni::achar* aName)
+  {
     cPath path = ni::GetRootFS()->GetAbsolutePath(aName);
     const cString& dir = path.GetDirectory();
     __sync_lock();
     if (dir.IsNotEmpty() && (_addedDirs.find(dir) == _addedDirs.end())) {
-      TRACE_ADD_DLL_DIR(("... ni_dll_load: Adding DLL directory '%s' for dll '%s'", dir, aName));
+      TRACE_ADD_DLL_DIR((
+        "... ni_dll_load: Adding DLL directory '%s' for dll '%s'", dir, aName));
       ni::Windows::UTF16Buffer wDir;
-      niWin32_UTF8ToUTF16(wDir,dir.c_str());
+      niWin32_UTF8ToUTF16(wDir, dir.c_str());
       ::AddDllDirectory(wDir.begin());
       _addedDirs.insert(dir);
     }
   }
 };
 static sWindowDllLoaderDirectories _dllDirectories;
-#else
-extern "C" BOOL WINAPI SetDllDirectoryW( LPCWSTR lpPathName );
-#endif
+  #else
+extern "C" BOOL WINAPI SetDllDirectoryW(LPCWSTR lpPathName);
+  #endif
 
-niExportFunc(ni::tIntPtr) ni_dll_load(const ni::achar* aName) {
+niExportFunc(ni::tIntPtr) ni_dll_load(const ni::achar* aName)
+{
   ni::Windows::UTF16Buffer wName;
-  niWin32_UTF8ToUTF16(wName,aName);
+  niWin32_UTF8ToUTF16(wName, aName);
 
   {
     ni::tIntPtr hModule = (ni::tIntPtr)::LoadLibraryW(wName.begin());
@@ -267,35 +292,41 @@ niExportFunc(ni::tIntPtr) ni_dll_load(const ni::achar* aName) {
 
   tIntPtr errCode = _GetLastErrorCode();
   if (errCode == ERROR_MOD_NOT_FOUND) {
-    TRACE_ADD_DLL_DIR(("... ni_dll_load: ERROR_MOD_NOT_FOUND: Setting DLL directory for dll '%s'", aName));
-#ifdef USE_ADD_DLL_DIRECTORY
+    TRACE_ADD_DLL_DIR((
+      "... ni_dll_load: ERROR_MOD_NOT_FOUND: Setting DLL directory for dll '%s'",
+      aName));
+  #ifdef USE_ADD_DLL_DIRECTORY
     _dllDirectories.addDllDir(aName);
-#else
+  #else
     cPath path = ni::GetRootFS()->GetAbsolutePath(aName);
     const cString& dir = path.GetDirectory();
     ni::Windows::UTF16Buffer wDir;
-    niWin32_UTF8ToUTF16(wDir,dir.c_str());
+    niWin32_UTF8ToUTF16(wDir, dir.c_str());
     ::SetDllDirectoryW(wDir.begin());
-#endif
+  #endif
     ni::tIntPtr hModule = (ni::tIntPtr)::LoadLibraryW(wName.begin());
-#if !defined USE_ADD_DLL_DIRECTORY
+  #if !defined USE_ADD_DLL_DIRECTORY
     ::SetDllDirectoryW(NULL);
-#endif
+  #endif
     if (hModule != NULL) {
       return hModule;
     }
   }
 
   if (errCode != ERROR_FILE_NOT_FOUND) {
-    niError(niFmt("ni_dll_load: error: (%d:%x) %s.", errCode, errCode, _GetLastErrorMessage(errCode)));
+    niError(niFmt("ni_dll_load: error: (%d:%x) %s.", errCode, errCode,
+                  _GetLastErrorMessage(errCode)));
   }
   return NULL;
 }
-niExportFunc(void) ni_dll_free(ni::tIntPtr aModule) {
+niExportFunc(void) ni_dll_free(ni::tIntPtr aModule)
+{
   ::FreeLibrary((HMODULE)aModule);
 }
-niExportFunc(ni::tPtr) ni_dll_get_proc(ni::tIntPtr aModule, const char* aProcName) {
-  return (ni::tPtr)::GetProcAddress((HMODULE)aModule,aProcName);
+niExportFunc(ni::tPtr) ni_dll_get_proc(ni::tIntPtr aModule,
+                                       const char* aProcName)
+{
+  return (ni::tPtr)::GetProcAddress((HMODULE)aModule, aProcName);
 }
 #endif
 
@@ -306,135 +337,170 @@ niExportFunc(ni::tPtr) ni_dll_get_proc(ni::tIntPtr aModule, const char* aProcNam
 //----------------------------------------------------------------------------
 #if defined niWin32
 
-ni::cString _GetCommandLine() {
+ni::cString _GetCommandLine()
+{
   return Win32GetCommandLine();
 }
 
-niExportFunc(FILE*) afopen(const achar* file, const achar* mode, ni::cString* apPathOnDisk) {
-  if (!niStringIsOK(file)) return NULL;
-  if (!niStringIsOK(mode)) return NULL;
+niExportFunc(FILE*) afopen(const achar* file, const achar* mode,
+                           ni::cString* apPathOnDisk)
+{
+  if (!niStringIsOK(file))
+    return NULL;
+  if (!niStringIsOK(mode))
+    return NULL;
   ni::Windows::UTF16Buffer wFile;
-  niWin32_UTF8ToUTF16(wFile,file);
+  niWin32_UTF8ToUTF16(wFile, file);
   ni::Windows::UTF16Buffer wMode;
-  niWin32_UTF8ToUTF16(wMode,mode);
-  FILE* fp = _wfopen(wFile.begin(),wMode.begin());
+  niWin32_UTF8ToUTF16(wMode, mode);
+  FILE* fp = _wfopen(wFile.begin(), wMode.begin());
   if (fp && apPathOnDisk) {
     *apPathOnDisk = file;
   }
   return fp;
 }
-niExportFunc(int) amkdir(const achar* dir) {
-  if (!niStringIsOK(dir)) return -1;
+niExportFunc(int) amkdir(const achar* dir)
+{
+  if (!niStringIsOK(dir))
+    return -1;
   ni::Windows::UTF16Buffer wDir;
-  niWin32_UTF8ToUTF16(wDir,dir);
+  niWin32_UTF8ToUTF16(wDir, dir);
   return _wmkdir(wDir.begin());
 }
-niExportFunc(int) armdir(const achar* dir) {
-  if (!niStringIsOK(dir)) return -1;
+niExportFunc(int) armdir(const achar* dir)
+{
+  if (!niStringIsOK(dir))
+    return -1;
   ni::Windows::UTF16Buffer wDir;
-  niWin32_UTF8ToUTF16(wDir,dir);
+  niWin32_UTF8ToUTF16(wDir, dir);
   return _wrmdir(wDir.begin());
 }
-niExportFunc(int) aunlink(const achar* file) {
-  if (!niStringIsOK(file)) return -1;
+niExportFunc(int) aunlink(const achar* file)
+{
+  if (!niStringIsOK(file))
+    return -1;
   ni::Windows::UTF16Buffer wFile;
-  niWin32_UTF8ToUTF16(wFile,file);
+  niWin32_UTF8ToUTF16(wFile, file);
   return _wunlink(wFile.begin());
 }
 
-niExportFunc(int) FdOpen(const achar* path, ni::cString* apPathOnDisk, int mode, int pmode) {
+niExportFunc(int) FdOpen(const achar* path, ni::cString* apPathOnDisk, int mode,
+                         int pmode)
+{
   ni::BufferUTF16 wFileName(path);
-  int r = _wopen(wFileName.Chars(),mode,pmode);
+  int r = _wopen(wFileName.Chars(), mode, pmode);
   if (r >= 0 && apPathOnDisk) {
     *apPathOnDisk = path;
   }
   return r;
 }
 
-namespace ni { namespace Windows {
-niExportFunc(void) utf8_OutputDebugString(const char* aaszMsg) {
+namespace ni {
+namespace Windows {
+niExportFunc(void) utf8_OutputDebugString(const char* aaszMsg)
+{
   if (aaszMsg && *aaszMsg) {
     UTF16Buffer wMsg;
-    niWin32_UTF8ToUTF16(wMsg,aaszMsg);
+    niWin32_UTF8ToUTF16(wMsg, aaszMsg);
     ::OutputDebugStringW(wMsg.begin());
   }
 }
-}}
+} // namespace Windows
+} // namespace ni
 
-#ifdef niWinDesktop
-niExportFuncCPP(cString) agetenv(const achar* env) {
-  if (!niStringIsOK(env)) return "";
+  #ifdef niWinDesktop
+niExportFuncCPP(cString) agetenv(const achar* env)
+{
+  if (!niStringIsOK(env))
+    return "";
   ni::Windows::UTF16Buffer wEnv;
-  niWin32_UTF8ToUTF16(wEnv,env);
+  niWin32_UTF8ToUTF16(wEnv, env);
   ni::Windows::UTF8Buffer utf8EnvRet;
   WCHAR* envRet = _wgetenv(wEnv.begin());
-  if (!envRet) return AZEROSTR;
-  niWin32_UTF16ToUTF8(utf8EnvRet,envRet);
+  if (!envRet)
+    return AZEROSTR;
+  niWin32_UTF16ToUTF8(utf8EnvRet, envRet);
   return utf8EnvRet.begin();
 }
-niExportFunc(int) aputenv(const achar* envString) {
-  if (!niStringIsOK(envString)) return -1;
+niExportFunc(int) aputenv(const achar* envString)
+{
+  if (!niStringIsOK(envString))
+    return -1;
   ni::Windows::UTF16Buffer wEnvString;
-  niWin32_UTF8ToUTF16(wEnvString,envString);
+  niWin32_UTF8ToUTF16(wEnvString, envString);
   return _wputenv(wEnvString.begin());
 }
 
-namespace ni { namespace Windows {
+namespace ni {
+namespace Windows {
 
-niExportFunc(char*) utf8_GetCommandLine() {
+niExportFunc(char*) utf8_GetCommandLine()
+{
   static ni::Windows::UTF8Buffer _cmdLine;
   const WCHAR* cmdLine = ::GetCommandLineW();
-  niWin32_UTF16ToUTF8(_cmdLine,cmdLine);
+  niWin32_UTF16ToUTF8(_cmdLine, cmdLine);
   utf8_FixDriveLetter(_cmdLine.begin());
   return _cmdLine.begin();
 }
 
-niExportFunc(BOOL) utf8_SHGetSpecialFolderPath(HWND hwndOwner, LPSTR lpszPath, int nFolder, BOOL fCreate) {
+niExportFunc(BOOL) utf8_SHGetSpecialFolderPath(HWND hwndOwner, LPSTR lpszPath,
+                                               int nFolder, BOOL fCreate)
+{
   WCHAR buffer[_MAX_PATH];
   if (!SHGetSpecialFolderPathW(hwndOwner, buffer, nFolder, fCreate))
     return FALSE;
-  ni::Windows::UTF8Buffer uPath; uPath.Adopt(lpszPath);
-  niWin32_UTF16ToUTF8(uPath,buffer);
+  ni::Windows::UTF8Buffer uPath;
+  uPath.Adopt(lpszPath);
+  niWin32_UTF16ToUTF8(uPath, buffer);
   return TRUE;
 }
 
-niExportFunc(BOOL) utf8_SHGetFolderPath(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPSTR lpszPath) {
+niExportFunc(BOOL) utf8_SHGetFolderPath(HWND hwndOwner, int nFolder,
+                                        HANDLE hToken, DWORD dwFlags,
+                                        LPSTR lpszPath)
+{
   WCHAR buffer[_MAX_PATH];
   if (!SUCCEEDED(SHGetFolderPathW(hwndOwner, nFolder, hToken, dwFlags, buffer)))
     return FALSE;
-  ni::Windows::UTF8Buffer uPath; uPath.Adopt(lpszPath);
-  niWin32_UTF16ToUTF8(uPath,buffer);
+  ni::Windows::UTF8Buffer uPath;
+  uPath.Adopt(lpszPath);
+  niWin32_UTF16ToUTF8(uPath, buffer);
   return TRUE;
 }
 
-niExportFunc(int) utf8_access(const char* aaszPath, int mode) {
+niExportFunc(int) utf8_access(const char* aaszPath, int mode)
+{
   ni::Windows::UTF16Buffer wPath;
-  niWin32_UTF8ToUTF16(wPath,aaszPath);
-  return _waccess(wPath.begin(),mode);
+  niWin32_UTF8ToUTF16(wPath, aaszPath);
+  return _waccess(wPath.begin(), mode);
 }
 
-niExportFunc(char*) utf8_FixDriveLetter(char* apOut) {
+niExportFunc(char*) utf8_FixDriveLetter(char* apOut)
+{
   // make sure the drive letter is lower case for consistency
   int c0 = StrToLower(apOut[0]);
-  if ((c0 >= 'a') && (c0 <= 'z') && (apOut[1] == ':'))  {
+  if ((c0 >= 'a') && (c0 <= 'z') && (apOut[1] == ':')) {
     apOut[0] = c0;
   }
   return apOut;
 }
 
-niExportFunc(char*) utf8_GetModuleFileName(HMODULE ahDLL, char* apOut) {
+niExportFunc(char*) utf8_GetModuleFileName(HMODULE ahDLL, char* apOut)
+{
   WCHAR buffer[_MAX_PATH];
-  ::GetModuleFileNameW(ahDLL,buffer,_MAX_PATH);
+  ::GetModuleFileNameW(ahDLL, buffer, _MAX_PATH);
   *apOut = 0;
-  UTF8Buffer uOut; uOut.Adopt(apOut);
-  niWin32_UTF16ToUTF8(uOut,buffer);
+  UTF8Buffer uOut;
+  uOut.Adopt(apOut);
+  niWin32_UTF16ToUTF8(uOut, buffer);
   return utf8_FixDriveLetter(apOut);
 }
 
-niExportFunc(HMODULE) utf8_GetModuleHandle(const char* aaszPath) {
+niExportFunc(HMODULE) utf8_GetModuleHandle(const char* aaszPath)
+{
   if (aaszPath) {
     UTF16Buffer wPath;
-    niWin32_UTF8ToUTF16(wPath,aaszPath);
+    niWin32_UTF8ToUTF16(wPath, aaszPath);
     return ::GetModuleHandleW(wPath.begin());
   }
   else {
@@ -442,15 +508,17 @@ niExportFunc(HMODULE) utf8_GetModuleHandle(const char* aaszPath) {
   }
 }
 
-niExportFuncCPP(cString) utf8_getcwd() {
+niExportFuncCPP(cString) utf8_getcwd()
+{
   WCHAR buffer[_MAX_PATH];
-  _wgetcwd(buffer,_MAX_PATH);
+  _wgetcwd(buffer, _MAX_PATH);
   UTF8Buffer uOut;
-  niWin32_UTF16ToUTF8(uOut,buffer);
+  niWin32_UTF16ToUTF8(uOut, buffer);
   return utf8_FixDriveLetter(uOut.begin());
 }
 
-}}
-#endif
+} // namespace Windows
+} // namespace ni
+  #endif
 
 #endif

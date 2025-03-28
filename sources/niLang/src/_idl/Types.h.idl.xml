@@ -222,181 +222,181 @@
 			value="{0x00000000,0x0000,0x0000,{0,0,0,0,0,0,0,0}}"/>
 		<enum name="eTypeFlags">
 			<comments desc="Type flags. "/>
-			<value name="eTypeFlags_Constant" value="0x00000100 ">
+			<value name="eTypeFlags_Constant" value="0x00000100">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_Pointer" value="0x00000200 ">
+			<value name="eTypeFlags_Pointer" value="0x00000200">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_Collectable" value="0x00000400 ">
+			<value name="eTypeFlags_Collectable" value="0x00000400">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_Numeric" value="0x00000800 ">
+			<value name="eTypeFlags_Numeric" value="0x00000800">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_FUNCPROTO" value="0x00001000 ">
+			<value name="eTypeFlags_FUNCPROTO" value="0x00001000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_STRING" value="0x00002000 ">
+			<value name="eTypeFlags_STRING" value="0x00002000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_TABLE" value="0x00004000 ">
+			<value name="eTypeFlags_TABLE" value="0x00004000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_ARRAY" value="0x00008000 ">
+			<value name="eTypeFlags_ARRAY" value="0x00008000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_USERDATA" value="0x00010000 ">
+			<value name="eTypeFlags_USERDATA" value="0x00010000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_CLOSURE" value="0x00020000 ">
+			<value name="eTypeFlags_CLOSURE" value="0x00020000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_NATIVECLOSURE" value="0x00040000 ">
+			<value name="eTypeFlags_NATIVECLOSURE" value="0x00040000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_MethodOptional" value="0x00080000 ">
+			<value name="eTypeFlags_MethodOptional" value="0x00080000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_MethodSetter" value="0x00100000 ">
+			<value name="eTypeFlags_MethodSetter" value="0x00100000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_MethodGetter" value="0x00200000 ">
+			<value name="eTypeFlags_MethodGetter" value="0x00200000">
 				<comments desc=""/>
 			</value>
-			<value name="eTypeFlags_MethodStatic" value="0x00400000 ">
+			<value name="eTypeFlags_MethodStatic" value="0x00400000">
 				<comments desc=""/>
 			</value>
 		</enum>
 		<enum name="eType">
 			<comments desc="Base types enumeration. "/>
-			<value name="eType_Null" value="0 ">
+			<value name="eType_Null" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_IUnknown" value="1 ">
+			<value name="eType_IUnknown" value="1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_FirstGroup4" value="0x10 ">
+			<value name="eType_FirstGroup4" value="0x10">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I8" value="eType_FirstGroup4+0 ">
+			<value name="eType_I8" value="eType_FirstGroup4+0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U8" value="eType_FirstGroup4+1 ">
+			<value name="eType_U8" value="eType_FirstGroup4+1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I16" value="eType_FirstGroup4+2 ">
+			<value name="eType_I16" value="eType_FirstGroup4+2">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U16" value="eType_FirstGroup4+3 ">
+			<value name="eType_U16" value="eType_FirstGroup4+3">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I32" value="eType_FirstGroup4+4 ">
+			<value name="eType_I32" value="eType_FirstGroup4+4">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U32" value="eType_FirstGroup4+5 ">
+			<value name="eType_U32" value="eType_FirstGroup4+5">
 				<comments desc=""/>
 			</value>
-			<value name="eType_F32" value="eType_FirstGroup4+6 ">
+			<value name="eType_F32" value="eType_FirstGroup4+6">
 				<comments desc=""/>
 			</value>
-			<value name="eType_AChar" value="eType_FirstGroup4+7 ">
+			<value name="eType_AChar" value="eType_FirstGroup4+7">
 				<comments desc=""/>
 			</value>
-			<value name="eType_LastGroup4" value="0x1F ">
+			<value name="eType_LastGroup4" value="0x1F">
 				<comments desc=""/>
 			</value>
-			<value name="eType_FirstGroup8" value="0x20 ">
+			<value name="eType_FirstGroup8" value="0x20">
 				<comments desc=""/>
 			</value>
-			<value name="eType_I64" value="eType_FirstGroup8+0 ">
+			<value name="eType_I64" value="eType_FirstGroup8+0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_U64" value="eType_FirstGroup8+1 ">
+			<value name="eType_U64" value="eType_FirstGroup8+1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_F64" value="eType_FirstGroup8+2 ">
+			<value name="eType_F64" value="eType_FirstGroup8+2">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec2f" value="eType_FirstGroup8+3 ">
+			<value name="eType_Vec2f" value="eType_FirstGroup8+3">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec2i" value="eType_FirstGroup8+4 ">
+			<value name="eType_Vec2i" value="eType_FirstGroup8+4">
 				<comments desc=""/>
 			</value>
-			<value name="eType_LastGroup8" value="0x2F ">
+			<value name="eType_LastGroup8" value="0x2F">
 				<comments desc=""/>
 			</value>
-			<value name="eType_FirstGroup12" value="0x30 ">
+			<value name="eType_FirstGroup12" value="0x30">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec3f" value="eType_FirstGroup12+0 ">
+			<value name="eType_Vec3f" value="eType_FirstGroup12+0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec3i" value="eType_FirstGroup12+1 ">
+			<value name="eType_Vec3i" value="eType_FirstGroup12+1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_String" value="eType_FirstGroup12+2 ">
+			<value name="eType_String" value="eType_FirstGroup12+2">
 				<comments desc=""/>
 			</value>
-			<value name="eType_LastGroup12" value="0x3F ">
+			<value name="eType_LastGroup12" value="0x3F">
 				<comments desc=""/>
 			</value>
-			<value name="eType_FirstGroup16" value="0x40 ">
+			<value name="eType_FirstGroup16" value="0x40">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec4f" value="eType_FirstGroup16+0 ">
+			<value name="eType_Vec4f" value="eType_FirstGroup16+0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Vec4i" value="eType_FirstGroup16+1 ">
+			<value name="eType_Vec4i" value="eType_FirstGroup16+1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_UUID" value="eType_FirstGroup16+2 ">
+			<value name="eType_UUID" value="eType_FirstGroup16+2">
 				<comments desc=""/>
 			</value>
-			<value name="eType_LastGroup16" value="0x4F ">
+			<value name="eType_LastGroup16" value="0x4F">
 				<comments desc=""/>
 			</value>
-			<value name="eType_FirstExtended" value="0x50 ">
+			<value name="eType_FirstExtended" value="0x50">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Matrixf" value="eType_FirstExtended+0 ">
+			<value name="eType_Matrixf" value="eType_FirstExtended+0">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Variant" value="eType_FirstExtended+1 ">
+			<value name="eType_Variant" value="eType_FirstExtended+1">
 				<comments desc=""/>
 			</value>
-			<value name="eType_LastExtended" value="0x7F ">
+			<value name="eType_LastExtended" value="0x7F">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Enum" value="eType_U32 ">
+			<value name="eType_Enum" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Ptr" value="eType_U32 ">
+			<value name="eType_Ptr" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Size" value="eType_U32 ">
+			<value name="eType_Size" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Offset" value="eType_U32 ">
+			<value name="eType_Offset" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_IntPtr" value="eType_I32 ">
+			<value name="eType_IntPtr" value="eType_I32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_UIntPtr" value="eType_U32 ">
+			<value name="eType_UIntPtr" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_Int" value="eType_I32 ">
+			<value name="eType_Int" value="eType_I32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_UInt" value="eType_U32 ">
+			<value name="eType_UInt" value="eType_U32">
 				<comments desc=""/>
 			</value>
-			<value name="eType_ASZ" value="eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer ">
+			<value name="eType_ASZ" value="eType_AChar|eTypeFlags_Constant|eTypeFlags_Pointer">
 				<comments desc=""/>
 			</value>
-			<value name="eType_IUnknownPtr" value="eType_IUnknown|eTypeFlags_Pointer ">
+			<value name="eType_IUnknownPtr" value="eType_IUnknown|eTypeFlags_Pointer">
 				<comments desc=""/>
 			</value>
 		</enum>
@@ -423,40 +423,40 @@
 	<namespace name="ni">
 		<enum name="eLogFlags">
 			<comments desc="Log flags. "/>
-			<value name="eLogFlags_Raw" value="niBit ( 0 ) ">
+			<value name="eLogFlags_Raw" value="niBit(0)">
 				<comments desc="Raw type, log the message as-is without any formatting. "/>
 			</value>
-			<value name="eLogFlags_Debug" value="niBit ( 1 ) ">
+			<value name="eLogFlags_Debug" value="niBit(1)">
 				<comments desc="Debug log. "/>
 			</value>
-			<value name="eLogFlags_Info" value="niBit ( 2 ) ">
+			<value name="eLogFlags_Info" value="niBit(2)">
 				<comments desc="Info log. "/>
 			</value>
-			<value name="eLogFlags_Warning" value="niBit ( 3 ) ">
+			<value name="eLogFlags_Warning" value="niBit(3)">
 				<comments desc="Warning log. "/>
 			</value>
-			<value name="eLogFlags_Error" value="niBit ( 4 ) ">
+			<value name="eLogFlags_Error" value="niBit(4)">
 				<comments desc="Error log. "/>
 			</value>
-			<value name="eLogFlags_All" value="0xFFFF ">
+			<value name="eLogFlags_All" value="0xFFFF">
 				<comments desc="All types. (max 16 bits) "/>
 			</value>
-			<value name="eLogFlags_FormatMSVC" value="niBit ( 16 ) ">
+			<value name="eLogFlags_FormatMSVC" value="niBit(16)">
 				<comments desc="Format as a MSVC error message. "/>
 			</value>
-			<value name="eLogFlags_NoCallbackOutput" value="niBit ( 17 ) ">
+			<value name="eLogFlags_NoCallbackOutput" value="niBit(17)">
 				<comments desc="Do not call the log callback. "/>
 			</value>
-			<value name="eLogFlags_NoRegularOutput" value="niBit ( 18 ) ">
+			<value name="eLogFlags_NoRegularOutput" value="niBit(18)">
 				<comments desc="Do not output to the regular loggers, only the log callback can be called. "/>
 			</value>
-			<value name="eLogFlags_NoNewLine" value="niBit ( 19 ) ">
+			<value name="eLogFlags_NoNewLine" value="niBit(19)">
 				<comments desc="If possible, do not append a new line. "/>
 			</value>
-			<value name="eLogFlags_Stdout" value="niBit ( 20 ) ">
+			<value name="eLogFlags_Stdout" value="niBit(20)">
 				<comments desc="Outputs to stdout. Stderr is the default when not specified. "/>
 			</value>
-			<value name="eLogFlags_NoLogTypePrefix" value="niBit ( 21 ) ">
+			<value name="eLogFlags_NoLogTypePrefix" value="niBit(21)">
 				<comments desc="Do not prefix with the log type. "/>
 			</value>
 		</enum>
@@ -560,145 +560,145 @@
 			value="{1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}"/>
 		<enum name="ePlaneType">
 			<comments desc="Plane type. "/>
-			<value name="ePlaneType_X" value="0 ">
+			<value name="ePlaneType_X" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_YZ" value="ePlaneType_X ">
+			<value name="ePlaneType_YZ" value="ePlaneType_X">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_Y" value="1 ">
+			<value name="ePlaneType_Y" value="1">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_XZ" value="ePlaneType_Y ">
+			<value name="ePlaneType_XZ" value="ePlaneType_Y">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_Z" value="2 ">
+			<value name="ePlaneType_Z" value="2">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_XY" value="ePlaneType_Z ">
+			<value name="ePlaneType_XY" value="ePlaneType_Z">
 				<comments desc=""/>
 			</value>
-			<value name="ePlaneType_NonAxial" value="3 ">
+			<value name="ePlaneType_NonAxial" value="3">
 				<comments desc=""/>
 			</value>
 		</enum>
 		<enum name="eQuatSlerp">
 			<comments desc="Quat slerp mode "/>
-			<value name="eQuatSlerp_Short" value="0 ">
+			<value name="eQuatSlerp_Short" value="0">
 				<comments desc="The rotation will be less than 180 degrees, default. "/>
 			</value>
-			<value name="eQuatSlerp_Long" value="1 ">
+			<value name="eQuatSlerp_Long" value="1">
 				<comments desc="Rotation will be greater than 180 degrees. "/>
 			</value>
-			<value name="eQuatSlerp_NoCorrection" value="2 ">
+			<value name="eQuatSlerp_NoCorrection" value="2">
 				<comments desc="No correction is applied to garantee either a short or long path when doing the slerp. "/>
 			</value>
 		</enum>
 		<enum name="eRectCorners">
 			<comments desc="Rect corners. "/>
-			<value name="eRectCorners_TopLeft" value="niBit ( 0 ) ">
+			<value name="eRectCorners_TopLeft" value="niBit(0)">
 				<comments desc="Top left rectangle corner. "/>
 			</value>
-			<value name="eRectCorners_TopRight" value="niBit ( 1 ) ">
+			<value name="eRectCorners_TopRight" value="niBit(1)">
 				<comments desc="Top right rectangle corner. "/>
 			</value>
-			<value name="eRectCorners_BottomRight" value="niBit ( 2 ) ">
+			<value name="eRectCorners_BottomRight" value="niBit(2)">
 				<comments desc="Bottom right rectangle corner. "/>
 			</value>
-			<value name="eRectCorners_BottomLeft" value="niBit ( 3 ) ">
+			<value name="eRectCorners_BottomLeft" value="niBit(3)">
 				<comments desc="Bottom left rectangle corner. "/>
 			</value>
-			<value name="eRectCorners_Top" value="eRectCorners_TopLeft|eRectCorners_TopRight ">
+			<value name="eRectCorners_Top" value="eRectCorners_TopLeft|eRectCorners_TopRight">
 				<comments desc="Top rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Right" value="eRectCorners_TopRight|eRectCorners_BottomRight ">
+			<value name="eRectCorners_Right" value="eRectCorners_TopRight|eRectCorners_BottomRight">
 				<comments desc="Right rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Bottom" value="eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_Bottom" value="eRectCorners_BottomRight|eRectCorners_BottomLeft">
 				<comments desc="Bottom rectangle corners. "/>
 			</value>
-			<value name="eRectCorners_Left" value="eRectCorners_TopLeft|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_Left" value="eRectCorners_TopLeft|eRectCorners_BottomLeft">
 				<comments desc="Left rectangle corners, "/>
 			</value>
-			<value name="eRectCorners_All" value="eRectCorners_TopLeft|eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft ">
+			<value name="eRectCorners_All" value="eRectCorners_TopLeft|eRectCorners_TopRight|eRectCorners_BottomRight|eRectCorners_BottomLeft">
 				<comments desc="All rectangle corners. "/>
 			</value>
 		</enum>
 		<enum name="eRectEdges">
 			<comments desc="Rect edges. "/>
-			<value name="eRectEdges_Top" value="niBit ( 0 ) ">
+			<value name="eRectEdges_Top" value="niBit(0)">
 				<comments desc="Top rectangle edge. "/>
 			</value>
-			<value name="eRectEdges_Right" value="niBit ( 1 ) ">
+			<value name="eRectEdges_Right" value="niBit(1)">
 				<comments desc="Right rectangle edge. "/>
 			</value>
-			<value name="eRectEdges_Bottom" value="niBit ( 2 ) ">
+			<value name="eRectEdges_Bottom" value="niBit(2)">
 				<comments desc="Bottom rectangle edge. "/>
 			</value>
-			<value name="eRectEdges_Left" value="niBit ( 3 ) ">
+			<value name="eRectEdges_Left" value="niBit(3)">
 				<comments desc="Left rectangle edge. "/>
 			</value>
-			<value name="eRectEdges_Vertical" value="eRectEdges_Left|eRectEdges_Right ">
+			<value name="eRectEdges_Vertical" value="eRectEdges_Left|eRectEdges_Right">
 				<comments desc="Vertical rectangle edges. "/>
 			</value>
-			<value name="eRectEdges_Horizontal" value="eRectEdges_Top|eRectEdges_Bottom ">
+			<value name="eRectEdges_Horizontal" value="eRectEdges_Top|eRectEdges_Bottom">
 				<comments desc="Horizontal rectangle edges, "/>
 			</value>
-			<value name="eRectEdges_All" value="eRectEdges_Vertical|eRectEdges_Horizontal ">
+			<value name="eRectEdges_All" value="eRectEdges_Vertical|eRectEdges_Horizontal">
 				<comments desc="All rectangle edges. "/>
 			</value>
 		</enum>
 		<enum name="eRectFrameFlags">
 			<comments desc="Rect frame flags "/>
-			<value name="eRectFrameFlags_TopEdge" value="niBit ( 0 ) ">
+			<value name="eRectFrameFlags_TopEdge" value="niBit(0)">
 				<comments desc="Top rectangle edge. "/>
 			</value>
-			<value name="eRectFrameFlags_RightEdge" value="niBit ( 1 ) ">
+			<value name="eRectFrameFlags_RightEdge" value="niBit(1)">
 				<comments desc="Right rectangle edge. "/>
 			</value>
-			<value name="eRectFrameFlags_BottomEdge" value="niBit ( 2 ) ">
+			<value name="eRectFrameFlags_BottomEdge" value="niBit(2)">
 				<comments desc="Bottom rectangle edge. "/>
 			</value>
-			<value name="eRectFrameFlags_LeftEdge" value="niBit ( 3 ) ">
+			<value name="eRectFrameFlags_LeftEdge" value="niBit(3)">
 				<comments desc="Left rectangle edge. "/>
 			</value>
-			<value name="eRectFrameFlags_TopLeftCorner" value="niBit ( 4 ) ">
+			<value name="eRectFrameFlags_TopLeftCorner" value="niBit(4)">
 				<comments desc="Top left corner. "/>
 			</value>
-			<value name="eRectFrameFlags_TopRightCorner" value="niBit ( 5 ) ">
+			<value name="eRectFrameFlags_TopRightCorner" value="niBit(5)">
 				<comments desc="Top right corner. "/>
 			</value>
-			<value name="eRectFrameFlags_BottomLeftCorner" value="niBit ( 6 ) ">
+			<value name="eRectFrameFlags_BottomLeftCorner" value="niBit(6)">
 				<comments desc="Top left corner. "/>
 			</value>
-			<value name="eRectFrameFlags_BottomRightCorner" value="niBit ( 7 ) ">
+			<value name="eRectFrameFlags_BottomRightCorner" value="niBit(7)">
 				<comments desc="Top left corner. "/>
 			</value>
-			<value name="eRectFrameFlags_Center" value="niBit ( 8 ) ">
+			<value name="eRectFrameFlags_Center" value="niBit(8)">
 				<comments desc="Center of the rectangle "/>
 			</value>
-			<value name="eRectFrameFlags_TopSide" value="eRectFrameFlags_TopEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_TopRightCorner ">
+			<value name="eRectFrameFlags_TopSide" value="eRectFrameFlags_TopEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_TopRightCorner">
 				<comments desc="Top side "/>
 			</value>
-			<value name="eRectFrameFlags_BottomSide" value="eRectFrameFlags_BottomEdge|eRectFrameFlags_BottomLeftCorner|eRectFrameFlags_BottomRightCorner ">
+			<value name="eRectFrameFlags_BottomSide" value="eRectFrameFlags_BottomEdge|eRectFrameFlags_BottomLeftCorner|eRectFrameFlags_BottomRightCorner">
 				<comments desc="Bottom side "/>
 			</value>
-			<value name="eRectFrameFlags_LeftSide" value="eRectFrameFlags_LeftEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_BottomLeftCorner ">
+			<value name="eRectFrameFlags_LeftSide" value="eRectFrameFlags_LeftEdge|eRectFrameFlags_TopLeftCorner|eRectFrameFlags_BottomLeftCorner">
 				<comments desc="Left side "/>
 			</value>
-			<value name="eRectFrameFlags_RightSide" value="eRectFrameFlags_RightEdge|eRectFrameFlags_TopRightCorner|eRectFrameFlags_BottomRightCorner ">
+			<value name="eRectFrameFlags_RightSide" value="eRectFrameFlags_RightEdge|eRectFrameFlags_TopRightCorner|eRectFrameFlags_BottomRightCorner">
 				<comments desc="Right side "/>
 			</value>
-			<value name="eRectFrameFlags_VerticalSides" value="eRectFrameFlags_LeftSide|eRectFrameFlags_RightSide ">
+			<value name="eRectFrameFlags_VerticalSides" value="eRectFrameFlags_LeftSide|eRectFrameFlags_RightSide">
 				<comments desc="Vertidcal sides "/>
 			</value>
-			<value name="eRectFrameFlags_HorizontalSides" value="eRectFrameFlags_TopSide|eRectFrameFlags_BottomSide ">
+			<value name="eRectFrameFlags_HorizontalSides" value="eRectFrameFlags_TopSide|eRectFrameFlags_BottomSide">
 				<comments desc="Horizontal sides "/>
 			</value>
-			<value name="eRectFrameFlags_Edges" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides ">
+			<value name="eRectFrameFlags_Edges" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides">
 				<comments desc="All edges "/>
 			</value>
-			<value name="eRectFrameFlags_All" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides|eRectFrameFlags_Center ">
+			<value name="eRectFrameFlags_All" value="eRectFrameFlags_VerticalSides|eRectFrameFlags_HorizontalSides|eRectFrameFlags_Center">
 				<comments desc="The all frame ">
 					<remark text="Zero mean the all frame aswell "/>
 				</comments>
@@ -739,13 +739,13 @@
 			value="_A(&quot;iUnknown&quot;)"/>
 		<enum name="eListInterfacesFlags">
 			<comments desc=""/>
-			<value name="eListInterfacesFlags_All" value="0 ">
+			<value name="eListInterfacesFlags_All" value="0">
 				<comments desc="List all interfaces "/>
 			</value>
-			<value name="eListInterfacesFlags_NoDynamic" value="niBit ( 1 ) ">
+			<value name="eListInterfacesFlags_NoDynamic" value="niBit(1)">
 				<comments desc="Don&apos;t list &apos;dynamic&apos; interfaces (interfaces in sink that extend the object). "/>
 			</value>
-			<value name="eListInterfacesFlags_DynamicOnly" value="niBit ( 2 ) ">
+			<value name="eListInterfacesFlags_DynamicOnly" value="niBit(2)">
 				<comments desc="Only list &apos;dynamic&apos; interfaces (interfaces in sink that extend the object). ">
 					<remark text="This needs to be implemented only for objects that do have dynamic interfaces. "/>
 				</comments>
@@ -910,115 +910,115 @@
 	<namespace name="ni">
 		<enum name="eFileAttrFlags">
 			<comments desc="File attributes "/>
-			<value name="eFileAttrFlags_File" value="niBit ( 0 ) ">
+			<value name="eFileAttrFlags_File" value="niBit(0)">
 				<comments desc="File. "/>
 			</value>
-			<value name="eFileAttrFlags_Directory" value="niBit ( 1 ) ">
+			<value name="eFileAttrFlags_Directory" value="niBit(1)">
 				<comments desc="Directory. "/>
 			</value>
-			<value name="eFileAttrFlags_Archive" value="niBit ( 3 ) ">
+			<value name="eFileAttrFlags_Archive" value="niBit(3)">
 				<comments desc="Archive. "/>
 			</value>
-			<value name="eFileAttrFlags_ReadOnly" value="niBit ( 4 ) ">
+			<value name="eFileAttrFlags_ReadOnly" value="niBit(4)">
 				<comments desc="Read only. "/>
 			</value>
-			<value name="eFileAttrFlags_Hidden" value="niBit ( 5 ) ">
+			<value name="eFileAttrFlags_Hidden" value="niBit(5)">
 				<comments desc="Hidden attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_System" value="niBit ( 6 ) ">
+			<value name="eFileAttrFlags_System" value="niBit(6)">
 				<comments desc="System attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_Virtual" value="niBit ( 7 ) ">
+			<value name="eFileAttrFlags_Virtual" value="niBit(7)">
 				<comments desc="The file is &apos;virtual&apos;, aka it is not stored in the standard OS&apos;s file system, most likely it is stored within an archive or a-like. "/>
 			</value>
-			<value name="eFileAttrFlags_Device" value="niBit ( 8 ) ">
+			<value name="eFileAttrFlags_Device" value="niBit(8)">
 				<comments desc="Device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceFixed" value="eFileAttrFlags_Device|niBit ( 15 ) ">
+			<value name="eFileAttrFlags_DeviceFixed" value="eFileAttrFlags_Device|niBit(15)">
 				<comments desc="Fixed device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRemovable" value="eFileAttrFlags_Device|niBit ( 16 ) ">
+			<value name="eFileAttrFlags_DeviceRemovable" value="eFileAttrFlags_Device|niBit(16)">
 				<comments desc="Removable device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRAM" value="eFileAttrFlags_Device|niBit ( 17 ) ">
+			<value name="eFileAttrFlags_DeviceRAM" value="eFileAttrFlags_Device|niBit(17)">
 				<comments desc="RAM drive device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceRemote" value="eFileAttrFlags_Device|niBit ( 18 ) ">
+			<value name="eFileAttrFlags_DeviceRemote" value="eFileAttrFlags_Device|niBit(18)">
 				<comments desc="Remote device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceFloppy" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 19 ) ">
+			<value name="eFileAttrFlags_DeviceFloppy" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit(19)">
 				<comments desc="Floppy device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceCDRom" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit ( 20 ) ">
+			<value name="eFileAttrFlags_DeviceCDRom" value="eFileAttrFlags_Device|eFileAttrFlags_DeviceRemovable|niBit(20)">
 				<comments desc="CDRom device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved0" value="eFileAttrFlags_Device|niBit ( 21 ) ">
+			<value name="eFileAttrFlags_DeviceReserved0" value="eFileAttrFlags_Device|niBit(21)">
 				<comments desc="Reserved0 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved1" value="eFileAttrFlags_Device|niBit ( 22 ) ">
+			<value name="eFileAttrFlags_DeviceReserved1" value="eFileAttrFlags_Device|niBit(22)">
 				<comments desc="Reserved1 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved2" value="eFileAttrFlags_Device|niBit ( 23 ) ">
+			<value name="eFileAttrFlags_DeviceReserved2" value="eFileAttrFlags_Device|niBit(23)">
 				<comments desc="Reserved2 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved3" value="eFileAttrFlags_Device|niBit ( 24 ) ">
+			<value name="eFileAttrFlags_DeviceReserved3" value="eFileAttrFlags_Device|niBit(24)">
 				<comments desc="Reserved3 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved4" value="eFileAttrFlags_Device|niBit ( 25 ) ">
+			<value name="eFileAttrFlags_DeviceReserved4" value="eFileAttrFlags_Device|niBit(25)">
 				<comments desc="Reserved4 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved5" value="eFileAttrFlags_Device|niBit ( 26 ) ">
+			<value name="eFileAttrFlags_DeviceReserved5" value="eFileAttrFlags_Device|niBit(26)">
 				<comments desc="Reserved5 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved6" value="eFileAttrFlags_Device|niBit ( 27 ) ">
+			<value name="eFileAttrFlags_DeviceReserved6" value="eFileAttrFlags_Device|niBit(27)">
 				<comments desc="Reserved6 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved7" value="eFileAttrFlags_Device|niBit ( 28 ) ">
+			<value name="eFileAttrFlags_DeviceReserved7" value="eFileAttrFlags_Device|niBit(28)">
 				<comments desc="Reserved7 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved8" value="eFileAttrFlags_Device|niBit ( 29 ) ">
+			<value name="eFileAttrFlags_DeviceReserved8" value="eFileAttrFlags_Device|niBit(29)">
 				<comments desc="Reserved8 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved9" value="eFileAttrFlags_Device|niBit ( 30 ) ">
+			<value name="eFileAttrFlags_DeviceReserved9" value="eFileAttrFlags_Device|niBit(30)">
 				<comments desc="Reserved9 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_DeviceReserved10" value="eFileAttrFlags_Device|niBit ( 31 ) ">
+			<value name="eFileAttrFlags_DeviceReserved10" value="eFileAttrFlags_Device|niBit(31)">
 				<comments desc="Reserved10 device attribute. "/>
 			</value>
-			<value name="eFileAttrFlags_All" value="eFileAttrFlags_File|eFileAttrFlags_Directory ">
+			<value name="eFileAttrFlags_All" value="eFileAttrFlags_File|eFileAttrFlags_Directory">
 				<comments desc="All. "/>
 			</value>
-			<value name="eFileAttrFlags_AllFiles" value="eFileAttrFlags_File ">
+			<value name="eFileAttrFlags_AllFiles" value="eFileAttrFlags_File">
 				<comments desc="All files. "/>
 			</value>
-			<value name="eFileAttrFlags_AllDirectories" value="eFileAttrFlags_Directory ">
+			<value name="eFileAttrFlags_AllDirectories" value="eFileAttrFlags_Directory">
 				<comments desc="All directories. "/>
 			</value>
 		</enum>
 		<enum name="eFileTime">
 			<comments desc="File time. "/>
-			<value name="eFileTime_Creation" value="0 ">
+			<value name="eFileTime_Creation" value="0">
 				<comments desc="Creation file time. "/>
 			</value>
-			<value name="eFileTime_LastAccess" value="1 ">
+			<value name="eFileTime_LastAccess" value="1">
 				<comments desc="Last access file time. "/>
 			</value>
-			<value name="eFileTime_LastWrite" value="2 ">
+			<value name="eFileTime_LastWrite" value="2">
 				<comments desc="Last write file time. "/>
 			</value>
 		</enum>
 		<enum name="eFileOpenMode">
 			<comments desc="File open mode. "/>
-			<value name="eFileOpenMode_Read" value="niBit ( 0 ) ">
+			<value name="eFileOpenMode_Read" value="niBit(0)">
 				<comments desc="Read open mode. "/>
 			</value>
-			<value name="eFileOpenMode_Write" value="niBit ( 1 ) ">
+			<value name="eFileOpenMode_Write" value="niBit(1)">
 				<comments desc="Write open mode. "/>
 			</value>
-			<value name="eFileOpenMode_Append" value="niBit ( 2 ) |eFileOpenMode_Write ">
+			<value name="eFileOpenMode_Append" value="niBit(2)|eFileOpenMode_Write">
 				<comments desc="Append open mode. "/>
 			</value>
-			<value name="eFileOpenMode_Random" value="niBit ( 3 ) ">
+			<value name="eFileOpenMode_Random" value="niBit(3)">
 				<comments desc="Optimized form random access. "/>
 			</value>
 		</enum>

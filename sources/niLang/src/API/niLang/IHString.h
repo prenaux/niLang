@@ -17,8 +17,7 @@ struct iHStringCharIt;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! HString interface.
-struct iHString : public iUnknown
-{
+struct iHString : public iUnknown {
   niDeclareInterfaceUUID(iHString,0x0f0162e8,0x64c3,0x4276,0x9e,0x1e,0x42,0xbc,0x02,0x42,0x43,0x23);
   //! Get the string's characters.
   //! {Property}
@@ -48,39 +47,54 @@ struct iHString : public iUnknown
   //! Return a character iterator to iterate over the specifed byte
   //! range in the string.
   //! \return NULL if the offset or size is out of range, else the new iterator.
-  virtual iHStringCharIt* __stdcall CreateRangeIt(tU32 offset, tU32 size) const = 0;
+  virtual iHStringCharIt* __stdcall CreateRangeIt(tU32 offset,
+                                                  tU32 size) const = 0;
 };
 
 //! HString smart pointer.
 typedef Ptr<iHString> tHStringPtr;
 
 //! Get the string in a HString. Returns an empty string if the HString is null.
-inline const achar* HStringGetStringEmpty(const iHString* ahsp) { return ahsp?ahsp->GetChars():_A(""); }
+inline const achar* HStringGetStringEmpty(const iHString* ahsp)
+{
+  return ahsp ? ahsp->GetChars() : _A("");
+}
 //! Get the string in a HString. Returns an null string if the HString is null.
-inline const achar* HStringGetStringNull(const iHString* ahsp) { return ahsp?ahsp->GetChars():NULL; }
+inline const achar* HStringGetStringNull(const iHString* ahsp)
+{
+  return ahsp ? ahsp->GetChars() : NULL;
+}
 //! Check if an HString is valid and not empty.
-inline tBool HStringIsNotEmpty(const iHString* apStr) { return apStr && apStr->GetLength()>0; }
+inline tBool HStringIsNotEmpty(const iHString* apStr)
+{
+  return apStr && apStr->GetLength() > 0;
+}
 //! Check if an HString is valid and empty.
-inline tBool HStringIsEmpty(const iHString* apStr)  { return apStr == NULL || apStr->GetLength()<=0; }
+inline tBool HStringIsEmpty(const iHString* apStr)
+{
+  return apStr == NULL || apStr->GetLength() <= 0;
+}
 
 //! Get the localized string in a HString. Returns an empty string if the HString is null.
-inline const achar* HStringGetStringLocalized(const iHString* ahsp) {
-  return ahsp?HStringGetStringEmpty(ahsp->GetLocalized()):_A("");
+inline const achar* HStringGetStringLocalized(const iHString* ahsp)
+{
+  return ahsp ? HStringGetStringEmpty(ahsp->GetLocalized()) : _A("");
 }
 //! Get the localized string in a HString. Returns an empty string if the HString is null.
-inline const achar* HStringGetStringLocalized(iHString* locale, const iHString* ahsp) {
-  return ahsp?HStringGetStringEmpty(ahsp->GetLocalizedEx(locale)):_A("");
+inline const achar* HStringGetStringLocalized(iHString* locale,
+                                              const iHString* ahsp)
+{
+  return ahsp ? HStringGetStringEmpty(ahsp->GetLocalizedEx(locale)) : _A("");
 }
 
 //! Get the hstring chars
-#define niHStr(X)     ni::HStringGetStringEmpty(X)
+#define niHStr(X) ni::HStringGetStringEmpty(X)
 //! Get the localized hstring chars
-#define niLStr(X)     ni::HStringGetStringLocalized(X)
+#define niLStr(X) ni::HStringGetStringLocalized(X)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! HString character iterator interface.
-struct iHStringCharIt : public iUnknown
-{
+struct iHStringCharIt : public iUnknown {
   niDeclareInterfaceUUID(iHStringCharIt,0xa6885894,0xf6a9,0x40fb,0x82,0x06,0x57,0x1f,0x3c,0x97,0x42,0x78);
 
   //! Get the string being iterated.
@@ -128,51 +142,56 @@ struct iHStringCharIt : public iUnknown
 };
 
 /**@}*/
-}
+} // namespace ni
 
 namespace astl {
 
 //! Hash a HString
 struct hstring_hash {
-  size_t operator()(const ni::iHString* __x) const {
+  size_t operator()(const ni::iHString* __x) const
+  {
     return (size_t)__x;
   }
 };
 
 //! HString less compare
 struct hstring_less_cmp {
-  bool operator()(const ni::iHString* s1, const ni::iHString* s2) const {
+  bool operator()(const ni::iHString* s1, const ni::iHString* s2) const
+  {
     return ni::StrCmp(niHStr(s1), niHStr(s2)) < 0;
   }
 };
 
 //! HString less case insensitive compare
 struct hstring_less_icmp {
-  bool operator()(const ni::iHString* s1, const ni::iHString* s2) const {
+  bool operator()(const ni::iHString* s1, const ni::iHString* s2) const
+  {
     return ni::StrICmp(niHStr(s1), niHStr(s2)) < 0;
   }
 };
 
 //! HString hash map
 template <typename T>
-struct hstring_hash_map : public astl::hash_map<ni::tHStringPtr,T,hstring_hash> {};
+struct hstring_hash_map
+    : public astl::hash_map<ni::tHStringPtr, T, hstring_hash> {};
 
 //! HString map, case sensitive sorted
-template<typename T>
-struct hstring_map_cmp : public astl::map<ni::tHStringPtr,T,hstring_less_cmp> {};
+template <typename T>
+struct hstring_map_cmp
+    : public astl::map<ni::tHStringPtr, T, hstring_less_cmp> {};
 
 //! HString map, case insensitive sorted
-template<typename T>
-struct hstring_map_icmp : public astl::map<ni::tHStringPtr,T,hstring_less_icmp> {};
+template <typename T>
+struct hstring_map_icmp
+    : public astl::map<ni::tHStringPtr, T, hstring_less_icmp> {};
 
-}
+} // namespace astl
 
 namespace eastl {
 
 ASTL_TEMPLATE_NULL
-struct hash<ni::tHStringPtr> : public astl::hstring_hash {
-};
+struct hash<ni::tHStringPtr> : public astl::hstring_hash {};
 
-}
+} // namespace eastl
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __IHSTRING_H__

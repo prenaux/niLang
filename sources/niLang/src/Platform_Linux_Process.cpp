@@ -5,19 +5,19 @@
 
 #if (defined niLinux || defined niQNX) && !defined niNoProcess
 
-//----------------------------------------------------------------------------
-//
-// Section: Process Utils
-//
-//----------------------------------------------------------------------------
-#include <ctype.h>
-#include <dirent.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#include "API/niLang/STL/vector.h"
+  //----------------------------------------------------------------------------
+  //
+  // Section: Process Utils
+  //
+  //----------------------------------------------------------------------------
+  #include <ctype.h>
+  #include <dirent.h>
+  #include <fcntl.h>
+  #include <unistd.h>
+  #include <sys/types.h>
+  #include <sys/wait.h>
+  #include <stdio.h>
+  #include "API/niLang/STL/vector.h"
 
 namespace {
 
@@ -26,18 +26,19 @@ enum ParsingState {
   KEY_VALUE
 };
 
-}  // namespace
+} // namespace
 
 namespace base {
 
 bool LaunchApp(const astl::vector<astl::string>& argv,
                const file_handle_mapping_vector& fds_to_remap,
                ProcessHandle* process_handle,
-               const astl::vector<ni::cString>& aEnvs) {
+               const astl::vector<ni::cString>& aEnvs)
+{
   bool retval = true;
 
   char* env_copy[aEnvs.size() + 1];
-  niLoop(i,aEnvs.size()) {
+  niLoop (i, aEnvs.size()) {
     env_copy[i] = const_cast<char*>(aEnvs[i].Chars());
   }
   env_copy[aEnvs.size()] = NULL;
@@ -56,8 +57,8 @@ bool LaunchApp(const astl::vector<astl::string>& argv,
   int pid = fork();
   if (pid == 0) {
     for (file_handle_mapping_vector::const_iterator it = fds_to_remap.begin();
-         it != fds_to_remap.end();
-         ++it) {
+         it != fds_to_remap.end(); ++it)
+    {
       int src_fd = it->first;
       int dest_fd = it->second;
       if (src_fd == dest_fd) {
@@ -65,19 +66,21 @@ bool LaunchApp(const astl::vector<astl::string>& argv,
         if (flags != -1) {
           fcntl(src_fd, F_SETFD, flags & ~FD_CLOEXEC);
         }
-      } else {
+      }
+      else {
         dup2(src_fd, dest_fd);
       }
     }
-#ifdef niQNX
+  #ifdef niQNX
     execve(argv_copy[0], argv_copy, env_copy);
-#else
+  #else
     execvpe(argv_copy[0], argv_copy, env_copy);
-#endif
-
-  } else if (pid < 0) {
+  #endif
+  }
+  else if (pid < 0) {
     retval = false;
-  } else {
+  }
+  else {
     if (process_handle)
       *process_handle = pid;
   }
@@ -90,18 +93,22 @@ bool LaunchApp(const astl::vector<astl::string>& argv,
 
 NamedProcessIterator::NamedProcessIterator(const astl::string& executable_name,
                                            const ProcessFilter* filter)
-    : executable_name_(executable_name), filter_(filter) {
+    : executable_name_(executable_name)
+    , filter_(filter)
+{
   procfs_dir_ = opendir("/proc");
 }
 
-NamedProcessIterator::~NamedProcessIterator() {
+NamedProcessIterator::~NamedProcessIterator()
+{
   if (procfs_dir_) {
     closedir(procfs_dir_);
     procfs_dir_ = NULL;
   }
 }
 
-const ProcessEntry* NamedProcessIterator::NextProcessEntry() {
+const ProcessEntry* NamedProcessIterator::NextProcessEntry()
+{
   bool result = false;
   do {
     result = CheckForNextProcess();
@@ -113,7 +120,8 @@ const ProcessEntry* NamedProcessIterator::NextProcessEntry() {
   return NULL;
 }
 
-bool NamedProcessIterator::CheckForNextProcess() {
+bool NamedProcessIterator::CheckForNextProcess()
+{
   // TODO(port): skip processes owned by different UID
 
   dirent* slot = 0;
@@ -147,7 +155,7 @@ bool NamedProcessIterator::CheckForNextProcess() {
 
     // Read the process's status.
     sprintf(buf, "/proc/%s/stat", slot->d_name);
-    FILE *fp = fopen(buf, "r");
+    FILE* fp = fopen(buf, "r");
     if (!fp)
       return false;
 
@@ -196,11 +204,12 @@ bool NamedProcessIterator::CheckForNextProcess() {
   return true;
 }
 
-bool NamedProcessIterator::IncludeEntry() {
+bool NamedProcessIterator::IncludeEntry()
+{
   // TODO(port): make this also work for non-ASCII filenames
   if (!executable_name_.empty()) {
-    astl::string exeName(executable_name_.begin(),executable_name_.end());
-    if (strcmp(exeName.c_str(),entry_.szExeFile) != 0)
+    astl::string exeName(executable_name_.begin(), executable_name_.end());
+    if (strcmp(exeName.c_str(), entry_.szExeFile) != 0)
       return false;
   }
   if (!filter_)
@@ -208,6 +217,6 @@ bool NamedProcessIterator::IncludeEntry() {
   return filter_->Includes(entry_.pid, entry_.ppid);
 }
 
-}  // namespace base
+} // namespace base
 
 #endif

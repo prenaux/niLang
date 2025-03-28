@@ -11,8 +11,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Char type returned by the methods of the tokenizer interface.
-enum eStringTokenizerCharType
-{
+enum eStringTokenizerCharType {
   //! The char is normal and will be added to the current token.
   eStringTokenizerCharType_Normal = 0,
   //! The char will be skipped.
@@ -34,8 +33,7 @@ enum eStringTokenizerCharType
  * This allow to implement any rule of tokenizing.
  */
 //! {DispatchWrapper}
-struct iStringTokenizer : public iUnknown
-{
+struct iStringTokenizer : public iUnknown {
   niDeclareInterfaceUUID(iStringTokenizer,0x59cd4f04,0xd5bb,0x4e1e,0xbb,0x23,0xbc,0x1a,0x5b,0xb4,0x5b,0xdc);
   virtual eStringTokenizerCharType __stdcall GetCharType(tU32 c) = 0;
   virtual void __stdcall OnNewLine() = 0;
@@ -43,5 +41,5 @@ struct iStringTokenizer : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISTRINGTOKENIZER_25608894_H__

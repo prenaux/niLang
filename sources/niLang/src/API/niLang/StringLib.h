@@ -106,11 +106,13 @@ niExportFunc(achar*) StrZCat(achar* dest, tI32 size, const achar* src);
 //! Enhanced Utf8-aware version of the ANSI strncpy() function
 //! that can handle the size (in bytes) of the destination string.
 //! The raw Utf8-aware version of ANSI strncpy() is defined as:
-niExportFunc(achar*) StrZNCpy(achar* dest, tI32 size, const achar* src, tSize n);
+niExportFunc(achar*) StrZNCpy(achar* dest, tI32 size, const achar* src,
+                              tSize n);
 //! Enhanced Utf8-aware version of the ANSI strncat() function
 //! that can handle the size (in bytes) of the destination string.
 //! The raw Utf8-aware version of ANSI strncat() is defined as:
-niExportFunc(achar*) StrZNCat(achar* dest, tI32 size, const achar* src, tSize n);
+niExportFunc(achar*) StrZNCat(achar* dest, tI32 size, const achar* src,
+                              tSize n);
 //! Utf8-aware version of the ANSI strcmp() function.
 niExportFunc(tI32) StrCmp(const achar* s1, const achar* s2);
 //! Utf8-aware version of the strncmp() function.
@@ -162,7 +164,8 @@ niExportFunc(void) StrBytesToHexa(achar* d, tU8* bytes, tU32 byteCount);
 //! Get a path from a 'command line' string. Gets what is between the first quote '"' pair
 //! if present, else what is before the first space character. Returns the size in bytes
 //! of the path copied in the destination.
-niExportFunc(tI32) StrGetCommandPath(achar* dest, tU32 destMaxSize, const achar* src, tU32* apLen);
+niExportFunc(tI32) StrGetCommandPath(achar* dest, tU32 destMaxSize,
+                                     const achar* src, tU32* apLen);
 //! Return the number of code points in the specified UTF8 string. (equivalent to size for UTF8)
 niExportFunc(tSize) StrCCPCount(const cchar* acszA);
 //! Return the number of code points in the specified UTF16 string. (size = num cp * sizeof(tU16))
@@ -178,45 +181,62 @@ niExportFunc(tBool) StrEndsWith(const achar* aaszA, const achar* aaszB);
 niExportFunc(tBool) StrEndsWithI(const achar* aaszA, const achar* aaszB);
 
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZSubstr(achar* apOut, const achar* aStr, tU32 anStrSz, tI32 start, tU32 size = 0xFFFF);
+niExportFunc(achar*) StrZSubstr(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                tI32 start, tU32 size = 0xFFFF);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZSlice(achar* apOut, const achar* aStr, tU32 anStrSz, tI32 start, tI32 end = 0xFFFF);
+niExportFunc(achar*) StrZSlice(achar* apOut, const achar* aStr, tU32 anStrSz,
+                               tI32 start, tI32 end = 0xFFFF);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZMid(achar* apOut, const achar* aStr, tU32 anStrSz, tU32 anFirst, tU32 size = 0xFFFF);
+niExportFunc(achar*) StrZMid(achar* apOut, const achar* aStr, tU32 anStrSz,
+                             tU32 anFirst, tU32 size = 0xFFFF);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZLeft(achar* apOut, const achar* aStr, tU32 anStrSz, tU32 anSize);
+niExportFunc(achar*) StrZLeft(achar* apOut, const achar* aStr, tU32 anStrSz,
+                              tU32 anSize);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZRight(achar* apOut, const achar* aStr, tU32 anStrSz, tU32 anSize);
+niExportFunc(achar*) StrZRight(achar* apOut, const achar* aStr, tU32 anStrSz,
+                               tU32 anSize);
 
 //! Str find flags
 enum eStrFindFlags {
   eStrFindFlags_Forward = 0,
   eStrFindFlags_Reversed = niBit(0),
   eStrFindFlags_ICmp = niBit(1),
-  eStrFindFlags_ForwardI = eStrFindFlags_Forward|eStrFindFlags_ICmp,
-  eStrFindFlags_ReversedI = eStrFindFlags_Reversed|eStrFindFlags_ICmp,
+  eStrFindFlags_ForwardI = eStrFindFlags_Forward | eStrFindFlags_ICmp,
+  eStrFindFlags_ReversedI = eStrFindFlags_Reversed | eStrFindFlags_ICmp,
 };
 
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(tI32) StrZFindEx(tU32 anFindFlags, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz, tI32 anStart = eInvalidHandle);
+niExportFunc(tI32) StrZFindEx(tU32 anFindFlags, const achar* aStr, tU32 anStrSz,
+                              const achar* aToFind, tU32 anToFindSz,
+                              tI32 anStart = eInvalidHandle);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(tI32) StrZFindChar(const achar* aStr, tU32 anStrSz, const tU32 aChar, tI32 anStart = 0);
+niExportFunc(tI32) StrZFindChar(const achar* aStr, tU32 anStrSz,
+                                const tU32 aChar, tI32 anStart = 0);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(tI32) StrZRFindChar(const achar* aStr, tU32 anStrSz, const tU32 aChar, tI32 anStart = 0x7fffffff);
+niExportFunc(tI32) StrZRFindChar(const achar* aStr, tU32 anStrSz,
+                                 const tU32 aChar, tI32 anStart = 0x7fffffff);
 
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(tI32) StrZAfterPos(tU32 anFindFlags, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz);
+niExportFunc(tI32) StrZAfterPos(tU32 anFindFlags, const achar* aStr,
+                                tU32 anStrSz, const achar* aToFind,
+                                tU32 anToFindSz);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZAfterEx(tU32 anFindFlags, achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz);
+niExportFunc(achar*) StrZAfterEx(tU32 anFindFlags, achar* apOut,
+                                 const achar* aStr, tU32 anStrSz,
+                                 const achar* aToFind, tU32 anToFindSz);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(tI32) StrZBeforePos(tU32 anFindFlags, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz);
+niExportFunc(tI32) StrZBeforePos(tU32 anFindFlags, const achar* aStr,
+                                 tU32 anStrSz, const achar* aToFind,
+                                 tU32 anToFindSz);
 //! \remark All return and parameter values are in bytes, not character count.
-niExportFunc(achar*) StrZBeforeEx(tU32 anFindFlags, achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz);
+niExportFunc(achar*) StrZBeforeEx(tU32 anFindFlags, achar* apOut,
+                                  const achar* aStr, tU32 anStrSz,
+                                  const achar* aToFind, tU32 anToFindSz);
 
-niExportFunc(achar*) StrPutPathSep(achar *filename);
+niExportFunc(achar*) StrPutPathSep(achar* filename);
 niExportFunc(achar*) StrMakeStdPath(achar* path);
 niExportFunc(achar*) StrFixPath(achar* dest, const achar* path, int size);
-niExportFunc(tBool)  StrIsAbsolutePath(const achar* path);
+niExportFunc(tBool) StrIsAbsolutePath(const achar* path);
 
 //!
 //! Get next token from string *appString, where tokens are possibly-empty
@@ -239,139 +259,205 @@ niExportFunc(tBool)  StrIsAbsolutePath(const achar* path);
 //!   free(tofree);
 //! </pre>
 //!
-niExportFunc(achar*) StrSep(achar **stringp, const achar *delim);
+niExportFunc(achar*) StrSep(achar** stringp, const achar* delim);
 
 //! Same as StrSep, except that it always considers quoted strings as one
 //! token and handles "" and \" quote escaping.
-niExportFunc(achar*) StrSepQuoted(achar **stringp, const achar *delim, const tU32 aQuote);
+niExportFunc(achar*) StrSepQuoted(achar** stringp, const achar* delim,
+                                  const tU32 aQuote);
 
 //! Returns the byte index of the ':' character of a :// protocol definition
 niExportFunc(tI32) StrFindProtocol(const achar* aURL);
 
 //! Set the specified string to zero length.
-static inline achar* StrZero(achar* apOut) {
+static inline achar* StrZero(achar* apOut)
+{
   *apOut = 0;
   return apOut;
 }
 
 //! Utf8-aware version of strcpy()
-static inline achar* StrCpy(achar* dest, const achar* src) {
-  return StrZCpy(dest,niMaxI32,src);
+static inline achar* StrCpy(achar* dest, const achar* src)
+{
+  return StrZCpy(dest, niMaxI32, src);
 }
 //! Utf8-aware version of strcat()
-static inline achar* StrCat(achar* dest, const achar* src) {
-  return StrZCat(dest,niMaxI32,src);
+static inline achar* StrCat(achar* dest, const achar* src)
+{
+  return StrZCat(dest, niMaxI32, src);
 }
 //! Utf8-aware version of strncpy()
-static inline achar* StrNCpy(achar* dest, const achar* src, tSize n) {
-  return StrZNCpy(dest,niMaxI32,src,n);
+static inline achar* StrNCpy(achar* dest, const achar* src, tSize n)
+{
+  return StrZNCpy(dest, niMaxI32, src, n);
 }
 //! Utf8-aware version of strncat()
-static inline achar* StrNCat(achar* dest, const achar* src, tSize n) {
-  return StrZNCat(dest,niMaxI32,src,n);
+static inline achar* StrNCat(achar* dest, const achar* src, tSize n)
+{
+  return StrZNCat(dest, niMaxI32, src, n);
 }
 
 //! Check whether the specified string is empty.
-static inline tBool StrIsEmpty(const achar* aaszA) {
+static inline tBool StrIsEmpty(const achar* aaszA)
+{
   return (aaszA == NULL) || (*aaszA == 0);
 }
 //! Check whether the specified string is not empty.
-static inline tBool StrIsNotEmpty(const achar* aaszA) {
+static inline tBool StrIsNotEmpty(const achar* aaszA)
+{
   return (aaszA != NULL) && (*aaszA != 0);
 }
 
-static inline tI32 StrZFind(const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz, tI32 anStart = 0) {
-  return StrZFindEx(0,aStr,anStrSz,aToFind,anToFindSz,anStart);
+static inline tI32 StrZFind(const achar* aStr, tU32 anStrSz,
+                            const achar* aToFind, tU32 anToFindSz,
+                            tI32 anStart = 0)
+{
+  return StrZFindEx(0, aStr, anStrSz, aToFind, anToFindSz, anStart);
 }
-static inline tI32 StrZFindI(const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz, tI32 anStart = 0) {
-  return StrZFindEx(eStrFindFlags_ICmp,aStr,anStrSz,aToFind,anToFindSz,anStart);
+static inline tI32 StrZFindI(const achar* aStr, tU32 anStrSz,
+                             const achar* aToFind, tU32 anToFindSz,
+                             tI32 anStart = 0)
+{
+  return StrZFindEx(eStrFindFlags_ICmp, aStr, anStrSz, aToFind, anToFindSz,
+                    anStart);
 }
-static inline tI32 StrZRFind(const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz, tI32 anStart = 0x7fffffff) {
-  return StrZFindEx(eStrFindFlags_Reversed,aStr,anStrSz,aToFind,anToFindSz,anStart);
+static inline tI32 StrZRFind(const achar* aStr, tU32 anStrSz,
+                             const achar* aToFind, tU32 anToFindSz,
+                             tI32 anStart = 0x7fffffff)
+{
+  return StrZFindEx(eStrFindFlags_Reversed, aStr, anStrSz, aToFind, anToFindSz,
+                    anStart);
 }
-static inline tI32 StrZRFindI(const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz, tI32 anStart = 0x7fffffff) {
-  return StrZFindEx(eStrFindFlags_ReversedI,aStr,anStrSz,aToFind,anToFindSz,anStart);
-}
-
-static inline achar* StrZAfter(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZAfterEx(0,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZAfterI(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZAfterEx(eStrFindFlags_ICmp,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZRAfter(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZAfterEx(eStrFindFlags_Reversed,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZRAfterI(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZAfterEx(eStrFindFlags_ReversedI,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-
-static inline achar* StrZBefore(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZBeforeEx(0,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZBeforeI(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZBeforeEx(eStrFindFlags_ICmp,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZRBefore(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZBeforeEx(eStrFindFlags_Reversed,apOut,aStr,anStrSz,aToFind,anToFindSz);
-}
-static inline achar* StrZRBeforeI(achar* apOut, const achar* aStr, tU32 anStrSz, const achar* aToFind, tU32 anToFindSz) {
-  return StrZBeforeEx(eStrFindFlags_ReversedI,apOut,aStr,anStrSz,aToFind,anToFindSz);
+static inline tI32 StrZRFindI(const achar* aStr, tU32 anStrSz,
+                              const achar* aToFind, tU32 anToFindSz,
+                              tI32 anStart = 0x7fffffff)
+{
+  return StrZFindEx(eStrFindFlags_ReversedI, aStr, anStrSz, aToFind, anToFindSz,
+                    anStart);
 }
 
-static inline tBool StrZContains(const achar* aStr, tU32 anStrSz, const achar* aSearch, tU32 anSearchSz, tI32 start) {
-  return StrZFind(aStr,anStrSz,aSearch,anSearchSz,start) >= 0;
+static inline achar* StrZAfter(achar* apOut, const achar* aStr, tU32 anStrSz,
+                               const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZAfterEx(0, apOut, aStr, anStrSz, aToFind, anToFindSz);
 }
-static inline tBool StrZContainsI(const achar* aStr, tU32 anStrSz, const achar* aSearch, tU32 anSearchSz, tI32 start) {
-  return StrZFindI(aStr,anStrSz,aSearch,anSearchSz,start) >= 0;
+static inline achar* StrZAfterI(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZAfterEx(eStrFindFlags_ICmp, apOut, aStr, anStrSz, aToFind,
+                     anToFindSz);
+}
+static inline achar* StrZRAfter(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZAfterEx(eStrFindFlags_Reversed, apOut, aStr, anStrSz, aToFind,
+                     anToFindSz);
+}
+static inline achar* StrZRAfterI(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                 const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZAfterEx(eStrFindFlags_ReversedI, apOut, aStr, anStrSz, aToFind,
+                     anToFindSz);
 }
 
-static inline tBool StrIsEmptyChar(tU32 c) {
+static inline achar* StrZBefore(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZBeforeEx(0, apOut, aStr, anStrSz, aToFind, anToFindSz);
+}
+static inline achar* StrZBeforeI(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                 const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZBeforeEx(eStrFindFlags_ICmp, apOut, aStr, anStrSz, aToFind,
+                      anToFindSz);
+}
+static inline achar* StrZRBefore(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                 const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZBeforeEx(eStrFindFlags_Reversed, apOut, aStr, anStrSz, aToFind,
+                      anToFindSz);
+}
+static inline achar* StrZRBeforeI(achar* apOut, const achar* aStr, tU32 anStrSz,
+                                  const achar* aToFind, tU32 anToFindSz)
+{
+  return StrZBeforeEx(eStrFindFlags_ReversedI, apOut, aStr, anStrSz, aToFind,
+                      anToFindSz);
+}
+
+static inline tBool StrZContains(const achar* aStr, tU32 anStrSz,
+                                 const achar* aSearch, tU32 anSearchSz,
+                                 tI32 start)
+{
+  return StrZFind(aStr, anStrSz, aSearch, anSearchSz, start) >= 0;
+}
+static inline tBool StrZContainsI(const achar* aStr, tU32 anStrSz,
+                                  const achar* aSearch, tU32 anSearchSz,
+                                  tI32 start)
+{
+  return StrZFindI(aStr, anStrSz, aSearch, anSearchSz, start) >= 0;
+}
+
+static inline tBool StrIsEmptyChar(tU32 c)
+{
   return StrIsSpace(c) || c == '\n' || c == '\r' || c == '\t';
 }
 
-static inline tBool StrIsPathSep(const tU32 c) {
+static inline tBool StrIsPathSep(const tU32 c)
+{
   return (c == '/' || c == '\\');
 }
-static inline tBool StrStartsWithDriveSep(const char* str) {
+static inline tBool StrStartsWithDriveSep(const char* str)
+{
   return StrStartsWith(str, ":/") || StrStartsWith(str, ":\\");
 }
-static inline tBool StrStartsWithHomeExpansion(const char* aPath) {
-  return (*aPath == '~') && (*(aPath+1) == '/' || *(aPath+1) == 0);
+static inline tBool StrStartsWithHomeExpansion(const char* aPath)
+{
+  return (*aPath == '~') && (*(aPath + 1) == '/' || *(aPath + 1) == 0);
 }
 
-static inline tBool StrEq(const achar* aaszA, const achar* aaszB) {
-  return StrCmp(aaszA,aaszB) == 0;
+static inline tBool StrEq(const achar* aaszA, const achar* aaszB)
+{
+  return StrCmp(aaszA, aaszB) == 0;
 }
-static inline tBool StrNEq(const achar* aaszA, const achar* aaszB, tSize anNumChars) {
-  return StrNCmp(aaszA,aaszB,anNumChars) == 0;
+static inline tBool StrNEq(const achar* aaszA, const achar* aaszB,
+                           tSize anNumChars)
+{
+  return StrNCmp(aaszA, aaszB, anNumChars) == 0;
 }
-static inline tBool StrIEq(const achar* aaszA, const achar* aaszB) {
-  return StrICmp(aaszA,aaszB) == 0;
+static inline tBool StrIEq(const achar* aaszA, const achar* aaszB)
+{
+  return StrICmp(aaszA, aaszB) == 0;
 }
-static inline tBool StrNIEq(const achar* aaszA, const achar* aaszB, tSize anNumChars) {
-  return StrNICmp(aaszA,aaszB,anNumChars) == 0;
+static inline tBool StrNIEq(const achar* aaszA, const achar* aaszB,
+                            tSize anNumChars)
+{
+  return StrNICmp(aaszA, aaszB, anNumChars) == 0;
 }
 
-static inline tI32 StrMapLengthIndex(const achar* aaszA, tI32 anIndex) {
-  return StrMapIndex(StrLen(aaszA),anIndex);
+static inline tI32 StrMapLengthIndex(const achar* aaszA, tI32 anIndex)
+{
+  return StrMapIndex(StrLen(aaszA), anIndex);
 }
-static inline tI32 StrMapSizeIndex(const achar* aaszA, tI32 anIndex) {
-  return StrMapIndex(StrSize(aaszA),anIndex);
+static inline tI32 StrMapSizeIndex(const achar* aaszA, tI32 anIndex)
+{
+  return StrMapIndex(StrSize(aaszA), anIndex);
 }
 
-static inline tBool StrIsNumberPart(tU32 c, tBool bDotIsNumber niDefaultParam(niTrue)) {
+static inline tBool StrIsNumberPart(tU32 c,
+                                    tBool bDotIsNumber niDefaultParam(niTrue))
+{
   return StrIsDigit(c) || c == '-' || (bDotIsNumber && (c == '.'));
 }
 
-static inline achar* StrDupModule(const achar* aaszStr) {
+static inline achar* StrDupModule(const achar* aaszStr)
+{
   const tU32 sizez = StrSizeZ(aaszStr);
   if (sizez == 0)
     return NULL;
   achar* str = (achar*)niMalloc(sizez);
   if (str) {
-    ni::MemCopy((tPtr)str,(tPtr)aaszStr,sizez);
-    str[sizez-1] = 0;
+    ni::MemCopy((tPtr)str, (tPtr)aaszStr, sizez);
+    str[sizez - 1] = 0;
   }
   return str;
 }
@@ -535,18 +621,19 @@ enum eUCPScript {
 niExportFunc(tU32) StrGetUCPProps(tU32 cp, tU32* apCharType, tU32* apScript);
 
 //! Check whether the specified character is a punctuation character.
-static inline tBool StrIsPunct(tU32 ch) {
-  return ni::StrGetUCPProps(ch,NULL,NULL) == ni::eUCPCategory_Punctuation;
+static inline tBool StrIsPunct(tU32 ch)
+{
+  return ni::StrGetUCPProps(ch, NULL, NULL) == ni::eUCPCategory_Punctuation;
 }
 
 //! Check whether the specified character can be considered a word for
 //! auto line break purposes.
-static inline tBool StrIsWordChar(tU32 ch) {
+static inline tBool StrIsWordChar(tU32 ch)
+{
   ni::tU32 script;
-  ni::tU32 cat = ni::StrGetUCPProps(ch,NULL,&script);
+  ni::tU32 cat = ni::StrGetUCPProps(ch, NULL, &script);
   return (cat == ni::eUCPCategory_Letter) &&
-      (script == ni::eUCPScript_Han ||
-       script == ni::eUCPScript_Hangul);
+         (script == ni::eUCPScript_Han || script == ni::eUCPScript_Hangul);
 }
 
 #endif // niMinFeatures(15)
@@ -554,5 +641,5 @@ static inline tBool StrIsWordChar(tU32 ch) {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __STRINGLIB_H_8B4B4FF5_B474_47EB_B185_6F69B2E6C016__

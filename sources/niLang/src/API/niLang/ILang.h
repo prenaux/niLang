@@ -53,8 +53,7 @@ enum eEnumToStringFlags {
 typedef tU32 tEnumToStringFlags;
 
 //! System messages id.
-enum eSystemMessage
-{
+enum eSystemMessage {
   //! The application exits.
   //! \param A: unused
   //! \param B: unused
@@ -79,8 +78,7 @@ enum eSystemMessage
 };
 
 //! Clipboard types
-enum eClipboardType
-{
+enum eClipboardType {
   //! System clipboard.
   eClipboardType_System = 0,
   //! Memory clipboard 1.
@@ -110,8 +108,7 @@ enum eClipboardType
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-struct iLang : public iUnknown
-{
+struct iLang : public iUnknown {
   niDeclareInterfaceUUID(iLang,0x8e2cebd1,0x783b,0x4b0b,0xb7,0xb3,0x62,0xa3,0x87,0xd1,0x90,0xb1);
 
   //########################################################################################
@@ -135,7 +132,8 @@ struct iLang : public iUnknown
 
   //! Set an OS environment variable.
   //! {Property}
-  virtual void __stdcall SetEnv(const achar* aaszEnv, const achar* aaszValue) const = 0;
+  virtual void __stdcall SetEnv(const achar* aaszEnv,
+                                const achar* aaszValue) const = 0;
   //! Get an OS environment variable.
   //! {Property}
   virtual cString __stdcall GetEnv(const achar* aaszEnv) const = 0;
@@ -153,7 +151,8 @@ struct iLang : public iUnknown
   virtual tBool __stdcall HasProperty(const achar* aaszName) const = 0;
   //! Set the specified system property.
   //! {Property}
-  virtual void __stdcall SetProperty(const achar* aaszName, const achar* aaszValue) = 0;
+  virtual void __stdcall SetProperty(const achar* aaszName,
+                                     const achar* aaszValue) = 0;
   //! Get the specified system property.
   //! {Property}
   virtual cString __stdcall GetProperty(const achar* aaszName) const = 0;
@@ -170,13 +169,16 @@ struct iLang : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetModuleDefIndex(const achar* aaszName) const = 0;
   //! Load a module definition from a DLL.
-  virtual const iModuleDef* __stdcall LoadModuleDef(const achar* aName, const achar* aaszFile = NULL) = 0;
+  virtual const iModuleDef* __stdcall LoadModuleDef(
+    const achar* aName, const achar* aaszFile = NULL) = 0;
 
   //! Create instance map.
   //! {Property}
   virtual tCreateInstanceCMap* __stdcall GetCreateInstanceMap() const = 0;
   //! Create instance of the specified object type.
-  virtual iUnknown* __stdcall CreateInstance(const achar* aOID, const Var& aVarA = niVarNull, const Var& aVarB = niVarNull) = 0;
+  virtual iUnknown* __stdcall CreateInstance(const achar* aOID,
+                                             const Var& aVarA = niVarNull,
+                                             const Var& aVarB = niVarNull) = 0;
 
   //! Get the global instance map.
   //! {Property}
@@ -187,10 +189,12 @@ struct iLang : public iUnknown
   //!     iResource you can do QueryInterface<iResource>(GetLang()) and it will return
   //!     the instance of the registered global instance.
   //! {Property}
-  virtual tBool __stdcall SetGlobalInstance(const achar* aaszName, iUnknown* apInstance) = 0;
+  virtual tBool __stdcall SetGlobalInstance(const achar* aaszName,
+                                            iUnknown* apInstance) = 0;
   //! Get a global instance.
   //! {Property}
-  virtual iUnknown* __stdcall GetGlobalInstance(const achar* aaszName) const = 0;
+  virtual iUnknown* __stdcall GetGlobalInstance(
+    const achar* aaszName) const = 0;
 
   //! Register an enumeration definition.
   virtual tBool __stdcall RegisterEnumDef(const sEnumDef* apEnumDef) = 0;
@@ -204,7 +208,8 @@ struct iLang : public iUnknown
   //! {Property}
   virtual const tUUID& __stdcall GetInterfaceUUID(iHString* ahspStr) const = 0;
   //! Get the interface definition from the specified UUID.
-  virtual const sInterfaceDef* __stdcall GetInterfaceDefFromUUID(const tUUID& aUUID) const = 0;
+  virtual const sInterfaceDef* __stdcall GetInterfaceDefFromUUID(
+    const tUUID& aUUID) const = 0;
   //! @}
 
   //########################################################################################
@@ -229,11 +234,15 @@ struct iLang : public iUnknown
   virtual tBool __stdcall ClearLocalization(iHString* ahspLocale) = 0;
 
   //! Set the localization of the specified 'native' string.
-  virtual tBool __stdcall SetLocalization(iHString* ahspLocale, iHString* ahspNative, iHString* ahspLocalized) = 0;
+  virtual tBool __stdcall SetLocalization(iHString* ahspLocale,
+                                          iHString* ahspNative,
+                                          iHString* ahspLocalized) = 0;
   //! Set the localization of the specified of all strings in the specified map.
-  virtual tBool __stdcall SetLocalizationMap(iHString* ahspLocale, const tStringCMap* apLocalizationMap) = 0;
+  virtual tBool __stdcall SetLocalizationMap(
+    iHString* ahspLocale, const tStringCMap* apLocalizationMap) = 0;
   //! Get all localized strings of the specified locale.
-  virtual tU32 __stdcall GetLocalizationMap(iHString* ahspLocale, tStringCMap* apLocalizedMap) const = 0;
+  virtual tU32 __stdcall GetLocalizationMap(
+    iHString* ahspLocale, tStringCMap* apLocalizedMap) const = 0;
 
   //! Set whether the string table should mark missing locale translations.
   //! {Property}
@@ -243,7 +252,8 @@ struct iLang : public iUnknown
   virtual tBool __stdcall GetMarkMissingLocalization() const = 0;
   //! Get all missing strings of the specified locale.
   //! \remark This retrieves all strings which should have been translated but are not.
-  virtual tStringCVec* __stdcall GetMissingLocalization(iHString* locale) const = 0;
+  virtual tStringCVec* __stdcall GetMissingLocalization(
+    iHString* locale) const = 0;
   //! @}
 
   //########################################################################################
@@ -273,7 +283,9 @@ struct iLang : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetLogFilter() const = 0;
   //! Log a message.
-  virtual void __stdcall Log(tLogFlags type, const achar* msg, const achar* file, tU32 line, const achar* func) = 0;
+  virtual void __stdcall Log(tLogFlags type, const achar* msg,
+                             const achar* file, tU32 line,
+                             const achar* func) = 0;
   //! @}
 
   //########################################################################################
@@ -285,10 +297,12 @@ struct iLang : public iUnknown
   //! {Property}
   virtual iFileSystem* __stdcall GetRootFS() const = 0;
   //! Create a directory file system.
-  virtual iFileSystem* __stdcall CreateFileSystemDir(const achar* aaszDir, tFileSystemRightsFlags aRights) const = 0;
+  virtual iFileSystem* __stdcall CreateFileSystemDir(
+    const achar* aaszDir, tFileSystemRightsFlags aRights) const = 0;
   //! Creates a file system that store the file using its hashed file name.
   //! \remark This allows to use anything as filename and use the underlying file system more as a key/value store.
-  virtual iFileSystem* __stdcall CreateFileSystemHashed(const iFileSystem* apFS) const = 0;
+  virtual iFileSystem* __stdcall CreateFileSystemHashed(
+    const iFileSystem* apFS) const = 0;
   //! @}
 
   //########################################################################################
@@ -303,26 +317,38 @@ struct iLang : public iUnknown
   //! Create a dummy file.
   virtual iFile* __stdcall CreateFileWriteDummy() = 0;
   //! Create a memory file base.
-  virtual iFileBase* __stdcall CreateFileBaseMemory(tPtr apMem, tSize anSize, tBool abFree, const achar* aszPath = NULL) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseMemory(
+    tPtr apMem, tSize anSize, tBool abFree, const achar* aszPath = NULL) = 0;
   //! Create a memory file.
-  virtual iFile* __stdcall CreateFileMemory(tPtr apMem, tSize anSize, tBool abFree, const achar* aszPath = NULL) = 0;
+  virtual iFile* __stdcall CreateFileMemory(tPtr apMem, tSize anSize,
+                                            tBool abFree,
+                                            const achar* aszPath = NULL) = 0;
   //! Create a memory file base.
-  virtual iFileBase* __stdcall CreateFileBaseMemoryAlloc(tSize anSize, const achar* aszPath = NULL) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseMemoryAlloc(
+    tSize anSize, const achar* aszPath = NULL) = 0;
   //! Create a memory file.
-  virtual iFile* __stdcall CreateFileMemoryAlloc(tSize anSize, const achar* aszPath = NULL) = 0;
+  virtual iFile* __stdcall CreateFileMemoryAlloc(
+    tSize anSize, const achar* aszPath = NULL) = 0;
   //! Create a dynamic memory file base.
-  virtual iFileBase* __stdcall CreateFileBaseDynamicMemory(tSize anSize = 0, const achar* aszPath = NULL) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseDynamicMemory(
+    tSize anSize = 0, const achar* aszPath = NULL) = 0;
   //! Create a dynamic memory file.
-  virtual iFile* __stdcall CreateFileDynamicMemory(tSize anSize = 0, const achar* aszPath = NULL) = 0;
+  virtual iFile* __stdcall CreateFileDynamicMemory(
+    tSize anSize = 0, const achar* aszPath = NULL) = 0;
   //! Create a file base window.
   //! \remark If AutoSeekSet is true SeekSet will be called before each read/write operations
   //!         which allows to have multiple file windows on the same file and read from them
   //!         concurently. However that method is usually quite slow, a better approach is to
   //!         open a new shared file handle of the base file with and create the file window
   //!         with the offset and auto seek set disabled.
-  virtual iFileBase* __stdcall CreateFileBaseWindow(iFileBase* apBase, tI64 anBase, tI64 anSize, const achar* aaszPath, tBool abAutoSeekSet) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseWindow(iFileBase* apBase,
+                                                    tI64 anBase, tI64 anSize,
+                                                    const achar* aaszPath,
+                                                    tBool abAutoSeekSet) = 0;
   //! Create a file window.
-  virtual iFile* __stdcall CreateFileWindow(iFileBase* apBase, tI64 anBase, tI64 anSize, const achar* aaszPath, tBool abAutoSeekSet) = 0;
+  virtual iFile* __stdcall CreateFileWindow(iFileBase* apBase, tI64 anBase,
+                                            tI64 anSize, const achar* aaszPath,
+                                            tBool abAutoSeekSet) = 0;
   //! @}
 
   //########################################################################################
@@ -331,9 +357,11 @@ struct iLang : public iUnknown
   //! @{
 
   //! Create a file base buffer encoder.
-  virtual iFileBase* __stdcall CreateFileBaseBufferEncoder(iFileBase* apBase, iBufferEncoder* apEnc) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseBufferEncoder(
+    iFileBase* apBase, iBufferEncoder* apEnc) = 0;
   //! Create a file buffer encoder.
-  virtual iFile* __stdcall CreateFileBufferEncoder(iFileBase* apBase, iBufferEncoder* apEnc) = 0;
+  virtual iFile* __stdcall CreateFileBufferEncoder(iFileBase* apBase,
+                                                   iBufferEncoder* apEnc) = 0;
   //! Create a file base buffer decoder.
   //! \param apBase
   //! \param apDec
@@ -341,13 +369,19 @@ struct iLang : public iUnknown
   //!        decoded. Pass zero to autodetect. Should be specified
   //!        whenever possible, without it the whole file is decoded
   //!        to determin the its size.
-  virtual iFileBase* __stdcall CreateFileBaseBufferDecoder(iFileBase* apBase, iBufferDecoder* apDec, tSize aDecodedSize) = 0;
+  virtual iFileBase* __stdcall CreateFileBaseBufferDecoder(
+    iFileBase* apBase, iBufferDecoder* apDec, tSize aDecodedSize) = 0;
   //! Create a file buffer decoder.
-  virtual iFile* __stdcall CreateFileBufferDecoder(iFileBase* apBase, iBufferDecoder* apDec, tSize aDecodedSize) = 0;
+  virtual iFile* __stdcall CreateFileBufferDecoder(iFileBase* apBase,
+                                                   iBufferDecoder* apDec,
+                                                   tSize aDecodedSize) = 0;
   //! Encodes a file using the specified buffer encoder.
-  virtual tSize __stdcall FileBufferEncode(iBufferEncoder* apEnc, iFile* apSrc, tSize anSrcSize, iFile* apDest) = 0;
+  virtual tSize __stdcall FileBufferEncode(iBufferEncoder* apEnc, iFile* apSrc,
+                                           tSize anSrcSize, iFile* apDest) = 0;
   //! Decodes a file using the specified buffer decoder.
-  virtual tSize __stdcall FileBufferDecode(iBufferDecoder* apDec, iFile* apSrc, tSize anSrcSize, iFile* apDest, tSize anDestSize) = 0;
+  virtual tSize __stdcall FileBufferDecode(iBufferDecoder* apDec, iFile* apSrc,
+                                           tSize anSrcSize, iFile* apDest,
+                                           tSize anDestSize) = 0;
   //! @}
 
   //########################################################################################
@@ -404,13 +438,17 @@ struct iLang : public iUnknown
 
 #if niMinFeatures(20)
   //! Parse Json contained in the specified file.
-  virtual ni::tBool __stdcall JsonParseFile(ni::iFile* apFile, ni::iJsonParserSink* apSink) = 0;
+  virtual ni::tBool __stdcall JsonParseFile(ni::iFile* apFile,
+                                            ni::iJsonParserSink* apSink) = 0;
   //! Parse Json contained in the specified string.
-  virtual ni::tBool __stdcall JsonParseString(const ni::cString& aString, ni::iJsonParserSink* apSink) = 0;
+  virtual ni::tBool __stdcall JsonParseString(const ni::cString& aString,
+                                              ni::iJsonParserSink* apSink) = 0;
   //! Create a Json writer to write to the specified sink.
-  virtual ni::iJsonWriter* __stdcall CreateJsonSinkWriter(ni::iJsonWriterSink* apSink, ni::tBool abPrettyPrint) = 0;
+  virtual ni::iJsonWriter* __stdcall CreateJsonSinkWriter(
+    ni::iJsonWriterSink* apSink, ni::tBool abPrettyPrint) = 0;
   //! Create a Json writer to write to the specified file.
-  virtual ni::iJsonWriter* __stdcall CreateJsonFileWriter(ni::iFile* apFile, ni::tBool abPrettyPrint) = 0;
+  virtual ni::iJsonWriter* __stdcall CreateJsonFileWriter(
+    ni::iFile* apFile, ni::tBool abPrettyPrint) = 0;
 #endif
   //! @}
 
@@ -421,9 +459,11 @@ struct iLang : public iUnknown
 
 #if niMinFeatures(20)
   //! Parse Xml contained in the specified file.
-  virtual ni::tBool __stdcall XmlParseFile(ni::iFile* apFile, ni::iXmlParserSink* apSink) = 0;
+  virtual ni::tBool __stdcall XmlParseFile(ni::iFile* apFile,
+                                           ni::iXmlParserSink* apSink) = 0;
   //! Parse Xml contained in the specified string.
-  virtual ni::tBool __stdcall XmlParseString(const ni::cString& aString, ni::iXmlParserSink* apSink) = 0;
+  virtual ni::tBool __stdcall XmlParseString(const ni::cString& aString,
+                                             ni::iXmlParserSink* apSink) = 0;
 #endif
   //! @}
 
@@ -444,13 +484,20 @@ struct iLang : public iUnknown
   //!         check for a NULL pointer.
   virtual Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) = 0;
   //! Convert an enum value to an expression string.
-  virtual cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) = 0;
+  virtual cString __stdcall EnumToString(tU32 anValue,
+                                         const sEnumDef* apEnumDef,
+                                         tEnumToStringFlags aFlags) = 0;
   //! Convert an expression string to an enum value.
   //! \return 0 if the expression cant be parsed or isnt found in the enum def.
-  virtual tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) = 0;
+  virtual tU32 __stdcall StringToEnum(const achar* aExpr,
+                                      const sEnumDef* apEnumDef,
+                                      tEnumToStringFlags aFlags) = 0;
   //! Convert an expression string to an enum value.
   //! \return aDefaultValue if the expression cant be parsed or isnt found in the enum def.
-  virtual tU32 __stdcall StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) = 0;
+  virtual tU32 __stdcall StringToEnumDefault(const achar* aExpr,
+                                             const sEnumDef* apEnumDef,
+                                             tEnumToStringFlags aFlags,
+                                             tU32 aDefaultValue) = 0;
   //! @}
 
   //########################################################################################
@@ -460,7 +507,8 @@ struct iLang : public iUnknown
 
 #if niMinFeatures(15)
   //! Add a scripting host.
-  virtual tBool __stdcall AddScriptingHost(iHString* ahspName, iScriptingHost* apHost) = 0;
+  virtual tBool __stdcall AddScriptingHost(iHString* ahspName,
+                                           iScriptingHost* apHost) = 0;
   //! Remove a scripting host.
   virtual tBool __stdcall RemoveScriptingHost(iHString* ahspName) = 0;
   //! Get the number of scripting hosts.
@@ -474,16 +522,19 @@ struct iLang : public iUnknown
   virtual iScriptingHost* __stdcall GetScriptingHost(tU32 anIndex) = 0;
   //! Get the scripting host from the specified name.
   //! {Property}
-  virtual iScriptingHost* __stdcall GetScriptingHostFromName(iHString* ahspName) = 0;
+  virtual iScriptingHost* __stdcall GetScriptingHostFromName(
+    iHString* ahspName) = 0;
   //! Get the index of the specified scripting host.
   //! {Property}
-  virtual tU32 __stdcall GetScriptingHostIndex(iScriptingHost* apHost) const = 0;
+  virtual tU32 __stdcall GetScriptingHostIndex(
+    iScriptingHost* apHost) const = 0;
 
   //! Service all scripting hosts.
   virtual void __stdcall ServiceAllScriptingHosts(tBool abForceGC) = 0;
 
   //! Get the first scripting host that can evaluate the code resources.
-  virtual iScriptingHost* __stdcall FindScriptingHost(iHString* ahspContext, iHString* ahspCodeResource) = 0;
+  virtual iScriptingHost* __stdcall FindScriptingHost(
+    iHString* ahspContext, iHString* ahspCodeResource) = 0;
 #endif
   //! @}
 
@@ -524,7 +575,9 @@ struct iLang : public iUnknown
   virtual tBool __stdcall URLExists(const achar* aURL) = 0;
   //! Find the path/url matching the specified resource, basepath and with the extensions derived from the specified loader prefix.
   //! \remark Example: found = URLFindFilePath("foo.bar", "data/", "BitmapLoader.")
-  virtual cString __stdcall URLFindFilePath(const achar* aszRes, const achar* aszBasePath, const achar* aLoaderPrefix) = 0;
+  virtual cString __stdcall URLFindFilePath(const achar* aszRes,
+                                            const achar* aszBasePath,
+                                            const achar* aLoaderPrefix) = 0;
   //! @}
 
   //########################################################################################
@@ -543,15 +596,21 @@ struct iLang : public iUnknown
   //! @{
 
   //! Check if the file contains an object of the specified type.
-  virtual tBool __stdcall IsSerializedObject(iFile* apFile, const achar* aID, tI64* apObjSize) = 0;
+  virtual tBool __stdcall IsSerializedObject(iFile* apFile, const achar* aID,
+                                             tI64* apObjSize) = 0;
   //! Serialize an object.
-  virtual iUnknown* __stdcall SerializeObject(iFile* apFile, iUnknown* apObject, eSerializeMode aMode, tI64* apObjSize) = 0;
+  virtual iUnknown* __stdcall SerializeObject(iFile* apFile, iUnknown* apObject,
+                                              eSerializeMode aMode,
+                                              tI64* apObjSize) = 0;
   //! Read serialization header.
   //! {NoAutomation}
-  virtual tI64 __stdcall ReadSerializationHeader(iFile* apFile, cString* apID, tI64* apSize) = 0;
+  virtual tI64 __stdcall ReadSerializationHeader(iFile* apFile, cString* apID,
+                                                 tI64* apSize) = 0;
   //! Write serialization header.
   //! {NoAutomation}
-  virtual tI64 __stdcall WriteSerializationHeader(iFile* apFile, const achar* apID, tI64 anSize) = 0;
+  virtual tI64 __stdcall WriteSerializationHeader(iFile* apFile,
+                                                  const achar* apID,
+                                                  tI64 anSize) = 0;
   //! @}
 
   //########################################################################################
@@ -560,7 +619,8 @@ struct iLang : public iUnknown
   //! @{
 
   //! Create a new device resource manager.
-  virtual iDeviceResourceManager* __stdcall CreateDeviceResourceManager(const achar* aszType) = 0;
+  virtual iDeviceResourceManager* __stdcall CreateDeviceResourceManager(
+    const achar* aszType) = 0;
   //! @}
 
   //########################################################################################
@@ -570,7 +630,8 @@ struct iLang : public iUnknown
 
   //! Get the system message targets.
   //! {Property}
-  virtual tMessageHandlerSinkLst* __stdcall GetSystemMessageHandlers() const = 0;
+  virtual tMessageHandlerSinkLst* __stdcall GetSystemMessageHandlers()
+    const = 0;
   //! @}
 
   //########################################################################################
@@ -581,16 +642,23 @@ struct iLang : public iUnknown
   //! Create a data table.
   virtual iDataTable* __stdcall CreateDataTable(const achar* aaszName) = 0;
   //! Serialize the specified data table.
-  virtual tBool __stdcall SerializeDataTable(const achar* aaszType, eSerializeMode aMode, iDataTable* apTable, iFile* apFile) = 0;
+  virtual tBool __stdcall SerializeDataTable(const achar* aaszType,
+                                             eSerializeMode aMode,
+                                             iDataTable* apTable,
+                                             iFile* apFile) = 0;
   //! Create a data table write stack.
-  virtual iDataTableWriteStack* __stdcall CreateDataTableWriteStack(iDataTable* apDT) = 0;
+  virtual iDataTableWriteStack* __stdcall CreateDataTableWriteStack(
+    iDataTable* apDT) = 0;
   //! Create a data table write stack.
-  virtual iDataTableWriteStack* __stdcall CreateDataTableWriteStackFromName(const achar* aaszName) = 0;
+  virtual iDataTableWriteStack* __stdcall CreateDataTableWriteStackFromName(
+    const achar* aaszName) = 0;
   //! Create a data table read stack.
-  virtual iDataTableReadStack* __stdcall CreateDataTableReadStack(iDataTable* apDT) = 0;
+  virtual iDataTableReadStack* __stdcall CreateDataTableReadStack(
+    iDataTable* apDT) = 0;
   //! Build an absolute path to the specified datatable and property.
   //! \remark If anPropIndex == eInvalidHandle the path points to the datatable and not the property
-  virtual cString __stdcall GetAbsoluteDataTablePath(iDataTable* apDT, tU32 anPropIndex) = 0;
+  virtual cString __stdcall GetAbsoluteDataTablePath(iDataTable* apDT,
+                                                     tU32 anPropIndex) = 0;
   //! @}
 
   //########################################################################################
@@ -605,7 +673,8 @@ struct iLang : public iUnknown
   //!     <li>text : Has a 'text' property of type string containing the text</li>
   //!     <li>bitmap : Has a 'bitmap' property of type iUnknown containing the bitmap</li>
   //!     </ul>
-  virtual tBool __stdcall SetClipboard(eClipboardType aType, iDataTable* apDT) = 0;
+  virtual tBool __stdcall SetClipboard(eClipboardType aType,
+                                       iDataTable* apDT) = 0;
   //! Get the data of the specified clipboard.
   //! {Property}
   virtual iDataTable* __stdcall GetClipboard(eClipboardType aType) const = 0;
@@ -636,32 +705,47 @@ struct iLang : public iUnknown
   virtual tOSMonitorFlags __stdcall GetMonitorFlags(tU32 anIndex) const = 0;
 
   //! Create a new OS window.
-  virtual iOSWindow* __stdcall CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) = 0;
+  virtual iOSWindow* __stdcall CreateWindow(iOSWindow* apParent,
+                                            const achar* aaszTitle,
+                                            const sRecti& aRect,
+                                            tOSWindowCreateFlags aCreate,
+                                            tOSWindowStyleFlags aStyle) = 0;
   //! Create a an OS window from a generic OS window handle.
-  virtual iOSWindow* __stdcall CreateWindowEx(tIntPtr aOSWindowHandle, tOSWindowCreateFlags aCreate) = 0;
+  virtual iOSWindow* __stdcall CreateWindowEx(tIntPtr aOSWindowHandle,
+                                              tOSWindowCreateFlags aCreate) = 0;
 
   //! Displays a native modal message box.
-  virtual eOSMessageBoxReturn __stdcall MessageBox(iOSWindow* apParent, const achar* aaszTitle, const achar* aaszText, tOSMessageBoxFlags aFlags) = 0;
+  virtual eOSMessageBoxReturn __stdcall MessageBox(
+    iOSWindow* apParent, const achar* aaszTitle, const achar* aaszText,
+    tOSMessageBoxFlags aFlags) = 0;
   //! Displays a native file open dialog box.
   //! \param aParent is the parent window.
   //! \param aTitle title of the dialog. "Open" by default.
   //! \param aFilter the file extension filters. Example "pdf;txt;*", '*' means that all extensions are accepted.
   //! \param aInitDir the directory to start from.
   //! \return An empty string if the user canceled, else the file path selected.
-  virtual cString __stdcall OpenFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) = 0;
+  virtual cString __stdcall OpenFileDialog(iOSWindow* aParent,
+                                           const achar* aTitle,
+                                           const achar* aFilter,
+                                           const achar* aInitDir) = 0;
   //! Displays a native file save dialog box.
   //! \param aParent is the parent window.
   //! \param aTitle title of the dialog. "Open" by default.
   //! \param aFilter the file extension filters. Example "pdf;txt;*", '*' means that all extensions are accepted.
   //! \param aInitDir the directory to start from.
   //! \return An empty string if the user canceled, else the file path selected.
-  virtual cString __stdcall SaveFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) = 0;
+  virtual cString __stdcall SaveFileDialog(iOSWindow* aParent,
+                                           const achar* aTitle,
+                                           const achar* aFilter,
+                                           const achar* aInitDir) = 0;
   //! Displays a native directory picker dialog box.
   //! \param aParent is the parent window.
   //! \param aTitle title of the dialog. "Open" by default.
   //! \param aInitDir the directory to start from.
   //! \return An empty string if the user canceled, else the file path selected.
-  virtual cString __stdcall PickDirectoryDialog(iOSWindow* aParent, const achar* aTitle, const achar* aInitDir) = 0;
+  virtual cString __stdcall PickDirectoryDialog(iOSWindow* aParent,
+                                                const achar* aTitle,
+                                                const achar* aInitDir) = 0;
   //! @}
 
   //########################################################################################
@@ -686,13 +770,19 @@ struct iLang : public iUnknown
   //########################################################################################
   //! @{
 
-  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort) = 0;
-  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(const achar* aAddress) = 0;
-  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort) = 0;
-  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(const achar* aAddress) = 0;
-  virtual iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol, iRemoteAddress* apAddr) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(
+    tU32 anIP, tU32 anPort) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(
+    const achar* aAddress) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(
+    tU32 anIP, tU32 anPort) = 0;
+  virtual iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(
+    const achar* aAddress) = 0;
+  virtual iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol,
+                                          iRemoteAddress* apAddr) = 0;
   //! {NoAutomation}
-  virtual iSocket* __stdcall CreateSocketFromHandle(tInt aSocket, iRemoteAddress* apAddr) = 0;
+  virtual iSocket* __stdcall CreateSocketFromHandle(tInt aSocket,
+                                                    iRemoteAddress* apAddr) = 0;
   //! {NoAutomation}
   virtual void __stdcall CloseSocketHandle(tInt aSocket) = 0;
   //! @}
@@ -702,83 +792,101 @@ struct iLang : public iUnknown
 niExportFunc(ni::iLang*) GetLang();
 
 //! Convert the specified enum to a its value string
-#define niEnumToChars(ENUM,VALUE)                                       \
-  ni::GetLang()->EnumToString((ENUM)VALUE,GetEnumDef_##ENUM(),0).Chars()
+#define niEnumToChars(ENUM, VALUE) \
+  ni::GetLang()->EnumToString((ENUM)VALUE, GetEnumDef_##ENUM(), 0).Chars()
 
 //! Convert the specified enum to its expanded value string (ENUM.VALUESTRING)
-#define niFullEnumToChars(ENUM,VALUE)                                   \
-  ni::GetLang()->EnumToString((ENUM)VALUE,GetEnumDef_##ENUM(),ni::eEnumToStringFlags_Full).Chars()
+#define niFullEnumToChars(ENUM, VALUE)               \
+  ni::GetLang()                                      \
+    ->EnumToString((ENUM)VALUE, GetEnumDef_##ENUM(), \
+                   ni::eEnumToStringFlags_Full)      \
+    .Chars()
 
 //! Convert the specified flags to its value string (FLAG1|...|FLAGN)
-#define niFlagsToChars(ENUM,VALUE)                                      \
-  ni::GetLang()->EnumToString((ENUM)VALUE,GetEnumDef_##ENUM(),ni::eEnumToStringFlags_Flags).Chars()
+#define niFlagsToChars(ENUM, VALUE)                  \
+  ni::GetLang()                                      \
+    ->EnumToString((ENUM)VALUE, GetEnumDef_##ENUM(), \
+                   ni::eEnumToStringFlags_Flags)     \
+    .Chars()
 
 //! Convert the specified flags to its expanded value string (FLAGS.FLAG1|...|FLAGS.FLAGN)
-#define niFullFlagsToChars(ENUM,VALUE)                                  \
-  ni::GetLang()->EnumToString((ENUM)VALUE,GetEnumDef_##ENUM(),ni::eEnumToStringFlags_Flags|ni::eEnumToStringFlags_Full).Chars()
+#define niFullFlagsToChars(ENUM, VALUE)                                        \
+  ni::GetLang()                                                                \
+    ->EnumToString((ENUM)VALUE, GetEnumDef_##ENUM(),                           \
+                   ni::eEnumToStringFlags_Flags | ni::eEnumToStringFlags_Full) \
+    .Chars()
 
-#define niDefConstHString_(VARNAME,STRING)                \
-  __forceinline ni::iHString* GetHString_##VARNAME() {    \
-    static ni::tHStringPtr _hstr_##VARNAME = _H(STRING);  \
-    return _hstr_##VARNAME.raw_ptr();                     \
+#define niDefConstHString_(VARNAME, STRING)              \
+  __forceinline ni::iHString* GetHString_##VARNAME()     \
+  {                                                      \
+    static ni::tHStringPtr _hstr_##VARNAME = _H(STRING); \
+    return _hstr_##VARNAME.raw_ptr();                    \
   }
 
-#define niDefConstHString(STR)  niDefConstHString_(STR,#STR)
-#define niGetConstHString(STR)  GetHString_##STR()
+#define niDefConstHString(STR) niDefConstHString_(STR, #STR)
+#define niGetConstHString(STR) GetHString_##STR()
 
 #ifdef niNoUnsafePtr
-#define _H(STR)           ni::CreateHStringFromView(STR).non_null()
+  #define _H(STR) ni::CreateHStringFromView(STR).non_null()
 #else
-#define _H(STR)           ni::CreateHStringFromView(STR)
+  #define _H(STR) ni::CreateHStringFromView(STR)
 #endif
-#define _HC(STR)          niGetConstHString(STR)
-#define _HDecl_(NAME,STR) niDefConstHString_(NAME,STR)
-#define _HDecl(STR)       niDefConstHString(STR)
+#define _HC(STR) niGetConstHString(STR)
+#define _HDecl_(NAME, STR) niDefConstHString_(NAME, STR)
+#define _HDecl(STR) niDefConstHString(STR)
 
-niExportFuncCPP(Ptr<iHString>) CreateHStringFromView(astl::string_view aStringView);
+niExportFuncCPP(Ptr<iHString>) CreateHStringFromView(
+  astl::string_view aStringView);
 niExportFunc(iHString*) CreateHStringForC(const char* aStr, std::size_t aLen);
 
 //! Create an object instance using function linkage
-#define niCreateInstance(MODULE,OBJECT,A,B) New_##MODULE##_##OBJECT(A,B)
+#define niCreateInstance(MODULE, OBJECT, A, B) New_##MODULE##_##OBJECT(A, B)
 
-#define niRegisterModuleDef(NAME)                         \
-  const ni::iModuleDef* __stdcall GetModuleDef_##NAME();  \
+#define niRegisterModuleDef(NAME)                        \
+  const ni::iModuleDef* __stdcall GetModuleDef_##NAME(); \
   ni::GetLang()->RegisterModule(GetModuleDef_##NAME());
 
-niExportFunc(ni::iUnknown*) New_niLang_Lang(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niLang_Lang(const ni::Var&, const ni::Var&);
 
 ///////////////////////////////////////////////
-static inline tBool __stdcall HasProperty(const achar* aaszName) {
+static inline tBool __stdcall HasProperty(const achar* aaszName)
+{
   return GetLang()->HasProperty(aaszName);
 }
-static inline void __stdcall SetProperty(const achar* aaszName, const achar* aaszValue) {
-  GetLang()->SetProperty(aaszName,aaszValue);
+static inline void __stdcall SetProperty(const achar* aaszName,
+                                         const achar* aaszValue)
+{
+  GetLang()->SetProperty(aaszName, aaszValue);
 }
-static inline cString __stdcall GetProperty(const achar* aaszName, const achar* aaszDefault = AZEROSTR) {
+static inline cString __stdcall GetProperty(const achar* aaszName,
+                                            const achar* aaszDefault = AZEROSTR)
+{
   if (!HasProperty(aaszName))
     return aaszDefault;
   return GetLang()->GetProperty(aaszName);
 }
 
 ///////////////////////////////////////////////
-inline tBool HasCreateInstance(const achar* aaszName) {
+inline tBool HasCreateInstance(const achar* aaszName)
+{
   return ni::GetLang()->GetCreateInstanceMap()->find(aaszName) !=
-      ni::GetLang()->GetCreateInstanceMap()->end();
+         ni::GetLang()->GetCreateInstanceMap()->end();
 }
 
 ///////////////////////////////////////////////
-inline tBool RegisterCreateInstance(const achar* aaszName, iCallback* apCallback) {
+inline tBool RegisterCreateInstance(const achar* aaszName,
+                                    iCallback* apCallback)
+{
   niAssert(niStringIsOK(aaszName));
   niAssert(niIsOK(apCallback));
-  astl::upsert(
-      *ni::GetLang()->GetCreateInstanceMap(),
-      aaszName,
-      apCallback);
+  astl::upsert(*ni::GetLang()->GetCreateInstanceMap(), aaszName, apCallback);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-inline tBool UnregisterCreateInstance(const achar* aaszName, iCallback* apCallback) {
+inline tBool UnregisterCreateInstance(const achar* aaszName,
+                                      iCallback* apCallback)
+{
   Nonnull<tCreateInstanceCMap> mapCI(ni::GetLang()->GetCreateInstanceMap());
   tCreateInstanceCMap::iterator it = mapCI->find(aaszName);
   if (it == mapCI->end())
@@ -795,9 +903,11 @@ struct sPropertyString {
       : _name(aName)
       , _default(aDefault)
       , _fetched(eFalse)
-  {}
+  {
+  }
 
-  const cString& get(tBool abForceGet = eFalse) {
+  const cString& get(tBool abForceGet = eFalse)
+  {
     if (abForceGet || !_fetched) {
       _fetched = eTrue;
       if (ni::GetLang()->HasProperty(_name)) {
@@ -810,7 +920,7 @@ struct sPropertyString {
     return _value;
   }
 
-private:
+ private:
   const achar* const _name;
   const achar* const _default;
   tBool _fetched;
@@ -823,9 +933,11 @@ struct sPropertyBool {
       : _name(aName)
       , _default(aDefault)
       , _fetched(eFalse)
-  {}
+  {
+  }
 
-  const tBool get(tBool abForceGet = eFalse) {
+  const tBool get(tBool abForceGet = eFalse)
+  {
     if (abForceGet || !_fetched) {
       _fetched = eTrue;
       if (ni::GetLang()->HasProperty(_name)) {
@@ -838,7 +950,7 @@ struct sPropertyBool {
     return (tBool)_value;
   }
 
-private:
+ private:
   const achar* const _name;
   const tBool _default;
   tBool _fetched;
@@ -846,7 +958,9 @@ private:
 };
 
 ///////////////////////////////////////////////
-inline cString URLExistsComputeShortestRelativeFilePath(const achar* aszFileName) {
+inline cString URLExistsComputeShortestRelativeFilePath(
+  const achar* aszFileName)
+{
   cString strFilename;
   if (niStringIsOK(aszFileName)) {
     if (ni::GetLang()->URLExists(aszFileName)) {
@@ -875,44 +989,46 @@ inline cString URLExistsComputeShortestRelativeFilePath(const achar* aszFileName
 }
 
 ///////////////////////////////////////////////
-inline Var __stdcall ExpressionVariableToVar(iExpressionVariable* apVar) {
+inline Var __stdcall ExpressionVariableToVar(iExpressionVariable* apVar)
+{
   if (!apVar)
     return niVarNull;
 
   switch (apVar->GetType()) {
-    case  eExpressionVariableType_Float: {
-      return apVar->GetFloat();
-    }
-    case  eExpressionVariableType_Vec2: {
-      return apVar->GetVec2();
-    }
-    case  eExpressionVariableType_Vec3: {
-      return apVar->GetVec3();
-    }
-    case  eExpressionVariableType_Vec4: {
-      return apVar->GetVec4();
-    }
-    case  eExpressionVariableType_Matrix: {
-      return apVar->GetMatrix();
-    }
-    case  eExpressionVariableType_String: {
-      return apVar->GetString();
-    }
-    default: {
-      return niVarNull;
-    }
+  case eExpressionVariableType_Float: {
+    return apVar->GetFloat();
+  }
+  case eExpressionVariableType_Vec2: {
+    return apVar->GetVec2();
+  }
+  case eExpressionVariableType_Vec3: {
+    return apVar->GetVec3();
+  }
+  case eExpressionVariableType_Vec4: {
+    return apVar->GetVec4();
+  }
+  case eExpressionVariableType_Matrix: {
+    return apVar->GetMatrix();
+  }
+  case eExpressionVariableType_String: {
+    return apVar->GetString();
+  }
+  default: {
+    return niVarNull;
+  }
   }
 }
 
 ///////////////////////////////////////////////
-inline Var __stdcall EvalVar(iExpressionContext* apContext, const achar* aExpr) {
+inline Var __stdcall EvalVar(iExpressionContext* apContext, const achar* aExpr)
+{
   niAssert(apContext != NULL);
 
   if (!niStringIsOK(aExpr))
     return niVarNull;
 
   if (aExpr[0] == '`') {
-    return (aExpr+1);
+    return (aExpr + 1);
   }
 
   Ptr<iExpressionVariable> ev = apContext->Eval(aExpr);
@@ -923,22 +1039,28 @@ inline Var __stdcall EvalVar(iExpressionContext* apContext, const achar* aExpr) 
 }
 
 ///////////////////////////////////////////////
-inline iFile* CreateBin2HFile(const unsigned char* data, const int size, const char* name) {
+inline iFile* CreateBin2HFile(const unsigned char* data, const int size,
+                              const char* name)
+{
   cString fileName = name;
   int dotPos = fileName.rfind("_");
   if (dotPos > 0) {
     fileName.data()[dotPos] = '.';
   }
-  return ni::GetLang()->CreateFileMemory((tPtr)data, size, eFalse, fileName.Chars());
+  return ni::GetLang()->CreateFileMemory((tPtr)data, size, eFalse,
+                                         fileName.Chars());
 }
 
-#define niExternBin2H(NAME)                     \
-  extern unsigned char NAME##_DATA[];           \
+#define niExternBin2H(NAME)           \
+  extern unsigned char NAME##_DATA[]; \
   extern int NAME##_DATA_SIZE;
-#define niFileOpenBin2H(NAME) CreateBin2HFile(NAME##_DATA, NAME##_DATA_SIZE, "BIN2H_" #NAME)
+#define niFileOpenBin2H(NAME) \
+  CreateBin2HFile(NAME##_DATA, NAME##_DATA_SIZE, "BIN2H_" #NAME)
 
 ///////////////////////////////////////////////
-inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir = nullptr) {
+inline cString GetToolkitDir(const achar* aToolkitName,
+                             const achar* aSubDir = nullptr)
+{
   cString r = ni::GetLang()->GetProperty("ni.dirs.work");
   if (niStringIsOK(aToolkitName)) {
     r += aToolkitName;
@@ -952,11 +1074,13 @@ inline cString GetToolkitDir(const achar* aToolkitName, const achar* aSubDir = n
 }
 
 ///////////////////////////////////////////////
-inline cString GetModuleDataDir(const achar* aToolkitName, const achar* aModuleName) {
-  return GetToolkitDir(aToolkitName,"data") + aModuleName + "/";
+inline cString GetModuleDataDir(const achar* aToolkitName,
+                                const achar* aModuleName)
+{
+  return GetToolkitDir(aToolkitName, "data") + aModuleName + "/";
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ILANG_H_1CD42183_7376_49A5_BEE6_0141CD400B64__

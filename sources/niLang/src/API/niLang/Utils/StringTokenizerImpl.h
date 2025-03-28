@@ -19,8 +19,7 @@ namespace ni {
 /** Default tokenizer, the separator is the space character, strings between two quote are
  * one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cDefaultStringTokenizer : public ImplRC<iStringTokenizer>
-{
+class cDefaultStringTokenizer : public ImplRC<iStringTokenizer> {
  public:
   cDefaultStringTokenizer()
   {
@@ -31,27 +30,21 @@ class cDefaultStringTokenizer : public ImplRC<iStringTokenizer>
   eStringTokenizerCharType __stdcall GetCharType(tU32 c)
   {
     eStringTokenizerCharType type = eStringTokenizerCharType_Normal;
-    if (c == '\\')
-    {
-      if (mbPrevBackslash)
-      {
+    if (c == '\\') {
+      if (mbPrevBackslash) {
         mbPrevBackslash = eFalse;
       }
-      else
-      {
+      else {
         type = eStringTokenizerCharType_Skip;
         mbPrevBackslash = eTrue;
       }
     }
-    else
-    {
-      if (c == '"')
-      {
+    else {
+      if (c == '"') {
         if (!mbPrevBackslash)
-          mbInString = mbInString?eFalse:eTrue;
+          mbInString = mbInString ? eFalse : eTrue;
       }
-      else if (!mbInString && StrIsSpace(c))
-      {
+      else if (!mbInString && StrIsSpace(c)) {
         type = eStringTokenizerCharType_Splitter;
       }
       mbPrevBackslash = eFalse;
@@ -59,7 +52,8 @@ class cDefaultStringTokenizer : public ImplRC<iStringTokenizer>
     return type;
   }
 
-  void __stdcall OnNewLine() {
+  void __stdcall OnNewLine()
+  {
   }
 
  private:
@@ -72,8 +66,7 @@ class cDefaultStringTokenizer : public ImplRC<iStringTokenizer>
 /** Function tokenizer, the separator are the space character, ',', '(' and ')', strings
  * between two quote are one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cFunctionStringTokenizer : public ImplRC<iStringTokenizer>
-{
+class cFunctionStringTokenizer : public ImplRC<iStringTokenizer> {
  public:
   cFunctionStringTokenizer()
   {
@@ -84,33 +77,25 @@ class cFunctionStringTokenizer : public ImplRC<iStringTokenizer>
   eStringTokenizerCharType __stdcall GetCharType(tU32 c)
   {
     eStringTokenizerCharType type = eStringTokenizerCharType_Normal;
-    if (c == '\\')
-    {
-      if (mbPrevBackslash)
-      {
+    if (c == '\\') {
+      if (mbPrevBackslash) {
         mbPrevBackslash = eFalse;
       }
-      else
-      {
+      else {
         type = eStringTokenizerCharType_Skip;
         mbPrevBackslash = eTrue;
       }
     }
-    else
-    {
-      if (c == '"')
-      {
+    else {
+      if (c == '"') {
         if (!mbPrevBackslash)
-          mbInString = mbInString?eFalse:eTrue;
+          mbInString = mbInString ? eFalse : eTrue;
       }
-      else if (!mbInString)
-      {
-        if (StrIsSpace(c))
-        {
+      else if (!mbInString) {
+        if (StrIsSpace(c)) {
           type = eStringTokenizerCharType_Splitter;
         }
-        else if (c == '(' || c == ')' || c == ',')
-        {
+        else if (c == '(' || c == ')' || c == ',') {
           type = eStringTokenizerCharType_SplitterAndToken;
         }
       }
@@ -119,7 +104,8 @@ class cFunctionStringTokenizer : public ImplRC<iStringTokenizer>
     return type;
   }
 
-  void __stdcall OnNewLine() {
+  void __stdcall OnNewLine()
+  {
   }
 
  private:
@@ -132,8 +118,7 @@ class cFunctionStringTokenizer : public ImplRC<iStringTokenizer>
 /** Flags tokenizer, the separator are the '|' and space characters, strings
  * between two quote are one token, '\' char is ignored, '\\' is a '\', and '\"' is '"'.
  */
-class cFlagsStringTokenizer : public ImplRC<iStringTokenizer>
-{
+class cFlagsStringTokenizer : public ImplRC<iStringTokenizer> {
  public:
   cFlagsStringTokenizer()
   {
@@ -144,27 +129,21 @@ class cFlagsStringTokenizer : public ImplRC<iStringTokenizer>
   eStringTokenizerCharType __stdcall GetCharType(tU32 c)
   {
     eStringTokenizerCharType type = eStringTokenizerCharType_Normal;
-    if (c == '\\')
-    {
-      if (mbPrevBackslash)
-      {
+    if (c == '\\') {
+      if (mbPrevBackslash) {
         mbPrevBackslash = eFalse;
       }
-      else
-      {
+      else {
         type = eStringTokenizerCharType_Skip;
         mbPrevBackslash = eTrue;
       }
     }
-    else
-    {
-      if (c == '"')
-      {
+    else {
+      if (c == '"') {
         if (!mbPrevBackslash)
-          mbInString = mbInString?eFalse:eTrue;
+          mbInString = mbInString ? eFalse : eTrue;
       }
-      else if (!mbInString && (StrIsSpace(c) || c == '|'))
-      {
+      else if (!mbInString && (StrIsSpace(c) || c == '|')) {
         type = eStringTokenizerCharType_Splitter;
       }
       mbPrevBackslash = eFalse;
@@ -172,7 +151,8 @@ class cFlagsStringTokenizer : public ImplRC<iStringTokenizer>
     return type;
   }
 
-  void __stdcall OnNewLine() {
+  void __stdcall OnNewLine()
+  {
   }
 
  private:
@@ -185,8 +165,7 @@ class cFlagsStringTokenizer : public ImplRC<iStringTokenizer>
 /** CommandLine tokenizer, the separator is the space character, strings between two quotes
  * are one token.
  */
-class cCommandLineStringTokenizer : public ImplRC<iStringTokenizer>
-{
+class cCommandLineStringTokenizer : public ImplRC<iStringTokenizer> {
  public:
   cCommandLineStringTokenizer()
   {
@@ -197,83 +176,88 @@ class cCommandLineStringTokenizer : public ImplRC<iStringTokenizer>
   eStringTokenizerCharType __stdcall GetCharType(tU32 c)
   {
     eStringTokenizerCharType type = eStringTokenizerCharType_Normal;
-    if ((c == mcInString) || (mcInString == 0 && (c == '"' || c == '\'')))
-    {
+    if ((c == mcInString) || (mcInString == 0 && (c == '"' || c == '\''))) {
       mbInString = !mbInString;
-      if (!mbInString) mcInString = 0;
+      if (!mbInString)
+        mcInString = 0;
     }
-    else if (!mbInString && StrIsSpace(c))
-    {
+    else if (!mbInString && StrIsSpace(c)) {
       type = eStringTokenizerCharType_Splitter;
     }
     return type;
   }
 
-  void __stdcall OnNewLine() {
+  void __stdcall OnNewLine()
+  {
   }
 
  private:
-  tU32  mcInString;
+  tU32 mcInString;
   tBool mbInString;
 };
 
 ///////////////////////////////////////////////
 template <typename TVEC>
-inline tSize StringTokenize(const cString& aToTok, TVEC& vTokens, iStringTokenizer* apTok)
+inline tSize StringTokenize(const cString& aToTok, TVEC& vTokens,
+                            iStringTokenizer* apTok)
 {
   niAssert(niIsOK(apTok));
-  if (!niIsOK(apTok)) return 0;
+  if (!niIsOK(apTok))
+    return 0;
 
-  cString current; current.reserve(64);
+  cString current;
+  current.reserve(64);
   tSize numToks = 0;
   const achar* pIterator = aToTok.Chars();
   do {
     tU32 c = StrGetNextX(&pIterator);
-    if (!c) break;
+    if (!c)
+      break;
 
     switch (apTok->GetCharType(c)) {
-      case eStringTokenizerCharType_Normal: {
-        current.appendChar(c);
-        break;
-      }
-      case eStringTokenizerCharType_Skip: {
-        break;
-      }
-      case eStringTokenizerCharType_SplitterStart: {
-        if (current.IsNotEmpty()) {
-          vTokens.push_back(current);
-          ++numToks;
-        }
-        current.Clear(64);
-        current.appendChar(c);
-        break;
-      }
-      case eStringTokenizerCharType_SplitterEnd: {
-        current.appendChar(c);
+    case eStringTokenizerCharType_Normal: {
+      current.appendChar(c);
+      break;
+    }
+    case eStringTokenizerCharType_Skip: {
+      break;
+    }
+    case eStringTokenizerCharType_SplitterStart: {
+      if (current.IsNotEmpty()) {
         vTokens.push_back(current);
         ++numToks;
-        current.Clear(64);
-        break;
       }
-      case eStringTokenizerCharType_Splitter: {
-        if (current.IsNotEmpty()) {
-          vTokens.push_back(current);
-          ++numToks;
-        }
-        current.Clear(64);
-        break;
+      current.Clear(64);
+      current.appendChar(c);
+      break;
+    }
+    case eStringTokenizerCharType_SplitterEnd: {
+      current.appendChar(c);
+      vTokens.push_back(current);
+      ++numToks;
+      current.Clear(64);
+      break;
+    }
+    case eStringTokenizerCharType_Splitter: {
+      if (current.IsNotEmpty()) {
+        vTokens.push_back(current);
+        ++numToks;
       }
-      case eStringTokenizerCharType_SplitterAndToken: {
-        if (current.IsNotEmpty()) {
-          vTokens.push_back(current);
-          ++numToks;
-        }
-        cString tmp; tmp.appendChar(c);
-        vTokens.push_back(tmp);
-        current.Clear(64);
-        break;
+      current.Clear(64);
+      break;
+    }
+    case eStringTokenizerCharType_SplitterAndToken: {
+      if (current.IsNotEmpty()) {
+        vTokens.push_back(current);
+        ++numToks;
       }
-      default: break;
+      cString tmp;
+      tmp.appendChar(c);
+      vTokens.push_back(tmp);
+      current.Clear(64);
+      break;
+    }
+    default: break;
     }
   } while (1);
   if (current.IsNotEmpty()) {
@@ -285,19 +269,22 @@ inline tSize StringTokenize(const cString& aToTok, TVEC& vTokens, iStringTokeniz
 
 template <typename TOKENIZER>
 struct sTokenGenerator {
-private:
+ private:
   TOKENIZER _tokenizer;
   const achar* _pIterator;
   cString _token;
   tI64 _numTokens;
   tU32 _queuedChar;
 
-public:
-  sTokenGenerator(const achar* apChars) : sTokenGenerator(apChars,TOKENIZER()) {
+ public:
+  sTokenGenerator(const achar* apChars)
+      : sTokenGenerator(apChars, TOKENIZER())
+  {
   }
 
   sTokenGenerator(const achar* apChars, TOKENIZER&& aTokenizer)
-      : _tokenizer(aTokenizer) {
+      : _tokenizer(aTokenizer)
+  {
     _token.clear();
     _token.reserve(64);
     _numTokens = 0;
@@ -305,23 +292,28 @@ public:
     _queuedChar = 0;
   }
 
-  const tI64 GetNumTokens() const {
+  const tI64 GetNumTokens() const
+  {
     return _numTokens;
   }
 
-  const tI64 GetIndex() const {
+  const tI64 GetIndex() const
+  {
     return _numTokens - 1;
   }
 
-  cString& GetCurrentToken() {
+  cString& GetCurrentToken()
+  {
     return _token;
   }
 
-  const cString& GetValue() const {
+  const cString& GetValue() const
+  {
     return _token;
   }
 
-  tBool GetNext() {
+  tBool GetNext()
+  {
     if (!_pIterator || *_pIterator == 0)
       return eFalse;
 
@@ -341,45 +333,45 @@ public:
       }
 
       switch (_tokenizer.GetCharType(c)) {
-        case eStringTokenizerCharType_Normal: {
-          _token.appendChar(c);
-          break;
+      case eStringTokenizerCharType_Normal: {
+        _token.appendChar(c);
+        break;
+      }
+      case eStringTokenizerCharType_Skip: {
+        break;
+      }
+      case eStringTokenizerCharType_SplitterStart: {
+        if (_token.IsNotEmpty()) {
+          return eTrue;
         }
-        case eStringTokenizerCharType_Skip: {
-          break;
+        _token.appendChar(c);
+        break;
+      }
+      case eStringTokenizerCharType_SplitterEnd: {
+        _token.appendChar(c);
+        return eTrue;
+      }
+      case eStringTokenizerCharType_Splitter: {
+        if (_token.IsNotEmpty()) {
+          return eTrue;
         }
-        case eStringTokenizerCharType_SplitterStart: {
-          if (_token.IsNotEmpty()) {
-            return eTrue;
-          }
-          _token.appendChar(c);
-          break;
+        _token.clear();
+        break;
+      }
+      case eStringTokenizerCharType_SplitterAndToken: {
+        if (_token.IsNotEmpty()) {
+          _queuedChar = c;
+          return eTrue;
         }
-        case eStringTokenizerCharType_SplitterEnd: {
+        else {
           _token.appendChar(c);
           return eTrue;
         }
-        case eStringTokenizerCharType_Splitter: {
-          if (_token.IsNotEmpty()) {
-            return eTrue;
-          }
-          _token.clear();
-          break;
-        }
-        case eStringTokenizerCharType_SplitterAndToken: {
-          if (_token.IsNotEmpty()) {
-            _queuedChar = c;
-            return eTrue;
-          }
-          else {
-            _token.appendChar(c);
-            return eTrue;
-          }
-          break;
-        }
-        case eStringTokenizerCharType_ForceDWORD: {
-          break;
-        }
+        break;
+      }
+      case eStringTokenizerCharType_ForceDWORD: {
+        break;
+      }
       }
     } while (1);
 
@@ -397,5 +389,5 @@ public:
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __STRINGTOKENIZERIMPL_30700010_H__

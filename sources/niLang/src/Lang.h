@@ -17,17 +17,19 @@
 namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cLang : public ImplLocal<iLang>
-{
+class cLang : public ImplLocal<iLang> {
   niBeginClass(cLang);
 
  public:
-  static iUnknown* __stdcall _CreateInstance(const Var& aVarA, const Var& aVarB);
+  static iUnknown* __stdcall _CreateInstance(const Var& aVarA,
+                                             const Var& aVarB);
 
-  void* operator new(size_t, void* apMem)  {
+  void* operator new(size_t, void* apMem)
+  {
     return apMem;
   }
-  void operator delete(void*) {
+  void operator delete(void*)
+  {
     niPanicUnreachable("Cant delete cLang.");
   }
 
@@ -55,9 +57,12 @@ class cLang : public ImplLocal<iLang>
   tU32 __stdcall GetNumLocales() const;
   iHString* __stdcall GetLocale(tU32 abIndex) const;
   tBool __stdcall ClearLocalization(iHString* ahspLocale);
-  tBool __stdcall SetLocalization(iHString* ahspLocale, iHString* ahspNative, iHString* ahspLocalized);
-  tBool __stdcall SetLocalizationMap(iHString* ahspLocale, const tStringCMap* apLocalizationMap);
-  tU32 __stdcall GetLocalizationMap(iHString* ahspLocale, tStringCMap* apLocalizedMap) const;
+  tBool __stdcall SetLocalization(iHString* ahspLocale, iHString* ahspNative,
+                                  iHString* ahspLocalized);
+  tBool __stdcall SetLocalizationMap(iHString* ahspLocale,
+                                     const tStringCMap* apLocalizationMap);
+  tU32 __stdcall GetLocalizationMap(iHString* ahspLocale,
+                                    tStringCMap* apLocalizedMap) const;
   void __stdcall SetMarkMissingLocalization(tBool abMarkMissing);
   tBool __stdcall GetMarkMissingLocalization() const;
   tStringCVec* __stdcall GetMissingLocalization(iHString* locale) const;
@@ -66,7 +71,7 @@ class cLang : public ImplLocal<iLang>
   tUUID __stdcall CreateGlobalUUID();
 
   const iTime* __stdcall GetCurrentTime() const;
-  tF64  __stdcall TimerInSeconds() const;
+  tF64 __stdcall TimerInSeconds() const;
 
   void __stdcall ResetFrameTime();
   tBool __stdcall UpdateFrameTime(const tF64 afElapsedTime);
@@ -78,44 +83,68 @@ class cLang : public ImplLocal<iLang>
 
   void __stdcall SetLogFilter(tU32 exclude);
   tU32 __stdcall GetLogFilter() const;
-  void __stdcall Log(tLogFlags type, const achar* file, const achar* func, tU32 line, const achar* msg);
+  void __stdcall Log(tLogFlags type, const achar* file, const achar* func,
+                     tU32 line, const achar* msg);
 
   iFileSystem* __stdcall GetRootFS() const;
-  iFileSystem* __stdcall CreateFileSystemDir(const achar* aaszDir, tFileSystemRightsFlags aRights) const;
-  iFileSystem* __stdcall CreateFileSystemHashed(const iFileSystem* apBaseFS) const;
+  iFileSystem* __stdcall CreateFileSystemDir(
+    const achar* aaszDir, tFileSystemRightsFlags aRights) const;
+  iFileSystem* __stdcall CreateFileSystemHashed(
+    const iFileSystem* apBaseFS) const;
 
   iFile* __stdcall CreateFile(iFileBase* apBase);
   iFileBase* __stdcall CreateFileBaseWriteDummy();
   iFile* __stdcall CreateFileWriteDummy();
-  iFileBase* __stdcall CreateFileBaseMemory(tPtr pMem, tSize nSize, tBool bFree, const achar* aszPath);
-  iFile* __stdcall CreateFileMemory(tPtr pMem, tSize nSize, tBool bFree, const achar* aszPath);
-  iFileBase* __stdcall CreateFileBaseMemoryAlloc(tSize nSize, const achar* aszPath);
+  iFileBase* __stdcall CreateFileBaseMemory(tPtr pMem, tSize nSize, tBool bFree,
+                                            const achar* aszPath);
+  iFile* __stdcall CreateFileMemory(tPtr pMem, tSize nSize, tBool bFree,
+                                    const achar* aszPath);
+  iFileBase* __stdcall CreateFileBaseMemoryAlloc(tSize nSize,
+                                                 const achar* aszPath);
   iFile* __stdcall CreateFileMemoryAlloc(tSize nSize, const achar* aszPath);
-  iFileBase* __stdcall CreateFileBaseDynamicMemory(tSize anSize, const achar* aszPath);
+  iFileBase* __stdcall CreateFileBaseDynamicMemory(tSize anSize,
+                                                   const achar* aszPath);
   iFile* __stdcall CreateFileDynamicMemory(tSize anSize, const achar* aszPath);
-  iFileBase* __stdcall CreateFileBaseWindow(iFileBase* apBase, tI64 anBase, tI64 anSize, const achar* aaszPath, tBool abAutoSeekSet);
-  iFile* __stdcall CreateFileWindow(iFileBase* apBase, tI64 anBase, tI64 anSize, const achar* aaszPath, tBool abAutoSeekSet);
+  iFileBase* __stdcall CreateFileBaseWindow(iFileBase* apBase, tI64 anBase,
+                                            tI64 anSize, const achar* aaszPath,
+                                            tBool abAutoSeekSet);
+  iFile* __stdcall CreateFileWindow(iFileBase* apBase, tI64 anBase, tI64 anSize,
+                                    const achar* aaszPath, tBool abAutoSeekSet);
 
-  iFileBase* __stdcall CreateFileBaseBufferEncoder(iFileBase* apBase, iBufferEncoder* apEnc) niImpl;
-  iFile* __stdcall CreateFileBufferEncoder(iFileBase* apBase, iBufferEncoder* apEnc) niImpl;
-  iFileBase* __stdcall CreateFileBaseBufferDecoder(iFileBase* apBase, iBufferDecoder* apDec, tSize aDecodedSize) niImpl;
-  iFile* __stdcall CreateFileBufferDecoder(iFileBase* apBase, iBufferDecoder* apDec, tSize aDecodedSize) niImpl;
-  tSize __stdcall FileBufferEncode(iBufferEncoder* apEnc, iFile* apSrc, tSize anSrcSize, iFile* apDest) niImpl;
-  tSize __stdcall FileBufferDecode(iBufferDecoder* apDec, iFile* apSrc, tSize anSrcSize, iFile* apDest, tSize anDestSize) niImpl;
+  iFileBase* __stdcall CreateFileBaseBufferEncoder(
+    iFileBase* apBase, iBufferEncoder* apEnc) niImpl;
+  iFile* __stdcall CreateFileBufferEncoder(iFileBase* apBase,
+                                           iBufferEncoder* apEnc) niImpl;
+  iFileBase* __stdcall CreateFileBaseBufferDecoder(iFileBase* apBase,
+                                                   iBufferDecoder* apDec,
+                                                   tSize aDecodedSize) niImpl;
+  iFile* __stdcall CreateFileBufferDecoder(iFileBase* apBase,
+                                           iBufferDecoder* apDec,
+                                           tSize aDecodedSize) niImpl;
+  tSize __stdcall FileBufferEncode(iBufferEncoder* apEnc, iFile* apSrc,
+                                   tSize anSrcSize, iFile* apDest) niImpl;
+  tSize __stdcall FileBufferDecode(iBufferDecoder* apDec, iFile* apSrc,
+                                   tSize anSrcSize, iFile* apDest,
+                                   tSize anDestSize) niImpl;
 
   tI32 __stdcall RunCommand(const achar* aaszCmd);
   tI32 __stdcall StartPath(const achar* aaszFile);
 
 #if niMinFeatures(20)
   tBool __stdcall JsonParseFile(iFile* apFile, iJsonParserSink* apSink);
-  tBool __stdcall JsonParseString(const cString& aString, iJsonParserSink* apSink);
-  iJsonWriter* __stdcall CreateJsonSinkWriter(iJsonWriterSink* apSink, tBool abPrettyPrint);
-  iJsonWriter* __stdcall CreateJsonFileWriter(iFile* apFile, tBool abPrettyPrint);
+  tBool __stdcall JsonParseString(const cString& aString,
+                                  iJsonParserSink* apSink);
+  iJsonWriter* __stdcall CreateJsonSinkWriter(iJsonWriterSink* apSink,
+                                              tBool abPrettyPrint);
+  iJsonWriter* __stdcall CreateJsonFileWriter(iFile* apFile,
+                                              tBool abPrettyPrint);
 #endif
 
 #if niMinFeatures(20)
-  ni::tBool __stdcall XmlParseFile(ni::iFile* apFile, ni::iXmlParserSink* apSink);
-  ni::tBool __stdcall XmlParseString(const ni::cString& aString, ni::iXmlParserSink* apSink);
+  ni::tBool __stdcall XmlParseFile(ni::iFile* apFile,
+                                   ni::iXmlParserSink* apSink);
+  ni::tBool __stdcall XmlParseString(const ni::cString& aString,
+                                     ni::iXmlParserSink* apSink);
 #endif
 
 #if niMinFeatures(15)
@@ -128,15 +157,21 @@ class cLang : public ImplLocal<iLang>
   tU32 __stdcall GetScriptingHostIndexFromName(iHString* ahspName);
   tU32 __stdcall GetScriptingHostIndex(iScriptingHost* apHost) const;
   void __stdcall ServiceAllScriptingHosts(tBool abForceGC);
-  iScriptingHost* __stdcall FindScriptingHost(iHString* ahspContext, iHString* ahspCodeResource);
+  iScriptingHost* __stdcall FindScriptingHost(iHString* ahspContext,
+                                              iHString* ahspCodeResource);
 #endif
 
   iExpressionContext* __stdcall CreateExpressionContext() niImpl;
   iExpressionContext* __stdcall GetExpressionContext() const niImpl;
   Ptr<iExpressionVariable> __stdcall Eval(const achar* aaszExpr) niImpl;
-  cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
-  tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) niImpl;
-  tU32 __stdcall StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) niImpl;
+  cString __stdcall EnumToString(tU32 anValue, const sEnumDef* apEnumDef,
+                                 tEnumToStringFlags aFlags) niImpl;
+  tU32 __stdcall StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef,
+                              tEnumToStringFlags aFlags) niImpl;
+  tU32 __stdcall StringToEnumDefault(const achar* aExpr,
+                                     const sEnumDef* apEnumDef,
+                                     tEnumToStringFlags aFlags,
+                                     tU32 aDefaultValue) niImpl;
 
   iProf* __stdcall GetProf() const;
 
@@ -144,7 +179,9 @@ class cLang : public ImplLocal<iLang>
   iURLFileHandler* __stdcall URLGetHandler(const achar* aURL) niImpl;
   iFile* __stdcall URLOpen(const achar* aURL) niImpl;
   tBool __stdcall URLExists(const achar* aURL) niImpl;
-  cString __stdcall URLFindFilePath(const achar* aszRes, const achar* aszBasePath, const achar* aLoaderPrefix) niImpl;
+  cString __stdcall URLFindFilePath(const achar* aszRes,
+                                    const achar* aszBasePath,
+                                    const achar* aLoaderPrefix) niImpl;
 
   //// iOSPlatform //////////////////////////////////
   tU32 __stdcall GetNumMonitors() const;
@@ -153,30 +190,51 @@ class cLang : public ImplLocal<iLang>
   const achar* __stdcall GetMonitorName(tU32 anIndex) const;
   sRecti __stdcall GetMonitorRect(tU32 anIndex) const;
   tOSMonitorFlags __stdcall GetMonitorFlags(tU32 anIndex) const;
-  iOSWindow* __stdcall CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle);
-  iOSWindow* __stdcall CreateWindowEx(tIntPtr aOSWindowHandle, tOSWindowCreateFlags aCreate);
-  eOSMessageBoxReturn __stdcall MessageBox(iOSWindow* apParent, const achar* aaszTitle, const achar* aaszText, tOSMessageBoxFlags aFlags);
-  cString __stdcall OpenFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) niImpl;
-  cString __stdcall SaveFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) niImpl;
-  cString __stdcall PickDirectoryDialog(iOSWindow* aParent, const achar* aTitle, const achar* aInitDir) niImpl;
+  iOSWindow* __stdcall CreateWindow(iOSWindow* apParent, const achar* aaszTitle,
+                                    const sRecti& aRect,
+                                    tOSWindowCreateFlags aCreate,
+                                    tOSWindowStyleFlags aStyle);
+  iOSWindow* __stdcall CreateWindowEx(tIntPtr aOSWindowHandle,
+                                      tOSWindowCreateFlags aCreate);
+  eOSMessageBoxReturn __stdcall MessageBox(iOSWindow* apParent,
+                                           const achar* aaszTitle,
+                                           const achar* aaszText,
+                                           tOSMessageBoxFlags aFlags);
+  cString __stdcall OpenFileDialog(iOSWindow* aParent, const achar* aTitle,
+                                   const achar* aFilter,
+                                   const achar* aInitDir) niImpl;
+  cString __stdcall SaveFileDialog(iOSWindow* aParent, const achar* aTitle,
+                                   const achar* aFilter,
+                                   const achar* aInitDir) niImpl;
+  cString __stdcall PickDirectoryDialog(iOSWindow* aParent, const achar* aTitle,
+                                        const achar* aInitDir) niImpl;
   tU32 __stdcall GetNumGameCtrls() const;
   iGameCtrl* __stdcall GetGameCtrl(tU32 aulIdx) const;
 
   tMessageHandlerSinkLst* __stdcall GetSystemMessageHandlers() const;
 
-  tBool __stdcall IsSerializedObject(iFile* apFile, const achar* aID, tI64* apObjSize);
-  iUnknown* __stdcall SerializeObject(iFile* apFile, iUnknown* apObject, eSerializeMode aMode, tI64* apSize);
-  tI64 __stdcall ReadSerializationHeader(iFile* apFile, cString* apID, tI64* apObjSize);
-  tI64 __stdcall WriteSerializationHeader(iFile* apFile, const achar* apID, tI64 anSize);
+  tBool __stdcall IsSerializedObject(iFile* apFile, const achar* aID,
+                                     tI64* apObjSize);
+  iUnknown* __stdcall SerializeObject(iFile* apFile, iUnknown* apObject,
+                                      eSerializeMode aMode, tI64* apSize);
+  tI64 __stdcall ReadSerializationHeader(iFile* apFile, cString* apID,
+                                         tI64* apObjSize);
+  tI64 __stdcall WriteSerializationHeader(iFile* apFile, const achar* apID,
+                                          tI64 anSize);
 
-  iDeviceResourceManager* __stdcall CreateDeviceResourceManager(const achar* aszType);
+  iDeviceResourceManager* __stdcall CreateDeviceResourceManager(
+    const achar* aszType);
 
   iDataTable* __stdcall CreateDataTable(const achar* aaszName);
-  tBool __stdcall SerializeDataTable(const achar* aaszSerName, eSerializeMode aMode, iDataTable* apTable, iFile* apFile);
+  tBool __stdcall SerializeDataTable(const achar* aaszSerName,
+                                     eSerializeMode aMode, iDataTable* apTable,
+                                     iFile* apFile);
   iDataTableWriteStack* __stdcall CreateDataTableWriteStack(iDataTable* apDT);
-  iDataTableWriteStack* __stdcall CreateDataTableWriteStackFromName(const achar* aaszName);
+  iDataTableWriteStack* __stdcall CreateDataTableWriteStackFromName(
+    const achar* aaszName);
   iDataTableReadStack* __stdcall CreateDataTableReadStack(iDataTable* apDT);
-  cString __stdcall GetAbsoluteDataTablePath(iDataTable* apDT, tU32 anPropIndex);
+  cString __stdcall GetAbsoluteDataTablePath(iDataTable* apDT,
+                                             tU32 anPropIndex);
 
   tBool __stdcall SetClipboard(eClipboardType aType, iDataTable* apDT);
   iDataTable* __stdcall GetClipboard(eClipboardType aType) const;
@@ -184,11 +242,16 @@ class cLang : public ImplLocal<iLang>
   tBool __stdcall LoadLocalization(iDataTable* apDT);
 
   iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4(tU32 anIP, tU32 anPort);
-  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(const achar* aAddress);
-  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(tU32 anIP, tU32 anPort);
-  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(const achar* aAddress);
-  iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol, iRemoteAddress* apAddr);
-  iSocket* __stdcall CreateSocketFromHandle(tInt aSocket, iRemoteAddress* apAddr);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4FromString(
+    const achar* aAddress);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4RO(tU32 anIP,
+                                                          tU32 anPort);
+  iRemoteAddressIPv4* __stdcall CreateRemoteAddressIPv4ROFromString(
+    const achar* aAddress);
+  iSocket* __stdcall CreateSocket(eSocketProtocol aProtocol,
+                                  iRemoteAddress* apAddr);
+  iSocket* __stdcall CreateSocketFromHandle(tInt aSocket,
+                                            iRemoteAddress* apAddr);
   void __stdcall CloseSocketHandle(tInt aSocket);
   //// iLang //////////////////////////////////
 
@@ -203,9 +266,10 @@ class cLang : public ImplLocal<iLang>
   tU32 mnAverageFPS;
 
   // HString
-  typedef astl::hstring_hash_map<Ptr<iHString> > tLocalizationMap;
+  typedef astl::hstring_hash_map<Ptr<iHString>> tLocalizationMap;
   struct sLocalizationTable {
-    sLocalizationTable() {
+    sLocalizationTable()
+    {
       missing = tStringCVec::Create();
     }
     Ptr<tStringCVec> missing;
@@ -217,12 +281,13 @@ class cLang : public ImplLocal<iLang>
   niSync tLocalesHMap mmapLocales;
   tBool mbMarkMissingLocalization;
 
-  sLocalizationTable* _GetLocalizationTable(iHString* locale, tBool abNew) const;
+  sLocalizationTable* _GetLocalizationTable(iHString* locale,
+                                            tBool abNew) const;
   iHString* __stdcall _GetLocalized(iHString* locale, iHString* native);
 
   // Interfaces
-  typedef astl::map<cString,Ptr<iUnknown> > tGlobalInstanceMap;
-  tGlobalInstanceMap  mmapGlobalInstances;
+  typedef astl::map<cString, Ptr<iUnknown>> tGlobalInstanceMap;
+  tGlobalInstanceMap mmapGlobalInstances;
 
   // System Properties
   static void _InitDefaultSystemProperties(tStringCMap* prop);
@@ -242,13 +307,15 @@ class cLang : public ImplLocal<iLang>
   tSHVec mvSH;
 
   // Exit
-  astl::vector<Ptr<iRunnable> > mvOnExit;
+  astl::vector<Ptr<iRunnable>> mvOnExit;
 
   // Modules
   void _StartupModules();
 
   struct sModuleDef {
-    sModuleDef() {}
+    sModuleDef()
+    {
+    }
     tIntPtr mhDLL = 0;
     Ptr<iModuleDef> mptrModuleDef;
   };
@@ -260,39 +327,44 @@ class cLang : public ImplLocal<iLang>
   tU32 __stdcall GetNumModuleDefs() const niImpl;
   const iModuleDef* __stdcall GetModuleDef(tU32 anIndex) const niImpl;
   tU32 __stdcall GetModuleDefIndex(const achar* aaszName) const niImpl;
-  const iModuleDef* __stdcall LoadModuleDef(const achar* aMID, const achar* aaszFile = NULL) niImpl;
+  const iModuleDef* __stdcall LoadModuleDef(
+    const achar* aMID, const achar* aaszFile = NULL) niImpl;
 
   Nonnull<tCreateInstanceCMap> mmapCreateInstance;
-  tCreateInstanceCMap* __stdcall GetCreateInstanceMap() const {
+  tCreateInstanceCMap* __stdcall GetCreateInstanceMap() const
+  {
     return mmapCreateInstance;
   }
-  iUnknown* __stdcall CreateInstance(
-      const achar* aOID,
-      const Var& aVarA = niVarNull, const Var& aVarB = niVarNull) niImpl;
+  iUnknown* __stdcall CreateInstance(const achar* aOID,
+                                     const Var& aVarA = niVarNull,
+                                     const Var& aVarB = niVarNull) niImpl;
 
   Nonnull<tGlobalInstanceCMap> mmapGlobalInstance;
-  tGlobalInstanceCMap* __stdcall GetGlobalInstanceMap() const {
+  tGlobalInstanceCMap* __stdcall GetGlobalInstanceMap() const
+  {
     return mmapGlobalInstance;
   }
-  tBool __stdcall SetGlobalInstance(const achar* aaszName, iUnknown* apInstance) niImpl;
+  tBool __stdcall SetGlobalInstance(const achar* aaszName,
+                                    iUnknown* apInstance) niImpl;
   iUnknown* __stdcall GetGlobalInstance(const achar* aaszName) const niImpl;
 
-  typedef astl::map<cString,const sEnumDef*> tEnumDefMap;
-  astl::map<cString,const sEnumDef*> mmapEnumDefs;
+  typedef astl::map<cString, const sEnumDef*> tEnumDefMap;
+  astl::map<cString, const sEnumDef*> mmapEnumDefs;
   tBool __stdcall RegisterEnumDef(const sEnumDef* apEnumDef);
   const sEnumDef* __stdcall GetEnumDef(const achar* aEID) niImpl;
 
-  typedef astl::bimap<tUUID,tHStringPtr> tUUIDNameBMap;
+  typedef astl::bimap<tUUID, tHStringPtr> tUUIDNameBMap;
   tUUIDNameBMap mbmapUUIDNames;
-  typedef astl::map<tUUID,const sInterfaceDef*> tUUIDDefMap;
+  typedef astl::map<tUUID, const sInterfaceDef*> tUUIDDefMap;
   tUUIDDefMap mmapUUIDDef;
   iHString* __stdcall GetInterfaceName(const tUUID& aUUID) const niImpl;
   const tUUID& __stdcall GetInterfaceUUID(iHString* ahspStr) const niImpl;
-  const sInterfaceDef* __stdcall GetInterfaceDefFromUUID(const tUUID& aUUID) const niImpl;
+  const sInterfaceDef* __stdcall GetInterfaceDefFromUUID(
+    const tUUID& aUUID) const niImpl;
 
   void _PlatformStartup();
 
-  Ptr<tMessageHandlerSinkLst>  mptrSystemMessageHandlers;
+  Ptr<tMessageHandlerSinkLst> mptrSystemMessageHandlers;
 
   Ptr<iDataTable> mptrClipboard[eClipboardType_Last];
 
@@ -304,6 +376,6 @@ class cLang : public ImplLocal<iLang>
 ni::iUnknown* iMessageHandler_CreateDispatchWrapper(ni::iDispatch* apDispatch);
 cLang* GetLangImpl();
 
-}
+} // namespace ni
 //////////////////////////////////////////////////////////////////////////////////////////////
 #endif // __SYSTEM_H__

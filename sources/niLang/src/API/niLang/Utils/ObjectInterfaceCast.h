@@ -13,8 +13,8 @@
 
 // Has been tested with MSVC only...
 #if !defined niMSVC && !defined niGCC && !defined niCLang
-#define niSafeObjectInterfaceCast
-#pragma niNote("Using SafeHString test, be sure to read the comments below.")
+  #define niSafeObjectInterfaceCast
+  #pragma niNote("Using SafeHString test, be sure to read the comments below.")
 /*
   niSafeObjectInterfaceCast will use QueryInterface to determin if the object is a iHString.
   This is reliable on any platform but it ought to be quite slow. So it's a really
@@ -32,11 +32,12 @@
 #ifdef niSafeObjectInterfaceCast
 namespace ni {
 
-inline iHString* GetIUnknownHString(iUnknown* apObj) {
+inline iHString* GetIUnknownHString(iUnknown* apObj)
+{
   return ni::QueryInterface<iHString>(apObj);
 }
 
-}
+} // namespace ni
 //////////////////////////////////////////////////////////////////////
 // 'Unsafe' (if not tested) Object Interface cast
 //////////////////////////////////////////////////////////////////////
@@ -46,15 +47,18 @@ niExportFunc(void*) ni_get_vtable_object_iHString();
 
 namespace ni {
 
-#define niGetVTable_Object(OBJ)    (*((void**)(OBJ)))
-#define niGetVTable_IHString()      niGetVTable_Object(ni_get_vtable_object_iHString())
+  #define niGetVTable_Object(OBJ) (*((void**)(OBJ)))
+  #define niGetVTable_IHString() \
+    niGetVTable_Object(ni_get_vtable_object_iHString())
 
-__forceinline iHString* GetIUnknownHString(iUnknown* apObj) {
-  return  ((apObj == NULL || niGetVTable_IHString() != niGetVTable_Object(apObj)) ?
-           (ni::iHString*)NULL : (ni::iHString*)apObj);
+__forceinline iHString* GetIUnknownHString(iUnknown* apObj)
+{
+  return ((apObj == NULL || niGetVTable_IHString() != niGetVTable_Object(apObj))
+            ? (ni::iHString*)NULL
+            : (ni::iHString*)apObj);
 }
 
-}
+} // namespace ni
 #endif
 
 #define niGetIUnknownHString(apObj) ni::GetIUnknownHString(apObj)

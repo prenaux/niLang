@@ -15,83 +15,82 @@ struct sInterfaceDef;
  */
 
 //! Create a dispatch wrapper
-typedef iUnknown* (__ni_export_call_decl *tpfnCreateDispatchWrapper)(iDispatch* apDispatch);
+typedef iUnknown*(__ni_export_call_decl* tpfnCreateDispatchWrapper)(
+  iDispatch* apDispatch);
 //! Create an object instance
-typedef iUnknown* (__ni_export_call_decl *tpfnCreateObjectInstance)(const Var& aVarA, const Var& aVarB);
+typedef iUnknown*(__ni_export_call_decl* tpfnCreateObjectInstance)(
+  const Var& aVarA, const Var& aVarB);
 //! Get a module definition.
-typedef const iModuleDef* (__ni_export_call_decl *tpfnGetModuleDef)();
+typedef const iModuleDef*(__ni_export_call_decl* tpfnGetModuleDef)();
 //! Get an enum definition.
-typedef const sEnumDef* (__ni_export_call_decl *tpfnGetEnumDef)();
+typedef const sEnumDef*(__ni_export_call_decl* tpfnGetEnumDef)();
 //! Get an interface definition.
-typedef const sInterfaceDef* (__ni_export_call_decl *tpfnGetInterfaceDef)();
+typedef const sInterfaceDef*(__ni_export_call_decl* tpfnGetInterfaceDef)();
 
-struct sConstantDef
-{
+struct sConstantDef {
  public:
   const achar* const maszName;
-  const Var        mvarValue;
+  const Var mvarValue;
 
-  sConstantDef(const achar* aaszName,
-               const Var&  avarValue)
-      : maszName(aaszName),
-        mvarValue(avarValue)
-  {}
+  sConstantDef(const achar* aaszName, const Var& avarValue)
+      : maszName(aaszName)
+      , mvarValue(avarValue)
+  {
+  }
 };
 
 struct sEnumValueDef {
   const achar* const maszName;
-  const tU32         mnValue;
+  const tU32 mnValue;
 };
 
 struct sEnumDef {
-  const achar* const         maszName;
-  const tU32                 mnNumValues;
+  const achar* const maszName;
+  const tU32 mnNumValues;
   const sEnumValueDef* const mpValues;
 };
 
 struct sParameterDef {
-  const achar* const  maszName;
-  const tType         mType;
-  const tUUID* const  mTypeUUID;
-  const achar* const  mTypeName;
+  const achar* const maszName;
+  const tType mType;
+  const tUUID* const mTypeUUID;
+  const achar* const mTypeName;
 };
 
 struct sMethodDef {
-  const achar* const  maszName;
-  const tType         mReturnType;
-  const tUUID* const  mReturnTypeUUID;
-  const char* const   mReturnTypeName;
-  const tU32          mnNumParameters;
+  const achar* const maszName;
+  const tType mReturnType;
+  const tUUID* const mReturnTypeUUID;
+  const char* const mReturnTypeName;
+  const tU32 mnNumParameters;
   const sParameterDef* const mpParameters;
 #if !defined niConfig_NoXCALL
-  const tpfnVMCall    mpVMCall;
+  const tpfnVMCall mpVMCall;
 #endif
 };
 
-struct sInterfaceDef
-{
-  const achar* const              maszName;
-  const tUUID* const              mUUID;
-  const tU32                      mnNumBases;
-  const tUUID* const*             mpBases;
-  const tU32                      mnNumMethods;
-  const sMethodDef* const*        mpMethods;
+struct sInterfaceDef {
+  const achar* const maszName;
+  const tUUID* const mUUID;
+  const tU32 mnNumBases;
+  const tUUID* const* mpBases;
+  const tU32 mnNumMethods;
+  const sMethodDef* const* mpMethods;
   const tpfnCreateDispatchWrapper mpfnCreateDispatchWrapper;
 };
 
 //! Object type definition interface.
-struct iObjectTypeDef : public iUnknown
-{
+struct iObjectTypeDef : public iUnknown {
   niDeclareInterfaceUUID(iObjectTypeDef,0xc26d991e,0xe51f,0x4d84,0x86,0x6a,0xe7,0x7f,0xaf,0xd1,0xb8,0xe2);
   //! Get the object type's name.
   virtual const achar* __stdcall GetName() const = 0;
   //! Create an instance of the object.
-  virtual iUnknown* __stdcall CreateInstance(const Var& aVarA, const Var& aVarB) const = 0;
+  virtual iUnknown* __stdcall CreateInstance(const Var& aVarA,
+                                             const Var& aVarB) const = 0;
 };
 
 //! Module definition interface.
-struct iModuleDef : public iUnknown
-{
+struct iModuleDef : public iUnknown {
   niDeclareInterfaceUUID(iModuleDef,0x80463a66,0xfc9e,0x4490,0xab,0x81,0x00,0xb9,0x15,0x2c,0x17,0xf3);
 
   //! Get the module's name.
@@ -132,17 +131,18 @@ struct iModuleDef : public iUnknown
   virtual const iObjectTypeDef* __stdcall GetObjectType(tU32 anIndex) const = 0;
 };
 
-static inline tBool VarIsType(const Var* apVar, const tType aType, const tBool abCheckTypeFlags) {
+static inline tBool VarIsType(const Var* apVar, const tType aType,
+                              const tBool abCheckTypeFlags)
+{
   if (!aType)
     return apVar->IsNull();
-  if (abCheckTypeFlags ?
-      (apVar->mType != aType) :
-      (niType(apVar->mType) != niType(aType)))
+  if (abCheckTypeFlags ? (apVar->mType != aType)
+                       : (niType(apVar->mType) != niType(aType)))
     return eFalse;
   return eTrue;
 }
 
 /**@}*/
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
-}; // End of ni
+};     // namespace ni
 #endif // __OBJMODEL_4180864_H__

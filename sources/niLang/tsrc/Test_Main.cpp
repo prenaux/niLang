@@ -4,20 +4,21 @@
 #include <niLang/Utils/MainImpl.h>
 
 #if defined niEmbedded
-// #define EMBEDDED_FIXTURE_NAME "FJSCC-OpenGL"
-// #define EMBEDDED_FIXTURE_NAME "FFileSystem-ModuleDataDir"
-// #define EMBEDDED_FIXTURE_NAME "FStartPath-OpenUrl"
-#define EMBEDDED_FIXTURE_NAME "FProcess"
+  // #define EMBEDDED_FIXTURE_NAME "FJSCC-OpenGL"
+  // #define EMBEDDED_FIXTURE_NAME "FFileSystem-ModuleDataDir"
+  // #define EMBEDDED_FIXTURE_NAME "FStartPath-OpenUrl"
+  #define EMBEDDED_FIXTURE_NAME "FProcess"
 #endif
 
 #if !defined niNoProcess
 extern bool Test_ChildProcess_Start(int argc, const char** argv, int& ret);
 #endif
 
-int main(int argc, const char** argv, const char** envp) {
+int main(int argc, const char** argv, const char** envp)
+{
   int r = -1;
 #if !defined niNoProcess
-  if (Test_ChildProcess_Start(argc,argv,r)) {
+  if (Test_ChildProcess_Start(argc, argv, r)) {
     return r;
   }
   else
@@ -31,7 +32,7 @@ int main(int argc, const char** argv, const char** envp) {
     }
     else {
       printf("I/env:\n");
-      for (const char **env = envp; *env != nullptr; env++) {
+      for (const char** env = envp; *env != nullptr; env++) {
         printf("- %s\n", *env);
       }
       fflush(stdout);
@@ -42,7 +43,7 @@ int main(int argc, const char** argv, const char** envp) {
 #ifdef EMBEDDED_FIXTURE_NAME
     fixtureName = ni::GetProperty("FIXTURE", EMBEDDED_FIXTURE_NAME);
 #else
-    ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(),&fixtureName);
+    ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine(), &fixtureName);
 #endif
     return UnitTest::RunAllTests(fixtureName.Chars());
   }

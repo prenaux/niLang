@@ -4,18 +4,18 @@
 #include "API/niLang/Types.h"
 #if niMinFeatures(15)
 
-#include "API/niLang/Utils/UnknownImpl.h"
-#include "API/niLang/ICrypto.h"
-#include "API/niLang/IFile.h"
-#include "API/niLang/Var.h"
-#include "API/niLang/StringDef.h"
+  #include "API/niLang/Utils/UnknownImpl.h"
+  #include "API/niLang/ICrypto.h"
+  #include "API/niLang/IFile.h"
+  #include "API/niLang/Var.h"
+  #include "API/niLang/StringDef.h"
 
-#include "zlib/zlib.h"
-#include "mbedtls/md5.h"
-#include "mbedtls/ripemd160.h"
-#include "mbedtls/sha1.h"
-#include "mbedtls/sha256.h"
-#include "mbedtls/sha512.h"
+  #include "zlib/zlib.h"
+  #include "mbedtls/md5.h"
+  #include "mbedtls/ripemd160.h"
+  #include "mbedtls/sha1.h"
+  #include "mbedtls/sha256.h"
+  #include "mbedtls/sha512.h"
 
 using namespace ni;
 
@@ -31,28 +31,41 @@ struct iCryptoHashDef {
 
 struct MD5 {
   static struct Def : public iCryptoHashDef {
-    virtual int __stdcall GetSize() const { return DIGEST_SIZE; }
-    virtual const achar* __stdcall GetName() const { return "SHA-1"; }
+    virtual int __stdcall GetSize() const
+    {
+      return DIGEST_SIZE;
+    }
+    virtual const achar* __stdcall GetName() const
+    {
+      return "SHA-1";
+    }
   } _Def;
 
-  enum { DIGEST_SIZE = 16 };
+  enum {
+    DIGEST_SIZE = 16
+  };
 
   mbedtls_md5_context _ctx;
 
-  MD5() {
+  MD5()
+  {
     mbedtls_md5_init(&_ctx);
     Restart();
   }
-  ~MD5() {
+  ~MD5()
+  {
     mbedtls_md5_free(&_ctx);
   }
-  void Restart() {
+  void Restart()
+  {
     mbedtls_md5_starts(&_ctx);
   }
-  void Update(void* data, size_t size) {
+  void Update(void* data, size_t size)
+  {
     mbedtls_md5_update(&_ctx, (unsigned char*)data, size);
   }
-  void Final(void* data) {
+  void Final(void* data)
+  {
     mbedtls_md5_finish(&_ctx, (unsigned char*)data);
     Restart();
   }
@@ -61,28 +74,41 @@ MD5::Def MD5::_Def;
 
 struct SHA1 {
   static struct Def : public iCryptoHashDef {
-    virtual int __stdcall GetSize() const { return DIGEST_SIZE; }
-    virtual const achar* __stdcall GetName() const { return "SHA-1"; }
+    virtual int __stdcall GetSize() const
+    {
+      return DIGEST_SIZE;
+    }
+    virtual const achar* __stdcall GetName() const
+    {
+      return "SHA-1";
+    }
   } _Def;
 
-  enum { DIGEST_SIZE = 20 };
+  enum {
+    DIGEST_SIZE = 20
+  };
 
   mbedtls_sha1_context _ctx;
 
-  SHA1() {
+  SHA1()
+  {
     mbedtls_sha1_init(&_ctx);
     Restart();
   }
-  ~SHA1() {
+  ~SHA1()
+  {
     mbedtls_sha1_free(&_ctx);
   }
-  void Restart() {
+  void Restart()
+  {
     mbedtls_sha1_starts(&_ctx);
   }
-  void Update(void* data, size_t size) {
+  void Update(void* data, size_t size)
+  {
     mbedtls_sha1_update(&_ctx, (unsigned char*)data, size);
   }
-  void Final(void* data) {
+  void Final(void* data)
+  {
     mbedtls_sha1_finish(&_ctx, (unsigned char*)data);
     Restart();
   }
@@ -91,28 +117,41 @@ SHA1::Def SHA1::_Def;
 
 struct RIPEMD160 {
   static struct Def : public iCryptoHashDef {
-    virtual int __stdcall GetSize() const { return DIGEST_SIZE; }
-    virtual const achar* __stdcall GetName() const { return "SHA-1"; }
+    virtual int __stdcall GetSize() const
+    {
+      return DIGEST_SIZE;
+    }
+    virtual const achar* __stdcall GetName() const
+    {
+      return "SHA-1";
+    }
   } _Def;
 
-  enum { DIGEST_SIZE = 20 };
+  enum {
+    DIGEST_SIZE = 20
+  };
 
   mbedtls_ripemd160_context _ctx;
 
-  RIPEMD160() {
+  RIPEMD160()
+  {
     mbedtls_ripemd160_init(&_ctx);
     Restart();
   }
-  ~RIPEMD160() {
+  ~RIPEMD160()
+  {
     mbedtls_ripemd160_free(&_ctx);
   }
-  void Restart() {
+  void Restart()
+  {
     mbedtls_ripemd160_starts(&_ctx);
   }
-  void Update(void* data, size_t size) {
+  void Update(void* data, size_t size)
+  {
     mbedtls_ripemd160_update(&_ctx, (unsigned char*)data, size);
   }
-  void Final(void* data) {
+  void Final(void* data)
+  {
     mbedtls_ripemd160_finish(&_ctx, (unsigned char*)data);
     Restart();
   }
@@ -121,28 +160,41 @@ RIPEMD160::Def RIPEMD160::_Def;
 
 struct SHA256 {
   static struct Def : public iCryptoHashDef {
-    virtual int __stdcall GetSize() const { return DIGEST_SIZE; }
-    virtual const achar* __stdcall GetName() const { return "SHA256"; }
+    virtual int __stdcall GetSize() const
+    {
+      return DIGEST_SIZE;
+    }
+    virtual const achar* __stdcall GetName() const
+    {
+      return "SHA256";
+    }
   } _Def;
 
-  enum { DIGEST_SIZE = 32 };
+  enum {
+    DIGEST_SIZE = 32
+  };
 
   mbedtls_sha256_context _ctx;
 
-  SHA256() {
+  SHA256()
+  {
     mbedtls_sha256_init(&_ctx);
     Restart();
   }
-  ~SHA256() {
+  ~SHA256()
+  {
     mbedtls_sha256_free(&_ctx);
   }
-  void Restart() {
+  void Restart()
+  {
     mbedtls_sha256_starts(&_ctx, 0);
   }
-  void Update(void* data, size_t size) {
+  void Update(void* data, size_t size)
+  {
     mbedtls_sha256_update(&_ctx, (unsigned char*)data, size);
   }
-  void Final(void* data) {
+  void Final(void* data)
+  {
     mbedtls_sha256_finish(&_ctx, (unsigned char*)data);
     Restart();
   }
@@ -151,28 +203,41 @@ SHA256::Def SHA256::_Def;
 
 struct SHA384 {
   static struct Def : public iCryptoHashDef {
-    virtual int __stdcall GetSize() const { return DIGEST_SIZE; }
-    virtual const achar* __stdcall GetName() const { return "SHA384"; }
+    virtual int __stdcall GetSize() const
+    {
+      return DIGEST_SIZE;
+    }
+    virtual const achar* __stdcall GetName() const
+    {
+      return "SHA384";
+    }
   } _Def;
 
-  enum { DIGEST_SIZE = 48 };
+  enum {
+    DIGEST_SIZE = 48
+  };
 
   mbedtls_sha512_context _ctx;
 
-  SHA384() {
+  SHA384()
+  {
     mbedtls_sha512_init(&_ctx);
     Restart();
   }
-  ~SHA384() {
+  ~SHA384()
+  {
     mbedtls_sha512_free(&_ctx);
   }
-  void Restart() {
+  void Restart()
+  {
     mbedtls_sha512_starts(&_ctx, 1);
   }
-  void Update(void* data, size_t size) {
+  void Update(void* data, size_t size)
+  {
     mbedtls_sha512_update(&_ctx, (unsigned char*)data, size);
   }
-  void Final(void* data) {
+  void Final(void* data)
+  {
     mbedtls_sha512_finish(&_ctx, (unsigned char*)data);
     Restart();
   }
@@ -186,43 +251,56 @@ enum eSHA512_DigestSize {
   eSHA512_DigestSize_512 = 64,
 };
 
-#define SHA512_VARIANT(NAME,NUM_BITS)                                   \
-  struct NAME {                                                         \
-    static struct Def : public iCryptoHashDef {                         \
-      virtual int __stdcall GetSize() const { return eSHA512_DigestSize_##NUM_BITS; } \
-      virtual const achar* __stdcall GetName() const { return "NAME"; } \
-    } _Def;                                                             \
-                                                                        \
-    enum { DIGEST_SIZE = eSHA512_DigestSize_##NUM_BITS };               \
-                                                                        \
-    mbedtls_sha512_context _ctx;                                        \
-                                                                        \
-    NAME() {                                                            \
-      mbedtls_sha512_init(&_ctx);                                       \
-      Restart();                                                        \
-    }                                                                   \
-    ~NAME() {                                                           \
-      mbedtls_sha512_free(&_ctx);                                       \
-    }                                                                   \
-    void Restart() {                                                    \
-      mbedtls_sha512_starts(&_ctx, 0);                                  \
-    }                                                                   \
-    void Update(void* data, size_t size) {                              \
-      mbedtls_sha512_update(&_ctx, (tU8*)data, size);                   \
-    }                                                                   \
-    void Final(void* data) {                                            \
-      if (DIGEST_SIZE == 64) {                                          \
-        mbedtls_sha512_finish(&_ctx, (tU8*)data);                       \
-      }                                                                 \
-      else {                                                            \
-        tU8 fullDigest[64];                                             \
-        mbedtls_sha512_finish(&_ctx, fullDigest);                       \
-        memcpy(data,fullDigest,DIGEST_SIZE);                            \
-      }                                                                 \
-      Restart();                                                        \
-    }                                                                   \
-  };                                                                    \
-  NAME::Def NAME::_Def;
+  #define SHA512_VARIANT(NAME, NUM_BITS)                \
+    struct NAME {                                       \
+      static struct Def : public iCryptoHashDef {       \
+        virtual int __stdcall GetSize() const           \
+        {                                               \
+          return eSHA512_DigestSize_##NUM_BITS;         \
+        }                                               \
+        virtual const achar* __stdcall GetName() const  \
+        {                                               \
+          return "NAME";                                \
+        }                                               \
+      } _Def;                                           \
+                                                        \
+      enum {                                            \
+        DIGEST_SIZE = eSHA512_DigestSize_##NUM_BITS     \
+      };                                                \
+                                                        \
+      mbedtls_sha512_context _ctx;                      \
+                                                        \
+      NAME()                                            \
+      {                                                 \
+        mbedtls_sha512_init(&_ctx);                     \
+        Restart();                                      \
+      }                                                 \
+      ~NAME()                                           \
+      {                                                 \
+        mbedtls_sha512_free(&_ctx);                     \
+      }                                                 \
+      void Restart()                                    \
+      {                                                 \
+        mbedtls_sha512_starts(&_ctx, 0);                \
+      }                                                 \
+      void Update(void* data, size_t size)              \
+      {                                                 \
+        mbedtls_sha512_update(&_ctx, (tU8*)data, size); \
+      }                                                 \
+      void Final(void* data)                            \
+      {                                                 \
+        if (DIGEST_SIZE == 64) {                        \
+          mbedtls_sha512_finish(&_ctx, (tU8*)data);     \
+        }                                               \
+        else {                                          \
+          tU8 fullDigest[64];                           \
+          mbedtls_sha512_finish(&_ctx, fullDigest);     \
+          memcpy(data, fullDigest, DIGEST_SIZE);        \
+        }                                               \
+        Restart();                                      \
+      }                                                 \
+    };                                                  \
+    NAME::Def NAME::_Def;
 
 SHA512_VARIANT(SHA512_128, 128);
 SHA512_VARIANT(SHA512_160, 160);
@@ -235,103 +313,119 @@ SHA512_VARIANT(SHA512, 512);
 //
 //===========================================================================
 template <typename tHashModule>
-class cCryptoHash : public ImplRC<iCryptoHash>
-{
+class cCryptoHash : public ImplRC<iCryptoHash> {
   static const tU32 BLOCKSIZE = 4096;
 
  public:
-  cCryptoHash() {
+  cCryptoHash()
+  {
     ZeroMembers();
   }
-  ~cCryptoHash() {
+  ~cCryptoHash()
+  {
   }
 
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     return eTrue;
   }
 
-  void __stdcall ZeroMembers() {
+  void __stdcall ZeroMembers()
+  {
   }
 
-  const achar* __stdcall GetHashType() const {
+  const achar* __stdcall GetHashType() const
+  {
     return tHashModule::_Def.GetName();
   }
-  tU32 __stdcall GetDigestSize() const {
+  tU32 __stdcall GetDigestSize() const
+  {
     return tHashModule::DIGEST_SIZE;
   }
 
-  tBool __stdcall UpdateBlock(iFile* apFile, tI64 aStart, tI64 aSize) {
-    niCheckSilent(niIsOK(apFile),eFalse);
+  tBool __stdcall UpdateBlock(iFile* apFile, tI64 aStart, tI64 aSize)
+  {
+    niCheckSilent(niIsOK(apFile), eFalse);
     apFile->SeekSet(aStart);
-    return Update(apFile,aSize);
+    return Update(apFile, aSize);
   }
-  tBool __stdcall Update(iFile* apFile, tI64 aSize) {
-    niCheckSilent(niIsOK(apFile),eFalse);
-    tU8 buff[BLOCKSIZE+1];
+  tBool __stdcall Update(iFile* apFile, tI64 aSize)
+  {
+    niCheckSilent(niIsOK(apFile), eFalse);
+    tU8 buff[BLOCKSIZE + 1];
     tI64 sz = aSize;
     if (sz) {
       // process blocks
       while (sz > BLOCKSIZE) {
-        tI64 read = apFile->ReadRaw(buff,BLOCKSIZE);
-        if (read != BLOCKSIZE) return eFalse;
-        _hash.Update(buff,BLOCKSIZE);
+        tI64 read = apFile->ReadRaw(buff, BLOCKSIZE);
+        if (read != BLOCKSIZE)
+          return eFalse;
+        _hash.Update(buff, BLOCKSIZE);
         sz -= BLOCKSIZE;
       }
       // process last block
       if (sz > 0) {
-        tI64 read = apFile->ReadRaw(buff,(tSize)sz);
-        if (read != sz) return eFalse;
-        _hash.Update(buff,(tSize)sz);
+        tI64 read = apFile->ReadRaw(buff, (tSize)sz);
+        if (read != sz)
+          return eFalse;
+        _hash.Update(buff, (tSize)sz);
         sz = 0;
       }
     }
     else {
       // no size specified read until partial read or zero bytes read
       do {
-        tI64 read = apFile->ReadRaw(buff,BLOCKSIZE);
-        if (read == 0) break;
-        _hash.Update(buff,(tSize)read);
-        if (apFile->GetPartialRead()) break;
+        tI64 read = apFile->ReadRaw(buff, BLOCKSIZE);
+        if (read == 0)
+          break;
+        _hash.Update(buff, (tSize)read);
+        if (apFile->GetPartialRead())
+          break;
       } while (1);
     }
     return eTrue;
   }
-  tBool __stdcall UpdateRaw(tPtr apData, tSize aSize) {
-    niCheckSilent(apData!=NULL,eFalse);
-    _hash.Update(apData,aSize);
+  tBool __stdcall UpdateRaw(tPtr apData, tSize aSize)
+  {
+    niCheckSilent(apData != NULL, eFalse);
+    _hash.Update(apData, aSize);
     return eTrue;
   }
 
-  tSize __stdcall FinalRaw(tPtr apData, tSize anMaxSize) {
-    niCheckSilent(apData != NULL,eFalse);
-    niCheckSilent(anMaxSize >= tHashModule::DIGEST_SIZE,eFalse);
+  tSize __stdcall FinalRaw(tPtr apData, tSize anMaxSize)
+  {
+    niCheckSilent(apData != NULL, eFalse);
+    niCheckSilent(anMaxSize >= tHashModule::DIGEST_SIZE, eFalse);
     _hash.Final(apData);
     return tHashModule::DIGEST_SIZE;
   }
-  tSize __stdcall FinalFile(iFile* apDigest) {
-    niCheckSilent(niIsOK(apDigest),eFalse);
-    sWriteBufferToFile buffer(apDigest,tHashModule::DIGEST_SIZE);
+  tSize __stdcall FinalFile(iFile* apDigest)
+  {
+    niCheckSilent(niIsOK(apDigest), eFalse);
+    sWriteBufferToFile buffer(apDigest, tHashModule::DIGEST_SIZE);
     _hash.Final(buffer.begin());
     return buffer.commit(-1);
   }
-  cString __stdcall FinalString(eRawToStringEncoding aEncoding) {
+  cString __stdcall FinalString(eRawToStringEncoding aEncoding)
+  {
     tU8 buffer[tHashModule::DIGEST_SIZE];
     _hash.Final(buffer);
     switch (aEncoding) {
-      case eRawToStringEncoding_Hex: {
-        return HexEncodeToString(buffer, tHashModule::DIGEST_SIZE, eFalse);
-      }
-      case eRawToStringEncoding_Base64: {
-        return Base64EncodeToString(buffer, tHashModule::DIGEST_SIZE);
-      }
-      case eRawToStringEncoding_Base32: {
-        return Base32EncodeToString(buffer, tHashModule::DIGEST_SIZE, eFalse);
-      }
+    case eRawToStringEncoding_Hex: {
+      return HexEncodeToString(buffer, tHashModule::DIGEST_SIZE, eFalse);
+    }
+    case eRawToStringEncoding_Base64: {
+      return Base64EncodeToString(buffer, tHashModule::DIGEST_SIZE);
+    }
+    case eRawToStringEncoding_Base32: {
+      return Base32EncodeToString(buffer, tHashModule::DIGEST_SIZE, eFalse);
+    }
     }
     return AZEROSTR;
   }
 
-  tBool __stdcall Restart() {
+  tBool __stdcall Restart()
+  {
     _hash.Restart();
     return eTrue;
   }
@@ -341,7 +435,9 @@ class cCryptoHash : public ImplRC<iCryptoHash>
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-niExportFunc(ni::iUnknown*) New_niLang_CryptoHash(const Var& avarA, const Var& avarB) {
+niExportFunc(ni::iUnknown*) New_niLang_CryptoHash(const Var& avarA,
+                                                  const Var& avarB)
+{
   Ptr<iCryptoHash> hash;
   cString type = VarGetString(avarA);
   if (type.IEq("MD5")) {
@@ -372,7 +468,7 @@ niExportFunc(ni::iUnknown*) New_niLang_CryptoHash(const Var& avarA, const Var& a
     hash = niNew cCryptoHash<SHA512>();
   }
   else {
-    niError(niFmt("Message Hash algorithm '%s' not supported.",type));
+    niError(niFmt("Message Hash algorithm '%s' not supported.", type));
     return NULL;
   }
   return hash.GetRawAndSetNull();

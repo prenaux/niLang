@@ -12,18 +12,18 @@
 
 #ifdef niJNI
 
-#include "../Var.h"
+  #include "../Var.h"
 
-#include <jni.h>
-#undef JNIEXPORT
+  #include <jni.h>
+  #undef JNIEXPORT
 
-#if defined niGCC || defined niCLang
-#define JNIEXPORT extern "C" __attribute__ ((visibility("default")))
-#elif defined niMSVC
-#define JNIEXPORT extern "C" __declspec(dllexport)
-#else
-#error "Unknown platform for JNI build."
-#endif
+  #if defined niGCC || defined niCLang
+    #define JNIEXPORT extern "C" __attribute__((visibility("default")))
+  #elif defined niMSVC
+    #define JNIEXPORT extern "C" __declspec(dllexport)
+  #else
+    #error "Unknown platform for JNI build."
+  #endif
 
 #endif // #ifdef niJNI
 

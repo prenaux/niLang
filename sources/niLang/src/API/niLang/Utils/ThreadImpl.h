@@ -15,38 +15,56 @@
 
 namespace ni {
 
-static inline tU64 ThreadGetCurrentThreadID() {
+static inline tU64 ThreadGetCurrentThreadID()
+{
   return 0xAAAADDDD;
 }
 struct ThreadMutex : public Impl_HeapAlloc {
-  ThreadMutex() {}
-  ~ThreadMutex() {}
-  void __stdcall ThreadLock() const {}
-  void __stdcall ThreadUnlock() const {}
+  ThreadMutex()
+  {
+  }
+  ~ThreadMutex()
+  {
+  }
+  void __stdcall ThreadLock() const
+  {
+  }
+  void __stdcall ThreadUnlock() const
+  {
+  }
 };
 struct AutoThreadLock {
   AutoThreadLock() = delete;
-  AutoThreadLock(const ThreadMutex&) {}
-  ~AutoThreadLock() {}
+  AutoThreadLock(const ThreadMutex&)
+  {
+  }
+  ~AutoThreadLock()
+  {
+  }
 };
 
 struct ThreadEvent : public Impl_HeapAlloc {
-  ThreadEvent(tBool abManualReset = eFalse) {
+  ThreadEvent(tBool abManualReset = eFalse)
+  {
     mIsSignaled = abManualReset;
   }
-  ~ThreadEvent() {
+  ~ThreadEvent()
+  {
   }
 
   // put in non-signaled state
-  void __stdcall Reset() {
+  void __stdcall Reset()
+  {
     mIsSignaled = eFalse;
   }
   // put in signaled state
-  void __stdcall Signal() {
+  void __stdcall Signal()
+  {
     mIsSignaled = eTrue;
   }
   // wait for an event, set it back to non-signaled state when returning
-  tBool __stdcall Wait(tU32 anTimeout) {
+  tBool __stdcall Wait(tU32 anTimeout)
+  {
     niUnused(anTimeout);
     if (!mIsSignaled)
       return eFalse;
@@ -67,21 +85,21 @@ struct ThreadEvent : public Impl_HeapAlloc {
   tBool mIsSignaled;
 };
 
-}
+} // namespace ni
 
 #else
 
-#ifdef niWin32
+  #ifdef niWin32
 // We don't include windows.h because it pollutes the global namespace horribly.
 extern "C" {
 
-#define MY_WINBASEAPI __declspec(dllimport)
-#define MY_WINAPI __stdcall
-// Windows and MSVC are fuckwits: uint32_t is unsigned int, DWORD is unsigned
-// long, both are used thoroughly everywhere in Windows, and even though they
-// are guaranteed to be the same size and are both unsigned, MSVC treats them
-// as different pointer types with great fun ensuing...
-#define MY_DWORD unsigned long
+    #define MY_WINBASEAPI __declspec(dllimport)
+    #define MY_WINAPI __stdcall
+    // Windows and MSVC are fuckwits: uint32_t is unsigned int, DWORD is unsigned
+    // long, both are used thoroughly everywhere in Windows, and even though they
+    // are guaranteed to be the same size and are both unsigned, MSVC treats them
+    // as different pointer types with great fun ensuing...
+    #define MY_DWORD unsigned long
 
 typedef struct _MY_RTL_CRITICAL_SECTION {
   void* DebugInfo;
@@ -94,60 +112,74 @@ typedef struct _MY_RTL_CRITICAL_SECTION {
 
 MY_WINBASEAPI MY_DWORD MY_WINAPI GetCurrentThreadId();
 
-MY_WINBASEAPI void MY_WINAPI InitializeCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
-MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,MY_DWORD dwSpinCount);
-MY_WINBASEAPI void MY_WINAPI EnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
-MY_WINBASEAPI void MY_WINAPI LeaveCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
-MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(struct _RTL_CRITICAL_SECTION* lpCriticalSection,MY_DWORD dwSpinCount);
-MY_WINBASEAPI void MY_WINAPI DeleteCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI void MY_WINAPI
+InitializeCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(
+  struct _RTL_CRITICAL_SECTION* lpCriticalSection, MY_DWORD dwSpinCount);
+MY_WINBASEAPI void MY_WINAPI
+EnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI void MY_WINAPI
+LeaveCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI int MY_WINAPI InitializeCriticalSectionAndSpinCount(
+  struct _RTL_CRITICAL_SECTION* lpCriticalSection, MY_DWORD dwSpinCount);
+MY_WINBASEAPI void MY_WINAPI
+DeleteCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
 
 // There's a wrapper here because CreateEvent's definition has been made by nut jobs
-niExportFunc(void*) MyWin32CreateEvent(int bManualReset,int bInitialState);
+niExportFunc(void*) MyWin32CreateEvent(int bManualReset, int bInitialState);
 MY_WINBASEAPI int MY_WINAPI CloseHandle(void* hObject);
 MY_WINBASEAPI int MY_WINAPI SetEvent(void* hEvent);
 MY_WINBASEAPI int MY_WINAPI ResetEvent(void* hEvent);
 
-MY_WINBASEAPI void* MY_WINAPI CreateSemaphoreW(struct _SECURITY_ATTRIBUTES* lpSecurityAttr, long lInitialCount, long lMaximumCount, const wchar_t* lpName);
-MY_WINBASEAPI int MY_WINAPI ReleaseSemaphore(void* hObject, long lReleaseCount, long* lpPreviousCount);
+MY_WINBASEAPI void* MY_WINAPI
+CreateSemaphoreW(struct _SECURITY_ATTRIBUTES* lpSecurityAttr,
+                 long lInitialCount, long lMaximumCount, const wchar_t* lpName);
+MY_WINBASEAPI int MY_WINAPI ReleaseSemaphore(void* hObject, long lReleaseCount,
+                                             long* lpPreviousCount);
 
-MY_WINBASEAPI MY_DWORD MY_WINAPI WaitForSingleObject(void* hHandle,MY_DWORD dwMilliseconds);
+MY_WINBASEAPI MY_DWORD MY_WINAPI WaitForSingleObject(void* hHandle,
+                                                     MY_DWORD dwMilliseconds);
 
-MY_WINBASEAPI int MY_WINAPI TryEnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
+MY_WINBASEAPI int MY_WINAPI
+TryEnterCriticalSection(struct _RTL_CRITICAL_SECTION* lpCriticalSection);
 MY_WINBASEAPI void MY_WINAPI Sleep(MY_DWORD dwMilliseconds);
 
-#define MY_STATUS_WAIT_0 ((MY_DWORD)0x00000000L)
-#define MY_WAIT_OBJECT_0 ((MY_STATUS_WAIT_0) + 0)
+    #define MY_STATUS_WAIT_0 ((MY_DWORD)0x00000000L)
+    #define MY_WAIT_OBJECT_0 ((MY_STATUS_WAIT_0) + 0)
 
-#define MY_INFINITE 0xffffffff
+    #define MY_INFINITE 0xffffffff
 }
-#elif defined niPosix
-#  include "../Platforms/Unix/UnixThread.h"
-#  include <pthread.h>
-#  include <signal.h>
-#else
-#  error "No threading support on this platform."
-#endif
+  #elif defined niPosix
+    #include "../Platforms/Unix/UnixThread.h"
+    #include <pthread.h>
+    #include <signal.h>
+  #else
+    #error "No threading support on this platform."
+  #endif
 
 namespace ni {
 
-#ifdef niWin32
-static inline tU64 ThreadGetCurrentThreadID() {
+  #ifdef niWin32
+static inline tU64 ThreadGetCurrentThreadID()
+{
   return ::GetCurrentThreadId();
 }
-#elif defined niOSX || defined niIOS
-static inline tU64 ThreadGetCurrentThreadID() {
+  #elif defined niOSX || defined niIOS
+static inline tU64 ThreadGetCurrentThreadID()
+{
   uint64_t tid;
   pthread_threadid_np(NULL, &tid);
   return tid;
 }
-#else
-static inline tU64 ThreadGetCurrentThreadID() {
+  #else
+static inline tU64 ThreadGetCurrentThreadID()
+{
   // Maybe should return a U32 (some implementation might return a 64bit pointer...)
   return (tU64)pthread_self();
 }
-#endif
+  #endif
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -157,75 +189,85 @@ static inline tU64 ThreadGetCurrentThreadID() {
 namespace ni {
 
 struct ThreadMutex : public Impl_HeapAlloc {
-  ThreadMutex() {
-#ifdef niWin32
-    InitializeCriticalSectionAndSpinCount((struct _RTL_CRITICAL_SECTION*)&mCS,4000);
-    //    InitializeCriticalSection(&mCS);
-#else
+  ThreadMutex()
+  {
+  #ifdef niWin32
+    InitializeCriticalSectionAndSpinCount((struct _RTL_CRITICAL_SECTION*)&mCS,
+                                          4000);
+        //    InitializeCriticalSection(&mCS);
+  #else
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr,PTHREAD_MUTEX_RECURSIVE);
-    int r = pthread_mutex_init(&mID,&attr);
-    niAssertMsg(r==0,_A("Can't create pthread mutex."));
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    int r = pthread_mutex_init(&mID, &attr);
+    niAssertMsg(r == 0, _A("Can't create pthread mutex."));
     niUnused(r);
-#endif
+  #endif
   }
-  ~ThreadMutex() {
-#ifdef niWin32
+  ~ThreadMutex()
+  {
+  #ifdef niWin32
     DeleteCriticalSection((struct _RTL_CRITICAL_SECTION*)&mCS);
-#else
+  #else
     pthread_mutex_destroy(&mID);
-#endif
+  #endif
   }
-  void __stdcall ThreadLock() const {
-#ifdef niWin32
+  void __stdcall ThreadLock() const
+  {
+  #ifdef niWin32
     EnterCriticalSection((struct _RTL_CRITICAL_SECTION*)&mCS);
-#else
+  #else
     int r = pthread_mutex_lock(&mID);
-    niAssertMsg(r>=0,_A("Can't lock pthread mutex."));
+    niAssertMsg(r >= 0, _A("Can't lock pthread mutex."));
     niUnused(r);
-#endif
+  #endif
   }
-  void __stdcall ThreadUnlock() const {
-#ifdef niWin32
+  void __stdcall ThreadUnlock() const
+  {
+  #ifdef niWin32
     LeaveCriticalSection((struct _RTL_CRITICAL_SECTION*)&mCS);
-#else
+  #else
     int r = pthread_mutex_unlock(&mID);
-    niAssertMsg(r>=0,_A("Can't unlock pthread mutex."));
+    niAssertMsg(r >= 0, _A("Can't unlock pthread mutex."));
     niUnused(r);
-#endif
+  #endif
   }
 
-  bool __stdcall ThreadTryLock() const {
-#ifdef niWin32
+  bool __stdcall ThreadTryLock() const
+  {
+  #ifdef niWin32
     return TryEnterCriticalSection((struct _RTL_CRITICAL_SECTION*)&mCS) != 0;
-#else
+  #else
     return pthread_mutex_trylock(&mID) == 0;
-#endif
+  #endif
   }
 
  private:
-#ifdef niWin32
+  #ifdef niWin32
   mutable MY_CRITICAL_SECTION mCS;
-#else
+  #else
   mutable pthread_mutex_t mID;
-#endif
+  #endif
 };
 
 struct AutoThreadLock {
   AutoThreadLock() = delete;
-  AutoThreadLock(const ThreadMutex& v) : mValue(v) {
+  AutoThreadLock(const ThreadMutex& v)
+      : mValue(v)
+  {
     mValue.ThreadLock();
   }
-  ~AutoThreadLock() {
+  ~AutoThreadLock()
+  {
     mValue.ThreadUnlock();
   }
+
  private:
   const ThreadMutex& mValue;
   niClassStrictLocal(AutoThreadLock);
 };
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -236,146 +278,158 @@ namespace ni {
 
 struct ThreadEvent : public Impl_HeapAlloc {
   // create the event in non-signaled state
-  ThreadEvent(tBool abManualReset = eFalse) {
-#ifdef niWin32
-    mHandle = MyWin32CreateEvent(abManualReset,0);
-#else
-    mHandle = ni::Unix::CreateEvent(NULL,abManualReset,0);
-#endif
+  ThreadEvent(tBool abManualReset = eFalse)
+  {
+  #ifdef niWin32
+    mHandle = MyWin32CreateEvent(abManualReset, 0);
+  #else
+    mHandle = ni::Unix::CreateEvent(NULL, abManualReset, 0);
+  #endif
   }
-  ~ThreadEvent() {
-#ifdef niWin32
+  ~ThreadEvent()
+  {
+  #ifdef niWin32
     ::CloseHandle(mHandle);
-#else
+  #else
     ni::Unix::DeleteEvent(mHandle);
-#endif
+  #endif
   }
 
   // put in non-signaled state
-  void __stdcall Reset() {
-#ifdef niWin32
+  void __stdcall Reset()
+  {
+  #ifdef niWin32
     ::ResetEvent(mHandle);
-#else
+  #else
     ni::Unix::ResetEvent(mHandle);
-#endif
+  #endif
   }
   // put in signaled state
-  void __stdcall Signal() {
-#ifdef niWin32
+  void __stdcall Signal()
+  {
+  #ifdef niWin32
     ::SetEvent(mHandle);
-#else
+  #else
     ni::Unix::SetEvent(mHandle);
-#endif
+  #endif
   }
   // wait for an event, set it back to non-signaled state when returning
-  tBool __stdcall Wait(tU32 anTimeout) {
-#ifdef niWin32
-    return WaitForSingleObject(mHandle,anTimeout) == MY_WAIT_OBJECT_0;
-#else
-    return ni::Unix::WaitForSingleObject(mHandle,anTimeout) == ni::Unix::WAIT_OBJECT_0;
-#endif
+  tBool __stdcall Wait(tU32 anTimeout)
+  {
+  #ifdef niWin32
+    return WaitForSingleObject(mHandle, anTimeout) == MY_WAIT_OBJECT_0;
+  #else
+    return ni::Unix::WaitForSingleObject(mHandle, anTimeout) ==
+           ni::Unix::WAIT_OBJECT_0;
+  #endif
   }
-  void __stdcall InfiniteWait() {
-#ifdef niWin32
-    WaitForSingleObject(mHandle,MY_INFINITE);
-#else
-    ni::Unix::WaitForSingleObject(mHandle,ni::Unix::INFINITE);
-#endif
+  void __stdcall InfiniteWait()
+  {
+  #ifdef niWin32
+    WaitForSingleObject(mHandle, MY_INFINITE);
+  #else
+    ni::Unix::WaitForSingleObject(mHandle, ni::Unix::INFINITE);
+  #endif
   }
 
  private:
-#ifdef niWin32
+  #ifdef niWin32
   void* mHandle;
-#else
+  #else
   ni::Unix::HANDLE mHandle;
-#endif
+  #endif
 };
 
-}
+} // namespace ni
 
-//----------------------------------------------------------------------------
-//
-// Section: Semaphore
-//
-//----------------------------------------------------------------------------
-#ifdef niWin32
-// #include <windows.h>
-#elif defined niOSX || defined niIOS
-#include <mach/mach.h>
-#elif defined niLinux || defined niQNX
-#include <semaphore.h>
-#else
-#error "ThreadSem: Platform not supported"
-#endif
+  //----------------------------------------------------------------------------
+  //
+  // Section: Semaphore
+  //
+  //----------------------------------------------------------------------------
+  #ifdef niWin32
+  // #include <windows.h>
+  #elif defined niOSX || defined niIOS
+    #include <mach/mach.h>
+  #elif defined niLinux || defined niQNX
+    #include <semaphore.h>
+  #else
+    #error "ThreadSem: Platform not supported"
+  #endif
 
 namespace ni {
 
 struct ThreadSem : public Impl_HeapAlloc {
-#ifdef niWin32
+  #ifdef niWin32
   void* _winSem;
-#elif defined niOSX || defined niIOS
+  #elif defined niOSX || defined niIOS
   semaphore_t _osxSem;
-#elif defined niLinux
+  #elif defined niLinux
   sem_t _linSem;
-#endif
+  #endif
 
-  ThreadSem(tI32 initialCount = 0) {
+  ThreadSem(tI32 initialCount = 0)
+  {
     niAssert(initialCount >= 0);
-#ifdef niWin32
+  #ifdef niWin32
     _winSem = CreateSemaphoreW(NULL, initialCount, ni::TypeMax<tI32>(), NULL);
-#elif defined niOSX || defined niIOS
-    semaphore_create(mach_task_self(), &_osxSem, SYNC_POLICY_FIFO, initialCount);
-#elif defined niLinux
+  #elif defined niOSX || defined niIOS
+    semaphore_create(mach_task_self(), &_osxSem, SYNC_POLICY_FIFO,
+                     initialCount);
+  #elif defined niLinux
     sem_init(&_linSem, 0, initialCount);
-#endif
+  #endif
   }
 
-  ~ThreadSem() {
-#ifdef niWin32
+  ~ThreadSem()
+  {
+  #ifdef niWin32
     CloseHandle(_winSem);
-#elif defined niOSX || defined niIOS
+  #elif defined niOSX || defined niIOS
     semaphore_destroy(mach_task_self(), _osxSem);
-#elif defined niLinux
+  #elif defined niLinux
     sem_destroy(&_linSem);
-#endif
+  #endif
   }
 
   // Decrements the semaphore. If the resulting value is less than zero, it
   // waits for a signal from a thread that increments the semaphore by calling
   // Signal() before returning.
-  void InfiniteWait() {
-#ifdef niWin32
+  void InfiniteWait()
+  {
+  #ifdef niWin32
     WaitForSingleObject(_winSem, MY_INFINITE);
-#elif defined niOSX || defined niIOS
+  #elif defined niOSX || defined niIOS
     semaphore_wait(_osxSem);
-#elif defined niLinux
+  #elif defined niLinux
     // http://stackoverflow.com/questions/2013181/gdb-causes-sem-wait-to-fail-with-eintr-error
     int rc;
     do {
       rc = sem_wait(&_linSem);
     } while (rc == -1 && errno == EINTR);
-#endif
+  #endif
   }
 
   // Increments the counting semaphore. If the previous value was less than
   // zero, it wakes one of the threads that are waiting in Wait() before
   // returning.
-  void Signal(tU32 count = 1) {
-#ifdef niWin32
+  void Signal(tU32 count = 1)
+  {
+  #ifdef niWin32
     ReleaseSemaphore(_winSem, count, NULL);
-#elif defined niOSX || defined niIOS
+  #elif defined niOSX || defined niIOS
     while (count-- > 0) {
       semaphore_signal(_osxSem);
     }
-#elif defined niLinux
+  #elif defined niLinux
     while (count-- > 0) {
       sem_post(&_linSem);
     }
-#endif
+  #endif
   }
 };
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
@@ -386,12 +440,13 @@ namespace ni {
 
 //! Thread procedure type.
 //! {NoAutomation}
-typedef tIntPtr (__ni_export_call_decl *tpfnBaseThreadProc)(void* apData);
+typedef tIntPtr(__ni_export_call_decl* tpfnBaseThreadProc)(void* apData);
 
 struct iThread : public iUnknown {
   niDeclareInterfaceUUID(iThread,0x9cac2fc1,0xfe06,0x4ade,0x86,0x6e,0x5c,0xfc,0x3d,0xb7,0xca,0xff);
   //! Starts the thread.
-  virtual tBool __stdcall Start(tpfnBaseThreadProc apfnBaseThreadProc, void* apData) = 0;
+  virtual tBool __stdcall Start(tpfnBaseThreadProc apfnBaseThreadProc,
+                                void* apData) = 0;
   //! Close the thread handle and allow it to be restarted. Does not
   //! garantee that the thread actually finished.
   virtual void __stdcall Close() = 0;
@@ -413,20 +468,20 @@ struct iThread : public iUnknown {
   virtual tI32 __stdcall GetPriority() const = 0;
 };
 
-}
+} // namespace ni
 
 niExportFunc(ni::iThread*) ni_create_thread();
 niExportFunc(ni::tU32) ni_get_num_threads();
 niExportFunc(ni::iThread*) ni_get_thread(ni::tU32 anIndex);
 niExportFunc(void) ni_join_all_threads();
 
-#ifdef niWin32
-#undef MY_WINBASEAPI
-#undef MY_WINAPI
-#undef MY_STATUS_WAIT_0
-#undef MY_WAIT_OBJECT_0
-#undef MY_INFINITE
-#endif
+  #ifdef niWin32
+    #undef MY_WINBASEAPI
+    #undef MY_WINAPI
+    #undef MY_STATUS_WAIT_0
+    #undef MY_WAIT_OBJECT_0
+    #undef MY_INFINITE
+  #endif
 
 #endif
 

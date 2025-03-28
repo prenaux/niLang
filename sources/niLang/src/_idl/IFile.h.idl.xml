@@ -2,36 +2,36 @@
 	<namespace name="ni">
 		<enum name="eTextEncodingFormat">
 			<comments desc="Text encoding formats. "/>
-			<value name="eTextEncodingFormat_Unknown" value="eInvalidHandle ">
+			<value name="eTextEncodingFormat_Unknown" value="eInvalidHandle">
 				<comments desc="Text encoding format header is unknown/invalid. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF8" value="0 ">
+			<value name="eTextEncodingFormat_UTF8" value="0">
 				<comments desc="UTF8 encoding. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF8BOM" value="1 ">
+			<value name="eTextEncodingFormat_UTF8BOM" value="1">
 				<comments desc="UTF8 encoding, with explicit BOM. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF16LE" value="2 ">
+			<value name="eTextEncodingFormat_UTF16LE" value="2">
 				<comments desc="UTF16 Little Endian. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF16BE" value="3 ">
+			<value name="eTextEncodingFormat_UTF16BE" value="3">
 				<comments desc="UTF16 Big Endian. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF32LE" value="4 ">
+			<value name="eTextEncodingFormat_UTF32LE" value="4">
 				<comments desc="UTF32 Little Endian. "/>
 			</value>
-			<value name="eTextEncodingFormat_UTF32BE" value="5 ">
+			<value name="eTextEncodingFormat_UTF32BE" value="5">
 				<comments desc="UTF32 Big Endian. "/>
 			</value>
-			<value name="eTextEncodingFormat_BitStream" value="6 ">
+			<value name="eTextEncodingFormat_BitStream" value="6">
 				<comments desc="Bit stream encoding. ">
 					<remark text="Read/WriteChar(Ex) is not supported for this format. "/>
 				</comments>
 			</value>
-			<value name="eTextEncodingFormat_Unicode" value="eTextEncodingFormat_UTF32LE ">
+			<value name="eTextEncodingFormat_Unicode" value="eTextEncodingFormat_UTF32LE">
 				<comments desc=""/>
 			</value>
-			<value name="eTextEncodingFormat_Native" value="eTextEncodingFormat_UTF8 ">
+			<value name="eTextEncodingFormat_Native" value="eTextEncodingFormat_UTF8">
 				<comments desc="Native encoding. "/>
 			</value>
 		</enum>
@@ -73,35 +73,35 @@
 			value="niFourCC(&apos;S&apos;,&apos;E&apos;,&apos;Z&apos;,&apos;O&apos;)"/>
 		<enum name="eFileFlags">
 			<comments desc="File flags. "/>
-			<value name="eFileFlags_Read" value="niBit ( 0 ) ">
+			<value name="eFileFlags_Read" value="niBit(0)">
 				<comments desc="File can be read. "/>
 			</value>
-			<value name="eFileFlags_Write" value="niBit ( 1 ) ">
+			<value name="eFileFlags_Write" value="niBit(1)">
 				<comments desc="File can be written. "/>
 			</value>
-			<value name="eFileFlags_Append" value="niBit ( 2 ) ">
+			<value name="eFileFlags_Append" value="niBit(2)">
 				<comments desc="File opened in append mode. "/>
 			</value>
-			<value name="eFileFlags_PartialRead" value="niBit ( 16 ) ">
+			<value name="eFileFlags_PartialRead" value="niBit(16)">
 				<comments desc="The previous read operation read past the end of the file (could not read all bytes). "/>
 			</value>
-			<value name="eFileFlags_PartialWrite" value="niBit ( 17 ) ">
+			<value name="eFileFlags_PartialWrite" value="niBit(17)">
 				<comments desc="The previous write operation could not write all bytes to the file. "/>
 			</value>
-			<value name="eFileFlags_Encoder" value="niBit ( 18 ) ">
+			<value name="eFileFlags_Encoder" value="niBit(18)">
 				<comments desc="The file is an encoder/decoder (compressor/decompressor/encryptor/decryptor). ">
 					<remark text="Encoders might not move the file cursor by as many bytes as passed to the read/write methods since they usually compress or uncompress data. That is to say that Tell() might not match the the straight number of byte read or written to the file. "/>
 				</comments>
 			</value>
-			<value name="eFileFlags_NoSeek" value="niBit ( 19 ) ">
+			<value name="eFileFlags_NoSeek" value="niBit(19)">
 				<comments desc="Seek, SeekSet and SeekEnd are not supported and will always fail. "/>
 			</value>
-			<value name="eFileFlags_Dummy" value="niBit ( 20 ) ">
+			<value name="eFileFlags_Dummy" value="niBit(20)">
 				<comments desc="The file is a dummy, it wont really read or write anything. ">
 					<remark text="Used mainly to compute size of future serialization. "/>
 				</comments>
 			</value>
-			<value name="eFileFlags_Stream" value="niBit ( 21 ) ">
+			<value name="eFileFlags_Stream" value="niBit(21)">
 				<comments desc="The file is based on a stream. ">
 					<remark text="A stream is a &apos;connection&apos; that can be interrupted/paused/restarted at any time, mainly it means that Read/Write could block for an undefined amount of time waiting for more data to come or a write queue to be consumed. In general seeking is not supported for streams. "/>
 				</comments>

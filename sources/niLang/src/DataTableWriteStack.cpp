@@ -45,22 +45,24 @@ ni::tBool __stdcall cDataTableWriteStack::IsOK() const
 }
 
 ///////////////////////////////////////////////
-ni::iDataTable * cDataTableWriteStack::GetTop() const
+ni::iDataTable* cDataTableWriteStack::GetTop() const
 {
   return mStack.top();
 }
 
 ///////////////////////////////////////////////
-const achar * cDataTableWriteStack::GetName() const
+const achar* cDataTableWriteStack::GetName() const
 {
-  if (!niIsOK(STACK_TOP)) return AZEROSTR;
+  if (!niIsOK(STACK_TOP))
+    return AZEROSTR;
   return STACK_TOP->GetName();
 }
 
 ///////////////////////////////////////////////
 tU32 cDataTableWriteStack::GetNumChildren() const
 {
-  if (!niIsOK(STACK_TOP)) return 0;
+  if (!niIsOK(STACK_TOP))
+    return 0;
   return STACK_TOP->GetNumChildren();
 }
 
@@ -83,13 +85,14 @@ tBool cDataTableWriteStack::PushChildFail(tU32 anIndex)
     return eFalse;
   }
   Ptr<iDataTable> dt = STACK_TOP->GetChildFromIndex(anIndex);
-  if (!dt.IsOK()) return eFalse;
+  if (!dt.IsOK())
+    return eFalse;
   mStack.push(dt);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableWriteStack::Push(const achar *aaszName)
+tBool cDataTableWriteStack::Push(const achar* aaszName)
 {
   if (!niIsOK(STACK_TOP)) {
     mStack.push(NULL);
@@ -105,9 +108,10 @@ tBool cDataTableWriteStack::Push(const achar *aaszName)
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableWriteStack::PushFail(const achar *aaszName)
+tBool cDataTableWriteStack::PushFail(const achar* aaszName)
 {
-  if (!niIsOK(STACK_TOP)) return eFalse;
+  if (!niIsOK(STACK_TOP))
+    return eFalse;
   Ptr<iDataTable> dt = STACK_TOP->GetChild(aaszName);
   if (!dt.IsOK()) {
     return eFalse;
@@ -117,7 +121,7 @@ tBool cDataTableWriteStack::PushFail(const achar *aaszName)
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableWriteStack::PushNew(const achar *aaszName)
+tBool cDataTableWriteStack::PushNew(const achar* aaszName)
 {
   Ptr<iDataTable> dt = ni::CreateDataTable(aaszName);
   STACK_TOP->AddChild(dt);
@@ -126,7 +130,7 @@ tBool cDataTableWriteStack::PushNew(const achar *aaszName)
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableWriteStack::PushAppend(ni::iDataTable *apDT)
+tBool cDataTableWriteStack::PushAppend(ni::iDataTable* apDT)
 {
   STACK_TOP->AddChild(apDT);
   mStack.push(apDT);
@@ -134,7 +138,9 @@ tBool cDataTableWriteStack::PushAppend(ni::iDataTable *apDT)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cDataTableWriteStack::PushEx(const achar* aaszName, const achar* aaszProp, const achar* aaszVal)
+tBool __stdcall cDataTableWriteStack::PushEx(const achar* aaszName,
+                                             const achar* aaszProp,
+                                             const achar* aaszVal)
 {
   if (!niIsOK(STACK_TOP)) {
     mStack.push(NULL);
@@ -144,7 +150,9 @@ tBool __stdcall cDataTableWriteStack::PushEx(const achar* aaszName, const achar*
   Ptr<iDataTable> dt;
   for (tU32 i = 0; i < STACK_TOP->GetNumChildren(); ++i) {
     iDataTable* pDT = STACK_TOP->GetChildFromIndex(i);
-    if (ni::StrEq(pDT->GetName(),aaszName) && ni::StrEq(pDT->GetString(aaszProp).Chars(),aaszVal)) {
+    if (ni::StrEq(pDT->GetName(), aaszName) &&
+        ni::StrEq(pDT->GetString(aaszProp).Chars(), aaszVal))
+    {
       dt = pDT;
       break;
     }
@@ -152,7 +160,7 @@ tBool __stdcall cDataTableWriteStack::PushEx(const achar* aaszName, const achar*
 
   if (!dt.IsOK()) {
     dt = ni::CreateDataTable(aaszName);
-    dt->SetString(aaszProp,aaszVal);
+    dt->SetString(aaszProp, aaszVal);
     STACK_TOP->AddChild(dt);
   }
   mStack.push(dt);
@@ -160,7 +168,9 @@ tBool __stdcall cDataTableWriteStack::PushEx(const achar* aaszName, const achar*
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cDataTableWriteStack::PushFailEx(const achar* aaszName, const achar* aaszProp, const achar* aaszVal)
+tBool __stdcall cDataTableWriteStack::PushFailEx(const achar* aaszName,
+                                                 const achar* aaszProp,
+                                                 const achar* aaszVal)
 {
   if (!niIsOK(STACK_TOP)) {
     return eFalse;
@@ -168,7 +178,9 @@ tBool __stdcall cDataTableWriteStack::PushFailEx(const achar* aaszName, const ac
 
   for (tU32 i = 0; i < STACK_TOP->GetNumChildren(); ++i) {
     iDataTable* pDT = STACK_TOP->GetChildFromIndex(i);
-    if (ni::StrEq(pDT->GetName(),aaszName) && ni::StrEq(pDT->GetString(aaszProp).Chars(),aaszVal)) {
+    if (ni::StrEq(pDT->GetName(), aaszName) &&
+        ni::StrEq(pDT->GetString(aaszProp).Chars(), aaszVal))
+    {
       mStack.push(pDT);
       return eTrue;
     }
@@ -187,87 +199,102 @@ tBool cDataTableWriteStack::Pop()
 }
 
 ///////////////////////////////////////////////
-tBool cDataTableWriteStack::RemoveProperty(const achar *aaszName)
+tBool cDataTableWriteStack::RemoveProperty(const achar* aaszName)
 {
-  if (!niIsOK(STACK_TOP)) return eFalse;
+  if (!niIsOK(STACK_TOP))
+    return eFalse;
   tU32 nIndex = STACK_TOP->GetPropertyIndex(aaszName);
-  if (nIndex == eInvalidHandle) return eFalse;
+  if (nIndex == eInvalidHandle)
+    return eFalse;
   return STACK_TOP->RemovePropertyFromIndex(nIndex);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetString(const achar *aaszName, const achar *v)
+void cDataTableWriteStack::SetString(const achar* aaszName, const achar* v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetString(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetString(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetHString(const achar *aaszName, iHString *v)
+void cDataTableWriteStack::SetHString(const achar* aaszName, iHString* v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetString(aaszName,HStringGetStringEmpty(v));
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetString(aaszName, HStringGetStringEmpty(v));
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetInt(const achar *aaszName, tI64 v)
+void cDataTableWriteStack::SetInt(const achar* aaszName, tI64 v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetInt(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetInt(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetBool(const achar *aaszName, tBool v)
+void cDataTableWriteStack::SetBool(const achar* aaszName, tBool v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetBool(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetBool(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetFloat(const achar *aaszName, tF64 v)
+void cDataTableWriteStack::SetFloat(const achar* aaszName, tF64 v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetFloat(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetFloat(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetVec2(const achar *aaszName, const sVec2f &v)
+void cDataTableWriteStack::SetVec2(const achar* aaszName, const sVec2f& v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetVec2(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetVec2(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetVec3(const achar *aaszName, const sVec3f &v)
+void cDataTableWriteStack::SetVec3(const achar* aaszName, const sVec3f& v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetVec3(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetVec3(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetVec4(const achar *aaszName, const sVec4f &v)
+void cDataTableWriteStack::SetVec4(const achar* aaszName, const sVec4f& v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetVec4(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetVec4(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetMatrix(const achar *aaszName, const sMatrixf &v)
+void cDataTableWriteStack::SetMatrix(const achar* aaszName, const sMatrixf& v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetMatrix(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetMatrix(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetIUnknown(const achar *aaszName, iUnknown *v)
+void cDataTableWriteStack::SetIUnknown(const achar* aaszName, iUnknown* v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetIUnknown(aaszName,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetIUnknown(aaszName, v);
 }
 
 ///////////////////////////////////////////////
-void cDataTableWriteStack::SetEnum(const achar *aaszName, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 v)
+void cDataTableWriteStack::SetEnum(const achar* aaszName,
+                                   const sEnumDef* apEnumDef,
+                                   tEnumToStringFlags aFlags, tU32 v)
 {
-  if (!niIsOK(STACK_TOP)) return;
-  STACK_TOP->SetEnum(aaszName,apEnumDef,aFlags,v);
+  if (!niIsOK(STACK_TOP))
+    return;
+  STACK_TOP->SetEnum(aaszName, apEnumDef, aFlags, v);
 }

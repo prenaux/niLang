@@ -2,37 +2,37 @@
 	<namespace name="ni">
 		<enum name="eFileSystemRightsFlags">
 			<comments desc="File system rights. "/>
-			<value name="eFileSystemRightsFlags_Enum" value="niBit ( 0 ) ">
+			<value name="eFileSystemRightsFlags_Enum" value="niBit(0)">
 				<comments desc="Right to enumerate files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_Read" value="niBit ( 1 ) ">
+			<value name="eFileSystemRightsFlags_Read" value="niBit(1)">
 				<comments desc="Right to read from files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_Write" value="niBit ( 2 ) ">
+			<value name="eFileSystemRightsFlags_Write" value="niBit(2)">
 				<comments desc="Right to write in files, but not to create files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_Create" value="niBit ( 3 ) ">
+			<value name="eFileSystemRightsFlags_Create" value="niBit(3)">
 				<comments desc="Right to create files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_Delete" value="niBit ( 4 ) ">
+			<value name="eFileSystemRightsFlags_Delete" value="niBit(4)">
 				<comments desc="Right to delete files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_Execute" value="niBit ( 5 ) ">
+			<value name="eFileSystemRightsFlags_Execute" value="niBit(5)">
 				<comments desc="Right to execute files. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_ReadOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read ">
+			<value name="eFileSystemRightsFlags_ReadOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read">
 				<comments desc="Read-only system "/>
 			</value>
-			<value name="eFileSystemRightsFlags_WriteOnly" value="eFileSystemRightsFlags_Write ">
+			<value name="eFileSystemRightsFlags_WriteOnly" value="eFileSystemRightsFlags_Write">
 				<comments desc="Write-only system "/>
 			</value>
-			<value name="eFileSystemRightsFlags_ReadWriteOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Write ">
+			<value name="eFileSystemRightsFlags_ReadWriteOnly" value="eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Write">
 				<comments desc="Read-Write-only system "/>
 			</value>
-			<value name="eFileSystemRightsFlags_IOOnly" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete ">
+			<value name="eFileSystemRightsFlags_IOOnly" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete">
 				<comments desc="IO rights only. All excepted execution. "/>
 			</value>
-			<value name="eFileSystemRightsFlags_All" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete|eFileSystemRightsFlags_Execute ">
+			<value name="eFileSystemRightsFlags_All" value="eFileSystemRightsFlags_Read|eFileSystemRightsFlags_Enum|eFileSystemRightsFlags_Write|eFileSystemRightsFlags_Create|eFileSystemRightsFlags_Delete|eFileSystemRightsFlags_Execute">
 				<comments desc="All rights "/>
 			</value>
 		</enum>

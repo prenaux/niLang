@@ -12,7 +12,7 @@ struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
 
   URLFileHandler_Directories(const astl::vector<cString>& aBaseDirs)
   {
-    niLoop(i,aBaseDirs.size()) {
+    niLoop (i, aBaseDirs.size()) {
       const auto& dir = aBaseDirs[i];
       // App/data
       {
@@ -38,7 +38,8 @@ struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
   }
 
   // Toolkit directories are assumed to be at the same level as the app's directory
-  void _AddToolkitDirs(const achar* aAppDir, const achar* aToolkitName) {
+  void _AddToolkitDirs(const achar* aAppDir, const achar* aToolkitName)
+  {
     {
       cPath path;
       path.SetDirectory(aAppDir);
@@ -57,26 +58,33 @@ struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
     }
   }
 
-  virtual iFile* __stdcall URLOpen(const achar* aURL) {
+  virtual iFile* __stdcall URLOpen(const achar* aURL)
+  {
     const cString path = _FindFile(StringURLGetPath(aURL));
     // niDebugFmt(("... URLFileHandler.dir.URLOpen: %s -> %s", aURL, path));
-    if (path.IsEmpty()) return NULL;
-    return ni::GetRootFS()->FileOpen(path.Chars(),eFileOpenMode_Read);
+    if (path.IsEmpty())
+      return NULL;
+    return ni::GetRootFS()->FileOpen(path.Chars(), eFileOpenMode_Read);
   }
 
-  virtual tBool __stdcall URLExists(const achar* aURL) {
+  virtual tBool __stdcall URLExists(const achar* aURL)
+  {
     const cString path = _FindFile(StringURLGetPath(aURL));
-    if (path.IsEmpty()) return eFalse;
+    if (path.IsEmpty())
+      return eFalse;
     return eTrue;
   }
 
-  cString __stdcall _FindFile(const cString& basePath) {
-    if (ni::GetRootFS()->FileExists(basePath.Chars(),eFileAttrFlags_AllFiles)) {
+  cString __stdcall _FindFile(const cString& basePath)
+  {
+    if (ni::GetRootFS()->FileExists(basePath.Chars(), eFileAttrFlags_AllFiles))
+    {
       return basePath;
     }
-    niLoopr(i,_dirs.size()) {
+    niLoopr (i, _dirs.size()) {
       cString tryPath = _dirs[i] + basePath;
-      if (ni::GetRootFS()->FileExists(tryPath.Chars(),eFileAttrFlags_AllFiles)) {
+      if (ni::GetRootFS()->FileExists(tryPath.Chars(), eFileAttrFlags_AllFiles))
+      {
         return tryPath;
       }
     }
@@ -84,5 +92,5 @@ struct URLFileHandler_Directories : public ImplRC<iURLFileHandler> {
   }
 };
 
-}
+} // namespace ni
 #endif // __URLFILEHANDLERDIRECTORY_H_692E9AA7_6504_984D_9D3C_0C906E64D859__

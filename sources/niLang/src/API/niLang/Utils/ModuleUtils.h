@@ -14,20 +14,23 @@ namespace ni {
  */
 
 #if defined niDebug
-#define niModuleFileNameBuildType "da"
+  #define niModuleFileNameBuildType "da"
 #else
-#define niModuleFileNameBuildType "ra"
+  #define niModuleFileNameBuildType "ra"
 #endif
 
 ///////////////////////////////////////////////
 #ifndef niNoDLL
-inline cString __stdcall GetModuleFileName(const achar* aaszName, const achar* aaszExt = niDLLSuffix, const achar* aBuildType = niModuleFileNameBuildType) {
+inline cString __stdcall GetModuleFileName(
+  const achar* aaszName, const achar* aaszExt = niDLLSuffix,
+  const achar* aBuildType = niModuleFileNameBuildType)
+{
   cString ret;
 
-  // Prefix
-#if !defined niWindows
+    // Prefix
+  #if !defined niWindows
   ret += "lib";
-#endif
+  #endif
 
   // Module name
   ret += aaszName;
@@ -48,5 +51,5 @@ inline cString __stdcall GetModuleFileName(const achar* aaszName, const achar* a
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __CORELIBSYSTEMEMUIMPL_27946974_H__

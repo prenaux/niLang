@@ -13,5 +13,4 @@
 
 #define EA_FAIL() assert(false)
 
-
-#endif  // EAASSERT_EAASSERT_H
+#endif // EAASSERT_EAASSERT_H

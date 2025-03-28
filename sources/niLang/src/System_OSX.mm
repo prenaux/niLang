@@ -1,25 +1,25 @@
 #include "API/niLang/Types.h"
 
 #ifdef niOSX
-#include "Platform_OSX.h"
-#include "Lang.h"
-#include "API/niLang_ModuleDef.h"
-#include "API/niLang/IOSWindow.h"
-#include <niLang/Utils/CollectionImpl.h>
-#include <niLang/Utils/TimerSleep.h>
-#include "API/niLang/Platforms/OSX/osxgl.h"
-#include <CoreVideo/CVDisplayLink.h>
-#include <niLang/STL/scope_guard.h>
-#include <niLang/STL/set.h>
+  #include "Platform_OSX.h"
+  #include "Lang.h"
+  #include "API/niLang_ModuleDef.h"
+  #include "API/niLang/IOSWindow.h"
+  #include <niLang/Utils/CollectionImpl.h>
+  #include <niLang/Utils/TimerSleep.h>
+  #include "API/niLang/Platforms/OSX/osxgl.h"
+  #include <CoreVideo/CVDisplayLink.h>
+  #include <niLang/STL/scope_guard.h>
+  #include <niLang/STL/set.h>
 
-// Needed for _NSGetProgname
-#include <crt_externs.h>
+  // Needed for _NSGetProgname
+  #include <crt_externs.h>
 
 using namespace ni;
 
-#define OSX_SWITCH_INOUT_ON_FOCUS
+  #define OSX_SWITCH_INOUT_ON_FOCUS
 
-#define TRACE_OSX(X) // niDebugFmt(X)
+  #define TRACE_OSX(X) // niDebugFmt(X)
 
 //
 // TouchEvents seem to be normalized (in the 0-1 range) - so not very useful
@@ -43,7 +43,8 @@ static void _CreateApplicationMenus(id<NSApplicationDelegate> appDelegate);
 static tU32 _PumpEvents();
 
 static tBool _bSetDockTileLabelFromWindowTitle = eFalse;
-niExportFunc(void) osxSetDockTileLabelFromWindowTitle(const tBool abDoSet) {
+niExportFunc(void) osxSetDockTileLabelFromWindowTitle(const tBool abDoSet)
+{
   _bSetDockTileLabelFromWindowTitle = abDoSet;
 }
 niExportFunc(void) osxSetDockTileLabel(const achar* aaszLabel);
@@ -201,39 +202,46 @@ static void _RegisterWindow(cOSXWindow* apWindow);
 static void _UnregisterWindow(cOSXWindow* apWindow);
 static void _TerminateApp();
 
-static void _SendWindowTextInput(cOSXWindow* apWindow, const char* aaszText) {
+static void _SendWindowTextInput(cOSXWindow* apWindow, const char* aaszText)
+{
   TRACE_OSX(("... OSX: _SendWindowTextInput: %s", aaszText));
 }
 
-static void _SendWindowEditingText(cOSXWindow* apWindow, const char* aaszText, int loc, int len) {
-  TRACE_OSX(("... OSX: _SendWindowEditingText: %s [%d,%d]",
-             aaszText, loc, len));
+static void _SendWindowEditingText(cOSXWindow* apWindow, const char* aaszText,
+                                   int loc, int len)
+{
+  TRACE_OSX(
+    ("... OSX: _SendWindowEditingText: %s [%d,%d]", aaszText, loc, len));
 }
 
-static void _FlipNSRect(const cOSXWindow* apWindow, NSRect *r)
+static void _FlipNSRect(const cOSXWindow* apWindow, NSRect* r)
 {
   /* FIXME: Cache the display used for this window */
-  r->origin.y = CGDisplayPixelsHigh(kCGDirectMainDisplay) - r->origin.y - r->size.height;
+  r->origin.y =
+    CGDisplayPixelsHigh(kCGDirectMainDisplay) - r->origin.y - r->size.height;
 }
-static NSRect _ToNSRect(const cOSXWindow* apWindow, const sRecti& aRect) {
+static NSRect _ToNSRect(const cOSXWindow* apWindow, const sRecti& aRect)
+{
   NSRect r;
   r.origin.x = aRect.x;
   r.origin.y = aRect.y;
   r.size.width = aRect.GetWidth();
   r.size.height = aRect.GetHeight();
-  _FlipNSRect(apWindow,&r);
+  _FlipNSRect(apWindow, &r);
   return r;
 }
 
-static unsigned int _ToNSWindowStyle(tOSWindowStyleFlags aStyle) {
+static unsigned int _ToNSWindowStyle(tOSWindowStyleFlags aStyle)
+{
   unsigned int style;
   if (aStyle & eOSWindowStyleFlags_Overlay) {
     style = NSBorderlessWindowMask;
   }
   else {
-    style = NSTitledWindowMask|NSClosableWindowMask|NSMiniaturizableWindowMask;
+    style =
+      NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
   }
-  if (niFlagIsNot(aStyle,eOSWindowStyleFlags_FixedSize)) {
+  if (niFlagIsNot(aStyle, eOSWindowStyleFlags_FixedSize)) {
     style |= NSResizableWindowMask;
   }
   return style;
@@ -242,20 +250,23 @@ static unsigned int _ToNSWindowStyle(tOSWindowStyleFlags aStyle) {
 extern NSString* _ToNSString(const ni::achar* aString);
 
 static bool _cursorVisible = true;
-static void _ShowCursor() {
-	if (!_cursorVisible) {
-		_cursorVisible = true;
-		[NSCursor unhide];
-	}
+static void _ShowCursor()
+{
+  if (!_cursorVisible) {
+    _cursorVisible = true;
+    [NSCursor unhide];
+  }
 }
-static void _HideCursor() {
-	if (_cursorVisible) {
-		_cursorVisible = false;
-		[NSCursor hide];
-	}
+static void _HideCursor()
+{
+  if (_cursorVisible) {
+    _cursorVisible = false;
+    [NSCursor hide];
+  }
 }
 
-static void _WrapCursorPosition(const sVec2i& abAbsPos) {
+static void _WrapCursorPosition(const sVec2i& abAbsPos)
+{
   CGPoint location;
   location.x = abAbsPos.x;
   location.y = abAbsPos.y;
@@ -263,28 +274,27 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-@interface NIWindowDelegate : NSResponder <NSWindowDelegate>
-{
+@interface NIWindowDelegate : NSResponder <NSWindowDelegate> {
   cOSXWindow* _wnd;
 }
 
--(void) listen:(cOSXWindow*)data;
--(void) close;
+- (void)listen:(cOSXWindow*)data;
+- (void)close;
 
 /* Window delegate functionality */
--(BOOL) windowShouldClose:(id) sender;
--(void) windowDidExpose:(NSNotification *) aNotification;
--(void) windowDidMove:(NSNotification *) aNotification;
--(void) windowDidResize:(NSNotification *) aNotification;
--(void) windowDidMiniaturize:(NSNotification *) aNotification;
--(void) windowDidDeminiaturize:(NSNotification *) aNotification;
--(void) windowDidBecomeKey:(NSNotification *) aNotification;
--(void) windowDidResignKey:(NSNotification *) aNotification;
--(void) windowDidChangeBackingProperties:(NSNotification *) aNotification;
--(void) windowWillEnterFullScreen:(NSNotification *) aNotification;
--(void) windowDidEnterFullScreen:(NSNotification *) aNotification;
--(void) windowWillExitFullScreen:(NSNotification *) aNotification;
--(void) windowDidExitFullScreen:(NSNotification *) aNotification;
+- (BOOL)windowShouldClose:(id)sender;
+- (void)windowDidExpose:(NSNotification*)aNotification;
+- (void)windowDidMove:(NSNotification*)aNotification;
+- (void)windowDidResize:(NSNotification*)aNotification;
+- (void)windowDidMiniaturize:(NSNotification*)aNotification;
+- (void)windowDidDeminiaturize:(NSNotification*)aNotification;
+- (void)windowDidBecomeKey:(NSNotification*)aNotification;
+- (void)windowDidResignKey:(NSNotification*)aNotification;
+- (void)windowDidChangeBackingProperties:(NSNotification*)aNotification;
+- (void)windowWillEnterFullScreen:(NSNotification*)aNotification;
+- (void)windowDidEnterFullScreen:(NSNotification*)aNotification;
+- (void)windowWillExitFullScreen:(NSNotification*)aNotification;
+- (void)windowDidExitFullScreen:(NSNotification*)aNotification;
 @end
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,17 +302,18 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
 @end
 
 @implementation NIWindow
-- (BOOL) canBecomeKeyWindow {
+- (BOOL)canBecomeKeyWindow
+{
   return YES;
 }
-- (BOOL) canBecomeMainWindow {
+- (BOOL)canBecomeMainWindow
+{
   return YES;
 }
 @end
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-@interface NIApplication : NSApplication
-{
+@interface NIApplication : NSApplication {
 }
 @end
 
@@ -311,17 +322,16 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
 // From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
 // This works around an AppKit bug, where key up events while holding
 // down the command key don't get sent to the key window.
-- (void)sendEvent:(NSEvent *)event
+- (void)sendEvent:(NSEvent*)event
 {
   if ([event type] == NSEventTypeKeyUp &&
-  ([event modifierFlags] & NSEventModifierFlagCommand))
+      ([event modifierFlags] & NSEventModifierFlagCommand))
   {
     [[self keyWindow] sendEvent:event];
   }
   else
     [super sendEvent:event];
 }
-
 
 // No-op thread entry point
 //
@@ -331,98 +341,101 @@ static void _WrapCursorPosition(const sVec2i& abAbsPos) {
 
 - (void)loadMainMenu
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
   NSArray* nibObjects;
   [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
-   owner:NSApp
-   topLevelObjects:&nibObjects];
-#else
+                                owner:NSApp
+                      topLevelObjects:&nibObjects];
+  #else
   [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
-#endif
+  #endif
 }
 @end
 
-// setAppleMenu disappeared from the headers in 10.4
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-@interface NSApplication(NSAppleMenu)
-- (void)setAppleMenu:(NSMenu *)menu;
+  // setAppleMenu disappeared from the headers in 10.4
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+@interface NSApplication (NSAppleMenu)
+- (void)setAppleMenu:(NSMenu*)menu;
 @end
-#endif
+  #endif
 
-@implementation NSApplication(TS)
+@implementation NSApplication (TS)
 - (void)setRunning
 {
 }
 @end
 
 @interface NIAppDelegate : NSObject <NSApplicationDelegate>
-- (BOOL)application:(NSApplication *)sender openFile:(NSString *)aFilename;
-- (BOOL)application:(NSApplication *)sender openFiles:(NSArray *)aFilenames;
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
-- (void)requestClose:(NSApplication *)sender;
+- (BOOL)application:(NSApplication*)sender openFile:(NSString*)aFilename;
+- (BOOL)application:(NSApplication*)sender openFiles:(NSArray*)aFilenames;
+- (NSApplicationTerminateReply)applicationShouldTerminate:
+  (NSApplication*)sender;
+- (void)requestClose:(NSApplication*)sender;
 @end
 
 @implementation NIAppDelegate : NSObject
-- (void)applicationWillFinishLaunching:(NSNotification *)notification
+- (void)applicationWillFinishLaunching:(NSNotification*)notification
 {
   TRACE_OSX(("... OSX: applicationWillFinishLaunching"));
 
   [NSApp activateIgnoringOtherApps:YES];
 
-  NSDictionary *appDefaults = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                 [NSNumber numberWithBool:NO], @"AppleMomentumScrollSupported",
-                                 [NSNumber numberWithBool:NO], @"ApplePressAndHoldEnabled",
-                                 [NSNumber numberWithBool:YES], @"ApplePersistenceIgnoreState",
-                                 nil];
+  NSDictionary* appDefaults = [[NSDictionary alloc]
+    initWithObjectsAndKeys:[NSNumber numberWithBool:NO],
+                           @"AppleMomentumScrollSupported",
+                           [NSNumber numberWithBool:NO],
+                           @"ApplePressAndHoldEnabled",
+                           [NSNumber numberWithBool:YES],
+                           @"ApplePersistenceIgnoreState", nil];
   [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
+- (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
   TRACE_OSX(("... OSX: applicationDidFinishLaunching"));
   _PumpEvents();
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)sender
 {
   TRACE_OSX(("... OSX: applicationShouldTerminate"));
   _TerminateApp();
   return NSTerminateCancel;
 }
 
--(BOOL)application:(NSApplication *)sender openFile:(NSString *)aFilename
+- (BOOL)application:(NSApplication*)sender openFile:(NSString*)aFilename
 {
   NSLog(@"openFile: %@", aFilename);
   const cString strFilename = [aFilename UTF8String];
   ni::GetLang()->SetProperty("OpenFile", strFilename.Chars());
   // ni::GetLang()->MessageBox(NULL, "OSX Info", niFmt("openFile: %s", strFilename), ni::eOSMessageBoxFlags_Ok);
-  ni::SendMessages(
-      ni::GetLang()->GetSystemMessageHandlers(),
-      eSystemMessage_OpenFile,strFilename,niVarNull);
+  ni::SendMessages(ni::GetLang()->GetSystemMessageHandlers(),
+                   eSystemMessage_OpenFile, strFilename, niVarNull);
   return YES;
 }
 
--(BOOL)application:(NSApplication *)sender openFiles:(NSArray *)aFilenames
+- (BOOL)application:(NSApplication*)sender openFiles:(NSArray*)aFilenames
 {
   NSLog(@"openFiles: %@", aFilenames);
-  niLoop(i,[aFilenames count]) {
+  niLoop (i, [aFilenames count]) {
     const cString strFilename = [aFilenames[i] UTF8String];
     ni::GetLang()->SetProperty("OpenFile", strFilename.Chars());
     // ni::GetLang()->MessageBox(NULL, "OSX Info", niFmt("openFiles[%d]: %s", i, strFilename), ni::eOSMessageBoxFlags_Ok);
-    ni::SendMessages(
-        ni::GetLang()->GetSystemMessageHandlers(),
-        eSystemMessage_OpenFile,strFilename,niVarNull);
+    ni::SendMessages(ni::GetLang()->GetSystemMessageHandlers(),
+                     eSystemMessage_OpenFile, strFilename, niVarNull);
   }
   return YES;
 }
-- (void)requestClose:(NSApplication *)sender {
+- (void)requestClose:(NSApplication*)sender
+{
   TRACE_OSX(("... OSX: requestClose"));
   _TerminateApp();
 }
 @end
 
-static NSString* _GetApplicationName() {
-  NSString *appName = 0;
+static NSString* _GetApplicationName()
+{
+  NSString* appName = 0;
   if (!appName) {
     cString propAppName = GetLang()->GetProperty("ni.app.name");
     if (propAppName.IsNotEmpty()) {
@@ -441,11 +454,11 @@ static NSString* _GetApplicationName() {
 
 static void _CreateApplicationMenus(id<NSApplicationDelegate> appDelegate)
 {
-  NSString *appName;
-  NSString *title;
-  NSMenu *appleMenu;
-  NSMenu *windowMenu;
-  NSMenuItem *menuItem;
+  NSString* appName;
+  NSString* title;
+  NSMenu* appleMenu;
+  NSMenu* windowMenu;
+  NSMenuItem* menuItem;
 
   /* Create the main menu bar */
   [NSApp setMainMenu:[[NSMenu alloc] init]];
@@ -456,26 +469,40 @@ static void _CreateApplicationMenus(id<NSApplicationDelegate> appDelegate)
 
   /* Add menu items */
   title = [@"About " stringByAppendingString:appName];
-  [appleMenu addItemWithTitle:title action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
+  [appleMenu addItemWithTitle:title
+                       action:@selector(orderFrontStandardAboutPanel:)
+                keyEquivalent:@""];
 
   [appleMenu addItem:[NSMenuItem separatorItem]];
 
   title = [@"Hide " stringByAppendingString:appName];
-  [appleMenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@/*"h"*/""];
+  [appleMenu addItemWithTitle:title
+                       action:@selector(hide:)
+                keyEquivalent:@ /*"h"*/ ""];
 
-  menuItem = (NSMenuItem *)[appleMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@/*"h"*/""];
-  [menuItem setKeyEquivalentModifierMask:(NSAlternateKeyMask|NSCommandKeyMask)];
+  menuItem =
+    (NSMenuItem*)[appleMenu addItemWithTitle:@"Hide Others"
+                                      action:@selector(hideOtherApplications:)
+                               keyEquivalent:@ /*"h"*/ ""];
+  [menuItem
+    setKeyEquivalentModifierMask:(NSAlternateKeyMask | NSCommandKeyMask)];
 
-  [appleMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+  [appleMenu addItemWithTitle:@"Show All"
+                       action:@selector(unhideAllApplications:)
+                keyEquivalent:@""];
 
   [appleMenu addItem:[NSMenuItem separatorItem]];
 
   title = [@"Quit " stringByAppendingString:appName];
-  menuItem = [appleMenu addItemWithTitle:title action:@selector(requestClose:) keyEquivalent:@"q"];
-  [menuItem setTarget: appDelegate];
+  menuItem = [appleMenu addItemWithTitle:title
+                                  action:@selector(requestClose:)
+                           keyEquivalent:@"q"];
+  [menuItem setTarget:appDelegate];
 
   /* Put menu into the menubar */
-  menuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
+  menuItem = [[NSMenuItem alloc] initWithTitle:@""
+                                        action:nil
+                                 keyEquivalent:@""];
   [menuItem setSubmenu:appleMenu];
   [[NSApp mainMenu] addItem:menuItem];
 
@@ -486,11 +513,15 @@ static void _CreateApplicationMenus(id<NSApplicationDelegate> appDelegate)
   windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
 
   /* "Minimize" item */
-  menuItem = [[NSMenuItem alloc] initWithTitle:@"Minimize" action:@selector(performMiniaturize:) keyEquivalent:@/*"m"*/""];
+  menuItem = [[NSMenuItem alloc] initWithTitle:@"Minimize"
+                                        action:@selector(performMiniaturize:)
+                                 keyEquivalent:@ /*"m"*/ ""];
   [windowMenu addItem:menuItem];
 
   /* Put menu into the menubar */
-  menuItem = [[NSMenuItem alloc] initWithTitle:@"Window" action:nil keyEquivalent:@""];
+  menuItem = [[NSMenuItem alloc] initWithTitle:@"Window"
+                                        action:nil
+                                 keyEquivalent:@""];
   [menuItem setSubmenu:windowMenu];
   [[NSApp mainMenu] addItem:menuItem];
 
@@ -498,7 +529,8 @@ static void _CreateApplicationMenus(id<NSApplicationDelegate> appDelegate)
   [NSApp setWindowsMenu:windowMenu];
 }
 
-niExportFunc(void) osxSetDockTileLabel(const achar* aaszLabel) {
+niExportFunc(void) osxSetDockTileLabel(const achar* aaszLabel)
+{
   NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
   if (!dockTile)
     return;
@@ -544,11 +576,11 @@ static tU32 _PumpEvents()
   @autoreleasepool {
     tU32 numEvents = 0;
     for (;;) {
-      NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                        untilDate:[NSDate distantPast]
-                        inMode:NSDefaultRunLoopMode
-                        dequeue:YES];
-      if ( event == nil ) {
+      NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                          untilDate:[NSDate distantPast]
+                                             inMode:NSDefaultRunLoopMode
+                                            dequeue:YES];
+      if (event == nil) {
         break;
       }
       [NSApp sendEvent:event];
@@ -571,22 +603,22 @@ static tU32 _PumpEvents()
 }
 
 /* This function assumes that it's called from within an autorelease pool */
-static NSImage* _CreateNSImage(const tU32* apImgData,
-                               const tU32 anWidth,
+static NSImage* _CreateNSImage(const tU32* apImgData, const tU32 anWidth,
                                const tU32 anHeight)
 {
   const tU32 nPitch = anWidth * sizeof(tU32);
 
-  NSBitmapImageRep* imgrep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
-                              pixelsWide: anWidth
-                              pixelsHigh: anHeight
-                              bitsPerSample: 8
-                              samplesPerPixel: 4
-                              hasAlpha: YES
-                              isPlanar: NO
-                              colorSpaceName: NSDeviceRGBColorSpace
-                              bytesPerRow: nPitch
-                              bitsPerPixel: 32];
+  NSBitmapImageRep* imgrep =
+    [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                            pixelsWide:anWidth
+                                            pixelsHigh:anHeight
+                                         bitsPerSample:8
+                                       samplesPerPixel:4
+                                              hasAlpha:YES
+                                              isPlanar:NO
+                                        colorSpaceName:NSDeviceRGBColorSpace
+                                           bytesPerRow:nPitch
+                                          bitsPerPixel:32];
   if (imgrep == nil) {
     return nil;
   }
@@ -596,7 +628,7 @@ static NSImage* _CreateNSImage(const tU32* apImgData,
   ni::MemCopy((tPtr)pixels, (tPtr)apImgData, nPitch * anHeight);
 
   /* Premultiply the alpha channel */
-  for (int i = (anWidth * anHeight); i--; ) {
+  for (int i = (anWidth * anHeight); i--;) {
     const tU8 alpha = pixels[3];
     pixels[0] = (tU8)(((tU16)pixels[0] * alpha) / 255);
     pixels[1] = (tU8)(((tU16)pixels[1] * alpha) / 255);
@@ -604,35 +636,34 @@ static NSImage* _CreateNSImage(const tU32* apImgData,
     pixels += 4;
   }
 
-  NSImage* img = [[NSImage alloc] initWithSize: NSMakeSize(anWidth, anHeight)];
+  NSImage* img = [[NSImage alloc] initWithSize:NSMakeSize(anWidth, anHeight)];
   if (img != nil) {
-    [img addRepresentation: imgrep];
+    [img addRepresentation:imgrep];
   }
 
   return img;
 }
 
-static NSCursor* _CreateNSCursor(const tU32* apImgData,
-                                 const tU32 anWidth,
-                                 const tU32 anHeight,
-                                 const tI32 anHotX,
+static NSCursor* _CreateNSCursor(const tU32* apImgData, const tU32 anWidth,
+                                 const tU32 anHeight, const tI32 anHotX,
                                  const tI32 anHotY)
 {
   NSImage* nsimage = _CreateNSImage(apImgData, anWidth, anHeight);
   if (nsimage) {
-    return [[NSCursor alloc] initWithImage: nsimage hotSpot: NSMakePoint(anHotX, anHotY)];
+    return [[NSCursor alloc] initWithImage:nsimage
+                                   hotSpot:NSMakePoint(anHotX, anHotY)];
   }
   return NULL;
 }
 
 @interface NSCursor (InvisibleCursor)
-+ (NSCursor *)invisibleCursor;
++ (NSCursor*)invisibleCursor;
 @end
 
 @implementation NSCursor (InvisibleCursor)
-+ (NSCursor *)invisibleCursor
++ (NSCursor*)invisibleCursor
 {
-  static NSCursor *invisibleCursor = NULL;
+  static NSCursor* invisibleCursor = NULL;
   if (!invisibleCursor) {
     /* RAW 16x16 transparent GIF */
     static unsigned char cursorBytes[] = {
@@ -643,79 +674,78 @@ static NSCursor* _CreateNSCursor(const tU32* apImgData,
       0x0F, 0xA3, 0x9C, 0xB4, 0xDA, 0x8B, 0xB3, 0x3E, 0x05, 0x00, 0x3B
     };
 
-    NSData *cursorData = [NSData dataWithBytesNoCopy:&cursorBytes[0]
-                          length:sizeof(cursorBytes)
-                          freeWhenDone:NO];
-    NSImage *cursorImage = [[NSImage alloc] initWithData:cursorData];
+    NSData* cursorData = [NSData dataWithBytesNoCopy:&cursorBytes[0]
+                                              length:sizeof(cursorBytes)
+                                        freeWhenDone:NO];
+    NSImage* cursorImage = [[NSImage alloc] initWithData:cursorData];
     invisibleCursor = [[NSCursor alloc] initWithImage:cursorImage
-                       hotSpot:NSZeroPoint];
+                                              hotSpot:NSZeroPoint];
   }
 
   return invisibleCursor;
 }
 @end
 
-//----------------------------------------------------------------------------
-//
-// Section: NSTranslator implementation (IME)
-//
-//----------------------------------------------------------------------------
-#define DEBUG_IME NSLog
+  //----------------------------------------------------------------------------
+  //
+  // Section: NSTranslator implementation (IME)
+  //
+  //----------------------------------------------------------------------------
+  #define DEBUG_IME NSLog
 // #define DEBUG_IME(...)
 
-#ifndef NX_DEVICERCTLKEYMASK
-#define NX_DEVICELCTLKEYMASK    0x00000001
-#endif
-#ifndef NX_DEVICELSHIFTKEYMASK
-#define NX_DEVICELSHIFTKEYMASK  0x00000002
-#endif
-#ifndef NX_DEVICERSHIFTKEYMASK
-#define NX_DEVICERSHIFTKEYMASK  0x00000004
-#endif
-#ifndef NX_DEVICELCMDKEYMASK
-#define NX_DEVICELCMDKEYMASK    0x00000008
-#endif
-#ifndef NX_DEVICERCMDKEYMASK
-#define NX_DEVICERCMDKEYMASK    0x00000010
-#endif
-#ifndef NX_DEVICELALTKEYMASK
-#define NX_DEVICELALTKEYMASK    0x00000020
-#endif
-#ifndef NX_DEVICERALTKEYMASK
-#define NX_DEVICERALTKEYMASK    0x00000040
-#endif
-#ifndef NX_DEVICERCTLKEYMASK
-#define NX_DEVICERCTLKEYMASK    0x00002000
-#endif
+  #ifndef NX_DEVICERCTLKEYMASK
+    #define NX_DEVICELCTLKEYMASK 0x00000001
+  #endif
+  #ifndef NX_DEVICELSHIFTKEYMASK
+    #define NX_DEVICELSHIFTKEYMASK 0x00000002
+  #endif
+  #ifndef NX_DEVICERSHIFTKEYMASK
+    #define NX_DEVICERSHIFTKEYMASK 0x00000004
+  #endif
+  #ifndef NX_DEVICELCMDKEYMASK
+    #define NX_DEVICELCMDKEYMASK 0x00000008
+  #endif
+  #ifndef NX_DEVICERCMDKEYMASK
+    #define NX_DEVICERCMDKEYMASK 0x00000010
+  #endif
+  #ifndef NX_DEVICELALTKEYMASK
+    #define NX_DEVICELALTKEYMASK 0x00000020
+  #endif
+  #ifndef NX_DEVICERALTKEYMASK
+    #define NX_DEVICERALTKEYMASK 0x00000040
+  #endif
+  #ifndef NX_DEVICERCTLKEYMASK
+    #define NX_DEVICERCTLKEYMASK 0x00002000
+  #endif
 
-@interface NiNSTranslatorResponder : NSView <NSTextInput>
-{
+@interface NiNSTranslatorResponder : NSView <NSTextInput> {
   cOSXWindow* _wnd;
-  NSString*   _markedText;
-  NSRange     _markedRange;
-  NSRange     _selectedRange;
+  NSString* _markedText;
+  NSRange _markedRange;
+  NSRange _selectedRange;
   sRecti _inputRect;
 }
-- (void) doCommandBySelector:(SEL)myselector;
-- (void) setInputRect:(const sRecti *) rect;
+- (void)doCommandBySelector:(SEL)myselector;
+- (void)setInputRect:(const sRecti*)rect;
 @end
 
 @implementation NiNSTranslatorResponder
 
-- (void) setInputRect:(const sRecti *) rect
+- (void)setInputRect:(const sRecti*)rect
 {
   _inputRect = *rect;
 }
 
-- (void) insertText:(id) aString
+- (void)insertText:(id)aString
 {
-  const char *str;
+  const char* str;
 
   DEBUG_IME(@"insertText: %@", aString);
 
   /* Could be NSString or NSAttributedString, so we have
    * to test and convert it before return as SDL event */
-  if ([aString isKindOfClass: [NSAttributedString class]])
+  if ([aString isKindOfClass:[NSAttributedString class]])
     str = [[aString string] UTF8String];
   else
     str = [aString UTF8String];
@@ -723,7 +753,7 @@ static NSCursor* _CreateNSCursor(const tU32* apImgData,
   _SendWindowTextInput(_wnd, str);
 }
 
-- (void) doCommandBySelector:(SEL) myselector
+- (void)doCommandBySelector:(SEL)myselector
 {
   /* No need to do anything since we are not using Cocoa
      selectors to handle special keys, instead we use SDL
@@ -731,29 +761,27 @@ static NSCursor* _CreateNSCursor(const tU32* apImgData,
   */
 }
 
-- (BOOL) hasMarkedText
+- (BOOL)hasMarkedText
 {
   return _markedText != nil;
 }
 
-- (NSRange) markedRange
+- (NSRange)markedRange
 {
   return _markedRange;
 }
 
-- (NSRange) selectedRange
+- (NSRange)selectedRange
 {
   return _selectedRange;
 }
 
-- (void) setMarkedText:(id) aString
-selectedRange:(NSRange) selRange
+- (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
 {
-  if ([aString isKindOfClass: [NSAttributedString class]])
+  if ([aString isKindOfClass:[NSAttributedString class]])
     aString = [aString string];
 
-  if ([aString length] == 0)
-  {
+  if ([aString length] == 0) {
     [self unmarkText];
     return;
   }
@@ -765,51 +793,53 @@ selectedRange:(NSRange) selRange
   _selectedRange = selRange;
   _markedRange = NSMakeRange(0, [aString length]);
 
-  _SendWindowEditingText(_wnd, [aString UTF8String], selRange.location, selRange.length);
+  _SendWindowEditingText(_wnd, [aString UTF8String], selRange.location,
+                         selRange.length);
 
-  DEBUG_IME(@"setMarkedText: %@, (%d, %d)",
-            _markedText,
-            (int)selRange.location, (int)selRange.length);
+  DEBUG_IME(@"setMarkedText: %@, (%d, %d)", _markedText, (int)selRange.location,
+            (int)selRange.length);
 }
 
-- (void) unmarkText {
+- (void)unmarkText
+{
   _markedText = nil;
   _SendWindowEditingText(_wnd, "", 0, 0);
 }
 
-- (NSRect) firstRectForCharacterRange: (NSRange) theRange
+- (NSRect)firstRectForCharacterRange:(NSRange)theRange
 {
-  NSWindow *window = [self window];
-  NSRect contentRect = [window contentRectForFrameRect: [window frame]];
+  NSWindow* window = [self window];
+  NSRect contentRect = [window contentRectForFrameRect:[window frame]];
   float windowHeight = contentRect.size.height;
-  NSRect rect = NSMakeRect(_inputRect.x, windowHeight - _inputRect.y - _inputRect.GetHeight(),
+  NSRect rect = NSMakeRect(_inputRect.x,
+                           windowHeight - _inputRect.y - _inputRect.GetHeight(),
                            _inputRect.GetWidth(), _inputRect.GetHeight());
 
-  DEBUG_IME(@"firstRectForCharacterRange: (%d, %d): windowHeight = %g, rect = %@",
-            (int)theRange.location, (int)theRange.length,
-            windowHeight,
-            NSStringFromRect(rect));
-  rect.origin = [[self window] convertBaseToScreen: rect.origin];
+  DEBUG_IME(
+    @"firstRectForCharacterRange: (%d, %d): windowHeight = %g, rect = %@",
+    (int)theRange.location, (int)theRange.length, windowHeight,
+    NSStringFromRect(rect));
+  rect.origin = [[self window] convertBaseToScreen:rect.origin];
 
   return rect;
 }
 
-- (NSAttributedString *) attributedSubstringFromRange: (NSRange) theRange
+- (NSAttributedString*)attributedSubstringFromRange:(NSRange)theRange
 {
-  DEBUG_IME(@"attributedSubstringFromRange: (%d, %d)",
-            (int)theRange.location, (int)theRange.length);
+  DEBUG_IME(@"attributedSubstringFromRange: (%d, %d)", (int)theRange.location,
+            (int)theRange.length);
   return nil;
 }
 
-- (NSInteger) conversationIdentifier
+- (NSInteger)conversationIdentifier
 {
-  return (NSInteger) self;
+  return (NSInteger)self;
 }
 
 /* This method returns the index for character that is
  * nearest to thePoint.  thPoint is in screen coordinate system.
  */
-- (NSUInteger) characterIndexForPoint:(NSPoint) thePoint
+- (NSUInteger)characterIndexForPoint:(NSPoint)thePoint
 {
   DEBUG_IME(@"characterIndexForPoint: (%g, %g)", thePoint.x, thePoint.y);
   return 0;
@@ -820,7 +850,7 @@ selectedRange:(NSRange) selRange
  * NSInputServer examines the return value of this
  * method & constructs appropriate attributed string.
  */
-- (NSArray *) validAttributesForMarkedText
+- (NSArray*)validAttributesForMarkedText
 {
   return [NSArray array];
 }
@@ -832,7 +862,8 @@ selectedRange:(NSRange) selRange
 // Section: cOSXWindow implementation
 //
 //----------------------------------------------------------------------------
-class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iOSWindowOSX> {
+class cOSXWindow : public ni::ImplRC<ni::iOSWindow, ni::eImplFlags_Default,
+                                     ni::iOSWindowOSX> {
   niBeginClass(cOSXWindow);
 
  public:
@@ -860,12 +891,14 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   }
 
   ///////////////////////////////////////////////
-  ~cOSXWindow() {
+  ~cOSXWindow()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     osxglDestroyContext(this);
     mbRequestedClose = eTrue;
     _ReleaseWindow();
@@ -873,58 +906,70 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const niImpl {
+  ni::tBool __stdcall IsOK() const niImpl
+  {
     niClassIsOK(cOSXWindow);
     return nsWindow != nil;
   }
 
   ///////////////////////////////////////////////
-  iOSWindow* __stdcall GetParent() const niImpl {
+  iOSWindow* __stdcall GetParent() const niImpl
+  {
     return mptrParentWindow;
   }
-  tIntPtr __stdcall GetPID() const niImpl {
+  tIntPtr __stdcall GetPID() const niImpl
+  {
     return (tIntPtr)0;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetClientAreaWindow(tIntPtr aHandle) niImpl {
+  void __stdcall SetClientAreaWindow(tIntPtr aHandle) niImpl
+  {
   }
-  tIntPtr __stdcall GetClientAreaWindow() const niImpl {
+  tIntPtr __stdcall GetClientAreaWindow() const niImpl
+  {
     return 0;
   }
 
   ///////////////////////////////////////////////
-  virtual tIntPtr __stdcall GetHandle() const niImpl {
+  virtual tIntPtr __stdcall GetHandle() const niImpl
+  {
     return (tIntPtr)nsWindow;
   }
-  virtual tBool __stdcall GetIsHandleOwned() const niImpl {
+  virtual tBool __stdcall GetIsHandleOwned() const niImpl
+  {
     return nsOwned;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall ActivateWindow() niImpl {
+  virtual void __stdcall ActivateWindow() niImpl
+  {
     [nsWindow makeKeyAndOrderFront:nil];
   }
-  virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl {
+  virtual tBool __stdcall SwitchIn(tU32 anReason) niImpl
+  {
     TRACE_OSX(("... OSX: switchIn"));
     mbIsActive = eTrue;
-    _SendMessage(eOSWindowMessage_SwitchIn,anReason);
+    _SendMessage(eOSWindowMessage_SwitchIn, anReason);
     return eTrue;
   }
-  virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl {
+  virtual tBool __stdcall SwitchOut(tU32 anReason) niImpl
+  {
     TRACE_OSX(("... OSX: switchOut"));
-    _SendMessage(eOSWindowMessage_SwitchOut,anReason);
+    _SendMessage(eOSWindowMessage_SwitchOut, anReason);
     mbIsActive = eFalse;
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall GetIsActive() const niImpl {
+  virtual tBool __stdcall GetIsActive() const niImpl
+  {
     return mbIsActive;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl {
+  virtual void __stdcall SetTitle(const achar* aaszTitle) niImpl
+  {
     mstrTitle = aaszTitle;
     NSString* str = _ToNSString(mstrTitle.Chars());
     [nsWindow setTitle:str];
@@ -950,19 +995,23 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
       }
     }
   }
-  virtual const achar* __stdcall GetTitle() const niImpl {
+  virtual const achar* __stdcall GetTitle() const niImpl
+  {
     return mstrTitle.Chars();
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetStyle(tOSWindowStyleFlags aStyle) niImpl {
+  virtual void __stdcall SetStyle(tOSWindowStyleFlags aStyle) niImpl
+  {
   }
-  virtual tOSWindowStyleFlags __stdcall GetStyle() const niImpl {
+  virtual tOSWindowStyleFlags __stdcall GetStyle() const niImpl
+  {
     return 0;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetShow(tOSWindowShowFlags aShow) niImpl {
+  virtual void __stdcall SetShow(tOSWindowShowFlags aShow) niImpl
+  {
     // Needed here so that "[NSApp activateIgnoringOtherApps:YES]" below works
     // as expected. That is so that we have a functioning menu bar when an app
     // starts from a terminal.
@@ -974,7 +1023,8 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     else if (aShow & eOSWindowShowFlags_Restore) {
       if ([nsWindow isMiniaturized]) {
         [nsWindow deminiaturize:nil];
-      } else if ([nsWindow isZoomed]) {
+      }
+      else if ([nsWindow isZoomed]) {
         [nsWindow zoom:nil];
       }
     }
@@ -985,7 +1035,7 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
       else if (aShow & eOSWindowShowFlags_Minimize) {
         [nsWindow miniaturize:nil];
       }
-      if (niFlagIs(aShow,eOSWindowShowFlags_Show)) {
+      if (niFlagIs(aShow, eOSWindowShowFlags_Show)) {
         /* makeKeyAndOrderFront: has the side-effect of deminiaturizing and showing
            a minimized or hidden window, so check for that before showing it.
         */
@@ -996,37 +1046,45 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
       }
     }
   }
-  virtual tOSWindowShowFlags __stdcall GetShow() const niImpl {
+  virtual tOSWindowShowFlags __stdcall GetShow() const niImpl
+  {
     return 0;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetZOrder(eOSWindowZOrder aZOrder) niImpl {
+  virtual void __stdcall SetZOrder(eOSWindowZOrder aZOrder) niImpl
+  {
   }
-  virtual eOSWindowZOrder __stdcall GetZOrder() const niImpl {
+  virtual eOSWindowZOrder __stdcall GetZOrder() const niImpl
+  {
     return eOSWindowZOrder_Normal;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSize(const sVec2i& avSize) niImpl {
+  virtual void __stdcall SetSize(const sVec2i& avSize) niImpl
+  {
     sRecti rect = GetRect();
     rect.SetSize(avSize);
     SetRect(rect);
   }
-  virtual sVec2i __stdcall GetSize() const niImpl {
+  virtual sVec2i __stdcall GetSize() const niImpl
+  {
     return GetRect().GetSize();
   }
-  virtual void __stdcall SetPosition(const sVec2i& avPos) niImpl {
+  virtual void __stdcall SetPosition(const sVec2i& avPos) niImpl
+  {
     sRecti rect = GetRect();
     rect.MoveTo(avPos);
     SetRect(rect);
   }
-  virtual sVec2i __stdcall GetPosition() const niImpl {
+  virtual sVec2i __stdcall GetPosition() const niImpl
+  {
     return GetRect().GetTopLeft();
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetRect(const sRecti& aRect) niImpl {
+  virtual void __stdcall SetRect(const sRecti& aRect) niImpl
+  {
     NSRect rect;
     rect.origin.x = aRect.x;
     rect.origin.y = aRect.y;
@@ -1035,49 +1093,57 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     _FlipNSRect(this, &rect);
     [nsWindow setFrame:rect display:YES];
   }
-  virtual sRecti __stdcall GetRect() const niImpl {
+  virtual sRecti __stdcall GetRect() const niImpl
+  {
     NSRect rect = [nsWindow frame];
-    _FlipNSRect(this,&rect);
-    return sRecti(rect.origin.x,rect.origin.y,rect.size.width,rect.size.height);
+    _FlipNSRect(this, &rect);
+    return sRecti(rect.origin.x, rect.origin.y, rect.size.width,
+                  rect.size.height);
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl {
+  virtual void __stdcall SetClientSize(const sVec2i& avSize) niImpl
+  {
     const tF32 contentsScale = GetContentsScale();
-    NSSize pointSize = NSMakeSize(
-      avSize.x / contentsScale, avSize.y / contentsScale);
+    NSSize pointSize =
+      NSMakeSize(avSize.x / contentsScale, avSize.y / contentsScale);
     [nsWindow setContentSize:pointSize];
   }
-  virtual sVec2i __stdcall GetClientSize() const niImpl {
+  virtual sVec2i __stdcall GetClientSize() const niImpl
+  {
     sVec2i sz;
     if (nsView) {
       NSRect rect = [nsView bounds];
       rect = [nsView convertRectToBacking:rect];
-      sz = Vec2i(rect.size.width,rect.size.height);
+      sz = Vec2i(rect.size.width, rect.size.height);
     }
     else {
       NSRect rect = [nsWindow contentRectForFrameRect:[nsWindow frame]];
-      sz = Vec2i(rect.size.width,rect.size.height) * GetContentsScale();
+      sz = Vec2i(rect.size.width, rect.size.height) * GetContentsScale();
     }
     return sz;
   }
 
   ///////////////////////////////////////////////
-  virtual tF32 __stdcall GetContentsScale() const {
+  virtual tF32 __stdcall GetContentsScale() const
+  {
     return (nsWindow != nil) ? [nsWindow backingScaleFactor] : 1.0f;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall Clear() niImpl {
+  virtual void __stdcall Clear() niImpl
+  {
   }
 
   ///////////////////////////////////////////////
-  virtual tMessageHandlerSinkLst* __stdcall GetMessageHandlers() const niImpl {
+  virtual tMessageHandlerSinkLst* __stdcall GetMessageHandlers() const niImpl
+  {
     return mptrMT;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl {
+  virtual tBool __stdcall UpdateWindow(tBool abBlockingMessages) niImpl
+  {
     const tU32 numEvents = _PumpEvents();
     if (nsGL.context) {
       // If we have an OpenGL context we send paint right after update.  For
@@ -1092,12 +1158,14 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     }
   }
 
-  virtual tBool __stdcall RedrawWindow() niImpl {
+  virtual tBool __stdcall RedrawWindow() niImpl
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall CenterWindow() niImpl {
+  void __stdcall CenterWindow() niImpl
+  {
     //
     // NOTE: This does not put the window "dead center" on the screen
     //
@@ -1111,57 +1179,60 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall GetRequestedClose() const niImpl {
+  virtual tBool __stdcall GetRequestedClose() const niImpl
+  {
     return mbRequestedClose;
   }
-  virtual void __stdcall SetRequestedClose(tBool abRequested) niImpl {
+  virtual void __stdcall SetRequestedClose(tBool abRequested) niImpl
+  {
     mbRequestedClose = abRequested;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetCursor(eOSCursor aCursor) niImpl {
+  virtual void __stdcall SetCursor(eOSCursor aCursor) niImpl
+  {
     if (mCursor == aCursor)
       return;
     mCursor = aCursor;
     _UpdateCursor(mCursor);
   }
 
-  virtual eOSCursor __stdcall GetCursor() const niImpl {
+  virtual eOSCursor __stdcall GetCursor() const niImpl
+  {
     return mCursor;
   }
 
-  void _UpdateCursor(const eOSCursor aCursor) {
+  void _UpdateCursor(const eOSCursor aCursor)
+  {
     NSCursor* newCursor = nil;
     switch (aCursor) {
-      case eOSCursor_None: {
-        newCursor = [NSCursor invisibleCursor];
+    case eOSCursor_None: {
+      newCursor = [NSCursor invisibleCursor];
+      break;
+    }
+    case eOSCursor_Wait: {
+      newCursor = [NSCursor arrowCursor];
+      break;
+    }
+    case eOSCursor_Text: {
+      newCursor = [NSCursor IBeamCursor];
+      break;
+    }
+    case eOSCursor_ResizeHz: {
+      newCursor = [NSCursor resizeLeftRightCursor];
+      break;
+    }
+    case eOSCursor_ResizeVt: {
+      newCursor = [NSCursor resizeUpDownCursor];
+      break;
+    }
+    case eOSCursor_Custom:
+      if (nsCustomCursor) {
+        newCursor = nsCustomCursor;
         break;
       }
-      case eOSCursor_Wait: {
-        newCursor = [NSCursor arrowCursor];
-        break;
-      }
-      case eOSCursor_Text: {
-        newCursor = [NSCursor IBeamCursor];
-        break;
-      }
-      case eOSCursor_ResizeHz: {
-        newCursor = [NSCursor resizeLeftRightCursor];
-        break;
-      }
-      case eOSCursor_ResizeVt: {
-        newCursor = [NSCursor resizeUpDownCursor];
-        break;
-      }
-      case eOSCursor_Custom:
-        if (nsCustomCursor) {
-          newCursor = nsCustomCursor;
-          break;
-        }
-      default:
-      case eOSCursor_Arrow:
-        newCursor = [NSCursor arrowCursor];
-        break;
+    default:
+    case eOSCursor_Arrow: newCursor = [NSCursor arrowCursor]; break;
     }
     if (nsCursor == newCursor) {
       return;
@@ -1181,14 +1252,19 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     }
   }
 
-  virtual tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth, tU32 anHeight, tU32 anPivotX, tU32 anPivotY, const tU32* apData) niImpl {
+  virtual tBool __stdcall InitCustomCursor(tIntPtr aID, tU32 anWidth,
+                                           tU32 anHeight, tU32 anPivotX,
+                                           tU32 anPivotY,
+                                           const tU32* apData) niImpl
+  {
     if (aID == mnCustomCursorID)
       return eTrue;
 
     if (!apData) // we're just checking size support...
       return eTrue;
 
-    nsCustomCursor = _CreateNSCursor(apData,anWidth,anHeight,anPivotX,anPivotY);
+    nsCustomCursor =
+      _CreateNSCursor(apData, anWidth, anHeight, anPivotX, anPivotY);
     if (!nsCustomCursor) {
       niWarning("Couldn't create custom cursor !");
       return eFalse;
@@ -1197,24 +1273,26 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     mnCustomCursorID = aID;
     return eTrue;
   }
-  virtual tIntPtr __stdcall GetCustomCursorID() const niImpl {
+  virtual tIntPtr __stdcall GetCustomCursorID() const niImpl
+  {
     return mnCustomCursorID;
   }
 
-  virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl {
+  virtual void __stdcall SetCursorPosition(const sVec2i& avCursorPos) niImpl
+  {
     const sRecti rect = this->GetRect();
     const tF32 contentsScale = GetContentsScale();
-    const sVec2i pos = Vec2i(
-      rect.x + (avCursorPos.x/contentsScale),
-      rect.y + (avCursorPos.y/contentsScale)
-    );
+    const sVec2i pos = Vec2i(rect.x + (avCursorPos.x / contentsScale),
+                             rect.y + (avCursorPos.y / contentsScale));
     _WrapCursorPosition(pos);
   }
-  virtual sVec2i __stdcall GetCursorPosition() const niImpl {
+  virtual sVec2i __stdcall GetCursorPosition() const niImpl
+  {
     return mvPrevMousePos;
   }
 
-  virtual void __stdcall SetCursorCapture(tBool abCapture) niImpl {
+  virtual void __stdcall SetCursorCapture(tBool abCapture) niImpl
+  {
     if (abCapture == mbCursorCapture)
       return;
     mbCursorCapture = abCapture;
@@ -1224,36 +1302,43 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     // the screen position set by the cursor capture mode.
     mnEatRelativeMouseMove = 2;
   }
-  virtual tBool __stdcall GetCursorCapture() const niImpl {
+  virtual tBool __stdcall GetCursorCapture() const niImpl
+  {
     return mbCursorCapture;
   }
 
-  virtual tBool __stdcall GetIsCursorOverClient() const niImpl {
+  virtual tBool __stdcall GetIsCursorOverClient() const niImpl
+  {
     return mbMouseOverClient;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall TryClose() niImpl {
+  virtual void __stdcall TryClose() niImpl
+  {
     if (nsWindow != nil) {
       [nsWindow performClose:nsWindow];
     }
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetDropTarget(tBool abDropTarget) niImpl {
+  virtual void __stdcall SetDropTarget(tBool abDropTarget) niImpl
+  {
     mbDropTarget = abDropTarget;
   }
-  virtual tBool __stdcall GetDropTarget() const niImpl {
+  virtual tBool __stdcall GetDropTarget() const niImpl
+  {
     return mbDropTarget;
   }
 
   ///////////////////////////////////////////////
-  virtual tU32 __stdcall GetMonitor() const niImpl {
+  virtual tU32 __stdcall GetMonitor() const niImpl
+  {
     return 0;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetFullScreen(tU32 anScreenId) niImpl {
+  tBool __stdcall SetFullScreen(tU32 anScreenId) niImpl
+  {
     if (anScreenId == eInvalidHandle) {
       // exit full screen
       if (nsIsFullscreen) {
@@ -1268,10 +1353,12 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     }
     return eFalse;
   }
-  tU32 __stdcall GetFullScreen() const niImpl {
+  tU32 __stdcall GetFullScreen() const niImpl
+  {
     return nsIsFullscreen ? 1 : eInvalidHandle;
   }
-  tBool __stdcall GetIsMinimized() const niImpl {
+  tBool __stdcall GetIsMinimized() const niImpl
+  {
     if (nsWindow) {
       return [nsWindow isMiniaturized];
     }
@@ -1279,37 +1366,45 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
       return eFalse;
     }
   }
-  tBool __stdcall GetIsMaximized() const niImpl {
+  tBool __stdcall GetIsMaximized() const niImpl
+  {
     return eFalse;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetFocus() niImpl {
+  virtual void __stdcall SetFocus() niImpl
+  {
   }
-  virtual tBool __stdcall GetHasFocus() const niImpl {
+  virtual tBool __stdcall GetHasFocus() const niImpl
+  {
     return mbIsActive;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetRefreshTimer(tF32 afRefreshTimer) niImpl {
+  virtual void __stdcall SetRefreshTimer(tF32 afRefreshTimer) niImpl
+  {
     // niDebugFmt(("... SetRefreshTimer: %g", afRefreshTimer));
     mfRefreshTimer = afRefreshTimer;
   }
-  virtual tF32 __stdcall GetRefreshTimer() const niImpl {
+  virtual tF32 __stdcall GetRefreshTimer() const niImpl
+  {
     return mfRefreshTimer;
   }
 
   ///////////////////////////////////////////////
-  virtual tIntPtr __stdcall GetParentHandle() const niImpl {
+  virtual tIntPtr __stdcall GetParentHandle() const niImpl
+  {
     return 0;
   }
-  virtual tU32 __stdcall IsParentWindow(tIntPtr aHandle) const niImpl {
+  virtual tU32 __stdcall IsParentWindow(tIntPtr aHandle) const niImpl
+  {
     return 0;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall AttachGraphicsAPI(iOSGraphicsAPI* apAPI) {
-    niCheckIsOK(apAPI,eFalse);
+  virtual tBool __stdcall AttachGraphicsAPI(iOSGraphicsAPI* apAPI)
+  {
+    niCheckIsOK(apAPI, eFalse);
     if (nsGL.context) {
       niError("An OpenGL graphics context is already attached to this window.");
       return eFalse;
@@ -1318,7 +1413,7 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
       niError("A Metal API context is already attached to this window.");
       return eFalse;
     }
-    if (StrIEq(apAPI->GetName(),"metal")) {
+    if (StrIEq(apAPI->GetName(), "metal")) {
       mptrAPI = apAPI;
     }
     else {
@@ -1327,32 +1422,35 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     }
     return eTrue;
   }
-  virtual iOSGraphicsAPI* __stdcall GetGraphicsAPI() const {
+  virtual iOSGraphicsAPI* __stdcall GetGraphicsAPI() const
+  {
     return mptrAPI;
   }
 
   ///////////////////////////////////////////////
-  virtual void* __stdcall GetNSWindow() const {
+  virtual void* __stdcall GetNSWindow() const
+  {
     return (__bridge void*)nsWindow;
   }
 
   ///////////////////////////////////////////////
-  tBool _SendMessage(eOSWindowMessage aMsg, const Var& avarA = niVarNull, const Var& avarB = niVarNull) {
+  tBool _SendMessage(eOSWindowMessage aMsg, const Var& avarA = niVarNull,
+                     const Var& avarB = niVarNull)
+  {
     if (nsGL.context) {
       const int cat = niMessageID_GetCharD(aMsg);
       switch (cat) {
-        case 'S':
-        case 'K':
-        case 'I':
-        case 'F':
-        case 'G':
-          nsGL.drawEvent.Signal();
-          break;
+      case 'S':
+      case 'K':
+      case 'I':
+      case 'F':
+      case 'G': nsGL.drawEvent.Signal(); break;
       }
     }
-    return ni::SendMessages(mptrMT,aMsg,avarA,avarB);
+    return ni::SendMessages(mptrMT, aMsg, avarA, avarB);
   }
-  tBool _RetainWindow(NSWindow* apNSWindow, NSView* apNSView, tBool abOwned, tBool abSetWindowProc)
+  tBool _RetainWindow(NSWindow* apNSWindow, NSView* apNSView, tBool abOwned,
+                      tBool abSetWindowProc)
   {
     _ReleaseWindow();
     nsWindow = apNSWindow;
@@ -1365,7 +1463,8 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     _RegisterWindow(this);
     return eTrue;
   }
-  tBool _ReleaseWindow() {
+  tBool _ReleaseWindow()
+  {
     _UnregisterWindow(this);
     nsCursor = nil;
     nsCustomCursor = nil;
@@ -1381,15 +1480,14 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     return eTrue;
   }
 
-  void _SendMouseMove(NSEvent* theEvent) {
+  void _SendMouseMove(NSEvent* theEvent)
+  {
     if (theEvent) {
-      const sVec2i vRelMove = {
-        (tI32)([theEvent deltaX]),
-        (tI32)([theEvent deltaY])
-      };
+      const sVec2i vRelMove = { (tI32)([theEvent deltaX]),
+                                (tI32)([theEvent deltaY]) };
       if (vRelMove != sVec2i::Zero()) {
         if (mnEatRelativeMouseMove <= 0) {
-          _SendMessage(eOSWindowMessage_RelativeMouseMove,vRelMove);
+          _SendMessage(eOSWindowMessage_RelativeMouseMove, vRelMove);
         }
         else {
           --mnEatRelativeMouseMove;
@@ -1400,9 +1498,8 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
     const tF32 contentsScale = GetContentsScale();
     const NSRect rect = [nsWindow contentRectForFrameRect:[nsWindow frame]];
     if (mbCursorCapture) {
-      SetCursorPosition(
-        Vec2i(rect.size.width * contentsScale / 2,
-              rect.size.height * contentsScale / 2));
+      SetCursorPosition(Vec2i(rect.size.width * contentsScale / 2,
+                              rect.size.height * contentsScale / 2));
     }
     else if (theEvent) {
       sVec2i vMousePos;
@@ -1439,7 +1536,8 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
           _UpdateCursor(mbMouseOverClient ? mCursor : eOSCursor_Arrow);
         }
 
-        _SendMessage(eOSWindowMessage_MouseMove,vMousePos * GetContentsScale());
+        _SendMessage(eOSWindowMessage_MouseMove,
+                     vMousePos * GetContentsScale());
         mvPrevMousePos = vMousePos;
         // TRACE_OSX(("... OSX: MouseMoved: abs: %s, rel: %s.", vMousePos, vRelMove));
       }
@@ -1447,28 +1545,28 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
   }
 
  public:
-  ni::Ptr<iOSWindow>          mptrParentWindow;
-  cString                     mstrTitle;
+  ni::Ptr<iOSWindow> mptrParentWindow;
+  cString mstrTitle;
   ni::Ptr<tMessageHandlerSinkLst> mptrMT;
-  tBool                       mbRequestedClose;
-  tBool                       mbCursorCapture;
-  tI32                        mnEatRelativeMouseMove;
-  tBool                       mbMouseOverClient;
-  tBool                       mbDropTarget;
-  tBool                       mbIsActive;
-  tF32                        mfRefreshTimer;
-  sVec2i                      mvPrevMousePos = ni::Vec2<tI32>(eInvalidHandle,eInvalidHandle);
+  tBool mbRequestedClose;
+  tBool mbCursorCapture;
+  tI32 mnEatRelativeMouseMove;
+  tBool mbMouseOverClient;
+  tBool mbDropTarget;
+  tBool mbIsActive;
+  tF32 mfRefreshTimer;
+  sVec2i mvPrevMousePos = ni::Vec2<tI32>(eInvalidHandle, eInvalidHandle);
 
-  eOSCursor        mCursor;
-  NSCursor*        nsCursor;
-  tIntPtr          mnCustomCursorID;
-  NSCursor*        nsCustomCursor;
-  NSWindow*        nsWindow;
-  NSView*          nsView;
+  eOSCursor mCursor;
+  NSCursor* nsCursor;
+  tIntPtr mnCustomCursorID;
+  NSCursor* nsCustomCursor;
+  NSWindow* nsWindow;
+  NSView* nsView;
   NIWindowDelegate* nsResponder;
-  tBool            nsOwned;
-  tU32             nsModifierFlags;
-  tBool            nsIsFullscreen;
+  tBool nsOwned;
+  tU32 nsModifierFlags;
+  tBool nsIsFullscreen;
 
   struct _GLContext {
     ThreadEvent vsyncEvent;
@@ -1496,16 +1594,15 @@ class cOSXWindow : public ni::ImplRC<ni::iOSWindow,ni::eImplFlags_Default,ni::iO
 //
 static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
   if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
     return [window->nsView convertRectToBacking:contentRect];
   else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+  #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     return contentRect;
 }
 
-@interface NIContentView : NSView
-{
+@interface NIContentView : NSView {
   cOSXWindow* _wnd;
 }
 - (id)initWithOSXWindow:(cOSXWindow*)initWindow;
@@ -1545,147 +1642,172 @@ static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
 }
 
 ///////////////////////////////////////////////
--(void) mouseDown:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)mouseDown:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   _wnd->_SendMouseMove(theEvent);
 
   int eventBt = [theEvent buttonNumber];
   ni::tU32 bt;
   switch (eventBt) {
-    case 0: bt = ePointerButton_Left; break;
-    case 1: bt = ePointerButton_Right; break;
-    case 2: bt = ePointerButton_Middle; break;
-    default: bt = ePointerButton_Bt0+eventBt; break;
+  case 0: bt = ePointerButton_Left; break;
+  case 1: bt = ePointerButton_Right; break;
+  case 2: bt = ePointerButton_Middle; break;
+  default: bt = ePointerButton_Bt0 + eventBt; break;
   }
   _wnd->_SendMessage(eOSWindowMessage_MouseButtonDown, (ni::tU32)bt);
 }
--(void) rightMouseDown:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)rightMouseDown:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseDown:theEvent];
 }
--(void) otherMouseDown:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)otherMouseDown:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseDown:theEvent];
 }
 
 ///////////////////////////////////////////////
--(void) mouseUp:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)mouseUp:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   _wnd->_SendMouseMove(theEvent);
 
   int eventBt = [theEvent buttonNumber];
   ni::tU32 bt;
   switch (eventBt) {
-    case 0: bt = ePointerButton_Left; break;
-    case 1: bt = ePointerButton_Right; break;
-    case 2: bt = ePointerButton_Middle; break;
-    default: bt = ePointerButton_Bt0+eventBt; break;
+  case 0: bt = ePointerButton_Left; break;
+  case 1: bt = ePointerButton_Right; break;
+  case 2: bt = ePointerButton_Middle; break;
+  default: bt = ePointerButton_Bt0 + eventBt; break;
   }
   _wnd->_SendMessage(eOSWindowMessage_MouseButtonUp, (ni::tU32)bt);
 
   const NSInteger clickCount = [theEvent clickCount];
   if (clickCount == 2) {
     _wnd->_SendMessage(eOSWindowMessage_MouseButtonDoubleClick,
-                       (ni::tU32)(ePointerButton_Bt0+eventBt));
+                       (ni::tU32)(ePointerButton_Bt0 + eventBt));
   }
 }
--(void) rightMouseUp:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)rightMouseUp:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseUp:theEvent];
 }
--(void) otherMouseUp:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)otherMouseUp:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseUp:theEvent];
 }
 
 ///////////////////////////////////////////////
--(void) mouseMoved:(NSEvent *) theEvent {
-  if (!_wnd  || !_wnd->mbIsActive) return;
+- (void)mouseMoved:(NSEvent*)theEvent
+{
+  if (!_wnd || !_wnd->mbIsActive)
+    return;
   _wnd->_SendMouseMove(theEvent);
 }
--(void) mouseDragged:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)mouseDragged:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseMoved:theEvent];
 }
--(void) rightMouseDragged:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)rightMouseDragged:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseMoved:theEvent];
 }
--(void) otherMouseDragged:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)otherMouseDragged:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
   [self mouseMoved:theEvent];
 }
 
 ///////////////////////////////////////////////
-- (void)scrollWheel:(NSEvent *)event
+- (void)scrollWheel:(NSEvent*)event
 {
-  if (!_wnd  || !_wnd->mbIsActive) return;
+  if (!_wnd || !_wnd->mbIsActive)
+    return;
 
   double deltaX, deltaY;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-  if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7)
-  {
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+  if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_7) {
     deltaX = [event scrollingDeltaX];
     deltaY = [event scrollingDeltaY];
 
-    if ([event hasPreciseScrollingDeltas])
-    {
+    if ([event hasPreciseScrollingDeltas]) {
       deltaX *= 0.1;
       deltaY *= 0.1;
     }
   }
   else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+  #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
   {
     deltaX = [event deltaX];
     deltaY = [event deltaY];
   }
 
   if (fabs(deltaX) > 0.0 || fabs(deltaY) > 0.0) {
-    TRACE_OSX(("... OSX: SCROLL WHEEL: %g, %g",deltaY,deltaX));
-    _wnd->_SendMessage(eOSWindowMessage_MouseWheel,deltaY,deltaX);
+    TRACE_OSX(("... OSX: SCROLL WHEEL: %g, %g", deltaY, deltaX));
+    _wnd->_SendMessage(eOSWindowMessage_MouseWheel, deltaY, deltaX);
   }
 }
 
 ///////////////////////////////////////////////
-- (void)magnifyWithEvent:(NSEvent *)event {
+- (void)magnifyWithEvent:(NSEvent*)event
+{
   const float mag = [event magnification];
-  TRACE_OSX(("... OSX: MAGNIFY: %g",mag));
+  TRACE_OSX(("... OSX: MAGNIFY: %g", mag));
   niUnused(mag);
 }
 
 ///////////////////////////////////////////////
-- (void)rotateWithEvent:(NSEvent *)event {
+- (void)rotateWithEvent:(NSEvent*)event
+{
   const float rot = [event rotation];
-  TRACE_OSX(("... OSX: ROTATE: %g",rot));
+  TRACE_OSX(("... OSX: ROTATE: %g", rot));
   niUnused(rot);
 }
 
 ///////////////////////////////////////////////
-- (void)swipeWithEvent:(NSEvent *)event {
+- (void)swipeWithEvent:(NSEvent*)event
+{
   CGFloat x = [event deltaX];
   CGFloat y = [event deltaY];
-  TRACE_OSX(("... OSX: SWIPE: %g, %g",x,y));
+  TRACE_OSX(("... OSX: SWIPE: %g, %g", x, y));
   niUnused(x);
   niUnused(y);
 }
 
 ///////////////////////////////////////////////
-- (void)_SendKey:(eKey)aKey isDown:(tBool)abIsDown {
-  _wnd->_SendMessage(
-    abIsDown ? eOSWindowMessage_KeyDown : eOSWindowMessage_KeyUp,
-    (tU32)aKey,
-    niVarNull);
+- (void)_SendKey:(eKey)aKey isDown:(tBool)abIsDown
+{
+  _wnd->_SendMessage(abIsDown ? eOSWindowMessage_KeyDown
+                              : eOSWindowMessage_KeyUp,
+                     (tU32)aKey, niVarNull);
 }
 
 ///////////////////////////////////////////////
--(void) keyDown:(NSEvent *) theEvent {
-  if (!_wnd  || !_wnd->mbIsActive) return;
+- (void)keyDown:(NSEvent*)theEvent
+{
+  if (!_wnd || !_wnd->mbIsActive)
+    return;
 
   const tU32 macKeyCode = [theEvent keyCode];
-  const sOSXScanCode& scanCode = (macKeyCode < niCountOf(_ScancodeTable)) ?
-      _ScancodeTable[macKeyCode] : _ScancodeUnknown;
+  const sOSXScanCode& scanCode = (macKeyCode < niCountOf(_ScancodeTable))
+                                   ? _ScancodeTable[macKeyCode]
+                                   : _ScancodeUnknown;
 
   if (scanCode.niKey != eKey_Unknown) {
     [self _SendKey:scanCode.niKey isDown:eTrue];
@@ -1695,40 +1817,45 @@ static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
     // Send after KeyDown - to mimic Windows' behavior
     NSString* characters = [theEvent characters];
     NSUInteger length = [characters length];
-    niLoop(i,length) {
+    niLoop (i, length) {
       const ni::tU32 c = [characters characterAtIndex:i];
-      TRACE_OSX(("... OSX: KEY CHAR: %d (%c)",c,c));
-      _wnd->_SendMessage(eOSWindowMessage_KeyChar,c,scanCode.niKey);
+      TRACE_OSX(("... OSX: KEY CHAR: %d (%c)", c, c));
+      _wnd->_SendMessage(eOSWindowMessage_KeyChar, c, scanCode.niKey);
     }
   }
 
   TRACE_OSX(("... OSX: KEY DOWN: %s, Mac:0x%02X, eKey: 0x%02X = %s",
-             [[theEvent characters] UTF8String],
-             macKeyCode,scanCode.niKey,
-             niEnumToChars(eKey,scanCode.niKey)));
+             [[theEvent characters] UTF8String], macKeyCode, scanCode.niKey,
+             niEnumToChars(eKey, scanCode.niKey)));
 }
--(void) keyUp:(NSEvent *) theEvent {
-  if (!_wnd  || !_wnd->mbIsActive) return;
+- (void)keyUp:(NSEvent*)theEvent
+{
+  if (!_wnd || !_wnd->mbIsActive)
+    return;
 
   const tU32 macKeyCode = [theEvent keyCode];
-  const sOSXScanCode& scanCode = (macKeyCode < niCountOf(_ScancodeTable)) ?
-      _ScancodeTable[macKeyCode] : _ScancodeUnknown;
+  const sOSXScanCode& scanCode = (macKeyCode < niCountOf(_ScancodeTable))
+                                   ? _ScancodeTable[macKeyCode]
+                                   : _ScancodeUnknown;
 
   if (scanCode.niKey != eKey_Unknown) {
     [self _SendKey:scanCode.niKey isDown:eFalse];
   }
 
   TRACE_OSX(("... OSX: KEY UP: %s, Mac:0x%02X, eKey: 0x%02X = %s",
-             [[theEvent characters] UTF8String],
-             macKeyCode,scanCode.niKey,
-             niEnumToChars(eKey,scanCode.niKey)));
+             [[theEvent characters] UTF8String], macKeyCode, scanCode.niKey,
+             niEnumToChars(eKey, scanCode.niKey)));
 }
--(void) autoKey:(NSEvent *) theEvent {
-  if (!_wnd  || !_wnd->mbIsActive) return;
-  TRACE_OSX(("... OSX: AUTOKEY: %s",[[theEvent characters] UTF8String]));
+- (void)autoKey:(NSEvent*)theEvent
+{
+  if (!_wnd || !_wnd->mbIsActive)
+    return;
+  TRACE_OSX(("... OSX: AUTOKEY: %s", [[theEvent characters] UTF8String]));
 }
--(void) flagsChanged:(NSEvent *) theEvent {
-  if (!_wnd) return;
+- (void)flagsChanged:(NSEvent*)theEvent
+{
+  if (!_wnd)
+    return;
 
   TRACE_OSX(("... OSX: FLAGS CHANGED"));
 
@@ -1737,7 +1864,9 @@ static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
     return;
   }
 
-#define DIFFPREV(F) ((isDown = niFlagIs(flags,F)), (niFlagIs(flags,F) != niFlagIs(_wnd->nsModifierFlags,F)))
+  #define DIFFPREV(F)               \
+    ((isDown = niFlagIs(flags, F)), \
+     (niFlagIs(flags, F) != niFlagIs(_wnd->nsModifierFlags, F)))
 
   tBool isDown = eFalse;
   if (DIFFPREV(NSAlphaShiftKeyMask)) {
@@ -1762,7 +1891,7 @@ static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
     // [self _SendKey:eKey_Fn isDown:isDown];
   }
 
-#undef DIFFPREV
+  #undef DIFFPREV
 
   _wnd->nsModifierFlags = flags;
 }
@@ -1770,19 +1899,21 @@ static NSRect convertRectToBacking(cOSXWindow* window, NSRect contentRect)
 ///////////////////////////////////////////////
 - (void)resetCursorRects
 {
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   TRACE_OSX(("... OSX: resetCursorRects"));
   [self discardCursorRects];
   [self addCursorRect:[self bounds] cursor:_wnd->nsCursor];
 }
 
-#ifdef HANDLE_TOUCH_EVENTS
+  #ifdef HANDLE_TOUCH_EVENTS
 ///////////////////////////////////////////////
 const tI32 MAX_TOUCHES = 10;
-static ni::sVec2f  _lastTouchPosition[MAX_TOUCHES] = {0};
-static ni::tIntPtr _touches[MAX_TOUCHES] = {0};
+static ni::sVec2f _lastTouchPosition[MAX_TOUCHES] = { 0 };
+static ni::tIntPtr _touches[MAX_TOUCHES] = { 0 };
 
-static tI32 _GetFingerIdFromTouch(tIntPtr touch) {
+static tI32 _GetFingerIdFromTouch(tIntPtr touch)
+{
   for (tI32 i = 0; i < MAX_TOUCHES; ++i) {
     if (_touches[i] == touch) {
       return i;
@@ -1790,7 +1921,8 @@ static tI32 _GetFingerIdFromTouch(tIntPtr touch) {
   }
   return -1;
 }
-static tI32 _AddNewTouch(tIntPtr touch) {
+static tI32 _AddNewTouch(tIntPtr touch)
+{
   for (tI32 i = 0; i < MAX_TOUCHES; ++i) {
     if (!_touches[i]) {
       _touches[i] = touch;
@@ -1799,12 +1931,14 @@ static tI32 _AddNewTouch(tIntPtr touch) {
   }
   return -1;
 }
-static tI32 _RemoveTouch(const int fingerId) {
+static tI32 _RemoveTouch(const int fingerId)
+{
   niAssert(fingerId < MAX_TOUCHES);
   _touches[fingerId] = 0;
   return -1;
 }
-static tI32 _CountNumTouches() {
+static tI32 _CountNumTouches()
+{
   int count = 0;
   for (int i = 0; i < MAX_TOUCHES; ++i) {
     if (_touches[i]) {
@@ -1813,25 +1947,24 @@ static tI32 _CountNumTouches() {
   }
   return count;
 }
-const ni::sVec2f _GetTouchLocation(NSTouch* touch, NSView* view) {
-#if 0
+const ni::sVec2f _GetTouchLocation(NSTouch* touch, NSView* view)
+{
+    #if 0
   NSPoint locationInView = [touch locationInView: view];
   ni::sVec2f r = {
     (float)locationInView.x * 1,
     (float)locationInView.y * 1
   };
-#else
-  ni::sVec2f r = {
-    [touch normalizedPosition].x,
-    1.0f - [touch normalizedPosition].y
-  };
-#endif
+    #else
+  ni::sVec2f r = { [touch normalizedPosition].x,
+                   1.0f - [touch normalizedPosition].y };
+    #endif
   return r;
 }
 
-- (void)touchesBeganWithEvent:(NSEvent *) theEvent
+- (void)touchesBeganWithEvent:(NSEvent*)theEvent
 {
-  NSSet *touches = [theEvent touchesMatchingPhase:NSTouchPhaseAny inView:nil];
+  NSSet* touches = [theEvent touchesMatchingPhase:NSTouchPhaseAny inView:nil];
   int existingTouchCount = 0;
 
   for (NSTouch* touch in touches) {
@@ -1845,90 +1978,92 @@ const ni::sVec2f _GetTouchLocation(NSTouch* touch, NSView* view) {
     TRACE_OSX(("... OSX: Reset Lost Fingers: %d", numFingers));
     for (--numFingers; numFingers >= 0; --numFingers) {
       if (_wnd) {
-        _wnd->_SendMessage(eOSWindowMessage_FingerUp,numFingers,Vec3f(0,0,0));
+        _wnd->_SendMessage(eOSWindowMessage_FingerUp, numFingers,
+                           Vec3f(0, 0, 0));
       }
       _RemoveTouch(numFingers);
     }
   }
 
-  TRACE_OSX(("... OSX: Began Fingers: %lu .. existing: %d", (unsigned long)[touches count], existingTouchCount));
+  TRACE_OSX(("... OSX: Began Fingers: %lu .. existing: %d",
+             (unsigned long)[touches count], existingTouchCount));
   [self handleTouches:NSTouchPhaseBegan withEvent:theEvent];
 }
 
-- (void)touchesMovedWithEvent:(NSEvent *) theEvent
+- (void)touchesMovedWithEvent:(NSEvent*)theEvent
 {
   [self handleTouches:NSTouchPhaseMoved withEvent:theEvent];
 }
 
-- (void)touchesEndedWithEvent:(NSEvent *) theEvent
+- (void)touchesEndedWithEvent:(NSEvent*)theEvent
 {
   [self handleTouches:NSTouchPhaseEnded withEvent:theEvent];
 }
 
-- (void)touchesCancelledWithEvent:(NSEvent *) theEvent
+- (void)touchesCancelledWithEvent:(NSEvent*)theEvent
 {
   [self handleTouches:NSTouchPhaseCancelled withEvent:theEvent];
 }
 
-- (void)handleTouches:(NSTouchPhase) phase withEvent:(NSEvent *) theEvent
+- (void)handleTouches:(NSTouchPhase)phase withEvent:(NSEvent*)theEvent
 {
-  NSSet *touches = [theEvent touchesMatchingPhase:phase inView:nil];
+  NSSet* touches = [theEvent touchesMatchingPhase:phase inView:nil];
 
-  for (NSTouch *touch in touches) {
+  for (NSTouch* touch in touches) {
     // const tIntPtr touchDeviceID = (tIntPtr)[touch device];
     const tIntPtr touchIdentity = (tIntPtr)[touch identity];
 
     // PIERRE: This returns normalized coordinates which we can't use
     // directly. The only thing we'd want this for is to recognized things
     // like "3 fingers pan".
-    const sVec2f touchLocation = _GetTouchLocation(touch,self);
+    const sVec2f touchLocation = _GetTouchLocation(touch, self);
 
     switch (phase) {
-      case NSTouchPhaseBegan: {
-        const tI32 fingerIndex = _AddNewTouch(touchIdentity);
-        if (fingerIndex >= 0) {
-          _lastTouchPosition[fingerIndex] = touchLocation;
-          const sVec3f v = Vec3f(touchLocation.x,touchLocation.y,1);
-          TRACE_OSX(("... OSX: FingerDown: %d, %s", fingerIndex, v));
-          // if (_wnd) {
-          // _wnd->_SendMessage(eOSWindowMessage_FingerDown,fingerIndex,v);
-          // }
-        }
-        break;
+    case NSTouchPhaseBegan: {
+      const tI32 fingerIndex = _AddNewTouch(touchIdentity);
+      if (fingerIndex >= 0) {
+        _lastTouchPosition[fingerIndex] = touchLocation;
+        const sVec3f v = Vec3f(touchLocation.x, touchLocation.y, 1);
+        TRACE_OSX(("... OSX: FingerDown: %d, %s", fingerIndex, v));
+        // if (_wnd) {
+        // _wnd->_SendMessage(eOSWindowMessage_FingerDown,fingerIndex,v);
+        // }
       }
-      case NSTouchPhaseEnded:
-      case NSTouchPhaseCancelled: {
-        const tI32 fingerIndex = _GetFingerIdFromTouch(touchIdentity);
-        if (fingerIndex >= 0) {
-          _lastTouchPosition[fingerIndex] = touchLocation;
-          const sVec3f v = Vec3f(touchLocation.x,touchLocation.y,0);
-          TRACE_OSX(("... OSX: FingerUp: %d, %s", fingerIndex, v));
-          // if (_wnd) {
-          // _wnd->_SendMessage(eOSWindowMessage_FingerUp,fingerIndex,v);
-          // }
-          _RemoveTouch(fingerIndex);
-        }
-        break;
+      break;
+    }
+    case NSTouchPhaseEnded:
+    case NSTouchPhaseCancelled: {
+      const tI32 fingerIndex = _GetFingerIdFromTouch(touchIdentity);
+      if (fingerIndex >= 0) {
+        _lastTouchPosition[fingerIndex] = touchLocation;
+        const sVec3f v = Vec3f(touchLocation.x, touchLocation.y, 0);
+        TRACE_OSX(("... OSX: FingerUp: %d, %s", fingerIndex, v));
+        // if (_wnd) {
+        // _wnd->_SendMessage(eOSWindowMessage_FingerUp,fingerIndex,v);
+        // }
+        _RemoveTouch(fingerIndex);
       }
-      case NSTouchPhaseMoved: {
-        const tI32 fingerIndex = _GetFingerIdFromTouch(touchIdentity);
-        if (fingerIndex >= 0) {
-          _lastTouchPosition[fingerIndex] = touchLocation;
-          const sVec3f v = Vec3f(touchLocation.x,touchLocation.y,1);
-          TRACE_OSX(("... OSX: FingerMove: %d, %s", fingerIndex, v));
-          // if (_wnd) {
-          // _wnd->_SendMessage(eOSWindowMessage_FingerMove,fingerIndex,v);
-          // }
-        }
-        break;
+      break;
+    }
+    case NSTouchPhaseMoved: {
+      const tI32 fingerIndex = _GetFingerIdFromTouch(touchIdentity);
+      if (fingerIndex >= 0) {
+        _lastTouchPosition[fingerIndex] = touchLocation;
+        const sVec3f v = Vec3f(touchLocation.x, touchLocation.y, 1);
+        TRACE_OSX(("... OSX: FingerMove: %d, %s", fingerIndex, v));
+        // if (_wnd) {
+        // _wnd->_SendMessage(eOSWindowMessage_FingerMove,fingerIndex,v);
+        // }
       }
-      default: {
-        break;
-      }
+      break;
+    }
+    default: {
+      break;
+    }
     }
   }
 }
-#endif
+  #endif
 @end
 
 //----------------------------------------------------------------------------
@@ -1938,16 +2073,17 @@ const ni::sVec2f _GetTouchLocation(NSTouch* touch, NSView* view) {
 //----------------------------------------------------------------------------
 static struct sOSXGL {
   // dlopen handle for dynamically loading OpenGL extension entry points
-  void*           framework;
+  void* framework;
   // TLS key for per-thread current context/window
-  pthread_key_t   current;
-  sOSXGL() {
+  pthread_key_t current;
+  sOSXGL()
+  {
     framework = NULL;
   }
 } _osxgl;
 
-#define OSXGL_WINDOW()                                          \
-  cOSXWindow* window = reinterpret_cast<cOSXWindow*>(apWindow);
+  #define OSXGL_WINDOW() \
+    cOSXWindow* window = reinterpret_cast<cOSXWindow*>(apWindow);
 
 static CVReturn _osxglDisplayLinkCallback(CVDisplayLinkRef displayLink,
                                           const CVTimeStamp* now,
@@ -1967,7 +2103,8 @@ static CVReturn _osxglDisplayLinkCallback(CVDisplayLinkRef displayLink,
   return kCVReturnSuccess;
 }
 
-niExportFunc(tBool) osxglIsStarted() {
+niExportFunc(tBool) osxglIsStarted()
+{
   return _osxgl.framework != NULL;
 }
 
@@ -1983,7 +2120,8 @@ niExportFunc(tBool) osxglStartup(void)
   }
 
   if (!_osxgl.framework) {
-    _osxgl.framework = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
+    _osxgl.framework =
+      CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_osxgl.framework == NULL) {
       niError("OSXGL: Failed to locate OpenGL framework");
       return eFalse;
@@ -1993,7 +2131,8 @@ niExportFunc(tBool) osxglStartup(void)
   return eTrue;
 }
 
-niExportFunc(void) osxglShutdown(void) {
+niExportFunc(void) osxglShutdown(void)
+{
   if (_osxgl.framework) {
     pthread_key_delete(_osxgl.current);
     _osxgl.framework = NULL;
@@ -2011,17 +2150,26 @@ static astl::vector<sGLRenderer> _vGLRenderers;
 static const char* _kPropertyOSXGLDeviceIndex = "OSXGL.DeviceIndex";
 static const char* _kPropertyOSXGLBestResolution = "OSXGL.BestResolution";
 
-niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglConfig)
+niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow,
+                                       sOSXGLConfig* nsglConfig)
 {
   OSXGL_WINDOW();
 
   unsigned int attributeCount = 0;
 
   // OS X needs non-zero color size, so set resonable values
-  const int colorBits = (nsglConfig->colorBits == 0) ? 24 : nsglConfig->colorBits;
+  const int colorBits =
+    (nsglConfig->colorBits == 0) ? 24 : nsglConfig->colorBits;
 
-#define ADD_ATTR(x) { attributes[attributeCount++] = x; }
-#define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
+  #define ADD_ATTR(x)                   \
+    {                                   \
+      attributes[attributeCount++] = x; \
+    }
+  #define ADD_ATTR2(x, y) \
+    {                     \
+      ADD_ATTR(x);        \
+      ADD_ATTR(y);        \
+    }
 
   // Arbitrary array size here
   NSOpenGLPixelFormatAttribute attributes[40];
@@ -2044,40 +2192,39 @@ niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglCo
       CGLDescribeRenderer(info, i, kCGLRPVideoMemoryMegabytes, &vidMem);
       CGLDescribeRenderer(info, i, kCGLRPTextureMemoryMegabytes, &texMem);
 
-      niDebugFmt(("... OSXGL Renderer[%d]: id: %p, displayMask: %x, vidMem: %d, texMem: %d",
-                  i, rendererId, displayMask, vidMem, texMem));
+      niDebugFmt((
+        "... OSXGL Renderer[%d]: id: %p, displayMask: %x, vidMem: %d, texMem: %d",
+        i, rendererId, displayMask, vidMem, texMem));
 
-      sGLRenderer r = {
-        rendererId,
-        displayMask,
-        vidMem,
-        texMem
-      };
+      sGLRenderer r = { rendererId, displayMask, vidMem, texMem };
       _vGLRenderers.push_back(r);
     }
   }
 
-  int deviceIndex = ni::GetProperty(_kPropertyOSXGLDeviceIndex,"-1").Long();
+  int deviceIndex = ni::GetProperty(_kPropertyOSXGLDeviceIndex, "-1").Long();
   if (deviceIndex >= 0) {
     if (deviceIndex >= _vGLRenderers.size()) {
-      niError(niFmt("OSXGL: Invalid OpenGL device index '%d', only '%d' available. Using default renderer.", deviceIndex, _vGLRenderers.size()));
+      niError(niFmt(
+        "OSXGL: Invalid OpenGL device index '%d', only '%d' available. Using default renderer.",
+        deviceIndex, _vGLRenderers.size()));
     }
     else {
       const sGLRenderer& r = _vGLRenderers[deviceIndex];
       ADD_ATTR2(NSOpenGLPFARendererID, r.rendererId);
       ADD_ATTR2(NSOpenGLPFAScreenMask, r.displayMask);
-      niDebugFmt(("... OSXGL Using Renderer[%d]: id: %p, displayMask: %x, vidMem: %d, texMem: %d",
-                  deviceIndex, r.rendererId, r.displayMask, r.vidMem, r.texMem));
+      niDebugFmt((
+        "... OSXGL Using Renderer[%d]: id: %p, displayMask: %x, vidMem: %d, texMem: %d",
+        deviceIndex, r.rendererId, r.displayMask, r.vidMem, r.texMem));
     }
   }
   else {
     niDebugFmt(("... OSXGL Using default renderer"));
   }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+  #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
   if (nsglConfig->glMajor > 2)
     ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+  #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
   ADD_ATTR2(NSOpenGLPFAColorSize, colorBits);
 
@@ -2100,8 +2247,7 @@ niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglCo
   if (nsglConfig->stereo)
     ADD_ATTR(NSOpenGLPFAStereo);
 
-  if (nsglConfig->aaSamples > 0)
-  {
+  if (nsglConfig->aaSamples > 0) {
     ADD_ATTR2(NSOpenGLPFASampleBuffers, 1);
     ADD_ATTR2(NSOpenGLPFASamples, nsglConfig->aaSamples);
   }
@@ -2111,10 +2257,11 @@ niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglCo
 
   ADD_ATTR(0);
 
-#undef ADD_ATTR
-#undef ADD_ATTR2
+  #undef ADD_ATTR
+  #undef ADD_ATTR2
 
-  window->nsGL.pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
+  window->nsGL.pixelFormat =
+    [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
   if (window->nsGL.pixelFormat == nil) {
     niError("OSXGL: Failed to create OpenGL pixel format");
     return eFalse;
@@ -2126,29 +2273,27 @@ niExportFunc(tBool) osxglCreateContext(iOSWindow* apWindow, sOSXGLConfig* nsglCo
     share = ((cOSXWindow*)nsglConfig->share)->nsGL.context;
 
   window->nsGL.context =
-      [[NSOpenGLContext alloc] initWithFormat:window->nsGL.pixelFormat
-       shareContext:share];
-  if (window->nsGL.context == nil)
-  {
+    [[NSOpenGLContext alloc] initWithFormat:window->nsGL.pixelFormat
+                               shareContext:share];
+  if (window->nsGL.context == nil) {
     niError("OSXGL: Failed to create OpenGL context");
     return eFalse;
   }
 
-  window->nsGL.useBestResolution = ni::GetProperty(_kPropertyOSXGLBestResolution, "1").Bool();
+  window->nsGL.useBestResolution =
+    ni::GetProperty(_kPropertyOSXGLBestResolution, "1").Bool();
   if (window->nsGL.useBestResolution) {
     [window->nsView setWantsBestResolutionOpenGLSurface:YES];
   }
   niDebugFmt(("... OSXGL use best resolution: %d contentScale: %s",
-              window->nsGL.useBestResolution,
-              window->GetContentsScale()));
+              window->nsGL.useBestResolution, window->GetContentsScale()));
 
   [window->nsGL.context setView:window->nsView];
 
   window->nsGL.swapInterval = nsglConfig->swapInterval;
   CVDisplayLinkCreateWithActiveCGDisplays(&window->nsGL.displayLink);
   CVDisplayLinkSetOutputCallback(window->nsGL.displayLink,
-                                 &_osxglDisplayLinkCallback,
-                                 window);
+                                 &_osxglDisplayLinkCallback, window);
   CVDisplayLinkStart(window->nsGL.displayLink);
 
   osxglUpdateDisplayLinkDisplay(window);
@@ -2175,7 +2320,8 @@ niExportFunc(void) osxglDestroyContext(iOSWindow* apWindow)
   window->nsGL.context = nil;
 }
 
-niExportFunc(tBool) osxglHasContext(iOSWindow* apWindow) {
+niExportFunc(tBool) osxglHasContext(iOSWindow* apWindow)
+{
   OSXGL_WINDOW();
   return window->nsGL.context != nil;
 }
@@ -2227,7 +2373,7 @@ niExportFunc(void) osxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait)
 
     if (window->nsGL.swapInterval > 0) {
       // Wait for 200ms max, in case something went wrong with the displaylink I guess?
-      window->nsGL.vsyncEvent.Wait(1000/5);
+      window->nsGL.vsyncEvent.Wait(1000 / 5);
     }
   }
 
@@ -2237,10 +2383,10 @@ niExportFunc(void) osxglSwapBuffers(iOSWindow* apWindow, tBool abDoNotWait)
 niExportFunc(tPtr) osxglGetProcAddress(const char* procname)
 {
   CFStringRef symbolName = CFStringCreateWithCString(
-      kCFAllocatorDefault,procname,kCFStringEncodingASCII);
+    kCFAllocatorDefault, procname, kCFStringEncodingASCII);
 
   tPtr symbol = (tPtr)CFBundleGetFunctionPointerForName(
-      (CFBundleRef)_osxgl.framework, symbolName);
+    (CFBundleRef)_osxgl.framework, symbolName);
   CFRelease(symbolName);
 
   return symbol;
@@ -2256,7 +2402,8 @@ niExportFunc(tIntPtr) osxglGetNSOpenGLContext(iOSWindow* apWindow)
 niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 {
   OSXGL_WINDOW();
-  CGDirectDisplayID displayID = [[[window->nsWindow screen] deviceDescription][@"NSScreenNumber"] unsignedIntValue];
+  CGDirectDisplayID displayID = [[[window->nsWindow screen]
+    deviceDescription][@"NSScreenNumber"] unsignedIntValue];
   if (!displayID)
     return;
   CVDisplayLinkSetCurrentCGDisplay(window->nsGL.displayLink, displayID);
@@ -2270,83 +2417,143 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 
 @implementation NIWindowDelegate
 ///////////////////////////////////////////////
--(void) listen:(cOSXWindow *)data {
-  NSNotificationCenter *center;
+- (void)listen:(cOSXWindow*)data
+{
+  NSNotificationCenter* center;
 
   _wnd = data;
-  NSView *view = [_wnd->nsWindow contentView];
+  NSView* view = [_wnd->nsWindow contentView];
 
-#if !defined OSX_SWITCH_INOUT_ON_FOCUS
+  #if !defined OSX_SWITCH_INOUT_ON_FOCUS
   _wnd->mbObservingVisible = YES;
   _wnd->mbWasVisible = [_wnd->nsWindow isVisible];
-#endif
+  #endif
 
   center = [NSNotificationCenter defaultCenter];
 
   [_wnd->nsWindow setNextResponder:self];
   if ([_wnd->nsWindow delegate] != nil) {
-    [center addObserver:self selector:@selector(windowDisExpose:) name:NSWindowDidExposeNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidMove:) name:NSWindowDidMoveNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidResize:) name:NSWindowDidResizeNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidMiniaturize:) name:NSWindowDidMiniaturizeNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidDeminiaturize:) name:NSWindowDidDeminiaturizeNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidBecomeKey:) name:NSWindowDidBecomeKeyNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidResignKey:) name:NSWindowDidResignKeyNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowWillEnterFullScreen:) name:NSWindowWillEnterFullScreenNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidEnterFullScreen:) name:NSWindowDidEnterFullScreenNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowWillExitFullScreen:) name:NSWindowWillExitFullScreenNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidExitFullScreen:) name:NSWindowDidExitFullScreenNotification object:_wnd->nsWindow];
-    [center addObserver:self selector:@selector(windowDidChangeScreen:) name:NSWindowDidChangeScreenNotification object:_wnd->nsWindow];
-  } else {
+    [center addObserver:self
+               selector:@selector(windowDisExpose:)
+                   name:NSWindowDidExposeNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidMove:)
+                   name:NSWindowDidMoveNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidResize:)
+                   name:NSWindowDidResizeNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidMiniaturize:)
+                   name:NSWindowDidMiniaturizeNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidDeminiaturize:)
+                   name:NSWindowDidDeminiaturizeNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidBecomeKey:)
+                   name:NSWindowDidBecomeKeyNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidResignKey:)
+                   name:NSWindowDidResignKeyNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowWillEnterFullScreen:)
+                   name:NSWindowWillEnterFullScreenNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidEnterFullScreen:)
+                   name:NSWindowDidEnterFullScreenNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowWillExitFullScreen:)
+                   name:NSWindowWillExitFullScreenNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidExitFullScreen:)
+                   name:NSWindowDidExitFullScreenNotification
+                 object:_wnd->nsWindow];
+    [center addObserver:self
+               selector:@selector(windowDidChangeScreen:)
+                   name:NSWindowDidChangeScreenNotification
+                 object:_wnd->nsWindow];
+  }
+  else {
     [_wnd->nsWindow setDelegate:self];
   }
 
-#if !defined OSX_SWITCH_INOUT_ON_FOCUS
+  #if !defined OSX_SWITCH_INOUT_ON_FOCUS
   /* Haven't found a delegate / notification that triggers when the window is
    * ordered out (is not visible any more). You can be ordered out without
    * minimizing, so DidMiniaturize doesn't work. (e.g. -[NSWindow orderOut:])
    */
   [_wnd->nsWindow addObserver:self
-   forKeyPath:@"visible"
-   options:NSKeyValueObservingOptionNew
-   context:NULL];
-#endif
+                   forKeyPath:@"visible"
+                      options:NSKeyValueObservingOptionNew
+                      context:NULL];
+  #endif
 
   [_wnd->nsWindow setNextResponder:self];
   [_wnd->nsWindow setAcceptsMouseMovedEvents:YES];
 
   [view setNextResponder:self];
-#ifdef HANDLE_TOUCH_EVENTS
+  #ifdef HANDLE_TOUCH_EVENTS
   [view setAcceptsTouchEvents:YES];
-#endif
+  #endif
 }
 
 ///////////////////////////////////////////////
--(void) close {
-  NSNotificationCenter *center;
+- (void)close
+{
+  NSNotificationCenter* center;
 
   center = [NSNotificationCenter defaultCenter];
 
   [_wnd->nsWindow setNextResponder:nil];
   if ([_wnd->nsWindow delegate] != self) {
-    [center removeObserver:self name:NSWindowDidExposeNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidMoveNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidResizeNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidMiniaturizeNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidDeminiaturizeNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidBecomeKeyNotification object:_wnd->nsWindow];
-    [center removeObserver:self name:NSWindowDidResignKeyNotification object:_wnd->nsWindow];
-  } else {
+    [center removeObserver:self
+                      name:NSWindowDidExposeNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidMoveNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidResizeNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidMiniaturizeNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidDeminiaturizeNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidBecomeKeyNotification
+                    object:_wnd->nsWindow];
+    [center removeObserver:self
+                      name:NSWindowDidResignKeyNotification
+                    object:_wnd->nsWindow];
+  }
+  else {
     [_wnd->nsWindow setDelegate:nil];
   }
-  [center removeObserver:self name:NSApplicationDidHideNotification object:NSApp];
-  [center removeObserver:self name:NSApplicationDidUnhideNotification object:NSApp];
+  [center removeObserver:self
+                    name:NSApplicationDidHideNotification
+                  object:NSApp];
+  [center removeObserver:self
+                    name:NSApplicationDidUnhideNotification
+                  object:NSApp];
 }
 
 ///////////////////////////////////////////////
--(BOOL) windowShouldClose:(id) sender {
+- (BOOL)windowShouldClose:(id)sender
+{
   TRACE_OSX(("... OSX: windowShouldClose"));
-  if (!_wnd) return NO;
+  if (!_wnd)
+    return NO;
   if (_wnd->GetRequestedClose()) {
     // already requested close...
   }
@@ -2361,9 +2568,11 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 }
 
 ///////////////////////////////////////////////
--(void) windowDidMove:(NSNotification *) aNotification {
+- (void)windowDidMove:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidMove"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   if (_wnd->nsGL.context) {
     [_wnd->nsGL.context update];
   }
@@ -2371,9 +2580,11 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 }
 
 ///////////////////////////////////////////////
--(void) windowDidResize:(NSNotification *) aNotification {
+- (void)windowDidResize:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidResize"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   if (_wnd->nsGL.context) {
     [_wnd->nsGL.context update];
   }
@@ -2381,54 +2592,64 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 }
 
 ///////////////////////////////////////////////
--(void) windowDidMiniaturize:(NSNotification *) aNotification {
+- (void)windowDidMiniaturize:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidMiniaturize"));
-  if (!_wnd) return;
-  _wnd->_SendMessage(eOSWindowMessage_SwitchOut, eOSWindowSwitchReason_Minimized);
+  if (!_wnd)
+    return;
+  _wnd->_SendMessage(eOSWindowMessage_SwitchOut,
+                     eOSWindowSwitchReason_Minimized);
 }
 
 ///////////////////////////////////////////////
--(void) windowDidDeminiaturize:(NSNotification *) aNotification {
+- (void)windowDidDeminiaturize:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidDeminiaturize"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   //     _wnd->_SendMessage(eOSWindowMessage_SwitchIn);
 }
 
 ///////////////////////////////////////////////
--(void) windowDidBecomeKey:(NSNotification *) aNotification {
+- (void)windowDidBecomeKey:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidBecomeKey"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   _wnd->SwitchIn(eOSWindowSwitchReason_SetFocus);
   _wnd->_SendMessage(eOSWindowMessage_SetFocus);
   _wnd->_UpdateCursor(_wnd->mCursor);
 }
 
 ///////////////////////////////////////////////
--(void) windowDidResignKey:(NSNotification *) aNotification {
+- (void)windowDidResignKey:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidResignKey"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   _wnd->_UpdateCursor(eOSCursor_Arrow);
   _wnd->_SendMessage(eOSWindowMessage_LostFocus);
   _wnd->SwitchOut(eOSWindowSwitchReason_LostFocus);
 }
 
 ///////////////////////////////////////////////
--(void) windowDidExpose:(NSNotification *) aNotification {
+- (void)windowDidExpose:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidExpose"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
 }
 
-
 ///////////////////////////////////////////////
--(void) windowDidChangeBackingProperties:(NSNotification *) aNotification {
+- (void)windowDidChangeBackingProperties:(NSNotification*)aNotification
+{
 
-  NSWindow *theWindow = (NSWindow *)[aNotification object];
+  NSWindow* theWindow = (NSWindow*)[aNotification object];
   // NSLog(@"windowDidChangeBackingProperties: window=%@", theWindow);
 
   CGFloat newBackingScaleFactor = [theWindow backingScaleFactor];
   CGFloat oldBackingScaleFactor = [[[aNotification userInfo]
-                                    objectForKey:@"NSBackingPropertyOldScaleFactorKey"]
-                                   doubleValue];
+    objectForKey:@"NSBackingPropertyOldScaleFactorKey"] doubleValue];
   if (newBackingScaleFactor != oldBackingScaleFactor) {
     TRACE_OSX(("... OSX: The backing scale factor changed from %.1f -> %.1f",
                oldBackingScaleFactor, newBackingScaleFactor));
@@ -2445,29 +2666,39 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 }
 
 ///////////////////////////////////////////////
--(void) windowWillEnterFullScreen:(NSNotification *) aNotification {
+- (void)windowWillEnterFullScreen:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowWillEnterFullScreen"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
 }
--(void) windowDidEnterFullScreen:(NSNotification *) aNotification {
+- (void)windowDidEnterFullScreen:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidEnterFullScreen"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   _wnd->nsIsFullscreen = eTrue;
 }
--(void) windowWillExitFullScreen:(NSNotification *) aNotification {
+- (void)windowWillExitFullScreen:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowWillExitFullScreen"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
 }
--(void) windowDidExitFullScreen:(NSNotification *) aNotification {
+- (void)windowDidExitFullScreen:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidExitFullScreen"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   _wnd->nsIsFullscreen = eFalse;
 }
 
 ///////////////////////////////////////////////
--(void) windowDidChangeScreen:(NSNotification *) aNotification {
+- (void)windowDidChangeScreen:(NSNotification*)aNotification
+{
   TRACE_OSX(("... OSX: windowDidChangeScreen"));
-  if (!_wnd) return;
+  if (!_wnd)
+    return;
   osxglUpdateDisplayLinkDisplay(_wnd);
 }
 
@@ -2481,45 +2712,50 @@ niExportFunc(void) osxglUpdateDisplayLinkDisplay(iOSWindow* apWindow)
 struct sOSXSystem : public Impl_HeapAlloc {
   astl::vector<cOSXWindow*> mvWindows;
   struct sMonitor {
-    tIntPtr   mHandle;
-    cString   mstrName;
-    sRecti    mRect;
-    sRecti    mBounds;
+    tIntPtr mHandle;
+    cString mstrName;
+    sRecti mRect;
+    sRecti mBounds;
     tOSMonitorFlags mFlags;
-    tU32      mVendorID;
-    tU32      mProductID;
+    tU32 mVendorID;
+    tU32 mProductID;
     ni::Ptr<tVec2iCVec> _resolutions;
 
-    tU32 EnumerateResolutions(astl::vector<sVec2i>& aResolutions) {
+    tU32 EnumerateResolutions(astl::vector<sVec2i>& aResolutions)
+    {
       CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(mHandle, nil);
-      niDefer { CFRelease(displayModes); };
-      astl::set<sVec2i> enumeratedResolutions;
-      for(CFIndex i = 0; i < CFArrayGetCount(displayModes); ++i)
+      niDefer
       {
-        CGDisplayModeRef currentDisplayMode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, i);
-        sVec2i displayResolution = Vec2i(
-          (uint32_t)CGDisplayModeGetWidth(currentDisplayMode),
-          (uint32_t)CGDisplayModeGetHeight(currentDisplayMode)
-        );
+        CFRelease(displayModes);
+      };
+      astl::set<sVec2i> enumeratedResolutions;
+      for (CFIndex i = 0; i < CFArrayGetCount(displayModes); ++i) {
+        CGDisplayModeRef currentDisplayMode =
+          (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, i);
+        sVec2i displayResolution =
+          Vec2i((uint32_t)CGDisplayModeGetWidth(currentDisplayMode),
+                (uint32_t)CGDisplayModeGetHeight(currentDisplayMode));
         enumeratedResolutions.insert(displayResolution);
       }
       aResolutions.reserve(enumeratedResolutions.size());
-      aResolutions.assign(enumeratedResolutions.begin(),enumeratedResolutions.end());
+      aResolutions.assign(enumeratedResolutions.begin(),
+                          enumeratedResolutions.end());
       return enumeratedResolutions.size();
     }
   };
-  astl::vector<sMonitor>  mvMonitors;
+  astl::vector<sMonitor> mvMonitors;
 
-  sOSXSystem() {
+  sOSXSystem()
+  {
     // Detect displays
     CGDisplayCount displayCount;
-    CGDisplayErr r = CGGetOnlineDisplayList(0,NULL,&displayCount);
+    CGDisplayErr r = CGGetOnlineDisplayList(0, NULL, &displayCount);
     if (r == kCGErrorSuccess) {
       astl::vector<CGDirectDisplayID> displays;
       displays.resize(displayCount);
-      r = CGGetOnlineDisplayList(displayCount,displays.data(),&displayCount);
+      r = CGGetOnlineDisplayList(displayCount, displays.data(), &displayCount);
       if (r == kCGErrorSuccess) {
-        niLoop(i,displayCount) {
+        niLoop (i, displayCount) {
           _AddMonitor(displays[i]);
         }
       }
@@ -2535,10 +2771,11 @@ struct sOSXSystem : public Impl_HeapAlloc {
   NSString* screenNameForDisplay(CGDirectDisplayID displayID)
   {
     if (@available(macOS 10.15, *)) {
-      NSArray *screens = [NSScreen screens];
+      NSArray* screens = [NSScreen screens];
 
-      for (NSScreen *screen in screens) {
-        CGDirectDisplayID screenDisplayID = [[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
+      for (NSScreen* screen in screens) {
+        CGDirectDisplayID screenDisplayID = [[[screen deviceDescription]
+          objectForKey:@"NSScreenNumber"] intValue];
         if (screenDisplayID == displayID) {
           NSString* screenName = screen.localizedName;
           return screenName;
@@ -2547,17 +2784,22 @@ struct sOSXSystem : public Impl_HeapAlloc {
       return nil;
     }
     else {
-      NSString *screenName = nil;
-      NSDictionary *deviceInfo = (__bridge NSDictionary *)IODisplayCreateInfoDictionary(CGDisplayIOServicePort(displayID), kIODisplayOnlyPreferredName);
-      NSDictionary *localizedNames = [deviceInfo objectForKey:[NSString stringWithUTF8String:kDisplayProductName]];
+      NSString* screenName = nil;
+      NSDictionary* deviceInfo =
+        (__bridge NSDictionary*)IODisplayCreateInfoDictionary(
+          CGDisplayIOServicePort(displayID), kIODisplayOnlyPreferredName);
+      NSDictionary* localizedNames = [deviceInfo
+        objectForKey:[NSString stringWithUTF8String:kDisplayProductName]];
       if ([localizedNames count] > 0) {
-        screenName = [localizedNames objectForKey:[[localizedNames allKeys] objectAtIndex:0]];
+        screenName = [localizedNames
+          objectForKey:[[localizedNames allKeys] objectAtIndex:0]];
       }
       return screenName;
     }
   }
 
-  void _AddMonitor(CGDirectDisplayID displayID) {
+  void _AddMonitor(CGDirectDisplayID displayID)
+  {
     if (CGDisplayIsInMirrorSet(displayID))
       return;
 
@@ -2569,20 +2811,18 @@ struct sOSXSystem : public Impl_HeapAlloc {
     m.mHandle = displayID;
     NSString* screenName = screenNameForDisplay(displayID);
     if (screenName == nil) {
-      m.mstrName.Format(_A("Unnamed%d"),displayID);
+      m.mstrName.Format(_A("Unnamed%d"), displayID);
     }
     else {
       m.mstrName = [screenName UTF8String];
     }
-    m.mRect = ni::sRecti(0,0,
-                         CGDisplayPixelsWide(m.mHandle),
+    m.mRect = ni::sRecti(0, 0, CGDisplayPixelsWide(m.mHandle),
                          CGDisplayPixelsHigh(m.mHandle));
 
     CGRect displayBounds = CGDisplayBounds(displayID);
-    m.mBounds = Recti((int32_t)displayBounds.origin.x,
-                      (int32_t)displayBounds.origin.y,
-                      (int32_t)displayBounds.size.width,
-                      (int32_t)displayBounds.size.height);
+    m.mBounds = Recti(
+      (int32_t)displayBounds.origin.x, (int32_t)displayBounds.origin.y,
+      (int32_t)displayBounds.size.width, (int32_t)displayBounds.size.height);
     m.mFlags = 0;
     if (CGDisplayIsMain(m.mHandle)) {
       m.mFlags |= eOSMonitorFlags_Primary;
@@ -2591,56 +2831,60 @@ struct sOSXSystem : public Impl_HeapAlloc {
     m.mProductID = CGDisplayModelNumber(displayID);
 
     cString strResolutions;
-#if 0
+  #if 0
     astl::vector<sVec2i> resolutions;
     m.EnumerateResolutions(resolutions);
     strResolutions << "\nResolutions: " << (tU32)resolutions.size() << AEOL;
     for (auto it = resolutions.begin(); it != resolutions.end(); ++it) {
       strResolutions << "- " << it->x << "x" << it->y << AEOL;
     }
-#endif
+  #endif
 
     mvMonitors.push_back(m);
-    niLog(Info, niFmt(
-      "... OSX: Monitor %d: ID:%X name:'%s' rect:%s bounds:%s flags:%d vendorID:0x%X productID:0x%X%s\n",
-      mvMonitors.size()-1,
-      m.mHandle, m.mstrName.Chars(),
-      m.mRect, m.mBounds,
-      m.mFlags,
-      m.mVendorID, m.mProductID,
-      strResolutions));
+    niLog(
+      Info,
+      niFmt(
+        "... OSX: Monitor %d: ID:%X name:'%s' rect:%s bounds:%s flags:%d vendorID:0x%X productID:0x%X%s\n",
+        mvMonitors.size() - 1, m.mHandle, m.mstrName.Chars(), m.mRect,
+        m.mBounds, m.mFlags, m.mVendorID, m.mProductID, strResolutions));
   }
 };
 
-static sOSXSystem* _GetOSXSystem() {
+static sOSXSystem* _GetOSXSystem()
+{
   static sOSXSystem* _system = niNew sOSXSystem();
   return _system;
 }
 
 ///////////////////////////////////////////////
-static void _RegisterWindow(cOSXWindow* apWindow) {
+static void _RegisterWindow(cOSXWindow* apWindow)
+{
   sOSXSystem* osx = _GetOSXSystem();
-  astl::push_back_once(osx->mvWindows,apWindow);
+  astl::push_back_once(osx->mvWindows, apWindow);
   TRACE_OSX(("... OSX: _RegisterWindow: %p, %d window opened.",
              (tIntPtr)apWindow, osx->mvWindows.size()));
 }
-static void _UnregisterWindow(cOSXWindow* apWindow) {
+static void _UnregisterWindow(cOSXWindow* apWindow)
+{
   sOSXSystem* osx = _GetOSXSystem();
-  astl::find_erase(osx->mvWindows,apWindow);
+  astl::find_erase(osx->mvWindows, apWindow);
   TRACE_OSX(("... OSX: _UnregisterWindow: %p, %d window opened.",
              (tIntPtr)apWindow, osx->mvWindows.size()));
 }
 
-static void _TerminateApp() {
+static void _TerminateApp()
+{
   _RegisterApp();
   sOSXSystem* osx = _GetOSXSystem();
-  TRACE_OSX(("... OSX: Requested App Exit: %d window opened.", osx->mvWindows.size()));
+  TRACE_OSX(
+    ("... OSX: Requested App Exit: %d window opened.", osx->mvWindows.size()));
   while (!osx->mvWindows.empty()) {
     osx->mvWindows.back()->Invalidate();
   }
 }
 
-static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* aaszText)
+static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle,
+                                          const achar* aaszText)
 {
   _RegisterApp();
 
@@ -2651,23 +2895,25 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
   NSString* msg = _ToNSString(strText.Chars());
 
   // Create a panel for our custom dialog
-  NSPanel* panel = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 600, 400)
-                                              styleMask:NSWindowStyleMaskTitled |
-                                                        NSWindowStyleMaskClosable |
-                                                        NSWindowStyleMaskResizable
-                                                backing:NSBackingStoreBuffered
-                                                  defer:NO];
+  NSPanel* panel = [[NSPanel alloc]
+    initWithContentRect:NSMakeRect(0, 0, 600, 400)
+              styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                        NSWindowStyleMaskResizable
+                backing:NSBackingStoreBuffered
+                  defer:NO];
   [panel setTitle:title];
   [panel setReleasedWhenClosed:YES];
 
   // Create a scrollable text view with monospaced font
-  NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(20, 60, 560, 320)];
+  NSScrollView* scrollView =
+    [[NSScrollView alloc] initWithFrame:NSMakeRect(20, 60, 560, 320)];
   [scrollView setBorderType:NSBezelBorder];
   [scrollView setHasVerticalScroller:YES];
   [scrollView setHasHorizontalScroller:YES];
   [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 
-  NSTextView* textView = [[NSTextView alloc] initWithFrame:[[scrollView contentView] bounds]];
+  NSTextView* textView =
+    [[NSTextView alloc] initWithFrame:[[scrollView contentView] bounds]];
   [textView setMinSize:NSMakeSize(0.0, 0.0)];
   [textView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
   [textView setVerticallyResizable:YES];
@@ -2684,7 +2930,8 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
     monoFont = [NSFont fontWithName:@"Monaco" size:11.0];
   }
   if (!monoFont) {
-    monoFont = [NSFont monospacedSystemFontOfSize:11.0 weight:NSFontWeightRegular];
+    monoFont = [NSFont monospacedSystemFontOfSize:11.0
+                                           weight:NSFontWeightRegular];
   }
 
   [textView setFont:monoFont];
@@ -2694,7 +2941,8 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
   [scrollView setDocumentView:textView];
 
   // Add Copy to Clipboard button
-  NSButton* copyButton = [[NSButton alloc] initWithFrame:NSMakeRect(20, 20, 150, 24)];
+  NSButton* copyButton =
+    [[NSButton alloc] initWithFrame:NSMakeRect(20, 20, 150, 24)];
   [copyButton setTitle:@"Copy to Clipboard"];
   [copyButton setBezelStyle:NSBezelStyleRounded];
   [copyButton setAutoresizingMask:NSViewMaxXMargin | NSViewMaxYMargin];
@@ -2704,7 +2952,8 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
   [copyButton setAction:@selector(performClick:)];
 
   // Add OK button
-  NSButton* okButton = [[NSButton alloc] initWithFrame:NSMakeRect(500, 20, 80, 24)];
+  NSButton* okButton =
+    [[NSButton alloc] initWithFrame:NSMakeRect(500, 20, 80, 24)];
   [okButton setTitle:@"OK"];
   [okButton setBezelStyle:NSBezelStyleRounded];
   [okButton setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];
@@ -2721,7 +2970,8 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
   [[panel contentView] addSubview:okButton];
 
   // Make sure our app is frontmost
-  [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+  [[NSRunningApplication currentApplication]
+    activateWithOptions:NSApplicationActivateIgnoringOtherApps];
 
   // Center the panel on screen
   [panel center];
@@ -2741,7 +2991,7 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
 
     // Check if Copy button was clicked
     if ([copyButton state] == NSControlStateValueOn) {
-      NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+      NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
       [pasteboard clearContents];
       [pasteboard setString:msg forType:NSPasteboardTypeString];
       [copyButton setState:NSControlStateValueOff];
@@ -2757,22 +3007,23 @@ static eOSMessageBoxReturn _OSXTextDialog(const achar* aaszTitle, const achar* a
   return eOSMessageBoxReturn_Yes;
 }
 
-void cLang::FatalError(const achar* aszMsg) {
+void cLang::FatalError(const achar* aszMsg)
+{
   sOSXSystem* osx = _GetOSXSystem();
 
   // Log message
   cString logMessage = niFmt(_A("[FATAL ERROR]\n%s\n"), aszMsg);
-  niLog(Error,logMessage);
+  niLog(Error, logMessage);
 
   if (!osx->mvWindows.empty() && ni_get_show_fatal_error_message_box()) {
     // Dialog message
     cString dialogMessage = logMessage;
 
     astl::vector<cString> logs;
-    ni_get_last_logs(&logs,20);
+    ni_get_last_logs(&logs, 20);
     if (!logs.empty()) {
       dialogMessage += "--- Last logs ---\n";
-      niLoop(i,logs.size()) {
+      niLoop (i, logs.size()) {
         dialogMessage += logs[i];
       }
     }
@@ -2791,64 +3042,81 @@ void cLang::FatalError(const achar* aszMsg) {
 //----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-void cLang::_PlatformStartup() {
+void cLang::_PlatformStartup()
+{
 }
 
 ///////////////////////////////////////////////
-tU32 cLang::GetNumMonitors() const {
+tU32 cLang::GetNumMonitors() const
+{
   sOSXSystem* osx = _GetOSXSystem();
   return (tU32)osx->mvMonitors.size();
 }
-tU32 cLang::GetMonitorIndex(tIntPtr aHandle) const {
+tU32 cLang::GetMonitorIndex(tIntPtr aHandle) const
+{
   sOSXSystem* osx = _GetOSXSystem();
-  niLoop(i,osx->mvMonitors.size()) {
+  niLoop (i, osx->mvMonitors.size()) {
     if (osx->mvMonitors[i].mHandle == aHandle)
       return (tU32)i;
   }
   return eInvalidHandle;
 }
-tIntPtr cLang::GetMonitorHandle(tU32 anIndex) const {
+tIntPtr cLang::GetMonitorHandle(tU32 anIndex) const
+{
   sOSXSystem* osx = _GetOSXSystem();
-  niCheckSilent(anIndex < osx->mvMonitors.size(),eInvalidHandle);
+  niCheckSilent(anIndex < osx->mvMonitors.size(), eInvalidHandle);
   return osx->mvMonitors[anIndex].mHandle;
 }
-const achar* cLang::GetMonitorName(tU32 anIndex) const {
+const achar* cLang::GetMonitorName(tU32 anIndex) const
+{
   sOSXSystem* osx = _GetOSXSystem();
-  niCheckSilent(anIndex < osx->mvMonitors.size(),NULL);
+  niCheckSilent(anIndex < osx->mvMonitors.size(), NULL);
   return osx->mvMonitors[anIndex].mstrName.Chars();
 }
-sRecti cLang::GetMonitorRect(tU32 anIndex) const {
+sRecti cLang::GetMonitorRect(tU32 anIndex) const
+{
   sOSXSystem* osx = _GetOSXSystem();
-  niCheckSilent(anIndex < osx->mvMonitors.size(),sRecti::Null());
+  niCheckSilent(anIndex < osx->mvMonitors.size(), sRecti::Null());
   return osx->mvMonitors[anIndex].mRect;
 }
-tOSMonitorFlags cLang::GetMonitorFlags(tU32 anIndex) const {
+tOSMonitorFlags cLang::GetMonitorFlags(tU32 anIndex) const
+{
   sOSXSystem* osx = _GetOSXSystem();
-  niCheckSilent(anIndex < osx->mvMonitors.size(),0);
+  niCheckSilent(anIndex < osx->mvMonitors.size(), 0);
   return osx->mvMonitors[anIndex].mFlags;
 }
 
 ///////////////////////////////////////////////
-iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszTitle, const sRecti& aRect, tOSWindowCreateFlags aCreate, tOSWindowStyleFlags aStyle) {
+iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent,
+                                         const achar* aaszTitle,
+                                         const sRecti& aRect,
+                                         tOSWindowCreateFlags aCreate,
+                                         tOSWindowStyleFlags aStyle)
+{
   if (!_RegisterApp()) {
     niError(_A("Can't register application !"));
     return NULL;
   }
 
-  niCheck(aRect.GetWidth() > 0,NULL);
-  niCheck(aRect.GetWidth() < 0xFFFF,NULL);
-  niCheck(aRect.GetHeight() > 0,NULL);
-  niCheck(aRect.GetHeight() < 0xFFFF,NULL);
+  niCheck(aRect.GetWidth() > 0, NULL);
+  niCheck(aRect.GetWidth() < 0xFFFF, NULL);
+  niCheck(aRect.GetHeight() > 0, NULL);
+  niCheck(aRect.GetHeight() < 0xFFFF, NULL);
 
-  NSRect rect = _ToNSRect(NULL,aRect);
+  NSRect rect = _ToNSRect(NULL, aRect);
   unsigned int style = _ToNSWindowStyle(aStyle);
-  NSWindow* nsWindow = [[NIWindow alloc] initWithContentRect:rect styleMask:style backing:NSBackingStoreBuffered defer:FALSE];
+  NSWindow* nsWindow =
+    [[NIWindow alloc] initWithContentRect:rect
+                                styleMask:style
+                                  backing:NSBackingStoreBuffered
+                                    defer:FALSE];
 
   // Add the OSX Lion fullscreen button if the window is not fixed size
-  if (!niFlagIs(aStyle,eOSWindowStyleFlags_FixedSize)) {
-    if ([nsWindow respondsToSelector: @selector(toggleFullScreen:)]) {
-      [nsWindow setCollectionBehavior:
-       [nsWindow collectionBehavior] | NSWindowCollectionBehaviorFullScreenPrimary];
+  if (!niFlagIs(aStyle, eOSWindowStyleFlags_FixedSize)) {
+    if ([nsWindow respondsToSelector:@selector(toggleFullScreen:)]) {
+      [nsWindow
+        setCollectionBehavior:[nsWindow collectionBehavior] |
+                              NSWindowCollectionBehaviorFullScreenPrimary];
     }
   }
 
@@ -2860,9 +3128,9 @@ iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszT
   Ptr<cOSXWindow> wnd = niNew cOSXWindow(apParent);
 
   NSView* nsView = [[NIContentView alloc] initWithOSXWindow:wnd.ptr()];
-  [nsWindow setContentView: nsView];
+  [nsWindow setContentView:nsView];
 
-  if (!wnd->_RetainWindow(nsWindow,nsView,eTrue,eTrue)) {
+  if (!wnd->_RetainWindow(nsWindow, nsView, eTrue, eTrue)) {
     niError(_A("Can't retain window !"));
     wnd = NULL;
   }
@@ -2872,21 +3140,24 @@ iOSWindow* __stdcall cLang::CreateWindow(iOSWindow* apParent, const achar* aaszT
 
   return wnd.GetRawAndSetNull();
 }
-iOSWindow* __stdcall cLang::CreateWindowEx(tIntPtr aOSWindowHandle, tOSWindowCreateFlags aCreate) {
+iOSWindow* __stdcall cLang::CreateWindowEx(tIntPtr aOSWindowHandle,
+                                           tOSWindowCreateFlags aCreate)
+{
   niError("Not implemented !");
   return NULL;
 }
 
 ///////////////////////////////////////////////
-eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar* aaszTitle, const achar* aaszText, tOSMessageBoxFlags aFlags)
+eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent,
+                                                const achar* aaszTitle,
+                                                const achar* aaszText,
+                                                tOSMessageBoxFlags aFlags)
 {
   _RegisterApp();
-  cString strTitle = niIsStringOK(aaszTitle)?aaszTitle:"Message";
-  cString strText = niIsStringOK(aaszText)?aaszText:_A("");
+  cString strTitle = niIsStringOK(aaszTitle) ? aaszTitle : "Message";
+  cString strText = niIsStringOK(aaszText) ? aaszText : _A("");
   if (!_bAppHasBeenRegistered) {
-    niPrintln(niFmt("--- %s ---\n%s\n",
-                            strTitle.Chars(),
-                            strText.Chars()));
+    niPrintln(niFmt("--- %s ---\n%s\n", strTitle.Chars(), strText.Chars()));
     return eOSMessageBoxReturn_Yes;
   }
   else {
@@ -2897,16 +3168,19 @@ eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar
     NSAlert* alert = [[NSAlert alloc] init];
     [alert setMessageText:title];
 
-#if 1
-    NSSize msgSize = [msg sizeWithAttributes:@{NSFontAttributeName: [NSFont systemFontOfSize:[NSFont systemFontSize]]}];
-    alert.accessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, ni::Min(msgSize.width,750), 0)];
+  #if 1
+    NSSize msgSize = [msg sizeWithAttributes:@{
+      NSFontAttributeName : [NSFont systemFontOfSize:[NSFont systemFontSize]]
+    }];
+    alert.accessoryView = [[NSView alloc]
+      initWithFrame:NSMakeRect(0, 0, ni::Min(msgSize.width, 750), 0)];
     [alert setInformativeText:msg];
-#else
+  #else
     // This is kept as reference, we could in the future use NSTextView or
     // NSTextField to make a clean left aligned "report" section. I think this
     // would also need a special message box for this style of message box,
     // that style would be useful to display error logs more cleanly.
-    NSTextField *textField;
+    NSTextField* textField;
     textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 100)];
     [textField setStringValue:msg];
     [textField setBezeled:NO];
@@ -2914,21 +3188,22 @@ eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar
     [textField setEditable:NO];
     [textField setSelectable:NO];
     alert.accessoryView = textField;
-#endif
+  #endif
 
-    if (niFlagIs(aFlags,eOSMessageBoxFlags_IconWarning) ||
-        niFlagIs(aFlags,eOSMessageBoxFlags_IconError)) {
+    if (niFlagIs(aFlags, eOSMessageBoxFlags_IconWarning) ||
+        niFlagIs(aFlags, eOSMessageBoxFlags_IconError))
+    {
       [alert setAlertStyle:NSAlertStyleCritical];
     }
-    else if (niFlagIs(aFlags,eOSMessageBoxFlags_IconInfo)) {
+    else if (niFlagIs(aFlags, eOSMessageBoxFlags_IconInfo)) {
       [alert setAlertStyle:NSAlertStyleInformational];
     }
 
-    if (niFlagIs(aFlags,eOSMessageBoxFlags_YesNo)) {
+    if (niFlagIs(aFlags, eOSMessageBoxFlags_YesNo)) {
       [alert addButtonWithTitle:@"Yes"];
       [alert addButtonWithTitle:@"No"];
     }
-    else if (niFlagIs(aFlags,eOSMessageBoxFlags_OkCancel)) {
+    else if (niFlagIs(aFlags, eOSMessageBoxFlags_OkCancel)) {
       [alert addButtonWithTitle:@"Ok"];
       [alert addButtonWithTitle:@"Cancel"];
     }
@@ -2936,7 +3211,8 @@ eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar
       [alert addButtonWithTitle:@"Ok"];
     }
 
-    [[NSRunningApplication currentApplication] activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    [[NSRunningApplication currentApplication]
+      activateWithOptions:NSApplicationActivateIgnoringOtherApps];
 
     NSInteger i = [alert runModal];
     if (i == NSAlertFirstButtonReturn) {
@@ -2951,7 +3227,9 @@ eOSMessageBoxReturn __stdcall cLang::MessageBox(iOSWindow* apParent, const achar
 
 // source of code modal logic: http://stackoverflow.com/questions/604768/wait-for-nsalert-beginsheetmodalforwindow
 // note: whether extensions are actually shown depends on a user setting in Finder; we can't control it here
-static void _setupSavePanel(NSSavePanel *s, const achar* aTitle, const achar* aFilter, const achar* aInitDir) {
+static void _setupSavePanel(NSSavePanel* s, const achar* aTitle,
+                            const achar* aFilter, const achar* aInitDir)
+{
   [s setCanCreateDirectories:YES];
   [s setShowsHiddenFiles:YES];
   [s setExtensionHidden:NO];
@@ -2963,14 +3241,15 @@ static void _setupSavePanel(NSSavePanel *s, const achar* aTitle, const achar* aF
   }
   if (niStringIsOK(aInitDir)) {
     // niDebugFmt(("... _setupSavePanel: setDirectoryURL: '%s'", aInitDir));
-    [s setDirectoryURL:[NSURL fileURLWithPath:_ToNSString(niFmt("file://%s",aInitDir))]];
+    [s setDirectoryURL:[NSURL fileURLWithPath:_ToNSString(
+                                                niFmt("file://%s", aInitDir))]];
   }
   if (niStringIsOK(aFilter)) {
     tBool allowAllExts = eFalse;
     astl::vector<cString> exts;
     StringSplit(_ASTR(aFilter), ";", &exts);
     NSMutableArray* filters = [[NSMutableArray alloc] init];
-    niLoop(i, exts.size()) {
+    niLoop (i, exts.size()) {
       if (exts[i].IEq("*")) {
         allowAllExts = eTrue;
         continue;
@@ -2984,12 +3263,15 @@ static void _setupSavePanel(NSSavePanel *s, const achar* aTitle, const achar* aF
   }
 }
 
-static cString _runSavePanel(NSWindow *parent, NSSavePanel *s) {
+static cString _runSavePanel(NSWindow* parent, NSSavePanel* s)
+{
   _RegisterApp();
-  [s beginSheetModalForWindow:parent completionHandler:^(NSInteger result) {
-      [NSApp stopModalWithCode:result];
-    }];
-  const tBool isOK = ([NSApp runModalForWindow:s] == NSFileHandlingPanelOKButton);
+  [s beginSheetModalForWindow:parent
+            completionHandler:^(NSInteger result) {
+              [NSApp stopModalWithCode:result];
+            }];
+  const tBool isOK =
+    ([NSApp runModalForWindow:s] == NSFileHandlingPanelOKButton);
   if (parent) {
     // Make the parent window active. Without this the file dialog stays
     // dangling when we switch back if we switch to another window right away
@@ -3007,7 +3289,10 @@ static cString _runSavePanel(NSWindow *parent, NSSavePanel *s) {
 }
 
 ///////////////////////////////////////////////
-cString __stdcall cLang::OpenFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) {
+cString __stdcall cLang::OpenFileDialog(iOSWindow* aParent, const achar* aTitle,
+                                        const achar* aFilter,
+                                        const achar* aInitDir)
+{
   NSWindow* nsParent = nil;
   if (niIsOK(aParent)) {
     nsParent = ((cOSXWindow*)aParent)->nsWindow;
@@ -3028,7 +3313,10 @@ cString __stdcall cLang::OpenFileDialog(iOSWindow* aParent, const achar* aTitle,
 }
 
 ///////////////////////////////////////////////
-cString __stdcall cLang::SaveFileDialog(iOSWindow* aParent, const achar* aTitle, const achar* aFilter, const achar* aInitDir) {
+cString __stdcall cLang::SaveFileDialog(iOSWindow* aParent, const achar* aTitle,
+                                        const achar* aFilter,
+                                        const achar* aInitDir)
+{
   NSWindow* nsParent = nil;
   if (niIsOK(aParent)) {
     nsParent = ((cOSXWindow*)aParent)->nsWindow;
@@ -3045,7 +3333,10 @@ cString __stdcall cLang::SaveFileDialog(iOSWindow* aParent, const achar* aTitle,
 }
 
 ///////////////////////////////////////////////
-cString __stdcall cLang::PickDirectoryDialog(iOSWindow* aParent, const achar* aTitle, const achar* aInitDir) {
+cString __stdcall cLang::PickDirectoryDialog(iOSWindow* aParent,
+                                             const achar* aTitle,
+                                             const achar* aInitDir)
+{
   NSWindow* nsParent = nil;
   if (niIsOK(aParent)) {
     nsParent = ((cOSXWindow*)aParent)->nsWindow;
@@ -3066,10 +3357,12 @@ cString __stdcall cLang::PickDirectoryDialog(iOSWindow* aParent, const achar* aT
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetNumGameCtrls() const {
+tU32 __stdcall cLang::GetNumGameCtrls() const
+{
   return 0;
 }
-iGameCtrl* __stdcall cLang::GetGameCtrl(tU32 aulIdx) const {
+iGameCtrl* __stdcall cLang::GetGameCtrl(tU32 aulIdx) const
+{
   return NULL;
 }
 

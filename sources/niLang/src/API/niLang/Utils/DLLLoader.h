@@ -92,35 +92,43 @@ struct sDLLLoader {
 
   sDLLLoader(const achar* aName, const achar* aFileName)
       : _dllName(aName)
-      , _fileName(aFileName) {
+      , _fileName(aFileName)
+  {
   }
 
-  ~sDLLLoader() {
+  ~sDLLLoader()
+  {
     _FreeHandle();
   }
 
-  void _AddError(const achar* aError) {
+  void _AddError(const achar* aError)
+  {
     _loadErrors.push_back(aError);
   }
 
-  tBool _LoadHandle() {
+  tBool _LoadHandle()
+  {
     niPanicAssert(_dllHandle == 0);
     if (_fileName.empty()) {
-      niLog(Info, niFmt("DLLLoader: %s: Using static methods.", _dllName, _fileName));
+      niLog(Info,
+            niFmt("DLLLoader: %s: Using static methods.", _dllName, _fileName));
       return eTrue;
     }
     _dllHandle = ni_dll_load(_fileName.Chars());
     if (!_dllHandle) {
-      _AddError(niFmt("DLLLoader: %s: ni_dll_load of '%s' failed.", _dllName, _fileName));
+      _AddError(niFmt("DLLLoader: %s: ni_dll_load of '%s' failed.", _dllName,
+                      _fileName));
       return eFalse;
     }
     else {
-      niLog(Info, niFmt("DLLLoader: %s: Loaded dll '%s'.", _dllName, _fileName));
+      niLog(Info,
+            niFmt("DLLLoader: %s: Loaded dll '%s'.", _dllName, _fileName));
     }
     return eTrue;
   }
 
-  void _FreeHandle() {
+  void _FreeHandle()
+  {
     if (_dllHandle) {
       niLog(Info, niFmt("DLLLoader: %s: freed dll '%s'.", _dllName, _fileName));
       ni_dll_free(_dllHandle);
@@ -128,15 +136,18 @@ struct sDLLLoader {
     }
   }
 
-  tBool IsLoaded() const {
+  tBool IsLoaded() const
+  {
     return _isLoaded;
   }
 
-  tBool HasLoadError() const {
+  tBool HasLoadError() const
+  {
     return !_loadErrors.empty();
   }
 
-  tBool BeginLoad() {
+  tBool BeginLoad()
+  {
     _loadErrors.clear();
     _loadMutex.ThreadLock();
     niZeroMember(_numLoaded);
@@ -146,31 +157,38 @@ struct sDLLLoader {
     return _LoadHandle();
   }
 
-  tBool EndLoad() {
+  tBool EndLoad()
+  {
     if (HasLoadError()) {
       for (auto& err : _loadErrors) {
         niError(err.Chars());
       }
-      niLog(Info, niFmt(
-        "DLLLoader: %s: Loading failed with %d errors. Loaded %d from dll, %d from custom, %d statically.",
-        _dllName, _loadErrors.size(),
-        _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
+      niLog(
+        Info,
+        niFmt(
+          "DLLLoader: %s: Loading failed with %d errors. Loaded %d from dll, %d from custom, %d statically.",
+          _dllName, _loadErrors.size(), _numLoaded._dll, _numLoaded._custom,
+          _numLoaded._static));
       _FreeHandle();
     }
     else {
-      niLog(Info, niFmt(
-        "DLLLoader: %s: Loaded successfully. Loaded %d from dll, %d from custom, %d statically.",
-        _dllName, _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
+      niLog(
+        Info,
+        niFmt(
+          "DLLLoader: %s: Loaded successfully. Loaded %d from dll, %d from custom, %d statically.",
+          _dllName, _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
     }
     _loadMutex.ThreadUnlock();
     return !HasLoadError();
   }
 
-  void* LoadProc(const achar* aProcName, tBool abOptional = eFalse) {
+  void* LoadProc(const achar* aProcName, tBool abOptional = eFalse)
+  {
     void* r = _dllHandle ? ni_dll_get_proc(_dllHandle, aProcName) : nullptr;
     if (!r) {
       if (!abOptional) {
-        _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' from handle '%p'.", _dllName, aProcName, (tIntPtr)_dllHandle));
+        _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' from handle '%p'.",
+                        _dllName, aProcName, (tIntPtr)_dllHandle));
       }
       return nullptr;
     }
@@ -178,11 +196,16 @@ struct sDLLLoader {
     return r;
   }
 
-  void* LoadProcCustom(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse) {
+  void* LoadProcCustom(const achar* aProcName,
+                       tpfnDLLGetProcAddress apfnLoadProc,
+                       tBool abOptional = eFalse)
+  {
     void* r = apfnLoadProc(aProcName);
     if (!r) {
       if (!abOptional) {
-        _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' with custom GetProcAddress.", _dllName, aProcName));
+        _AddError(niFmt(
+          "DLLLoader: %s: Can't load proc '%s' with custom GetProcAddress.",
+          _dllName, aProcName));
       }
       return nullptr;
     }
@@ -191,19 +214,27 @@ struct sDLLLoader {
   }
 };
 
-#define NI_DLL_BEGIN_LOADER(NAME,FILENAME) static ni::tBool ni_dll_load_##NAME() { \
-  static ni::sDLLLoader _dllLoader(#NAME,FILENAME);                     \
-  if (_dllLoader.IsLoaded())                                            \
-    return !_dllLoader.HasLoadError();                                  \
-  niDefer {                                                             \
-    _dllLoader.EndLoad();                                               \
-  };                                                                    \
-  niCheck(_dllLoader.BeginLoad(),ni::eFalse);                           \
+#define NI_DLL_BEGIN_LOADER(NAME, FILENAME)            \
+  static ni::tBool ni_dll_load_##NAME()                \
+  {                                                    \
+    static ni::sDLLLoader _dllLoader(#NAME, FILENAME); \
+    if (_dllLoader.IsLoaded())                         \
+      return !_dllLoader.HasLoadError();               \
+    niDefer                                            \
+    {                                                  \
+      _dllLoader.EndLoad();                            \
+    };                                                 \
+    niCheck(_dllLoader.BeginLoad(), ni::eFalse);
 
-#define NI_DLL_END_LOADER(NAME)   return !_dllLoader.HasLoadError(); }
+#define NI_DLL_END_LOADER(NAME)      \
+  return !_dllLoader.HasLoadError(); \
+  }
 
-#define NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS) typedef RET (CALLCONV *tpfn_##NAME) PARAMS; static tpfn_##NAME dll_##NAME = nullptr
-#define NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS) dll_##NAME = (tpfn_##NAME)_dllLoader.LoadProc(#NAME)
+#define NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS) \
+  typedef RET(CALLCONV* tpfn_##NAME) PARAMS;          \
+  static tpfn_##NAME dll_##NAME = nullptr
+#define NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS) \
+  dll_##NAME = (tpfn_##NAME)_dllLoader.LoadProc(#NAME)
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/

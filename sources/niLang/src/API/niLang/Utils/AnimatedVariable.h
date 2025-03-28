@@ -13,8 +13,7 @@ namespace ni {
  */
 
 template <typename T, typename TIMET = ni::tF32>
-class sAnimatedVariable
-{
+class sAnimatedVariable {
  public:
   sAnimatedVariable()
   {
@@ -61,15 +60,15 @@ class sAnimatedVariable
 
  private:
   T mfBase;
-  T   mfVar;
-  T   mfTarget;
-  T   mfDelta;
-  TIMET   mfTime;
-  TIMET   mfTimeTarget;
+  T mfVar;
+  T mfTarget;
+  T mfDelta;
+  TIMET mfTime;
+  TIMET mfTimeTarget;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __ANIMATEDVARIABLE_7008758_H__

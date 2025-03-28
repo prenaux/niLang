@@ -31,7 +31,8 @@ struct sOSWindowXWinHandles {
   int _screen;
 };
 
-niExportFunc(tBool) linuxGetOSWindowXWinHandles(iOSWindow* apWindow, sOSWindowXWinHandles& aOut);
+niExportFunc(tBool) linuxGetOSWindowXWinHandles(iOSWindow* apWindow,
+                                                sOSWindowXWinHandles& aOut);
 niExportFunc(tBool) linuxglCreateContext(iOSWindow* apWindow);
 niExportFunc(tBool) linuxglDestroyContext(iOSWindow* apWindow);
 niExportFunc(tBool) linuxglHasContext(iOSWindow* apWindow);
@@ -42,7 +43,7 @@ niExportFunc(void*) linuxglGetProcAddress(const achar* name);
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-} // namespace ni {
+} // namespace ni
 
 #endif // #ifdef niLinuxDesktop
 

@@ -23,7 +23,9 @@ struct iOSXMetalAPI : public iOSGraphicsAPI {
   virtual void* __stdcall GetDevice() const = 0;
   virtual void* __stdcall GetCommandQueue() const = 0;
   virtual void* __stdcall GetMTKView() const = 0;
-  virtual void* __stdcall NewRenderCommandEncoder(const double4& aClearColor, tF32 aClearDepth, tU32 aClearStencil) = 0;
+  virtual void* __stdcall NewRenderCommandEncoder(const double4& aClearColor,
+                                                  tF32 aClearDepth,
+                                                  tU32 aClearStencil) = 0;
   virtual tBool __stdcall PresentAndCommit(iRunnable* apOnCompleted) = 0;
   virtual sVec2i __stdcall GetViewSize() const = 0;
   virtual tBool __stdcall DrawablePresent() = 0;
@@ -33,14 +35,16 @@ niExportFunc(tBool) osxMetalSetDefaultDevice();
 niExportFunc(tBool) osxMetalSetDevice(void* apDevice);
 niExportFunc(void*) osxMetalGetDevice();
 
-niExportFunc(iOSXMetalAPI*) osxMetalCreateAPIForMTKView(void* apDevice, void* apMTKView);
+niExportFunc(iOSXMetalAPI*) osxMetalCreateAPIForMTKView(void* apDevice,
+                                                        void* apMTKView);
 
 #ifdef niOSX
-niExportFunc(iOSXMetalAPI*) osxMetalCreateAPIForWindow(void* apDevice, iOSWindow* apWindow);
+niExportFunc(iOSXMetalAPI*) osxMetalCreateAPIForWindow(void* apDevice,
+                                                       iOSWindow* apWindow);
 #endif
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-} // namespace ni {
+} // namespace ni
 #endif // __OSXMETAL_H_5DE6C4B9_12AD_4544_8F88_59BA1F7CCFCE__

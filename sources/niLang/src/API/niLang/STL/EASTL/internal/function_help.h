@@ -6,46 +6,43 @@
 #define EASTL_INTERNAL_FUNCTION_HELP_H
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once
+  #pragma once
 #endif
 
 #include "config.h"
 #include "../type_traits.h"
 
-namespace eastl
+namespace eastl {
+namespace internal {
+
+//////////////////////////////////////////////////////////////////////
+// is_null
+//
+template <typename T>
+bool is_null(const T&)
 {
-	namespace internal
-	{
+  return false;
+}
 
-		//////////////////////////////////////////////////////////////////////
-		// is_null
-		//
-		template <typename T>
-		bool is_null(const T&)
-		{
-			return false;
-		}
+template <typename Result, typename... Arguments>
+bool is_null(Result (*const& function_pointer)(Arguments...))
+{
+  return function_pointer == nullptr;
+}
 
-		template <typename Result, typename... Arguments>
-		bool is_null(Result (*const& function_pointer)(Arguments...))
-		{
-			return function_pointer == nullptr;
-		}
+template <typename Result, typename Class, typename... Arguments>
+bool is_null(Result (Class::*const& function_pointer)(Arguments...))
+{
+  return function_pointer == nullptr;
+}
 
-		template <typename Result, typename Class, typename... Arguments>
-		bool is_null(Result (Class::*const& function_pointer)(Arguments...))
-		{
-			return function_pointer == nullptr;
-		}
+template <typename Result, typename Class, typename... Arguments>
+bool is_null(Result (Class::*const& function_pointer)(Arguments...) const)
+{
+  return function_pointer == nullptr;
+}
 
-		template <typename Result, typename Class, typename... Arguments>
-		bool is_null(Result (Class::*const& function_pointer)(Arguments...) const)
-		{
-			return function_pointer == nullptr;
-		}
-
-	} // namespace internal
+} // namespace internal
 } // namespace eastl
 
 #endif // Header include guard
-

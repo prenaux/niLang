@@ -5,21 +5,21 @@ namespace {
 
 using namespace ni;
 
-struct ASTL_memory {
-};
+struct ASTL_memory {};
 
 struct sMyData {
   tInt _foo = 111;
 };
 
-TEST_FIXTURE(ASTL_memory, shared_ptr) {
+TEST_FIXTURE(ASTL_memory, shared_ptr)
+{
   {
     astl::shared_ptr<sMyData> a = astl::make_shared<sMyData>();
     CHECK_EQUAL(111, a->_foo);
   }
 
   {
-    astl::shared_ptr<sMyData> a = astl::make_shared<sMyData>(sMyData { 123 });
+    astl::shared_ptr<sMyData> a = astl::make_shared<sMyData>(sMyData{ 123 });
     CHECK_EQUAL(123, a->_foo);
     CHECK_EQUAL(1, a.use_count());
 
@@ -31,7 +31,8 @@ TEST_FIXTURE(ASTL_memory, shared_ptr) {
   }
 }
 
-TEST_FIXTURE(ASTL_memory, weak_ptr) {
+TEST_FIXTURE(ASTL_memory, weak_ptr)
+{
   astl::weak_ptr<sMyData> w;
   CHECK_EQUAL(true, w.expired());
 
@@ -60,12 +61,14 @@ TEST_FIXTURE(ASTL_memory, weak_ptr) {
 }
 
 // a function consuming a unique_ptr can take it by value or by rvalue reference
-astl::unique_ptr<sMyData> _test_pass_through(astl::unique_ptr<sMyData> p) {
-    p->_foo = 888;
-    return p;
+astl::unique_ptr<sMyData> _test_pass_through(astl::unique_ptr<sMyData> p)
+{
+  p->_foo = 888;
+  return p;
 }
 
-TEST_FIXTURE(ASTL_memory, unique_ptr) {
+TEST_FIXTURE(ASTL_memory, unique_ptr)
+{
   astl::unique_ptr<sMyData> a = astl::make_unique<sMyData>();
   CHECK_EQUAL(111, a->_foo);
   CHECK_EQUAL(true, (!!a));
@@ -81,7 +84,8 @@ struct sFoo {
   astl::required<ni::tI32> _bar;
 };
 
-TEST_FIXTURE(ASTL_memory, required) {
+TEST_FIXTURE(ASTL_memory, required)
+{
 #if 0
   sFoo f1; // does not compile
   sFoo f2 = {}; // does not compile

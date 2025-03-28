@@ -7,19 +7,18 @@
 #define MATH_IMPL_INCLUDE_ONLY
 #include "API/niLang/Math/MathImpl.h"
 
-#define IMPL_TRANSFORM(TYPE,VEC,TRAN)               \
+#define IMPL_TRANSFORM(TYPE, VEC, TRAN)             \
   niAssert(t##TYPE##CVec::IsSameType(VEC));         \
-  niCheckSilent(t##TYPE##CVec::IsSameType(VEC),;);  \
+  niCheckSilent(t##TYPE##CVec::IsSameType(VEC), ;); \
   s##TYPE* pData = apVecs->_Data();                 \
-  niLoop(i,pData->size()) {                          \
-    ni::TRAN(*pData,*pData,aMatrix);                \
+  niLoop (i, pData->size()) {                       \
+    ni::TRAN(*pData, *pData, aMatrix);              \
     ++pData;                                        \
   }
 
 using namespace ni;
 
-class cMath : public ImplLocal<iMath>
-{
+class cMath : public ImplLocal<iMath> {
   niBeginClass(cMath);
 
  public:
@@ -30,7 +29,7 @@ class cMath : public ImplLocal<iMath>
 #define MATH_IMPL_FN(T) [[nodiscard]] T __stdcall
 #define MATH_IMPL_FN_VOID void __stdcall
 #define MATH_IMPL_CONST_OVR const niImpl
-  #include "API/niLang/Math/MathImpl.h"
+#include "API/niLang/Math/MathImpl.h"
   //// iMath ////////////////////////////////////
 
  private:
@@ -39,13 +38,15 @@ class cMath : public ImplLocal<iMath>
 
 namespace ni {
 
-niExportFunc(ni::iMath*) GetMath() {
+niExportFunc(ni::iMath*) GetMath()
+{
   static cMath _math;
   return &_math;
 }
 
-niExportFunc(ni::iUnknown*) New_niLang_Math(const ni::Var&,const ni::Var&) {
+niExportFunc(ni::iUnknown*) New_niLang_Math(const ni::Var&, const ni::Var&)
+{
   return GetMath();
 }
 
-}
+} // namespace ni

@@ -15,12 +15,13 @@ namespace StdC {
 
 inline EASTDC_API uint64_t GetTime()
 {
-	using namespace std::chrono;
-	nanoseconds ns = duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
-	return ns.count();
+  using namespace std::chrono;
+  nanoseconds ns =
+    duration_cast<nanoseconds>(system_clock::now().time_since_epoch());
+  return ns.count();
 }
 
-}} // namespace EA::StdC
+} // namespace StdC
+} // namespace EA
 
-
-#endif  // EASTDC_EADATETIME_H
+#endif // EASTDC_EADATETIME_H

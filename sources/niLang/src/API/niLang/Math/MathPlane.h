@@ -42,24 +42,22 @@ T PlaneDotNormal(const sVec4<T>& P, const sVec3<T>& V)
   return P.A() * V.x + P.B() * V.y + P.C() * V.z;
 }
 
-
 ///////////////////////////////////////////////
 template <class T>
-sVec4<T>& PlaneFromPointNormal(sVec4<T>& Out, const sVec3<T>& vPoint, const sVec3<T>& vNormal)
+sVec4<T>& PlaneFromPointNormal(sVec4<T>& Out, const sVec3<T>& vPoint,
+                               const sVec3<T>& vNormal)
 {
   Out.A() = vNormal.x;
   Out.B() = vNormal.y;
   Out.C() = vNormal.z;
-  Out.D() = -VecDot(vNormal,vPoint);
+  Out.D() = -VecDot(vNormal, vPoint);
   return Out;
 }
 
 ///////////////////////////////////////////////
 template <class T>
-sVec4<T>& PlaneFromPoints(sVec4<T>& Out,
-                             const sVec3<T>& V1,
-                             const sVec3<T>& V2,
-                             const sVec3<T>& V3)
+sVec4<T>& PlaneFromPoints(sVec4<T>& Out, const sVec3<T>& V1, const sVec3<T>& V2,
+                          const sVec3<T>& V3)
 {
   /*
     sVec3f vCOM = (V1+V2+V3)/3.0f;
@@ -98,58 +96,56 @@ sVec4<T>& PlaneFromPoints(sVec4<T>& Out,
 
 ///////////////////////////////////////////////
 template <class T>
-sVec3<T>* PlaneIntersectLine(const sVec4<T>& P,
-                                const sVec3<T>& V1,
-                                const sVec3<T>& V2,
-                                sVec3<T>* pOut = NULL,
-                                T *percent = NULL)
+sVec3<T>* PlaneIntersectLine(const sVec4<T>& P, const sVec3<T>& V1,
+                             const sVec3<T>& V2, sVec3<T>* pOut = NULL,
+                             T* percent = NULL)
 {
-  sVec3<T> line(V2-V1), lineN;
+  sVec3<T> line(V2 - V1), lineN;
   sVec4<T> pi(P);
-  T     denom, t;
+  T denom, t;
 
-  VecNormalize(lineN,line);
+  VecNormalize(lineN, line);
   PlaneNormalize(pi);
 
-  denom = PlaneDotNormal(pi,lineN);
+  denom = PlaneDotNormal(pi, lineN);
   if (denom == 0)
     return NULL;
 
-  t = -PlaneDotCoord(pi,V1) / denom;
+  t = -PlaneDotCoord(pi, V1) / denom;
 
   if (pOut)
     VecMAD(*pOut, lineN, t, V1);
 
-  if (percent) *percent = t/VecLength(line);
+  if (percent)
+    *percent = t / VecLength(line);
 
   return pOut;
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-sVec3<T> *PlaneIntersectRay(const sVec4<T>& P,
-                               const sVec3<T>& avRayPos,
-                               const sVec3<T>& avRayDir,
-                               sVec3<T> *pOut = NULL,
-                               T *dist = NULL)
+sVec3<T>* PlaneIntersectRay(const sVec4<T>& P, const sVec3<T>& avRayPos,
+                            const sVec3<T>& avRayDir, sVec3<T>* pOut = NULL,
+                            T* dist = NULL)
 {
   sVec3<T> line(avRayDir), lineN;
   sVec4<T> pi(P);
-  T     denom, t;
+  T denom, t;
 
-  VecNormalize(lineN,line);
+  VecNormalize(lineN, line);
   PlaneNormalize(pi);
 
-  denom = PlaneDotNormal(pi,lineN);
+  denom = PlaneDotNormal(pi, lineN);
   if (denom == 0)
     return NULL;
 
-  t = -PlaneDotCoord(pi,avRayPos) / denom;
+  t = -PlaneDotCoord(pi, avRayPos) / denom;
 
   if (pOut)
     VecMAD(*pOut, lineN, t, avRayPos);
 
-  if(dist) *dist = t;
+  if (dist)
+    *dist = t;
 
   return pOut;
 }
@@ -178,21 +174,22 @@ sVec4<T>* PlaneNormalize(sVec4<T>& Out, const sVec4<T>& P)
 template <class T>
 sVec4<T>* PlaneNormalize(sVec4<T>& Out)
 {
-  return PlaneNormalize(Out,Out);
+  return PlaneNormalize(Out, Out);
 }
 
 ///////////////////////////////////////////////
 template <class T>
-sVec4<T>& PlaneTransform(sVec4<T>& Out,
-                            const sVec4<T>& P,
-                            const sMatrix<T>& M)
+sVec4<T>& PlaneTransform(sVec4<T>& Out, const sVec4<T>& P, const sMatrix<T>& M)
 {
-  sMatrix<T>  m;
-  T     a, b, c, d;
+  sMatrix<T> m;
+  T a, b, c, d;
 
-  MatrixInverse(m,M);
+  MatrixInverse(m, M);
 
-  a = P.A(); b = P.B(); c = P.C(); d = P.D();
+  a = P.A();
+  b = P.B();
+  c = P.C();
+  d = P.D();
 
   Out.A() = a * m._11 + b * m._12 + c * m._13 + d * m._14;
   Out.B() = a * m._21 + b * m._22 + c * m._23 + d * m._24;
@@ -205,10 +202,14 @@ sVec4<T>& PlaneTransform(sVec4<T>& Out,
 ///////////////////////////////////////////////
 // Same as PlaneTransform but assume the matrix passed is already inversed.
 template <class T>
-sVec4<T>& PlaneTransformInversedMatrix(sVec4<T>& Out, const sVec4<T>& P, const sMatrix<T>& M)
+sVec4<T>& PlaneTransformInversedMatrix(sVec4<T>& Out, const sVec4<T>& P,
+                                       const sMatrix<T>& M)
 {
   T a, b, c, d;
-  a = P.A(); b = P.B(); c = P.C(); d = P.D();
+  a = P.A();
+  b = P.B();
+  c = P.C();
+  d = P.D();
 
   Out.A() = a * M._11 + b * M._12 + c * M._13 + d * M._14;
   Out.B() = a * M._21 + b * M._22 + c * M._23 + d * M._24;
@@ -220,21 +221,23 @@ sVec4<T>& PlaneTransformInversedMatrix(sVec4<T>& Out, const sVec4<T>& P, const s
 
 ///////////////////////////////////////////////
 template <class T>
-sVec3<T>* PlaneIntersection(sVec3<T>& Out, const sVec4<T>& PA, const sVec4<T>& PB, const sVec4<T>& PC)
+sVec3<T>* PlaneIntersection(sVec3<T>& Out, const sVec4<T>& PA,
+                            const sVec4<T>& PB, const sVec4<T>& PC)
 {
   sVec3<T> BcC, CcA, AcB;
 
-  T denom = VecDot(PA.GetNormal(), VecCross(BcC,PB.GetNormal(),PC.GetNormal()));
+  T denom =
+    VecDot(PA.GetNormal(), VecCross(BcC, PB.GetNormal(), PC.GetNormal()));
   if (denom == 0)
     return NULL;
-  denom = 1/denom;
+  denom = 1 / denom;
 
   VecCross(CcA, PC.GetNormal(), PA.GetNormal());
   VecCross(AcB, PA.GetNormal(), PB.GetNormal());
 
-  Out.x = (-PA.D()*BcC.x - PB.D()*CcA.x - PC.D()*AcB.x) * denom;
-  Out.y = (-PA.D()*BcC.y - PB.D()*CcA.y - PC.D()*AcB.y) * denom;
-  Out.z = (-PA.D()*BcC.z - PB.D()*CcA.z - PC.D()*AcB.z) * denom;
+  Out.x = (-PA.D() * BcC.x - PB.D() * CcA.x - PC.D() * AcB.x) * denom;
+  Out.y = (-PA.D() * BcC.y - PB.D() * CcA.y - PC.D() * AcB.y) * denom;
+  Out.z = (-PA.D() * BcC.z - PB.D() * CcA.z - PC.D() * AcB.z) * denom;
 
   return &Out;
 }
@@ -244,9 +247,9 @@ template <class T>
 sVec3<T>& PlaneClosest(sVec3<T>& Out, const sVec4<T>& P, const sVec3<T>& A)
 {
   T dist = PlaneDotCoord(P, A);
-  Out.x = A.x - P.x*dist;
-  Out.y = A.y - P.y*dist;
-  Out.z = A.z - P.z*dist;
+  Out.x = A.x - P.x * dist;
+  Out.y = A.y - P.y * dist;
+  Out.z = A.z - P.z * dist;
   return Out;
 }
 
@@ -273,14 +276,12 @@ ePlaneType PlaneMaxType(const sVec4<T>& Plane)
   ePlaneType ret = ePlaneType_X;
   T fMaxNorm = (T)fabs(Plane.x);
 
-  if(fMaxNorm < fabs(Plane.y))
-  {
+  if (fMaxNorm < fabs(Plane.y)) {
     fMaxNorm = (T)fabs(Plane.y);
     ret = ePlaneType_Y;
   }
 
-  if(fMaxNorm < fabs(Plane.z))
-  {
+  if (fMaxNorm < fabs(Plane.z)) {
     fMaxNorm = (T)fabs(Plane.z);
     ret = ePlaneType_Z;
   }
@@ -295,32 +296,38 @@ ePlaneType PlaneMaxType(const sVec4<T>& Plane)
 //! If not NULL apFwdDir is the direction toward which the forward vector should be the closest.
 //! By example if you want the forward vector to be the one that points down you'd pass sVec3f::OpYAxis() here.
 template <class T>
-sMatrix<T>& PlaneExtractCoordinateSystem(sMatrix<T>& Out, const sVec4<T>& Plane, tBool abTranspose, const sVec3<T>* apFwdDir, const sVec3<T>* apOrigin)
+sMatrix<T>& PlaneExtractCoordinateSystem(sMatrix<T>& Out, const sVec4<T>& Plane,
+                                         tBool abTranspose,
+                                         const sVec3<T>* apFwdDir,
+                                         const sVec3<T>* apOrigin)
 {
   sVec3<T> vOrg, vRight, vFwd;
 
   // find the major axis
   sVec3<T> vA = { 0, 0, 0 };
   if (ni::Abs(Plane.y) > ni::Abs(Plane.z)) {
-    if (ni::Abs(Plane.z) < ni::Abs(Plane.x))  vA.z = 1.0f;
-    else                      vA.x = 1.0f;
+    if (ni::Abs(Plane.z) < ni::Abs(Plane.x))
+      vA.z = 1.0f;
+    else
+      vA.x = 1.0f;
   }
   else {
-    if (ni::Abs(Plane.y) <= ni::Abs(Plane.x)) vA.y = 1.0f;
-    else                      vA.x = 1.0f;
+    if (ni::Abs(Plane.y) <= ni::Abs(Plane.x))
+      vA.y = 1.0f;
+    else
+      vA.x = 1.0f;
   }
 
-  VecNormalize(VecCross(vRight,   vA,  Plane.GetNormal()));
-  VecNormalize(VecCross(vFwd,   vRight, Plane.GetNormal()));
+  VecNormalize(VecCross(vRight, vA, Plane.GetNormal()));
+  VecNormalize(VecCross(vFwd, vRight, Plane.GetNormal()));
   vOrg = -Plane.GetDist() * Plane.GetNormal();
 
-  if (apFwdDir)
-  {
+  if (apFwdDir) {
     sVec3<T> vFwdDir = -*apFwdDir;
-    T fRYCos = VecDot(vRight,vFwdDir);
-    T fFYCos = VecDot(vFwd,vFwdDir);
-    T fIRYCos = VecDot(-vRight,vFwdDir);
-    T fIFYCos = VecDot(-vFwd,vFwdDir);
+    T fRYCos = VecDot(vRight, vFwdDir);
+    T fFYCos = VecDot(vFwd, vFwdDir);
+    T fIRYCos = VecDot(-vRight, vFwdDir);
+    T fIFYCos = VecDot(-vFwd, vFwdDir);
 
     T fSmallest = 1.0f;
     sVec3<T> newRight(vRight), newFwd(vFwd);
@@ -350,14 +357,26 @@ sMatrix<T>& PlaneExtractCoordinateSystem(sMatrix<T>& Out, const sVec4<T>& Plane,
 
   const sVec3<T> planeNormal = Plane.GetNormal();
   if (abTranspose) {
-    Out._11 = vRight.x; Out._21 = planeNormal.x;  Out._31 = vFwd.x;
-    Out._12 = vRight.y; Out._22 = planeNormal.y;  Out._32 = vFwd.y;
-    Out._13 = vRight.z; Out._23 = planeNormal.z;  Out._33 = vFwd.z;
+    Out._11 = vRight.x;
+    Out._21 = planeNormal.x;
+    Out._31 = vFwd.x;
+    Out._12 = vRight.y;
+    Out._22 = planeNormal.y;
+    Out._32 = vFwd.y;
+    Out._13 = vRight.z;
+    Out._23 = planeNormal.z;
+    Out._33 = vFwd.z;
   }
   else {
-    Out._11 = vRight.x; Out._12 = planeNormal.x;  Out._13 = vFwd.x;
-    Out._21 = vRight.y; Out._22 = planeNormal.y;  Out._23 = vFwd.y;
-    Out._31 = vRight.z; Out._32 = planeNormal.z;  Out._33 = vFwd.z;
+    Out._11 = vRight.x;
+    Out._12 = planeNormal.x;
+    Out._13 = vFwd.x;
+    Out._21 = vRight.y;
+    Out._22 = planeNormal.y;
+    Out._23 = vFwd.y;
+    Out._31 = vRight.z;
+    Out._32 = planeNormal.z;
+    Out._33 = vFwd.z;
   }
 
   Out._14 = 0.0f;
@@ -388,5 +407,5 @@ tBool PlaneIntersectSphere(const sVec4<T>& plane, const sVec3<T>& pos, T radius)
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __MATHPLANE_9071702_H__

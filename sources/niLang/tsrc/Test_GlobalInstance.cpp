@@ -4,16 +4,18 @@
 
 using namespace ni;
 
-struct FGlobalInstance
-{
-};
+struct FGlobalInstance {};
 
 struct Dummy : public ImplRC<iUnknown> {
   cString _name;
-  Dummy(const achar* aName) : _name(aName) {}
+  Dummy(const achar* aName)
+      : _name(aName)
+  {
+  }
 };
 
-TEST_FIXTURE(FGlobalInstance,Range) {
+TEST_FIXTURE(FGlobalInstance, Range)
+{
   Ptr<tGlobalInstanceCMap> map = tGlobalInstanceCMap::Create();
   astl::upsert(*map, _ASTR("Dummy1"), niNew Dummy("1"));
   astl::upsert(*map, _ASTR("Alpha"), niNew Dummy("A"));
@@ -36,10 +38,11 @@ TEST_FIXTURE(FGlobalInstance,Range) {
     niDebugFmt(("... %s = %s", it->first, ((Dummy*)it->second.ptr())->_name));
     ++found;
   }
-  CHECK_EQUAL(7,found);
+  CHECK_EQUAL(7, found);
 }
 
-TEST_FIXTURE(FGlobalInstance,PutGet) {
+TEST_FIXTURE(FGlobalInstance, PutGet)
+{
   Ptr<iUnknown> i1 = niNew Dummy("1");
   Ptr<iUnknown> i2 = niNew Dummy("2");
   Ptr<tGlobalInstanceCMap> map = tGlobalInstanceCMap::Create();

@@ -2,8 +2,7 @@
 #include "../src/API/niLang/IFile.h"
 #include "../src/API/niLang/ILang.h"
 
-struct FURLFile {
-};
+struct FURLFile {};
 
 using namespace ni;
 
@@ -22,7 +21,8 @@ static achar const* _URL[] = {
 
 const tI32 knMaxProtocolSearchLen = 16;
 
-TEST_FIXTURE(FURLFile,StringURL) {
+TEST_FIXTURE(FURLFile, StringURL)
+{
   niDebugFmt(("... URL[0]: %s", _URL[0]));
 
   CHECK_EQUAL(4, StrFindProtocol(_URL[0]));
@@ -34,16 +34,19 @@ TEST_FIXTURE(FURLFile,StringURL) {
   CHECK_EQUAL(1, StrFindProtocol(_URL[6]));
 
   CHECK_EQUAL(_ASTR("http"), StringURLGetProtocol(_URL[0]));
-  CHECK_EQUAL(_ASTR("bytecollider.com/img/ni-logo.png"), StringURLGetPath(_URL[0]));
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/ni-logo.png"),
+              StringURLGetPath(_URL[0]));
 
   CHECK_EQUAL(_ASTR("HTTP"), StringURLGetProtocol(_URL[5]));
-  CHECK_EQUAL(_ASTR("BYTECOLLIDER.COM/IMG/NI-LOGO.PNG"), StringURLGetPath(_URL[5]));
+  CHECK_EQUAL(_ASTR("BYTECOLLIDER.COM/IMG/NI-LOGO.PNG"),
+              StringURLGetPath(_URL[5]));
 
   CHECK_EQUAL(_ASTR("file"), StringURLGetProtocol(_URL[3]));
   CHECK_EQUAL(_ASTR("img/ni-logo.png"), StringURLGetPath(_URL[3]));
 
   CHECK_EQUAL(_ASTR(""), StringURLGetProtocol(_URL[1]));
-  CHECK_EQUAL(_ASTR("..\\..\\data\\niUI\\error.dds"), StringURLGetPath(_URL[1]));
+  CHECK_EQUAL(_ASTR("..\\..\\data\\niUI\\error.dds"),
+              StringURLGetPath(_URL[1]));
 
   CHECK_EQUAL(_ASTR("a"), StringURLGetProtocol(_URL[6]));
   CHECK_EQUAL(_ASTR("foo://bar"), StringURLGetPath(_URL[6]));
@@ -53,7 +56,8 @@ TEST_FIXTURE(FURLFile,StringURL) {
   CHECK_EQUAL(_ASTR(""), StringURLGetPath(""));
 }
 
-TEST_FIXTURE(FURLFile,URLHandler) {
+TEST_FIXTURE(FURLFile, URLHandler)
+{
   CHECK_EQUAL(_ASTR("file"), ni::GetLang()->URLGetProtocol(_URL[1]));
   CHECK_EQUAL(_ASTR("file"), ni::GetLang()->URLGetProtocol(_URL[2]));
   CHECK_EQUAL(_ASTR("file"), ni::GetLang()->URLGetProtocol(_URL[7]));
@@ -70,17 +74,18 @@ TEST_FIXTURE(FURLFile,URLHandler) {
   CHECK(fileHandler.ptr() != defaultHandler.ptr());
 }
 
-TEST_FIXTURE(FURLFile,URLOpen) {
+TEST_FIXTURE(FURLFile, URLOpen)
+{
   niDebugFmt(("... URL[7]: %s", _URL[7]));
   Ptr<iFile> fileFP = ni::GetLang()->URLOpen(_URL[7]);
   CHECK_RETURN_IF_FAILED(fileFP.IsOK());
-  CHECK_EQUAL(152,fileFP->GetSize());
+  CHECK_EQUAL(152, fileFP->GetSize());
 
   niDebugFmt(("... URL[2]: %s", _URL[2]));
   Ptr<iFile> defaultFP = ni::GetLang()->URLOpen(_URL[2]);
   CHECK_RETURN_IF_FAILED(defaultFP.IsOK());
   CHECK_EQUAL(fileFP->GetSize(), defaultFP->GetSize());
-  CHECK_EQUAL(152,fileFP->GetSize());
+  CHECK_EQUAL(152, fileFP->GetSize());
 
   {
     cString absPath = ni::GetLang()->GetEnv("WORK");
@@ -91,7 +96,8 @@ TEST_FIXTURE(FURLFile,URLOpen) {
   }
 }
 
-TEST_FIXTURE(FURLFile,PathURL) {
+TEST_FIXTURE(FURLFile, PathURL)
+{
   niDebugFmt(("... URL[0]: %s", _URL[0]));
   ni::cPath pathURL(_URL[0]);
 
@@ -99,8 +105,7 @@ TEST_FIXTURE(FURLFile,PathURL) {
               pathURL.GetPath());
 
   pathURL.SetFile("narf.foo");
-  CHECK_EQUAL(_ASTR("http://bytecollider.com/img/narf.foo"),
-              pathURL.GetPath());
+  CHECK_EQUAL(_ASTR("http://bytecollider.com/img/narf.foo"), pathURL.GetPath());
 
   CHECK(pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR("http"), pathURL.GetProtocol());
@@ -114,21 +119,17 @@ TEST_FIXTURE(FURLFile,PathURL) {
   pathURL.SetProtocol("");
   CHECK(!pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR(""), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"),
-              pathURL.GetPath());
-
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"), pathURL.GetPath());
 
   // make sure nothing changes if we set the protocol to empty again
   pathURL.SetProtocol("");
   CHECK(!pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR(""), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"),
-              pathURL.GetPath());
+  CHECK_EQUAL(_ASTR("bytecollider.com/img/narf.foo"), pathURL.GetPath());
 
   // add back a protocol
   pathURL.SetProtocol("foo");
   CHECK(pathURL.HasProtocol());
   CHECK_EQUAL(_ASTR("foo"), pathURL.GetProtocol());
-  CHECK_EQUAL(_ASTR("foo://bytecollider.com/img/narf.foo"),
-              pathURL.GetPath());
+  CHECK_EQUAL(_ASTR("foo://bytecollider.com/img/narf.foo"), pathURL.GetPath());
 }

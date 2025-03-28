@@ -12,10 +12,10 @@
 #include "FileFd.h"
 
 #ifdef niWindows
-#include <sys/utime.h>
+  #include <sys/utime.h>
 #endif
 #ifdef niPosix
-#include <utime.h>
+  #include <utime.h>
 #endif
 
 using namespace ni;
@@ -28,39 +28,45 @@ using namespace ni;
 // #endif
 
 #ifndef niCore_FileStdIO_UseOpen
-#define niCore_FileStdIO_UseFILE // doesnt support more than 2GB file in Windows...
+  #define niCore_FileStdIO_UseFILE // doesnt support more than 2GB file in Windows...
 #endif
 
 #ifdef niCore_FileStdIO_UseFILE
-#if defined ni64 || (defined niWin32 && (_MSC_VER > 1310))
-#define niCore_FileStdIO_64
-#endif
-#define CheckValid(X) if (mpFP == NULL) return X;
+  #if defined ni64 || (defined niWin32 && (_MSC_VER > 1310))
+    #define niCore_FileStdIO_64
+  #endif
+  #define CheckValid(X) \
+    if (mpFP == NULL)   \
+      return X;
 #else
-#define CheckValid(X) if (mnFile == -1) return X;
+  #define CheckValid(X) \
+    if (mnFile == -1)   \
+      return X;
 #endif
 
 #undef stdio
 
-niExportFuncCPP(ni::cString) agetcwd() {
+niExportFuncCPP(ni::cString) agetcwd()
+{
 #ifdef niWindows
   return ni::Windows::utf8_getcwd();
 #else
-  char buf[niStackBufferSize] = {0};
-  getcwd(buf,sizeof(buf));
+  char buf[niStackBufferSize] = { 0 };
+  getcwd(buf, sizeof(buf));
   return buf;
 #endif
 }
 
 #define DEVICE_SEPARATOR ':'
 
-static bool _RemovePathSlashPatterns(char* apData) {
+static bool _RemovePathSlashPatterns(char* apData)
+{
   bool modified = false;
 
   /* remove duplicate slashes */
   {
     char* p = NULL;
-    const char t[] = {'/','/',0};
+    const char t[] = { '/', '/', 0 };
     while ((p = (char*)StrStr(apData, t)) != NULL) {
       StrRemove(p, 0);
       modified = true;
@@ -70,7 +76,7 @@ static bool _RemovePathSlashPatterns(char* apData) {
   /* remove /./ patterns */
   {
     char* p = NULL;
-    const char t[] = {'/','.','/',0};
+    const char t[] = { '/', '.', '/', 0 };
     while ((p = (char*)StrStr(apData, t)) != NULL) {
       StrRemove(p, 0);
       StrRemove(p, 0);
@@ -81,11 +87,11 @@ static bool _RemovePathSlashPatterns(char* apData) {
   /* collapse /../ patterns */
   {
     char* p = NULL;
-    const char t[] = {'/','.','.','/',0};
+    const char t[] = { '/', '.', '.', '/', 0 };
     char* buf = apData;
-    while ((p = (char*)StrStr(buf,t)) != NULL) {
+    while ((p = (char*)StrStr(buf, t)) != NULL) {
       int i;
-      for (i=0; buf+StrOffset(buf, i) < p; i++)
+      for (i = 0; buf + StrOffset(buf, i) < p; i++)
         ;
 
       while (--i > 0) {
@@ -103,7 +109,7 @@ static bool _RemovePathSlashPatterns(char* apData) {
         i = 0;
 
       p += StrSize(t);
-      memmove(buf+StrOffset(buf, i+1), p, StrSizeZ(p));
+      memmove(buf + StrOffset(buf, i + 1), p, StrSizeZ(p));
       modified = true;
     }
   }
@@ -113,17 +119,18 @@ static bool _RemovePathSlashPatterns(char* apData) {
 
 // Returns the canonical form of the specified filename, i.e. the minimal
 // absolute filename describing the same file.
-niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool forceDirectory = eFalse)
+niExportFuncCPP(cString) CanonicalizeFilename(
+  const char* filename, const tBool forceDirectory = eFalse)
 {
   cString o;
-  const tBool isDirectory = forceDirectory || StrEndsWith(filename,"/");
+  const tBool isDirectory = forceDirectory || StrEndsWith(filename, "/");
   if (!niStringIsOK(filename)) {
     return AZEROSTR;
   }
 
   /* if the filename starts with ~ then it's relative to a home directory */
   if (StrStartsWithHomeExpansion(filename)) {
-    const char *tail = filename + StrCharWidth(StrGetNext(filename));
+    const char* tail = filename + StrCharWidth(StrGetNext(filename));
     o = ni::GetLang()->GetProperty("ni.dirs.home");
     if (!o.empty() && !StrIsPathSep(o.back())) {
       o.appendChar('/');
@@ -133,9 +140,11 @@ niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool 
   /* if the filename is relative, make it absolute */
   else if (!StrIsAbsolutePath(filename) && (StrGetNext(filename) != '#')) {
     cString strCwd = agetcwd();
-    if ((StrToLower(strCwd[0]) >= 'a') && (StrToLower(strCwd[0]) <= 'z') && (strCwd[1] == DEVICE_SEPARATOR)) {
+    if ((StrToLower(strCwd[0]) >= 'a') && (StrToLower(strCwd[0]) <= 'z') &&
+        (strCwd[1] == DEVICE_SEPARATOR))
+    {
       // append, skip the drive letter since its already added at the begining
-      o.append(strCwd.Chars()+2);
+      o.append(strCwd.Chars() + 2);
     }
     else {
       o.append(strCwd);
@@ -161,7 +170,7 @@ niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool 
     /* if not, use the current drive */
     if (drive < 0)
       drive = _getdrive();
-    o.appendChar(drive+'a');
+    o.appendChar(drive + 'a');
     o.appendChar(DEVICE_SEPARATOR);
   }
 #endif
@@ -183,14 +192,14 @@ niExportFuncCPP(cString) CanonicalizeFilename(const char *filename, const tBool 
 }
 
 ///////////////////////////////////////////////
-class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
-{
+class cFileStdIO : public ImplRC<iFileBase, eImplFlags_Default> {
  public:
   ///////////////////////////////////////////////
-  inline cFileStdIO(const achar* aaszFileName, eFileOpenMode aMode) {
+  inline cFileStdIO(const achar* aaszFileName, eFileOpenMode aMode)
+  {
     ZeroMembers();
 
-    if (ni::StrICmp(aaszFileName,_A(":stdin:")) == 0) {
+    if (ni::StrICmp(aaszFileName, _A(":stdin:")) == 0) {
       mnFlags = eFileOpenMode_Read;
 #ifdef niCore_FileStdIO_UseFILE
       mpFP = stdin;
@@ -198,7 +207,7 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
       mnFile = 0;
 #endif
     }
-    else if (ni::StrICmp(aaszFileName,_A(":stdout:")) == 0) {
+    else if (ni::StrICmp(aaszFileName, _A(":stdout:")) == 0) {
       mnFlags = eFileOpenMode_Write;
 #ifdef niCore_FileStdIO_UseFILE
       mpFP = stdout;
@@ -206,7 +215,7 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
       mnFile = 1;
 #endif
     }
-    else if (ni::StrICmp(aaszFileName,_A(":stderr:")) == 0) {
+    else if (ni::StrICmp(aaszFileName, _A(":stderr:")) == 0) {
       mnFlags = eFileOpenMode_Write;
 #ifdef niCore_FileStdIO_UseFILE
       mpFP = stderr;
@@ -220,21 +229,25 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
       /////// FILE base file implementation ///////
 
       while (1) {
-        achar aszMode[16] = {0};
-        if (niFlagTest(aMode,eFileOpenMode_Append)) {
-          ni::StrCat(aszMode,_A("ab"));
+        achar aszMode[16] = { 0 };
+        if (niFlagTest(aMode, eFileOpenMode_Append)) {
+          ni::StrCat(aszMode, _A("ab"));
         }
-        else if (niFlagTest(aMode,eFileOpenMode_Read) && niFlagTest(aMode,eFileOpenMode_Write)) {
-          ni::StrCat(aszMode,_A("r+b")); // read and write mode (DONT ERASE existing content)
+        else if (niFlagTest(aMode, eFileOpenMode_Read) &&
+                 niFlagTest(aMode, eFileOpenMode_Write))
+        {
+          ni::StrCat(
+            aszMode,
+            _A("r+b")); // read and write mode (DONT ERASE existing content)
         }
-        else if (niFlagTest(aMode,eFileOpenMode_Read))  {
-          ni::StrCat(aszMode,_A("rb"));
+        else if (niFlagTest(aMode, eFileOpenMode_Read)) {
+          ni::StrCat(aszMode, _A("rb"));
         }
-        else if (niFlagTest(aMode,eFileOpenMode_Write)) {
-          ni::StrCat(aszMode,_A("wb"));
+        else if (niFlagTest(aMode, eFileOpenMode_Write)) {
+          ni::StrCat(aszMode, _A("wb"));
         }
-        if (niFlagTest(aMode,eFileOpenMode_Random)) {
-          ni::StrCat(aszMode,_A("R"));
+        if (niFlagTest(aMode, eFileOpenMode_Random)) {
+          ni::StrCat(aszMode, _A("R"));
         }
 
         mpFP = afopen(aaszFileName, aszMode, &mstrPath);
@@ -242,17 +255,20 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
           // Opened the file, break out of the loop
           break;
         }
-        if (niFlagTest(aMode,eFileOpenMode_Read) && niFlagTest(aMode,eFileOpenMode_Write)) {
+        if (niFlagTest(aMode, eFileOpenMode_Read) &&
+            niFlagTest(aMode, eFileOpenMode_Write))
+        {
           // Read-write mode, will fail if the file hasn't be created yet, so we're going
           // to try to create it this time, in w+ mode
           aszMode[0] = 0;
           // read and write mode (ERASE existing content)
-          StrCat(aszMode,_A("w+b"));
+          StrCat(aszMode, _A("w+b"));
           // Apply the random flag...
-          if (niFlagTest(aMode,eFileOpenMode_Random)) {
-            StrCat(aszMode,_A("R"));
+          if (niFlagTest(aMode, eFileOpenMode_Random)) {
+            StrCat(aszMode, _A("R"));
           }
-          aMode = (eFileOpenMode)0; // zero the mode, we won't retry after this...
+          aMode =
+            (eFileOpenMode)0; // zero the mode, we won't retry after this...
           // continue, will retry opening the file with the new mode
           continue;
         }
@@ -267,18 +283,18 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
       /////// _open base file implementation ///////
       int mode = _O_BINARY;
       int pmode = 0;
-      if (niFlagTest(aMode,eFileOpenMode_Append)) {
-        mode |= _O_CREAT|_O_APPEND;
+      if (niFlagTest(aMode, eFileOpenMode_Append)) {
+        mode |= _O_CREAT | _O_APPEND;
         pmode |= _S_IWRITE;
-        if (niFlagTest(aMode,eFileOpenMode_Read)) {
+        if (niFlagTest(aMode, eFileOpenMode_Read)) {
           mode |= _O_RDWR;
           pmode |= _S_IREAD;
         }
       }
-      else if (niFlagTest(aMode,eFileOpenMode_Write)) {
+      else if (niFlagTest(aMode, eFileOpenMode_Write)) {
         mode |= _O_CREAT;
         pmode |= _S_IWRITE;
-        if (niFlagTest(aMode,eFileOpenMode_Read)) {
+        if (niFlagTest(aMode, eFileOpenMode_Read)) {
           mode |= _O_RDWR;
           pmode |= _S_IREAD;
         }
@@ -286,14 +302,14 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
           mode |= _O_WRONLY;
         }
       }
-      else if (niFlagTest(aMode,eFileOpenMode_Read))  {
+      else if (niFlagTest(aMode, eFileOpenMode_Read)) {
         mode |= _O_RDONLY;
         pmode |= _S_IREAD;
       }
-      if (niFlagTest(aMode,eFileOpenMode_Random)) {
+      if (niFlagTest(aMode, eFileOpenMode_Random)) {
         mode |= _O_RANDOM;
       }
-      mnFile = FdOpen(aaszFileName,&mstrPath,mode,pmode);
+      mnFile = FdOpen(aaszFileName, &mstrPath, mode, pmode);
       if (mnFile == -1) {
         // perror("Can't open file.");
         return;
@@ -303,13 +319,14 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  inline ~cFileStdIO() {
+  inline ~cFileStdIO()
+  {
     Invalidate();
   }
 
-
   ///////////////////////////////////////////////
-  inline void ZeroMembers() {
+  inline void ZeroMembers()
+  {
 #ifdef niCore_FileStdIO_UseFILE
     mpFP = NULL;
 #else
@@ -319,9 +336,9 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
     mnFlags = 0;
   }
 
-
   ///////////////////////////////////////////////
-  inline tBool  __stdcall IsOK() const {
+  inline tBool __stdcall IsOK() const
+  {
 #ifdef niCore_FileStdIO_UseFILE
     return (mpFP != NULL);
 #else
@@ -330,7 +347,8 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  inline void __stdcall Invalidate() {
+  inline void __stdcall Invalidate()
+  {
 #ifdef niCore_FileStdIO_UseFILE
     if (mpFP) {
       if (mpFP != stdin && mpFP != stdout && mpFP != stderr) {
@@ -346,54 +364,55 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
 #endif
   }
 
-
   ///////////////////////////////////////////////
-  inline tBool  __stdcall Seek(tI64 offset) {
+  inline tBool __stdcall Seek(tI64 offset)
+  {
     CheckValid(eFalse);
 #ifdef niCore_FileStdIO_UseFILE
-#ifdef niCore_FileStdIO_64
+  #ifdef niCore_FileStdIO_64
     return _fseeki64(mpFP, offset, SEEK_CUR) ? eFalse : eTrue;
-#else
+  #else
     return fseek(mpFP, (long)offset, SEEK_CUR) ? eFalse : eTrue;
-#endif
+  #endif
 #else
-    return FdSeek(mnFile,offset,SEEK_CUR) == -1LL ? eFalse : eTrue;
+    return FdSeek(mnFile, offset, SEEK_CUR) == -1LL ? eFalse : eTrue;
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tBool  __stdcall SeekSet(tI64 offset) {
+  inline tBool __stdcall SeekSet(tI64 offset)
+  {
     CheckValid(eFalse);
 #ifdef niCore_FileStdIO_UseFILE
-#ifdef niCore_FileStdIO_64
+  #ifdef niCore_FileStdIO_64
     return _fseeki64(mpFP, (long)offset, SEEK_SET) ? eFalse : eTrue;
-#else
+  #else
     return fseek(mpFP, (long)offset, SEEK_SET) ? eFalse : eTrue;
-#endif
+  #endif
 #else
-    return FdSeek(mnFile,offset,SEEK_SET) == -1LL ? eFalse : eTrue;
+    return FdSeek(mnFile, offset, SEEK_SET) == -1LL ? eFalse : eTrue;
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tBool    __stdcall SeekEnd(tI64 offset) {
+  inline tBool __stdcall SeekEnd(tI64 offset)
+  {
     if (offset == 0) {
       CheckValid(eFalse);
 #ifdef niCore_FileStdIO_UseFILE
-#ifdef niCore_FileStdIO_64
-      return _fseeki64(mpFP,0,SEEK_END) ? eFalse : eTrue;
+  #ifdef niCore_FileStdIO_64
+      return _fseeki64(mpFP, 0, SEEK_END) ? eFalse : eTrue;
+  #else
+      return fseek(mpFP, 0, SEEK_END) ? eFalse : eTrue;
+  #endif
 #else
-      return fseek(mpFP,0,SEEK_END) ? eFalse : eTrue;
-#endif
-#else
-      return FdSeek(mnFile,offset,SEEK_END) == -1LL ? eFalse : eTrue;
+      return FdSeek(mnFile, offset, SEEK_END) == -1LL ? eFalse : eTrue;
 #endif
     }
     else {
       const tI64 size = GetSize();
       if (offset < size) {
-        return SeekSet(size-offset);
-
+        return SeekSet(size - offset);
       }
       else {
         return SeekSet(0);
@@ -402,35 +421,38 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  inline tSize  __stdcall ReadRaw(void* pOut, tSize nSize) {
+  inline tSize __stdcall ReadRaw(void* pOut, tSize nSize)
+  {
     CheckValid(0);
 #ifdef niCore_FileStdIO_UseFILE
     return fread(pOut, 1, nSize, mpFP);
 #else
-    return FdRead(mnFile,pOut,nSize);
+    return FdRead(mnFile, pOut, nSize);
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tSize  __stdcall WriteRaw(const void* pOut, tSize nSize) {
+  inline tSize __stdcall WriteRaw(const void* pOut, tSize nSize)
+  {
     CheckValid(0);
 #ifdef niCore_FileStdIO_UseFILE
     return fwrite(pOut, 1, nSize, mpFP);
 #else
-    return FdWrite(mnFile,pOut,nSize);
+    return FdWrite(mnFile, pOut, nSize);
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tI64 __stdcall Tell() {
+  inline tI64 __stdcall Tell()
+  {
     CheckValid(0);
     tI64 pos;
 #ifdef niCore_FileStdIO_UseFILE
-#ifdef niCore_FileStdIO_64
+  #ifdef niCore_FileStdIO_64
     pos = _ftelli64(mpFP);
-#else
+  #else
     pos = ftell(mpFP);
-#endif
+  #endif
 #else
     pos = FdTell(mnFile);
 #endif
@@ -438,48 +460,53 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
   ///////////////////////////////////////////////
-  inline tI64 __stdcall GetSize() const {
+  inline tI64 __stdcall GetSize() const
+  {
     CheckValid(0);
     return FdSize(_fd());
   }
 
   ///////////////////////////////////////////////
-  inline tBool __stdcall Flush() {
+  inline tBool __stdcall Flush()
+  {
     CheckValid(eFalse);
     return _flush();
   }
 
   ///////////////////////////////////////////////
-  inline const achar* __stdcall GetSourcePath() const {
+  inline const achar* __stdcall GetSourcePath() const
+  {
     CheckValid(AZEROSTR);
     return mstrPath.Chars();
   }
 
   ///////////////////////////////////////////////
-  inline tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const {
+  inline tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const
+  {
     CheckValid(eFalse);
 #if defined niWinDesktop
-    FILETIME  utc_time, local_time;
-    SYSTEMTIME  system_time;
-    BOOL    retval = FALSE;
+    FILETIME utc_time, local_time;
+    SYSTEMTIME system_time;
+    BOOL retval = FALSE;
 
     ni::Windows::UTF16Buffer wPath;
-    niWin32_UTF8ToUTF16(wPath,mstrPath.Chars());
-    HANDLE hFile = ::CreateFileW(wPath.begin(), FILE_READ_ATTRIBUTES, 0, NULL, OPEN_EXISTING, 0, NULL);
+    niWin32_UTF8ToUTF16(wPath, mstrPath.Chars());
+    HANDLE hFile = ::CreateFileW(wPath.begin(), FILE_READ_ATTRIBUTES, 0, NULL,
+                                 OPEN_EXISTING, 0, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
       return eFalse;
 
     // Get the current time in UTC format
     switch (aFileTime) {
-      case eFileTime_Creation:
-        retval = GetFileTime(hFile, &utc_time, NULL, NULL);
-        break;
-      case eFileTime_LastAccess:
-        retval = GetFileTime(hFile, NULL, &utc_time, NULL);
-        break;
-      case eFileTime_LastWrite:
-        retval = GetFileTime(hFile, NULL, NULL, &utc_time);
-        break;
+    case eFileTime_Creation:
+      retval = GetFileTime(hFile, &utc_time, NULL, NULL);
+      break;
+    case eFileTime_LastAccess:
+      retval = GetFileTime(hFile, NULL, &utc_time, NULL);
+      break;
+    case eFileTime_LastWrite:
+      retval = GetFileTime(hFile, NULL, NULL, &utc_time);
+      break;
     }
 
     CloseHandle(hFile);
@@ -505,26 +532,21 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
     apTime->SetTimeZone(_timezone);
     return eTrue;
 #else
-    time_t atime,mtime,ctime;
-    if (!unix_filetime(mstrPath.Chars(),&atime,&mtime,&ctime))
+    time_t atime, mtime, ctime;
+    if (!unix_filetime(mstrPath.Chars(), &atime, &mtime, &ctime))
       return eFalse;
     switch (aFileTime) {
-      case eFileTime_Creation:
-        SetTimeFromTimeT(apTime, (void*)&ctime);
-        break;
-      case eFileTime_LastAccess:
-        SetTimeFromTimeT(apTime, (void*)&atime);
-        break;
-      case eFileTime_LastWrite:
-        SetTimeFromTimeT(apTime, (void*)&mtime);
-        break;
+    case eFileTime_Creation: SetTimeFromTimeT(apTime, (void*)&ctime); break;
+    case eFileTime_LastAccess: SetTimeFromTimeT(apTime, (void*)&atime); break;
+    case eFileTime_LastWrite: SetTimeFromTimeT(apTime, (void*)&mtime); break;
     }
     return eTrue;
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) {
+  inline tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime)
+  {
     CheckValid(eFalse);
 #if defined niWinDesktop
     if (aFileTime == eFileTime_Creation)
@@ -549,7 +571,7 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
     }
 
     ni::Windows::UTF16Buffer wPath;
-    niWin32_UTF8ToUTF16(wPath,mstrPath.Chars());
+    niWin32_UTF8ToUTF16(wPath, mstrPath.Chars());
     if (_wutime64(wPath.begin(), &buf) != 0)
       return eFalse;
 
@@ -581,18 +603,20 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
 
     return eTrue;
 #else
-#pragma niTodo("IMPLEMENT cFileStdIO::SetTime.")
+  #pragma niTodo("IMPLEMENT cFileStdIO::SetTime.")
     return eFalse;
 #endif
   }
 
   ///////////////////////////////////////////////
-  inline tFileFlags __stdcall GetFileFlags() const {
+  inline tFileFlags __stdcall GetFileFlags() const
+  {
     return mnFlags;
   }
 
   ///////////////////////////////////////////////
-  inline tBool  __stdcall Resize(tI64 newSize) {
+  inline tBool __stdcall Resize(tI64 newSize)
+  {
     int fd = _fd();
 #if defined niWin32
     if (_chsize(fd, (long)newSize) != -1) {
@@ -612,7 +636,8 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
  private:
-  inline tBool _flush() const {
+  inline tBool _flush() const
+  {
 #ifdef niCore_FileStdIO_UseFILE
     fflush((FILE*)mpFP);
     return eTrue;
@@ -621,7 +646,8 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
     return eTrue;
 #endif
   }
-  inline int _fd() const {
+  inline int _fd() const
+  {
 #ifdef niCore_FileStdIO_UseFILE
     return mpFP ? _fileno(mpFP) : -1;
 #else
@@ -630,13 +656,13 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
   }
 
 #ifdef niCore_FileStdIO_UseFILE
-  FILE*  mpFP;
+  FILE* mpFP;
 #else
-  int      mnFile;
+  int mnFile;
 #endif
-  tI64   mnSize;
-  tU32   mnFlags;
-  cString  mstrPath;
+  tI64 mnSize;
+  tU32 mnFlags;
+  cString mstrPath;
 };
 
 //----------------------------------------------------------------------------
@@ -645,63 +671,76 @@ class cFileStdIO : public ImplRC<iFileBase,eImplFlags_Default>
 //
 //----------------------------------------------------------------------------
 //! File system enumerator implementation
-class cFileSystemEnumerator : public ni::ImplRC<ni::iFileSystemEnumerator,ni::eImplFlags_Default>
-{
+class cFileSystemEnumerator
+    : public ni::ImplRC<ni::iFileSystemEnumerator, ni::eImplFlags_Default> {
   niBeginClass(cFileSystemEnumerator);
 
  public:
   ///////////////////////////////////////////////
-  cFileSystemEnumerator(iFileSystem* apFS) {
+  cFileSystemEnumerator(iFileSystem* apFS)
+  {
     ZeroMembers();
     mptrFS = apFS;
   }
 
   ///////////////////////////////////////////////
-  ~cFileSystemEnumerator() {
+  ~cFileSystemEnumerator()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
+  void __stdcall ZeroMembers()
+  {
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     niClassIsOK(cFileSystemEnumerator);
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iFileSystem* __stdcall GetFileSystem() const {
+  virtual iFileSystem* __stdcall GetFileSystem() const
+  {
     return mptrFS;
   }
   ///////////////////////////////////////////////
-  virtual tBool __stdcall FindFirst(const achar* aaszPattern) {
-    if (!niStringIsOK(aaszPattern)) return eFalse;
+  virtual tBool __stdcall FindFirst(const achar* aaszPattern)
+  {
+    if (!niStringIsOK(aaszPattern))
+      return eFalse;
     return mFF.First(aaszPattern);
   }
   ///////////////////////////////////////////////
-  virtual tBool __stdcall FindNext() {
+  virtual tBool __stdcall FindNext()
+  {
     return mFF.Next();
   }
   ///////////////////////////////////////////////
-  virtual const achar* __stdcall GetFileName() const {
+  virtual const achar* __stdcall GetFileName() const
+  {
     return mFF.FileName();
   }
   ///////////////////////////////////////////////
-  virtual tI64 __stdcall GetFileSize() const {
+  virtual tI64 __stdcall GetFileSize() const
+  {
     return mFF.FileSize();
   }
   ///////////////////////////////////////////////
-  virtual tFileAttrFlags __stdcall GetFileAttributes() const {
+  virtual tFileAttrFlags __stdcall GetFileAttributes() const
+  {
     return mFF.FileAttribs();
   }
   ///////////////////////////////////////////////
-  virtual iTime* __stdcall GetFileTime() const {
+  virtual iTime* __stdcall GetFileTime() const
+  {
     if (!mptrTime.IsOK()) {
       niThis(cFileSystemEnumerator)->mptrTime = ni::CreateTimeZero();
     }
@@ -710,10 +749,10 @@ class cFileSystemEnumerator : public ni::ImplRC<ni::iFileSystemEnumerator,ni::eI
   }
 
  private:
-  Ptr<iFileSystem>  mptrFS;
-  cString         mstrPattern;
-  Ptr<iTime>    mptrTime;
-  ni::FindFile      mFF;
+  Ptr<iFileSystem> mptrFS;
+  cString mstrPattern;
+  Ptr<iTime> mptrTime;
+  ni::FindFile mFF;
 
   niEndClass(cFileSystemEnumerator);
 };
@@ -726,16 +765,21 @@ class cFileSystemEnumerator : public ni::ImplRC<ni::iFileSystemEnumerator,ni::eI
 namespace ni {
 
 ///////////////////////////////////////////////
-static tU32 _FileEnumCountItemFileInfo(const sFileInfo& fi, iRegex* regex, tU32& count, iFileEnumSink* apSink, astl::vector<sFileInfo>* apFiles, tU32 anMax) {
-  if ((fi.attribs&eFileAttrFlags_Directory)
-      || !niIsOK(regex)
-      || regex->DoesMatch(fi.name.Chars()))
+static tU32 _FileEnumCountItemFileInfo(const sFileInfo& fi, iRegex* regex,
+                                       tU32& count, iFileEnumSink* apSink,
+                                       astl::vector<sFileInfo>* apFiles,
+                                       tU32 anMax)
+{
+  if ((fi.attribs & eFileAttrFlags_Directory) || !niIsOK(regex) ||
+      regex->DoesMatch(fi.name.Chars()))
   {
     if (apFiles) {
       apFiles->push_back(fi);
     }
     ++count;
-    if (niIsOK(apSink) && !apSink->OnFound(fi.name.Chars(),fi.attribs,fi.size)) {
+    if (niIsOK(apSink) &&
+        !apSink->OnFound(fi.name.Chars(), fi.attribs, fi.size))
+    {
       return count;
     }
     if (anMax && count >= anMax) {
@@ -746,18 +790,23 @@ static tU32 _FileEnumCountItemFileInfo(const sFileInfo& fi, iRegex* regex, tU32&
 }
 
 ///////////////////////////////////////////////
-static tU32 _FileEnumCountItem(const ni::FindFile& aFF, iRegex* regex, tU32& count, iFileEnumSink* apSink, astl::vector<sFileInfo>* apFiles, tU32 anMax) {
+static tU32 _FileEnumCountItem(const ni::FindFile& aFF, iRegex* regex,
+                               tU32& count, iFileEnumSink* apSink,
+                               astl::vector<sFileInfo>* apFiles, tU32 anMax)
+{
   sFileInfo fi;
   fi.count = count;
   fi.name = aFF.FileName();
   fi.time = aFF.FileTime();
   fi.attribs = aFF.FileAttribs();
   fi.size = aFF.FileSize();
-  return _FileEnumCountItemFileInfo(fi,regex,count,apSink,apFiles,anMax);
+  return _FileEnumCountItemFileInfo(fi, regex, count, apSink, apFiles, anMax);
 }
 
 ///////////////////////////////////////////////
-niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink* apSink, astl::vector<sFileInfo>* apFiles, tU32 anMax)
+niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs,
+                            iFileEnumSink* apSink,
+                            astl::vector<sFileInfo>* apFiles, tU32 anMax)
 {
   if (!niIsStringOK(aszFile)) {
     return 0;
@@ -773,57 +822,59 @@ niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink*
   tI32 regexPos = strFile.find(_A("|"));
   Ptr<ni::iRegex> regex;
   if (regexPos != cString::npos) {
-    strRegex = strFile.substr(regexPos+1);
-    strFile = strFile.substr(0,regexPos);
-    regex = ni::CreateFilePatternRegex(strRegex.Chars(),_A("|"));
-    if (!regex.IsOK()) return eInvalidHandle;
+    strRegex = strFile.substr(regexPos + 1);
+    strFile = strFile.substr(0, regexPos);
+    regex = ni::CreateFilePatternRegex(strRegex.Chars(), _A("|"));
+    if (!regex.IsOK())
+      return eInvalidHandle;
   }
 
-  if (StrEq(strFile.Chars(),_A("//")) ||
-      StrEq(strFile.Chars(),_A("//*"))  ||
-      StrEq(strFile.Chars(),_A("//*.*")))
+  if (StrEq(strFile.Chars(), _A("//")) || StrEq(strFile.Chars(), _A("//*")) ||
+      StrEq(strFile.Chars(), _A("//*.*")))
   {
 #if defined niWinDesktop
-    if (niFlagTest(flAttribs,eFileAttrFlags_Directory))
-    {
+    if (niFlagTest(flAttribs, eFileAttrFlags_Directory)) {
       achar curDrive[4] = { 'A', ':', '\\', 0 };
-      niLoop(i,26) {
-        curDrive[0] = (achar)('A'+i);
+      niLoop (i, 26) {
+        curDrive[0] = (achar)('A' + i);
         UINT driveInfo = GetDriveType(curDrive);
-        if (driveInfo != DRIVE_UNKNOWN &&
-            driveInfo != DRIVE_NO_ROOT_DIR)
-        {
+        if (driveInfo != DRIVE_UNKNOWN && driveInfo != DRIVE_NO_ROOT_DIR) {
           sFileInfo fi;
           fi.count = count;
-          fi.name = niFmt(_A("%c:"),i+65);
+          fi.name = niFmt(_A("%c:"), i + 65);
           fi.attribs = eFileAttrFlags_Directory;
           switch (driveInfo) {
-            case DRIVE_REMOVABLE: fi.attribs |= (curDrive[0]==_A('A')||curDrive[0]==_A('B')) ? eFileAttrFlags_DeviceFloppy : eFileAttrFlags_DeviceRemovable; break;
-            case DRIVE_REMOTE:    fi.attribs |= eFileAttrFlags_DeviceRemote;
-            case DRIVE_CDROM:   fi.attribs |= eFileAttrFlags_DeviceCDRom;
-            case DRIVE_RAMDISK:   fi.attribs |= eFileAttrFlags_DeviceRAM;
-            case DRIVE_FIXED:   fi.attribs |= eFileAttrFlags_DeviceFixed;
+          case DRIVE_REMOVABLE:
+            fi.attribs |= (curDrive[0] == _A('A') || curDrive[0] == _A('B'))
+                            ? eFileAttrFlags_DeviceFloppy
+                            : eFileAttrFlags_DeviceRemovable;
+            break;
+          case DRIVE_REMOTE: fi.attribs |= eFileAttrFlags_DeviceRemote;
+          case DRIVE_CDROM: fi.attribs |= eFileAttrFlags_DeviceCDRom;
+          case DRIVE_RAMDISK: fi.attribs |= eFileAttrFlags_DeviceRAM;
+          case DRIVE_FIXED: fi.attribs |= eFileAttrFlags_DeviceFixed;
           }
-          r = _FileEnumCountItemFileInfo(fi,regex,count,pSink,apFiles,anMax);
-          if (r != eInvalidHandle) return r;
+          r =
+            _FileEnumCountItemFileInfo(fi, regex, count, pSink, apFiles, anMax);
+          if (r != eInvalidHandle)
+            return r;
         }
       }
     }
     return count;
 #else
-    strFile = strFile.Chars()+1;
+    strFile = strFile.Chars() + 1;
 #endif
   }
   // Is it a Windows drive path `//X:` ?
-  else if (StrNICmp(strFile.Chars(),_A("//"),2) == 0 &&
+  else if (StrNICmp(strFile.Chars(), _A("//"), 2) == 0 &&
            (strFile.Len() >= 4 && strFile[3] == _A(':')))
   {
     // Make this a valid root path
     strFile = strFile.substr(2);
   }
   // Is it a absolute root path `//Something` ?
-  else if (StrNICmp(strFile.Chars(),_A("//"),2) == 0)
-  {
+  else if (StrNICmp(strFile.Chars(), _A("//"), 2) == 0) {
     // Make this a valid root path
     strFile = strFile.substr(1);
   }
@@ -851,10 +902,13 @@ niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink*
     return 0;
 
   do {
-    if (ff.FileAttribs()&flAttribs) {
-      if (ni::StrCmp(ff.FileName(),_A("..")) != 0 && ni::StrCmp(ff.FileName(),_A(".")) != 0) {
-        r = _FileEnumCountItem(ff,regex,count,pSink,apFiles,anMax);
-        if (r != eInvalidHandle) return r;
+    if (ff.FileAttribs() & flAttribs) {
+      if (ni::StrCmp(ff.FileName(), _A("..")) != 0 &&
+          ni::StrCmp(ff.FileName(), _A(".")) != 0)
+      {
+        r = _FileEnumCountItem(ff, regex, count, pSink, apFiles, anMax);
+        if (r != eInvalidHandle)
+          return r;
       }
     }
   } while (ff.Next());
@@ -862,27 +916,27 @@ niExportFunc(tU32) FileEnum(const achar* aszFile, tU32 flAttribs, iFileEnumSink*
   return count;
 }
 
-}
+} // namespace ni
 
 //----------------------------------------------------------------------------
 //
 // Section: cFileSystemDir
 //
 //----------------------------------------------------------------------------
-#define FILESYSTEM_REBASE_PATH(NAME)            \
-  cString __rebased_##NAME;                     \
-  __rebased_##NAME << this->mstrBase;           \
-  __rebased_##NAME << _##NAME;                  \
+#define FILESYSTEM_REBASE_PATH(NAME)  \
+  cString __rebased_##NAME;           \
+  __rebased_##NAME << this->mstrBase; \
+  __rebased_##NAME << _##NAME;        \
   const char* NAME = __rebased_##NAME.Chars();
 
-class cFileSystemDir : public ImplRC<ni::iFileSystem>
-{
+class cFileSystemDir : public ImplRC<ni::iFileSystem> {
   niBeginClass(cFileSystemDir);
+
  public:
   ///////////////////////////////////////////////
   cFileSystemDir(const achar* aaszDir, tFileSystemRightsFlags aRights)
   {
-    mRights  = aRights;
+    mRights = aRights;
     if (niStringIsOK(aaszDir)) {
       cPath path;
       path.SetDirectory(aaszDir);
@@ -891,34 +945,40 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   }
 
   ///////////////////////////////////////////////
-  ~cFileSystemDir() {
+  ~cFileSystemDir()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     if (mRights) {
       mRights = 0;
     }
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tFileSystemRightsFlags __stdcall GetRightsFlags() const {
+  virtual tFileSystemRightsFlags __stdcall GetRightsFlags() const
+  {
     return mRights;
   }
 
   ///////////////////////////////////////////////
-  virtual const achar* __stdcall GetBaseContainer() const {
+  virtual const achar* __stdcall GetBaseContainer() const
+  {
     return mstrBase.Chars();
   }
 
   ///////////////////////////////////////////////
-  inline tBool __stdcall _CheckPathRights(const achar* aaszPath) {
+  inline tBool __stdcall _CheckPathRights(const achar* aaszPath)
+  {
     if (!mstrBase.empty()) {
       // dont authorize a constrained directory FS to use ".."
       if (StrZContains(aaszPath, 0, "..", 0, 0))
@@ -930,15 +990,14 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tBool __stdcall FileMakeDir(const achar* _aszDir)
   {
-    niCheck(_CheckPathRights(_aszDir),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Create),eFalse);
+    niCheck(_CheckPathRights(_aszDir), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Create), eFalse);
 
     FILESYSTEM_REBASE_PATH(aszDir);
 
     cPath curPath;
     cString strDir;
-    while (1)
-    {
+    while (1) {
       const tU32 chDir = StrGetNext(aszDir);
       if (*aszDir == '\\')
         strDir.appendChar('/');
@@ -946,10 +1005,11 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
         strDir.appendChar(chDir);
       if ((!chDir || chDir == '/' || chDir == '\\') && strDir.IsNotEmpty()) {
         curPath.AddDirectoryBack(strDir.Chars());
-        if (ni::StrCmp(curPath.GetPath().Chars(),_A("/")) != 0 &&
-            ni::StrCmp(curPath.GetPath().Chars(),_A("./")) != 0 &&
+        if (ni::StrCmp(curPath.GetPath().Chars(), _A("/")) != 0 &&
+            ni::StrCmp(curPath.GetPath().Chars(), _A("./")) != 0 &&
             !curPath.GetPath().EndsWith(_A(":/")) &&
-            FileExists(curPath.GetPath().Chars(),eFileAttrFlags_Directory) == 0)
+            FileExists(curPath.GetPath().Chars(), eFileAttrFlags_Directory) ==
+              0)
         {
           bool failed;
           failed = amkdir(curPath.GetPath().Chars()) != 0;
@@ -971,8 +1031,8 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tBool __stdcall FileDeleteDir(const achar* _aszDir)
   {
-    niCheck(_CheckPathRights(_aszDir),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Delete),eFalse);
+    niCheck(_CheckPathRights(_aszDir), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Delete), eFalse);
 
     FILESYSTEM_REBASE_PATH(aszDir);
     return (armdir(aszDir) == 0);
@@ -981,11 +1041,11 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tBool __stdcall FileCopy(const achar* _aszDest, const achar* _aszSrc)
   {
-    niCheck(_CheckPathRights(_aszDest),eFalse);
-    niCheck(_CheckPathRights(_aszSrc),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Read),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Write),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Create),eFalse);
+    niCheck(_CheckPathRights(_aszDest), eFalse);
+    niCheck(_CheckPathRights(_aszSrc), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Read), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Write), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Create), eFalse);
 
     FILE *src, *dst;
 
@@ -1006,9 +1066,9 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
 
     char buf[4096];
     while (1) {
-      size_t r = fread(buf,1,sizeof(buf),src);
+      size_t r = fread(buf, 1, sizeof(buf), src);
       if (r > 0) {
-        fwrite(buf,r,1,dst);
+        fwrite(buf, r, 1, dst);
       }
       if (feof(src))
         break;
@@ -1022,12 +1082,12 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tBool __stdcall FileMove(const achar* _aszDest, const achar* _aszSrc)
   {
-    niCheck(_CheckPathRights(_aszDest),eFalse);
-    niCheck(_CheckPathRights(_aszSrc),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Read),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Write),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Create),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Delete),eFalse);
+    niCheck(_CheckPathRights(_aszDest), eFalse);
+    niCheck(_CheckPathRights(_aszSrc), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Read), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Write), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Create), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Delete), eFalse);
     FILESYSTEM_REBASE_PATH(aszSrc);
     FILESYSTEM_REBASE_PATH(aszDest);
     return ::rename(aszSrc, aszDest) == 0;
@@ -1036,8 +1096,8 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tBool __stdcall FileDelete(const achar* _aszFile)
   {
-    niCheck(_CheckPathRights(_aszFile),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Delete),eFalse);
+    niCheck(_CheckPathRights(_aszFile), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Delete), eFalse);
 
     FILESYSTEM_REBASE_PATH(aszFile);
     cString path = aszFile;
@@ -1048,38 +1108,41 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
         *p = '\\';
       ++p;
     }
-    ni::Windows::UTF16Buffer wPath; niWin32_UTF8ToUTF16(wPath,path.Chars());
-    return (::DeleteFileW(wPath.begin())?eTrue:eFalse);
+    ni::Windows::UTF16Buffer wPath;
+    niWin32_UTF8ToUTF16(wPath, path.Chars());
+    return (::DeleteFileW(wPath.begin()) ? eTrue : eFalse);
 #else
     return (aunlink(path.Chars()) == 0);
 #endif
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall FileEnum(const achar* _aszFile, tU32 flAttribs, iFileEnumSink* apSink)
+  tU32 __stdcall FileEnum(const achar* _aszFile, tU32 flAttribs,
+                          iFileEnumSink* apSink)
   {
-    niCheck(_CheckPathRights(_aszFile),eInvalidHandle);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Enum),eInvalidHandle);
+    niCheck(_CheckPathRights(_aszFile), eInvalidHandle);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Enum), eInvalidHandle);
     FILESYSTEM_REBASE_PATH(aszFile);
-    return ni::FileEnum(aszFile,flAttribs,apSink,NULL,0);
+    return ni::FileEnum(aszFile, flAttribs, apSink, NULL, 0);
   }
 
   ///////////////////////////////////////////////
   tU32 __stdcall FileExists(const achar* _aszFile, tU32 flAttribs)
   {
-    niCheck(_CheckPathRights(_aszFile),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Read) |
-            niFlagIs(mRights,eFileSystemRightsFlags_Write) |
-            niFlagIs(mRights,eFileSystemRightsFlags_Enum),eFalse);
+    niCheck(_CheckPathRights(_aszFile), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Read) |
+              niFlagIs(mRights, eFileSystemRightsFlags_Write) |
+              niFlagIs(mRights, eFileSystemRightsFlags_Enum),
+            eFalse);
 
     FILESYSTEM_REBASE_PATH(aszFile);
 #ifdef niWindows
     // This is necessary on Windows because it doesn't handle
     // directories as if they were a file so FdOpen just doesn't work on
     // directories
-    if (flAttribs&eFileAttrFlags_Directory) {
+    if (flAttribs & eFileAttrFlags_Directory) {
       astl::vector<sFileInfo> infos;
-      tU32 r = ni::FileEnum(aszFile,flAttribs,NULL,&infos,1);
+      tU32 r = ni::FileEnum(aszFile, flAttribs, NULL, &infos, 1);
       if (r == 1) {
         return infos[0].attribs;
       }
@@ -1091,9 +1154,10 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
 #endif
     {
       tU32 attr = FdPathAttrs(aszFile);
-      if ((flAttribs&eFileAttrFlags_Directory) && (attr&eFileAttrFlags_Directory))
+      if ((flAttribs & eFileAttrFlags_Directory) &&
+          (attr & eFileAttrFlags_Directory))
         return attr;
-      if ((flAttribs&eFileAttrFlags_File) && (attr&eFileAttrFlags_File))
+      if ((flAttribs & eFileAttrFlags_File) && (attr & eFileAttrFlags_File))
         return attr;
       return 0;
     }
@@ -1102,8 +1166,8 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   tI64 __stdcall FileSize(const achar* _aszFile)
   {
-    niCheck(_CheckPathRights(_aszFile),eFalse);
-    niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Enum),eFalse);
+    niCheck(_CheckPathRights(_aszFile), eFalse);
+    niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Enum), eFalse);
     FILESYSTEM_REBASE_PATH(aszFile);
     return FdPathSize(aszFile);
   }
@@ -1111,22 +1175,27 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   ///////////////////////////////////////////////
   iFileBase* __stdcall FileBaseOpen(const achar* _aszFile, eFileOpenMode aMode)
   {
-    niCheck(_CheckPathRights(_aszFile),NULL);
+    niCheck(_CheckPathRights(_aszFile), NULL);
 
     // check rights
-    if (niFlagIs(aMode,eFileOpenMode_Read)) {
-      niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Read),NULL);
+    if (niFlagIs(aMode, eFileOpenMode_Read)) {
+      niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Read), NULL);
     }
 
     FILESYSTEM_REBASE_PATH(aszFile);
 
-    if (niFlagIs(aMode,eFileOpenMode_Write) || niFlagIs(aMode,eFileOpenMode_Append)) {
-      niCheck(niFlagIs(mRights,eFileSystemRightsFlags_Write),NULL);
-      if (!niFlagIs(mRights,eFileSystemRightsFlags_Create)) {
+    if (niFlagIs(aMode, eFileOpenMode_Write) ||
+        niFlagIs(aMode, eFileOpenMode_Append))
+    {
+      niCheck(niFlagIs(mRights, eFileSystemRightsFlags_Write), NULL);
+      if (!niFlagIs(mRights, eFileSystemRightsFlags_Create)) {
         // no create right so the file must already exists, this is
         // arguable... but that's how it is :)
-        if (!FileExists(aszFile,eFileAttrFlags_AllFiles)) {
-          niError(niFmt(_A("No create rights assigned to write file '%s' which doesnt already exist."),aszFile));
+        if (!FileExists(aszFile, eFileAttrFlags_AllFiles)) {
+          niError(niFmt(
+            _A(
+              "No create rights assigned to write file '%s' which doesnt already exist."),
+            aszFile));
           return NULL;
         }
       }
@@ -1142,35 +1211,37 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
   }
   iFile* __stdcall FileOpen(const achar* aszFile, eFileOpenMode aMode)
   {
-    Ptr<iFileBase> fpBase = FileBaseOpen(aszFile,aMode);
-    if (!niIsOK(fpBase)) return NULL;
+    Ptr<iFileBase> fpBase = FileBaseOpen(aszFile, aMode);
+    if (!niIsOK(fpBase))
+      return NULL;
     return ni::CreateFile(fpBase);
   }
 
   ///////////////////////////////////////////////
-  virtual cString __stdcall GetAbsolutePath(const achar* _aszFile) const {
+  virtual cString __stdcall GetAbsolutePath(const achar* _aszFile) const
+  {
     FILESYSTEM_REBASE_PATH(aszFile);
-    const tBool isDirectory = StrEndsWith(_aszFile,"/");
+    const tBool isDirectory = StrEndsWith(_aszFile, "/");
 
 #if defined niWinDesktop
     if (StrStartsWithHomeExpansion(aszFile)) {
-      return CanonicalizeFilename(aszFile,isDirectory);
+      return CanonicalizeFilename(aszFile, isDirectory);
     }
     else {
       WCHAR buffer[AMAX_PATH];
       WCHAR* bufferFile;
       ni::Windows::UTF16Buffer wFile;
-      niWin32_UTF8ToUTF16(wFile,aszFile);
-      if (::GetFullPathNameW(wFile.begin(),AMAX_PATH,buffer,&bufferFile)) {
+      niWin32_UTF8ToUTF16(wFile, aszFile);
+      if (::GetFullPathNameW(wFile.begin(), AMAX_PATH, buffer, &bufferFile)) {
         ni::Windows::UTF8Buffer bufferUTF8;
-        niWin32_UTF16ToUTF8(bufferUTF8,buffer);
-        return CanonicalizeFilename(bufferUTF8.begin(),isDirectory);
+        niWin32_UTF16ToUTF8(bufferUTF8, buffer);
+        return CanonicalizeFilename(bufferUTF8.begin(), isDirectory);
       }
       return AZEROSTR;
     }
 #elif defined niPosix
     cString r;
-    char* resolvedPath = realpath(aszFile,NULL);
+    char* resolvedPath = realpath(aszFile, NULL);
     if (resolvedPath) {
       r = resolvedPath;
       // If resolved_path is specified as NULL, then realpath() uses malloc(3)
@@ -1182,20 +1253,21 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
     else {
       r = aszFile;
     }
-    return CanonicalizeFilename(r.Chars(),isDirectory);
+    return CanonicalizeFilename(r.Chars(), isDirectory);
 #else
-    #error "GetAbsolutePath: Unknown platform."
+  #error "GetAbsolutePath: Unknown platform."
 #endif
   }
 
   ///////////////////////////////////////////////
-  virtual iFileSystemEnumerator* __stdcall CreateEnumerator() {
+  virtual iFileSystemEnumerator* __stdcall CreateEnumerator()
+  {
     return niNew cFileSystemEnumerator(this);
   }
 
  private:
-  cString         mstrBase;
-  tFileSystemRightsFlags  mRights;
+  cString mstrBase;
+  tFileSystemRightsFlags mRights;
   niEndClass(cFileSystemDir);
 };
 
@@ -1206,24 +1278,29 @@ class cFileSystemDir : public ImplRC<ni::iFileSystem>
 //----------------------------------------------------------------------------
 niConstValue achar* const kFileSystemHashedAlgo = "SHA1";
 
-struct FileSystemHashed : public ImplRC<ni::iFileSystem>
-{
+struct FileSystemHashed : public ImplRC<ni::iFileSystem> {
   ///////////////////////////////////////////////
   FileSystemHashed(const iFileSystem* apFS)
-      : _fs(apFS) {}
+      : _fs(apFS)
+  {
+  }
 
   const Ptr<iFileSystem> _fs;
 
   // !!! This must be thread safe
-  cString _ComputeFilePath(const achar* aFile, const tBool createCacheSubDir) const {
+  cString _ComputeFilePath(const achar* aFile,
+                           const tBool createCacheSubDir) const
+  {
     const tI32 strLen = StrLen(aFile);
     const tI32 extPos = StrZRFindChar(aFile, 0, '.');
     // const tI32 extLen = strLen - extPos;
-    cString hash = HashToString(HashString(CreateHash(kFileSystemHashedAlgo), aFile, extPos));
+    cString hash = HashToString(
+      HashString(CreateHash(kFileSystemHashedAlgo), aFile, extPos));
     niAssert(hash.size() >= 4);
     cString path;
     path.reserve(6 + hash.size() + 1);
-    const achar cacheSubDir[7] = { hash[0], hash[1], '/', hash[2], hash[3], '/', 0 };
+    const achar cacheSubDir[7] = { hash[0], hash[1], '/', hash[2],
+                                   hash[3], '/',     0 };
     path.append(cacheSubDir);
     path.append(hash.Chars());
     // Preserves the extension, this is to keep compatibility with functions
@@ -1238,36 +1315,41 @@ struct FileSystemHashed : public ImplRC<ni::iFileSystem>
     return path;
   }
 
-  virtual tFileSystemRightsFlags __stdcall GetRightsFlags() const niImpl {
+  virtual tFileSystemRightsFlags __stdcall GetRightsFlags() const niImpl
+  {
     return _fs->GetRightsFlags() & ~(eFileSystemRightsFlags_Enum);
   }
 
-  virtual const achar* __stdcall GetBaseContainer() const niImpl {
+  virtual const achar* __stdcall GetBaseContainer() const niImpl
+  {
     return _fs->GetBaseContainer();
   }
 
-  virtual tBool __stdcall FileMakeDir(const achar* aDir) niImpl {
+  virtual tBool __stdcall FileMakeDir(const achar* aDir) niImpl
+  {
     niError("Not supported.");
     return eFalse;
   }
 
-  virtual tBool __stdcall FileDeleteDir(const achar* aDir) niImpl {
+  virtual tBool __stdcall FileDeleteDir(const achar* aDir) niImpl
+  {
     niError("Not supported.");
     return eFalse;
   }
 
-  virtual tBool __stdcall FileCopy(const achar* aDest, const achar* aSrc) niImpl {
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Read),eFalse);
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Write),eFalse);
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Create),eFalse);
+  virtual tBool __stdcall FileCopy(const achar* aDest, const achar* aSrc) niImpl
+  {
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Read), eFalse);
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Write), eFalse);
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Create), eFalse);
 
-    const cString srcPath = _ComputeFilePath(aSrc,eFalse);
+    const cString srcPath = _ComputeFilePath(aSrc, eFalse);
     if (!_fs->FileExists(srcPath.Chars(), eFileAttrFlags_File)) {
       niError(niFmt(_A("Source file '%s' doesn't exist."), aSrc));
       return eFalse;
     }
 
-    const cString dstPath = _ComputeFilePath(aDest,eTrue);
+    const cString dstPath = _ComputeFilePath(aDest, eTrue);
     if (!_fs->FileCopy(dstPath.Chars(), srcPath.Chars())) {
       niError(niFmt(_A("Copying file '%s' to '%s' failed."), aSrc, aDest));
       return eFalse;
@@ -1276,19 +1358,20 @@ struct FileSystemHashed : public ImplRC<ni::iFileSystem>
     return eFalse;
   }
 
-  virtual tBool __stdcall FileMove(const achar* aDest, const achar* aSrc) niImpl {
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Read),eFalse);
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Write),eFalse);
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Create),eFalse);
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Delete),eFalse);
+  virtual tBool __stdcall FileMove(const achar* aDest, const achar* aSrc) niImpl
+  {
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Read), eFalse);
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Write), eFalse);
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Create), eFalse);
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Delete), eFalse);
 
-    const cString srcPath = _ComputeFilePath(aSrc,eFalse);
+    const cString srcPath = _ComputeFilePath(aSrc, eFalse);
     if (!_fs->FileExists(srcPath.Chars(), eFileAttrFlags_File)) {
       niError(niFmt(_A("Source file '%s' doesn't exist."), aSrc));
       return eFalse;
     }
 
-    const cString dstPath = _ComputeFilePath(aDest,eTrue);
+    const cString dstPath = _ComputeFilePath(aDest, eTrue);
     if (!_fs->FileMove(dstPath.Chars(), srcPath.Chars())) {
       niError(niFmt(_A("Moving file '%s' to '%s' failed."), aSrc, aDest));
       return eFalse;
@@ -1297,76 +1380,91 @@ struct FileSystemHashed : public ImplRC<ni::iFileSystem>
     return eFalse;
   }
 
-  virtual tBool __stdcall FileDelete(const achar* aFile) niImpl {
-    niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Delete),eFalse);
-    const cString filePath = _ComputeFilePath(aFile,eFalse);
+  virtual tBool __stdcall FileDelete(const achar* aFile) niImpl
+  {
+    niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Delete), eFalse);
+    const cString filePath = _ComputeFilePath(aFile, eFalse);
     return _fs->FileDelete(filePath.Chars());
   }
 
-  virtual tU32  __stdcall FileEnum(const achar* aFile, tU32 aAttribs, iFileEnumSink* aSink) niImpl {
+  virtual tU32 __stdcall FileEnum(const achar* aFile, tU32 aAttribs,
+                                  iFileEnumSink* aSink) niImpl
+  {
     return 0;
   }
 
-  virtual tU32  __stdcall FileExists(const achar* aFile, tU32 aAttribs) niImpl {
-    const cString filePath = _ComputeFilePath(aFile,eFalse);
+  virtual tU32 __stdcall FileExists(const achar* aFile, tU32 aAttribs) niImpl
+  {
+    const cString filePath = _ComputeFilePath(aFile, eFalse);
     return _fs->FileExists(filePath.Chars(), aAttribs);
   }
 
-  virtual tI64  __stdcall FileSize(const achar* aFile) niImpl {
-    const cString filePath = _ComputeFilePath(aFile,eFalse);
+  virtual tI64 __stdcall FileSize(const achar* aFile) niImpl
+  {
+    const cString filePath = _ComputeFilePath(aFile, eFalse);
     return _fs->FileSize(filePath.Chars());
   }
 
-  virtual iFile*  __stdcall FileOpen(const achar* aFile, eFileOpenMode aMode) niImpl {
-    Ptr<iFileBase> fpBase = FileBaseOpen(aFile,aMode);
-    if (!niIsOK(fpBase)) return NULL;
+  virtual iFile* __stdcall FileOpen(const achar* aFile,
+                                    eFileOpenMode aMode) niImpl
+  {
+    Ptr<iFileBase> fpBase = FileBaseOpen(aFile, aMode);
+    if (!niIsOK(fpBase))
+      return NULL;
     return ni::CreateFile(fpBase);
   }
 
-  virtual iFileBase*  __stdcall FileBaseOpen(const achar* aFile, eFileOpenMode aMode) niImpl {
-    if (niFlagIs(aMode,eFileOpenMode_Write)) {
-      niCheck(niFlagIs(GetRightsFlags(),eFileSystemRightsFlags_Write),NULL);
+  virtual iFileBase* __stdcall FileBaseOpen(const achar* aFile,
+                                            eFileOpenMode aMode) niImpl
+  {
+    if (niFlagIs(aMode, eFileOpenMode_Write)) {
+      niCheck(niFlagIs(GetRightsFlags(), eFileSystemRightsFlags_Write), NULL);
     }
 
-    const cString filePath = _ComputeFilePath(aFile,niFlagIs(aMode,eFileOpenMode_Write));
+    const cString filePath =
+      _ComputeFilePath(aFile, niFlagIs(aMode, eFileOpenMode_Write));
     return _fs->FileBaseOpen(filePath.Chars(), aMode);
   }
 
-  virtual cString __stdcall GetAbsolutePath(const achar* aFile) const niImpl {
-    const cString filePath = _ComputeFilePath(aFile,eFalse);
+  virtual cString __stdcall GetAbsolutePath(const achar* aFile) const niImpl
+  {
+    const cString filePath = _ComputeFilePath(aFile, eFalse);
     return _fs->GetAbsolutePath(filePath.Chars());
   }
 
-  virtual iFileSystemEnumerator* __stdcall CreateEnumerator() niImpl {
+  virtual iFileSystemEnumerator* __stdcall CreateEnumerator() niImpl
+  {
     return NULL;
   }
 };
 
 namespace ni {
 
-niExportFunc(iFileSystem*) GetRootFS() {
-  static Ptr<cFileSystemDir> _rootFS = niNew cFileSystemDir(
-      NULL,eFileSystemRightsFlags_All);
+niExportFunc(iFileSystem*) GetRootFS()
+{
+  static Ptr<cFileSystemDir> _rootFS =
+    niNew cFileSystemDir(NULL, eFileSystemRightsFlags_All);
   return _rootFS;
 }
 
-niExportFunc(iFileSystem*) CreateFileSystemDir(const achar* aaszDir, tFileSystemRightsFlags aRights)
+niExportFunc(iFileSystem*) CreateFileSystemDir(const achar* aaszDir,
+                                               tFileSystemRightsFlags aRights)
 {
-  if (!GetRootFS()->FileExists(aaszDir,eFileAttrFlags_Directory)) {
-    niError(niFmt(_A("Directory '%s' doesn't exists."),aaszDir));
+  if (!GetRootFS()->FileExists(aaszDir, eFileAttrFlags_Directory)) {
+    niError(niFmt(_A("Directory '%s' doesn't exists."), aaszDir));
     return NULL;
   }
   if (!aRights) {
     niError(niFmt(_A("No rights specified.")));
     return NULL;
   }
-  return niNew cFileSystemDir(aaszDir,aRights);
+  return niNew cFileSystemDir(aaszDir, aRights);
 }
 
-
-niExportFuncCPP(iFileSystem*) CreateFileSystemHashed(const iFileSystem* apFS) {
+niExportFuncCPP(iFileSystem*) CreateFileSystemHashed(const iFileSystem* apFS)
+{
   niCheckIsOK(apFS, NULL);
   return niNew FileSystemHashed(apFS);
 }
 
-}
+} // namespace ni

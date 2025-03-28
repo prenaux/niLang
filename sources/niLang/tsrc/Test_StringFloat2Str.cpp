@@ -7,7 +7,8 @@
 
 struct FStringFloat2Str {};
 
-TEST_FIXTURE(FStringFloat2Str,DetectNeedCorrectDouble) {
+TEST_FIXTURE(FStringFloat2Str, DetectNeedCorrectDouble)
+{
   // Double operations detection based on target architecture.
   // Linux uses a 80bit wide floating point stack on x86. This induces double
   // rounding, which in turn leads to wrong results.
@@ -19,35 +20,54 @@ TEST_FIXTURE(FStringFloat2Str,DetectNeedCorrectDouble) {
   // disabled.)
   // On Linux,x86 89255e-22 != Div_double(89255.0/1e22)
   niDebugFmt(("NEED CORRECT DOUBLE: %s, 89255.0/1e22 = %f",
-              (double(89255.0/1e22) == 89255e-22) ? "no" : "yes",
-              double(89255.0/1e22)));
+              (double(89255.0 / 1e22) == 89255e-22) ? "no" : "yes",
+              double(89255.0 / 1e22)));
 }
 
-TEST_FIXTURE(FStringFloat2Str,Base) {
+TEST_FIXTURE(FStringFloat2Str, Base)
+{
 
-  CHECK_EQUAL(_ASTR("123.45600128173828"),ni::cString().SetDouble(123.456f,ni::eDoubleToStringMode_ShortestSingle));
-  CHECK_EQUAL(_ASTR("123.456"),ni::cString().SetDouble(123.456f,ni::eDoubleToStringMode_Precision,6));
-  CHECK_EQUAL(_ASTR("-123.45600128173828"),ni::cString().SetDouble(-123.456f,ni::eDoubleToStringMode_ShortestSingle));
-  CHECK_EQUAL(_ASTR("1237894700"),ni::cString().SetDouble((ni::tF64)1237894598.78978978));
+  CHECK_EQUAL(
+    _ASTR("123.45600128173828"),
+    ni::cString().SetDouble(123.456f, ni::eDoubleToStringMode_ShortestSingle));
+  CHECK_EQUAL(
+    _ASTR("123.456"),
+    ni::cString().SetDouble(123.456f, ni::eDoubleToStringMode_Precision, 6));
+  CHECK_EQUAL(
+    _ASTR("-123.45600128173828"),
+    ni::cString().SetDouble(-123.456f, ni::eDoubleToStringMode_ShortestSingle));
+  CHECK_EQUAL(_ASTR("1237894700"),
+              ni::cString().SetDouble((ni::tF64)1237894598.78978978));
 
-  CHECK_EQUAL(_ASTR("-1237894700"),ni::cString().SetDouble((ni::tF64)-1237894598.78978978));
+  CHECK_EQUAL(_ASTR("-1237894700"),
+              ni::cString().SetDouble((ni::tF64)-1237894598.78978978));
 
   CHECK_EQUAL(1.23789e+9, ni::StringToDouble("1.23789e+9"));
 
-  CHECK_EQUAL(_ASTR("1237894598"),ni::cString().SetDouble((ni::tF64)1237894598));
+  CHECK_EQUAL(_ASTR("1237894598"),
+              ni::cString().SetDouble((ni::tF64)1237894598));
   CHECK_EQUAL(1237894598, ni::StringToDouble("1237894598"));
-  CHECK_EQUAL(_ASTR("-1237894598"),ni::cString().SetDouble((ni::tF64)-1237894598));
+  CHECK_EQUAL(_ASTR("-1237894598"),
+              ni::cString().SetDouble((ni::tF64)-1237894598));
 
   const ni::tF64 fActionScriptMaxDouble = 1.79769313486231e+308;
   const ni::tF64 fActionScriptMinDouble = 4.94065645841247e-324;
 
-  CHECK_EQUAL(fActionScriptMaxDouble, ni::StringToDouble("1.79769313486231e+308"));
-  CHECK_EQUAL(fActionScriptMinDouble, ni::StringToDouble("4.94065645841247e-324"));
+  CHECK_EQUAL(fActionScriptMaxDouble,
+              ni::StringToDouble("1.79769313486231e+308"));
+  CHECK_EQUAL(fActionScriptMinDouble,
+              ni::StringToDouble("4.94065645841247e-324"));
 
-  CHECK_EQUAL(_ASTR("1.79769313486231e+308"), ni::cString().SetDouble(fActionScriptMaxDouble,ni::eDoubleToStringMode_Exponential,14));
-  CHECK_EQUAL(_ASTR("1.79769313486231e+308"), ni::cString().Format("%.14e",fActionScriptMaxDouble));
-  CHECK_EQUAL(_ASTR("4.94065645841247e-324"), ni::cString().SetDouble(fActionScriptMinDouble,ni::eDoubleToStringMode_Exponential,14));
-  CHECK_EQUAL(_ASTR("4.94065645841247e-324"), ni::cString().Format("%.14e",fActionScriptMinDouble));
+  CHECK_EQUAL(_ASTR("1.79769313486231e+308"),
+              ni::cString().SetDouble(fActionScriptMaxDouble,
+                                      ni::eDoubleToStringMode_Exponential, 14));
+  CHECK_EQUAL(_ASTR("1.79769313486231e+308"),
+              ni::cString().Format("%.14e", fActionScriptMaxDouble));
+  CHECK_EQUAL(_ASTR("4.94065645841247e-324"),
+              ni::cString().SetDouble(fActionScriptMinDouble,
+                                      ni::eDoubleToStringMode_Exponential, 14));
+  CHECK_EQUAL(_ASTR("4.94065645841247e-324"),
+              ni::cString().Format("%.14e", fActionScriptMinDouble));
 
   CHECK(ni::IsNaN(ni::StringToDouble("nan")));
   CHECK(ni::IsNaN(ni::StringToDouble("NaN")));
@@ -66,11 +86,11 @@ TEST_FIXTURE(FStringFloat2Str,Base) {
 
   const char* testNum = "123e3hello";
   const char* endp = NULL;
-  CHECK_EQUAL((ni::tF64)123000,ni::StrToD(testNum,&endp));
-  CHECK_EQUAL('h',*endp);
+  CHECK_EQUAL((ni::tF64)123000, ni::StrToD(testNum, &endp));
+  CHECK_EQUAL('h', *endp);
 
   ni::tInt charCount = ni::eInvalidHandle;
-  CHECK_EQUAL((ni::tF64)123000,ni::StringToDouble(testNum,0,&charCount));
-  CHECK_EQUAL(5,charCount);
-  CHECK_EQUAL('h',testNum[charCount]);
+  CHECK_EQUAL((ni::tF64)123000, ni::StringToDouble(testNum, 0, &charCount));
+  CHECK_EQUAL(5, charCount);
+  CHECK_EQUAL('h', testNum[charCount]);
 }

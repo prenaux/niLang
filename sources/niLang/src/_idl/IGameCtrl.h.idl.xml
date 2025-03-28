@@ -2,76 +2,76 @@
 	<namespace name="ni">
 		<enum name="eGameCtrlAxis">
 			<comments desc="Game controller axis "/>
-			<value name="eGameCtrlAxis_LX" value="0 ">
+			<value name="eGameCtrlAxis_LX" value="0">
 				<comments desc="Left X Axis. "/>
 			</value>
-			<value name="eGameCtrlAxis_LY" value="1 ">
+			<value name="eGameCtrlAxis_LY" value="1">
 				<comments desc="Left Y Axis. "/>
 			</value>
-			<value name="eGameCtrlAxis_LZ" value="2 ">
+			<value name="eGameCtrlAxis_LZ" value="2">
 				<comments desc="Left Z Axis. "/>
 			</value>
-			<value name="eGameCtrlAxis_RX" value="3 ">
+			<value name="eGameCtrlAxis_RX" value="3">
 				<comments desc="Right X Axis. "/>
 			</value>
-			<value name="eGameCtrlAxis_RY" value="4 ">
+			<value name="eGameCtrlAxis_RY" value="4">
 				<comments desc="Right Y Axis. "/>
 			</value>
-			<value name="eGameCtrlAxis_RZ" value="5 ">
+			<value name="eGameCtrlAxis_RZ" value="5">
 				<comments desc="Right Z AXis. "/>
 			</value>
-			<value name="eGameCtrlAxis_Last" value="6 ">
+			<value name="eGameCtrlAxis_Last" value="6">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
 		<enum name="eGameCtrlButton">
 			<comments desc="Game controller buttons. "/>
-			<value name="eGameCtrlButton_A" value="0 ">
+			<value name="eGameCtrlButton_A" value="0">
 				<comments desc="A "/>
 			</value>
-			<value name="eGameCtrlButton_B" value="1 ">
+			<value name="eGameCtrlButton_B" value="1">
 				<comments desc="B "/>
 			</value>
-			<value name="eGameCtrlButton_X" value="2 ">
+			<value name="eGameCtrlButton_X" value="2">
 				<comments desc="X "/>
 			</value>
-			<value name="eGameCtrlButton_Y" value="3 ">
+			<value name="eGameCtrlButton_Y" value="3">
 				<comments desc="Y "/>
 			</value>
-			<value name="eGameCtrlButton_LeftBlock" value="4 ">
+			<value name="eGameCtrlButton_LeftBlock" value="4">
 				<comments desc="Left Block "/>
 			</value>
-			<value name="eGameCtrlButton_RightBlock" value="5 ">
+			<value name="eGameCtrlButton_RightBlock" value="5">
 				<comments desc="Right Block "/>
 			</value>
-			<value name="eGameCtrlButton_Back" value="6 ">
+			<value name="eGameCtrlButton_Back" value="6">
 				<comments desc="Back "/>
 			</value>
-			<value name="eGameCtrlButton_Start" value="7 ">
+			<value name="eGameCtrlButton_Start" value="7">
 				<comments desc="Start "/>
 			</value>
-			<value name="eGameCtrlButton_LeftThumb" value="8 ">
+			<value name="eGameCtrlButton_LeftThumb" value="8">
 				<comments desc="Left Thumb "/>
 			</value>
-			<value name="eGameCtrlButton_RightThumb" value="9 ">
+			<value name="eGameCtrlButton_RightThumb" value="9">
 				<comments desc="Right Thumb "/>
 			</value>
-			<value name="eGameCtrlButton_LeftTrigger" value="10 ">
+			<value name="eGameCtrlButton_LeftTrigger" value="10">
 				<comments desc="LeftTrigger "/>
 			</value>
-			<value name="eGameCtrlButton_RightTrigger" value="11 ">
+			<value name="eGameCtrlButton_RightTrigger" value="11">
 				<comments desc="RightTrigger "/>
 			</value>
-			<value name="eGameCtrlButton_DPadUp" value="12 ">
+			<value name="eGameCtrlButton_DPadUp" value="12">
 				<comments desc="Up "/>
 			</value>
-			<value name="eGameCtrlButton_DPadDown" value="13 ">
+			<value name="eGameCtrlButton_DPadDown" value="13">
 				<comments desc="Down "/>
 			</value>
-			<value name="eGameCtrlButton_DPadLeft" value="14 ">
+			<value name="eGameCtrlButton_DPadLeft" value="14">
 				<comments desc="Left "/>
 			</value>
-			<value name="eGameCtrlButton_DPadRight" value="15 ">
+			<value name="eGameCtrlButton_DPadRight" value="15">
 				<comments desc="Right "/>
 			</value>
 		</enum>

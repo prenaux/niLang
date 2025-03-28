@@ -2,16 +2,16 @@
 	<namespace name="ni">
 		<enum name="eRemoteAddressType">
 			<comments desc="Remote address types. "/>
-			<value name="eRemoteAddressType_Unknown" value="0 ">
+			<value name="eRemoteAddressType_Unknown" value="0">
 				<comments desc="Unknown remote address type. "/>
 			</value>
-			<value name="eRemoteAddressType_IPv4" value="1 ">
+			<value name="eRemoteAddressType_IPv4" value="1">
 				<comments desc="IP v4 address type. "/>
 			</value>
-			<value name="eRemoteAddressType_IPv6" value="2 ">
+			<value name="eRemoteAddressType_IPv6" value="2">
 				<comments desc="IP v6 address type. "/>
 			</value>
-			<value name="eRemoteAddressType_IPC" value="3 ">
+			<value name="eRemoteAddressType_IPC" value="3">
 				<comments desc="IPC (inter-process communication) address. "/>
 			</value>
 		</enum>
@@ -119,10 +119,10 @@
 		</interface>
 		<enum name="eRemoteAddressIPv4Reserved">
 			<comments desc="IPv4 remote address reserved values. "/>
-			<value name="eRemoteAddressIPv4Reserved_Any" value="0 ">
+			<value name="eRemoteAddressIPv4Reserved_Any" value="0">
 				<comments desc="Any address will do. Used by server/listener. "/>
 			</value>
-			<value name="eRemoteAddressIPv4Reserved_Broadcast" value="0xFFFFFFFF ">
+			<value name="eRemoteAddressIPv4Reserved_Broadcast" value="0xFFFFFFFF">
 				<comments desc="Address used to broadcast a packet. "/>
 			</value>
 		</enum>
@@ -177,106 +177,106 @@
 		</interface>
 		<enum name="eSocketProtocol">
 			<comments desc="Socket protocols. "/>
-			<value name="eSocketProtocol_Unknown" value="0 ">
+			<value name="eSocketProtocol_Unknown" value="0">
 				<comments desc="Unknown protocol. "/>
 			</value>
-			<value name="eSocketProtocol_UDP" value="1 ">
+			<value name="eSocketProtocol_UDP" value="1">
 				<comments desc="UDP protocol. "/>
 			</value>
-			<value name="eSocketProtocol_TCP" value="2 ">
+			<value name="eSocketProtocol_TCP" value="2">
 				<comments desc="TCP protocol "/>
 			</value>
 		</enum>
 		<enum name="eSocketWaitFlags">
 			<comments desc="Socket wait flags. "/>
-			<value name="eSocketWaitFlags_None" value="0 ">
+			<value name="eSocketWaitFlags_None" value="0">
 				<comments desc="No flags, failure/timeout. "/>
 			</value>
-			<value name="eSocketWaitFlags_Send" value="niBit ( 0 ) ">
+			<value name="eSocketWaitFlags_Send" value="niBit(0)">
 				<comments desc="Wait for send. "/>
 			</value>
-			<value name="eSocketWaitFlags_Receive" value="niBit ( 1 ) ">
+			<value name="eSocketWaitFlags_Receive" value="niBit(1)">
 				<comments desc="Wait for receive. "/>
 			</value>
-			<value name="eSocketWaitFlags_Error" value="0xFFFFFFFF ">
+			<value name="eSocketWaitFlags_Error" value="0xFFFFFFFF">
 				<comments desc="Wait error "/>
 			</value>
 		</enum>
 		<enum name="eSocketErrno">
 			<comments desc="Socket Error codes "/>
-			<value name="eSocketErrno_OK" value="0 ">
+			<value name="eSocketErrno_OK" value="0">
 				<comments desc="No Error "/>
 			</value>
-			<value name="eSocketErrno_Unknown" value="1 ">
+			<value name="eSocketErrno_Unknown" value="1">
 				<comments desc="Generic &apos;unknown&apos; error. "/>
 			</value>
-			<value name="eSocketErrno_WouldBlock" value="2 ">
+			<value name="eSocketErrno_WouldBlock" value="2">
 				<comments desc="(EWOULDBLOCK/EAGAIN) Resource temporarily unavailable. This is a temporary condition and later calls to the same routine may complete normally. "/>
 			</value>
-			<value name="eSocketErrno_Interrupted" value="3 ">
+			<value name="eSocketErrno_Interrupted" value="3">
 				<comments desc="(EINTR) Interrupted function call. A blocking operation was interrupted. "/>
 			</value>
-			<value name="eSocketErrno_Invalid" value="4 ">
+			<value name="eSocketErrno_Invalid" value="4">
 				<comments desc="(EINVAL) Invalid argument. "/>
 			</value>
-			<value name="eSocketErrno_Already" value="5 ">
+			<value name="eSocketErrno_Already" value="5">
 				<comments desc="(EALREADY) Operation already in progress. An operation was attempted on a non-blocking object that already had an operation in progress. "/>
 			</value>
-			<value name="eSocketErrno_BadFile" value="6 ">
+			<value name="eSocketErrno_BadFile" value="6">
 				<comments desc="(EBADF) Bad file descriptor. "/>
 			</value>
-			<value name="eSocketErrno_HostDown" value="7 ">
+			<value name="eSocketErrno_HostDown" value="7">
 				<comments desc="(EHOSTDOWN) Host is down. A socket operation failed because the destination host was down. A socket operation encountered a dead host. Networking activity on the local host has not been initiated. "/>
 			</value>
-			<value name="eSocketErrno_InProgress" value="8 ">
+			<value name="eSocketErrno_InProgress" value="8">
 				<comments desc="(EINPROGRESS) Operation now in progress. An operation that takes a long time to complete (such as a Connect()) was attempted on a non-blocking socket. "/>
 			</value>
-			<value name="eSocketErrno_MessageTooLong" value="9 ">
+			<value name="eSocketErrno_MessageTooLong" value="9">
 				<comments desc="(EMSGSIZE) Message too long. A message sent on a socket was larger than the internal message buffer or some other network limit. "/>
 			</value>
-			<value name="eSocketErrno_Shutdown" value="10 ">
+			<value name="eSocketErrno_Shutdown" value="10">
 				<comments desc="(ESHUTDOWN) Cannot send after socket shutdown. "/>
 			</value>
-			<value name="eSocketErrno_Timeout" value="11 ">
+			<value name="eSocketErrno_Timeout" value="11">
 				<comments desc="(ETIMEDOUT) Connection timed out. A connect or send request failed because the connected party did not properly respond after a period of time. "/>
 			</value>
-			<value name="eSocketErrno_TooManyUsers" value="12 ">
+			<value name="eSocketErrno_TooManyUsers" value="12">
 				<comments desc="(EUSERS) Too many users. "/>
 			</value>
-			<value name="eSocketErrno_AlreadyConnected" value="13 ">
+			<value name="eSocketErrno_AlreadyConnected" value="13">
 				<comments desc="(EISCONN) Socket is already connected. A Connect request was made on an already connected socket; or, a send request on a connected socket specified a destination when already connected. "/>
 			</value>
-			<value name="eSocketErrno_NotConnected" value="14 ">
+			<value name="eSocketErrno_NotConnected" value="14">
 				<comments desc="(ENOTCONN) Socket is not connected. A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket) no address was supplied. "/>
 			</value>
-			<value name="eSocketErrno_ConnectionAborted" value="15 ">
+			<value name="eSocketErrno_ConnectionAborted" value="15">
 				<comments desc="(ECONNABORTED) Software caused connection abort. "/>
 			</value>
-			<value name="eSocketErrno_ConnectionRefused" value="16 ">
+			<value name="eSocketErrno_ConnectionRefused" value="16">
 				<comments desc="(ECONNREFUSED) Connection refused. No connection could be made because the target machine actively refused it. This usually results from trying to connect to a service that is inactive on the foreign host. "/>
 			</value>
-			<value name="eSocketErrno_ConnectionReset" value="17 ">
+			<value name="eSocketErrno_ConnectionReset" value="17">
 				<comments desc="(ECONNRESET) Connection reset by peer. A connection was forcibly closed by a peer. This normally results from a loss of the connection on the remote socket due to a timeout or a reboot. "/>
 			</value>
-			<value name="eSocketErrno_AddressInUser" value="18 ">
+			<value name="eSocketErrno_AddressInUser" value="18">
 				<comments desc="(EADDRINUSE) Address already in use. An attempt was made to access a file in a way forbidden by its file access permissions. "/>
 			</value>
-			<value name="eSocketErrno_CannotAssignAddress" value="19 ">
+			<value name="eSocketErrno_CannotAssignAddress" value="19">
 				<comments desc="(EADDRNOTAVAIL) Cannot assign requested address. "/>
 			</value>
-			<value name="eSocketErrno_NetworkDown" value="20 ">
+			<value name="eSocketErrno_NetworkDown" value="20">
 				<comments desc="(ENETDOWN) Network is down. "/>
 			</value>
-			<value name="eSocketErrno_NetworkReset" value="21 ">
+			<value name="eSocketErrno_NetworkReset" value="21">
 				<comments desc="(ENETRESET) Network dropped connection on reset. "/>
 			</value>
-			<value name="eSocketErrno_NetworkUnreachable" value="22 ">
+			<value name="eSocketErrno_NetworkUnreachable" value="22">
 				<comments desc="(ENETUNREACH) Network is unreachable. "/>
 			</value>
-			<value name="eSocketErrno_NoBufferSpace" value="23 ">
+			<value name="eSocketErrno_NoBufferSpace" value="23">
 				<comments desc="(ENOBUFS) No buffer space available. "/>
 			</value>
-			<value name="eSocketErrno_MessagePartial" value="24 ">
+			<value name="eSocketErrno_MessagePartial" value="24">
 				<comments desc="Only a portion of the message has been received. ">
 					<remark text="Currently, this can be set by ReceiveBuffers only. "/>
 				</comments>

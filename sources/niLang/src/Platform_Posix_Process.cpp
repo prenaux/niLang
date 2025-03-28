@@ -2,13 +2,13 @@
 
 #if defined niPosix && !defined niNoProcess
 
-#include "API/niLang/Utils/TimerSleep.h"
-#include "API/niLang/StringDef.h"
+  #include "API/niLang/Utils/TimerSleep.h"
+  #include "API/niLang/StringDef.h"
 
-#ifdef niOSX
-#define HAS_LIBPROC
-#include <libproc.h>
-#endif
+  #ifdef niOSX
+    #define HAS_LIBPROC
+    #include <libproc.h>
+  #endif
 
 //----------------------------------------------------------------------------
 //
@@ -17,14 +17,16 @@
 //----------------------------------------------------------------------------
 namespace base {
 
-void Process::Close() {
+void Process::Close()
+{
   pid_ = process_ = 0;
   // if the process wasn't termiated (so we waited) or the state
   // wasn't already collected w/ a wait from process_utils, we're gonna
   // end up w/ a zombie when it does finally exit.
 }
 
-void Process::Terminate(int result_code) {
+void Process::Terminate(int result_code)
+{
   // result_code isn't supportable.
   if (!process_)
     return;
@@ -32,32 +34,34 @@ void Process::Terminate(int result_code) {
   KillProcess(process_, result_code, true);
 }
 
-bool Process::is_current() const {
+bool Process::is_current() const
+{
   return process_ == GetCurrentProcId();
 }
 
 // static
-Process Process::Current() {
-  return Process(GetCurrentProcId(),GetCurrentProcId());
+Process Process::Current()
+{
+  return Process(GetCurrentProcId(), GetCurrentProcId());
 }
 
-}  // namspace base
+} // namespace base
 
-//----------------------------------------------------------------------------
-//
-// Section: Process Utils
-//
-//----------------------------------------------------------------------------
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
+  //----------------------------------------------------------------------------
+  //
+  // Section: Process Utils
+  //
+  //----------------------------------------------------------------------------
+  #include <dirent.h>
+  #include <errno.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdlib.h>
+  #include <sys/resource.h>
+  #include <sys/time.h>
+  #include <sys/types.h>
+  #include <sys/wait.h>
+  #include <unistd.h>
 
 // #include "base/basictypes.h"
 // #include "base/logging.h"
@@ -70,26 +74,28 @@ const int kMicrosecondsPerSecond = 1000000;
 
 namespace base {
 
-int GetCurrentProcId() {
+int GetCurrentProcId()
+{
   return getpid();
 }
 
-ni::tIntPtr GetParentProcessFromPid(ni::tIntPtr dwPID) {
+ni::tIntPtr GetParentProcessFromPid(ni::tIntPtr dwPID)
+{
   // Not implemented
   return 0;
 }
 
-ni::cString GetProcessExePathFromPid(ni::tIntPtr pid) {
+ni::cString GetProcessExePathFromPid(ni::tIntPtr pid)
+{
   int ret;
-  char pathbuf[PATH_MAX] = {0};
-#ifdef HAS_LIBPROC
+  char pathbuf[PATH_MAX] = { 0 };
+  #ifdef HAS_LIBPROC
   ret = proc_pidpath(pid, pathbuf, sizeof(pathbuf));
-#else
+  #else
   ret = ::readlink(niFmt("/proc/%d/exe", pid), pathbuf, sizeof(pathbuf));
-#endif
+  #endif
   if (ret <= 0) {
-    niError(niFmt("PID %d: proc_pidpath(): %s\n",
-                  pid, strerror(errno)));
+    niError(niFmt("PID %d: proc_pidpath(): %s\n", pid, strerror(errno)));
     return AZEROSTR;
   }
   else {
@@ -100,7 +106,8 @@ ni::cString GetProcessExePathFromPid(ni::tIntPtr pid) {
 // Attempts to kill the process identified by the given process
 // entry structure.  Ignores specified exit_code; posix can't force that.
 // Returns true if this is successful, false otherwise.
-bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
+bool KillProcess(ProcessHandle process_id, int exit_code, bool wait)
+{
   bool result = false;
 
   int status = kill(process_id, SIGTERM);
@@ -126,7 +133,8 @@ bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
 // passed as a template argument to scoped_ptr_malloc below.
 class ScopedPtrMallocFree {
  public:
-  inline void operator()(void* x) const {
+  inline void operator()(void* x) const
+  {
     free(x);
   }
 };
@@ -134,10 +142,9 @@ class ScopedPtrMallocFree {
 // scoped_ptr_malloc<> is similar to scoped_ptr<>, but it accepts a
 // second template argument, the functor used to free the object.
 
-template<class C, class FreeProc = ScopedPtrMallocFree>
+template <class C, class FreeProc = ScopedPtrMallocFree>
 class scoped_ptr_malloc {
  public:
-
   // The element type
   typedef C element_type;
 
@@ -146,17 +153,22 @@ class scoped_ptr_malloc {
   // The input parameter must be allocated with an allocator that matches the
   // Free functor.  For the default Free functor, this is malloc, calloc, or
   // realloc.
-  explicit scoped_ptr_malloc(C* p = NULL): ptr_(p) {}
+  explicit scoped_ptr_malloc(C* p = NULL)
+      : ptr_(p)
+  {
+  }
 
   // Destructor.  If there is a C object, call the Free functor.
-  ~scoped_ptr_malloc() {
+  ~scoped_ptr_malloc()
+  {
     free_(ptr_);
   }
 
   // Reset.  Calls the Free functor on the current owned object, if any.
   // Then takes ownership of a new object, if given.
   // this->reset(this->get()) works.
-  void reset(C* p = NULL) {
+  void reset(C* p = NULL)
+  {
     if (ptr_ != p) {
       free_(ptr_);
       ptr_ = p;
@@ -166,17 +178,20 @@ class scoped_ptr_malloc {
   // Get the current object.
   // operator* and operator-> will cause an assert() failure if there is
   // no current object.
-  C& operator*() const {
+  C& operator*() const
+  {
     assert(ptr_ != NULL);
     return *ptr_;
   }
 
-  C* operator->() const {
+  C* operator->() const
+  {
     assert(ptr_ != NULL);
     return ptr_;
   }
 
-  C* get() const {
+  C* get() const
+  {
     return ptr_;
   }
 
@@ -185,16 +200,19 @@ class scoped_ptr_malloc {
   // to the same object, not just to two different but equal objects.
   // For compatibility wwith the boost-derived implementation, these
   // take non-const arguments.
-  bool operator==(C* p) const {
+  bool operator==(C* p) const
+  {
     return ptr_ == p;
   }
 
-  bool operator!=(C* p) const {
+  bool operator!=(C* p) const
+  {
     return ptr_ != p;
   }
 
   // Swap two scoped pointers.
-  void swap(scoped_ptr_malloc & b) {
+  void swap(scoped_ptr_malloc& b)
+  {
     C* tmp = b.ptr_;
     b.ptr_ = ptr_;
     ptr_ = tmp;
@@ -205,7 +223,8 @@ class scoped_ptr_malloc {
   // If this object holds a NULL pointer, the return value is NULL.
   // After this operation, this object will hold a NULL pointer,
   // and will not own the object any more.
-  C* release() {
+  C* release()
+  {
     C* tmp = ptr_;
     ptr_ = NULL;
     return tmp;
@@ -227,28 +246,32 @@ class scoped_ptr_malloc {
   void operator=(const scoped_ptr_malloc&);
 };
 
-template<class C, class FP>
+template <class C, class FP>
 FP const scoped_ptr_malloc<C, FP>::free_ = FP();
 
-template<class C, class FP> inline
-void swap(scoped_ptr_malloc<C, FP>& a, scoped_ptr_malloc<C, FP>& b) {
+template <class C, class FP>
+inline void swap(scoped_ptr_malloc<C, FP>& a, scoped_ptr_malloc<C, FP>& b)
+{
   a.swap(b);
 }
 
-template<class C, class FP> inline
-bool operator==(C* p, const scoped_ptr_malloc<C, FP>& b) {
+template <class C, class FP>
+inline bool operator==(C* p, const scoped_ptr_malloc<C, FP>& b)
+{
   return p == b.get();
 }
 
-template<class C, class FP> inline
-bool operator!=(C* p, const scoped_ptr_malloc<C, FP>& b) {
+template <class C, class FP>
+inline bool operator!=(C* p, const scoped_ptr_malloc<C, FP>& b)
+{
   return p != b.get();
 }
 
 // A class to handle auto-closing of DIR*'s.
 class ScopedDIRClose {
  public:
-  inline void operator()(DIR* x) const {
+  inline void operator()(DIR* x) const
+  {
     if (x) {
       closedir(x);
     }
@@ -258,22 +281,23 @@ typedef scoped_ptr_malloc<DIR, ScopedDIRClose> ScopedDIR;
 
 // Sets all file descriptors to close on exec except for stdin, stdout
 // and stderr.
-void SetAllFDsToCloseOnExec() {
-#if defined(niLinux) || defined (niQNX)
+void SetAllFDsToCloseOnExec()
+{
+  #if defined(niLinux) || defined(niQNX)
   const char fd_dir[] = "/proc/self/fd";
-#elif defined(niOSX) || defined(niIOS)
+  #elif defined(niOSX) || defined(niIOS)
   const char fd_dir[] = "/dev/fd";
-#else
-#error "Unknown POSIX platform."
-#endif
+  #else
+    #error "Unknown POSIX platform."
+  #endif
   ScopedDIR dir_closer(opendir(fd_dir));
-  DIR *dir = dir_closer.get();
+  DIR* dir = dir_closer.get();
   if (NULL == dir) {
     //     DLOG(ERROR) << "Unable to open " << fd_dir;
     return;
   }
 
-  struct dirent *ent;
+  struct dirent* ent;
   while ((ent = readdir(dir))) {
     // Skip . and .. entries.
     if (ent->d_name[0] == '.')
@@ -290,7 +314,8 @@ void SetAllFDsToCloseOnExec() {
   }
 }
 
-bool DidProcessCrash(ProcessHandle handle) {
+bool DidProcessCrash(ProcessHandle handle)
+{
   int status;
   if (waitpid(handle, &status, WNOHANG)) {
     // I feel like dancing!
@@ -298,14 +323,12 @@ bool DidProcessCrash(ProcessHandle handle) {
   }
 
   if (WIFSIGNALED(status)) {
-    switch(WTERMSIG(status)) {
-      case SIGSEGV:
-      case SIGILL:
-      case SIGABRT:
-      case SIGFPE:
-        return true;
-      default:
-        return false;
+    switch (WTERMSIG(status)) {
+    case SIGSEGV:
+    case SIGILL:
+    case SIGABRT:
+    case SIGFPE: return true;
+    default: return false;
     }
   }
 
@@ -342,7 +365,9 @@ int WaitpidWithTimeout(ProcessHandle handle, int wait_milliseconds,
   // This function is used primarilly for unit tests, if we want to use it in
   // the application itself it would probably be best to examine other routes.
   int status = -1;
-  pid_t ret_pid = waitpid(handle, &status, (wait_milliseconds == (int)ni::eInvalidHandle) ? 0 : WNOHANG);
+  pid_t ret_pid =
+    waitpid(handle, &status,
+            (wait_milliseconds == (int)ni::eInvalidHandle) ? 0 : WNOHANG);
   const ni::tF64 waitSeconds = (ni::tF64)wait_milliseconds / 1000.0;
 
   // If the process hasn't exited yet, then sleep and try again.
@@ -362,7 +387,7 @@ int WaitpidWithTimeout(ProcessHandle handle, int wait_milliseconds,
 
     // usleep() will return 0 and set errno to EINTR on receipt of a signal
     // such as SIGCHLD.
-    ni::SleepMs(sleep_time*1000.0);
+    ni::SleepMs(sleep_time * 1000.0);
     ret_pid = waitpid(handle, &status, WNOHANG);
   }
 
@@ -377,37 +402,47 @@ int WaitpidWithTimeout(ProcessHandle handle, int wait_milliseconds,
   return status;
 }
 
-}  // namespace
+} // namespace
 
-bool WaitForSingleProcess(ProcessHandle handle, int wait_milliseconds) {
+bool WaitForSingleProcess(ProcessHandle handle, int wait_milliseconds)
+{
   bool waitpid_success;
-  int status = WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, NULL);
+  int status =
+    WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, NULL);
   if (status != -1) {
     niAssert(waitpid_success);
     return WIFEXITED(status);
-  } else {
+  }
+  else {
     return false;
   }
 }
 
-bool WaitForExitCode(ProcessHandle handle, int* exit_code, int wait_milliseconds) {
+bool WaitForExitCode(ProcessHandle handle, int* exit_code,
+                     int wait_milliseconds)
+{
   bool waitpid_success;
-  int status = WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, exit_code);
+  int status =
+    WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, exit_code);
   if (status != -1) {
     niAssert(waitpid_success);
     return WIFEXITED(status);
-  } else {
+  }
+  else {
     return false;
   }
 }
 
-bool CrashAwareSleep(ProcessHandle handle, int wait_milliseconds) {
+bool CrashAwareSleep(ProcessHandle handle, int wait_milliseconds)
+{
   bool waitpid_success;
-  int status = WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, NULL);
+  int status =
+    WaitpidWithTimeout(handle, wait_milliseconds, &waitpid_success, NULL);
   if (status != -1) {
     niAssert(waitpid_success);
     return !(WIFEXITED(status) || WIFSIGNALED(status));
-  } else {
+  }
+  else {
     // If waitpid returned with an error, then the process doesn't exist
     // (which most probably means it didn't exist before our call).
     return waitpid_success;
@@ -415,7 +450,8 @@ bool CrashAwareSleep(ProcessHandle handle, int wait_milliseconds) {
 }
 
 int GetProcessCount(const astl::string& executable_name,
-                    const ProcessFilter* filter) {
+                    const ProcessFilter* filter)
+{
   int count = 0;
 
   NamedProcessIterator iter(executable_name, filter);
@@ -425,7 +461,8 @@ int GetProcessCount(const astl::string& executable_name,
 }
 
 bool KillProcesses(const astl::string& executable_name, int exit_code,
-                   const ProcessFilter* filter) {
+                   const ProcessFilter* filter)
+{
   bool result = true;
   const ProcessEntry* entry;
 
@@ -437,8 +474,8 @@ bool KillProcesses(const astl::string& executable_name, int exit_code,
 }
 
 bool WaitForProcessesToExit(const astl::string& executable_name,
-                            int wait_milliseconds,
-                            const ProcessFilter* filter) {
+                            int wait_milliseconds, const ProcessFilter* filter)
+{
   bool result = false;
 
   // TODO(port): This is inefficient, but works if there are multiple procs.
@@ -459,17 +496,16 @@ bool WaitForProcessesToExit(const astl::string& executable_name,
 }
 
 bool CleanupProcesses(const astl::string& executable_name,
-                      int wait_milliseconds,
-                      int exit_code,
-                      const ProcessFilter* filter) {
+                      int wait_milliseconds, int exit_code,
+                      const ProcessFilter* filter)
+{
   bool exited_cleanly =
-      WaitForProcessesToExit(executable_name, wait_milliseconds,
-                             filter);
+    WaitForProcessesToExit(executable_name, wait_milliseconds, filter);
   if (!exited_cleanly)
     KillProcesses(executable_name, exit_code, filter);
   return exited_cleanly;
 }
 
-}  // namespace base
+} // namespace base
 
 #endif

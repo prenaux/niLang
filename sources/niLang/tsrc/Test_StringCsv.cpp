@@ -4,11 +4,11 @@
 
 using namespace ni;
 
-struct FStringCsv {
-};
+struct FStringCsv {};
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FStringCsv,SplitSep) {
+TEST_FIXTURE(FStringCsv, SplitSep)
+{
   const char* _csv[] = {
     /* 0 */ "level,name,cmd,comments,type,address,abb_status,comments_multiple",
     /* 1 */ ",,,,,,,",
@@ -65,7 +65,8 @@ TEST_FIXTURE(FStringCsv,SplitSep) {
   }
 }
 
-TEST_FIXTURE(FStringCsv,ReadCSVLine) {
+TEST_FIXTURE(FStringCsv, ReadCSVLine)
+{
   const char csvFile[] = {
     ",RDU-001-A,\"Replace:001:001,002,003,004,005,006,007,008,009,010,011,012,013,014,015,016,017,018,019\",\"Need to show consumption of the RDUs kW\n"
     "Need to show status of all the RDUs - Eg. On/ off \",OnOff,[Control Structure]Root/Control Network_PMS/DF21_Optimus_PMS/Applications/PMS2_Phase1/Control Modules/Level_2/SG-DF-01-02-RDU-001-A:OnOff3.Value,\"1 = on , 0 = off\",\"RDU-001-A to RDU-019A &\n"
@@ -77,7 +78,8 @@ TEST_FIXTURE(FStringCsv,ReadCSVLine) {
     "RDU-001-B to RDU-019-B\"\n"
   };
 
-  ni::Ptr<ni::iFile> fp = ni::CreateFileMemory((ni::tPtr)csvFile, sizeof(csvFile), ni::eFalse, "");
+  ni::Ptr<ni::iFile> fp =
+    ni::CreateFileMemory((ni::tPtr)csvFile, sizeof(csvFile), ni::eFalse, "");
   while (!fp->GetPartialRead()) {
     ni::cString line = fp->ReadQuotedLine();
     if (line.empty())
@@ -88,7 +90,7 @@ TEST_FIXTURE(FStringCsv,ReadCSVLine) {
     CHECK_EQUAL(8, toks.size());
     CHECK(toks[1].StartsWith("RDU-001"));
     CHECK(toks[7].EndsWith("RDU-019-B\""));
-    niLoop(i,toks.size()) {
+    niLoop (i, toks.size()) {
       toks[i].TrimEx("\" ");
     }
     CHECK(toks[1].StartsWith("RDU-001"));
@@ -96,12 +98,13 @@ TEST_FIXTURE(FStringCsv,ReadCSVLine) {
   }
 }
 
-TEST_FIXTURE(FStringCsv,Write) {
+TEST_FIXTURE(FStringCsv, Write)
+{
   const ni::tU32 numValues = 5;
-  const ni::cString expectedCsv = "hello world,123,\"foo \"\"bar\"\"\",,  spaced  ";
-  const ni::achar* values[numValues] = {
-    "hello world", "123", "foo \"bar\"", "", "  spaced  "
-  };
+  const ni::cString expectedCsv =
+    "hello world,123,\"foo \"\"bar\"\"\",,  spaced  ";
+  const ni::achar* values[numValues] = { "hello world", "123", "foo \"bar\"",
+                                         "", "  spaced  " };
 
   {
     ni::cString o;
@@ -113,7 +116,7 @@ TEST_FIXTURE(FStringCsv,Write) {
     astl::vector<ni::cString> toks;
     StringSplitSepQuoted(expectedCsv, ",", '"', &toks);
     CHECK_EQUAL(numValues, toks.size());
-    niLoop(i,numValues) {
+    niLoop (i, numValues) {
       cString col;
       StringDecodeCsvUnquote(col, '"', toks[i]);
       CHECK_EQUAL(_ASTR(values[i]), col);
@@ -124,7 +127,7 @@ TEST_FIXTURE(FStringCsv,Write) {
     astl::vector<ni::cString> cols;
     StringSplitCsvFields(expectedCsv, ",", '"', &cols);
     CHECK_EQUAL(numValues, cols.size());
-    niLoop(i,numValues) {
+    niLoop (i, numValues) {
       CHECK_EQUAL(_ASTR(values[i]), cols[i]);
     }
   }

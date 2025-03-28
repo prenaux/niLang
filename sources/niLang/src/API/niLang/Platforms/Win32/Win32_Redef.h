@@ -4,27 +4,27 @@
 // SPDX-License-Identifier: MIT
 
 #ifdef _WINDOWS_
-#pragma message("=== You should let Win32_Redef.h include windows.h")
+  #pragma message("=== You should let Win32_Redef.h include windows.h")
 #endif
 
 #ifndef _WIN32_WINNT
-#ifdef WINAPI_FAMILY
-#define _WIN32_WINNT 0x0600
-#else
-#define _WIN32_WINNT 0x0501
-#endif
+  #ifdef WINAPI_FAMILY
+    #define _WIN32_WINNT 0x0600
+  #else
+    #define _WIN32_WINNT 0x0501
+  #endif
 #endif
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #ifdef _MSC_VER
-#pragma warning( push )
-#pragma warning ( disable : 4005 ) // macro redef
-#if defined _LINT && _MSC_VER >= 1600
-#include <codeanalysis\warnings.h>
-#pragma warning ( disable : ALL_CODE_ANALYSIS_WARNINGS )
-#endif
+  #pragma warning(push)
+  #pragma warning(disable : 4005) // macro redef
+  #if defined _LINT && _MSC_VER >= 1600
+    #include <codeanalysis\warnings.h>
+    #pragma warning(disable : ALL_CODE_ANALYSIS_WARNINGS)
+  #endif
 #endif
 
 #include <tchar.h>
@@ -33,7 +33,7 @@
 #include <Shlobj.h>
 
 #ifdef _MSC_VER
-#pragma warning( pop )
+  #pragma warning(pop)
 #endif
 
 #include <direct.h>
@@ -74,21 +74,26 @@
 #undef SetPort
 
 #undef niWin32API
-#define niWin32API(FUNC)  ::FUNC##W
+#define niWin32API(FUNC) ::FUNC##W
 
 #undef SNDMSG
-#define SNDMSG  niWin32API(SendMessage)
+#define SNDMSG niWin32API(SendMessage)
 
 #if defined __cplusplus && defined niWinDesktop
-namespace ni { namespace Windows {
+namespace ni {
+namespace Windows {
 niExportFunc(char*) utf8_GetCommandLine();
-niExportFunc(BOOL) utf8_SHGetSpecialFolderPath(HWND hwndOwner, LPSTR lpszPath, int nFolder, BOOL fCreate);
-niExportFunc(BOOL) utf8_SHGetFolderPath(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPSTR lpszPath);
+niExportFunc(BOOL) utf8_SHGetSpecialFolderPath(HWND hwndOwner, LPSTR lpszPath,
+                                               int nFolder, BOOL fCreate);
+niExportFunc(BOOL) utf8_SHGetFolderPath(HWND hwndOwner, int nFolder,
+                                        HANDLE hToken, DWORD dwFlags,
+                                        LPSTR lpszPath);
 niExportFunc(int) utf8_access(const char* aaszPath, int mode);
-#define Win32GetCommandLine ni::Windows::utf8_GetCommandLine
-#define Win32GetSpecialFolderPath ni::Windows::utf8_SHGetSpecialFolderPath
-#define Win32GetFolderPath ni::Windows::utf8_SHGetFolderPath
-}}
+  #define Win32GetCommandLine ni::Windows::utf8_GetCommandLine
+  #define Win32GetSpecialFolderPath ni::Windows::utf8_SHGetSpecialFolderPath
+  #define Win32GetFolderPath ni::Windows::utf8_SHGetFolderPath
+} // namespace Windows
+} // namespace ni
 #endif
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

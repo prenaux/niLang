@@ -12,12 +12,12 @@
 
 #ifndef _DEBUG
 
-#ifdef niConfig_MinModuleDefSize
-#ifdef niMSVC
-// restore default optimizations
-#pragma optimize( "", on )
-#endif
-#endif
+  #ifdef niConfig_MinModuleDefSize
+    #ifdef niMSVC
+      // restore default optimizations
+      #pragma optimize("", on)
+    #endif
+  #endif
 
 #endif
 

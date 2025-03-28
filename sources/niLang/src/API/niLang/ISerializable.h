@@ -12,8 +12,7 @@ struct iFile;
  */
 
 //! Serialization flags.
-enum eSerializeFlags
-{
+enum eSerializeFlags {
   //! Serialize write.
   eSerializeFlags_Write = niBit(0),
   //! Serialize read.
@@ -35,11 +34,16 @@ enum eSerializeFlags
   //! Serialization category 8.
   eSerializeFlags_Category8 = niBit(9),
   //! Serialization category 1 to 4 (base).
-  eSerializeFlags_CategoryBase = eSerializeFlags_Category1|eSerializeFlags_Category2|eSerializeFlags_Category3|eSerializeFlags_Category4,
+  eSerializeFlags_CategoryBase =
+    eSerializeFlags_Category1 | eSerializeFlags_Category2 |
+    eSerializeFlags_Category3 | eSerializeFlags_Category4,
   //! Serialization category 4 to 8 (extended).
-  eSerializeFlags_CategoryExtended = eSerializeFlags_Category5|eSerializeFlags_Category6|eSerializeFlags_Category7|eSerializeFlags_Category8,
+  eSerializeFlags_CategoryExtended =
+    eSerializeFlags_Category5 | eSerializeFlags_Category6 |
+    eSerializeFlags_Category7 | eSerializeFlags_Category8,
   //! Serialization all category.
-  eSerializeFlags_CategoryAll = eSerializeFlags_CategoryBase|eSerializeFlags_CategoryExtended,
+  eSerializeFlags_CategoryAll =
+    eSerializeFlags_CategoryBase | eSerializeFlags_CategoryExtended,
   //! Serialize write will also write type information metadata.
   //! \remark The 11th bit is reserved to set whether or not 'edit' metadata should be serialized.
   //!     This can be, and is, assumed by serialization flags for other object types.
@@ -54,18 +58,17 @@ enum eSerializeFlags
 };
 
 //! Serialization mode
-enum eSerializeMode
-{
+enum eSerializeMode {
   //! Write mode.
   eSerializeMode_Write = eSerializeFlags_Write,
   //! Write raw mode.
   //! \remark Means that no object header will be written.
-  eSerializeMode_WriteRaw = eSerializeFlags_Write|eSerializeFlags_Raw,
+  eSerializeMode_WriteRaw = eSerializeFlags_Write | eSerializeFlags_Raw,
   //! Read mode.
   eSerializeMode_Read = eSerializeFlags_Read,
   //! Read raw mode.
   //! \remark Means that no object header will be checked for.
-  eSerializeMode_ReadRaw = eSerializeFlags_Read|eSerializeFlags_Raw,
+  eSerializeMode_ReadRaw = eSerializeFlags_Read | eSerializeFlags_Raw,
   //! \internal
   eSerializeMode_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -74,8 +77,7 @@ enum eSerializeMode
 typedef tU32 tSerializeFlags;
 
 //! iSerializable interface.
-struct iSerializable : public iUnknown
-{
+struct iSerializable : public iUnknown {
   niDeclareInterfaceUUID(iSerializable,0x1e9334fc,0xe622,0x4932,0xbb,0x73,0xed,0xf0,0xc9,0xdc,0x1c,0x90);
 
   //! Get the object type ID.
@@ -89,7 +91,7 @@ struct iSerializable : public iUnknown
 };
 
 /**@}*/
-}
+} // namespace ni
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __ISERIALIZABLE_20417058_H__

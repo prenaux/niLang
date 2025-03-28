@@ -14,41 +14,44 @@
 
 #ifndef HAVE_FINDFIRST
 
-#include <limits.h>
-#if defined niOSX || defined niLinux || defined niQNX
-#  include <time.h>
-#  include <dirent.h>
-#endif
+  #include <limits.h>
+  #if defined niOSX || defined niLinux || defined niQNX
+    #include <time.h>
+    #include <dirent.h>
+  #endif
 
-#ifdef ni64
-#  if !defined __USE_LARGEFILE64 || __USE_LARGEFILE64 != 1
-#    error "__USE_LARGEFILE64 not defined correctly."
-#  endif
-#endif
+  #ifdef ni64
+    #if !defined __USE_LARGEFILE64 || __USE_LARGEFILE64 != 1
+      #error "__USE_LARGEFILE64 not defined correctly."
+    #endif
+  #endif
 
-#define FF_MAXPATHLEN _MAX_PATH
+  #define FF_MAXPATHLEN _MAX_PATH
 
 struct sUnixFFInfo {
-  niNamespace(ni,achar) dirname[FF_MAXPATHLEN];
-  niNamespace(ni,achar) pattern[FF_MAXPATHLEN];
-  niNamespace(ni,achar) filename[FF_MAXPATHLEN];
+  niNamespace(ni, achar) dirname[FF_MAXPATHLEN];
+  niNamespace(ni, achar) pattern[FF_MAXPATHLEN];
+  niNamespace(ni, achar) filename[FF_MAXPATHLEN];
   DIR* dir;
 };
 
 struct sUnixFFBlk {
   sUnixFFInfo info;
-  niNamespace(ni,achar) name[FF_MAXPATHLEN];
-  time_t      time_write;
-  ni::tI64    size;
+  niNamespace(ni, achar) name[FF_MAXPATHLEN];
+  time_t time_write;
+  ni::tI64 size;
   unsigned long attrib;
 };
 
-niExportFunc(int) unix_ff_match(const niNamespace(ni,achar) *fn,
-                                const niNamespace(ni,achar) *pattern);
-niExportFunc(int) unix_findfirst(const niNamespace(ni,achar) *pattern, sUnixFFBlk* aFFBlk);
+niExportFunc(int) unix_ff_match(const niNamespace(ni, achar)* fn,
+                                const niNamespace(ni, achar)* pattern);
+niExportFunc(int) unix_findfirst(const niNamespace(ni, achar)* pattern,
+                                 sUnixFFBlk* aFFBlk);
 niExportFunc(int) unix_findnext(sUnixFFBlk* aFFBlk);
 niExportFunc(void) unix_findclose(sUnixFFBlk* aFFBlk);
-niExportFunc(niNamespace(ni,tBool)) unix_filetime(const niNamespace(ni,achar)* filename, time_t* apATime, time_t* apMTime, time_t* apCTime);
+niExportFunc(niNamespace(ni, tBool)) unix_filetime(
+  const niNamespace(ni, achar)* filename, time_t* apATime, time_t* apMTime,
+  time_t* apCTime);
 
 #endif // HAVE_FINDFIRST
 

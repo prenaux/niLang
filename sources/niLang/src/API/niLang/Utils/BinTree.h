@@ -19,16 +19,18 @@ enum eBinTreeNode {
 };
 
 //! Binary Tree node template.
-template<class T> class BinTreeNode {
+template <class T>
+class BinTreeNode {
  public:
   T* GetData()
   {
     return &mData;
   }
 
-  BinTreeNode(T aData, BinTreeNode<T> *aParent, eBinTreeNode aParentDir)
+  BinTreeNode(T aData, BinTreeNode<T>* aParent, eBinTreeNode aParentDir)
   {
-    for(int i=0;i<2;i++) mChild[i]=NULL;
+    for (int i = 0; i < 2; i++)
+      mChild[i] = NULL;
     mData = aData;
     mParent = aParent;
     mParentDir = aParentDir;
@@ -36,8 +38,8 @@ template<class T> class BinTreeNode {
 
   BinTreeNode<T>* AddChild(eBinTreeNode i, T aData)
   {
-    if(mChild[i]==NULL){
-      mChild[i] = new BinTreeNode<T>(aData, this,i);
+    if (mChild[i] == NULL) {
+      mChild[i] = new BinTreeNode<T>(aData, this, i);
       return mChild[i];
     }
     return NULL;
@@ -61,10 +63,12 @@ template<class T> class BinTreeNode {
 };
 
 //! Binary tree template.
-template<class T> class BinTree {
+template <class T>
+class BinTree {
  public:
-  BinTree(){
-    mlNumOfNodes =0;
+  BinTree()
+  {
+    mlNumOfNodes = 0;
     mFirstNode = NULL;
   }
 
@@ -79,7 +83,7 @@ template<class T> class BinTree {
    */
   int Clear()
   {
-    mlNum=0;
+    mlNum = 0;
     DeleteNode(mFirstNode);
     mFirstNode = NULL;
     return mlNum;
@@ -93,9 +97,8 @@ template<class T> class BinTree {
    */
   BinTreeNode<T>* Insert(T aData)
   {
-    if(mFirstNode==NULL)
-    {
-      mFirstNode = new BinTreeNode<T>(aData, NULL,eBinTreeNode_Left);
+    if (mFirstNode == NULL) {
+      mFirstNode = new BinTreeNode<T>(aData, NULL, eBinTreeNode_Left);
       mlNumOfNodes++;
 
       return mFirstNode;
@@ -104,20 +107,17 @@ template<class T> class BinTree {
     //Insertion other then at the root is not supported!
     BinTreeNode<T>* Node = mFirstNode;
     eBinTreeNode c;
-    while(true)
-    {
+    while (true) {
       //if(Node->GetData()<aData)
       c = eBinTreeNode_Left;
       //else
       //  c = eBinTreeNode_Right;
 
-      if(Node->GetChild(c)==NULL)
-      {
+      if (Node->GetChild(c) == NULL) {
         Node = Node->AddChild(c, aData);
         break;
       }
-      else
-      {
+      else {
         Node = Node->GetChild(c);
       }
     }
@@ -133,13 +133,17 @@ template<class T> class BinTree {
    * \param aChild what child to insert at
    * \return
    */
-  BinTreeNode<T>* InsertAt(T aData,BinTreeNode<T>* aNode, eBinTreeNode aChild=eBinTreeNode_Left)
+  BinTreeNode<T>* InsertAt(T aData, BinTreeNode<T>* aNode,
+                           eBinTreeNode aChild = eBinTreeNode_Left)
   {
-    if(aNode == NULL)return NULL;
+    if (aNode == NULL)
+      return NULL;
 
-    if(aNode->GetChild(aChild)!=NULL) {
-      aChild = aChild==eBinTreeNode_Left ? eBinTreeNode_Right : eBinTreeNode_Left;
-      if(aNode->GetChild(aChild)!=NULL)return NULL;
+    if (aNode->GetChild(aChild) != NULL) {
+      aChild =
+        aChild == eBinTreeNode_Left ? eBinTreeNode_Right : eBinTreeNode_Left;
+      if (aNode->GetChild(aChild) != NULL)
+        return NULL;
     }
 
     return aNode->AddChild(aChild, aData);
@@ -158,7 +162,7 @@ template<class T> class BinTree {
   {
     mlstNodes.clear();
     PopulateLeafList(mFirstNode);
-    return  mlstNodes;
+    return mlstNodes;
   }
 
   /**
@@ -169,7 +173,7 @@ template<class T> class BinTree {
   {
     mlstNodes.clear();
     PopulateNodeList(mFirstNode);
-    return  mlstNodes;
+    return mlstNodes;
   }
 
  private:
@@ -181,7 +185,8 @@ template<class T> class BinTree {
 
   void DeleteNode(BinTreeNode<T>* aNode)
   {
-    if(aNode==NULL) return;
+    if (aNode == NULL)
+      return;
 
     DeleteNode(aNode->GetChild(eBinTreeNode_Left));
     DeleteNode(aNode->GetChild(eBinTreeNode_Right));
@@ -192,7 +197,8 @@ template<class T> class BinTree {
 
   void PopulateNodeList(BinTreeNode<T>* aNode)
   {
-    if(aNode==NULL) return;
+    if (aNode == NULL)
+      return;
 
     PopulateNodeList(aNode->GetChild(eBinTreeNode_Left));
     mlstNodes.push_back(aNode);
@@ -201,10 +207,11 @@ template<class T> class BinTree {
 
   void PopulateLeafList(BinTreeNode<T>* aNode)
   {
-    if(aNode==NULL) return;
+    if (aNode == NULL)
+      return;
 
-    if(aNode->GetChild(eBinTreeNode_Left)==NULL &&
-       aNode->GetChild(eBinTreeNode_Right)==NULL)
+    if (aNode->GetChild(eBinTreeNode_Left) == NULL &&
+        aNode->GetChild(eBinTreeNode_Right) == NULL)
     {
       mlstNodes.push_back(aNode);
     }
@@ -212,12 +219,10 @@ template<class T> class BinTree {
     PopulateLeafList(aNode->GetChild(eBinTreeNode_Left));
     PopulateLeafList(aNode->GetChild(eBinTreeNode_Right));
   }
-
-
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __BINTREE_310502_H__

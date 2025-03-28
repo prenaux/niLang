@@ -3,11 +3,11 @@
 #include "API/niLang/Types.h"
 
 #if niMinFeatures(20)
-#include "API/niLang/StringDef.h"
-#include "API/niLang/StringLibIt.h"
-#include "API/niLang/IJson.h"
-#include "API/niLang/STL/vector.h"
-#include "API/niLang/STL/stack.h"
+  #include "API/niLang/StringDef.h"
+  #include "API/niLang/StringLibIt.h"
+  #include "API/niLang/IJson.h"
+  #include "API/niLang/STL/vector.h"
+  #include "API/niLang/STL/stack.h"
 
 namespace ni {
 
@@ -17,9 +17,9 @@ namespace ni {
 
 struct sJsonParser {
   cString _line;
-  tU32    _lineCount;
+  tU32 _lineCount;
   const achar* _p;
-  tU32    _tok;
+  tU32 _tok;
   cString _buf;
 
   sJsonParser();
@@ -81,28 +81,41 @@ struct sJsonWriter : public iJsonWriter {
   tBool __stdcall ObjectBegin();
   tBool __stdcall ObjectEnd();
 
-  tBool __stdcall ObjectString(const achar* aName, const achar* aStr) {
-    if (!Name(aName)) return eFalse;
-    if (!ValueString(aStr)) return eFalse;
+  tBool __stdcall ObjectString(const achar* aName, const achar* aStr)
+  {
+    if (!Name(aName))
+      return eFalse;
+    if (!ValueString(aStr))
+      return eFalse;
     return eTrue;
   }
-  tBool __stdcall ObjectNumber(const achar* aName, const achar* aStr) {
-    if (!Name(aName)) return eFalse;
-    if (!ValueNumber(aStr)) return eFalse;
+  tBool __stdcall ObjectNumber(const achar* aName, const achar* aStr)
+  {
+    if (!Name(aName))
+      return eFalse;
+    if (!ValueNumber(aStr))
+      return eFalse;
     return eTrue;
   }
-  tBool __stdcall ObjectBool(const achar* aName, tBool abValue) {
-    if (!Name(aName)) return eFalse;
-    if (!ValueBool(abValue)) return eFalse;
+  tBool __stdcall ObjectBool(const achar* aName, tBool abValue)
+  {
+    if (!Name(aName))
+      return eFalse;
+    if (!ValueBool(abValue))
+      return eFalse;
     return eTrue;
   }
-  tBool __stdcall ObjectNull(const achar* aName) {
-    if (!Name(aName)) return eFalse;
-    if (!ValueNull()) return eFalse;
+  tBool __stdcall ObjectNull(const achar* aName)
+  {
+    if (!Name(aName))
+      return eFalse;
+    if (!ValueNull())
+      return eFalse;
     return eTrue;
   }
 
-  tBool __stdcall Key(const achar* aName) {
+  tBool __stdcall Key(const achar* aName)
+  {
     return Name(aName);
   }
 
@@ -139,10 +152,11 @@ struct sJsonWriter : public iJsonWriter {
   void _BufferAppend(tU32 c);
 
   virtual void __stdcall OnError(const achar* aaszReason) = 0;
-  virtual tBool __stdcall OnWrite(eJsonType aValue, const achar* aaszString) = 0;
+  virtual tBool __stdcall OnWrite(eJsonType aValue,
+                                  const achar* aaszString) = 0;
 };
 
-}
+} // namespace ni
 
 #endif // niMinFeatures(20)
 #endif // __JSON_H_FE9D777A_8A76_40EF_9D2E_1516F3649A38__

@@ -9,8 +9,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Device resource interface.
-struct iDeviceResource : public iUnknown
-{
+struct iDeviceResource : public iUnknown {
   niDeclareInterfaceUUID(iDeviceResource,0xbd49fea5,0xd9e4,0x4798,0xa3,0xfe,0x1e,0xf3,0x90,0x98,0x0c,0xe7);
 
   //! Get the resource's name.
@@ -32,8 +31,7 @@ struct iDeviceResource : public iUnknown
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Device resource manager interface.
 //! \remark When the inteface is released it invalidates all the device resources contained.
-struct iDeviceResourceManager : public iUnknown
-{
+struct iDeviceResourceManager : public iUnknown {
   niDeclareInterfaceUUID(iDeviceResourceManager,0x96aa6bb9,0x898d,0x4d68,0xad,0x3f,0x5a,0x39,0x0b,0xdc,0x62,0x05);
 
   //! Resource type.
@@ -60,10 +58,11 @@ struct iDeviceResourceManager : public iUnknown
   //! Get the index of the first resource that has the specified name. eInvalidHandle if it cant be found.
   virtual tU32 __stdcall GetIndexFromName(iHString* ahspName) const = 0;
   //! Get the index of the specified resource. eInvalidHandle if it cant be found.
-  virtual tU32 __stdcall GetIndexFromResource(iDeviceResource* apResource) const = 0;
+  virtual tU32 __stdcall GetIndexFromResource(
+    iDeviceResource* apResource) const = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IDEVICERESOURCE_8481598_H__

@@ -12,7 +12,7 @@ niAsanDefaultOptions();
 #endif
 
 #ifdef niWindows
-#include "../Platforms/Win32/Win32_DelayLoadImpl.h"
+  #include "../Platforms/Win32/Win32_DelayLoadImpl.h"
 #endif
 
 #endif // __MAINIMPL_H_FE396F86_3119_4BA8_8CF6_A007B4DA8BBE__

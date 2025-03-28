@@ -17,19 +17,22 @@ namespace ni {
 
 //! ID generator template.
 template <typename T, typename BASE = cEmpty>
-struct IDGeneratorTpl : public BASE
-{
+struct IDGeneratorTpl : public BASE {
  protected:
-  IDGeneratorTpl(tSize aFreeListPopSize) : _freelistPopSize(aFreeListPopSize) {
+  IDGeneratorTpl(tSize aFreeListPopSize)
+      : _freelistPopSize(aFreeListPopSize)
+  {
     _counter = 0;
     // reserve ID 0, aka "NULL" sould be considered invalid
     this->AllocID();
   }
-  ~IDGeneratorTpl() {
+  ~IDGeneratorTpl()
+  {
   }
 
  public:
-  T __stdcall AllocID() {
+  T __stdcall AllocID()
+  {
     __sync_lock();
     if (_freelist.size() > _freelistPopSize) {
       T r = _freelist.top();
@@ -40,46 +43,54 @@ struct IDGeneratorTpl : public BASE
       return _counter++;
     }
   }
-  tBool __stdcall FreeID(T aID) {
+  tBool __stdcall FreeID(T aID)
+  {
     niAssert(aID != 0);
     __sync_lock();
     //niAssert(aID < _counter);
-    if (aID >= _counter) return eFalse;
+    if (aID >= _counter)
+      return eFalse;
     _freelist.push(aID);
     return eTrue;
   }
 
-  T __stdcall GetCounter() const {
+  T __stdcall GetCounter() const
+  {
     __sync_lock();
     return _counter;
   }
 
  private:
   __sync_mutex();
-  const tSize   _freelistPopSize;
-  T       _counter;
-  astl::stack<T>  _freelist;
+  const tSize _freelistPopSize;
+  T _counter;
+  astl::stack<T> _freelist;
 };
 
 //! ID generator.
-struct IDGenerator : public IDGeneratorTpl<tU32,ImplRC<iUnknown> >
-{
-  IDGenerator* Create(tSize aFreeListPopSize = 10) {
+struct IDGenerator : public IDGeneratorTpl<tU32, ImplRC<iUnknown>> {
+  IDGenerator* Create(tSize aFreeListPopSize = 10)
+  {
     return niNew IDGenerator(aFreeListPopSize);
   }
 
  private:
-  IDGenerator(tSize aFreeListPopSize = 10) : IDGeneratorTpl<tU32,ImplRC<iUnknown> >(aFreeListPopSize) {}
+  IDGenerator(tSize aFreeListPopSize = 10)
+      : IDGeneratorTpl<tU32, ImplRC<iUnknown>>(aFreeListPopSize)
+  {
+  }
 };
 
 //! Local ID generator.
-struct LocalIDGenerator : public IDGeneratorTpl<tU32,cEmpty>
-{
-  LocalIDGenerator(tSize aFreeListPopSize = 10) : IDGeneratorTpl<tU32,cEmpty>(aFreeListPopSize) {}
+struct LocalIDGenerator : public IDGeneratorTpl<tU32, cEmpty> {
+  LocalIDGenerator(tSize aFreeListPopSize = 10)
+      : IDGeneratorTpl<tU32, cEmpty>(aFreeListPopSize)
+  {
+  }
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __IDGENERATOR_24666734_H__

@@ -73,15 +73,18 @@ tConsoleSinkLst* __stdcall cConsole::GetSinkList() const
 }
 
 ///////////////////////////////////////////////
-cConsole::sNamespace* cConsole::GetNamespaceAndName(const achar* aszName, cString& strNamespace, cString& strName)
+cConsole::sNamespace* cConsole::GetNamespaceAndName(const achar* aszName,
+                                                    cString& strNamespace,
+                                                    cString& strName)
 {
   tBool bHasNamespace = eFalse;
   cString strA;
   cString strB;
   const achar* p = aszName;
-  while (StrIsSpace(*p)) { StrGetNextX(&p); }
-  while (*p && !ni::StrIsSpace(*p))
-  {
+  while (StrIsSpace(*p)) {
+    StrGetNextX(&p);
+  }
+  while (*p && !ni::StrIsSpace(*p)) {
     const tU32 ch = StrGetNext(p);
     if (ch == '.') {
       bHasNamespace = eTrue;
@@ -91,8 +94,7 @@ cConsole::sNamespace* cConsole::GetNamespaceAndName(const achar* aszName, cStrin
       { // strA will contain the namespace if there is one, else the name
         strA.appendChar(StrToLower(ch));
       }
-      else
-      { // strB will contain the name if there is a namespace
+      else { // strB will contain the name if there is a namespace
         strB.appendChar(StrToLower(ch));
       }
     }
@@ -108,9 +110,9 @@ cConsole::sNamespace* cConsole::GetNamespaceAndName(const achar* aszName, cStrin
     strName = strA;
   }
 
-  sNamespace* pNS = GetNamespace(bHasNamespace?strNamespace.Chars():NULL);
+  sNamespace* pNS = GetNamespace(bHasNamespace ? strNamespace.Chars() : NULL);
   if (!pNS) {
-    niWarning(niFmt(_A("Can't find '%s' namespace"),strNamespace.Chars()));
+    niWarning(niFmt(_A("Can't find '%s' namespace"), strNamespace.Chars()));
     return NULL;
   }
 
@@ -189,11 +191,12 @@ tBool cConsole::AddVariable(const achar* aszName, const achar* aszValue)
 
     tStringMap::iterator itVar = pNS->mapVars.find(strName);
     if (itVar != pNS->mapVars.end()) {
-      niWarning(niFmt(_A("Variable '%s' already exists in namespace '%s'"), strName.Chars(), strNS.Chars()));
+      niWarning(niFmt(_A("Variable '%s' already exists in namespace '%s'"),
+                      strName.Chars(), strNS.Chars()));
       return eFalse;
     }
 
-    astl::upsert(pNS->mapVars, strName, aszValue?aszValue:_A(""));
+    astl::upsert(pNS->mapVars, strName, aszValue ? aszValue : _A(""));
   }
   return eTrue;
 }
@@ -214,7 +217,8 @@ tBool cConsole::RemoveVariable(const achar* aszName)
 
     tStringMap::iterator itVar = pNS->mapVars.find(strName);
     if (itVar == pNS->mapVars.end()) {
-      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"), strName.Chars(), strNS.Chars()));
+      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"),
+                      strName.Chars(), strNS.Chars()));
       return eFalse;
     }
 
@@ -238,14 +242,16 @@ tBool cConsole::SetVariable(const achar* aszName, const achar* aszValue)
     __sync_lock();
     tStringMap::iterator itVar = pNS->mapVars.find(strName);
     if (itVar == pNS->mapVars.end()) {
-      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"), strName.Chars(), strNS.Chars()));
+      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"),
+                      strName.Chars(), strNS.Chars()));
       return eFalse;
     }
 
     itVar->second = aszValue;
 
-    niCallSinkVoid_(ConsoleSink,msinkList,NamespaceVariableChanged,
-                    (strNS.Chars(), itVar->first.Chars(), itVar->second.Chars()));
+    niCallSinkVoid_(
+      ConsoleSink, msinkList, NamespaceVariableChanged,
+      (strNS.Chars(), itVar->first.Chars(), itVar->second.Chars()));
   }
   return eTrue;
 }
@@ -266,7 +272,8 @@ cString cConsole::GetVariable(const achar* aszName)
 
     tStringMap::iterator itVar = pNS->mapVars.find(strName);
     if (itVar == pNS->mapVars.end()) {
-      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"), strName.Chars(), strNS.Chars()));
+      niWarning(niFmt(_A("Variable '%s' don't exists in namespace '%s'"),
+                      strName.Chars(), strNS.Chars()));
       return AZEROSTR;
     }
 
@@ -275,11 +282,13 @@ cString cConsole::GetVariable(const achar* aszName)
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cConsole::GetNumCommands() const {
+tU32 __stdcall cConsole::GetNumCommands() const
+{
   __sync_lock();
   return (tU32)mCmdQueue.size();
 }
-tBool __stdcall cConsole::PushCommand(const achar* aszCommand) {
+tBool __stdcall cConsole::PushCommand(const achar* aszCommand)
+{
   if (!niStringIsOK(aszCommand))
     return eFalse;
 
@@ -291,7 +300,8 @@ tBool __stdcall cConsole::PushCommand(const achar* aszCommand) {
   mCmdQueue.push_back(aszCommand);
   return eTrue;
 }
-cString __stdcall cConsole::PopCommand() {
+cString __stdcall cConsole::PopCommand()
+{
   __sync_lock();
   if (mCmdQueue.empty())
     return "";
@@ -299,7 +309,8 @@ cString __stdcall cConsole::PopCommand() {
   mCmdQueue.pop_front();
   return r;
 }
-tU32 __stdcall cConsole::PopAndRunAllCommands() {
+tU32 __stdcall cConsole::PopAndRunAllCommands()
+{
   {
     __sync_lock();
     if (mCmdQueue.empty())
@@ -332,7 +343,7 @@ tBool cConsole::CommandExists(const achar* aszName)
     return eFalse;
 
   cString strName, strNS;
-  sNamespace* pNS = GetNamespaceAndName(aszName,strNS,strName);
+  sNamespace* pNS = GetNamespaceAndName(aszName, strNS, strName);
   if (!pNS)
     return eFalse;
 
@@ -402,7 +413,8 @@ tBool cConsole::RemoveCommand(const achar* aszName)
 cString __stdcall cConsole::GetCommandDescription(const achar* aszCommand) const
 {
   cString strName, strNS;
-  sNamespace* pNS = const_cast<cConsole*>(this)->GetNamespaceAndName(aszCommand, strNS, strName);
+  sNamespace* pNS = const_cast<cConsole*>(this)->GetNamespaceAndName(
+    aszCommand, strNS, strName);
   if (!pNS) {
     niError(niFmt(_A("Can't get namespace of '%s'."), aszCommand));
     return AZEROSTR;
@@ -474,23 +486,26 @@ tBool cConsole::RunCommand(const achar* aszCommand)
     }
 
 #if niMinFeatures(15)
-    Ptr<iScriptingHost> ptrHost = ni::GetLang()->GetScriptingHostFromName(hspHostName);
+    Ptr<iScriptingHost> ptrHost =
+      ni::GetLang()->GetScriptingHostFromName(hspHostName);
     if (!ptrHost.IsOK()) {
       niError(niFmt(_A("ScriptingHost[%s]: not registered."), hspHostName));
       return eFalse;
     }
 
-    niCallSinkRetTest_(ConsoleSink,msinkList,BeforeRunScript,(ptrHost,p),sinkRet,sinkRet==eTrue);
+    niCallSinkRetTest_(ConsoleSink, msinkList, BeforeRunScript, (ptrHost, p),
+                       sinkRet, sinkRet == eTrue);
     if (sinkRet) {
       SetVariable(_A("Result"), NULL);
       SetVariable(_A("Error"), NULL);
-      tBool r = ptrHost->EvalString(hspContext,p);
+      tBool r = ptrHost->EvalString(hspContext, p);
       if (!r) {
-        niError(niFmt(_A("ScriptingHost[%s,%s]: command '%s' error."),hspHostName,hspContext,p));
+        niError(niFmt(_A("ScriptingHost[%s,%s]: command '%s' error."),
+                      hspHostName, hspContext, p));
         return eFalse;
       }
 
-      niCallSinkVoid_(ConsoleSink,msinkList,AfterRunScript,(ptrHost,p));
+      niCallSinkVoid_(ConsoleSink, msinkList, AfterRunScript, (ptrHost, p));
       return eTrue;
     }
     else {
@@ -501,13 +516,13 @@ tBool cConsole::RunCommand(const achar* aszCommand)
     return eFalse;
 #endif
   }
-  else
-  {
-    niCallSinkRetTest_(ConsoleSink,msinkList,BeforeRunCommand,(aszCommand),sinkRet,sinkRet==eTrue);
+  else {
+    niCallSinkRetTest_(ConsoleSink, msinkList, BeforeRunCommand, (aszCommand),
+                       sinkRet, sinkRet == eTrue);
     if (sinkRet) {
 
       cString strName, strNS;
-      sNamespace* pNS = GetNamespaceAndName(aszCommand,strNS,strName);
+      sNamespace* pNS = GetNamespaceAndName(aszCommand, strNS, strName);
       if (!pNS) {
         niError(niFmt(_A("Can't get namespace of '%s'."), aszCommand));
         return eFalse;
@@ -525,16 +540,16 @@ tBool cConsole::RunCommand(const achar* aszCommand)
 
         cString strCmd(aszCommand);
         cCommandLineStringTokenizer tokCmdLine;
-        StringTokenize(strCmd,*vArgs,&tokCmdLine);
+        StringTokenize(strCmd, *vArgs, &tokCmdLine);
 
         // Look in the argument list if there is no variable
         // and if yes replace them by their string value.
-        for (tStringCVec::iterator itArg = vArgs->begin(); itArg != vArgs->end(); ++itArg)
+        for (tStringCVec::iterator itArg = vArgs->begin();
+             itArg != vArgs->end(); ++itArg)
         {
-          const achar *parg = itArg->c_str();
+          const achar* parg = itArg->c_str();
           if (*(parg++) == '$') {
-            if (*parg == '$')
-            { // $$ print a $
+            if (*parg == '$') { // $$ print a $
               *itArg = parg;
             }
             else {
@@ -549,15 +564,16 @@ tBool cConsole::RunCommand(const achar* aszCommand)
 
         cmdSink = itCmd->second;
         if (!niIsOK(cmdSink)) {
-          niError(niFmt(_A("Command '%s' has an invalid sink."), strName.Chars()));
+          niError(
+            niFmt(_A("Command '%s' has an invalid sink."), strName.Chars()));
           return eFalse;
         }
       }
 
       SetVariable(_A("Result"), NULL);
       SetVariable(_A("Error"), NULL);
-      tBool ret = cmdSink->OnRun(vArgs,this);
-      niCallSinkVoid_(ConsoleSink,msinkList,AfterRunCommand,(p));
+      tBool ret = cmdSink->OnRun(vArgs, this);
+      niCallSinkVoid_(ConsoleSink, msinkList, AfterRunCommand, (p));
       return ret;
     }
     else {
@@ -568,7 +584,8 @@ tBool cConsole::RunCommand(const achar* aszCommand)
 
 ///////////////////////////////////////////////
 //! Complete the given command line.
-cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNext)
+cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd,
+                                                tBool abNext)
 {
   __sync_lock();
 
@@ -583,7 +600,6 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
   if (strCmdLine.empty())
     return cString();
 
-
   astl::vector<cString> vToks;
   cDefaultStringTokenizer tokDefault;
   StringTokenize(strCmdLine, vToks, &tokDefault);
@@ -591,49 +607,46 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
   tU32 count = 0;
   cString strResult;
 
-  if (vToks.size() == 1)
-  {
+  if (vToks.size() == 1) {
     tSize cmplen = strCmdLine.length();
 
-    for (tCommandMapCIt itCmd = mGlobalNamespace.mapCommands.begin(); itCmd != mGlobalNamespace.mapCommands.end(); ++itCmd)
+    for (tCommandMapCIt itCmd = mGlobalNamespace.mapCommands.begin();
+         itCmd != mGlobalNamespace.mapCommands.end(); ++itCmd)
     {
-      if (itCmd->first.nicmp(strCmdLine.Chars(),cmplen) == 0) {
-        if (mulCompleteCmdLineCount == count++)
-        {
+      if (itCmd->first.nicmp(strCmdLine.Chars(), cmplen) == 0) {
+        if (mulCompleteCmdLineCount == count++) {
           strResult = itCmd->first;
         }
       }
     }
 
-    for (tNamespaceMapCIt itNS = mmapNamespaces.begin(); itNS != mmapNamespaces.end(); ++itNS)
+    for (tNamespaceMapCIt itNS = mmapNamespaces.begin();
+         itNS != mmapNamespaces.end(); ++itNS)
     {
-      if (itNS->first.nicmp(strCmdLine.Chars(),ni::Min(itNS->first.length(),cmplen)) != 0)
+      if (itNS->first.nicmp(strCmdLine.Chars(),
+                            ni::Min(itNS->first.length(), cmplen)) != 0)
         continue;
 
-      for (tCommandMapCIt itCmd = itNS->second.mapCommands.begin(); itCmd != itNS->second.mapCommands.end(); ++itCmd)
+      for (tCommandMapCIt itCmd = itNS->second.mapCommands.begin();
+           itCmd != itNS->second.mapCommands.end(); ++itCmd)
       {
         cString str;
         str << itNS->first << _A(".") << itCmd->first;
 
-        if (str.nicmp(strCmdLine.Chars(),cmplen) == 0)
-        {
-          if (mulCompleteCmdLineCount == count++)
-          {
+        if (str.nicmp(strCmdLine.Chars(), cmplen) == 0) {
+          if (mulCompleteCmdLineCount == count++) {
             strResult = str;
           }
         }
       }
     }
   }
-  else
-  {
-    if (vToks.back()[0] == _A('$'))
-    {
+  else {
+    if (vToks.back()[0] == _A('$')) {
       strCmdLine = vToks.back().substr(1);
       abDollar = eTrue;
     }
-    else
-    {
+    else {
       strCmdLine = vToks.back();
     }
     tSize cmplen = strCmdLine.length();
@@ -641,18 +654,18 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
     for (tStringMap::const_iterator itVar = mGlobalNamespace.mapVars.begin();
          itVar != mGlobalNamespace.mapVars.end(); ++itVar)
     {
-      if (itVar->first.nicmp(strCmdLine.Chars(),cmplen) == 0)
-      {
-        if (mulCompleteCmdLineCount == count++)
-        {
+      if (itVar->first.nicmp(strCmdLine.Chars(), cmplen) == 0) {
+        if (mulCompleteCmdLineCount == count++) {
           strResult = itVar->first;
         }
       }
     }
 
-    for (tNamespaceMapCIt itNS = mmapNamespaces.begin(); itNS != mmapNamespaces.end(); ++itNS)
+    for (tNamespaceMapCIt itNS = mmapNamespaces.begin();
+         itNS != mmapNamespaces.end(); ++itNS)
     {
-      if (itNS->first.nicmp(strCmdLine.Chars(), ni::Min(itNS->first.length(),cmplen)) != 0)
+      if (itNS->first.nicmp(strCmdLine.Chars(),
+                            ni::Min(itNS->first.length(), cmplen)) != 0)
         continue;
 
       for (tStringMap::const_iterator itVar = itNS->second.mapVars.begin();
@@ -661,10 +674,8 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
         cString str;
         str << itNS->first << _A(".") << itVar->first;
 
-        if (str.nicmp(strCmdLine.Chars(), cmplen) == 0)
-        {
-          if (mulCompleteCmdLineCount == count++)
-          {
+        if (str.nicmp(strCmdLine.Chars(), cmplen) == 0) {
+          if (mulCompleteCmdLineCount == count++) {
             strResult = str;
           }
         }
@@ -673,20 +684,19 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
   }
 
   // A completion has been found
-  if (strResult.IsNotEmpty())
-  {
-    if (vToks.size() == 1)
-    {
+  if (strResult.IsNotEmpty()) {
+    if (vToks.size() == 1) {
       strCmdLine = strResult;
     }
-    else
-    {
+    else {
       strCmdLine.Clear();
-      for (astl::vector<cString>::iterator itT = vToks.begin(); itT+1 != vToks.end(); ++itT) {
+      for (astl::vector<cString>::iterator itT = vToks.begin();
+           itT + 1 != vToks.end(); ++itT)
+      {
         strCmdLine << *itT;
         strCmdLine << _A(" ");
       }
-      strCmdLine << (achar*)(abDollar?_A("$"):_A("")) <<  strResult;
+      strCmdLine << (achar*)(abDollar ? _A("$") : _A("")) << strResult;
     }
 
     //if (abNext)
@@ -702,8 +712,7 @@ cString __stdcall cConsole::CompleteCommandLine(const achar* aaszCmd, tBool abNe
     //        --mulCompleteCmdLineCount;
     //    }
   }
-  else
-  {
+  else {
     return cString();
   }
 
@@ -715,15 +724,17 @@ namespace ni {
 
 static Ptr<iConsole> _pConsole;
 
-niExportFunc(iConsole*) GetConsole() {
+niExportFunc(iConsole*) GetConsole()
+{
   if (!_pConsole.IsOK()) {
     _pConsole = niNew cConsole();
   }
   return _pConsole.ptr();
 }
 
-niExportFunc(iUnknown*) New_niLang_Console(const Var&, const Var&) {
+niExportFunc(iUnknown*) New_niLang_Console(const Var&, const Var&)
+{
   return GetConsole();
 }
 
-}
+} // namespace ni

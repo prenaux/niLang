@@ -7,17 +7,18 @@
 #include "../STL/type_traits.h"
 
 #if defined __cplusplus
-#include <exception> // for std::set_terminate
+  #include <exception> // for std::set_terminate
 #endif
 
 #ifdef niWindows
-// Unfortunately we have no choice to get SetUnhandledExceptionFilter as
-// forward declaring it sanely is almost impossible to do a in a robust way.
-#include "../Platforms/Win32/Win32_Redef.h"
-#include <signal.h>
-#define niCrashReportHasMinidump
-niExternC __ni_module_export LONG WINAPI ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo);
-#define niUseWindowsSEHExceptions
+  // Unfortunately we have no choice to get SetUnhandledExceptionFilter as
+  // forward declaring it sanely is almost impossible to do a in a robust way.
+  #include "../Platforms/Win32/Win32_Redef.h"
+  #include <signal.h>
+  #define niCrashReportHasMinidump
+niExternC __ni_module_export LONG WINAPI
+ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo);
+  #define niUseWindowsSEHExceptions
 #endif
 
 namespace ni {
@@ -28,20 +29,25 @@ namespace ni {
  * @{
  */
 
-niExportFuncCPP(ni::cString&) ni_stack_get_current(ni::cString& aOutput, void* apExp, int skip);
+niExportFuncCPP(ni::cString&) ni_stack_get_current(ni::cString& aOutput,
+                                                   void* apExp, int skip);
 
 #if !defined __cplusplus
 
-#define niCrashReport_DeclareHandler()
-#define niCrashReport_ModuleInstall()
+  #define niCrashReport_DeclareHandler()
+  #define niCrashReport_ModuleInstall()
 
 #else
 
 niExportFunc(void) cpp_terminate_handler();
 niExportFunc(void) cpp_purecall_handler();
-niExportFunc(void) cpp_security_handler(int code, void *x);
-niExportFunc(void) cpp_invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t pReserved);
-niExportFunc(int)  cpp_new_handler(size_t);
+niExportFunc(void) cpp_security_handler(int code, void* x);
+niExportFunc(void) cpp_invalid_parameter_handler(const wchar_t* expression,
+                                                 const wchar_t* function,
+                                                 const wchar_t* file,
+                                                 unsigned int line,
+                                                 uintptr_t pReserved);
+niExportFunc(int) cpp_new_handler(size_t);
 niExportFunc(void) cpp_sigabrt_handler(int);
 niExportFunc(void) cpp_sigfpe_handler(int /*code*/, int subcode);
 niExportFunc(void) cpp_sigill_handler(int);
@@ -56,37 +62,37 @@ static inline void __niCrashReportModuleInstall()
   // niPrintln("__niCrashReportModuleInstall");
   std::set_terminate(cpp_terminate_handler);
 
-#ifdef niWindows
+  #ifdef niWindows
   SetUnhandledExceptionFilter(ni_windows_seh_unhandled_exception_filter);
   _set_error_mode(_OUT_TO_STDERR);
-#endif
+  #endif
 
-#if defined _MSC_VER
-#if _MSC_VER>=1300
+  #if defined _MSC_VER
+    #if _MSC_VER >= 1300
   // Pure Virtual call handler
   _set_purecall_handler(cpp_purecall_handler);
 
   // Catch new operator memory allocation exceptions
   _set_new_mode(1); // Force malloc() to call new handler too
   _set_new_handler(cpp_new_handler);
-#endif
+    #endif
 
-#if _MSC_VER>=1400
+    #if _MSC_VER >= 1400
   // Catch invalid parameter exceptions.
   _set_invalid_parameter_handler(cpp_invalid_parameter_handler);
-#endif
+    #endif
 
-#if _MSC_VER>=1300 && _MSC_VER<1400
+    #if _MSC_VER >= 1300 && _MSC_VER < 1400
   // Catch buffer overrun exceptions
   // The _set_security_error_handler is deprecated in VC8 C++ run time library
   _set_security_error_handler(cpp_security_handler);
-#endif
+    #endif
 
-  // Set up C++ signal handlers
-#if _MSC_VER>=1400
+      // Set up C++ signal handlers
+    #if _MSC_VER >= 1400
   _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
-#endif
-#endif
+    #endif
+  #endif
 
   // Catch an abnormal program termination
   signal(SIGABRT, cpp_sigabrt_handler);
@@ -97,47 +103,47 @@ static inline void __niCrashReportModuleInstall()
   // Catch a termination request
   signal(SIGTERM, cpp_sigterm_handler);
 
-#if !defined niWindows
+  #if !defined niWindows
   // Catch a sigill request
   signal(SIGILL, cpp_sigill_handler);
 
   // Catch a sigsegv request
   signal(SIGSEGV, cpp_sigsegv_handler);
-#endif
+  #endif
 }
 
 //! Uninstall the handlers into a specified module, this should be called
 //! for each module that uses its own CRT.
 static inline void __niCrashReportModuleUninstall()
 {
-  // niPrintln("__niCrashReportModuleUninstall");
+    // niPrintln("__niCrashReportModuleUninstall");
 
-#if defined _MSC_VER
-#if _MSC_VER>=1300
+  #if defined _MSC_VER
+    #if _MSC_VER >= 1300
   // Pure Virtual call handler
   _set_purecall_handler(NULL);
 
   // Catch new operator memory allocation exceptions
   _set_new_mode(1); // Force malloc() to call new handler too
   _set_new_handler(NULL);
-#endif
+    #endif
 
-#if _MSC_VER>=1400
+    #if _MSC_VER >= 1400
   // Catch invalid parameter exceptions.
   _set_invalid_parameter_handler(NULL);
-#endif
+    #endif
 
-#if _MSC_VER>=1300 && _MSC_VER<1400
+    #if _MSC_VER >= 1300 && _MSC_VER < 1400
   // Catch buffer overrun exceptions
   // The _set_security_error_handler is deprecated in VC8 C++ run time library
   _set_security_error_handler(NULL);
-#endif
+    #endif
 
-  // Set up C++ signal handlers
-#if _MSC_VER>=1400
+      // Set up C++ signal handlers
+    #if _MSC_VER >= 1400
   _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
-#endif
-#endif
+    #endif
+  #endif
 
   // Catch an abnormal program termination
   signal(SIGABRT, NULL);
@@ -148,30 +154,36 @@ static inline void __niCrashReportModuleUninstall()
   // Catch a termination request
   signal(SIGTERM, NULL);
 
-#if !defined niWindows
+  #if !defined niWindows
   // Catch a sigill request
   signal(SIGILL, NULL);
   // Catch a sigsegv request
   signal(SIGSEGV, NULL);
-#endif
+  #endif
 }
 
 struct sNiCrashReport {
-  sNiCrashReport() { __niCrashReportModuleInstall(); }
-  ~sNiCrashReport() { __niCrashReportModuleUninstall(); }
+  sNiCrashReport()
+  {
+    __niCrashReportModuleInstall();
+  }
+  ~sNiCrashReport()
+  {
+    __niCrashReportModuleUninstall();
+  }
 };
 
-// Should be declared above your main() function
-#define niCrashReport_DeclareHandler() ni::sNiCrashReport _niCrashReport;
+  // Should be declared above your main() function
+  #define niCrashReport_DeclareHandler() ni::sNiCrashReport _niCrashReport;
 
-#ifdef niWindows
-// This should only be necessary on Windows since on other platforms the
-// standard C library is shared between the modules. On Windows DLLs can have
-// a different CRT and thus set of signal table and handlers.
-#define niCrashReport_ModuleInstall() ni::__niCrashReportModuleInstall()
-#else
-#define niCrashReport_ModuleInstall()
-#endif
+  #ifdef niWindows
+    // This should only be necessary on Windows since on other platforms the
+    // standard C library is shared between the modules. On Windows DLLs can have
+    // a different CRT and thus set of signal table and handlers.
+    #define niCrashReport_ModuleInstall() ni::__niCrashReportModuleInstall()
+  #else
+    #define niCrashReport_ModuleInstall()
+  #endif
 
 // Use ni::TryCatchPanic in <niLang/Utils/CrashReport.h> to handle it if you
 // must. You generally should not.
@@ -182,57 +194,60 @@ struct iPanicDescription {
   virtual const cString& __stdcall GetDesc() const noexcept = 0;
 };
 
-#ifdef niUseWindowsSEHExceptions
+  #ifdef niUseWindowsSEHExceptions
 extern "C" void* __cdecl _exception_info(void);
-#pragma intrinsic(_exception_info)
+    #pragma intrinsic(_exception_info)
 
 extern "C" unsigned long __cdecl _exception_code(void);
-#pragma intrinsic(_exception_code)
+    #pragma intrinsic(_exception_code)
 
 niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo);
 niExportFunc(iPanicDescription*) ni_windows_seh_get_last_panic();
 
 template <typename RunFunc, typename CatchFunc>
-auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
+auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
+{
   using RunReturnType = decltype(aRun());
   using CatchReturnType = decltype(aCatch(*ni_windows_seh_get_last_panic()));
-  static_assert(
-    std::is_same_v<RunReturnType, CatchReturnType>,
-    "Run and catch functions must return the same type");
+  static_assert(std::is_same_v<RunReturnType, CatchReturnType>,
+                "Run and catch functions must return the same type");
 
   if constexpr (std::is_void_v<RunReturnType>) {
-    __try {
+    __try
+    {
       aRun();
-    } __except (
-      ni_windows_seh_on_handle(_exception_code(), _exception_info())) {
+    } __except (ni_windows_seh_on_handle(_exception_code(), _exception_info()))
+    {
       aCatch(*ni_windows_seh_get_last_panic());
     }
   }
   else {
-    __try {
+    __try
+    {
       return aRun();
-    } __except (
-      ni_windows_seh_on_handle(_exception_code(), _exception_info())) {
+    } __except (ni_windows_seh_on_handle(_exception_code(), _exception_info()))
+    {
       return aCatch(*ni_windows_seh_get_last_panic());
     }
   }
 }
 
-#else // #ifdef niUseWindowsSEHExceptions
+  #else // #ifdef niUseWindowsSEHExceptions
 
 template <typename RunFunc, typename CatchFunc>
-auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
+auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
+{
   using RunReturnType = decltype(aRun());
-  using CatchReturnType = decltype(aCatch(astl::declval<ni::iPanicDescription>()));
-  static_assert(
-    std::is_same_v<RunReturnType, CatchReturnType>,
-    "Run and catch functions must return the same type");
+  using CatchReturnType =
+    decltype(aCatch(astl::declval<ni::iPanicDescription>()));
+  static_assert(std::is_same_v<RunReturnType, CatchReturnType>,
+                "Run and catch functions must return the same type");
 
   if constexpr (std::is_void_v<RunReturnType>) {
     niTry {
       aRun();
     }
-    niCatch(ni::iPanicDescription,e) {
+    niCatch (ni::iPanicDescription, e) {
       aCatch(e);
     }
   }
@@ -240,13 +255,13 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun()) {
     niTry {
       return aRun();
     }
-    niCatch(ni::iPanicDescription,e) {
+    niCatch (ni::iPanicDescription, e) {
       return aCatch(e);
     }
   }
 }
 
-#endif // #ifdef niUseWindowsSEHExceptions
+  #endif // #ifdef niUseWindowsSEHExceptions
 
 #endif // #if !defined __cplusplus
 

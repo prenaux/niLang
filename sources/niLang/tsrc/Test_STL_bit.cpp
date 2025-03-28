@@ -6,7 +6,8 @@ using namespace ni;
 
 struct ASTL_bit {};
 
-TEST_FIXTURE(ASTL_bit,countl_zero_basic) {
+TEST_FIXTURE(ASTL_bit, countl_zero_basic)
+{
   // Test 8-bit integers
   CHECK_EQUAL(8, astl::countl_zero(ni::tU8(0)));
   CHECK_EQUAL(7, astl::countl_zero(ni::tU8(1)));
@@ -32,7 +33,8 @@ TEST_FIXTURE(ASTL_bit,countl_zero_basic) {
   CHECK_EQUAL(32, astl::countl_zero(ni::tU64(0xFFFFFFFF)));
 }
 
-TEST_FIXTURE(ASTL_bit,countl_zero_edgecases) {
+TEST_FIXTURE(ASTL_bit, countl_zero_edgecases)
+{
   // Test all bits set
   CHECK_EQUAL(0, astl::countl_zero(ni::tU8(0xFF)));
   CHECK_EQUAL(0, astl::countl_zero(ni::tU16(0xFFFF)));
@@ -40,7 +42,7 @@ TEST_FIXTURE(ASTL_bit,countl_zero_edgecases) {
   CHECK_EQUAL(0, astl::countl_zero(ni::tU64(0xFFFFFFFFFFFFFFFF)));
 
   // Test alternating bits
-  CHECK_EQUAL(0, astl::countl_zero(ni::tU8(0xAA)));  // 10101010
+  CHECK_EQUAL(0, astl::countl_zero(ni::tU8(0xAA))); // 10101010
   CHECK_EQUAL(0, astl::countl_zero(ni::tU16(0xAAAA)));
   CHECK_EQUAL(0, astl::countl_zero(ni::tU32(0xAAAAAAAA)));
   CHECK_EQUAL(0, astl::countl_zero(ni::tU64(0xAAAAAAAAAAAAAAAA)));
@@ -63,8 +65,9 @@ TEST_FIXTURE(ASTL_bit,countl_zero_edgecases) {
   CHECK_EQUAL(0, astl::countl_zero(ni::tU64(0x8000000000000000)));
 }
 
-TEST_FIXTURE(ASTL_bit,countl_zero_randomvalues) {
-  astl::mt19937_64 gen { 42 };  // Fixed seed for reproducibility
+TEST_FIXTURE(ASTL_bit, countl_zero_randomvalues)
+{
+  astl::mt19937_64 gen{ 42 }; // Fixed seed for reproducibility
 
   for (int i = 0; i < 1000; ++i) {
     ni::tU64 value = gen();

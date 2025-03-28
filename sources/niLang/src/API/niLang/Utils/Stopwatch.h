@@ -13,30 +13,37 @@ namespace ni {
  */
 
 struct sStopwatch {
-  sStopwatch() {
+  sStopwatch()
+  {
     Start();
   }
-  sStopwatch(tF32 afStart) : mfStart(afStart) {
+  sStopwatch(tF32 afStart)
+      : mfStart(afStart)
+  {
   }
-  void Start() {
+  void Start()
+  {
     mfStart = ni::TimerInSeconds();
   }
-  tF64 GetStart() const {
+  tF64 GetStart() const
+  {
     return mfStart;
   }
-  tF64 GetSeconds() const {
+  tF64 GetSeconds() const
+  {
     return ni::TimerInSeconds() - mfStart;
   }
-  tI64 GetMs() const {
+  tI64 GetMs() const
+  {
     return (tI64)(GetSeconds() * 1000.0);
   }
 
-private:
+ private:
   tF64 mfStart;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __STOPWATCH_H_B513D9A2_BFC8_354D_854E_B34E715D58C4__

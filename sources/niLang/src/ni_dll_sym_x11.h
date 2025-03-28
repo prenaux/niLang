@@ -1,71 +1,126 @@
 #include "niLang/Utils/DLLLoader.h"
 #include <X11/Xlib.h>
-NI_DLL_PROC(int, __cdecl, XClearWindow, (Display* a, Window b));
-NI_DLL_PROC(int, __cdecl, XMapRaised, (Display* a, Window b));
+NI_DLL_PROC(int, __cdecl, XClearWindow, (Display * a, Window b));
+NI_DLL_PROC(int, __cdecl, XMapRaised, (Display * a, Window b));
 NI_DLL_PROC(XSizeHints*, __cdecl, XAllocSizeHints, (void));
-NI_DLL_PROC(void, __cdecl, XSetWMNormalHints, (Display* a, Window b, XSizeHints* c));
+NI_DLL_PROC(void, __cdecl, XSetWMNormalHints,
+            (Display * a, Window b, XSizeHints* c));
 NI_DLL_PROC(int, __cdecl, XFree, (void* a));
-NI_DLL_PROC(Atom, __cdecl, XInternAtom, (Display* a, _Xconst char* b, Bool c));
-NI_DLL_PROC(int, __cdecl, XChangeProperty, (Display* a, Window b, Atom c, Atom d, int e, int f, _Xconst unsigned char* g, int h));
-NI_DLL_PROC(int, __cdecl, XDeleteProperty, (Display* a, Window b, Atom c));
-NI_DLL_PROC(int, __cdecl, XSetTransientForHint, (Display* a, Window b, Window c));
-NI_DLL_PROC(int, __cdecl, XUndefineCursor, (Display* a, Window b));
-NI_DLL_PROC(Cursor, __cdecl, XCreateFontCursor, (Display* a, unsigned int b));
-NI_DLL_PROC(int, __cdecl, XFreeCursor, (Display* a, Cursor b));
-NI_DLL_PROC(int, __cdecl, XDefineCursor, (Display* a, Window b, Cursor c));
-NI_DLL_PROC(int, __cdecl, XMoveResizeWindow, (Display* a, Window b, int x, int y, unsigned int width, unsigned int height));
-NI_DLL_PROC(int, __cdecl, XFreeGC, (Display* a, GC gc));
-NI_DLL_PROC(int, __cdecl, XCloseDisplay, (Display* a));
-NI_DLL_PROC(int, __cdecl, XDestroyWindow, (Display* a, Window b));
+NI_DLL_PROC(Atom, __cdecl, XInternAtom, (Display * a, _Xconst char* b, Bool c));
+NI_DLL_PROC(int, __cdecl, XChangeProperty,
+            (Display * a, Window b, Atom c, Atom d, int e, int f,
+             _Xconst unsigned char* g, int h));
+NI_DLL_PROC(int, __cdecl, XDeleteProperty, (Display * a, Window b, Atom c));
+NI_DLL_PROC(int, __cdecl, XSetTransientForHint,
+            (Display * a, Window b, Window c));
+NI_DLL_PROC(int, __cdecl, XUndefineCursor, (Display * a, Window b));
+NI_DLL_PROC(Cursor, __cdecl, XCreateFontCursor, (Display * a, unsigned int b));
+NI_DLL_PROC(int, __cdecl, XFreeCursor, (Display * a, Cursor b));
+NI_DLL_PROC(int, __cdecl, XDefineCursor, (Display * a, Window b, Cursor c));
+NI_DLL_PROC(int, __cdecl, XMoveResizeWindow,
+            (Display * a, Window b, int x, int y, unsigned int width,
+             unsigned int height));
+NI_DLL_PROC(int, __cdecl, XFreeGC, (Display * a, GC gc));
+NI_DLL_PROC(int, __cdecl, XCloseDisplay, (Display * a));
+NI_DLL_PROC(int, __cdecl, XDestroyWindow, (Display * a, Window b));
 NI_DLL_PROC(Display*, __cdecl, XOpenDisplay, (_Xconst char* a));
-NI_DLL_PROC(int, __cdecl, XStoreName, (Display* a, Window b, _Xconst char* c));
-NI_DLL_PROC(int, __cdecl, XDisplayKeycodes, (Display* a, int* min_keycodes_return, int* max_keycodes_return));
-NI_DLL_PROC(KeySym, __cdecl, XKeycodeToKeysym, (Display* a, KeyCode keycode, int index));
-NI_DLL_PROC(int, __cdecl, XFilterEvent, (XEvent* event, Window window));
-NI_DLL_PROC(int, __cdecl, Xutf8LookupString, (XIC ic, XKeyPressedEvent* event, char* buffer_return, int bytes_buffer, KeySym* keysym_return, Status* status_return));
-NI_DLL_PROC(int, __cdecl, XLookupString, (XKeyEvent* event, char* buffer_return, int bytes_buffer, KeySym* keysym_return, XComposeStatus* status_in_out));
-NI_DLL_PROC(int, __cdecl, XNextEvent, (Display* a, XEvent* event_return));
-NI_DLL_PROC(int, __cdecl, XSync, (Display* a, Bool discard));
-NI_DLL_PROC(int, __cdecl, XEventsQueued, (Display* a, int mode));
-NI_DLL_PROC(XIM, __cdecl, XOpenIM, (Display* a, struct _XrmHashBucketRec* b, char* c, char* d));
-NI_DLL_PROC(Window, __cdecl, XCreateWindow, (Display* a, Window parent, int x, int y, unsigned int width, unsigned int height, unsigned int border_width, int depth, unsigned int classz, Visual* visual, unsigned long valuemask, XSetWindowAttributes* attributes));
-NI_DLL_PROC(GC, __cdecl, XCreateGC, (Display* a, Drawable d, unsigned long valuemask, XGCValues* values));
-NI_DLL_PROC(int, __cdecl, XSetBackground, (Display* a, GC gc, unsigned long background));
-NI_DLL_PROC(int, __cdecl, XSetForeground, (Display* a, GC gc, unsigned long foreground));
-NI_DLL_PROC(Pixmap, __cdecl, XCreatePixmap, (Display* a, Drawable d, unsigned int width, unsigned int height, unsigned int depth));
-NI_DLL_PROC(int, __cdecl, XDrawPoint, (Display* a, Drawable d, GC gc, int x, int y));
-NI_DLL_PROC(Cursor, __cdecl, XCreatePixmapCursor, (Display* a, Pixmap source, Pixmap mask, XColor* foreground_color, XColor* background_color, unsigned int x_hot, unsigned int y_hot));
-NI_DLL_PROC(int, __cdecl, XFreePixmap, (Display* a, Pixmap pixmap));
+NI_DLL_PROC(int, __cdecl, XStoreName, (Display * a, Window b, _Xconst char* c));
+NI_DLL_PROC(int, __cdecl, XDisplayKeycodes,
+            (Display * a, int* min_keycodes_return, int* max_keycodes_return));
+NI_DLL_PROC(KeySym, __cdecl, XKeycodeToKeysym,
+            (Display * a, KeyCode keycode, int index));
+NI_DLL_PROC(int, __cdecl, XFilterEvent, (XEvent * event, Window window));
+NI_DLL_PROC(int, __cdecl, Xutf8LookupString,
+            (XIC ic, XKeyPressedEvent* event, char* buffer_return,
+             int bytes_buffer, KeySym* keysym_return, Status* status_return));
+NI_DLL_PROC(int, __cdecl, XLookupString,
+            (XKeyEvent * event, char* buffer_return, int bytes_buffer,
+             KeySym* keysym_return, XComposeStatus* status_in_out));
+NI_DLL_PROC(int, __cdecl, XNextEvent, (Display * a, XEvent* event_return));
+NI_DLL_PROC(int, __cdecl, XSync, (Display * a, Bool discard));
+NI_DLL_PROC(int, __cdecl, XEventsQueued, (Display * a, int mode));
+NI_DLL_PROC(XIM, __cdecl, XOpenIM,
+            (Display * a, struct _XrmHashBucketRec* b, char* c, char* d));
+NI_DLL_PROC(Window, __cdecl, XCreateWindow,
+            (Display * a, Window parent, int x, int y, unsigned int width,
+             unsigned int height, unsigned int border_width, int depth,
+             unsigned int classz, Visual* visual, unsigned long valuemask,
+             XSetWindowAttributes* attributes));
+NI_DLL_PROC(GC, __cdecl, XCreateGC,
+            (Display * a, Drawable d, unsigned long valuemask,
+             XGCValues* values));
+NI_DLL_PROC(int, __cdecl, XSetBackground,
+            (Display * a, GC gc, unsigned long background));
+NI_DLL_PROC(int, __cdecl, XSetForeground,
+            (Display * a, GC gc, unsigned long foreground));
+NI_DLL_PROC(Pixmap, __cdecl, XCreatePixmap,
+            (Display * a, Drawable d, unsigned int width, unsigned int height,
+             unsigned int depth));
+NI_DLL_PROC(int, __cdecl, XDrawPoint,
+            (Display * a, Drawable d, GC gc, int x, int y));
+NI_DLL_PROC(Cursor, __cdecl, XCreatePixmapCursor,
+            (Display * a, Pixmap source, Pixmap mask, XColor* foreground_color,
+             XColor* background_color, unsigned int x_hot, unsigned int y_hot));
+NI_DLL_PROC(int, __cdecl, XFreePixmap, (Display * a, Pixmap pixmap));
 NI_DLL_PROC(XIC, __cdecl, XCreateIC, (XIM im, ...));
 NI_DLL_PROC(char*, __cdecl, XGetICValues, (XIC ic, ...));
 NI_DLL_PROC(void, __cdecl, XSetICFocus, (XIC ic));
-NI_DLL_PROC(int, __cdecl, XSelectInput, (Display* a, Window b, long event_mask));
-NI_DLL_PROC(Status, __cdecl, XSetWMProtocols, (Display* a, Window b, Atom* protocols, int count));
-NI_DLL_PROC(int, __cdecl, XScreenCount, (Display* a));
-NI_DLL_PROC(int, __cdecl, XGrabPointer, (Display* display, Window window, Bool owner, unsigned int mask, int pMode, int kMode, Window confinedTo, Cursor curso, Time time));
-NI_DLL_PROC(int, __cdecl, XUngrabPointer, (Display* display, Time time));
-NI_DLL_PROC(void, __cdecl, XWarpPointer, (Display* display, Window src_w, Window dest_w, int src_x, int src_y, unsigned int src_width, unsigned int src_height, int dest_x,
-                int dest_y));
-NI_DLL_PROC(void, __cdecl, XFlush, (Display* display));
-NI_DLL_PROC(void, __cdecl, XSetInputFocus, (Display *display, Window focus, int revert_to, Time time));
-NI_DLL_PROC(Bool, __cdecl, XQueryPointer, (Display *display, Window w, Window *root_return, int *child_return, int *root_x_return, int *root_y_return, int *win_x_return, int *win_y_return, unsigned int *mask_return));
-NI_DLL_PROC(Status, __cdecl, XSendEvent, (Display *display, Window w, Bool propagate, long event_mask, XEvent *event_send));
-NI_DLL_PROC(Bool, __cdecl, XTranslateCoordinates, (Display *display, Window src_w, Window dest_w, int src_x, int src_y, int *dest_x_return, int *dest_y_return, Window *child_return));
-NI_DLL_PROC(Window, __cdecl, XDefaultRootWindow, (Display *display));
-NI_DLL_PROC(Screen*, __cdecl, XScreenOfDisplay, (Display* display, int screen_number));
-NI_DLL_PROC(int, __cdecl, XWidthOfScreen, (Screen* screen));
-NI_DLL_PROC(int, __cdecl, XHeightOfScreen,(Screen* screen));
-NI_DLL_PROC(int, __cdecl, XChangeWindowAttributes, (Display* display, Window w, unsigned long valuemask, XSetWindowAttributes* attributes));
-NI_DLL_PROC(Status, __cdecl, XGetWindowAttributes, (Display* display, Window w, XWindowAttributes* window_attributes_return));
-NI_DLL_PROC(void, __cdecl, XClearArea, (Display *display, Window w, int x, int y, unsigned int width, unsigned int height, Bool exposures));
+NI_DLL_PROC(int, __cdecl, XSelectInput,
+            (Display * a, Window b, long event_mask));
+NI_DLL_PROC(Status, __cdecl, XSetWMProtocols,
+            (Display * a, Window b, Atom* protocols, int count));
+NI_DLL_PROC(int, __cdecl, XScreenCount, (Display * a));
+NI_DLL_PROC(int, __cdecl, XGrabPointer,
+            (Display * display, Window window, Bool owner, unsigned int mask,
+             int pMode, int kMode, Window confinedTo, Cursor curso, Time time));
+NI_DLL_PROC(int, __cdecl, XUngrabPointer, (Display * display, Time time));
+NI_DLL_PROC(void, __cdecl, XWarpPointer,
+            (Display * display, Window src_w, Window dest_w, int src_x,
+             int src_y, unsigned int src_width, unsigned int src_height,
+             int dest_x, int dest_y));
+NI_DLL_PROC(void, __cdecl, XFlush, (Display * display));
+NI_DLL_PROC(void, __cdecl, XSetInputFocus,
+            (Display * display, Window focus, int revert_to, Time time));
+NI_DLL_PROC(Bool, __cdecl, XQueryPointer,
+            (Display * display, Window w, Window* root_return,
+             int* child_return, int* root_x_return, int* root_y_return,
+             int* win_x_return, int* win_y_return, unsigned int* mask_return));
+NI_DLL_PROC(Status, __cdecl, XSendEvent,
+            (Display * display, Window w, Bool propagate, long event_mask,
+             XEvent* event_send));
+NI_DLL_PROC(Bool, __cdecl, XTranslateCoordinates,
+            (Display * display, Window src_w, Window dest_w, int src_x,
+             int src_y, int* dest_x_return, int* dest_y_return,
+             Window* child_return));
+NI_DLL_PROC(Window, __cdecl, XDefaultRootWindow, (Display * display));
+NI_DLL_PROC(Screen*, __cdecl, XScreenOfDisplay,
+            (Display * display, int screen_number));
+NI_DLL_PROC(int, __cdecl, XWidthOfScreen, (Screen * screen));
+NI_DLL_PROC(int, __cdecl, XHeightOfScreen, (Screen * screen));
+NI_DLL_PROC(int, __cdecl, XChangeWindowAttributes,
+            (Display * display, Window w, unsigned long valuemask,
+             XSetWindowAttributes* attributes));
+NI_DLL_PROC(Status, __cdecl, XGetWindowAttributes,
+            (Display * display, Window w,
+             XWindowAttributes* window_attributes_return));
+NI_DLL_PROC(void, __cdecl, XClearArea,
+            (Display * display, Window w, int x, int y, unsigned int width,
+             unsigned int height, Bool exposures));
 
 NI_DLL_PROC(char*, __cdecl, XResourceManagerString, (Display*));
 NI_DLL_PROC(XrmDatabase, __cdecl, XrmGetStringDatabase, (const char*));
 NI_DLL_PROC(void, __cdecl, XrmDestroyDatabase, (XrmDatabase));
-NI_DLL_PROC(Bool, __cdecl, XrmGetResource, (XrmDatabase,const char*,const char*,char**,XrmValue*));
+NI_DLL_PROC(Bool, __cdecl, XrmGetResource,
+            (XrmDatabase, const char*, const char*, char**, XrmValue*));
 
-NI_DLL_PROC(int, __cdecl, XGetWindowProperty, (Display*, Window, Atom, long, long, Bool, Atom, Atom*, int*, unsigned long*, unsigned long*, unsigned char**));
-NI_DLL_PROC(void, __cdecl, XConvertSelection, (Display* display, Atom selection, Atom target, Atom property, Window requestor, Time time));
-NI_DLL_PROC(void, __cdecl, XSetSelectionOwner, (Display *display, Atom selection, Window owner, Time time));
-NI_DLL_PROC(Window , __cdecl, XGetSelectionOwner, (Display *display, Atom selection));
+NI_DLL_PROC(int, __cdecl, XGetWindowProperty,
+            (Display*, Window, Atom, long, long, Bool, Atom, Atom*, int*,
+             unsigned long*, unsigned long*, unsigned char**));
+NI_DLL_PROC(void, __cdecl, XConvertSelection,
+            (Display * display, Atom selection, Atom target, Atom property,
+             Window requestor, Time time));
+NI_DLL_PROC(void, __cdecl, XSetSelectionOwner,
+            (Display * display, Atom selection, Window owner, Time time));
+NI_DLL_PROC(Window, __cdecl, XGetSelectionOwner,
+            (Display * display, Atom selection));
 NI_DLL_PROC(char*, __cdecl, XGetAtomName, (Display * display, Atom atom));

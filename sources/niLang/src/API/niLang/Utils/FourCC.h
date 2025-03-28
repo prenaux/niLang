@@ -13,8 +13,7 @@ namespace ni {
  */
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class FourCC
-{
+class FourCC {
  public:
   //! Initialize the FourCC with a tU32 value.
   inline FourCC(tU32 anFourCC = 0);
@@ -24,7 +23,7 @@ class FourCC
   inline FourCC(const cchar* acszFourCC);
 
   //! Cast to a tU32.
-  inline operator tU32 () const;
+  inline operator tU32() const;
 
   //! Set the ABCD components of the FourCC.
   inline void Set(tU8 anA, tU8 anB, tU8 anC, tU8 anD);
@@ -48,15 +47,15 @@ class FourCC
   inline cString GetString() const;
 
   //! Check if this FourCC is equal to another FourCC.
-  inline tBool operator == (const FourCC& aFourCC) const;
+  inline tBool operator==(const FourCC& aFourCC) const;
   //! Check if this FourCC is not equal to another FourCC.
-  inline tBool operator != (const FourCC& aFourCC) const;
+  inline tBool operator!=(const FourCC& aFourCC) const;
 
  private:
   union {
     tU32 mnFourCC;
     struct {
-      tU8 mnA,mnB,mnC,mnD;
+      tU8 mnA, mnB, mnC, mnD;
     };
   };
 };
@@ -71,7 +70,10 @@ inline FourCC::FourCC(tU32 anFourCC)
 ///////////////////////////////////////////////
 //! Initialize the FourCC with four tU8.
 inline FourCC::FourCC(tU8 anA, tU8 anB, tU8 anC, tU8 anD)
-    : mnA(anA), mnB(anB), mnC(anC), mnD(anD)
+    : mnA(anA)
+    , mnB(anB)
+    , mnC(anC)
+    , mnD(anD)
 {
   // fourcc = (((d)<<24)|((c)<<16)|((b)<<8)|(a))
 }
@@ -81,12 +83,10 @@ inline FourCC::FourCC(tU8 anA, tU8 anB, tU8 anC, tU8 anD)
 inline FourCC::FourCC(const cchar* acszFourCC)
 {
   tSize nStrLen = strlen(acszFourCC);
-  if (nStrLen == 0)
-  {
+  if (nStrLen == 0) {
     mnFourCC = 0;
   }
-  else
-  {
+  else {
     mnA = acszFourCC[0];
     mnB = (nStrLen >= 2) ? acszFourCC[1] : 0;
     mnC = (nStrLen >= 3) ? acszFourCC[2] : 0;
@@ -96,7 +96,7 @@ inline FourCC::FourCC(const cchar* acszFourCC)
 
 ///////////////////////////////////////////////
 //! Cast to a tU32.
-inline FourCC::operator tU32 () const
+inline FourCC::operator tU32() const
 {
   return mnFourCC;
 }
@@ -105,7 +105,10 @@ inline FourCC::operator tU32 () const
 //! Set the ABCD components of the FourCC.
 inline void FourCC::Set(tU8 anA, tU8 anB, tU8 anC, tU8 anD)
 {
-  mnA = anA; mnB = anB; mnC = anC; mnD = anD;
+  mnA = anA;
+  mnB = anB;
+  mnC = anC;
+  mnD = anD;
 }
 
 ///////////////////////////////////////////////
@@ -179,14 +182,14 @@ inline cString FourCC::GetString() const
 
 ///////////////////////////////////////////////
 //! Check if this FourCC is equal to another FourCC.
-inline tBool FourCC::operator == (const FourCC& aFourCC) const
+inline tBool FourCC::operator==(const FourCC& aFourCC) const
 {
   return mnFourCC == aFourCC.mnFourCC;
 }
 
 ///////////////////////////////////////////////
 //! Check if this FourCC is not equal to another FourCC.
-inline tBool FourCC::operator != (const FourCC& aFourCC) const
+inline tBool FourCC::operator!=(const FourCC& aFourCC) const
 {
   return mnFourCC != aFourCC.mnFourCC;
 }
@@ -194,5 +197,5 @@ inline tBool FourCC::operator != (const FourCC& aFourCC) const
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __FOURCC_56393748_H__

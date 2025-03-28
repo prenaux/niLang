@@ -3,17 +3,17 @@
 
 using namespace ni;
 
-struct FBuffer {
-};
+struct FBuffer {};
 
-TEST_FIXTURE(FBuffer,MallocZero) {
+TEST_FIXTURE(FBuffer, MallocZero)
+{
   tPtr zero1 = (tPtr)niMalloc(0);
   tPtr zero2 = (tPtr)niMalloc(0);
   CHECK_EQUAL(zero1, zero2);
   tU8 buffer[8];
   ni::MemCopy(buffer, zero1, sizeof(buffer));
-  niLoop(i,niCountOf(buffer)) {
-    CHECK_EQUAL(0,buffer[i]);
+  niLoop (i, niCountOf(buffer)) {
+    CHECK_EQUAL(0, buffer[i]);
   }
   niFree(zero1);
   tPtr foo = (tPtr)niRealloc(zero1, 16);
@@ -21,7 +21,8 @@ TEST_FIXTURE(FBuffer,MallocZero) {
   niFree(foo);
 }
 
-TEST_FIXTURE(FBuffer,Realloc) {
+TEST_FIXTURE(FBuffer, Realloc)
+{
   AUTO_WARNING_MODE();
 
   // Use a non aligned size which should lead to reallocating in place

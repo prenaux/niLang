@@ -4,16 +4,16 @@
 			<comments desc="Values returned by the classification functions ">
 				<remark text="Classification values can be combined as flags. "/>
 			</comments>
-			<value name="eClassify_Front" value="niBit ( 0 ) ">
+			<value name="eClassify_Front" value="niBit(0)">
 				<comments desc=""/>
 			</value>
-			<value name="eClassify_Back" value="niBit ( 1 ) ">
+			<value name="eClassify_Back" value="niBit(1)">
 				<comments desc=""/>
 			</value>
-			<value name="eClassify_Coplanar" value="niBit ( 2 ) ">
+			<value name="eClassify_Coplanar" value="niBit(2)">
 				<comments desc=""/>
 			</value>
-			<value name="eClassify_Spanned" value="niBit ( 3 )">
+			<value name="eClassify_Spanned" value="niBit(3)">
 				<comments desc=""/>
 			</value>
 		</enum>

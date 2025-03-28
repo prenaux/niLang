@@ -13,8 +13,7 @@ struct iExpressionContext;
  */
 
 //! Expression variables types.
-enum eExpressionVariableType
-{
+enum eExpressionVariableType {
   //! Real number variable type.
   //! Constructors: -x, x, x.y, -x.y
   eExpressionVariableType_Float = 0,
@@ -38,8 +37,7 @@ enum eExpressionVariableType
 };
 
 //! Expression variables flags.
-enum eExpressionVariableFlags
-{
+enum eExpressionVariableFlags {
   //! Default flags value.
   eExpressionVariableFlags_Default = 0,
   //! Variable is reserved.
@@ -59,8 +57,7 @@ enum eExpressionVariableFlags
 typedef tU32 tExpressionVariableFlags;
 
 //! Expression variable interface.
-struct iExpressionVariable : public iUnknown
-{
+struct iExpressionVariable : public iUnknown {
   niDeclareInterfaceUUID(iExpressionVariable,0x69569e99,0x6b3a,0x444c,0xb3,0x75,0xd2,0xce,0xb3,0x74,0x9b,0x4b);
   //! Set the variable name.
   virtual void __stdcall SetName(iHString* ahspString) = 0;
@@ -90,7 +87,7 @@ struct iExpressionVariable : public iUnknown
   virtual sVec2f __stdcall GetVec2() const = 0;
   //! Get the vector3 value of the variable.
   //! {Property}
-  virtual void __stdcall  SetVec3(const sVec3f& aV) = 0;
+  virtual void __stdcall SetVec3(const sVec3f& aV) = 0;
   //! Get the vector3 value of the variable.
   //! {Property}
   virtual sVec3f __stdcall GetVec3() const = 0;
@@ -115,8 +112,7 @@ struct iExpressionVariable : public iUnknown
 };
 
 //! Expression interface.
-struct iExpression : public iUnknown
-{
+struct iExpression : public iUnknown {
   niDeclareInterfaceUUID(iExpression,0x0506909d,0x5223,0x4d8b,0x87,0x6b,0x01,0xf5,0xa4,0x0c,0x92,0xf9);
   //! Eval the expression and returns the result.
   virtual Ptr<iExpressionVariable> __stdcall Eval() = 0;
@@ -137,8 +133,7 @@ struct iExpressionURLResolver : public iUnknown {
 };
 
 //! Expression context.
-struct iExpressionContext : public iUnknown
-{
+struct iExpressionContext : public iUnknown {
   niDeclareInterfaceUUID(iExpressionContext,0xa870ed3f,0xd227,0x467c,0x98,0xa2,0x8a,0xf1,0x41,0x1a,0xbe,0xe2);
 
   //########################################################################################
@@ -159,13 +154,21 @@ struct iExpressionContext : public iUnknown
   //! @{
 
   //! Create a new variable.
-  virtual iExpressionVariable* __stdcall CreateVariable(const achar* aaszName, eExpressionVariableType aType, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
+  virtual iExpressionVariable* __stdcall CreateVariable(
+    const achar* aaszName, eExpressionVariableType aType,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
   //! Create a variable from an expression.
-  virtual iExpressionVariable* __stdcall CreateVariableFromExpr(const achar* aaszName, const achar* aaszExpr, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
+  virtual iExpressionVariable* __stdcall CreateVariableFromExpr(
+    const achar* aaszName, const achar* aaszExpr,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
   //! Create a variable whos value is fetched from a runnable.
-  virtual iExpressionVariable* __stdcall CreateVariableFromRunnable(const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
+  virtual iExpressionVariable* __stdcall CreateVariableFromRunnable(
+    const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
   //! Create a variable initialized with the value of the specified variant.
-  virtual iExpressionVariable* __stdcall CreateVariableFromVar(const achar* aaszName, const Var& aInitialValue, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
+  virtual iExpressionVariable* __stdcall CreateVariableFromVar(
+    const achar* aaszName, const Var& aInitialValue,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default) = 0;
 
   //! Add a variable to the expression context.
   //! \remark Not duplicate or empty variable names are allowed.
@@ -173,7 +176,8 @@ struct iExpressionContext : public iUnknown
   //! Remove a variable from the expression context.
   virtual tBool __stdcall RemoveVariable(iExpressionVariable* apVariable) = 0;
   //! Find the variable with the specified name.
-  virtual iExpressionVariable* __stdcall FindVariable(iHString* ahspName) const = 0;
+  virtual iExpressionVariable* __stdcall FindVariable(
+    iHString* ahspName) const = 0;
   //! @}
 
   //########################################################################################
@@ -188,7 +192,8 @@ struct iExpressionContext : public iUnknown
   //! Get the unknown symbols into the specified expression.
   //! \param aaszExpr the expression to retrieve the symbols from.
   //! \param apList the string list where the symbols will be place \see ni::tStringCVec
-  virtual tBool __stdcall GetUnknownSymbols(const achar* aaszExpr, tStringCVec* apList) = 0;
+  virtual tBool __stdcall GetUnknownSymbols(const achar* aaszExpr,
+                                            tStringCVec* apList) = 0;
   //! @}
 
   //########################################################################################
@@ -224,13 +229,15 @@ struct iExpressionContext : public iUnknown
   //########################################################################################
   //! @{
 
-  virtual tBool __stdcall RegisterURLResolver(const achar* aaszProtocol, iExpressionURLResolver* apResolver) = 0;
+  virtual tBool __stdcall RegisterURLResolver(
+    const achar* aaszProtocol, iExpressionURLResolver* apResolver) = 0;
   virtual tBool __stdcall UnregisterURLResolver(const achar* aaszProtocol) = 0;
-  virtual iExpressionURLResolver* __stdcall FindURLResolver(const achar* aaszProtocol) const = 0;
+  virtual iExpressionURLResolver* __stdcall FindURLResolver(
+    const achar* aaszProtocol) const = 0;
   //! @}
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IEXPRESSION_H_5FF07DF5_2A37_436B_BCF5_7C09A8AA989D__

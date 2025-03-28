@@ -2,37 +2,37 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eJsonType">
 			<comments desc="Json value types "/>
-			<value min_features="20" name="eJsonType_Syntax" value="0 ">
+			<value min_features="20" name="eJsonType_Syntax" value="0">
 				<comments desc="Syntax parsing. "/>
 			</value>
-			<value min_features="20" name="eJsonType_Name" value="1 ">
+			<value min_features="20" name="eJsonType_Name" value="1">
 				<comments desc="Pair Name (string) "/>
 			</value>
-			<value min_features="20" name="eJsonType_String" value="2 ">
+			<value min_features="20" name="eJsonType_String" value="2">
 				<comments desc="String "/>
 			</value>
-			<value min_features="20" name="eJsonType_Number" value="3 ">
+			<value min_features="20" name="eJsonType_Number" value="3">
 				<comments desc="Number "/>
 			</value>
-			<value min_features="20" name="eJsonType_True" value="4 ">
+			<value min_features="20" name="eJsonType_True" value="4">
 				<comments desc="true "/>
 			</value>
-			<value min_features="20" name="eJsonType_False" value="5 ">
+			<value min_features="20" name="eJsonType_False" value="5">
 				<comments desc="false "/>
 			</value>
-			<value min_features="20" name="eJsonType_Null" value="6 ">
+			<value min_features="20" name="eJsonType_Null" value="6">
 				<comments desc="null "/>
 			</value>
-			<value min_features="20" name="eJsonType_ObjectBegin" value="7 ">
+			<value min_features="20" name="eJsonType_ObjectBegin" value="7">
 				<comments desc="Object begining "/>
 			</value>
-			<value min_features="20" name="eJsonType_ObjectEnd" value="8 ">
+			<value min_features="20" name="eJsonType_ObjectEnd" value="8">
 				<comments desc="Object end "/>
 			</value>
-			<value min_features="20" name="eJsonType_ArrayBegin" value="9 ">
+			<value min_features="20" name="eJsonType_ArrayBegin" value="9">
 				<comments desc="Array begining "/>
 			</value>
-			<value min_features="20" name="eJsonType_ArrayEnd" value="10 ">
+			<value min_features="20" name="eJsonType_ArrayEnd" value="10">
 				<comments desc="Array end "/>
 			</value>
 		</enum>
@@ -50,7 +50,7 @@
 				min_features="20"
 				name="OnJsonParserSink_Error"
 				num_parameters="3">
-				<comments desc="Json parser sink interface. Called when a parsing error occured. "/>
+				<comments desc="Called when a parsing error occured. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					name="aaszReason"
@@ -103,7 +103,7 @@
 				min_features="20"
 				name="OnJsonWriterSink_Error"
 				num_parameters="1">
-				<comments desc="Json writer sink interface. Called when there&apos;s a writting error. "/>
+				<comments desc="Called when there&apos;s a writting error. "/>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"

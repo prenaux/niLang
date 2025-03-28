@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #if niMinFeatures(15)
-#include "Utils/CollectionImpl.h"
+  #include "Utils/CollectionImpl.h"
 
 namespace ni {
 struct iRegex;
@@ -16,8 +16,7 @@ struct iFile;
  */
 
 //! OS Process spawning flags.
-enum eOSProcessSpawnFlags
-{
+enum eOSProcessSpawnFlags {
   //! No flags/default
   eOSProcessSpawnFlags_None = 0,
   //! Create stdin/out/err.
@@ -43,8 +42,7 @@ enum eOSProcessSpawnFlags
 typedef tU32 tOSProcessSpawnFlags;
 
 //! OS Process standard file objects.
-enum eOSProcessFile
-{
+enum eOSProcessFile {
   //! Stdin file object.
   eOSProcessFile_StdIn = 0,
   //! Stdout file object.
@@ -125,7 +123,8 @@ struct iOSProcessEnumSink : public iUnknown {
 
   //! Called when a process has been found.
   //! \return false to interrupt the enumeration, true to continue.
-  virtual ni::tBool __stdcall OnOSProcessEnumSink(tIntPtr aPID, tIntPtr aParentPID, const ni::achar* aaszExeName) = 0;
+  virtual ni::tBool __stdcall OnOSProcessEnumSink(
+    tIntPtr aPID, tIntPtr aParentPID, const ni::achar* aaszExeName) = 0;
 };
 
 //! OS Process Manager
@@ -142,20 +141,23 @@ struct iOSProcessManager : public iUnknown {
   virtual iOSProcess* __stdcall CreateProcess(tInt aPID) = 0;
 
   //! Spawn a new process. \see ni::iOSProcessManager::SpawnProcessEx
-  virtual iOSProcess* __stdcall SpawnProcess(const ni::achar* aaszCmdLine, tOSProcessSpawnFlags aSpawn) = 0;
+  virtual iOSProcess* __stdcall SpawnProcess(const ni::achar* aaszCmdLine,
+                                             tOSProcessSpawnFlags aSpawn) = 0;
   //! Spawn a new process with the specified working directory and environment variables.
   //! \param aaszCmdLine the command line of the process to spawn.
   //! \param aaszWorkDir if not NULL specifies the working directory from where the process will start.
   //! \param apEnvs if not NULL specifies the environment variables that will be set for the new process.
   //! \param aSpawn the spawn flags. \see ni::eOSProcessSpawnFlags
-  virtual iOSProcess* __stdcall SpawnProcessEx(
-      const ni::achar* aaszCmdLine, const achar* aaszWorkDir,
-      const tStringCMap* apEnvs, tOSProcessSpawnFlags aSpawn) = 0;
+  virtual iOSProcess* __stdcall SpawnProcessEx(const ni::achar* aaszCmdLine,
+                                               const achar* aaszWorkDir,
+                                               const tStringCMap* apEnvs,
+                                               tOSProcessSpawnFlags aSpawn) = 0;
 
   //! Enumerates all processes.
   //! \return The number of processes enumerated.
   //! \remark If apSink is NULL returns the number of processes that passed the filter.
-  virtual tU32 __stdcall EnumProcesses(ni::iRegex* apFilter, iOSProcessEnumSink* apSink) = 0;
+  virtual tU32 __stdcall EnumProcesses(ni::iRegex* apFilter,
+                                       iOSProcessEnumSink* apSink) = 0;
 
   //! Get the current working directory.
   //! {Property}
@@ -170,18 +172,24 @@ struct iOSProcessManager : public iUnknown {
 //! Get the OS process manager.
 niExportFunc(ni::iOSProcessManager*) GetOSProcessManager();
 
-inline iFile* GetStdOut() {
-  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdOut);
+inline iFile* GetStdOut()
+{
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(
+    eOSProcessFile_StdOut);
 }
-inline iFile* GetStdErr() {
-  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdErr);
+inline iFile* GetStdErr()
+{
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(
+    eOSProcessFile_StdErr);
 }
-inline iFile* GetStdIn() {
-  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(eOSProcessFile_StdIn);
+inline iFile* GetStdIn()
+{
+  return ni::GetOSProcessManager()->GetCurrentProcess()->GetFile(
+    eOSProcessFile_StdIn);
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // #if niMinFeatures(15)
 #endif // __IOSPROCESS_50BD34A2_37BC_4088_9518_47212EC83EE5_H__

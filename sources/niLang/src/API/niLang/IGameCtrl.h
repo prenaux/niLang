@@ -5,8 +5,7 @@
 namespace ni {
 
 //! Game controller axis
-enum eGameCtrlAxis
-{
+enum eGameCtrlAxis {
   //! Left X Axis.
   eGameCtrlAxis_LX = 0,
   //! Left Y Axis.
@@ -26,8 +25,7 @@ enum eGameCtrlAxis
 };
 
 //! Game controller buttons.
-enum eGameCtrlButton
-{
+enum eGameCtrlButton {
   //! A
   eGameCtrlButton_A = 0,
   //! B
@@ -55,7 +53,7 @@ enum eGameCtrlButton
   eGameCtrlButton_RightTrigger = 11,
 
   //! Up
-  eGameCtrlButton_DPadUp  = 12,
+  eGameCtrlButton_DPadUp = 12,
   //! Down
   eGameCtrlButton_DPadDown = 13,
   //! Left
@@ -69,8 +67,7 @@ enum eGameCtrlButton
 
 //! Game controller interface.
 //! {DispatchWrapper}
-struct iGameCtrl : public iUnknown
-{
+struct iGameCtrl : public iUnknown {
   niDeclareInterfaceUUID(iGameCtrl,0x14f09df7,0x3842,0x46ef,0x99,0x67,0xbb,0xc6,0x55,0x77,0x58,0xb7);
 
   //! Update the device states.
@@ -94,14 +91,14 @@ struct iGameCtrl : public iUnknown
 
   //! Return the number of buttons of the game controller.
   //! {Property}
-  virtual tU32  __stdcall GetNumButtons() const = 0;
+  virtual tU32 __stdcall GetNumButtons() const = 0;
   //! Return the force applied on the button.
   //! {Property}
   virtual tF32 __stdcall GetButton(tU32 ulButton) = 0;
 
   //! Return the number of axis of the game controller.
   //! {Property}
-  virtual tU32  __stdcall GetNumAxis()    const = 0;
+  virtual tU32 __stdcall GetNumAxis() const = 0;
   //! Return the position of the given axis
   //! {Property}
   virtual tF32 __stdcall GetAxis(eGameCtrlAxis axis) = 0;
@@ -121,5 +118,5 @@ struct iGameCtrl : public iUnknown
   virtual tF32 __stdcall GetBatteryLevel() const = 0;
 };
 
-}
+} // namespace ni
 #endif // __IGAMECTRL_H_E3E8B83D_D5CF_4C13_8107_8EA31A0A1300__

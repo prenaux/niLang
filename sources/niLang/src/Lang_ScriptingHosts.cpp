@@ -3,7 +3,7 @@
 
 #include "Lang.h"
 #ifdef niJNI
-#include "API/niLang/Utils/JNIUtils.h"
+  #include "API/niLang/Utils/JNIUtils.h"
 #endif
 
 using namespace ni;
@@ -11,9 +11,11 @@ using namespace ni;
 #if niMinFeatures(15)
 
 ///////////////////////////////////////////////
-tBool __stdcall cLang::AddScriptingHost(iHString* ahspName, iScriptingHost* apHost) {
-  niCheckIsOK(apHost,eFalse);
-  niCheck(HStringIsNotEmpty(ahspName),eFalse);
+tBool __stdcall cLang::AddScriptingHost(iHString* ahspName,
+                                        iScriptingHost* apHost)
+{
+  niCheckIsOK(apHost, eFalse);
+  niCheck(HStringIsNotEmpty(ahspName), eFalse);
   if (GetScriptingHostFromName(ahspName))
     return eTrue; // already added
 
@@ -26,40 +28,45 @@ tBool __stdcall cLang::AddScriptingHost(iHString* ahspName, iScriptingHost* apHo
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cLang::RemoveScriptingHost(iHString* ahspName) {
+tBool __stdcall cLang::RemoveScriptingHost(iHString* ahspName)
+{
   tU32 index = GetScriptingHostIndexFromName(ahspName);
   if (index == eInvalidHandle)
     return eFalse;
 
   __sync_lock_(ScriptingHosts);
-  mvSH.erase(mvSH.begin()+index);
+  mvSH.erase(mvSH.begin() + index);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetNumScriptingHosts() const {
+tU32 __stdcall cLang::GetNumScriptingHosts() const
+{
   __sync_lock_(ScriptingHosts);
   return (tU32)mvSH.size();
 }
 
 ///////////////////////////////////////////////
-iHString* __stdcall cLang::GetScriptingHostName(tU32 anIndex) const {
+iHString* __stdcall cLang::GetScriptingHostName(tU32 anIndex) const
+{
   __sync_lock_(ScriptingHosts);
-  niCheckSilent(anIndex < mvSH.size(),NULL);
+  niCheckSilent(anIndex < mvSH.size(), NULL);
   return mvSH[anIndex].hspName;
 }
 
 ///////////////////////////////////////////////
-iScriptingHost* __stdcall cLang::GetScriptingHost(tU32 anIndex) {
+iScriptingHost* __stdcall cLang::GetScriptingHost(tU32 anIndex)
+{
   __sync_lock_(ScriptingHosts);
-  niCheckSilent(anIndex < mvSH.size(),NULL);
+  niCheckSilent(anIndex < mvSH.size(), NULL);
   return mvSH[anIndex].ptrHost;
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetScriptingHostIndexFromName(iHString* ahspName) {
+tU32 __stdcall cLang::GetScriptingHostIndexFromName(iHString* ahspName)
+{
   __sync_lock_(ScriptingHosts);
-  niLoop(i,mvSH.size()) {
+  niLoop (i, mvSH.size()) {
     if (mvSH[i].hspName == ahspName)
       return i;
   }
@@ -67,14 +74,16 @@ tU32 __stdcall cLang::GetScriptingHostIndexFromName(iHString* ahspName) {
 }
 
 ///////////////////////////////////////////////
-iScriptingHost* __stdcall cLang::GetScriptingHostFromName(iHString* ahspName) {
+iScriptingHost* __stdcall cLang::GetScriptingHostFromName(iHString* ahspName)
+{
   return GetScriptingHost(GetScriptingHostIndexFromName(ahspName));
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cLang::GetScriptingHostIndex(iScriptingHost* apHost) const {
+tU32 __stdcall cLang::GetScriptingHostIndex(iScriptingHost* apHost) const
+{
   __sync_lock_(ScriptingHosts);
-  niLoop(i,mvSH.size()) {
+  niLoop (i, mvSH.size()) {
     if (mvSH[i].ptrHost == apHost)
       return i;
   }
@@ -82,23 +91,26 @@ tU32 __stdcall cLang::GetScriptingHostIndex(iScriptingHost* apHost) const {
 }
 
 ///////////////////////////////////////////////
-void __stdcall cLang::ServiceAllScriptingHosts(tBool abForceGC) {
+void __stdcall cLang::ServiceAllScriptingHosts(tBool abForceGC)
+{
   __sync_lock_(ScriptingHosts);
-#ifdef niJNI
+  #ifdef niJNI
   if (niJVM_HasVM()) {
     niJVM_Service(niJVM_GetCurrentEnv());
   }
-#endif
-  niLoop(i,mvSH.size()) {
+  #endif
+  niLoop (i, mvSH.size()) {
     mvSH[i].ptrHost->Service(abForceGC);
   }
 }
 
 ///////////////////////////////////////////////
-iScriptingHost* __stdcall cLang::FindScriptingHost(iHString* ahspContext, iHString* ahspCodeResource) {
+iScriptingHost* __stdcall cLang::FindScriptingHost(iHString* ahspContext,
+                                                   iHString* ahspCodeResource)
+{
   __sync_lock_(ScriptingHosts);
-  niLoopr(ri,mvSH.size()) {
-    if (mvSH[ri].ptrHost->CanEvalImpl(ahspContext,ahspCodeResource)) {
+  niLoopr (ri, mvSH.size()) {
+    if (mvSH[ri].ptrHost->CanEvalImpl(ahspContext, ahspCodeResource)) {
       return mvSH[ri].ptrHost;
     }
   }

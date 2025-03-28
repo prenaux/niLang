@@ -10,8 +10,11 @@
 
 namespace ni {
 
-static inline const achar* GetCurrentOSProcessCmdLine() {
-  if (ni::GetOSProcessManager() && ni::GetOSProcessManager()->GetCurrentProcess()) {
+static inline const achar* GetCurrentOSProcessCmdLine()
+{
+  if (ni::GetOSProcessManager() &&
+      ni::GetOSProcessManager()->GetCurrentProcess())
+  {
     return ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine();
   }
   return AZEROSTR;
@@ -24,20 +27,23 @@ static inline tI32 CmdLineGetParametersPos(const cString& str)
   tI32 pos = -1;
   if (str[0] == '\"') {
     pos = 0;
-    return str.find('\"',pos+1)+1;
+    return str.find('\"', pos + 1) + 1;
   }
   pos = str.find(' ');
   if (pos >= 0) {
-    return pos+1;
+    return pos + 1;
   }
   pos = str.find('\t');
   if (pos >= 0) {
-    return pos+1;
+    return pos + 1;
   }
   return 0;
 }
 
-static inline cString CmdLineStrCharItReadFile(StrCharIt& it, const tU32 anEndOnChar = 0, const tU32 anSkipBeginingChar = '=') {
+static inline cString CmdLineStrCharItReadFile(
+  StrCharIt& it, const tU32 anEndOnChar = 0,
+  const tU32 anSkipBeginingChar = '=')
+{
   cString r;
 
   tU32 endAtQuote = 0;
@@ -109,14 +115,16 @@ static inline cString CmdLineStrCharItReadFile(StrCharIt& it, const tU32 anEndOn
   }
 }
 
-typedef astl::function_ref<void(const achar* aProperty, const achar* aValue, tBool abIsShortHand)> tCmdLineParseArgFn;
+typedef astl::function_ref<void(const achar* aProperty, const achar* aValue,
+                                tBool abIsShortHand)>
+  tCmdLineParseArgFn;
 typedef astl::function_ref<void(const cString& aFilename)> tCmdLineParseFileFn;
 
 // Standard command line parsing. Handles -D & -- system properties.
 static inline tBool ParseCommandLine(
-  const achar* aaszCmdLine,
-  astl::optional<tCmdLineParseArgFn> afnParseArg,
-  astl::optional<tCmdLineParseFileFn> afnParseFile) {
+  const achar* aaszCmdLine, astl::optional<tCmdLineParseArgFn> afnParseArg,
+  astl::optional<tCmdLineParseFileFn> afnParseFile)
+{
   // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
@@ -142,8 +150,8 @@ static inline tBool ParseCommandLine(
       if (isShorthand) {
         it.prior();
       }
-      tOffset nameOffset = tOffset{0};
-      cString pname = ni::CmdLineStrCharItReadFile(it,'=');
+      tOffset nameOffset = tOffset{ 0 };
+      cString pname = ni::CmdLineStrCharItReadFile(it, '=');
       const tU32 prior = it.peek_prior();
       cString pvalue;
       if (prior == '=') {
@@ -159,7 +167,8 @@ static inline tBool ParseCommandLine(
         }
       }
       if (afnParseArg.has_value()) {
-        afnParseArg.value()(pname.Chars()+nameOffset,pvalue.Chars(),isShorthand);
+        afnParseArg.value()(pname.Chars() + nameOffset, pvalue.Chars(),
+                            isShorthand);
       }
       prevChar = 0;
     }
@@ -180,7 +189,7 @@ static inline tBool ParseCommandLine(
     const tCmdLineParseFileFn parseFile = afnParseFile.value();
     // get the other arguments...
     while (!it.is_end()) {
-      cString arg = ni::CmdLineStrCharItReadFile(it,0,0);
+      cString arg = ni::CmdLineStrCharItReadFile(it, 0, 0);
       if (!arg.empty()) {
         parseFile(arg);
       }
@@ -190,17 +199,24 @@ static inline tBool ParseCommandLine(
   return eTrue;
 }
 
-niDeprecated(20230807, ParseCommandLine(tCmdLineParseArgFn,tCmdLineParseFileFn))
-static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apInputFileName = NULL, ni::tStringCVec* apOtherFiles = NULL, ni::tStringCVec* apUnknownParams = NULL) {
+niDeprecated(20230807,
+             ParseCommandLine(tCmdLineParseArgFn,
+                              tCmdLineParseFileFn)) static inline tBool
+  ParseCommandLine(const achar* aaszCmdLine,
+                   ni::cString* apInputFileName = NULL,
+                   ni::tStringCVec* apOtherFiles = NULL,
+                   ni::tStringCVec* apUnknownParams = NULL)
+{
 
   tU32 numFiles = 0;
   return ParseCommandLine(
     aaszCmdLine,
-    tCmdLineParseArgFn{[&](const achar* aProperty, const achar* aValue, tBool aIsShorthand) {
+    tCmdLineParseArgFn{ [&](const achar* aProperty, const achar* aValue,
+                            tBool aIsShorthand) {
       if (aIsShorthand) {
         if (apUnknownParams) {
           if (niStringIsOK(aValue)) {
-            if (ni::StrIEq(aValue,"true")) {
+            if (ni::StrIEq(aValue, "true")) {
               apUnknownParams->push_back(aProperty);
             }
             else {
@@ -214,10 +230,10 @@ static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apIn
         }
       }
       else {
-        ni::GetLang()->SetProperty(aProperty,aValue);
+        ni::GetLang()->SetProperty(aProperty, aValue);
       }
-    }},
-    tCmdLineParseFileFn{[&](const cString& aFile) {
+    } },
+    tCmdLineParseFileFn{ [&](const cString& aFile) {
       if (numFiles == 0) {
         if (apInputFileName) {
           *apInputFileName = aFile;
@@ -229,7 +245,7 @@ static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apIn
         }
       }
       ++numFiles;
-    }});
+    } });
 }
 
 // Parse a command line that can optionally be split in multiple sections
@@ -239,8 +255,7 @@ static inline tBool ParseCommandLine(const achar* aaszCmdLine, ni::cString* apIn
 // \param aLambda `[&](const achar* aTool, const achar* aCmdLine, int argc, const achar** argv) -> int`
 template <typename T>
 static int ParseToolsCommandLine(const achar* aProcessCmdLine,
-                                 const achar aToolSplitter,
-                                 const T& aLambda)
+                                 const achar aToolSplitter, const T& aLambda)
 {
   cString processCmdLine = aProcessCmdLine;
   processCmdLine.Trim();
@@ -250,7 +265,8 @@ static int ParseToolsCommandLine(const achar* aProcessCmdLine,
     return eInvalidHandle; // no parameters
   }
 
-  const cString exePath = processCmdLine.slice(0,parametersPos).GetWithoutBEQuote();
+  const cString exePath =
+    processCmdLine.slice(0, parametersPos).GetWithoutBEQuote();
 
   tBool isTool = eFalse;
   StrCharIt it = processCmdLine.charZIt(parametersPos);
@@ -268,7 +284,7 @@ static int ParseToolsCommandLine(const achar* aProcessCmdLine,
 
   const achar aszToolSpliter[2] = { aToolSplitter, 0 };
 
-  for ( ; !it.is_end(); ) {
+  for (; !it.is_end();) {
     // get the command line
     int inQuote = 0;
     cString tool = "@default";
@@ -324,12 +340,13 @@ static int ParseToolsCommandLine(const achar* aProcessCmdLine,
     astl::vector<const char*> argsPtr;
     // TRACE_CMD_LINE(("TOOL: %s", tool));
     // TRACE_CMD_LINE(("CMDLINE: %s", cmdLine));
-    niLoop(i,args.size()) {
+    niLoop (i, args.size()) {
       // TRACE_CMD_LINE(("ARGS[%d]: '%s'", i, args[i]));
       argsPtr.push_back(args[i].Chars());
     }
 
-    int r = aLambda(tool.Chars(), cmdLine.Chars(), (int)argsPtr.size(), (const achar**)argsPtr.data());
+    int r = aLambda(tool.Chars(), cmdLine.Chars(), (int)argsPtr.size(),
+                    (const achar**)argsPtr.data());
     if (r != 0) {
       return r;
     }
@@ -338,5 +355,5 @@ static int ParseToolsCommandLine(const achar* aProcessCmdLine,
   return 0;
 }
 
-}
+} // namespace ni
 #endif // __CMDLINE_H_FBE040FF_0F8A_4BB1_9F92_35517A9DFE09__

@@ -12,7 +12,8 @@ static const tU32 knDataTableSerializeVersionBitsLzma = niMakeVersion(2,2,0);
 static const tU32 knDataTableSerializeVersionRawLzma = niMakeVersion(2,2,1);
 
 //const ni::tU32 _knDataTableObjectSerializeVersion = knDataTableSerializeVersionRaw; // dtb
-static const ni::tU32 _knDataTableObjectSerializeVersion = knDataTableSerializeVersionRawZip; // dtz
+static const ni::tU32 _knDataTableObjectSerializeVersion =
+  knDataTableSerializeVersionRawZip; // dtz
 
 } // end of namespace ni
 

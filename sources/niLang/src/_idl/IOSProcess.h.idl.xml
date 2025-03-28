@@ -2,26 +2,26 @@
 	<namespace name="ni">
 		<enum min_features="15" name="eOSProcessSpawnFlags">
 			<comments desc="OS Process spawning flags. "/>
-			<value min_features="15" name="eOSProcessSpawnFlags_None" value="0 ">
+			<value min_features="15" name="eOSProcessSpawnFlags_None" value="0">
 				<comments desc="No flags/default "/>
 			</value>
-			<value min_features="15" name="eOSProcessSpawnFlags_StdFiles" value="niBit ( 0 ) ">
+			<value min_features="15" name="eOSProcessSpawnFlags_StdFiles" value="niBit(0)">
 				<comments desc="Create stdin/out/err. ">
 					<remark text="Indicates that we want to redirect stdin/ou/err to our own handles. The implication is that we can and must drain stdout/err to retrieve its output. "/>
 				</comments>
 			</value>
-			<value min_features="15" name="eOSProcessSpawnFlags_DifferentStdOutAndStdErr" value="niBit ( 1 ) ">
+			<value min_features="15" name="eOSProcessSpawnFlags_DifferentStdOutAndStdErr" value="niBit(1)">
 				<comments desc="Indicates that we want different pipes for StdOut and StdErr. ">
 					<remark text="This means that both stdout and stderr need to be drained. "/>
 				</comments>
 			</value>
-			<value min_features="15" name="eOSProcessSpawnFlags_SandBox" value="niBit ( 2 ) ">
+			<value min_features="15" name="eOSProcessSpawnFlags_SandBox" value="niBit(2)">
 				<comments desc="Create the process in sand boxed environment. ">
 					<remark text="A process in a SandBox will have limited rights to access sensitive informations in the OS. "/>
 					<remark text="Not all OS&apos;s are capable of creating sandboxed processes. "/>
 				</comments>
 			</value>
-			<value min_features="15" name="eOSProcessSpawnFlags_Detached" value="niBit ( 3 ) ">
+			<value min_features="15" name="eOSProcessSpawnFlags_Detached" value="niBit(3)">
 				<comments desc="Create the process an independant process. ">
 					<remark text="This is needed to launch other applications independantly, such as in the case of a launcher starting another app. "/>
 				</comments>
@@ -29,16 +29,16 @@
 		</enum>
 		<enum min_features="15" name="eOSProcessFile">
 			<comments desc="OS Process standard file objects. "/>
-			<value min_features="15" name="eOSProcessFile_StdIn" value="0 ">
+			<value min_features="15" name="eOSProcessFile_StdIn" value="0">
 				<comments desc="Stdin file object. "/>
 			</value>
-			<value min_features="15" name="eOSProcessFile_StdOut" value="1 ">
+			<value min_features="15" name="eOSProcessFile_StdOut" value="1">
 				<comments desc="Stdout file object. "/>
 			</value>
-			<value min_features="15" name="eOSProcessFile_StdErr" value="2 ">
+			<value min_features="15" name="eOSProcessFile_StdErr" value="2">
 				<comments desc="Stderr file object. "/>
 			</value>
-			<value min_features="15" name="eOSProcessFile_Last" value="3 ">
+			<value min_features="15" name="eOSProcessFile_Last" value="3">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

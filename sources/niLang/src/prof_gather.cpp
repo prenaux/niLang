@@ -5,36 +5,39 @@
 
 niProf_Define(_global);
 
-double Prof_get_time(void) {
+double Prof_get_time(void)
+{
   return ni::TimerInSeconds();
 }
-void Prof_get_timestamp(ni::tI64* result) {
+void Prof_get_timestamp(ni::tI64* result)
+{
   *result = (ni::tI64)(ni::TimerInSeconds() * 1e9);
 }
 
-Prof_Zone_Stack Prof_dummy  ;  // impossible parent
-Prof_Zone_Stack Prof_dummy2 ;
-Prof_Zone_Stack *Prof_stack = &Prof_dummy2;
+Prof_Zone_Stack Prof_dummy; // impossible parent
+Prof_Zone_Stack Prof_dummy2;
+Prof_Zone_Stack* Prof_stack = &Prof_dummy2;
 
 int Prof_num_zones;
-Prof_Zone *Prof_zones[MAX_PROFILING_ZONES];
+Prof_Zone* Prof_zones[MAX_PROFILING_ZONES];
 
-#define MAX_HASH_SIZE     65536   // not unlimited, to catch unbalanced BEGIN/END_PROF
-#define INIT_HASH_SIZE    256     // balance resource usage and avoid initial growth
+  #define MAX_HASH_SIZE \
+    65536 // not unlimited, to catch unbalanced BEGIN/END_PROF
+  #define INIT_HASH_SIZE 256 // balance resource usage and avoid initial growth
 
-static Prof_Zone_Stack *init_hash[] = { &Prof_dummy };
-static Prof_Zone_Stack **zone_hash = init_hash;
+static Prof_Zone_Stack* init_hash[] = { &Prof_dummy };
+static Prof_Zone_Stack** zone_hash = init_hash;
 static int zone_hash_count = 1;
-static int zone_hash_max   = 1;
-static int zone_hash_mask  = 0;
+static int zone_hash_max = 1;
+static int zone_hash_mask = 0;
 
-static int hash(Prof_Zone *z, Prof_Zone_Stack *s)
+static int hash(Prof_Zone* z, Prof_Zone_Stack* s)
 {
   int n = (int)((intptr_t)z + (intptr_t)s);
   return n + (n >> 8);
 }
 
-static void insert_node(Prof_Zone_Stack *q)
+static void insert_node(Prof_Zone_Stack* q)
 {
   int h = hash(q->zone, q->parent);
   int x = h & zone_hash_mask;
@@ -48,16 +51,16 @@ static void insert_node(Prof_Zone_Stack *q)
   ++zone_hash_count;
 }
 
-static void init_zone(Prof_Zone *zone)
+static void init_zone(Prof_Zone* zone)
 {
   Prof_zones[Prof_num_zones++] = zone;
 
   zone->initialized = 1;
 }
 
-static int count_recursion_depth(Prof_Zone_Stack *stack, Prof_Zone *zone)
+static int count_recursion_depth(Prof_Zone_Stack* stack, Prof_Zone* zone)
 {
-  int n=0;
+  int n = 0;
   while (stack) {
     if (stack->zone == zone)
       ++n;
@@ -66,10 +69,11 @@ static int count_recursion_depth(Prof_Zone_Stack *stack, Prof_Zone *zone)
   return n;
 }
 
-static Prof_Zone_Stack *createStackNode(Prof_Zone *zone, Prof_Zone_Stack *parent)
+static Prof_Zone_Stack* createStackNode(Prof_Zone* zone,
+                                        Prof_Zone_Stack* parent)
 {
   // create a new node
-  Prof_Zone_Stack *z = (Prof_Zone_Stack *)niMalloc(sizeof(*z));
+  Prof_Zone_Stack* z = (Prof_Zone_Stack*)niMalloc(sizeof(*z));
   z->zone = zone;
   z->parent = parent;
   z->total_entry_count = 0;
@@ -85,11 +89,11 @@ static void init_zone_hash(int size)
 {
   int i;
   niAssert(size <= MAX_HASH_SIZE);
-  zone_hash_max   = size;
+  zone_hash_max = size;
   zone_hash_count = 0;
-  zone_hash       = (Prof_Zone_Stack **)niMalloc(sizeof(*zone_hash) * zone_hash_max);
-  zone_hash_mask  = size-1;
-  for (i=0; i < zone_hash_max; ++i)
+  zone_hash = (Prof_Zone_Stack**)niMalloc(sizeof(*zone_hash) * zone_hash_max);
+  zone_hash_mask = size - 1;
+  for (i = 0; i < zone_hash_max; ++i)
     zone_hash[i] = &Prof_dummy;
 }
 
@@ -97,22 +101,25 @@ static void Prof_init_lowlevel(void);
 
 // this code is structured to minimize computation
 // assuming there's a hit in the very first slot
-Prof_Zone_Stack *Prof_StackAppend(Prof_Zone *zone)
+Prof_Zone_Stack* Prof_StackAppend(Prof_Zone* zone)
 {
   int h = hash(zone, Prof_stack), s;
   int x = h & zone_hash_mask;
-  Prof_Zone_Stack *z = zone_hash[x];
-  if (z->parent == Prof_stack && z->zone == zone) return z;
+  Prof_Zone_Stack* z = zone_hash[x];
+  if (z->parent == Prof_stack && z->zone == zone)
+    return z;
   if (z != &Prof_dummy) {
 
     // compute a secondary hash function; force it to be odd
     // so it's relatively prime to the power-of-two table size
     s = ((h << 4) + (h >> 4)) | 1;
-    for(;;) {
+    for (;;) {
       x = (x + s) & zone_hash_mask;
       z = zone_hash[x];
-      if (z->parent == Prof_stack && z->zone == zone) return z;
-      if (z == &Prof_dummy) break;
+      if (z->parent == Prof_stack && z->zone == zone)
+        return z;
+      if (z == &Prof_dummy)
+        break;
     }
     // loop is guaranteed to terminate because the hash table is never full
   }
@@ -130,13 +137,13 @@ Prof_Zone_Stack *Prof_StackAppend(Prof_Zone *zone)
 
   // check if we need to grow the table
   // we keep it at most 1/2 full to be very fast
-  if (zone_hash_count*2 > zone_hash_max) {
+  if (zone_hash_count * 2 > zone_hash_max) {
     Prof_Zone_Stack **old_hash = zone_hash, *z;
-    int i,n = zone_hash_max;
+    int i, n = zone_hash_max;
 
-    init_zone_hash(zone_hash_max*2);
+    init_zone_hash(zone_hash_max * 2);
 
-    for (i=0; i < n; ++i)
+    for (i = 0; i < n; ++i)
       if (old_hash[i] != &Prof_dummy)
         insert_node(old_hash[i]);
 
@@ -150,10 +157,10 @@ Prof_Zone_Stack *Prof_StackAppend(Prof_Zone *zone)
   return zone_hash[x] = createStackNode(zone, Prof_stack);
 }
 
-void Prof_traverse(void (*func)(Prof_Zone_Stack *z))
+void Prof_traverse(void (*func)(Prof_Zone_Stack* z))
 {
   int i;
-  for (i=0; i < zone_hash_max; ++i)
+  for (i = 0; i < zone_hash_max; ++i)
     if (zone_hash[i] != &Prof_dummy)
       func(zone_hash[i]);
 }

@@ -2,24 +2,24 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eXmlParserNodeType">
 			<comments desc="Xml parser node types. "/>
-			<value min_features="20" name="eXmlParserNodeType_ElementBegin" value="0 ">
+			<value min_features="20" name="eXmlParserNodeType_ElementBegin" value="0">
 				<comments desc="A xml element, like \&lt;foo&gt; "/>
 			</value>
-			<value min_features="20" name="eXmlParserNodeType_ElementEnd" value="1 ">
+			<value min_features="20" name="eXmlParserNodeType_ElementEnd" value="1">
 				<comments desc="End of an xml element, like \&lt;/foo&gt; "/>
 			</value>
-			<value min_features="20" name="eXmlParserNodeType_Text" value="2 ">
+			<value min_features="20" name="eXmlParserNodeType_Text" value="2">
 				<comments desc="Text within a xml element: \&lt;foo&gt; this is the text. \&lt;/foo&gt; "/>
 			</value>
-			<value min_features="20" name="eXmlParserNodeType_EmptyText" value="3 ">
+			<value min_features="20" name="eXmlParserNodeType_EmptyText" value="3">
 				<comments desc="Empty Text within a xml element: \&lt;foo&gt; \&lt;/foo&gt; ">
 					<remark text="Empty is text composed only of non-printable characters. "/>
 				</comments>
 			</value>
-			<value min_features="20" name="eXmlParserNodeType_Comment" value="4 ">
+			<value min_features="20" name="eXmlParserNodeType_Comment" value="4">
 				<comments desc="An xml comment like &amp;lt;!-- I am a comment --&amp;gt; or a DTD definition. "/>
 			</value>
-			<value min_features="20" name="eXmlParserNodeType_CDATA" value="5 ">
+			<value min_features="20" name="eXmlParserNodeType_CDATA" value="5">
 				<comments desc="An xml cdata section like &amp;lt;![CDATA[ this is some CDATA ]]&amp;gt; "/>
 			</value>
 		</enum>
@@ -37,7 +37,7 @@
 				min_features="20"
 				name="OnXmlParserSink_Node"
 				num_parameters="2">
-				<comments desc="Xml parser sink interface. "/>
+				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="aType"

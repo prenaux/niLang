@@ -4,95 +4,96 @@
 // SPDX-License-Identifier: MIT
 #ifdef __MINGW32__
 
-#define niPlatformDetected
+  #define niPlatformDetected
 
-#define niWindows   // OS
-#define niGCC     // Compiler
-#define niMingW32   // Compiler, MingW32 (tested with GCC 3.4.5)
+  #define niWindows // OS
+  #define niGCC     // Compiler
+  #define niMingW32 // Compiler, MingW32 (tested with GCC 3.4.5)
 
-#if defined _UNICODE && !defined UNICODE
-#define UNICODE
-#endif
+  #if defined _UNICODE && !defined UNICODE
+    #define UNICODE
+  #endif
 
-#ifndef _WIN32_DCOM
-#define _WIN32_DCOM
-#endif
+  #ifndef _WIN32_DCOM
+    #define _WIN32_DCOM
+  #endif
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
+  #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+  #endif
 
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#ifndef _WIN32_IE
-#define _WIN32_IE   0x0501
-#endif
+  #ifndef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0501
+  #endif
+  #ifndef _WIN32_IE
+    #define _WIN32_IE 0x0501
+  #endif
 
-#define __STDC_LIMIT_MACROS // For WCHAR_MIN and WCHAR_MAX in stdint.
-#define __STDC_CONSTANT_MACROS  // For UINT??_C macros to avoid using L and UL suffixes on constants.
+  #define __STDC_LIMIT_MACROS // For WCHAR_MIN and WCHAR_MAX in stdint.
+  #define __STDC_CONSTANT_MACROS // For UINT??_C macros to avoid using L and UL suffixes on constants.
 
-// Required headers
-#include <string.h>
-#ifdef __cplusplus
-#include <new>  // placement new
-#endif
+  // Required headers
+  #include <string.h>
+  #ifdef __cplusplus
+    #include <new> // placement new
+  #endif
 
-// Typename
-#define niTypename  typename
+  // Typename
+  #define niTypename typename
 
-// Compiler support #pragma comment(lib,"libfile.lib")
-//#define niPragmaCommentLib
+  // Compiler support #pragma comment(lib,"libfile.lib")
+  //#define niPragmaCommentLib
 
-#define niBaseInterfacePadding
+  #define niBaseInterfacePadding
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Structures packing
-#define niPragmaPack 0
-#define niPackPush(x)
-#define niPackPop()
-#define niPacked(x) __attribute__((packed))
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Structures packing
+  #define niPragmaPack 0
+  #define niPackPush(x)
+  #define niPackPop()
+  #define niPacked(x) __attribute__((packed))
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-#define niDLLSuffix        ".dll"
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  #define niDLLSuffix ".dll"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Types definition
-#define niTypeCChar char
-#define niTypeUChar wchar_t
-#define niTypeI8    signed char
-#define niTypeI16   signed short
-#define niTypeI32   signed long
-#define niTypeI64   signed long long
-#define niTypeU8    unsigned char
-#define niTypeU16   unsigned short
-#define niTypeU32   unsigned long
-#define niTypeU64   unsigned long long
-#define niTypeF32   float
-#define niTypeF64   double
-#define niTypePtr   niTypeU8*
-#define niTypeSize    size_t
-#define niTypeInt     int
-#define niTypeUInt      unsigned int
-#ifdef ni64 // 64 bits target
-#define niTypeIntPtr  niTypeI64
-#define niTypeUIntPtr niTypeU64
-#define niTypeOffset  niTypeI64
-#else
-#define niTypeIntPtr  niTypeI32
-#define niTypeUIntPtr niTypeU32
-#define niTypeOffset  niTypeI32
-#endif
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Types definition
+  #define niTypeCChar char
+  #define niTypeUChar wchar_t
+  #define niTypeI8 signed char
+  #define niTypeI16 signed short
+  #define niTypeI32 signed long
+  #define niTypeI64 signed long long
+  #define niTypeU8 unsigned char
+  #define niTypeU16 unsigned short
+  #define niTypeU32 unsigned long
+  #define niTypeU64 unsigned long long
+  #define niTypeF32 float
+  #define niTypeF64 double
+  #define niTypePtr niTypeU8*
+  #define niTypeSize size_t
+  #define niTypeInt int
+  #define niTypeUInt unsigned int
+  #ifdef ni64 // 64 bits target
+    #define niTypeIntPtr niTypeI64
+    #define niTypeUIntPtr niTypeU64
+    #define niTypeOffset niTypeI64
+  #else
+    #define niTypeIntPtr niTypeI32
+    #define niTypeUIntPtr niTypeU32
+    #define niTypeOffset niTypeI32
+  #endif
 
-#define niUCharSize    2
+  #define niUCharSize 2
 
-#define niPragmaMinTypeInfoOn   component(mintypeinfo, on)
-#define niPragmaMinTypeInfoOff    component(mintypeinfo, off)
+  #define niPragmaMinTypeInfoOn component(mintypeinfo, on)
+  #define niPragmaMinTypeInfoOff component(mintypeinfo, off)
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Main - Entry point
-#define niWindowedMain() int APIENTRY WinMain(HINSTANCE ahInstance, HINSTANCE, LPTSTR, int)
-#define niConsoleMain() int main(int argc, const char** argv)
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // Main - Entry point
+  #define niWindowedMain() \
+    int APIENTRY WinMain(HINSTANCE ahInstance, HINSTANCE, LPTSTR, int)
+  #define niConsoleMain() int main(int argc, const char** argv)
 
 #endif // __MINGW32__
 

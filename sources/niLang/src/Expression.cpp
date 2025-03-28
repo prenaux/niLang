@@ -19,8 +19,8 @@ using namespace ni;
 // #define USE_MODULO_OP
 // #define DEFAULT_ENUM_IS_FULLY_QUALIFIED
 
-typedef tF64  tScalarFloat;
-typedef tF32  tVectorFloat;
+typedef tF64 tScalarFloat;
+typedef tF32 tVectorFloat;
 
 #define EXPRESSION_TRACE niWarning
 
@@ -43,426 +43,668 @@ class Evaluator;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Mathematic variables.
 
-static tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar) {
+static tBool __stdcall _FromVar(iExpressionVariable* apExprVar, const Var& aVar)
+{
   niAssert(niIsOK(apExprVar));
   Var value = aVar;
   switch (apExprVar->GetType()) {
-    case eExpressionVariableType_Float:
-      VarConvertType(value,eType_F64);
-      apExprVar->SetFloat(value.GetFloatValue());
-      break;
-    case eExpressionVariableType_Vec2:
-      VarConvertType(value,eType_Vec2f);
-      apExprVar->SetVec2(value.GetVec2fValue());
-      break;
-    case eExpressionVariableType_Vec3:
-      VarConvertType(value,eType_Vec3f);
-      apExprVar->SetVec3(value.GetVec3fValue());
-      break;
-    case eExpressionVariableType_Vec4:
-      VarConvertType(value,eType_Vec4f);
-      apExprVar->SetVec4(value.GetVec4fValue());
-      break;
-    case eExpressionVariableType_Matrix:
-      VarConvertType(value,eType_Matrixf);
-      apExprVar->SetMatrix(value.GetMatrixf());
-      break;
-    case eExpressionVariableType_String:
-      VarConvertType(value,eType_String);
-      apExprVar->SetString(value.GetString());
-      break;
-    default:
-      return eFalse;
+  case eExpressionVariableType_Float:
+    VarConvertType(value, eType_F64);
+    apExprVar->SetFloat(value.GetFloatValue());
+    break;
+  case eExpressionVariableType_Vec2:
+    VarConvertType(value, eType_Vec2f);
+    apExprVar->SetVec2(value.GetVec2fValue());
+    break;
+  case eExpressionVariableType_Vec3:
+    VarConvertType(value, eType_Vec3f);
+    apExprVar->SetVec3(value.GetVec3fValue());
+    break;
+  case eExpressionVariableType_Vec4:
+    VarConvertType(value, eType_Vec4f);
+    apExprVar->SetVec4(value.GetVec4fValue());
+    break;
+  case eExpressionVariableType_Matrix:
+    VarConvertType(value, eType_Matrixf);
+    apExprVar->SetMatrix(value.GetMatrixf());
+    break;
+  case eExpressionVariableType_String:
+    VarConvertType(value, eType_String);
+    apExprVar->SetString(value.GetString());
+    break;
+  default: return eFalse;
   }
   return eTrue;
 }
 
-static Var _ToVar(const iExpressionVariable* apExprVar) {
+static Var _ToVar(const iExpressionVariable* apExprVar)
+{
   niAssert(niIsOK(apExprVar));
   switch (apExprVar->GetType()) {
-    case eExpressionVariableType_Float:
-      return apExprVar->GetFloat();
-    case eExpressionVariableType_Vec2:
-      return apExprVar->GetVec2();
-    case eExpressionVariableType_Vec3:
-      return apExprVar->GetVec3();
-    case eExpressionVariableType_Vec4:
-      return apExprVar->GetVec4();
-    case eExpressionVariableType_Matrix:
-      return apExprVar->GetMatrix();
-    case eExpressionVariableType_String:
-      return apExprVar->GetString();
+  case eExpressionVariableType_Float: return apExprVar->GetFloat();
+  case eExpressionVariableType_Vec2: return apExprVar->GetVec2();
+  case eExpressionVariableType_Vec3: return apExprVar->GetVec3();
+  case eExpressionVariableType_Vec4: return apExprVar->GetVec4();
+  case eExpressionVariableType_Matrix: return apExprVar->GetMatrix();
+  case eExpressionVariableType_String: return apExprVar->GetString();
   }
   return niVarNull;
 }
 
 ///////////////////////////////////////////////
-struct ExprVar : public ImplRC<iExpressionVariable>
-{
+struct ExprVar : public ImplRC<iExpressionVariable> {
  protected:
-  ExprVar(iHString* ahspName, eExpressionVariableType aType) : hspName(ahspName), Type(aType) {}
+  ExprVar(iHString* ahspName, eExpressionVariableType aType)
+      : hspName(ahspName)
+      , Type(aType)
+  {
+  }
+
  public:
-  tHStringPtr       hspName;
-  eExpressionVariableType  Type;
+  tHStringPtr hspName;
+  eExpressionVariableType Type;
   tExpressionVariableFlags Flags;
 
-  inline void __stdcall SetName(iHString* ahspString) { hspName = ahspString; }
-  inline iHString* __stdcall GetName() const { return hspName; }
+  inline void __stdcall SetName(iHString* ahspString)
+  {
+    hspName = ahspString;
+  }
+  inline iHString* __stdcall GetName() const
+  {
+    return hspName;
+  }
   tBool __stdcall Copy(const iExpressionVariable* apVar);
   iExpressionVariable* __stdcall Clone() const;
   eExpressionVariableType __stdcall GetType() const;
   tExpressionVariableFlags __stdcall GetFlags() const;
 
-  tBool __stdcall SetVar(const Var& aVar) {
-
+  tBool __stdcall SetVar(const Var& aVar)
+  {
     Var value = aVar;
     switch (Type) {
-      case eExpressionVariableType_Float:
-        VarConvertType(value,eType_F64);
-        this->SetFloat(value.GetFloatValue());
-        break;
-      case eExpressionVariableType_Vec2:
-        VarConvertType(value,eType_Vec2f);
-        this->SetVec2(value.GetVec2fValue());
-        break;
-      case eExpressionVariableType_Vec3:
-        VarConvertType(value,eType_Vec3f);
-        this->SetVec3(value.GetVec3fValue());
-        break;
-      case eExpressionVariableType_Vec4:
-        VarConvertType(value,eType_Vec4f);
-        this->SetVec4(value.GetVec4fValue());
-        break;
-      case eExpressionVariableType_Matrix:
-        VarConvertType(value,eType_Matrixf);
-        this->SetMatrix(value.GetMatrixf());
-        break;
-      case eExpressionVariableType_String:
-        VarConvertType(value,eType_String);
-        this->SetString(value.GetString());
-        break;
-      default:
-        return eFalse;
+    case eExpressionVariableType_Float:
+      VarConvertType(value, eType_F64);
+      this->SetFloat(value.GetFloatValue());
+      break;
+    case eExpressionVariableType_Vec2:
+      VarConvertType(value, eType_Vec2f);
+      this->SetVec2(value.GetVec2fValue());
+      break;
+    case eExpressionVariableType_Vec3:
+      VarConvertType(value, eType_Vec3f);
+      this->SetVec3(value.GetVec3fValue());
+      break;
+    case eExpressionVariableType_Vec4:
+      VarConvertType(value, eType_Vec4f);
+      this->SetVec4(value.GetVec4fValue());
+      break;
+    case eExpressionVariableType_Matrix:
+      VarConvertType(value, eType_Matrixf);
+      this->SetMatrix(value.GetMatrixf());
+      break;
+    case eExpressionVariableType_String:
+      VarConvertType(value, eType_String);
+      this->SetString(value.GetString());
+      break;
+    default: return eFalse;
     }
     return eTrue;
   }
 
-  Var __stdcall ToVar() const {
+  Var __stdcall ToVar() const
+  {
     switch (Type) {
-      case eExpressionVariableType_Float:
-        return GetFloat();
-      case eExpressionVariableType_Vec2:
-        return GetVec2();
-      case eExpressionVariableType_Vec3:
-        return GetVec3();
-      case eExpressionVariableType_Vec4:
-        return GetVec4();
-      case eExpressionVariableType_Matrix:
-        return GetMatrix();
-      case eExpressionVariableType_String:
-        return GetString();
+    case eExpressionVariableType_Float: return GetFloat();
+    case eExpressionVariableType_Vec2: return GetVec2();
+    case eExpressionVariableType_Vec3: return GetVec3();
+    case eExpressionVariableType_Vec4: return GetVec4();
+    case eExpressionVariableType_Matrix: return GetMatrix();
+    case eExpressionVariableType_String: return GetString();
     }
     return niVarNull;
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarFromRunnable : public ExprVar
-{
-  ExprVarFromRunnable(iHString* ahspName, eExpressionVariableType aType, iRunnable* apRunnable)
-      : ExprVar(ahspName,aType)
+struct ExprVarFromRunnable : public ExprVar {
+  ExprVarFromRunnable(iHString* ahspName, eExpressionVariableType aType,
+                      iRunnable* apRunnable)
+      : ExprVar(ahspName, aType)
       , mRunnable(apRunnable)
   {
   }
 
   Ptr<iRunnable> mRunnable;
 
-  void _UpdateValue(Var& aValue, eExpressionVariableType aType) const {
+  void _UpdateValue(Var& aValue, eExpressionVariableType aType) const
+  {
     aValue = mRunnable->Run();
     // niDebugFmt(("... _UpdateValue: %s (%s)", aValue, ni::GetTypeString(aValue.mType)));
     switch (aType) {
-      case eExpressionVariableType_Float:
-        VarConvertType(aValue,eType_F64);
-        break;
+    case eExpressionVariableType_Float:
+      VarConvertType(aValue, eType_F64);
+      break;
 
+#define VAR_APPLY_SCALAR_OR_ELSE(VALUE, SCALARAPPLY, ELSEAPPLY) \
+  {                                                             \
+    tScalarFloat v;                                             \
+    switch (niType(VALUE.mType)) {                              \
+    case eType_I8: v = (tScalarFloat)VALUE.mI8; break;          \
+    case eType_U8: v = (tScalarFloat)VALUE.mU8; break;          \
+    case eType_I16: v = (tScalarFloat)VALUE.mI16; break;        \
+    case eType_U16: v = (tScalarFloat)VALUE.mU16; break;        \
+    case eType_I32: v = (tScalarFloat)VALUE.mI32; break;        \
+    case eType_U32: v = (tScalarFloat)VALUE.mU32; break;        \
+    case eType_I64: v = (tScalarFloat)VALUE.mI64; break;        \
+    case eType_U64: v = (tScalarFloat)VALUE.mU64; break;        \
+    case eType_F32: v = (tScalarFloat)VALUE.mF32; break;        \
+    case eType_F64: v = (tScalarFloat)VALUE.mF64; break;        \
+    default: ELSEAPPLY; return;                                 \
+    }                                                           \
+    SCALARAPPLY;                                                \
+  }
 
-#define VAR_APPLY_SCALAR_OR_ELSE(VALUE, SCALARAPPLY, ELSEAPPLY)   \
-        {                                                         \
-          tScalarFloat v;                                         \
-          switch (niType(VALUE.mType)) {                          \
-            case eType_I8: v = (tScalarFloat)VALUE.mI8; break;    \
-            case eType_U8: v = (tScalarFloat)VALUE.mU8; break;    \
-            case eType_I16: v = (tScalarFloat)VALUE.mI16; break;  \
-            case eType_U16: v = (tScalarFloat)VALUE.mU16; break;  \
-            case eType_I32: v = (tScalarFloat)VALUE.mI32; break;  \
-            case eType_U32: v = (tScalarFloat)VALUE.mU32; break;  \
-            case eType_I64: v = (tScalarFloat)VALUE.mI64; break;  \
-            case eType_U64: v = (tScalarFloat)VALUE.mU64; break;  \
-            case eType_F32: v = (tScalarFloat)VALUE.mF32; break;  \
-            case eType_F64: v = (tScalarFloat)VALUE.mF64; break;  \
-            default: ELSEAPPLY; return;                           \
-          }                                                       \
-          SCALARAPPLY;                                            \
-        }
-
-      case eExpressionVariableType_Vec2:
-        VAR_APPLY_SCALAR_OR_ELSE(
-            aValue,
-            aValue.SetVec2f(Vec2f(v,v)),
-            VarConvertType(aValue,eType_Vec2f));
-        break;
-      case eExpressionVariableType_Vec3:
-        VAR_APPLY_SCALAR_OR_ELSE(
-            aValue,
-            aValue.SetVec3f(Vec3f(v,v,v)),
-            VarConvertType(aValue,eType_Vec3f));
-        break;
-      case eExpressionVariableType_Vec4:
-        VAR_APPLY_SCALAR_OR_ELSE(
-            aValue,
-            aValue.SetVec4f(Vec4f(v,v,v,v)),
-            VarConvertType(aValue,eType_Vec4f));
-        break;
-      case eExpressionVariableType_Matrix:
-        VAR_APPLY_SCALAR_OR_ELSE(
-            aValue,
-            aValue.SetMatrixf(Matrix<tF32>((tF32)v,(tF32)v,(tF32)v,(tF32)v,
-                                           (tF32)v,(tF32)v,(tF32)v,(tF32)v,
-                                           (tF32)v,(tF32)v,(tF32)v,(tF32)v,
-                                           (tF32)v,(tF32)v,(tF32)v,(tF32)v)),
-            VarConvertType(aValue,eType_Matrixf));
-        break;
+    case eExpressionVariableType_Vec2:
+      VAR_APPLY_SCALAR_OR_ELSE(aValue, aValue.SetVec2f(Vec2f(v, v)),
+                               VarConvertType(aValue, eType_Vec2f));
+      break;
+    case eExpressionVariableType_Vec3:
+      VAR_APPLY_SCALAR_OR_ELSE(aValue, aValue.SetVec3f(Vec3f(v, v, v)),
+                               VarConvertType(aValue, eType_Vec3f));
+      break;
+    case eExpressionVariableType_Vec4:
+      VAR_APPLY_SCALAR_OR_ELSE(aValue, aValue.SetVec4f(Vec4f(v, v, v, v)),
+                               VarConvertType(aValue, eType_Vec4f));
+      break;
+    case eExpressionVariableType_Matrix:
+      VAR_APPLY_SCALAR_OR_ELSE(
+        aValue,
+        aValue.SetMatrixf(Matrix<tF32>((tF32)v, (tF32)v, (tF32)v, (tF32)v,
+                                       (tF32)v, (tF32)v, (tF32)v, (tF32)v,
+                                       (tF32)v, (tF32)v, (tF32)v, (tF32)v,
+                                       (tF32)v, (tF32)v, (tF32)v, (tF32)v)),
+        VarConvertType(aValue, eType_Matrixf));
+      break;
 
 #undef VAR_APPLY_SCALAR_OR_ELSE
 
-      case eExpressionVariableType_String:
-        VarConvertType(aValue,eType_String);
-        break;
-      default:
-        niAssertUnreachable("Unreachable.");
-        break;
+    case eExpressionVariableType_String:
+      VarConvertType(aValue, eType_String);
+      break;
+    default: niAssertUnreachable("Unreachable."); break;
     }
   }
 
-  virtual tScalarFloat __stdcall GetFloat() const niImpl {
+  virtual tScalarFloat __stdcall GetFloat() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_Float);
+    _UpdateValue(v, eExpressionVariableType_Float);
     // niDebugFmt(("... GetFloat: %s (%s)", v, ni::GetTypeString(v.mType)));
     return v.GetFloatValue();
   }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const niImpl {
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_Vec2);
+    _UpdateValue(v, eExpressionVariableType_Vec2);
     return v.GetVec2fValue();
   }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const niImpl {
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_Vec3);
+    _UpdateValue(v, eExpressionVariableType_Vec3);
     return v.GetVec3fValue();
   }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const niImpl {
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_Vec4);
+    _UpdateValue(v, eExpressionVariableType_Vec4);
     return v.GetVec4fValue();
   }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const niImpl {
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_Matrix);
+    _UpdateValue(v, eExpressionVariableType_Matrix);
     return v.GetMatrixf();
   }
-  virtual cString __stdcall GetString() const niImpl {
+  virtual cString __stdcall GetString() const niImpl
+  {
     Var v;
-    _UpdateValue(v,eExpressionVariableType_String);
+    _UpdateValue(v, eExpressionVariableType_String);
     return v.GetString();
   }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) {}
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) {}
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) {}
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) {}
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) {}
-  virtual void __stdcall SetString(const cString& aString) {}
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+  }
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
+  }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarFloat :  public ExprVar
-{
-  ExprVarFloat(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Float) { Value = 0; }
+struct ExprVarFloat : public ExprVar {
+  ExprVarFloat(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_Float)
+  {
+    Value = 0;
+  }
   tScalarFloat Value;
 
-  virtual tScalarFloat __stdcall GetFloat() const { return Value; }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Vec2<tVectorFloat>((tVectorFloat)Value,(tVectorFloat)Value); }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Vec3<tVectorFloat>((tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value); }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Vec4<tVectorFloat>((tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value); }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const {
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value;
+  }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Vec2<tVectorFloat>((tVectorFloat)Value, (tVectorFloat)Value);
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Vec3<tVectorFloat>((tVectorFloat)Value, (tVectorFloat)Value,
+                              (tVectorFloat)Value);
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Vec4<tVectorFloat>((tVectorFloat)Value, (tVectorFloat)Value,
+                              (tVectorFloat)Value, (tVectorFloat)Value);
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
     return Matrix<tVectorFloat>(
-        (tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,
-        (tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,
-        (tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,
-        (tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value,(tVectorFloat)Value);
+      (tVectorFloat)Value, (tVectorFloat)Value, (tVectorFloat)Value,
+      (tVectorFloat)Value, (tVectorFloat)Value, (tVectorFloat)Value,
+      (tVectorFloat)Value, (tVectorFloat)Value, (tVectorFloat)Value,
+      (tVectorFloat)Value, (tVectorFloat)Value, (tVectorFloat)Value,
+      (tVectorFloat)Value, (tVectorFloat)Value, (tVectorFloat)Value,
+      (tVectorFloat)Value);
   }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) { Value = aV; }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value = aV.x; }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value = aV.x; }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value = aV.x; }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) { Value = aV._11; }
-
-  virtual cString __stdcall GetString() const {
-    return niFmt("%g",Value);
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    Value = aV;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value = aV.x;
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value = aV.x;
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value = aV.x;
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value = aV._11;
+  }
+
+  virtual cString __stdcall GetString() const
+  {
+    return niFmt("%g", Value);
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString.Double();
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarVec2 :  public ExprVar
-{
-  ExprVarVec2(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Vec2) {}
+struct ExprVarVec2 : public ExprVar {
+  ExprVarVec2(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_Vec2)
+  {
+  }
   sVec2<tVectorFloat> Value;
 
-  virtual tScalarFloat __stdcall GetFloat() const { return Value.x; }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Value; }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Vec3<tVectorFloat>(Value.x,Value.y,tVectorFloat(0)); }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Vec4<tVectorFloat>(Value.x,Value.y,tVectorFloat(0),tVectorFloat(0)); }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const {
-    return Matrix<tVectorFloat>(Value.x,Value.y,tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0));
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value.x;
+  }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Value;
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Vec3<tVectorFloat>(Value.x, Value.y, tVectorFloat(0));
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Vec4<tVectorFloat>(Value.x, Value.y, tVectorFloat(0),
+                              tVectorFloat(0));
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
+    return Matrix<tVectorFloat>(
+      Value.x, Value.y, tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0));
   }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) { Value.x = Value.y = (tVectorFloat)aV; }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) { Value.x = aV._11;  Value.y = aV._12; }
-
-  virtual cString __stdcall GetString() const {
-    return niFmt("%s",Value);
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    Value.x = Value.y = (tVectorFloat)aV;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value.x = aV._11;
+    Value.y = aV._12;
+  }
+
+  virtual cString __stdcall GetString() const
+  {
+    return niFmt("%s", Value);
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString.Vec2<tVectorFloat>();
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarVec3 :  public ExprVar
-{
-  ExprVarVec3(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Vec3) {}
+struct ExprVarVec3 : public ExprVar {
+  ExprVarVec3(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_Vec3)
+  {
+  }
   sVec3<tVectorFloat> Value;
 
-  virtual tScalarFloat     __stdcall GetFloat() const { return Value.x; }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Vec2<tVectorFloat>(Value.x,Value.y); }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Value; }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Vec4<tVectorFloat>(Value.x,Value.y,Value.z,tVectorFloat(0)); }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const {
-    return Matrix<tVectorFloat>(Value.x,Value.y,Value.z,tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0));
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value.x;
+  }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Vec2<tVectorFloat>(Value.x, Value.y);
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Value;
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Vec4<tVectorFloat>(Value.x, Value.y, Value.z, tVectorFloat(0));
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
+    return Matrix<tVectorFloat>(
+      Value.x, Value.y, Value.z, tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0));
   }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) { Value.x = Value.y = Value.z = (tVectorFloat)aV; }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; Value.z = aV.z; }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; Value.z = aV.z; }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) { Value.x = aV._11;  Value.y = aV._12; Value.z = aV._13; }
-
-  virtual cString __stdcall GetString() const {
-    return niFmt("%s",Value);
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    Value.x = Value.y = Value.z = (tVectorFloat)aV;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+    Value.z = aV.z;
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+    Value.z = aV.z;
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value.x = aV._11;
+    Value.y = aV._12;
+    Value.z = aV._13;
+  }
+
+  virtual cString __stdcall GetString() const
+  {
+    return niFmt("%s", Value);
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString.Vec3<tVectorFloat>();
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarVec4 :  public ExprVar
-{
-  ExprVarVec4(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Vec4) {}
+struct ExprVarVec4 : public ExprVar {
+  ExprVarVec4(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_Vec4)
+  {
+  }
   sVec4<tVectorFloat> Value;
 
-  virtual tScalarFloat     __stdcall GetFloat() const { return Value.x; }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Vec2<tVectorFloat>(Value.x,Value.y); }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Vec3<tVectorFloat>(Value.x,Value.y,Value.z); }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Value; }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const {
-    return Matrix<tVectorFloat>(Value.x,Value.y,Value.z,Value.w,
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),
-                                tVectorFloat(0),tVectorFloat(0),tVectorFloat(0),tVectorFloat(0));
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value.x;
+  }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Vec2<tVectorFloat>(Value.x, Value.y);
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Vec3<tVectorFloat>(Value.x, Value.y, Value.z);
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Value;
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
+    return Matrix<tVectorFloat>(
+      Value.x, Value.y, Value.z, Value.w, tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0), tVectorFloat(0), tVectorFloat(0),
+      tVectorFloat(0), tVectorFloat(0));
   }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) { Value.x = Value.y = Value.z = Value.w = (tVectorFloat)aV; }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; Value.z = aV.z; }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value.x = aV.x; Value.y = aV.y; Value.z = aV.z; Value.w = aV.w; }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV) { Value.x = aV._11;  Value.y = aV._12; Value.z = aV._13; Value.w = aV._14; }
-
-  virtual cString __stdcall GetString() const {
-    return niFmt("%s",Value);
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    Value.x = Value.y = Value.z = Value.w = (tVectorFloat)aV;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+    Value.z = aV.z;
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value.x = aV.x;
+    Value.y = aV.y;
+    Value.z = aV.z;
+    Value.w = aV.w;
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value.x = aV._11;
+    Value.y = aV._12;
+    Value.z = aV._13;
+    Value.w = aV._14;
+  }
+
+  virtual cString __stdcall GetString() const
+  {
+    return niFmt("%s", Value);
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString.Vec4<tVectorFloat>();
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarMatrix :  public ExprVar
-{
-  ExprVarMatrix(iHString* ahspName) : ExprVar(ahspName,eExpressionVariableType_Matrix) {}
+struct ExprVarMatrix : public ExprVar {
+  ExprVarMatrix(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_Matrix)
+  {
+  }
   sMatrix<tVectorFloat> Value;
 
-  virtual tScalarFloat     __stdcall GetFloat() const { return Value._11; }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Vec2<tVectorFloat>(Value._11,Value._12); }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Vec3<tVectorFloat>(Value._11,Value._12,Value._13); }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Vec4<tVectorFloat>(Value._11,Value._12,Value._13,Value._14); }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const { return Value; }
-
-  virtual void __stdcall SetFloat(tScalarFloat aV) { tVectorFloat v = (tVectorFloat)aV; Value.Set(v,v,v,v,v,v,v,v,v,v,v,v,v,v,v,v); }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value._11 = aV.x; Value._12 = aV.y; }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value._11 = aV.x; Value._12 = aV.y; Value._13 = aV.z; }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value._11 = aV.x; Value._12 = aV.y; Value._13 = aV.z; Value._14 = aV.w; }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)   { Value = aV; }
-
-  virtual cString __stdcall GetString() const {
-    return niFmt("%s",Value);
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value._11;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Vec2<tVectorFloat>(Value._11, Value._12);
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Vec3<tVectorFloat>(Value._11, Value._12, Value._13);
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Vec4<tVectorFloat>(Value._11, Value._12, Value._13, Value._14);
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
+    return Value;
+  }
+
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    tVectorFloat v = (tVectorFloat)aV;
+    Value.Set(v, v, v, v, v, v, v, v, v, v, v, v, v, v, v, v);
+  }
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value._11 = aV.x;
+    Value._12 = aV.y;
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value._11 = aV.x;
+    Value._12 = aV.y;
+    Value._13 = aV.z;
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value._11 = aV.x;
+    Value._12 = aV.y;
+    Value._13 = aV.z;
+    Value._14 = aV.w;
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value = aV;
+  }
+
+  virtual cString __stdcall GetString() const
+  {
+    return niFmt("%s", Value);
+  }
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString.Matrix<tVectorFloat>();
   }
 };
 
 ///////////////////////////////////////////////
-struct ExprVarString :  public ExprVar
-{
-  ExprVarString(iHString* ahspName) :
-      ExprVar(ahspName,eExpressionVariableType_String) {}
+struct ExprVarString : public ExprVar {
+  ExprVarString(iHString* ahspName)
+      : ExprVar(ahspName, eExpressionVariableType_String)
+  {
+  }
   cString Value;
 
-  virtual tScalarFloat     __stdcall GetFloat() const { return Value.Double(); }
-  virtual sVec2<tVectorFloat> __stdcall GetVec2() const { return Value.Vec2<tVectorFloat>(); }
-  virtual sVec3<tVectorFloat> __stdcall GetVec3() const { return Value.Vec3<tVectorFloat>(); }
-  virtual sVec4<tVectorFloat> __stdcall GetVec4() const { return Value.Vec4<tVectorFloat>(); }
-  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const { return Value.Matrix<tVectorFloat>(); }
+  virtual tScalarFloat __stdcall GetFloat() const
+  {
+    return Value.Double();
+  }
+  virtual sVec2<tVectorFloat> __stdcall GetVec2() const
+  {
+    return Value.Vec2<tVectorFloat>();
+  }
+  virtual sVec3<tVectorFloat> __stdcall GetVec3() const
+  {
+    return Value.Vec3<tVectorFloat>();
+  }
+  virtual sVec4<tVectorFloat> __stdcall GetVec4() const
+  {
+    return Value.Vec4<tVectorFloat>();
+  }
+  virtual sMatrix<tVectorFloat> __stdcall GetMatrix() const
+  {
+    return Value.Matrix<tVectorFloat>();
+  }
 
-  virtual void __stdcall SetFloat(tScalarFloat aV) { Value = niFmt("%g",aV); }
-  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV) { Value = niFmt("%s",aV); }
-  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV) { Value = niFmt("%s",aV); }
-  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV) { Value = niFmt("%s",aV); }
-  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)   { Value = niFmt("%s",aV); }
+  virtual void __stdcall SetFloat(tScalarFloat aV)
+  {
+    Value = niFmt("%g", aV);
+  }
+  virtual void __stdcall SetVec2(const sVec2<tVectorFloat>& aV)
+  {
+    Value = niFmt("%s", aV);
+  }
+  virtual void __stdcall SetVec3(const sVec3<tVectorFloat>& aV)
+  {
+    Value = niFmt("%s", aV);
+  }
+  virtual void __stdcall SetVec4(const sVec4<tVectorFloat>& aV)
+  {
+    Value = niFmt("%s", aV);
+  }
+  virtual void __stdcall SetMatrix(const sMatrix<tVectorFloat>& aV)
+  {
+    Value = niFmt("%s", aV);
+  }
 
-  virtual cString __stdcall GetString() const {
+  virtual cString __stdcall GetString() const
+  {
     return Value;
   }
-  virtual void __stdcall SetString(const cString& aString) {
+  virtual void __stdcall SetString(const cString& aString)
+  {
     Value = aString;
   }
 };
 
-static ExprVar* _CreateVariable(const achar* aaszName, eExpressionVariableType aType, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default)
+static ExprVar* _CreateVariable(
+  const achar* aaszName, eExpressionVariableType aType,
+  tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default)
 {
   tHStringPtr hspName;
   if (niStringIsOK(aaszName)) {
@@ -470,27 +712,17 @@ static ExprVar* _CreateVariable(const achar* aaszName, eExpressionVariableType a
   }
   ExprVar* pVar = NULL;
   switch (aType) {
-    case eExpressionVariableType_Float:
-      pVar = niNew ExprVarFloat(hspName);
-      break;
-    case eExpressionVariableType_Vec2:
-      pVar = niNew ExprVarVec2(hspName);
-      break;
-    case eExpressionVariableType_Vec3:
-      pVar = niNew ExprVarVec3(hspName);
-      break;
-    case eExpressionVariableType_Vec4:
-      pVar = niNew ExprVarVec4(hspName);
-      break;
-    case eExpressionVariableType_Matrix:
-      pVar = niNew ExprVarMatrix(hspName);
-      break;
-    case eExpressionVariableType_String:
-      pVar = niNew ExprVarString(hspName);
-      break;
-    default:
-      niAssertUnreachable("Unreachable code.");
-      return NULL;
+  case eExpressionVariableType_Float: pVar = niNew ExprVarFloat(hspName); break;
+  case eExpressionVariableType_Vec2: pVar = niNew ExprVarVec2(hspName); break;
+  case eExpressionVariableType_Vec3: pVar = niNew ExprVarVec3(hspName); break;
+  case eExpressionVariableType_Vec4: pVar = niNew ExprVarVec4(hspName); break;
+  case eExpressionVariableType_Matrix:
+    pVar = niNew ExprVarMatrix(hspName);
+    break;
+  case eExpressionVariableType_String:
+    pVar = niNew ExprVarString(hspName);
+    break;
+  default: niAssertUnreachable("Unreachable code."); return NULL;
   }
 
   ((ExprVar*)(pVar))->Flags = aFlags;
@@ -498,8 +730,7 @@ static ExprVar* _CreateVariable(const achar* aaszName, eExpressionVariableType a
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-enum eMathExprTokenType
-{
+enum eMathExprTokenType {
   //! Unkown token, probably a variable.
   eMathExprTokenType_Unknown = 0,
   //! Real number token.
@@ -526,19 +757,17 @@ enum eMathExprTokenType
   eMathExprTokenType_ForceDWORD = 0xFFFFFFFF
 };
 
-struct sMathExprToken
-{
+struct sMathExprToken {
   eMathExprTokenType Type = eMathExprTokenType_Last;
-  cString            strToken = AZEROSTR;
-  tF64               fFloat = 0; // Real number data.
-  tI32               nGroupDepth = 0;  // Group depth
+  cString strToken = AZEROSTR;
+  tF64 fFloat = 0;      // Real number data.
+  tI32 nGroupDepth = 0; // Group depth
 };
-typedef astl::vector<sMathExprToken>  tMathExprTokenVec;
+typedef astl::vector<sMathExprToken> tMathExprTokenVec;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Math operation type.
-enum eMathOperationType
-{
+enum eMathOperationType {
   //! Operator type. op0 OPERATOR op1.
   eMathOperationType_Operator = 0,
   //! UnaryOperator type. UNARYOPERATOR op0.
@@ -554,32 +783,45 @@ enum eMathOperationType
 };
 
 //! Math operation
-struct Op : public ImplRC<ni::iUnknown>
-{
-  struct sOperand
-  {
+struct Op : public ImplRC<ni::iUnknown> {
+  struct sOperand {
     Ptr<ExprVar> ptrVariable;
-    Ptr<Op>      ptrOperation;
+    Ptr<Op> ptrOperation;
 
-    tBool IsOK() const {
+    tBool IsOK() const
+    {
       return (ptrVariable.IsOK()) || (ptrOperation.IsOK());
     }
 
-    tBool Eval(iExpressionContext* apContext) {
-      return (!ptrOperation.IsOK()) ? eTrue : (ptrOperation->Eval(apContext) != NULL);
+    tBool Eval(iExpressionContext* apContext)
+    {
+      return (!ptrOperation.IsOK()) ? eTrue
+                                    : (ptrOperation->Eval(apContext) != NULL);
     }
 
-    tBool IsConstant() const {
-      if (!ptrOperation.IsOK()) { return niFlagIs(ptrVariable->GetFlags(),eExpressionVariableFlags_Constant); }
-      else                      { return ptrOperation->IsConstant(); }
+    tBool IsConstant() const
+    {
+      if (!ptrOperation.IsOK()) {
+        return niFlagIs(ptrVariable->GetFlags(),
+                        eExpressionVariableFlags_Constant);
+      }
+      else {
+        return ptrOperation->IsConstant();
+      }
     }
 
-    iExpressionVariable* GetVariable() const {
-      if (!ptrOperation.IsOK()) { return ptrVariable; }
-      else                      { return ptrOperation->GetEvalResult(); }
+    iExpressionVariable* GetVariable() const
+    {
+      if (!ptrOperation.IsOK()) {
+        return ptrVariable;
+      }
+      else {
+        return ptrOperation->GetEvalResult();
+      }
     }
 
-    tBool ToBool() const {
+    tBool ToBool() const
+    {
       iExpressionVariable* pVar = this->GetVariable();
       niAssert(pVar != NULL);
       if (!pVar) {
@@ -593,13 +835,14 @@ struct Op : public ImplRC<ni::iUnknown>
       }
     }
 
-    const achar* GetName() const {
+    const achar* GetName() const
+    {
       return ptrOperation.IsOK() ? ptrOperation->GetName() : NULL;
     }
   };
 
-  typedef astl::vector<sOperand>  tOperandVec;
-  typedef tOperandVec::iterator   tOperandVecIt;
+  typedef astl::vector<sOperand> tOperandVec;
+  typedef tOperandVec::iterator tOperandVecIt;
   typedef tOperandVec::const_iterator tOperandVecCIt;
 
  public:
@@ -649,14 +892,14 @@ struct Op : public ImplRC<ni::iUnknown>
   //! Do the evaluation without checking.
   virtual tBool DoEvaluate(iExpressionContext* apContext) = 0;
 
-  cString                mstrName;
+  cString mstrName;
   Ptr<iExpressionVariable> mptrResult;
-  tOperandVec            mvOperands;
-  eMathOperationType     mType;
-  tBool                  mbEvaluated;
-  tBool                  mbConstant;
-  tBool                  mbVarArgs;
-  tBool                  mbLazy;
+  tOperandVec mvOperands;
+  eMathOperationType mType;
+  tBool mbEvaluated;
+  tBool mbConstant;
+  tBool mbVarArgs;
+  tBool mbLazy;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -664,30 +907,33 @@ struct Expression : public ImplRC<ni::iExpression> {
   Ptr<iExpressionContext> _context;
   Ptr<Op> _root;
 
-  Expression(iExpressionContext* apContext, Op* apRootOp) {
+  Expression(iExpressionContext* apContext, Op* apRootOp)
+  {
     niAssert(niIsOK(apContext));
     niAssert(niIsOK(apRootOp));
     _context = apContext;
     _root = apRootOp;
   }
 
-  virtual Ptr<iExpressionVariable> __stdcall Eval() {
+  virtual Ptr<iExpressionVariable> __stdcall Eval()
+  {
     return _root->Eval(_context);
   }
-  virtual iExpressionVariable* __stdcall GetEvalResult() const {
+  virtual iExpressionVariable* __stdcall GetEvalResult() const
+  {
     return _root->GetEvalResult();
   }
-  virtual iExpressionContext* __stdcall GetContext() const {
+  virtual iExpressionContext* __stdcall GetContext() const
+  {
     return _context;
   }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class Evaluator : public ImplRC<ni::iExpressionContext>
-{
+class Evaluator : public ImplRC<ni::iExpressionContext> {
  public:
-  typedef astl::map<cString,Ptr<Op>>  tOperationMap;
-  typedef tOperationMap::iterator       tOperationMapIt;
+  typedef astl::map<cString, Ptr<Op>> tOperationMap;
+  typedef tOperationMap::iterator tOperationMapIt;
   typedef tOperationMap::const_iterator tOperationMapCIt;
 
  public:
@@ -699,11 +945,13 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   //! Sanity check.
   tBool __stdcall IsOK() const;
 
-  iExpressionContext* __stdcall GetParentContext() const {
+  iExpressionContext* __stdcall GetParentContext() const
+  {
     return mptrParent;
   }
 
-  iExpressionContext* __stdcall CreateContext() {
+  iExpressionContext* __stdcall CreateContext()
+  {
     return niNew Evaluator(this);
   }
 
@@ -712,17 +960,27 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   //! Add an enumeration definition.
   tBool __stdcall AddEnumDef(const sEnumDef* apEnumDef);
 
-  iExpressionVariable* __stdcall CreateVariable(const achar* aaszName, eExpressionVariableType aType, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
-  iExpressionVariable* __stdcall CreateVariableFromExpr(const achar* aaszName, const achar* aaszExpr, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
-  iExpressionVariable* __stdcall CreateVariableFromRunnable(const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
-  iExpressionVariable* __stdcall CreateVariableFromVar(const achar* aaszName, const Var& aInitialValue, tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
+  iExpressionVariable* __stdcall CreateVariable(
+    const achar* aaszName, eExpressionVariableType aType,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
+  iExpressionVariable* __stdcall CreateVariableFromExpr(
+    const achar* aaszName, const achar* aaszExpr,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
+  iExpressionVariable* __stdcall CreateVariableFromRunnable(
+    const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
+  iExpressionVariable* __stdcall CreateVariableFromVar(
+    const achar* aaszName, const Var& aInitialValue,
+    tExpressionVariableFlags aFlags = eExpressionVariableFlags_Default);
 
   //! Tokenize the given string and output the result in the given token vector.
   tBool TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& aOut);
   //! Parse the given string and output the result in the given operation list.
   Ptr<Op> ParseExpr(const achar* aaszExpr);
   //! Parse the tokens.
-  Ptr<Op> _ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathExprTokenVec& avToks, tMathExprTokenVec::iterator& aitTok);
+  Ptr<Op> _ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand,
+                        tMathExprTokenVec& avToks,
+                        tMathExprTokenVec::iterator& aitTok);
 
   //! Get the unknown symbols in the specified expression.
   tBool __stdcall GetUnknownSymbols(const achar* aaszExpr, tStringCVec* apList);
@@ -740,15 +998,20 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   void __stdcall SetGlobalEnumSearch(tBool abEnabled);
   tBool __stdcall GetGlobalEnumSearch() const;
 
-  tBool __stdcall RegisterURLResolver(const achar* aaszProtocol, iExpressionURLResolver* apResolver) {
-    niCheckIsOK(apResolver,eFalse);
-    astl::upsert(mmapURLResolvers,aaszProtocol,apResolver);
+  tBool __stdcall RegisterURLResolver(const achar* aaszProtocol,
+                                      iExpressionURLResolver* apResolver)
+  {
+    niCheckIsOK(apResolver, eFalse);
+    astl::upsert(mmapURLResolvers, aaszProtocol, apResolver);
     return eTrue;
   }
-  tBool __stdcall UnregisterURLResolver(const achar* aaszProtocol) {
-    return !!astl::map_find_erase(mmapURLResolvers,aaszProtocol);
+  tBool __stdcall UnregisterURLResolver(const achar* aaszProtocol)
+  {
+    return !!astl::map_find_erase(mmapURLResolvers, aaszProtocol);
   }
-  iExpressionURLResolver* __stdcall FindURLResolver(const achar* aaszProtocol) const {
+  iExpressionURLResolver* __stdcall FindURLResolver(
+    const achar* aaszProtocol) const
+  {
     tURLResolverMap::const_iterator it = mmapURLResolvers.find(aaszProtocol);
     if (it == mmapURLResolvers.end()) {
       if (mptrParent.IsOK())
@@ -764,24 +1027,24 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   Ptr<Op> _CreateOperation(const achar* aaszName, eMathExprTokenType aOpType);
 
   Ptr<Evaluator> mptrParent;
-  astl::vector<Ptr<iExpressionVariable> > mvVariables;
+  astl::vector<Ptr<iExpressionVariable>> mvVariables;
   tOperationMap mmapOperators;
   tOperationMap mmapUnaryOperators;
   tOperationMap mmapFunctions;
-  tBool     mbOK;
+  tBool mbOK;
 
-  typedef astl::map<cString,const sEnumDef*>  tEnumMap;
+  typedef astl::map<cString, const sEnumDef*> tEnumMap;
   mutable tEnumMap mmapEnums;
-  const sEnumDef*  mpDefaultEnum;
+  const sEnumDef* mpDefaultEnum;
   tBool mbGlobalEnumSearch;
 
-  typedef astl::map<cString,Ptr<iExpressionURLResolver> > tURLResolverMap;
+  typedef astl::map<cString, Ptr<iExpressionURLResolver>> tURLResolverMap;
   tURLResolverMap mmapURLResolvers;
 
  public:
-
   ///////////////////////////////////////////////
-  virtual tBool __stdcall AddVariable(iExpressionVariable* apVar) {
+  virtual tBool __stdcall AddVariable(iExpressionVariable* apVar)
+  {
     if (!niIsOK(apVar)) {
       niError("Invalid variable.");
       return eFalse;
@@ -802,15 +1065,17 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   ///////////////////////////////////////////////
   tBool __stdcall RemoveVariable(iExpressionVariable* apVariable)
   {
-    if (!niIsOK(apVariable)) return eFalse;
-    if (apVariable->GetFlags()&eExpressionVariableFlags_Reserved) return eFalse;
-    return astl::find_erase(mvVariables,apVariable);
+    if (!niIsOK(apVariable))
+      return eFalse;
+    if (apVariable->GetFlags() & eExpressionVariableFlags_Reserved)
+      return eFalse;
+    return astl::find_erase(mvVariables, apVariable);
   }
 
   ///////////////////////////////////////////////
   iExpressionVariable* __stdcall _FindLocalVariable(iHString* ahspName) const
   {
-    niLoop(i,mvVariables.size()) {
+    niLoop (i, mvVariables.size()) {
       iExpressionVariable* v = mvVariables[i];
       if (v && v->GetName() == ahspName) {
         return v;
@@ -831,7 +1096,8 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   }
 
   ///////////////////////////////////////////////
-  Ptr<Op> __stdcall _CreateExpression(const achar *aaszExpr) {
+  Ptr<Op> __stdcall _CreateExpression(const achar* aaszExpr)
+  {
     Ptr<Op> ptrOp = ParseExpr(aaszExpr);
     if (!niIsOK(ptrOp)) {
       niError(niFmt(_A("Can't parse expression '%s'."), aaszExpr));
@@ -845,11 +1111,12 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   }
 
   ///////////////////////////////////////////////
-  ni::iExpression * __stdcall CreateExpression(const achar *aaszExpr)
+  ni::iExpression* __stdcall CreateExpression(const achar* aaszExpr)
   {
     Ptr<Op> ptrOp = _CreateExpression(aaszExpr);
-    if (!ptrOp.IsOK()) return NULL;
-    return niNew Expression(this,ptrOp);
+    if (!ptrOp.IsOK())
+      return NULL;
+    return niNew Expression(this, ptrOp);
   }
 
   ///////////////////////////////////////////////
@@ -872,24 +1139,22 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   cString __stdcall GetEnumValueString(tU32 anValue) const
   {
     if (mpDefaultEnum) {
-      niLoop(k,mpDefaultEnum->mnNumValues) {
+      niLoop (k, mpDefaultEnum->mnNumValues) {
         const sEnumValueDef& ev = mpDefaultEnum->mpValues[k];
         if (ev.mnValue == anValue) {
 #ifdef DEFAULT_ENUM_IS_FULLY_QUALIFIED
-          return
-              cString(mpDefaultEnum->mEID)
-              << _A(".") << ev.maszName;
+          return cString(mpDefaultEnum->mEID) << _A(".") << ev.maszName;
 #else
           return ev.maszName;
 #endif
         }
       }
     }
-    niLoopit(tEnumMap::const_iterator,it,mmapEnums) {
+    niLoopit (tEnumMap::const_iterator, it, mmapEnums) {
       const sEnumDef* pDef = it->second;
       if (!pDef || pDef == mpDefaultEnum)
         continue;
-      niLoop(k,pDef->mnNumValues) {
+      niLoop (k, pDef->mnNumValues) {
         const sEnumValueDef& ev = pDef->mpValues[k];
         if (ev.mnValue == anValue) {
           return cString(pDef->maszName) << _A(".") << ev.maszName;
@@ -904,40 +1169,42 @@ class Evaluator : public ImplRC<ni::iExpressionContext>
   {
     cString strRet;
     if (mpDefaultEnum) {
-      niLoop(k,mpDefaultEnum->mnNumValues) {
+      niLoop (k, mpDefaultEnum->mnNumValues) {
         const sEnumValueDef& ev = mpDefaultEnum->mpValues[k];
         const tU32 v = ev.mnValue;
-        if (v != 0 && niFlagTest(anValue,v)) {
-          if (strRet.IsNotEmpty()) strRet << _A("|");
+        if (v != 0 && niFlagTest(anValue, v)) {
+          if (strRet.IsNotEmpty())
+            strRet << _A("|");
 #ifdef DEFAULT_ENUM_IS_FULLY_QUALIFIED
           strRet << mpDefaultEnum->mEID << _A(".");
 #endif
           strRet << ev.maszName;
-          niFlagOff(anValue,v);
+          niFlagOff(anValue, v);
         }
       }
     }
-    niLoopit(tEnumMap::const_iterator,it,mmapEnums) {
+    niLoopit (tEnumMap::const_iterator, it, mmapEnums) {
       const sEnumDef* pDef = it->second;
       if (!pDef || pDef == mpDefaultEnum)
         continue;
-      niLoop(k,pDef->mnNumValues) {
+      niLoop (k, pDef->mnNumValues) {
         const sEnumValueDef& ev = pDef->mpValues[k];
         const tU32 v = ev.mnValue;
-        if (v != 0 && niFlagTest(anValue,v)) {
-          if (strRet.IsNotEmpty()) strRet << _A("|");
+        if (v != 0 && niFlagTest(anValue, v)) {
+          if (strRet.IsNotEmpty())
+            strRet << _A("|");
           strRet << pDef->maszName << _A(".") << ev.maszName;
-          niFlagOff(anValue,v);
+          niFlagOff(anValue, v);
         }
       }
     }
     if (anValue) {
-      if (strRet.IsNotEmpty()) strRet << _A("|");
-      strRet << niFmt(_A("0x%08x"),anValue);
+      if (strRet.IsNotEmpty())
+        strRet << _A("|");
+      strRet << niFmt(_A("0x%08x"), anValue);
     }
     return strRet;
   }
-
 };
 
 enum eMathEqTokenizerCharType {
@@ -948,11 +1215,9 @@ enum eMathEqTokenizerCharType {
   eMathEqTokenizerCharType_SplitterAndToken2 = 4,
 };
 
-static inline bool _IsStringDelimiterChar(const tU32 c) {
-  return
-      c == '"' ||
-      c == '\'' ||
-      c == '`';
+static inline bool _IsStringDelimiterChar(const tU32 c)
+{
+  return c == '"' || c == '\'' || c == '`';
 }
 
 /** Mathematic expression tokenizer, the separator is the space character,
@@ -960,10 +1225,10 @@ static inline bool _IsStringDelimiterChar(const tU32 c) {
   * '!', '|', and '^', strings between two quote are one token, '\' char is
   * ignored, '\\' is a '\', and '\"' is '"'.
   */
-class cMathEqTokenizer
-{
+class cMathEqTokenizer {
  public:
-  cMathEqTokenizer(const achar* aaszExpr) {
+  cMathEqTokenizer(const achar* aaszExpr)
+  {
     mnPrevChar = eFalse;
     mbPrevBackslash = eFalse;
     mStringStarted = 0;
@@ -971,10 +1236,12 @@ class cMathEqTokenizer
     mnCurrentToken = 0;
     StringTokenize(aaszExpr);
   }
-  ~cMathEqTokenizer() {
+  ~cMathEqTokenizer()
+  {
   }
 
-  const cString* GetNextToken() {
+  const cString* GetNextToken()
+  {
     if (mnCurrentToken >= mvTokens.size()) {
       return NULL;
     }
@@ -984,12 +1251,13 @@ class cMathEqTokenizer
  private:
   inline tSize StringTokenize(const achar* aaszExpr)
   {
-    cString current; current.reserve(64);
+    cString current;
+    current.reserve(64);
     tU32 c = 0, c2 = 0;
     tSize numToks = 0;
     const achar* pIterator = aaszExpr;
 
-    auto handleCurrent = [&] () {
+    auto handleCurrent = [&]() {
       if (current.IsNotEmpty()) {
         mvTokens.push_back(current);
         // niDebugFmt(("... TOK[%d]: CURRENT: '%s'", mvTokens.size()-1, mvTokens.back()));
@@ -998,14 +1266,14 @@ class cMathEqTokenizer
       }
     };
 
-    auto handleSplitterAndToken = [&] () {
+    auto handleSplitterAndToken = [&]() {
       handleCurrent();
       cString& r = astl::push_back(mvTokens);
       r.appendChar(c);
       // niDebugFmt(("... TOK[%d]: split: '%s'", mvTokens.size()-1, mvTokens.back()));
     };
 
-    auto handleSplitterAndToken2 = [&] () {
+    auto handleSplitterAndToken2 = [&]() {
       StrGetNextX(&pIterator); // skip c2
       handleCurrent();
       cString& r = astl::push_back(mvTokens);
@@ -1016,29 +1284,30 @@ class cMathEqTokenizer
 
     do {
       c = StrGetNextX(&pIterator);
-      if (!c) break;
+      if (!c)
+        break;
       c2 = StrGetNext(pIterator);
-      switch (this->GetCharType(c,c2)) {
-        case eMathEqTokenizerCharType_Normal: {
-          current.appendChar(c);
-          break;
-        }
-        case eMathEqTokenizerCharType_Skip: {
-          break;
-        }
-        case eMathEqTokenizerCharType_Splitter: {
-          handleCurrent();
-          break;
-        }
-        case eMathEqTokenizerCharType_SplitterAndToken: {
-          handleSplitterAndToken();
-          break;
-        }
-        case eMathEqTokenizerCharType_SplitterAndToken2: {
-          handleSplitterAndToken2();
-          break;
-        }
-        default: break;
+      switch (this->GetCharType(c, c2)) {
+      case eMathEqTokenizerCharType_Normal: {
+        current.appendChar(c);
+        break;
+      }
+      case eMathEqTokenizerCharType_Skip: {
+        break;
+      }
+      case eMathEqTokenizerCharType_Splitter: {
+        handleCurrent();
+        break;
+      }
+      case eMathEqTokenizerCharType_SplitterAndToken: {
+        handleSplitterAndToken();
+        break;
+      }
+      case eMathEqTokenizerCharType_SplitterAndToken2: {
+        handleSplitterAndToken2();
+        break;
+      }
+      default: break;
       }
     } while (1);
     handleCurrent();
@@ -1057,9 +1326,7 @@ class cMathEqTokenizer
       }
     }
     else if (mURLStarted) {
-      if (c == ')' ||
-          c == ',' ||
-          c == ']') {
+      if (c == ')' || c == ',' || c == ']') {
         type = eMathEqTokenizerCharType_SplitterAndToken;
         mURLStarted = eFalse;
       }
@@ -1077,48 +1344,55 @@ class cMathEqTokenizer
         mbPrevBackslash = eTrue;
       }
     }
-    else
-    {
+    else {
       if (c == '/' && mnPrevChar == ':') {
         mURLStarted = eTrue;
       }
       else if (_IsStringDelimiterChar(c)) {
         mStringStarted = c;
       }
-      else if (!mStringStarted)
-      {
+      else if (!mStringStarted) {
         if (StrIsSpace(c)) {
           type = eMathEqTokenizerCharType_Splitter;
         }
         else {
           switch (c) {
-            case '-':
-            case '+': {
-              if (mnPrevChar != 'e' && mnPrevChar != 'E') {
-                type = eMathEqTokenizerCharType_SplitterAndToken;
-              }
-              break;
-            }
-            case '|':
-            case '&':
-            case '=': {
-              type = (c2 == c) ? eMathEqTokenizerCharType_SplitterAndToken2 : eMathEqTokenizerCharType_SplitterAndToken;
-              break;
-            }
-            case '!':
-            case '>':
-            case '<': {
-              type = (c2 == '=')  ? eMathEqTokenizerCharType_SplitterAndToken2 : eMathEqTokenizerCharType_SplitterAndToken;
-              break;
-            }
-            case ',':
-            case '(': case ')': case '[': case ']':
-            case '*': case '/':
-            case '%': case '^': case '~':
-            case '?': case '.': {
+          case '-':
+          case '+': {
+            if (mnPrevChar != 'e' && mnPrevChar != 'E') {
               type = eMathEqTokenizerCharType_SplitterAndToken;
-              break;
             }
+            break;
+          }
+          case '|':
+          case '&':
+          case '=': {
+            type = (c2 == c) ? eMathEqTokenizerCharType_SplitterAndToken2
+                             : eMathEqTokenizerCharType_SplitterAndToken;
+            break;
+          }
+          case '!':
+          case '>':
+          case '<': {
+            type = (c2 == '=') ? eMathEqTokenizerCharType_SplitterAndToken2
+                               : eMathEqTokenizerCharType_SplitterAndToken;
+            break;
+          }
+          case ',':
+          case '(':
+          case ')':
+          case '[':
+          case ']':
+          case '*':
+          case '/':
+          case '%':
+          case '^':
+          case '~':
+          case '?':
+          case '.': {
+            type = eMathEqTokenizerCharType_SplitterAndToken;
+            break;
+          }
           }
         }
       }
@@ -1129,21 +1403,21 @@ class cMathEqTokenizer
   }
 
  private:
-  tU32    mnPrevChar;
-  tBool   mbPrevBackslash;
-  tU32    mStringStarted;
-  tU32    mURLStarted;
-  tU32  mnCurrentToken;
+  tU32 mnPrevChar;
+  tBool mbPrevBackslash;
+  tU32 mStringStarted;
+  tU32 mURLStarted;
+  tU32 mnCurrentToken;
   astl::vector<cString> mvTokens;
 };
 
 template <typename T, typename U>
-inline void _FloatAssign(T& d, U x) {
+inline void _FloatAssign(T& d, U x)
+{
   d = (T)x;
 }
 
-enum eNumberType
-{
+enum eNumberType {
   eNumberType_ErrorNotANumber = -5,
   eNumberType_ErrorScientificExponentExpected = -4,
   eNumberType_ErrorScientificInvalid = -3,
@@ -1163,18 +1437,17 @@ static eNumberType GetNumberType(const achar* aaszNumber, cString* apstrToParse)
   if (!apstrToParse)
     apstrToParse = &strTmp;
 
-#define CUR_CHAR    curChar
-#define APPEND_CHAR(X)  apstrToParse->appendChar(X)
-#define NEXT()      curChar = StrGetNextX(&it)
-#define LEN()     apstrToParse->Len()
+#define CUR_CHAR curChar
+#define APPEND_CHAR(X) apstrToParse->appendChar(X)
+#define NEXT() curChar = StrGetNextX(&it)
+#define LEN() apstrToParse->Len()
 
   eNumberType type = eNumberType_Int;
   tU32 curChar = 0;
   NEXT();
   const tU32 firstchar = CUR_CHAR;
   NEXT();
-  if (firstchar == _A('0') && StrToUpper(CUR_CHAR) == _A('X'))
-  {
+  if (firstchar == _A('0') && StrToUpper(CUR_CHAR) == _A('X')) {
     NEXT();
     type = eNumberType_Hexadecimal;
     while (ni::StrIsXDigit(CUR_CHAR)) {
@@ -1185,8 +1458,7 @@ static eNumberType GetNumberType(const achar* aaszNumber, cString* apstrToParse)
       return eNumberType_ErrorHexadecimalOverEight;
     }
   }
-  else
-  {
+  else {
     if (!StrIsNumberPart(firstchar))
       return eNumberType_ErrorNotANumber;
 
@@ -1196,22 +1468,19 @@ static eNumberType GetNumberType(const achar* aaszNumber, cString* apstrToParse)
     while (CUR_CHAR == _A('.') || ni::StrIsDigit(CUR_CHAR) ||
            CUR_CHAR == _A('e') || CUR_CHAR == _A('E'))
     {
-      if (CUR_CHAR == _A('.'))
-      {
+      if (CUR_CHAR == _A('.')) {
         if (type == eNumberType_Scientific)
           return eNumberType_ErrorScientificNoDotInExponent;
         type = eNumberType_Float;
       }
 
-      if (CUR_CHAR == _A('e') || CUR_CHAR == _A('E'))
-      {
+      if (CUR_CHAR == _A('e') || CUR_CHAR == _A('E')) {
         if (type != eNumberType_Float && type != eNumberType_Int)
           return eNumberType_ErrorScientificInvalid;
         type = eNumberType_Scientific;
         APPEND_CHAR('e');
         NEXT();
-        if (CUR_CHAR == '+' || CUR_CHAR == '-')
-        {
+        if (CUR_CHAR == '+' || CUR_CHAR == '-') {
           APPEND_CHAR(CUR_CHAR);
           NEXT();
         }
@@ -1226,20 +1495,21 @@ static eNumberType GetNumberType(const achar* aaszNumber, cString* apstrToParse)
   return type;
 }
 
-static eNumberType ReadNumberEx(eNumberType type, const achar* aaszNum, Var& aOut)
+static eNumberType ReadNumberEx(eNumberType type, const achar* aaszNum,
+                                Var& aOut)
 {
   const achar* sTemp;
   switch (type) {
-    case eNumberType_Scientific:
-    case eNumberType_Float:
-      aOut = (tF32)ni::StrToD(&aaszNum[0],&sTemp);
-      return eNumberType_Float;
-    case eNumberType_Int:
-      aOut = (tI32)ni::StrToL(&aaszNum[0],&sTemp,10);
-      return eNumberType_Int;
-    case eNumberType_Hexadecimal:
-      aOut = (tU32)ni::StrToUL(&aaszNum[0],&sTemp,16);
-      return eNumberType_Int;
+  case eNumberType_Scientific:
+  case eNumberType_Float:
+    aOut = (tF32)ni::StrToD(&aaszNum[0], &sTemp);
+    return eNumberType_Float;
+  case eNumberType_Int:
+    aOut = (tI32)ni::StrToL(&aaszNum[0], &sTemp, 10);
+    return eNumberType_Int;
+  case eNumberType_Hexadecimal:
+    aOut = (tU32)ni::StrToUL(&aaszNum[0], &sTemp, 16);
+    return eNumberType_Int;
   }
   return type;
 }
@@ -1247,71 +1517,107 @@ static eNumberType ReadNumberEx(eNumberType type, const achar* aaszNum, Var& aOu
 static eNumberType ReadNumber(const achar* aaszNumber, Var& aOut)
 {
   cString strNum;
-  eNumberType type = GetNumberType(aaszNumber,&strNum);
-  return ReadNumberEx(type,strNum.Chars(),aOut);
+  eNumberType type = GetNumberType(aaszNumber, &strNum);
+  return ReadNumberEx(type, strNum.Chars(), aOut);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Macros
-#define BeginOpO(NAME,STR)                                              \
-  class Op##NAME : public Op {                  \
-public:                                                                 \
-Op##NAME() : Op(eMathOperationType_Operator, STR, 2) {} \
-Op* Create() const { return niNew Op##NAME(); }
+#define BeginOpO(NAME, STR)                       \
+  class Op##NAME : public Op {                    \
+   public:                                        \
+    Op##NAME()                                    \
+        : Op(eMathOperationType_Operator, STR, 2) \
+    {                                             \
+    }                                             \
+    Op* Create() const                            \
+    {                                             \
+      return niNew Op##NAME();                    \
+    }
 
-#define BeginOpUO(NAME,STR)                                             \
-  class Op##NAME : public Op {                  \
-public:                                                                 \
-Op##NAME() : Op(eMathOperationType_UnaryOperator, STR, 1) {} \
-Op* Create() const { return niNew Op##NAME(); }
+#define BeginOpUO(NAME, STR)                           \
+  class Op##NAME : public Op {                         \
+   public:                                             \
+    Op##NAME()                                         \
+        : Op(eMathOperationType_UnaryOperator, STR, 1) \
+    {                                                  \
+    }                                                  \
+    Op* Create() const                                 \
+    {                                                  \
+      return niNew Op##NAME();                         \
+    }
 
-#define BeginOpF_(NAME,NUMPARAMS,INIT)                                  \
-  class Op##NAME : public Op {                                          \
-public:                                                                 \
-Op##NAME() : Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS) { INIT; } \
-Op* Create() const { return niNew Op##NAME(); }
+#define BeginOpF_(NAME, NUMPARAMS, INIT)                        \
+  class Op##NAME : public Op {                                  \
+   public:                                                      \
+    Op##NAME()                                                  \
+        : Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS) \
+    {                                                           \
+      INIT;                                                     \
+    }                                                           \
+    Op* Create() const                                          \
+    {                                                           \
+      return niNew Op##NAME();                                  \
+    }
 
-#define BeginOpF(NAME,NUMPARAMS) BeginOpF_(NAME,NUMPARAMS,;)
-#define BeginOpVF(NAME,NUMPARAMS) BeginOpF_(NAME,NUMPARAMS,mbConstant = eFalse;)
+#define BeginOpF(NAME, NUMPARAMS) BeginOpF_(NAME, NUMPARAMS, ;)
+#define BeginOpVF(NAME, NUMPARAMS) \
+  BeginOpF_(NAME, NUMPARAMS, mbConstant = eFalse;)
 
-#define BeginOpLF(NAME,NUMPARAMS)                         \
-  class Op##NAME : public Op {                            \
-public:                                                   \
-Op##NAME()                                                \
-: Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS) { \
-  mbLazy = eTrue;                                         \
-}                                                         \
-Op* Create() const {                                      \
-  return niNew Op##NAME();                                \
-}
+#define BeginOpLF(NAME, NUMPARAMS)                              \
+  class Op##NAME : public Op {                                  \
+   public:                                                      \
+    Op##NAME()                                                  \
+        : Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS) \
+    {                                                           \
+      mbLazy = eTrue;                                           \
+    }                                                           \
+    Op* Create() const                                          \
+    {                                                           \
+      return niNew Op##NAME();                                  \
+    }
 
-#define BeginOpWF(NAME,NUMPARAMS)                                       \
-  class Op##NAME : public Op                    \
-  {                                                                     \
-  tBool mbConstantOperands;                                             \
-  tScalarFloat mfVal;                                                   \
-  tScalarFloat mfBase;                                                  \
-  tScalarFloat mfTime;                                                  \
-  union {                                                               \
-    tScalarFloat mfAmplitude;                                           \
-    tScalarFloat mfInc;                                                 \
-  };                                                                    \
-  union {                                                               \
-    tScalarFloat mfPhase;                                               \
-    tScalarFloat mfMax;                                                 \
-    tScalarFloat mnMax;                                                 \
-  };                                                                    \
-  union {                                                               \
-    tScalarFloat mfFreq;                                                \
-    tScalarFloat mfTimeForIncrement;                                    \
-  };                                                                    \
-public:                                                                 \
-Op##NAME() :                                                \
-Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS)       \
-{ mfVal = 0; mfBase = 0; mfTime = 0; mfInc = 0; mnMax = 0; mfFreq = 0; mbConstantOperands = eFalse; mbConstant = eFalse; } \
-Op* Create() const { return niNew Op##NAME(); }
+#define BeginOpWF(NAME, NUMPARAMS)                              \
+  class Op##NAME : public Op {                                  \
+    tBool mbConstantOperands;                                   \
+    tScalarFloat mfVal;                                         \
+    tScalarFloat mfBase;                                        \
+    tScalarFloat mfTime;                                        \
+    union {                                                     \
+      tScalarFloat mfAmplitude;                                 \
+      tScalarFloat mfInc;                                       \
+    };                                                          \
+    union {                                                     \
+      tScalarFloat mfPhase;                                     \
+      tScalarFloat mfMax;                                       \
+      tScalarFloat mnMax;                                       \
+    };                                                          \
+    union {                                                     \
+      tScalarFloat mfFreq;                                      \
+      tScalarFloat mfTimeForIncrement;                          \
+    };                                                          \
+                                                                \
+   public:                                                      \
+    Op##NAME()                                                  \
+        : Op(eMathOperationType_Function, _A(#NAME), NUMPARAMS) \
+    {                                                           \
+      mfVal = 0;                                                \
+      mfBase = 0;                                               \
+      mfTime = 0;                                               \
+      mfInc = 0;                                                \
+      mnMax = 0;                                                \
+      mfFreq = 0;                                               \
+      mbConstantOperands = eFalse;                              \
+      mbConstant = eFalse;                                      \
+    }                                                           \
+    Op* Create() const                                          \
+    {                                                           \
+      return niNew Op##NAME();                                  \
+    }
 
-#define EndOp() };
+#define EndOp() \
+  }             \
+  ;
 
 #define AddOp(NAME) AddOperation(niNew Op##NAME())
 
@@ -1321,117 +1627,99 @@ Op* Create() const { return niNew Op##NAME(); }
 ///////////////////////////////////////////////
 tBool ExprVar::Copy(const iExpressionVariable* apVar)
 {
-  switch (Type)
-  {
-    case eExpressionVariableType_Float:
-      {
-        static_cast<ExprVarFloat*>(this)->Value = apVar->GetFloat();
-        break;
-      }
+  switch (Type) {
+  case eExpressionVariableType_Float: {
+    static_cast<ExprVarFloat*>(this)->Value = apVar->GetFloat();
+    break;
+  }
 
-    case eExpressionVariableType_Vec2:
-      {
-        static_cast<ExprVarVec2*>(this)->Value = apVar->GetVec2();
-        break;
-      }
+  case eExpressionVariableType_Vec2: {
+    static_cast<ExprVarVec2*>(this)->Value = apVar->GetVec2();
+    break;
+  }
 
-    case eExpressionVariableType_Vec3:
-      {
-        static_cast<ExprVarVec3*>(this)->Value = apVar->GetVec3();
-        break;
-      }
+  case eExpressionVariableType_Vec3: {
+    static_cast<ExprVarVec3*>(this)->Value = apVar->GetVec3();
+    break;
+  }
 
-    case eExpressionVariableType_Vec4:
-      {
-        static_cast<ExprVarVec4*>(this)->Value = apVar->GetVec4();
-        break;
-      }
+  case eExpressionVariableType_Vec4: {
+    static_cast<ExprVarVec4*>(this)->Value = apVar->GetVec4();
+    break;
+  }
 
-    case eExpressionVariableType_Matrix:
-      {
-        static_cast<ExprVarMatrix*>(this)->Value = apVar->GetMatrix();
-        break;
-      }
+  case eExpressionVariableType_Matrix: {
+    static_cast<ExprVarMatrix*>(this)->Value = apVar->GetMatrix();
+    break;
+  }
 
-    case eExpressionVariableType_String:
-      {
-        static_cast<ExprVarString*>(this)->Value = apVar->GetString();
-        break;
-      }
+  case eExpressionVariableType_String: {
+    static_cast<ExprVarString*>(this)->Value = apVar->GetString();
+    break;
+  }
 
-    default:
-      niAssertUnreachable("Unreachable.");
-      break;
+  default: niAssertUnreachable("Unreachable."); break;
   }
   return eTrue;
 }
 
 ///////////////////////////////////////////////
 //! Clone this variable.
-iExpressionVariable* __stdcall  ExprVar::Clone() const
+iExpressionVariable* __stdcall ExprVar::Clone() const
 {
   iExpressionVariable* pNew = NULL;
-  switch (Type)
-  {
-    case eExpressionVariableType_Float:
-      {
-        pNew = niNew ExprVarFloat(hspName);
-        static_cast<ExprVarFloat*>(pNew)->Value = this->GetFloat();
-        break;
-      }
+  switch (Type) {
+  case eExpressionVariableType_Float: {
+    pNew = niNew ExprVarFloat(hspName);
+    static_cast<ExprVarFloat*>(pNew)->Value = this->GetFloat();
+    break;
+  }
 
-    case eExpressionVariableType_Vec2:
-      {
-        pNew = niNew ExprVarVec2(hspName);
-        static_cast<ExprVarVec2*>(pNew)->Value = this->GetVec2();
-        break;
-      }
+  case eExpressionVariableType_Vec2: {
+    pNew = niNew ExprVarVec2(hspName);
+    static_cast<ExprVarVec2*>(pNew)->Value = this->GetVec2();
+    break;
+  }
 
-    case eExpressionVariableType_Vec3:
-      {
-        pNew = niNew ExprVarVec3(hspName);
-        static_cast<ExprVarVec3*>(pNew)->Value = this->GetVec3();
-        break;
-      }
+  case eExpressionVariableType_Vec3: {
+    pNew = niNew ExprVarVec3(hspName);
+    static_cast<ExprVarVec3*>(pNew)->Value = this->GetVec3();
+    break;
+  }
 
-    case eExpressionVariableType_Vec4:
-      {
-        pNew = niNew ExprVarVec4(hspName);
-        static_cast<ExprVarVec4*>(pNew)->Value = this->GetVec4();
-        break;
-      }
+  case eExpressionVariableType_Vec4: {
+    pNew = niNew ExprVarVec4(hspName);
+    static_cast<ExprVarVec4*>(pNew)->Value = this->GetVec4();
+    break;
+  }
 
-    case eExpressionVariableType_Matrix:
-      {
-        pNew = niNew ExprVarMatrix(hspName);
-        static_cast<ExprVarMatrix*>(pNew)->Value = this->GetMatrix();
-        break;
-      }
+  case eExpressionVariableType_Matrix: {
+    pNew = niNew ExprVarMatrix(hspName);
+    static_cast<ExprVarMatrix*>(pNew)->Value = this->GetMatrix();
+    break;
+  }
 
-    case eExpressionVariableType_String:
-      {
-        pNew = niNew ExprVarString(hspName);
-        static_cast<ExprVarString*>(pNew)->Value = this->GetString();
-        break;
-      }
+  case eExpressionVariableType_String: {
+    pNew = niNew ExprVarString(hspName);
+    static_cast<ExprVarString*>(pNew)->Value = this->GetString();
+    break;
+  }
 
-    default:
-      niAssertUnreachable("Unreachable.");
-      break;
+  default: niAssertUnreachable("Unreachable."); break;
   }
   return pNew;
 }
 
 ///////////////////////////////////////////////
 //! Get the variable's type.
-eExpressionVariableType __stdcall  ExprVar::GetType() const
+eExpressionVariableType __stdcall ExprVar::GetType() const
 {
   return Type;
 }
 
 ///////////////////////////////////////////////
 //! Get the variable's flags.
-tExpressionVariableFlags __stdcall  ExprVar::GetFlags() const
+tExpressionVariableFlags __stdcall ExprVar::GetFlags() const
 {
   return Flags;
 }
@@ -1459,42 +1747,47 @@ Op::Op(eMathOperationType aType, const achar* aszName, tU32 aulNumOperands)
 iExpressionVariable* Op::Eval(iExpressionContext* apContext)
 {
   if (!apContext) {
-    EXPRESSION_TRACE(niFmt(_A("Operation '%s' no context passed to Eval."),GetName()));
+    EXPRESSION_TRACE(
+      niFmt(_A("Operation '%s' no context passed to Eval."), GetName()));
     return NULL;
   }
 
   if (!mbEvaluated) {
     for (tOperandVecIt it = mvOperands.begin(); it != mvOperands.end(); ++it) {
       if (!it->IsOK()) {
-        EXPRESSION_TRACE(niFmt(_A("Operand %d not initialized."), astl::iterator_index(mvOperands,it)));
+        EXPRESSION_TRACE(niFmt(_A("Operand %d not initialized."),
+                               astl::iterator_index(mvOperands, it)));
         return NULL;
       }
     }
   }
 
-  if (mptrResult.IsOK() && niFlagIs(mptrResult->GetFlags(),eExpressionVariableFlags_Constant)) {
+  if (mptrResult.IsOK() &&
+      niFlagIs(mptrResult->GetFlags(), eExpressionVariableFlags_Constant))
+  {
     return mptrResult;
   }
   else if (mbLazy) {
     if (!SetupEvaluation(apContext)) {
-      EXPRESSION_TRACE(niFmt(_A("Operation '%s' evaluation setup failed."),GetName()));
+      EXPRESSION_TRACE(
+        niFmt(_A("Operation '%s' evaluation setup failed."), GetName()));
       return NULL;
     }
   }
   else {
     for (tOperandVecIt it = mvOperands.begin(); it != mvOperands.end(); ++it) {
       if (!it->Eval(apContext)) {
-        EXPRESSION_TRACE(niFmt(_A("Operation '%s', can't evaluate operand %d (%s)."),
-                               GetName(),
-                               astl::iterator_index(mvOperands,it),
-                               it->GetName()));
+        EXPRESSION_TRACE(niFmt(
+          _A("Operation '%s', can't evaluate operand %d (%s)."), GetName(),
+          astl::iterator_index(mvOperands, it), it->GetName()));
         return NULL;
       }
     }
 
     if (!mbEvaluated) {
       // Merge constant operations into a constant variable
-      for (tOperandVecIt it = mvOperands.begin(); it != mvOperands.end(); ++it) {
+      for (tOperandVecIt it = mvOperands.begin(); it != mvOperands.end(); ++it)
+      {
         if (!it->IsConstant() || !it->ptrOperation.IsOK())
           continue;
         it->ptrVariable = (ExprVar*)it->ptrOperation->GetEvalResult();
@@ -1503,11 +1796,13 @@ iExpressionVariable* Op::Eval(iExpressionContext* apContext)
       }
 
       if (!SetupEvaluation(apContext)) {
-        EXPRESSION_TRACE(niFmt(_A("Operation '%s' evaluation setup failed."),GetName()));
+        EXPRESSION_TRACE(
+          niFmt(_A("Operation '%s' evaluation setup failed."), GetName()));
         return NULL;
       }
       if (!niIsOK(mptrResult)) {
-        EXPRESSION_TRACE(niFmt(_A("Operation '%s', Result variable not initialized."),GetName()));
+        EXPRESSION_TRACE(niFmt(
+          _A("Operation '%s', Result variable not initialized."), GetName()));
         return NULL;
       }
     }
@@ -1554,8 +1849,7 @@ tBool Op::IsConstant() const
 tBool Op::AreOperandsConstant() const
 {
   tBool bOpsConstants = eTrue;
-  for (tOperandVecCIt it = mvOperands.begin(); it != mvOperands.end(); ++it)
-  {
+  for (tOperandVecCIt it = mvOperands.begin(); it != mvOperands.end(); ++it) {
     bOpsConstants = bOpsConstants && it->IsConstant();
   }
   return bOpsConstants;
@@ -1569,7 +1863,8 @@ iExpressionVariable* Op::GetEvalResult() const
 }
 
 ///////////////////////////////////////////////
-tBool Op::IsVarNumOperands() const {
+tBool Op::IsVarNumOperands() const
+{
   return mbVarArgs;
 }
 
@@ -1610,7 +1905,8 @@ tBool Op::SetOperandOperation(tU32 aulIdx, Ptr<Op> aptrOperation)
     mvOperands.push_back(sOperand());
   }
 
-  if (aulIdx >= mvOperands.size()) return eFalse;
+  if (aulIdx >= mvOperands.size())
+    return eFalse;
   mvOperands[aulIdx].ptrVariable = NULL;
   mvOperands[aulIdx].ptrOperation = aptrOperation;
   return niIsOK(aptrOperation);
@@ -1619,7 +1915,8 @@ tBool Op::SetOperandOperation(tU32 aulIdx, Ptr<Op> aptrOperation)
 ///////////////////////////////////////////////
 iExpressionVariable* Op::GetOperand(tU32 aulIdx) const
 {
-  if (aulIdx >= mvOperands.size()) return NULL;
+  if (aulIdx >= mvOperands.size())
+    return NULL;
   return mvOperands[aulIdx].GetVariable();
 }
 
@@ -1627,8 +1924,7 @@ iExpressionVariable* Op::GetOperand(tU32 aulIdx) const
 eExpressionVariableType Op::GetCommonOperandsType() const
 {
   eExpressionVariableType commonType = eExpressionVariableType_Float;
-  for (tOperandVecCIt it = mvOperands.begin(); it != mvOperands.end(); ++it)
-  {
+  for (tOperandVecCIt it = mvOperands.begin(); it != mvOperands.end(); ++it) {
     if (it->GetVariable()->GetType() > commonType)
       commonType = it->GetVariable()->GetType();
   }
@@ -1642,317 +1938,376 @@ eExpressionVariableType Op::GetCommonOperandsType() const
 #define OP2 (pSrc2[i])
 #define OP3 (pSrc3[i])
 
-#define DoWave(YCOMP)                                         \
-  tScalarFloat fX, fY;                                        \
-  mfTime = (tScalarFloat)fmod(mfTime+OP_GET_FRAME_TIME,1000); \
-  fX = (mfPhase+mfTime)*mfFreq;                               \
-  fX -= (tScalarFloat)floor(fX);                              \
-  YCOMP;                                                      \
-  mfVal = (fY*mfAmplitude)+mfBase;
+#define DoWave(YCOMP)                                            \
+  tScalarFloat fX, fY;                                           \
+  mfTime = (tScalarFloat)fmod(mfTime + OP_GET_FRAME_TIME, 1000); \
+  fX = (mfPhase + mfTime) * mfFreq;                              \
+  fX -= (tScalarFloat)floor(fX);                                 \
+  YCOMP;                                                         \
+  mfVal = (fY * mfAmplitude) + mfBase;
 
-#define DoSwitch(DOOP)                                        \
-  tU32 i = 0;                                                 \
-  switch (mptrResult->GetType())                              \
-  {                                                           \
-    case eExpressionVariableType_Float:                       \
-      {                                                       \
-        typedef tScalarFloat TDEST;                           \
-        tScalarFloat* pDest;                                  \
-        tScalarFloat fDest = (tScalarFloat)0; pDest = &fDest; \
-        DOOP;                                                 \
-        mptrResult->SetFloat(fDest);                          \
-        break;                                                \
-      }                                                       \
-    case eExpressionVariableType_Vec2:                     \
-      {                                                       \
-        typedef tVectorFloat TDEST;                           \
-        tVectorFloat* pDest;                                  \
-        sVec2<tVectorFloat> vDest; pDest = vDest.ptr();    \
-        for ( ; i < 2; ++i) { DOOP; }                         \
-        mptrResult->SetVec2(vDest);                        \
-        break;                                                \
-      }                                                       \
-    case eExpressionVariableType_Vec3:                     \
-      {                                                       \
-        typedef tVectorFloat TDEST;                           \
-        tVectorFloat* pDest;                                  \
-        sVec3<tVectorFloat> vDest; pDest = vDest.ptr();    \
-        for ( ; i < 3; ++i) { DOOP; }                         \
-        mptrResult->SetVec3(vDest);                        \
-        break;                                                \
-      }                                                       \
-    case eExpressionVariableType_Vec4:                     \
-      {                                                       \
-        typedef tVectorFloat TDEST;                           \
-        tVectorFloat* pDest;                                  \
-        sVec4<tVectorFloat> vDest; pDest = vDest.ptr();    \
-        for ( ; i < 4; ++i) { DOOP; }                         \
-        mptrResult->SetVec4(vDest);                        \
-        break;                                                \
-      }                                                       \
-    case eExpressionVariableType_Matrix:                      \
-      {                                                       \
-        typedef tVectorFloat TDEST;                           \
-        tVectorFloat* pDest;                                  \
-        sMatrix<tVectorFloat> mtxDest; pDest = mtxDest.ptr(); \
-        for ( ; i < 16; ++i) { DOOP; }                        \
-        mptrResult->SetMatrix(mtxDest);                       \
-        break;                                                \
-      }                                                       \
-    default:                                                  \
-      return eFalse;                                          \
+#define DoSwitch(DOOP)                    \
+  tU32 i = 0;                             \
+  switch (mptrResult->GetType()) {        \
+  case eExpressionVariableType_Float: {   \
+    typedef tScalarFloat TDEST;           \
+    tScalarFloat* pDest;                  \
+    tScalarFloat fDest = (tScalarFloat)0; \
+    pDest = &fDest;                       \
+    DOOP;                                 \
+    mptrResult->SetFloat(fDest);          \
+    break;                                \
+  }                                       \
+  case eExpressionVariableType_Vec2: {    \
+    typedef tVectorFloat TDEST;           \
+    tVectorFloat* pDest;                  \
+    sVec2<tVectorFloat> vDest;            \
+    pDest = vDest.ptr();                  \
+    for (; i < 2; ++i) {                  \
+      DOOP;                               \
+    }                                     \
+    mptrResult->SetVec2(vDest);           \
+    break;                                \
+  }                                       \
+  case eExpressionVariableType_Vec3: {    \
+    typedef tVectorFloat TDEST;           \
+    tVectorFloat* pDest;                  \
+    sVec3<tVectorFloat> vDest;            \
+    pDest = vDest.ptr();                  \
+    for (; i < 3; ++i) {                  \
+      DOOP;                               \
+    }                                     \
+    mptrResult->SetVec3(vDest);           \
+    break;                                \
+  }                                       \
+  case eExpressionVariableType_Vec4: {    \
+    typedef tVectorFloat TDEST;           \
+    tVectorFloat* pDest;                  \
+    sVec4<tVectorFloat> vDest;            \
+    pDest = vDest.ptr();                  \
+    for (; i < 4; ++i) {                  \
+      DOOP;                               \
+    }                                     \
+    mptrResult->SetVec4(vDest);           \
+    break;                                \
+  }                                       \
+  case eExpressionVariableType_Matrix: {  \
+    typedef tVectorFloat TDEST;           \
+    tVectorFloat* pDest;                  \
+    sMatrix<tVectorFloat> mtxDest;        \
+    pDest = mtxDest.ptr();                \
+    for (; i < 16; ++i) {                 \
+      DOOP;                               \
+    }                                     \
+    mptrResult->SetMatrix(mtxDest);       \
+    break;                                \
+  }                                       \
+  default: return eFalse;                 \
   }
 
-#define DoSwitch1(DOOP)                                                 \
-  tU32 i = 0;                                                           \
-  switch (mptrResult->GetType())                                        \
-  {                                                                     \
-    case eExpressionVariableType_Float:                                 \
-      {                                                                 \
-        const tScalarFloat* pSrc0;                                      \
-        typedef tScalarFloat TDEST;                                     \
-        tScalarFloat* pDest;                                            \
-        tScalarFloat fDest = (tScalarFloat)0; pDest = &fDest;           \
-        tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat(); pSrc0 = &fSrc0; \
-        DOOP;                                                           \
-        mptrResult->SetFloat(fDest);                                    \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec2:                               \
-      {                                                                 \
-        const tVectorFloat* pSrc0;                                      \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        sVec2<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2(); pSrc0 = vSrc0.ptr(); \
-        for ( ; i < 2; ++i) { DOOP; }                                   \
-        mptrResult->SetVec2(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec3:                               \
-      {                                                                 \
-        const tVectorFloat* pSrc0;                                      \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        sVec3<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3(); pSrc0 = vSrc0.ptr(); \
-        for ( ; i < 3; ++i) { DOOP; }                                   \
-        mptrResult->SetVec3(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec4:                               \
-      {                                                                 \
-        const tVectorFloat* pSrc0;                                      \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        sVec4<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4(); pSrc0 = vSrc0.ptr(); \
-        for ( ; i < 4; ++i) { DOOP; }                                   \
-        mptrResult->SetVec4(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Matrix:                                \
-      {                                                                 \
-        const tVectorFloat* pSrc0;                                      \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        sMatrix<tVectorFloat> mtxDest; pDest = mtxDest.ptr();           \
-        sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); pSrc0 = mtxSrc0.ptr(); \
-        for ( ; i < 16; ++i) { DOOP; }                                  \
-        mptrResult->SetMatrix(mtxDest);                                 \
-        break;                                                          \
-      }                                                                 \
-    default:                                                            \
-      return eFalse;                                                    \
+#define DoSwitch1(DOOP)                                                       \
+  tU32 i = 0;                                                                 \
+  switch (mptrResult->GetType()) {                                            \
+  case eExpressionVariableType_Float: {                                       \
+    const tScalarFloat* pSrc0;                                                \
+    typedef tScalarFloat TDEST;                                               \
+    tScalarFloat* pDest;                                                      \
+    tScalarFloat fDest = (tScalarFloat)0;                                     \
+    pDest = &fDest;                                                           \
+    tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat();             \
+    pSrc0 = &fSrc0;                                                           \
+    DOOP;                                                                     \
+    mptrResult->SetFloat(fDest);                                              \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec2: {                                        \
+    const tVectorFloat* pSrc0;                                                \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    sVec2<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    for (; i < 2; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec2(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec3: {                                        \
+    const tVectorFloat* pSrc0;                                                \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    sVec3<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    for (; i < 3; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec3(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec4: {                                        \
+    const tVectorFloat* pSrc0;                                                \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    sVec4<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    for (; i < 4; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec4(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Matrix: {                                      \
+    const tVectorFloat* pSrc0;                                                \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    sMatrix<tVectorFloat> mtxDest;                                            \
+    pDest = mtxDest.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); \
+    pSrc0 = mtxSrc0.ptr();                                                    \
+    for (; i < 16; ++i) {                                                     \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetMatrix(mtxDest);                                           \
+    break;                                                                    \
+  }                                                                           \
+  default: return eFalse;                                                     \
   }
 
-#define DoSwitch2(DOOP)                                                 \
-  tU32 i = 0;                                                           \
-  switch (mptrResult->GetType())                                        \
-  {                                                                     \
-    case eExpressionVariableType_Float:                                 \
-      {                                                                 \
-        typedef tScalarFloat TDEST;                                     \
-        tScalarFloat* pDest;                                            \
-        const tScalarFloat* pSrc0;                                      \
-        const tScalarFloat* pSrc1;                                      \
-        tScalarFloat fDest = (tScalarFloat)0; pDest = &fDest;           \
-        tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat(); pSrc0 = &fSrc0; \
-        tScalarFloat fSrc1 = mvOperands[1].GetVariable()->GetFloat(); pSrc1 = &fSrc1; \
-        { DOOP; }                                                       \
-        mptrResult->SetFloat(fDest);                                    \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec2:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        sVec2<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2(); pSrc0 = vSrc0.ptr(); \
-        sVec2<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec2(); pSrc1 = vSrc1.ptr(); \
-        for ( ; i < 2; ++i) { DOOP; }                                   \
-        mptrResult->SetVec2(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec3:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        sVec3<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3(); pSrc0 = vSrc0.ptr(); \
-        sVec3<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec3(); pSrc1 = vSrc1.ptr(); \
-        for ( ; i < 3; ++i) { DOOP; }                                   \
-        mptrResult->SetVec3(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec4:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        sVec4<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4(); pSrc0 = vSrc0.ptr(); \
-        sVec4<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec4(); pSrc1 = vSrc1.ptr(); \
-        for ( ; i < 4; ++i) { DOOP; }                                   \
-        mptrResult->SetVec4(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Matrix:                                \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        sMatrix<tVectorFloat> mtxDest; pDest = mtxDest.ptr();           \
-        sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); pSrc0 = mtxSrc0.ptr(); \
-        sMatrix<tVectorFloat> mtxSrc1 = mvOperands[1].GetVariable()->GetMatrix(); pSrc1 = mtxSrc1.ptr(); \
-        for ( ; i < 16; ++i) { DOOP; }                                  \
-        mptrResult->SetMatrix(mtxDest);                                 \
-        break;                                                          \
-      }                                                                 \
-    default:                                                            \
-      return eFalse;                                                    \
+#define DoSwitch2(DOOP)                                                       \
+  tU32 i = 0;                                                                 \
+  switch (mptrResult->GetType()) {                                            \
+  case eExpressionVariableType_Float: {                                       \
+    typedef tScalarFloat TDEST;                                               \
+    tScalarFloat* pDest;                                                      \
+    const tScalarFloat* pSrc0;                                                \
+    const tScalarFloat* pSrc1;                                                \
+    tScalarFloat fDest = (tScalarFloat)0;                                     \
+    pDest = &fDest;                                                           \
+    tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat();             \
+    pSrc0 = &fSrc0;                                                           \
+    tScalarFloat fSrc1 = mvOperands[1].GetVariable()->GetFloat();             \
+    pSrc1 = &fSrc1;                                                           \
+    {                                                                         \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetFloat(fDest);                                              \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec2: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    sVec2<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec2();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    for (; i < 2; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec2(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec3: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    sVec3<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec3();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    for (; i < 3; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec3(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec4: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    sVec4<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec4();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    for (; i < 4; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec4(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Matrix: {                                      \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    sMatrix<tVectorFloat> mtxDest;                                            \
+    pDest = mtxDest.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); \
+    pSrc0 = mtxSrc0.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc1 = mvOperands[1].GetVariable()->GetMatrix(); \
+    pSrc1 = mtxSrc1.ptr();                                                    \
+    for (; i < 16; ++i) {                                                     \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetMatrix(mtxDest);                                           \
+    break;                                                                    \
+  }                                                                           \
+  default: return eFalse;                                                     \
   }
 
-#define DoSwitch3(DOOP)                                                 \
-  tU32 i = 0;                                                           \
-  switch (mptrResult->GetType())                                        \
-  {                                                                     \
-    case eExpressionVariableType_Float:                                 \
-      {                                                                 \
-        typedef tScalarFloat TDEST;                                     \
-        tScalarFloat* pDest;                                            \
-        const tScalarFloat* pSrc0;                                      \
-        const tScalarFloat* pSrc1;                                      \
-        const tScalarFloat* pSrc2;                                      \
-        tScalarFloat fDest = (tScalarFloat)0; pDest = &fDest;           \
-        tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat(); pSrc0 = &fSrc0; \
-        tScalarFloat fSrc1 = mvOperands[1].GetVariable()->GetFloat(); pSrc1 = &fSrc1; \
-        tScalarFloat fSrc2 = mvOperands[2].GetVariable()->GetFloat(); pSrc2 = &fSrc2; \
-        DOOP;                                                           \
-        mptrResult->SetFloat(fDest);                                    \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec2:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        const tVectorFloat* pSrc2;                                      \
-        sVec2<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2(); pSrc0 = vSrc0.ptr(); \
-        sVec2<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec2(); pSrc1 = vSrc1.ptr(); \
-        sVec2<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec2(); pSrc2 = vSrc2.ptr(); \
-        for ( ; i < 2; ++i) { DOOP; }                                   \
-        mptrResult->SetVec2(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec3:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        const tVectorFloat* pSrc2;                                      \
-        sVec3<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3(); pSrc0 = vSrc0.ptr(); \
-        sVec3<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec3(); pSrc1 = vSrc1.ptr(); \
-        sVec3<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec3(); pSrc2 = vSrc2.ptr(); \
-        for ( ; i < 3; ++i) { DOOP; }                                   \
-        mptrResult->SetVec3(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Vec4:                               \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        const tVectorFloat* pSrc2;                                      \
-        sVec4<tVectorFloat> vDest; pDest = vDest.ptr();              \
-        sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4(); pSrc0 = vSrc0.ptr(); \
-        sVec4<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec4(); pSrc1 = vSrc1.ptr(); \
-        sVec4<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec4(); pSrc2 = vSrc2.ptr(); \
-        for ( ; i < 4; ++i) { DOOP; }                                   \
-        mptrResult->SetVec4(vDest);                                  \
-        break;                                                          \
-      }                                                                 \
-    case eExpressionVariableType_Matrix:                                \
-      {                                                                 \
-        typedef tVectorFloat TDEST;                                     \
-        tVectorFloat* pDest;                                            \
-        const tVectorFloat* pSrc0;                                      \
-        const tVectorFloat* pSrc1;                                      \
-        const tVectorFloat* pSrc2;                                      \
-        sMatrix<tVectorFloat> mtxDest; pDest = mtxDest.ptr();           \
-        sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); pSrc0 = mtxSrc0.ptr(); \
-        sMatrix<tVectorFloat> mtxSrc1 = mvOperands[1].GetVariable()->GetMatrix(); pSrc1 = mtxSrc1.ptr(); \
-        sMatrix<tVectorFloat> mtxSrc2 = mvOperands[2].GetVariable()->GetMatrix(); pSrc2 = mtxSrc2.ptr(); \
-        for ( ; i < 16; ++i) { DOOP; }                                  \
-        mptrResult->SetMatrix(mtxDest);                                 \
-        break;                                                          \
-      }                                                                 \
-    default:                                                            \
-      return eFalse;                                                    \
+#define DoSwitch3(DOOP)                                                       \
+  tU32 i = 0;                                                                 \
+  switch (mptrResult->GetType()) {                                            \
+  case eExpressionVariableType_Float: {                                       \
+    typedef tScalarFloat TDEST;                                               \
+    tScalarFloat* pDest;                                                      \
+    const tScalarFloat* pSrc0;                                                \
+    const tScalarFloat* pSrc1;                                                \
+    const tScalarFloat* pSrc2;                                                \
+    tScalarFloat fDest = (tScalarFloat)0;                                     \
+    pDest = &fDest;                                                           \
+    tScalarFloat fSrc0 = mvOperands[0].GetVariable()->GetFloat();             \
+    pSrc0 = &fSrc0;                                                           \
+    tScalarFloat fSrc1 = mvOperands[1].GetVariable()->GetFloat();             \
+    pSrc1 = &fSrc1;                                                           \
+    tScalarFloat fSrc2 = mvOperands[2].GetVariable()->GetFloat();             \
+    pSrc2 = &fSrc2;                                                           \
+    DOOP;                                                                     \
+    mptrResult->SetFloat(fDest);                                              \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec2: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    const tVectorFloat* pSrc2;                                                \
+    sVec2<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec2();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec2();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    sVec2<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec2();       \
+    pSrc2 = vSrc2.ptr();                                                      \
+    for (; i < 2; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec2(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec3: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    const tVectorFloat* pSrc2;                                                \
+    sVec3<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec3();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec3();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    sVec3<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec3();       \
+    pSrc2 = vSrc2.ptr();                                                      \
+    for (; i < 3; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec3(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Vec4: {                                        \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    const tVectorFloat* pSrc2;                                                \
+    sVec4<tVectorFloat> vDest;                                                \
+    pDest = vDest.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc0 = mvOperands[0].GetVariable()->GetVec4();       \
+    pSrc0 = vSrc0.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc1 = mvOperands[1].GetVariable()->GetVec4();       \
+    pSrc1 = vSrc1.ptr();                                                      \
+    sVec4<tVectorFloat> vSrc2 = mvOperands[2].GetVariable()->GetVec4();       \
+    pSrc2 = vSrc2.ptr();                                                      \
+    for (; i < 4; ++i) {                                                      \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetVec4(vDest);                                               \
+    break;                                                                    \
+  }                                                                           \
+  case eExpressionVariableType_Matrix: {                                      \
+    typedef tVectorFloat TDEST;                                               \
+    tVectorFloat* pDest;                                                      \
+    const tVectorFloat* pSrc0;                                                \
+    const tVectorFloat* pSrc1;                                                \
+    const tVectorFloat* pSrc2;                                                \
+    sMatrix<tVectorFloat> mtxDest;                                            \
+    pDest = mtxDest.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc0 = mvOperands[0].GetVariable()->GetMatrix(); \
+    pSrc0 = mtxSrc0.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc1 = mvOperands[1].GetVariable()->GetMatrix(); \
+    pSrc1 = mtxSrc1.ptr();                                                    \
+    sMatrix<tVectorFloat> mtxSrc2 = mvOperands[2].GetVariable()->GetMatrix(); \
+    pSrc2 = mtxSrc2.ptr();                                                    \
+    for (; i < 16; ++i) {                                                     \
+      DOOP;                                                                   \
+    }                                                                         \
+    mptrResult->SetMatrix(mtxDest);                                           \
+    break;                                                                    \
+  }                                                                           \
+  default: return eFalse;                                                     \
   }
 
 // Group operation
-class OpGroup : public Op
-{
+class OpGroup : public Op {
  public:
-  OpGroup() :
-      Op(eMathOperationType_Group, _A("#GROUP#"), 1)
+  OpGroup()
+      : Op(eMathOperationType_Group, _A("#GROUP#"), 1)
   {
   }
 
-  Op* Create() const { return niNew OpGroup(); }
+  Op* Create() const
+  {
+    return niNew OpGroup();
+  }
 
-  tBool SetupEvaluation(iExpressionContext*) {
+  tBool SetupEvaluation(iExpressionContext*)
+  {
     mptrResult = mvOperands[0].GetVariable();
     return eTrue;
   }
 
-  tBool DoEvaluate(iExpressionContext*) {
+  tBool DoEvaluate(iExpressionContext*)
+  {
     return eTrue;
   }
 };
 
 // URL operation
-class OpURL : public Op
-{
+class OpURL : public Op {
  public:
   Ptr<iExpressionURLResolver> mptrResolver;
   cString mstrURL;
   tBool mbShouldEval;
 
-  OpURL(iExpressionURLResolver* apResolver, const cString& aEncodedURL) :
-      Op(eMathOperationType_Function, _A("#URL#"), 0)
+  OpURL(iExpressionURLResolver* apResolver, const cString& aEncodedURL)
+      : Op(eMathOperationType_Function, _A("#URL#"), 0)
   {
     niAssert(apResolver != NULL);
     mbConstant = eFalse; // the result can change potentially at each eval
@@ -1961,9 +2316,13 @@ class OpURL : public Op
     mbShouldEval = eTrue;
   }
 
-  Op* Create() const { return niNew OpURL(mptrResolver,mstrURL); }
+  Op* Create() const
+  {
+    return niNew OpURL(mptrResolver, mstrURL);
+  }
 
-  tBool SetupEvaluation(iExpressionContext*) {
+  tBool SetupEvaluation(iExpressionContext*)
+  {
     if (!mptrResolver.IsOK() || mstrURL.empty())
       return eFalse;
 
@@ -1971,47 +2330,47 @@ class OpURL : public Op
 
     eExpressionVariableType type;
     switch (niType(v.GetType())) {
-      case eType_Vec2i:
-      case eType_Vec2f: {
-        type = eExpressionVariableType_Vec2;
-        break;
+    case eType_Vec2i:
+    case eType_Vec2f: {
+      type = eExpressionVariableType_Vec2;
+      break;
+    }
+    case eType_Vec3i:
+    case eType_Vec3f: {
+      type = eExpressionVariableType_Vec3;
+      break;
+    }
+    case eType_Vec4i:
+    case eType_Vec4f: {
+      type = eExpressionVariableType_Vec4;
+      break;
+    }
+    case eType_Matrixf: {
+      type = eExpressionVariableType_Matrix;
+      break;
+    }
+    default:
+      if (VarIsIntType(v.GetType()) || VarIsFloatType(v.GetType())) {
+        type = eExpressionVariableType_Float;
       }
-      case eType_Vec3i:
-      case eType_Vec3f: {
-        type = eExpressionVariableType_Vec3;
-        break;
+      else if (VarIsString(v)) {
+        type = eExpressionVariableType_String;
       }
-      case eType_Vec4i:
-      case eType_Vec4f: {
-        type = eExpressionVariableType_Vec4;
-        break;
+      else if (v.IsNull()) {
+        type = eExpressionVariableType_Float;
+        v.SetF64(0.0f);
       }
-      case eType_Matrixf: {
-        type = eExpressionVariableType_Matrix;
-        break;
+      else {
+        EXPRESSION_TRACE(niFmt("Invalid URL resolve return type: %s.",
+                               GetTypeString(v.GetType())));
+        type = eExpressionVariableType_Float;
+        v.SetF64(-1.0);
       }
-      default:
-        if (VarIsIntType(v.GetType()) ||
-            VarIsFloatType(v.GetType())) {
-          type = eExpressionVariableType_Float;
-        }
-        else if (VarIsString(v)) {
-          type = eExpressionVariableType_String;
-        }
-        else if (v.IsNull()) {
-          type = eExpressionVariableType_Float;
-          v.SetF64(0.0f);
-        }
-        else {
-          EXPRESSION_TRACE(niFmt("Invalid URL resolve return type: %s.", GetTypeString(v.GetType())));
-          type = eExpressionVariableType_Float;
-          v.SetF64(-1.0);
-        }
-        break;
+      break;
     }
 
-    mptrResult = _CreateVariable(NULL,type);
-    if (!_FromVar(mptrResult,v)) {
+    mptrResult = _CreateVariable(NULL, type);
+    if (!_FromVar(mptrResult, v)) {
       EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
       return eFalse;
     }
@@ -2021,10 +2380,11 @@ class OpURL : public Op
     return eTrue;
   }
 
-  tBool DoEvaluate(iExpressionContext*) {
+  tBool DoEvaluate(iExpressionContext*)
+  {
     if (mbShouldEval) {
       Var v = mptrResolver->ResolveURL(mstrURL.Chars());
-      if (!_FromVar(mptrResult,v)) {
+      if (!_FromVar(mptrResult, v)) {
         EXPRESSION_TRACE(niFmt("Can't convert URL value to expression."));
         return eFalse;
       }
@@ -2037,10 +2397,10 @@ class OpURL : public Op
 };
 
 // + operator
-BeginOpO(OperatorAdd,_A("+"))
+BeginOpO(OperatorAdd, _A("+"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2052,14 +2412,14 @@ tBool DoEvaluate(iExpressionContext*)
     mptrResult->SetString(out);
   }
   else {
-    DoSwitch2(DEST=OP0+OP1);
+    DoSwitch2(DEST = OP0 + OP1);
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // + unary operator
-BeginOpUO(OperatorPlus,_A("+"))
+BeginOpUO(OperatorPlus, _A("+"));
 tBool SetupEvaluation(iExpressionContext*)
 {
   return eTrue;
@@ -2069,193 +2429,205 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult = mvOperands[0].GetVariable();
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // - operator
-BeginOpO(OperatorSub,_A("-"))
+BeginOpO(OperatorSub, _A("-"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=OP0-OP1);
+  DoSwitch2(DEST = OP0 - OP1);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // - unary operator
-BeginOpUO(OperatorMinus,_A("-"))
+BeginOpUO(OperatorMinus, _A("-"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=-OP0);
+  DoSwitch1(DEST = -OP0);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // * operator
-BeginOpO(OperatorMul,_A("*"))
+BeginOpO(OperatorMul, _A("*"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=OP0*OP1);
+  DoSwitch2(DEST = OP0 * OP1);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // / operator
-BeginOpO(OperatorDiv,_A("/"))
+BeginOpO(OperatorDiv, _A("/"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=OP0/OP1);
+  DoSwitch2(DEST = OP0 / OP1);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // % operator
 #ifdef USE_MODULO_OP
-BeginOpO(OperatorMod,_A("%"))
+BeginOpO(OperatorMod, _A("%"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=ni::FMod(OP0,OP1));
+  DoSwitch2(DEST = ni::FMod(OP0, OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 #endif
 
 // ~ unary operator
-BeginOpUO(OperatorBitNegate,_A("~"))
+BeginOpUO(OperatorBitNegate, _A("~"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=(TDEST)~(int)OP0);
+  DoSwitch1(DEST = (TDEST) ~(int)OP0);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // | operator
-BeginOpO(OperatorBitOr,_A("|"))
+BeginOpO(OperatorBitOr, _A("|"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=(TDEST)((int)OP0|(int)OP1));
+  DoSwitch2(DEST = (TDEST)((int)OP0 | (int)OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // ^ operator
-BeginOpO(OperatorBitXor,_A("^"))
+BeginOpO(OperatorBitXor, _A("^"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=(TDEST)((int)OP0^(int)OP1));
+  DoSwitch2(DEST = (TDEST)((int)OP0 ^ (int)OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // & operator
-BeginOpO(OperatorBitAnd,_A("&"))
+BeginOpO(OperatorBitAnd, _A("&"));
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=(TDEST)((int)OP0&(int)OP1));
+  DoSwitch2(DEST = (TDEST)((int)OP0 & (int)OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // logical && operator
-BeginOpO(OperatorLogicalAnd,_A("&&"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorLogicalAnd, _A("&&"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
+tBool DoEvaluate(iExpressionContext*)
+{
   mptrResult->SetFloat(mvOperands[0].ToBool() && mvOperands[1].ToBool());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // logical || operator
-BeginOpO(OperatorLogicalOr,_A("||"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorLogicalOr, _A("||"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
+tBool DoEvaluate(iExpressionContext*)
+{
   mptrResult->SetFloat(mvOperands[0].ToBool() || mvOperands[1].ToBool());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // logical ! operator
-BeginOpUO(OperatorLogicalNot,_A("!"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpUO(OperatorLogicalNot, _A("!"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
+tBool DoEvaluate(iExpressionContext*)
+{
   mptrResult->SetFloat(!mvOperands[0].ToBool());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // logical !! operator (TO_BOOL)
-BeginOpUO(OperatorLogicalToBool,_A("!!"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpUO(OperatorLogicalToBool, _A("!!"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
+tBool DoEvaluate(iExpressionContext*)
+{
   mptrResult->SetFloat(mvOperands[0].ToBool());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp == operator
-BeginOpO(OperatorCmpEq,_A("=="))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpEq, _A("=="));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(0);
   }
@@ -2265,22 +2637,26 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 == OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 == OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp != operator
-BeginOpO(OperatorCmpNotEq,_A("!="))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpNotEq, _A("!="));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(1);
   }
@@ -2290,22 +2666,26 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 != OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 != OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp < operator
-BeginOpO(OperatorCmpLt,_A("<"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpLt, _A("<"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(op0Type < op1Type);
   }
@@ -2315,22 +2695,26 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 < OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 < OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp <= operator
-BeginOpO(OperatorCmpLte,_A("<="))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpLte, _A("<="));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(op0Type <= op1Type);
   }
@@ -2340,22 +2724,26 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 <= OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 <= OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp > operator
-BeginOpO(OperatorCmpGt,_A(">"))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpGt, _A(">"));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(op0Type > op1Type);
   }
@@ -2365,22 +2753,26 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 > OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 > OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cmp >= operator
-BeginOpO(OperatorCmpGte,_A(">="))
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpO(OperatorCmpGte, _A(">="));
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  const eExpressionVariableType op0Type = mvOperands[0].GetVariable()->GetType();
-  const eExpressionVariableType op1Type = mvOperands[1].GetVariable()->GetType();
+tBool DoEvaluate(iExpressionContext*)
+{
+  const eExpressionVariableType op0Type =
+    mvOperands[0].GetVariable()->GetType();
+  const eExpressionVariableType op1Type =
+    mvOperands[1].GetVariable()->GetType();
   if (op0Type != op1Type) {
     mptrResult->SetFloat(op0Type >= op1Type);
   }
@@ -2390,18 +2782,18 @@ tBool DoEvaluate(iExpressionContext*) {
                            mvOperands[1].GetVariable()->GetString());
     }
     else {
-      DoSwitch2(DEST=(TDEST)(OP0 >= OP1));
+      DoSwitch2(DEST = (TDEST)(OP0 >= OP1));
     }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A 2D vector.
-BeginOpF(Vec2,2)
+BeginOpF(Vec2, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec2);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec2);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2412,13 +2804,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec2(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A 3D vector.
-BeginOpF(Vec3,3)
+BeginOpF(Vec3, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2430,13 +2822,14 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec3(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A 3D vector.
-BeginOpF(RGB,3)
+BeginOpF(RGB, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3,eExpressionVariableFlags_Color);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3,
+                               eExpressionVariableFlags_Color);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2448,13 +2841,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec3(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A 4D vector.
-BeginOpF(Vec4,4)
+BeginOpF(Vec4, 4);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2467,13 +2860,14 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec4(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A 4D color.
-BeginOpF(RGBA,4)
+BeginOpF(RGBA, 4);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Color);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Color);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2486,13 +2880,14 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec4(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A quaternion vector.
-BeginOpF(Quat,4)
+BeginOpF(Quat, 4);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2505,47 +2900,47 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetVec4(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A rectangle.
-BeginOpF(Rect,4)
+BeginOpF(Rect, 4);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   sRect<tVectorFloat> dest(
-      (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
-      (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
-      (tVectorFloat)mvOperands[2].GetVariable()->GetFloat(),
-      (tVectorFloat)mvOperands[3].GetVariable()->GetFloat());
+    (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[2].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[3].GetVariable()->GetFloat());
   mptrResult->SetVec4(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! A matrix.
-BeginOpF(Matrix,16)
+BeginOpF(Matrix, 16);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   sMatrix<tVectorFloat> dest;
-  dest._11 = (tVectorFloat)mvOperands[ 0].GetVariable()->GetFloat();
-  dest._12 = (tVectorFloat)mvOperands[ 1].GetVariable()->GetFloat();
-  dest._13 = (tVectorFloat)mvOperands[ 2].GetVariable()->GetFloat();
-  dest._14 = (tVectorFloat)mvOperands[ 3].GetVariable()->GetFloat();
-  dest._21 = (tVectorFloat)mvOperands[ 4].GetVariable()->GetFloat();
-  dest._22 = (tVectorFloat)mvOperands[ 5].GetVariable()->GetFloat();
-  dest._23 = (tVectorFloat)mvOperands[ 6].GetVariable()->GetFloat();
-  dest._24 = (tVectorFloat)mvOperands[ 7].GetVariable()->GetFloat();
-  dest._31 = (tVectorFloat)mvOperands[ 8].GetVariable()->GetFloat();
-  dest._32 = (tVectorFloat)mvOperands[ 9].GetVariable()->GetFloat();
+  dest._11 = (tVectorFloat)mvOperands[0].GetVariable()->GetFloat();
+  dest._12 = (tVectorFloat)mvOperands[1].GetVariable()->GetFloat();
+  dest._13 = (tVectorFloat)mvOperands[2].GetVariable()->GetFloat();
+  dest._14 = (tVectorFloat)mvOperands[3].GetVariable()->GetFloat();
+  dest._21 = (tVectorFloat)mvOperands[4].GetVariable()->GetFloat();
+  dest._22 = (tVectorFloat)mvOperands[5].GetVariable()->GetFloat();
+  dest._23 = (tVectorFloat)mvOperands[6].GetVariable()->GetFloat();
+  dest._24 = (tVectorFloat)mvOperands[7].GetVariable()->GetFloat();
+  dest._31 = (tVectorFloat)mvOperands[8].GetVariable()->GetFloat();
+  dest._32 = (tVectorFloat)mvOperands[9].GetVariable()->GetFloat();
   dest._33 = (tVectorFloat)mvOperands[10].GetVariable()->GetFloat();
   dest._34 = (tVectorFloat)mvOperands[11].GetVariable()->GetFloat();
   dest._41 = (tVectorFloat)mvOperands[12].GetVariable()->GetFloat();
@@ -2555,13 +2950,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetMatrix(dest);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to real number.
-BeginOpF(ToReal,1)
+BeginOpF(ToReal, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2569,13 +2964,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to real number, synonym of ToReal
-BeginOpF(ToFloat,1)
+BeginOpF(ToFloat, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2583,13 +2978,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to a bool, synonym of !!
-BeginOpF(ToBool,1)
+BeginOpF(ToBool, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2597,13 +2992,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetFloat(mvOperands[0].ToBool());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to 2d vector.
-BeginOpF(ToVec2,1)
+BeginOpF(ToVec2, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec2);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec2);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2611,13 +3006,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to 3d vector.
-BeginOpF(ToVec3,1)
+BeginOpF(ToVec3, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2625,13 +3020,14 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to 3d color.
-BeginOpF(ToRGB,1)
+BeginOpF(ToRGB, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3,eExpressionVariableFlags_Color);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3,
+                               eExpressionVariableFlags_Color);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2639,13 +3035,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to 4d vector.
-BeginOpF(ToVec4,1)
+BeginOpF(ToVec4, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2653,13 +3049,14 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to 4d color.
-BeginOpF(ToRGBA,1)
+BeginOpF(ToRGBA, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Color);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Color);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2667,27 +3064,28 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to quaternion.
-BeginOpF(ToQuat,1)
+BeginOpF(ToQuat, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
- return eTrue;
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
+  return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to matrix.
-BeginOpF(ToMatrix,1)
+BeginOpF(ToMatrix, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2695,13 +3093,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Cast to string.
-BeginOpF(ToString,1)
+BeginOpF(ToString, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -2709,180 +3107,227 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->Copy(mvOperands[0].GetVariable());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Return a string which contains the typename.
-BeginOpF(GetTypeString,1)
+BeginOpF(GetTypeString, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  cString typeString = niEnumToChars(eExpressionVariableType,mvOperands[0].GetVariable()->GetType());
+  cString typeString = niEnumToChars(eExpressionVariableType,
+                                     mvOperands[0].GetVariable()->GetType());
   mptrResult->SetString(typeString);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Check type
-BeginOpF(IsFloat,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+BeginOpF(IsFloat, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_Float);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_Float);
   return eTrue;
 }
-EndOp()
-BeginOpF(IsVec2,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+EndOp();
+BeginOpF(IsVec2, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_Vec2);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_Vec2);
   return eTrue;
 }
-EndOp()
-BeginOpF(IsVec3,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+EndOp();
+BeginOpF(IsVec3, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_Vec3);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_Vec3);
   return eTrue;
 }
-EndOp()
-BeginOpF(IsVec4,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+EndOp();
+BeginOpF(IsVec4, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_Vec4);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_Vec4);
   return eTrue;
 }
-EndOp()
-BeginOpF(IsMatrix,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+EndOp();
+BeginOpF(IsMatrix, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_Matrix);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_Matrix);
   return eTrue;
 }
-EndOp()
-BeginOpF(IsString,1)
-tBool SetupEvaluation(iExpressionContext*) {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+EndOp();
+BeginOpF(IsString, 1);
+tBool SetupEvaluation(iExpressionContext*)
+{
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
-tBool DoEvaluate(iExpressionContext*) {
-  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() == eExpressionVariableType_String);
+tBool DoEvaluate(iExpressionContext*)
+{
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetType() ==
+                       eExpressionVariableType_String);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetX(vec)
-BeginOpF(GetX,1)
+BeginOpF(GetX, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
-  switch (pVar->GetType())
-  {
-    case eExpressionVariableType_Float: mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);  break;
-    case eExpressionVariableType_Vec2: mptrResult->SetFloat(static_cast<const ExprVarVec2*>(pVar)->Value.x);  break;
-    case eExpressionVariableType_Vec3: mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.x);  break;
-    case eExpressionVariableType_Vec4: mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.x);  break;
-    case eExpressionVariableType_Matrix:  mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._11); break;
+  switch (pVar->GetType()) {
+  case eExpressionVariableType_Float:
+    mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);
+    break;
+  case eExpressionVariableType_Vec2:
+    mptrResult->SetFloat(static_cast<const ExprVarVec2*>(pVar)->Value.x);
+    break;
+  case eExpressionVariableType_Vec3:
+    mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.x);
+    break;
+  case eExpressionVariableType_Vec4:
+    mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.x);
+    break;
+  case eExpressionVariableType_Matrix:
+    mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._11);
+    break;
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetY(vec)
-BeginOpF(GetY,1)
+BeginOpF(GetY, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
-  switch (pVar->GetType())
-  {
-    case eExpressionVariableType_Float: mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);  break;
-    case eExpressionVariableType_Vec2: mptrResult->SetFloat(static_cast<const ExprVarVec2*>(pVar)->Value.y);  break;
-    case eExpressionVariableType_Vec3: mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.y);  break;
-    case eExpressionVariableType_Vec4: mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.y);  break;
-    case eExpressionVariableType_Matrix:  mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._12); break;
+  switch (pVar->GetType()) {
+  case eExpressionVariableType_Float:
+    mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);
+    break;
+  case eExpressionVariableType_Vec2:
+    mptrResult->SetFloat(static_cast<const ExprVarVec2*>(pVar)->Value.y);
+    break;
+  case eExpressionVariableType_Vec3:
+    mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.y);
+    break;
+  case eExpressionVariableType_Vec4:
+    mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.y);
+    break;
+  case eExpressionVariableType_Matrix:
+    mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._12);
+    break;
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetZ(vec)
-BeginOpF(GetZ,1)
+BeginOpF(GetZ, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
-  switch (pVar->GetType())
-  {
-    case eExpressionVariableType_Float: mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);  break;
-    case eExpressionVariableType_Vec2: mptrResult->SetFloat(0);  break;
-    case eExpressionVariableType_Vec3: mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.z);  break;
-    case eExpressionVariableType_Vec4: mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.z);  break;
-    case eExpressionVariableType_Matrix:  mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._13);break;
+  switch (pVar->GetType()) {
+  case eExpressionVariableType_Float:
+    mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);
+    break;
+  case eExpressionVariableType_Vec2: mptrResult->SetFloat(0); break;
+  case eExpressionVariableType_Vec3:
+    mptrResult->SetFloat(static_cast<const ExprVarVec3*>(pVar)->Value.z);
+    break;
+  case eExpressionVariableType_Vec4:
+    mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.z);
+    break;
+  case eExpressionVariableType_Matrix:
+    mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._13);
+    break;
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetW(vec)
-BeginOpF(GetW,1)
+BeginOpF(GetW, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
-  switch (pVar->GetType())
-  {
-    case eExpressionVariableType_Float: mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);  break;
-    case eExpressionVariableType_Vec2:
-    case eExpressionVariableType_Vec3:
-      mptrResult->SetFloat(0);
-      break;
-    case eExpressionVariableType_Vec4: mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.w);  break;
-    case eExpressionVariableType_Matrix:  mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._14); break;
+  switch (pVar->GetType()) {
+  case eExpressionVariableType_Float:
+    mptrResult->SetFloat(static_cast<const ExprVarFloat*>(pVar)->Value);
+    break;
+  case eExpressionVariableType_Vec2:
+  case eExpressionVariableType_Vec3: mptrResult->SetFloat(0); break;
+  case eExpressionVariableType_Vec4:
+    mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.w);
+    break;
+  case eExpressionVariableType_Matrix:
+    mptrResult->SetFloat(static_cast<const ExprVarMatrix*>(pVar)->Value._14);
+    break;
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetWidth(vec4)
-BeginOpF(GetWidth,1)
+BeginOpF(GetWidth, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   if (mvOperands[0].GetVariable()->GetType() != eExpressionVariableType_Vec4) {
     EXPRESSION_TRACE(_A("Operand 0 is not a vector4."));
     return eFalse;
@@ -2893,17 +3338,17 @@ tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
   niAssert(pVar->GetType() == eExpressionVariableType_Vec4);
-  mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.z-
+  mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.z -
                        static_cast<const ExprVarVec4*>(pVar)->Value.x);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // GetHeight(vec4)
-BeginOpF(GetHeight,1)
+BeginOpF(GetHeight, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   if (mvOperands[0].GetVariable()->GetType() != eExpressionVariableType_Vec4) {
     EXPRESSION_TRACE(_A("Operand 0 is not a vector4."));
     return eFalse;
@@ -2914,14 +3359,14 @@ tBool DoEvaluate(iExpressionContext*)
 {
   iExpressionVariable* pVar = mvOperands[0].GetVariable();
   niAssert(pVar->GetType() == eExpressionVariableType_Vec4);
-  mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.w-
+  mptrResult->SetFloat(static_cast<const ExprVarVec4*>(pVar)->Value.w -
                        static_cast<const ExprVarVec4*>(pVar)->Value.y);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // rotate function
-BeginOpF(Rotate,2)
+BeginOpF(Rotate, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
   if (mvOperands[1].GetVariable()->GetType() != eExpressionVariableType_Matrix)
@@ -2936,477 +3381,483 @@ tBool SetupEvaluation(iExpressionContext*)
   {
     type = eExpressionVariableType_Vec3;
   }
-  mptrResult = _CreateVariable(NULL,type);
+  mptrResult = _CreateVariable(NULL, type);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  switch (mptrResult->GetType())
-  {
-    case eExpressionVariableType_Vec2: {
-      VecTransformNormal(static_cast<ExprVarVec2*>(mptrResult.ptr())->Value,
-                         static_cast<ExprVarVec2*>(mvOperands[0].GetVariable())->Value,
-                         static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-      break;
-    }
-    case eExpressionVariableType_Vec3: {
-      VecTransformNormal(static_cast<ExprVarVec3*>(mptrResult.ptr())->Value,
-                         mvOperands[0].GetVariable()->GetVec3(),
-                         static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-      break;
-    }
-    default: {
-      EXPRESSION_TRACE(_A("Operand 1 is not a vec2 or vec3."));
-      return eFalse;
-    }
+  switch (mptrResult->GetType()) {
+  case eExpressionVariableType_Vec2: {
+    VecTransformNormal(
+      static_cast<ExprVarVec2*>(mptrResult.ptr())->Value,
+      static_cast<ExprVarVec2*>(mvOperands[0].GetVariable())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
+  case eExpressionVariableType_Vec3: {
+    VecTransformNormal(
+      static_cast<ExprVarVec3*>(mptrResult.ptr())->Value,
+      mvOperands[0].GetVariable()->GetVec3(),
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
+  default: {
+    EXPRESSION_TRACE(_A("Operand 1 is not a vec2 or vec3."));
+    return eFalse;
+  }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // mod function (% modulo)
-BeginOpF(Mod,2)
+BeginOpF(Mod, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=ni::FMod(OP0,OP1));
+  DoSwitch2(DEST = ni::FMod(OP0, OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // sin function
-BeginOpF(Sin,1)
+BeginOpF(Sin, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Sin(OP0));
+  DoSwitch1(DEST = ni::Sin(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // asin function
-BeginOpF(ASin,1)
+BeginOpF(ASin, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::ASin(OP0));
+  DoSwitch1(DEST = ni::ASin(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cos function
-BeginOpF(Cos,1)
+BeginOpF(Cos, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Cos(OP0));
+  DoSwitch1(DEST = ni::Cos(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // acos function
-BeginOpF(ACos,1)
+BeginOpF(ACos, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::ACos(OP0));
+  DoSwitch1(DEST = ni::ACos(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // tan function
-BeginOpF(Tan,1)
+BeginOpF(Tan, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Tan(OP0));
+  DoSwitch1(DEST = ni::Tan(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // atan function
-BeginOpF(ATan,1)
+BeginOpF(ATan, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::ATan(OP0));
+  DoSwitch1(DEST = ni::ATan(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // rad function
-BeginOpF(Rad,1)
+BeginOpF(Rad, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Rad(OP0));
+  DoSwitch1(DEST = ni::Rad(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // deg function
-BeginOpF(Deg,1)
+BeginOpF(Deg, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Deg(OP0));
+  DoSwitch1(DEST = ni::Deg(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // floor function
-BeginOpF(Floor,1)
+BeginOpF(Floor, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Floor(OP0));
+  DoSwitch1(DEST = ni::Floor(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // ceil function
-BeginOpF(Ceil,1)
+BeginOpF(Ceil, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Ceil(OP0));
+  DoSwitch1(DEST = ni::Ceil(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // abs function
-BeginOpF(Abs,1)
+BeginOpF(Abs, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Abs(OP0));
+  DoSwitch1(DEST = ni::Abs(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // sign function
-BeginOpF(Sign,1)
+BeginOpF(Sign, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Sign(OP0));
+  DoSwitch1(DEST = ni::Sign(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Pow function
-BeginOpF(Pow,2)
+BeginOpF(Pow, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=ni::Pow(OP0,OP1));
+  DoSwitch2(DEST = ni::Pow(OP0, OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // LShift function
-BeginOpF(LShift,2)
+BeginOpF(LShift, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(_FloatAssign(DEST,(int)OP0<<(int)OP1));
+  DoSwitch2(_FloatAssign(DEST, (int)OP0 << (int)OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // RShift function
-BeginOpF(RShift,2)
+BeginOpF(RShift, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(_FloatAssign(DEST,(int)OP0>>(int)OP1));
+  DoSwitch2(_FloatAssign(DEST, (int)OP0 >> (int)OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Mul function
-BeginOpF(Mul,2)
+BeginOpF(Mul, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  if (mvOperands[1].GetVariable()->GetType() != eExpressionVariableType_Matrix) {
+  if (mvOperands[1].GetVariable()->GetType() != eExpressionVariableType_Matrix)
+  {
     EXPRESSION_TRACE(_A("Second operand is not a matrix."));
     return eFalse;
   }
-  mptrResult = _CreateVariable(NULL,mvOperands[0].GetVariable()->GetType());
+  mptrResult = _CreateVariable(NULL, mvOperands[0].GetVariable()->GetType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  switch (mptrResult->GetType())
-  {
-    case eExpressionVariableType_Float:
-      {
-        static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
-            static_cast<ExprVarFloat*>(mvOperands[0].GetVariable())->Value *
-            static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value._11;
-        break;
-      }
-    case eExpressionVariableType_Vec2:
-      {
-        VecTransformCoord(static_cast<ExprVarVec2*>(mptrResult.ptr())->Value,
-                          static_cast<ExprVarVec2*>(mvOperands[0].GetVariable())->Value,
-                          static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-        break;
-      }
-    case eExpressionVariableType_Vec3:
-      {
-        VecTransformCoord(static_cast<ExprVarVec3*>(mptrResult.ptr())->Value,
-                          static_cast<ExprVarVec3*>(mvOperands[0].GetVariable())->Value,
-                          static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-        break;
-      }
-    case eExpressionVariableType_Vec4:
-      {
-        VecTransform(static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                     static_cast<ExprVarVec4*>(mvOperands[0].GetVariable())->Value,
-                     static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-        break;
-      }
-    case eExpressionVariableType_Matrix:
-      {
-        MatrixMultiply(static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
-                       static_cast<ExprVarMatrix*>(mvOperands[0].GetVariable())->Value,
-                       static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
-        break;
-      }
+  switch (mptrResult->GetType()) {
+  case eExpressionVariableType_Float: {
+    static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
+      static_cast<ExprVarFloat*>(mvOperands[0].GetVariable())->Value *
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value._11;
+    break;
+  }
+  case eExpressionVariableType_Vec2: {
+    VecTransformCoord(
+      static_cast<ExprVarVec2*>(mptrResult.ptr())->Value,
+      static_cast<ExprVarVec2*>(mvOperands[0].GetVariable())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
+  case eExpressionVariableType_Vec3: {
+    VecTransformCoord(
+      static_cast<ExprVarVec3*>(mptrResult.ptr())->Value,
+      static_cast<ExprVarVec3*>(mvOperands[0].GetVariable())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
+  case eExpressionVariableType_Vec4: {
+    VecTransform(
+      static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+      static_cast<ExprVarVec4*>(mvOperands[0].GetVariable())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
+  case eExpressionVariableType_Matrix: {
+    MatrixMultiply(
+      static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[0].GetVariable())->Value,
+      static_cast<ExprVarMatrix*>(mvOperands[1].GetVariable())->Value);
+    break;
+  }
   }
   return eTrue;
 }
-EndOp()
-
+EndOp();
 
 // lerp function
-BeginOpF(Lerp,3)
+BeginOpF(Lerp, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch3(DEST=ni::Lerp(OP0,OP1,OP2));
+  DoSwitch3(DEST = ni::Lerp(OP0, OP1, OP2));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // clamp function
-BeginOpF(Clamp,3)
+BeginOpF(Clamp, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch3(DEST=ni::Clamp(OP0,OP1,OP2));
+  DoSwitch3(DEST = ni::Clamp(OP0, OP1, OP2));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Sat function
-BeginOpF(Sat,1)
+BeginOpF(Sat, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::ClampZeroOne(OP0));
+  DoSwitch1(DEST = ni::ClampZeroOne(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // sqrt function
-BeginOpF(Sqrt,1)
+BeginOpF(Sqrt, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(DEST=ni::Sqrt(OP0));
+  DoSwitch1(DEST = ni::Sqrt(OP0));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // dot2 function
-BeginOpF(Dot2,2)
+BeginOpF(Dot2, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
-      VecDot(mvOperands[0].GetVariable()->GetVec2(), mvOperands[1].GetVariable()->GetVec2());
+    VecDot(mvOperands[0].GetVariable()->GetVec2(),
+           mvOperands[1].GetVariable()->GetVec2());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // dot3 function
-BeginOpF(Dot3,2)
+BeginOpF(Dot3, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
-      VecDot(mvOperands[0].GetVariable()->GetVec3(), mvOperands[1].GetVariable()->GetVec3());
+    VecDot(mvOperands[0].GetVariable()->GetVec3(),
+           mvOperands[1].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // dot4 function
-BeginOpF(Dot4,2)
+BeginOpF(Dot4, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
-      VecDot(mvOperands[0].GetVariable()->GetVec4(), mvOperands[1].GetVariable()->GetVec4());
+    VecDot(mvOperands[0].GetVariable()->GetVec4(),
+           mvOperands[1].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Len2 function
-BeginOpF(Len2,1)
+BeginOpF(Len2, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value = VecLength(mvOperands[0].GetVariable()->GetVec2());
+  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
+    VecLength(mvOperands[0].GetVariable()->GetVec2());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Len3 function
-BeginOpF(Len3,1)
+BeginOpF(Len3, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value = VecLength(mvOperands[0].GetVariable()->GetVec3());
+  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
+    VecLength(mvOperands[0].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Len4 function
-BeginOpF(Len4,1)
+BeginOpF(Len4, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value = VecLength(mvOperands[0].GetVariable()->GetVec4());
+  static_cast<ExprVarFloat*>(mptrResult.ptr())->Value =
+    VecLength(mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cross3 function
-BeginOpF(Cross3,2)
+BeginOpF(Cross3, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   VecCross(static_cast<ExprVarVec3*>(mptrResult.ptr())->Value,
-           mvOperands[0].GetVariable()->GetVec3(), mvOperands[1].GetVariable()->GetVec3());
+           mvOperands[0].GetVariable()->GetVec3(),
+           mvOperands[1].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // cross4 function
-BeginOpF(Cross4,3)
+BeginOpF(Cross4, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3417,13 +3868,13 @@ tBool DoEvaluate(iExpressionContext*)
            mvOperands[2].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // normalize2(vec2) function
-BeginOpF(Normalize2,1)
+BeginOpF(Normalize2, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec2);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec2);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3432,13 +3883,13 @@ tBool DoEvaluate(iExpressionContext*)
                mvOperands[0].GetVariable()->GetVec2());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // normalize3(vec3) function
-BeginOpF(Normalize3,1)
+BeginOpF(Normalize3, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3447,13 +3898,13 @@ tBool DoEvaluate(iExpressionContext*)
                mvOperands[0].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // normalize4(vec4) function
-BeginOpF(Normalize4,1)
+BeginOpF(Normalize4, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3462,83 +3913,83 @@ tBool DoEvaluate(iExpressionContext*)
                mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // min function
-BeginOpF(Min,2)
+BeginOpF(Min, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=ni::Min(OP0,OP1));
+  DoSwitch2(DEST = ni::Min(OP0, OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // max function
-BeginOpF(Max,2)
+BeginOpF(Max, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(DEST=ni::Max(OP0,OP1));
+  DoSwitch2(DEST = ni::Max(OP0, OP1));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Rand function
-BeginOpF(Rand,0)
+BeginOpF(Rand, 0);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch(DEST=RandFloat());
+  DoSwitch(DEST = RandFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Rand2 function
-BeginOpF(Rand2,2)
+BeginOpF(Rand2, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch2(_FloatAssign(DEST,RandFloatRange(OP0,OP1)));
+  DoSwitch2(_FloatAssign(DEST, RandFloatRange(OP0, OP1)));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Bit function
-BeginOpF(Bit,1)
+BeginOpF(Bit, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  DoSwitch1(_FloatAssign(DEST,niBit((int)OP0)));
+  DoSwitch1(_FloatAssign(DEST, niBit((int)OP0)));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationX function
-BeginOpF(MatrixRotationX,1)
+BeginOpF(MatrixRotationX, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3547,13 +3998,13 @@ tBool DoEvaluate(iExpressionContext*)
                   (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationY function
-BeginOpF(MatrixRotationY,1)
+BeginOpF(MatrixRotationY, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3562,13 +4013,13 @@ tBool DoEvaluate(iExpressionContext*)
                   (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationZ function
-BeginOpF(MatrixRotationZ,1)
+BeginOpF(MatrixRotationZ, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3577,13 +4028,13 @@ tBool DoEvaluate(iExpressionContext*)
                   (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationAxis function
-BeginOpF(MatrixRotationAxis,2)
+BeginOpF(MatrixRotationAxis, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3593,45 +4044,47 @@ tBool DoEvaluate(iExpressionContext*)
                      (tVectorFloat)mvOperands[1].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationQuat function
-BeginOpF(MatrixRotationQuat,1)
+BeginOpF(MatrixRotationQuat, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  MatrixRotationQuat(static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
-                     (const sQuat<tVectorFloat>&)mvOperands[0].GetVariable()->GetVec4());
+  MatrixRotationQuat(
+    static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
+    (const sQuat<tVectorFloat>&)mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixRotationYPR function
-BeginOpF(MatrixRotationYPR,3)
+BeginOpF(MatrixRotationYPR, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  MatrixRotationYawPitchRoll(static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
-                             (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
-                             (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
-                             (tVectorFloat)mvOperands[2].GetVariable()->GetFloat());
+  MatrixRotationYawPitchRoll(
+    static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value,
+    (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[2].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixTranslation function
-BeginOpF(MatrixTranslation,1)
+BeginOpF(MatrixTranslation, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3640,13 +4093,13 @@ tBool DoEvaluate(iExpressionContext*)
                     mvOperands[0].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixScale function
-BeginOpF(MatrixScale,1)
+BeginOpF(MatrixScale, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3655,13 +4108,13 @@ tBool DoEvaluate(iExpressionContext*)
                 mvOperands[0].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixIdentity function
-BeginOpF(MatrixIdentity,0)
+BeginOpF(MatrixIdentity, 0);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3669,13 +4122,13 @@ tBool DoEvaluate(iExpressionContext*)
   MatrixIdentity(static_cast<ExprVarMatrix*>(mptrResult.ptr())->Value);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // MatrixInverse function
-BeginOpF(MatrixInverse,1)
+BeginOpF(MatrixInverse, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Matrix);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Matrix);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3684,13 +4137,14 @@ tBool DoEvaluate(iExpressionContext*)
                 mvOperands[0].GetVariable()->GetMatrix());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatIdentity()
-BeginOpF(QuatIdentity,0)
+BeginOpF(QuatIdentity, 0);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3698,32 +4152,35 @@ tBool DoEvaluate(iExpressionContext*)
   QuatIdentity((sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatBaryCentric(Q1,Q2,Q3,f,g)
-BeginOpF(QuatBaryCentric,5)
+BeginOpF(QuatBaryCentric, 5);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatBaryCentric((sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                  (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
-                  (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
-                  (const sQuatf&)mvOperands[2].GetVariable()->GetVec4(),
-                  (tVectorFloat)mvOperands[3].GetVariable()->GetFloat(),
-                  (tVectorFloat)mvOperands[4].GetVariable()->GetFloat());
+  QuatBaryCentric(
+    (sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[2].GetVariable()->GetVec4(),
+    (tVectorFloat)mvOperands[3].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[4].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatConjugate(Q)
-BeginOpF(QuatConjugate,1)
+BeginOpF(QuatConjugate, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3732,13 +4189,14 @@ tBool DoEvaluate(iExpressionContext*)
                 (const sQuatf&)mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatExp(Q)
-BeginOpF(QuatExp,1)
+BeginOpF(QuatExp, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3747,13 +4205,14 @@ tBool DoEvaluate(iExpressionContext*)
           (const sQuatf&)mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatInverse(Q)
-BeginOpF(QuatInverse,1)
+BeginOpF(QuatInverse, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3762,13 +4221,14 @@ tBool DoEvaluate(iExpressionContext*)
               (const sQuatf&)mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatLn(Q)
-BeginOpF(QuatLn,1)
+BeginOpF(QuatLn, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3777,13 +4237,14 @@ tBool DoEvaluate(iExpressionContext*)
          (const sQuatf&)mvOperands[0].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatMul(Q1,Q2)
-BeginOpF(QuatMul,2)
+BeginOpF(QuatMul, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3793,29 +4254,32 @@ tBool DoEvaluate(iExpressionContext*)
                (const sQuatf&)mvOperands[1].GetVariable()->GetVec4());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationAxis(V,angle)
-BeginOpF(QuatRotationAxis,2)
+BeginOpF(QuatRotationAxis, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatRotationAxis((sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                   mvOperands[0].GetVariable()->GetVec3(),
-                   (tVectorFloat)mvOperands[1].GetVariable()->GetFloat());
+  QuatRotationAxis(
+    (sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    mvOperands[0].GetVariable()->GetVec3(),
+    (tVectorFloat)mvOperands[1].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationX(angle)
-BeginOpF(QuatRotationX,1)
+BeginOpF(QuatRotationX, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3824,13 +4288,14 @@ tBool DoEvaluate(iExpressionContext*)
                 (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationY(angle)
-BeginOpF(QuatRotationY,1)
+BeginOpF(QuatRotationY, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3839,13 +4304,14 @@ tBool DoEvaluate(iExpressionContext*)
                 (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationZ(angle)
-BeginOpF(QuatRotationZ,1)
+BeginOpF(QuatRotationZ, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3854,121 +4320,133 @@ tBool DoEvaluate(iExpressionContext*)
                 (tVectorFloat)mvOperands[0].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationXYZ(angle)
-BeginOpF(QuatRotationXYZ,1)
+BeginOpF(QuatRotationXYZ, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   sVec3f angle = mvOperands[0].GetVariable()->GetVec3();
   QuatRotationXYZ((sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                  angle.x,angle.y,angle.z);
+                  angle.x, angle.y, angle.z);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationMatrix(M)
-BeginOpF(QuatRotationMatrix,1)
+BeginOpF(QuatRotationMatrix, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatRotationMatrix((sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                     mvOperands[0].GetVariable()->GetMatrix());
+  QuatRotationMatrix(
+    (sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    mvOperands[0].GetVariable()->GetMatrix());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationYPR(yaw,pitch,roll)
-BeginOpF(QuatRotationYPR,3)
+BeginOpF(QuatRotationYPR, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatRotationYawPitchRoll((sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                           (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
-                           (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
-                           (tVectorFloat)mvOperands[2].GetVariable()->GetFloat());
+  QuatRotationYawPitchRoll(
+    (sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    (tVectorFloat)mvOperands[0].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[1].GetVariable()->GetFloat(),
+    (tVectorFloat)mvOperands[2].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatRotationVector(vFrom,vTo)
-BeginOpF(QuatRotationVector,2)
+BeginOpF(QuatRotationVector, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatRotationVector((sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-                     mvOperands[0].GetVariable()->GetVec3(),
-                     mvOperands[1].GetVariable()->GetVec3());
+  QuatRotationVector(
+    (sQuatf&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    mvOperands[0].GetVariable()->GetVec3(),
+    mvOperands[1].GetVariable()->GetVec3());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatSlerp(Q1,Q2,t)
-BeginOpF(QuatSlerp,3)
+BeginOpF(QuatSlerp, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatSlerp((sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-            (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
-            (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
-            (tVectorFloat)mvOperands[2].GetVariable()->GetFloat(),
-            eQuatSlerp_Short);
+  QuatSlerp(
+    (sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
+    (tVectorFloat)mvOperands[2].GetVariable()->GetFloat(), eQuatSlerp_Short);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatSquad(Q1,Q2,Q3,Q4,t)
-BeginOpF(QuatSquad,5)
+BeginOpF(QuatSquad, 5);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  QuatSquad((sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
-            (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
-            (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
-            (const sQuatf&)mvOperands[2].GetVariable()->GetVec4(),
-            (const sQuatf&)mvOperands[3].GetVariable()->GetVec4(),
-            (tVectorFloat)mvOperands[4].GetVariable()->GetFloat());
+  QuatSquad(
+    (sQuat<tVectorFloat>&)static_cast<ExprVarVec4*>(mptrResult.ptr())->Value,
+    (const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[1].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[2].GetVariable()->GetVec4(),
+    (const sQuatf&)mvOperands[3].GetVariable()->GetVec4(),
+    (tVectorFloat)mvOperands[4].GetVariable()->GetFloat());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatToAxisAngle(Q)
-BeginOpF(QuatToAxisAngle,1)
+BeginOpF(QuatToAxisAngle, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec4,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec4,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   sVec3f axis;
   tF32 angle;
-  QuatToAxisAngle((const sQuatf&)mvOperands[0].GetVariable()->GetVec4(),axis,angle);
+  QuatToAxisAngle((const sQuatf&)mvOperands[0].GetVariable()->GetVec4(), axis,
+                  angle);
   sVec4f& q = static_cast<ExprVarVec4*>(mptrResult.ptr())->Value;
   q.x = axis.x;
   q.y = axis.y;
@@ -3976,13 +4454,14 @@ tBool DoEvaluate(iExpressionContext*)
   q.w = angle;
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // QuatToEuler(Q)
-BeginOpF(QuatToEuler,1)
+BeginOpF(QuatToEuler, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Vec3,eExpressionVariableFlags_Quat);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Vec3,
+                               eExpressionVariableFlags_Quat);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -3991,19 +4470,20 @@ tBool DoEvaluate(iExpressionContext*)
               static_cast<ExprVarVec3*>(mptrResult.ptr())->Value);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Inc(BaseValue, Inc per Second) function
-BeginOpWF(Inc,2)
+BeginOpWF(Inc, 2);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4012,24 +4492,25 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  mfVal += mfInc*OP_GET_FRAME_TIME;
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  mfVal += mfInc * OP_GET_FRAME_TIME;
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // IncWrap(BaseValue, Inc per Second, Max Value - attained; > test used)
-BeginOpWF(IncWrap,3)
+BeginOpWF(IncWrap, 3);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfMax = mvOperands[2].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4038,36 +4519,34 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  mfVal += mfInc*OP_GET_FRAME_TIME;
-  if (mfVal > mfMax)
-  {
-    while (1)
-    {
+  mfVal += mfInc * OP_GET_FRAME_TIME;
+  if (mfVal > mfMax) {
+    while (1) {
       mfVal -= mfMax;
-      if (mfVal < mfBase)
-      {
+      if (mfVal < mfBase) {
         mfVal += mfBase;
         break;
       }
     }
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Dec(BaseValue, Dec per Second)
-BeginOpWF(Dec,2)
+BeginOpWF(Dec, 2);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4076,24 +4555,25 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  mfVal -= mfInc*OP_GET_FRAME_TIME;
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  mfVal -= mfInc * OP_GET_FRAME_TIME;
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // DecWrap(BaseValue, Dec per Second, Min Value - attained; < test used)
-BeginOpWF(DecWrap,3)
+BeginOpWF(DecWrap, 3);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfMax = mvOperands[2].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4103,37 +4583,35 @@ tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
 
-  mfVal -= mfInc*OP_GET_FRAME_TIME;
-  if (mfVal < mfMax)
-  {
-    while (1)
-    {
+  mfVal -= mfInc * OP_GET_FRAME_TIME;
+  if (mfVal < mfMax) {
+    while (1) {
       mfVal += mfMax;
-      if (mfVal > mfBase)
-      {
+      if (mfVal > mfBase) {
         mfVal -= mfBase;
         break;
       }
     }
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Step(BaseValue, Increment, Time for increment)
-BeginOpWF(Step,3)
+BeginOpWF(Step, 3);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfTimeForIncrement = mvOperands[2].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4144,23 +4622,23 @@ tBool DoEvaluate(iExpressionContext*)
   SetupOperands();
 
   mfTime += OP_GET_FRAME_TIME;
-  if (mfTime >= mfTimeForIncrement)
-  {
-    mfVal = (mfVal-mfBase)+mfInc+mfBase;
+  if (mfTime >= mfTimeForIncrement) {
+    mfVal = (mfVal - mfBase) + mfInc + mfBase;
     mfTime = 0.0f;
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // StepWrap(BaseValue, Increment, Time for increment,
 //           Max Value - > test used; if 0 value never wrap)
-BeginOpWF(StepWrap,4)
+BeginOpWF(StepWrap, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfTimeForIncrement = mvOperands[2].GetVariable()->GetFloat();
@@ -4168,7 +4646,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4179,33 +4657,32 @@ tBool DoEvaluate(iExpressionContext*)
   SetupOperands();
 
   mfTime += OP_GET_FRAME_TIME;
-  if (mfTime >= mfTimeForIncrement)
-  {
-    mfVal = (mfVal-mfBase)+mfInc+mfBase;
+  if (mfTime >= mfTimeForIncrement) {
+    mfVal = (mfVal - mfBase) + mfInc + mfBase;
     mfTime = 0.0f;
-    if (mnMax && mfVal > mfMax)
-    {
+    if (mnMax && mfVal > mfMax) {
       mfVal = mfBase;
     }
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // StepBack(BaseValue, Decrement, Time for decrement)
-BeginOpWF(StepBack,3)
+BeginOpWF(StepBack, 3);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfTimeForIncrement = mvOperands[2].GetVariable()->GetFloat();
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4216,23 +4693,23 @@ tBool DoEvaluate(iExpressionContext*)
   SetupOperands();
 
   mfTime += OP_GET_FRAME_TIME;
-  if (mfTime >= mfTimeForIncrement)
-  {
-    mfVal = (mfVal-mfBase)-mfInc+mfBase;
+  if (mfTime >= mfTimeForIncrement) {
+    mfVal = (mfVal - mfBase) - mfInc + mfBase;
     mfTime = 0.0f;
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // StepBackWrap(BaseValue, Decrement, Time for decrement,
 //              Min Value - < test used; if 0 value never wrap)
-BeginOpWF(StepBackWrap,4)
+BeginOpWF(StepBackWrap, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfInc = mvOperands[1].GetVariable()->GetFloat();
   mfTimeForIncrement = mvOperands[2].GetVariable()->GetFloat();
@@ -4240,7 +4717,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4251,26 +4728,25 @@ tBool DoEvaluate(iExpressionContext*)
   SetupOperands();
 
   mfTime += OP_GET_FRAME_TIME;
-  if (mfTime >= mfTimeForIncrement)
-  {
-    mfVal = (mfVal-mfBase)-mfInc+mfBase;
+  if (mfTime >= mfTimeForIncrement) {
+    mfVal = (mfVal - mfBase) - mfInc + mfBase;
     mfTime = 0.0f;
-    if (mfVal < mfMax)
-    {
+    if (mfVal < mfMax) {
       mfVal = mfBase;
     }
   }
 
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // SinWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(SinWave,4)
+BeginOpWF(SinWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4279,7 +4755,7 @@ void SetupOperands()
 
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4288,17 +4764,18 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  DoWave(fY = ni::Sin(fX*ni2Pi));
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoWave(fY = ni::Sin(fX * ni2Pi));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // CosWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(CosWave,4)
+BeginOpWF(CosWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4306,7 +4783,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
 
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
@@ -4317,17 +4794,18 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  DoWave(fY = ni::Cos(fX*ni2Pi));
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoWave(fY = ni::Cos(fX * ni2Pi));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // TriangleWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(TriangleWave,4)
+BeginOpWF(TriangleWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4335,7 +4813,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4344,17 +4822,18 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  DoWave(fY = (fX < .5)?(4.0*fX-1.0):(-4.0*fX+3.0));
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoWave(fY = (fX < .5) ? (4.0 * fX - 1.0) : (-4.0 * fX + 3.0));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // SquareWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(SquareWave,4)
+BeginOpWF(SquareWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4362,7 +4841,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4371,17 +4850,18 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  DoWave(fY = (fX < .5)?(1.0):(-1.0));
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoWave(fY = (fX < .5) ? (1.0) : (-1.0));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // SawWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(SawWave,4)
+BeginOpWF(SawWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4389,7 +4869,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4399,16 +4879,17 @@ tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
   DoWave(fY = fX);
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // InvSawWave(Base,Amplitude,Phase,Frequence)
-BeginOpWF(InvSawWave,4)
+BeginOpWF(InvSawWave, 4);
 void SetupOperands()
 {
-  if (mbConstantOperands) return;
+  if (mbConstantOperands)
+    return;
   mfBase = mvOperands[0].GetVariable()->GetFloat();
   mfAmplitude = mvOperands[1].GetVariable()->GetFloat();
   mfPhase = mvOperands[2].GetVariable()->GetFloat();
@@ -4416,7 +4897,7 @@ void SetupOperands()
 }
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,GetCommonOperandsType());
+  mptrResult = _CreateVariable(NULL, GetCommonOperandsType());
   SetupOperands();
   mbConstantOperands = AreOperandsConstant();
   mfVal = mfBase;
@@ -4425,64 +4906,61 @@ tBool SetupEvaluation(iExpressionContext*)
 tBool DoEvaluate(iExpressionContext*)
 {
   SetupOperands();
-  DoWave(fY = (1.0)-fX);
-  DoSwitch(_FloatAssign(DEST,mfVal));
+  DoWave(fY = (1.0) - fX);
+  DoSwitch(_FloatAssign(DEST, mfVal));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! Format a string.
-BeginOpF(Format,eInvalidHandle)
+BeginOpF(Format, eInvalidHandle);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   switch (mvOperands.size()) {
-    case 0:
-      // empty string
-      break;
-    case 1:
-      // the string itself
-      mptrResult->SetString(mvOperands[0].GetVariable()->GetString());
-      break;
-    default: {
-      cString o;
-      const tU32 numFormatParams = (tU32)mvOperands.size()-1;
-      astl::vector<Var> args;
-      args.resize(numFormatParams);
-      astl::vector<const Var*> argsPtr;
-      argsPtr.resize(numFormatParams);
-      niLoop(i,numFormatParams) {
-        args[i] = _ToVar(mvOperands[i+1].GetVariable());
-        argsPtr[i] = &args[i];
-      }
-      StringCatFormatEx(
-          o,NULL,mvOperands[0].GetVariable()->GetString().Chars(),
-          argsPtr.data(),(tU32)argsPtr.size());
-      mptrResult->SetString(o);
+  case 0:
+    // empty string
+    break;
+  case 1:
+    // the string itself
+    mptrResult->SetString(mvOperands[0].GetVariable()->GetString());
+    break;
+  default: {
+    cString o;
+    const tU32 numFormatParams = (tU32)mvOperands.size() - 1;
+    astl::vector<Var> args;
+    args.resize(numFormatParams);
+    astl::vector<const Var*> argsPtr;
+    argsPtr.resize(numFormatParams);
+    niLoop (i, numFormatParams) {
+      args[i] = _ToVar(mvOperands[i + 1].GetVariable());
+      argsPtr[i] = &args[i];
     }
+    StringCatFormatEx(o, NULL, mvOperands[0].GetVariable()->GetString().Chars(),
+                      argsPtr.data(), (tU32)argsPtr.size());
+    mptrResult->SetString(o);
+  }
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! FormatCurrentTime(TIMEFORMAT: string) the current time.
-BeginOpVF(FormatCurrentTime,eInvalidHandle)
+BeginOpVF(FormatCurrentTime, eInvalidHandle);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   cString currentTime;
   switch (mvOperands.size()) {
-  case 0:
-    currentTime = ni::GetLang()->GetCurrentTime()->Format(NULL);
-    break;
+  case 0: currentTime = ni::GetLang()->GetCurrentTime()->Format(NULL); break;
   default:
     currentTime = ni::GetLang()->GetCurrentTime()->Format(
       mvOperands[0].GetVariable()->GetString().Chars());
@@ -4492,36 +4970,37 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(currentTime);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrLen(aText) -> Int
-BeginOpF(StrLen,1)
+BeginOpF(StrLen, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
-  mptrResult->SetFloat(
-      mvOperands[0].GetVariable()->GetString().size());
+  mptrResult->SetFloat(mvOperands[0].GetVariable()->GetString().size());
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrSlice(aText, aStartIndex, aEndIndex: optional) -> String
-BeginOpF(StrSlice,eInvalidHandle)
+BeginOpF(StrSlice, eInvalidHandle);
 tBool SetupEvaluation(iExpressionContext*)
 {
   if (mvOperands.size() < 2) {
-    EXPRESSION_TRACE("StrSlice(aText, aStartIndex, aEndIndex: optional) -> String: Not enough parameters.");
+    EXPRESSION_TRACE(
+      "StrSlice(aText, aStartIndex, aEndIndex: optional) -> String: Not enough parameters.");
     return eFalse;
   }
   else if (mvOperands.size() > 3) {
-    EXPRESSION_TRACE("StrSlice(aText, aStartIndex, aEndIndex: optional) -> String: Too many parameters.");
+    EXPRESSION_TRACE(
+      "StrSlice(aText, aStartIndex, aEndIndex: optional) -> String: Too many parameters.");
     return eFalse;
   }
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4529,17 +5008,19 @@ tBool DoEvaluate(iExpressionContext*)
   cString text = mvOperands[0].GetVariable()->GetString();
   const tInt slen = text.size();
   tInt sidx = (tInt)mvOperands[1].GetVariable()->GetFloat();
-  tInt eidx = (mvOperands.size() >= 3) ? (tInt)mvOperands[2].GetVariable()->GetFloat() : slen;
-  mptrResult->SetString(text.slice(sidx,eidx));
+  tInt eidx = (mvOperands.size() >= 3)
+                ? (tInt)mvOperands[2].GetVariable()->GetFloat()
+                : slen;
+  mptrResult->SetString(text.slice(sidx, eidx));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrMid(aText, aStartIndex, aCount) -> String
-BeginOpF(StrMid,3)
+BeginOpF(StrMid, 3);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4547,16 +5028,16 @@ tBool DoEvaluate(iExpressionContext*)
   cString text = mvOperands[0].GetVariable()->GetString();
   tU32 sidx = (tU32)mvOperands[1].GetVariable()->GetFloat();
   tU32 count = (tU32)mvOperands[2].GetVariable()->GetFloat();
-  mptrResult->SetString(text.Mid(sidx,count));
+  mptrResult->SetString(text.Mid(sidx, count));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrLeft(aText, aCount) -> String
-BeginOpF(StrLeft,2)
+BeginOpF(StrLeft, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4566,13 +5047,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.Left(count));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrRight(aText, aCount) -> String
-BeginOpF(StrRight,2)
+BeginOpF(StrRight, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4582,13 +5063,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.Right(count));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrBefore(aText, aSub) -> String
-BeginOpF(StrBefore,2)
+BeginOpF(StrBefore, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4598,13 +5079,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.Before(sub));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrRBefore(aText, aSub) -> String
-BeginOpF(StrRBefore,2)
+BeginOpF(StrRBefore, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4614,13 +5095,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.RBefore(sub));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrAfter(aText, aSub) -> String
-BeginOpF(StrAfter,2)
+BeginOpF(StrAfter, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4630,13 +5111,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.After(sub));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrRAfter(aText, aSub) -> String
-BeginOpF(StrRAfter,2)
+BeginOpF(StrRAfter, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4646,13 +5127,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text.RAfter(sub));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrToLower(aText) -> String
-BeginOpF(StrToLower,1)
+BeginOpF(StrToLower, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4662,14 +5143,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text);
   return eTrue;
 }
-EndOp()
-
+EndOp();
 
 //! StrToUpper(aText) -> String
-BeginOpF(StrToUpper,1)
+BeginOpF(StrToUpper, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4679,13 +5159,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrTrim(aText) -> String
-BeginOpF(StrTrim,1)
+BeginOpF(StrTrim, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4695,13 +5175,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrNormalize(aText) -> String
-BeginOpF(StrNormalize,1)
+BeginOpF(StrNormalize, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4711,13 +5191,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetString(text);
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrFind(aText, aSub) -> Int
-BeginOpF(StrFind,2)
+BeginOpF(StrFind, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4727,13 +5207,13 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetFloat(text.find(tofind));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! StrRFind(aText, aSub) -> Int
-BeginOpF(StrRFind,eInvalidHandle)
+BeginOpF(StrRFind, eInvalidHandle);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_Float);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_Float);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
@@ -4743,63 +5223,62 @@ tBool DoEvaluate(iExpressionContext*)
   mptrResult->SetFloat(text.rfind(tofind));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! DigestHex(aText, aType) -> String
-BeginOpF(DigestHex,2)
+BeginOpF(DigestHex, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   cString text = mvOperands[0].GetVariable()->GetString();
   cString type = mvOperands[1].GetVariable()->GetString();
-  mptrResult->SetString(
-      ni::GetCrypto()->Digest(text.Chars(), type.Chars(), eRawToStringEncoding_Hex));
+  mptrResult->SetString(ni::GetCrypto()->Digest(text.Chars(), type.Chars(),
+                                                eRawToStringEncoding_Hex));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! KDFGenSaltBlowfish(aRounds) -> String
-BeginOpF(KDFGenSaltBlowfish,1)
+BeginOpF(KDFGenSaltBlowfish, 1);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   tInt rounds = (tInt)mvOperands[0].GetVariable()->GetFloat();
-  mptrResult->SetString(
-      ni::GetCrypto()->KDFGenSaltBlowfish(NULL,rounds));
+  mptrResult->SetString(ni::GetCrypto()->KDFGenSaltBlowfish(NULL, rounds));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 //! KDFCrypt(aKey, aSalt) -> String
-BeginOpF(KDFCrypt,2)
+BeginOpF(KDFCrypt, 2);
 tBool SetupEvaluation(iExpressionContext*)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext*)
 {
   cString key = mvOperands[0].GetVariable()->GetString();
   cString salt = mvOperands[1].GetVariable()->GetString();
-  mptrResult->SetString(
-      ni::GetCrypto()->KDFCrypt(key.Chars(), salt.Chars()));
+  mptrResult->SetString(ni::GetCrypto()->KDFCrypt(key.Chars(), salt.Chars()));
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Get function
-BeginOpLF(Get,1)
+BeginOpLF(Get, 1);
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
-  if (mvOperands[0].GetVariable()->GetType() != eExpressionVariableType_String) {
+  if (mvOperands[0].GetVariable()->GetType() != eExpressionVariableType_String)
+  {
     EXPRESSION_TRACE("Get(): first operand is not a string.");
     return eFalse;
   }
@@ -4815,16 +5294,18 @@ tBool DoEvaluate(iExpressionContext*)
 {
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Set function
-BeginOpLF(Set,eInvalidHandle)
+BeginOpLF(Set, eInvalidHandle);
 Ptr<iExpressionContext> mptrLocalContext;
-astl::vector<Ptr<iExpressionVariable> > mvLocalVariables;
+astl::vector<Ptr<iExpressionVariable>> mvLocalVariables;
 
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
-  if (!mptrLocalContext.IsOK() || (mptrLocalContext->GetParentContext() != apContext)) {
+  if (!mptrLocalContext.IsOK() ||
+      (mptrLocalContext->GetParentContext() != apContext))
+  {
     // niDebugFmt(("... Creating local Set() context: was %p, parent was %p, new parent is %p", (tIntPtr)mptrLocalContext.ptr(), (tIntPtr)(mptrLocalContext.IsOK() ? mptrLocalContext->GetParentContext() : 0), (tIntPtr)apContext));
     mptrLocalContext = apContext->CreateContext();
     if (!mptrLocalContext.IsOK()) {
@@ -4840,7 +5321,8 @@ tBool SetupEvaluation(iExpressionContext* apContext)
     return eFalse;
   }
   if ((numOperands % 2) != 1) {
-    EXPRESSION_TRACE("Set(): must have a last operand which is the returned valued.");
+    EXPRESSION_TRACE(
+      "Set(): must have a last operand which is the returned valued.");
     return eFalse;
   }
 
@@ -4848,13 +5330,14 @@ tBool SetupEvaluation(iExpressionContext* apContext)
   if (!mvLocalVariables.empty()) {
     // niDebugFmt(("... Partial eval, refetching data of variables"));
     const tSize numLocals = mvLocalVariables.size();
-    niLoop(li,numLocals) {
+    niLoop (li, numLocals) {
       iExpressionVariable* val = mvLocalVariables[li];
-      const tU32 opValIndex = (li*2)+1;
+      const tU32 opValIndex = (li * 2) + 1;
       Op::sOperand& opVal = mvOperands[opValIndex];
       if (!opVal.Eval(mptrLocalContext)) {
-        EXPRESSION_TRACE(niFmt("Set(): operation, can't evaluate value operand %d (%s).",
-                                opValIndex, val->GetName()));
+        EXPRESSION_TRACE(
+          niFmt("Set(): operation, can't evaluate value operand %d (%s).",
+                opValIndex, val->GetName()));
         return eFalse;
       }
       val->Copy(opVal.GetVariable());
@@ -4862,50 +5345,55 @@ tBool SetupEvaluation(iExpressionContext* apContext)
     i = numLocals * 2;
   }
   else {
-    const tU32 numDeclsTimes2 = (numOperands - (numOperands%2));
-    mvLocalVariables.resize(numDeclsTimes2/2);
+    const tU32 numDeclsTimes2 = (numOperands - (numOperands % 2));
+    mvLocalVariables.resize(numDeclsTimes2 / 2);
     tU32 i = 0;
-    for ( ; i < numDeclsTimes2; i += 2) {
+    for (; i < numDeclsTimes2; i += 2) {
       Op::sOperand& opKey = mvOperands[i];
       if (!opKey.Eval(mptrLocalContext)) {
-        EXPRESSION_TRACE(niFmt("Set(): operation, can't evaluate key operand '%s' (%d).",
-                               opKey.GetName(), i));
+        EXPRESSION_TRACE(
+          niFmt("Set(): operation, can't evaluate key operand '%s' (%d).",
+                opKey.GetName(), i));
         return eFalse;
       }
       if (opKey.GetVariable()->GetType() != eExpressionVariableType_String) {
-        EXPRESSION_TRACE(niFmt("Set(): operation, key operand '%s' (%d) is not a string.",
-                               opKey.GetName(), i));
+        EXPRESSION_TRACE(
+          niFmt("Set(): operation, key operand '%s' (%d) is not a string.",
+                opKey.GetName(), i));
         return eFalse;
       }
       tHStringPtr key = _H(opKey.GetVariable()->GetString());
       if (HStringIsEmpty(key)) {
-        EXPRESSION_TRACE(niFmt("Set(): variable name resolves to an empty string '%s' (%d).",
-                               key, i+1));
+        EXPRESSION_TRACE(
+          niFmt("Set(): variable name resolves to an empty string '%s' (%d).",
+                key, i + 1));
         return eFalse;
       }
 
-      Op::sOperand& opVal = mvOperands[i+1];
+      Op::sOperand& opVal = mvOperands[i + 1];
       if (!opVal.Eval(mptrLocalContext)) {
-        EXPRESSION_TRACE(niFmt("Set(): operation, can't evaluate value operand '%s' (%d).",
-                               key, i+1));
+        EXPRESSION_TRACE(
+          niFmt("Set(): operation, can't evaluate value operand '%s' (%d).",
+                key, i + 1));
         return eFalse;
       }
 
       Ptr<iExpressionVariable> val = opVal.GetVariable()->Clone();
       val->SetName(key);
       if (!mptrLocalContext->AddVariable(val)) {
-        EXPRESSION_TRACE(niFmt("Set(): operation, can't add variable '%s' (%d).",
-                               key, i));
+        EXPRESSION_TRACE(
+          niFmt("Set(): operation, can't add variable '%s' (%d).", key, i));
         return eFalse;
       }
-      mvLocalVariables[i/2] = val;
+      mvLocalVariables[i / 2] = val;
     }
   }
 
-  for ( ; i < numOperands; ++i) {
+  for (; i < numOperands; ++i) {
     Op::sOperand& op = mvOperands[i];
     if (!op.Eval(mptrLocalContext)) {
-      EXPRESSION_TRACE(niFmt("Set(): operation, can't evaluate last operand %d.", i));
+      EXPRESSION_TRACE(
+        niFmt("Set(): operation, can't evaluate last operand %d.", i));
       return eFalse;
     }
   }
@@ -4918,10 +5406,10 @@ tBool DoEvaluate(iExpressionContext*)
 {
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // If function
-BeginOpLF(If,eInvalidHandle)
+BeginOpLF(If, eInvalidHandle);
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
   const tSize numOperands = mvOperands.size();
@@ -4930,7 +5418,8 @@ tBool SetupEvaluation(iExpressionContext* apContext)
     return eFalse;
   }
   if ((numOperands % 2) != 1) {
-    EXPRESSION_TRACE("If(): must have a last operand which is the value returned if not test pass.");
+    EXPRESSION_TRACE(
+      "If(): must have a last operand which is the value returned if not test pass.");
     return eFalse;
   }
   return eTrue;
@@ -4940,23 +5429,25 @@ tBool DoEvaluate(iExpressionContext* apContext)
   const tSize numOperands = mvOperands.size();
 
   Op::sOperand* opVal = &mvOperands.back();
-  const tSize numTestsTimes2 = numOperands-1;
+  const tSize numTestsTimes2 = numOperands - 1;
   tSize i = 0;
-  for ( ; i < numTestsTimes2; i += 2) {
+  for (; i < numTestsTimes2; i += 2) {
     Op::sOperand& opTest = mvOperands[i];
     if (!opTest.Eval(apContext)) {
-      EXPRESSION_TRACE(niFmt("If(): operation, can't evaluate test operand '%s' (%d).",
-                             opTest.GetName(), i));
+      EXPRESSION_TRACE(
+        niFmt("If(): operation, can't evaluate test operand '%s' (%d).",
+              opTest.GetName(), i));
       return eFalse;
     }
     if (opTest.ToBool()) {
-      opVal = &mvOperands[i+1];
+      opVal = &mvOperands[i + 1];
       break;
     }
   }
 
   if (!opVal->Eval(apContext)) {
-    EXPRESSION_TRACE(niFmt("If(): operation, can't evaluate value operand %d.", i));
+    EXPRESSION_TRACE(
+      niFmt("If(): operation, can't evaluate value operand %d.", i));
     return eFalse;
   }
   if (!mptrResult.IsOK()) {
@@ -4967,13 +5458,13 @@ tBool DoEvaluate(iExpressionContext* apContext)
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 // Eval function
-BeginOpF(Eval,1)
+BeginOpF(Eval, 1);
 tBool SetupEvaluation(iExpressionContext* apContext)
 {
-  mptrResult = _CreateVariable(NULL,eExpressionVariableType_String);
+  mptrResult = _CreateVariable(NULL, eExpressionVariableType_String);
   return eTrue;
 }
 tBool DoEvaluate(iExpressionContext* apContext)
@@ -4985,7 +5476,7 @@ tBool DoEvaluate(iExpressionContext* apContext)
   }
   return eTrue;
 }
-EndOp()
+EndOp();
 
 #undef DoSwitch
 #undef DoSwitch1
@@ -5001,7 +5492,8 @@ EndOp()
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////
-Evaluator::Evaluator(Evaluator* apParent) : mptrParent(apParent)
+Evaluator::Evaluator(Evaluator* apParent)
+    : mptrParent(apParent)
 {
   mpDefaultEnum = NULL;
   mbGlobalEnumSearch = eFalse;
@@ -5014,34 +5506,38 @@ Evaluator::Evaluator(Evaluator* apParent) : mptrParent(apParent)
 }
 
 ///////////////////////////////////////////////
-Evaluator::~Evaluator() {
+Evaluator::~Evaluator()
+{
 }
 
 ///////////////////////////////////////////////
-tBool Evaluator::_RegisterReservedVariables() {
-  typedef ni::Var (__cdecl *tpfnGetVariable)();
+tBool Evaluator::_RegisterReservedVariables()
+{
+  typedef ni::Var(__cdecl * tpfnGetVariable)();
 
   struct _Local {
-    static ni::Var time() {
+    static ni::Var time()
+    {
       return ni::TimerInSeconds();
     }
-    static ni::Var frametime() {
+    static ni::Var frametime()
+    {
       return OP_GET_FRAME_TIME;
     }
   };
   struct IotaRunnable : public ImplRC<iRunnable> {
     tU32 _iota = 0;
-    virtual Var __stdcall Run() {
+    virtual Var __stdcall Run()
+    {
       return (tF64)_iota++;
     }
   };
 
   {
-    Ptr<iExpressionVariable> v = CreateVariableFromRunnable(
-      "time",
-      eExpressionVariableType_Float,
-      ni::Runnable<tpfnGetVariable>(_Local::time),
-      eExpressionVariableFlags_Reserved);
+    Ptr<iExpressionVariable> v =
+      CreateVariableFromRunnable("time", eExpressionVariableType_Float,
+                                 ni::Runnable<tpfnGetVariable>(_Local::time),
+                                 eExpressionVariableFlags_Reserved);
     if (!AddVariable(v)) {
       niError(_A("Can't add 'time' reserved variable."));
       return eFalse;
@@ -5050,8 +5546,7 @@ tBool Evaluator::_RegisterReservedVariables() {
 
   {
     Ptr<iExpressionVariable> v = CreateVariableFromRunnable(
-      "frametime",
-      eExpressionVariableType_Float,
+      "frametime", eExpressionVariableType_Float,
       ni::Runnable<tpfnGetVariable>(_Local::frametime),
       eExpressionVariableFlags_Reserved);
     if (!AddVariable(v)) {
@@ -5062,9 +5557,7 @@ tBool Evaluator::_RegisterReservedVariables() {
 
   {
     Ptr<iExpressionVariable> v = CreateVariableFromRunnable(
-      "iota",
-      eExpressionVariableType_Float,
-      niNew IotaRunnable(),
+      "iota", eExpressionVariableType_Float, niNew IotaRunnable(),
       eExpressionVariableFlags_Reserved);
     if (!AddVariable(v)) {
       niError(_A("Can't add 'iota' reserved variable."));
@@ -5073,7 +5566,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("pi",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "pi", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'pi' reserved variable."));
       return eFalse;
@@ -5082,7 +5578,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("true",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "true", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'true' reserved variable."));
       return eFalse;
@@ -5091,7 +5590,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("false",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "false", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'false' reserved variable."));
       return eFalse;
@@ -5100,7 +5602,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("yes",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "yes", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'yes' reserved variable."));
       return eFalse;
@@ -5109,7 +5614,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("no",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "no", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'no' reserved variable."));
       return eFalse;
@@ -5118,7 +5626,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("pi2",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "pi2", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'pi2' reserved variable."));
       return eFalse;
@@ -5127,7 +5638,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("pi4",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "pi4", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'pi4' reserved variable."));
       return eFalse;
@@ -5136,7 +5650,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("max_float",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "max_float", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'max_float' reserved variable."));
       return eFalse;
@@ -5145,7 +5662,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("min_float",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "min_float", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'min_float' reserved variable."));
       return eFalse;
@@ -5154,7 +5674,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("invalid",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "invalid", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'invalid' reserved variable."));
       return eFalse;
@@ -5163,7 +5686,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("particles_epsilon",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "particles_epsilon", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'particles_epsilon' reserved variable."));
       return eFalse;
@@ -5172,7 +5698,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("particles_max",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "particles_max", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'particles_max' reserved variable."));
       return eFalse;
@@ -5181,7 +5710,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon' reserved variable."));
       return eFalse;
@@ -5190,7 +5722,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon0",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon0", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon0' reserved variable."));
       return eFalse;
@@ -5199,7 +5734,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon1",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon1", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon1' reserved variable."));
       return eFalse;
@@ -5208,7 +5746,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon2",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon2", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon2' reserved variable."));
       return eFalse;
@@ -5217,8 +5758,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable>
-        v = CreateVariable("epsilon3",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon3", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon3' reserved variable."));
       return eFalse;
@@ -5227,7 +5770,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon4",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon4", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon4' reserved variable."));
       return eFalse;
@@ -5236,7 +5782,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon5",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon5", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon5' reserved variable."));
       return eFalse;
@@ -5245,7 +5794,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon6",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon6", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon6' reserved variable."));
       return eFalse;
@@ -5254,7 +5806,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon7",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon7", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon7' reserved variable."));
       return eFalse;
@@ -5263,7 +5818,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon8",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon8", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon8' reserved variable."));
       return eFalse;
@@ -5272,7 +5830,10 @@ tBool Evaluator::_RegisterReservedVariables() {
   }
 
   {
-    Ptr<iExpressionVariable> v = CreateVariable("epsilon9",eExpressionVariableType_Float,eExpressionVariableFlags(eExpressionVariableFlags_Reserved|eExpressionVariableFlags_Constant));
+    Ptr<iExpressionVariable> v = CreateVariable(
+      "epsilon9", eExpressionVariableType_Float,
+      eExpressionVariableFlags(eExpressionVariableFlags_Reserved |
+                               eExpressionVariableFlags_Constant));
     if (!AddVariable(v)) {
       niError(_A("Can't add 'epsilon9' reserved variable."));
       return eFalse;
@@ -5487,68 +6048,75 @@ tBool Evaluator::AddOperation(Op* apOperation)
 ///////////////////////////////////////////////
 tBool Evaluator::AddEnumDef(const sEnumDef* apEnumDef)
 {
-  if (!apEnumDef) return eFalse;
-  astl::upsert(mmapEnums,apEnumDef->maszName,apEnumDef);
+  if (!apEnumDef)
+    return eFalse;
+  astl::upsert(mmapEnums, apEnumDef->maszName, apEnumDef);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-iExpressionVariable* Evaluator::CreateVariable(const achar* aaszName, eExpressionVariableType aType, tExpressionVariableFlags aFlags)
+iExpressionVariable* Evaluator::CreateVariable(const achar* aaszName,
+                                               eExpressionVariableType aType,
+                                               tExpressionVariableFlags aFlags)
 {
-  return _CreateVariable(aaszName,aType,aFlags);
+  return _CreateVariable(aaszName, aType, aFlags);
 }
 
 ///////////////////////////////////////////////
-iExpressionVariable* Evaluator::CreateVariableFromRunnable(const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable, tExpressionVariableFlags aFlags)
+iExpressionVariable* Evaluator::CreateVariableFromRunnable(
+  const achar* aaszName, eExpressionVariableType aType, iRunnable* apRunnable,
+  tExpressionVariableFlags aFlags)
 {
-  niCheckIsOK(apRunnable,NULL);
-  Ptr<iExpressionVariable> ptrVar = niNew ExprVarFromRunnable(_H(aaszName),aType,apRunnable);
+  niCheckIsOK(apRunnable, NULL);
+  Ptr<iExpressionVariable> ptrVar =
+    niNew ExprVarFromRunnable(_H(aaszName), aType, apRunnable);
   ((ExprVar*)(ptrVar.ptr()))->Flags = aFlags;
   return ptrVar.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
-iExpressionVariable* Evaluator::CreateVariableFromVar(const achar* aaszName, const Var& aVar, tExpressionVariableFlags aFlags)
+iExpressionVariable* Evaluator::CreateVariableFromVar(
+  const achar* aaszName, const Var& aVar, tExpressionVariableFlags aFlags)
 {
   eExpressionVariableType type;
   const tType varType = aVar.GetType();
   switch (niType(varType)) {
-    case eType_Vec2i:
-    case eType_Vec2f: {
-      type = eExpressionVariableType_Vec2;
-      break;
+  case eType_Vec2i:
+  case eType_Vec2f: {
+    type = eExpressionVariableType_Vec2;
+    break;
+  }
+  case eType_Vec3i:
+  case eType_Vec3f: {
+    type = eExpressionVariableType_Vec3;
+    break;
+  }
+  case eType_Vec4i:
+  case eType_Vec4f: {
+    type = eExpressionVariableType_Vec4;
+    break;
+  }
+  case eType_Matrixf: {
+    type = eExpressionVariableType_Matrix;
+    break;
+  }
+  default:
+    if (VarIsIntType(varType) || VarIsFloatType(varType)) {
+      type = eExpressionVariableType_Float;
     }
-    case eType_Vec3i:
-    case eType_Vec3f: {
-      type = eExpressionVariableType_Vec3;
-      break;
+    else if (VarIsString(aVar)) {
+      type = eExpressionVariableType_String;
     }
-    case eType_Vec4i:
-    case eType_Vec4f: {
-      type = eExpressionVariableType_Vec4;
-      break;
+    else {
+      EXPRESSION_TRACE(
+        niFmt("Invalid variant type: %s.", GetTypeString(varType)));
+      return NULL;
     }
-    case eType_Matrixf: {
-      type = eExpressionVariableType_Matrix;
-      break;
-    }
-    default:
-      if (VarIsIntType(varType) ||
-          VarIsFloatType(varType)) {
-        type = eExpressionVariableType_Float;
-      }
-      else if (VarIsString(aVar)) {
-        type = eExpressionVariableType_String;
-      }
-      else {
-        EXPRESSION_TRACE(niFmt("Invalid variant type: %s.", GetTypeString(varType)));
-        return NULL;
-      }
-      break;
+    break;
   }
 
-  Ptr<ExprVar> ptrVar = _CreateVariable(aaszName,type,aFlags);
-  if (!_FromVar(ptrVar,aVar)) {
+  Ptr<ExprVar> ptrVar = _CreateVariable(aaszName, type, aFlags);
+  if (!_FromVar(ptrVar, aVar)) {
     EXPRESSION_TRACE(niFmt("Can't convert variant value to variable."));
     return NULL;
   }
@@ -5557,9 +6125,10 @@ iExpressionVariable* Evaluator::CreateVariableFromVar(const achar* aaszName, con
 }
 
 ///////////////////////////////////////////////
-iExpressionVariable* Evaluator::CreateVariableFromExpr(const achar* aaszName, const achar* aaszExpr, tExpressionVariableFlags aFlags)
+iExpressionVariable* Evaluator::CreateVariableFromExpr(
+  const achar* aaszName, const achar* aaszExpr, tExpressionVariableFlags aFlags)
 {
-  Ptr<Op> ptrOp =  ParseExpr(aaszExpr);
+  Ptr<Op> ptrOp = ParseExpr(aaszExpr);
   if (!niIsOK(ptrOp)) {
     niError(niFmt(_A("Can't parse '%s'."), aaszExpr));
     return NULL;
@@ -5587,10 +6156,9 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
 
   const cString* nextTok = tokens.GetNextToken();
   if (!nextTok)
-	  return eFalse;
+    return eFalse;
 
-  while (1)
-  {
+  while (1) {
     if (!nextTok)
       break;
 
@@ -5600,22 +6168,19 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
     sMathExprToken token;
     // niDebugFmt(("TOK: %s",tok));
 
-    if (tok == _A("(") || tok == _A("["))
-    {
+    if (tok == _A("(") || tok == _A("[")) {
       token.Type = eMathExprTokenType_OpenGroup;
       token.nGroupDepth = nGroupDepth++;
     }
-    else if (tok == _A(")") || tok == _A("]"))
-    {
+    else if (tok == _A(")") || tok == _A("]")) {
       token.Type = eMathExprTokenType_CloseGroup;
       token.nGroupDepth = --nGroupDepth;
     }
-    else if (tok == _A(","))
-    {
+    else if (tok == _A(",")) {
       token.Type = eMathExprTokenType_Separator;
     }
     else if (_IsStringDelimiterChar(tok[0])) {
-      char toTrim[2] = {tok[0],0};
+      char toTrim[2] = { tok[0], 0 };
       token.Type = eMathExprTokenType_String;
       token.strToken = tok;
       token.strToken.TrimEx(toTrim);
@@ -5623,41 +6188,41 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
     else if (tok.contains("://")) {
       token.Type = eMathExprTokenType_URL;
     }
-    else if (tok == _A("+") || tok == _A("-") || tok == _A("*") || tok == _A("/") ||
+    else if (tok == _A("+") || tok == _A("-") || tok == _A("*") ||
+             tok == _A("/") ||
 #ifdef USE_MODULO_OP
              tok == _A("%") ||
 #endif
              tok == _A("!") || tok == _A("|") || tok == _A("^") ||
-             tok == _A("&") || tok == _A("~") ||
-             tok == _A("&&") || tok == _A("||") ||
-             tok == _A("!") || tok == _A("!!") ||
-             tok == _A("==") || tok == _A("!=") ||
-             tok == _A(">") || tok == _A(">=") ||
-             tok == _A("<") || tok == _A("<="))
+             tok == _A("&") || tok == _A("~") || tok == _A("&&") ||
+             tok == _A("||") || tok == _A("!") || tok == _A("!!") ||
+             tok == _A("==") || tok == _A("!=") || tok == _A(">") ||
+             tok == _A(">=") || tok == _A("<") || tok == _A("<="))
     {
-      if (avOut.empty() ||
-          (avOut.back().Type != eMathExprTokenType_Unknown &&
-           avOut.back().Type != eMathExprTokenType_Float &&
-           avOut.back().Type != eMathExprTokenType_String &&
-           avOut.back().Type != eMathExprTokenType_URL &&
-           avOut.back().Type != eMathExprTokenType_CloseGroup))
+      if (avOut.empty() || (avOut.back().Type != eMathExprTokenType_Unknown &&
+                            avOut.back().Type != eMathExprTokenType_Float &&
+                            avOut.back().Type != eMathExprTokenType_String &&
+                            avOut.back().Type != eMathExprTokenType_URL &&
+                            avOut.back().Type != eMathExprTokenType_CloseGroup))
       {
         token.Type = eMathExprTokenType_UnaryOperator;
         if (!GetUnaryOperator(tok.Chars())) {
-          niError(niFmt(_A("Can't find operation for modifier '%s'."), tok.Chars()));
+          niError(
+            niFmt(_A("Can't find operation for modifier '%s'."), tok.Chars()));
           return eFalse;
         }
       }
-      else
-      {
+      else {
         token.Type = eMathExprTokenType_Operator;
         if (!GetOperator(tok.Chars())) {
-          niError(niFmt(_A("Can't find operation for operator '%s'."), tok.Chars()));
+          niError(
+            niFmt(_A("Can't find operation for operator '%s'."), tok.Chars()));
           return eFalse;
         }
       }
     }
-    else if (tok[0] == _A('.') || ReadNumber(tok.Chars(),varNum) > eNumberType_Error)
+    else if (tok[0] == _A('.') ||
+             ReadNumber(tok.Chars(), varNum) > eNumberType_Error)
     {
       if (tok[0] == _A('.')) {
         if (!nextTok) {
@@ -5674,8 +6239,8 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
         }
       }
       if (strNum.IsNotEmpty()) {
-        if (ReadNumber(strNum.Chars(),varNum) <= eNumberType_Error) {
-          niError(niFmt(_A("Can't read number '%s'."),strNum.Chars()));
+        if (ReadNumber(strNum.Chars(), varNum) <= eNumberType_Error) {
+          niError(niFmt(_A("Can't read number '%s'."), strNum.Chars()));
           return eFalse;
         }
         strNum.Clear(64);
@@ -5701,24 +6266,28 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
       }
 #endif
     }
-    else
-    {
+    else {
       if (nextTok && (*nextTok)[0] == _A('(') && GetFunction(tok.Chars())) {
         token.Type = eMathExprTokenType_Function;
       }
       else {
         const sEnumDef* pEnumDef =
-            (tok[0] == 'e' && (tok[1] >= 'A' && tok[1] <= 'Z')) ?
-            GetEnumDef(tok.Chars()) : NULL;
+          (tok[0] == 'e' && (tok[1] >= 'A' && tok[1] <= 'Z'))
+            ? GetEnumDef(tok.Chars())
+            : NULL;
         if (pEnumDef) {
           if (!nextTok || *nextTok != _A(".")) {
-            niError(niFmt(_A("Dot ('.') expected after enumeration '%s'."),pEnumDef->maszName));
+            niError(niFmt(_A("Dot ('.') expected after enumeration '%s'."),
+                          pEnumDef->maszName));
             return eFalse;
           }
 
           nextTok = tokens.GetNextToken();
           if (!nextTok) {
-            niError(niFmt(_A("Unexpected end of expression, enum value key expected to index enumeration '%s'."),pEnumDef->maszName));
+            niError(niFmt(
+              _A(
+                "Unexpected end of expression, enum value key expected to index enumeration '%s'."),
+              pEnumDef->maszName));
             return eFalse;
           }
 
@@ -5726,14 +6295,14 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
 
           tU32 i, nValue = 0;
           for (i = 0; i < pEnumDef->mnNumValues; ++i) {
-            if (ni::StrEq(nextTok->Chars(),pEnumDef->mpValues[i].maszName)) {
+            if (ni::StrEq(nextTok->Chars(), pEnumDef->mpValues[i].maszName)) {
               nValue = pEnumDef->mpValues[i].mnValue;
               break;
             }
           }
           if (i == pEnumDef->mnNumValues) {
             niError(niFmt(_A("Can't find element '%s' in enumeration '%s'."),
-                          nextTok->Chars(),pEnumDef->maszName));
+                          nextTok->Chars(), pEnumDef->maszName));
             return eFalse;
           }
 
@@ -5745,7 +6314,7 @@ tBool Evaluator::TokenizeExpr(const achar* aaszExpr, tMathExprTokenVec& avOut)
           pEnumDef = mpDefaultEnum;
           tU32 i, nValue = 0;
           for (i = 0; i < pEnumDef->mnNumValues; ++i) {
-            if (ni::StrEq(tok.Chars(),pEnumDef->mpValues[i].maszName)) {
+            if (ni::StrEq(tok.Chars(), pEnumDef->mpValues[i].maszName)) {
               nValue = pEnumDef->mpValues[i].mnValue;
               break;
             }
@@ -5798,7 +6367,7 @@ Ptr<Op> Evaluator::ParseExpr(const achar* aaszExpr)
   tMathExprTokenVec vToks;
   vToks.reserve(128);
 
-  if (!TokenizeExpr(aaszExpr,vToks)) {
+  if (!TokenizeExpr(aaszExpr, vToks)) {
     niError(niFmt(_A("Can't tokenize expression '%s'."), aaszExpr));
     return NULL;
   }
@@ -5821,7 +6390,9 @@ Ptr<Op> Evaluator::ParseExpr(const achar* aaszExpr)
 }
 
 ///////////////////////////////////////////////
-Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathExprTokenVec& avToks, tMathExprTokenVec::iterator& aitTok)
+Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand,
+                                 tMathExprTokenVec& avToks,
+                                 tMathExprTokenVec::iterator& aitTok)
 {
   Ptr<iExpressionVariable> ptrVar;
   Ptr<Op> ptrOp;
@@ -5829,225 +6400,267 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
   {
     const sMathExprToken& token = *aitTok;
     switch (token.Type) {
-      case eMathExprTokenType_Unknown: {
-        // Unkown token, probably a variable.
-        ptrVar = FindVariable(_H(token.strToken));
-        if (!niIsOK(ptrVar)) {
-          // if there's an error return 0 as result so that we can always
-          // safely 'Eval()->Get'
-          niWarning(niFmt("Can't find variable '%s'.", token.strToken.Chars()));
-          ptrVar = niNew ExprVarFloat(_H(AZEROSTR));
-          ((ExprVar*)(ptrVar.ptr()))->Flags |= eExpressionVariableFlags_Constant;
-          ptrVar->SetFloat(0.0f);
-        }
-        break;
-      }
-      case eMathExprTokenType_Float: {
-        // Real number token.
+    case eMathExprTokenType_Unknown: {
+      // Unkown token, probably a variable.
+      ptrVar = FindVariable(_H(token.strToken));
+      if (!niIsOK(ptrVar)) {
+        // if there's an error return 0 as result so that we can always
+        // safely 'Eval()->Get'
+        niWarning(niFmt("Can't find variable '%s'.", token.strToken.Chars()));
         ptrVar = niNew ExprVarFloat(_H(AZEROSTR));
         ((ExprVar*)(ptrVar.ptr()))->Flags |= eExpressionVariableFlags_Constant;
-        ptrVar->SetFloat(token.fFloat);
-        break;
+        ptrVar->SetFloat(0.0f);
       }
-      case eMathExprTokenType_String: {
-        // String token.
-        ptrVar = niNew ExprVarString(_H(AZEROSTR));
-        ((ExprVar*)(ptrVar.ptr()))->Flags |= eExpressionVariableFlags_Constant;
-        ptrVar->SetString(token.strToken);
-        break;
-      }
-      case eMathExprTokenType_Operator: {
-        // Operator token.
-        niError(niFmt(_A("Operator syntax error for operator '%s'."), token.strToken.Chars()));
+      break;
+    }
+    case eMathExprTokenType_Float: {
+      // Real number token.
+      ptrVar = niNew ExprVarFloat(_H(AZEROSTR));
+      ((ExprVar*)(ptrVar.ptr()))->Flags |= eExpressionVariableFlags_Constant;
+      ptrVar->SetFloat(token.fFloat);
+      break;
+    }
+    case eMathExprTokenType_String: {
+      // String token.
+      ptrVar = niNew ExprVarString(_H(AZEROSTR));
+      ((ExprVar*)(ptrVar.ptr()))->Flags |= eExpressionVariableFlags_Constant;
+      ptrVar->SetString(token.strToken);
+      break;
+    }
+    case eMathExprTokenType_Operator: {
+      // Operator token.
+      niError(niFmt(_A("Operator syntax error for operator '%s'."),
+                    token.strToken.Chars()));
+      return NULL;
+    }
+    case eMathExprTokenType_UnaryOperator: {
+      // UnaryOperator token.
+      if ((aitTok + 1) == avToks.end()) {
+        niError(niFmt(
+          _A(
+            "Unexpected end of tokens when processing tokens of unary operator '%s'."),
+          token.strToken.Chars()));
         return NULL;
       }
-      case eMathExprTokenType_UnaryOperator: {
-        // UnaryOperator token.
-        if ((aitTok+1) == avToks.end())
-        {
-          niError(niFmt(_A("Unexpected end of tokens when processing tokens of unary operator '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
 
-        ptrOp = _CreateOperation(token.strToken.Chars(),token.Type);
-        niCheck(ptrOp.IsOK(),NULL);
+      ptrOp = _CreateOperation(token.strToken.Chars(), token.Type);
+      niCheck(ptrOp.IsOK(), NULL);
 
-        tU32 nCurrentOperand = 0;
-        ptrOp = _ProcessToken(ptrOp,nCurrentOperand,avToks,++aitTok);
-        if (!ptrOp.IsOK()) {
-          niError(niFmt(_A("Can't process tokens of unary operator '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
-        break;
+      tU32 nCurrentOperand = 0;
+      ptrOp = _ProcessToken(ptrOp, nCurrentOperand, avToks, ++aitTok);
+      if (!ptrOp.IsOK()) {
+        niError(niFmt(_A("Can't process tokens of unary operator '%s'."),
+                      token.strToken.Chars()));
+        return NULL;
       }
-      case eMathExprTokenType_Function: {
-        // Function token.
-        if (++aitTok == avToks.end()) {
-          niError(niFmt(_A("Unexpected end of tokens when processing tokens of function '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
+      break;
+    }
+    case eMathExprTokenType_Function: {
+      // Function token.
+      if (++aitTok == avToks.end()) {
+        niError(niFmt(
+          _A(
+            "Unexpected end of tokens when processing tokens of function '%s'."),
+          token.strToken.Chars()));
+        return NULL;
+      }
 
-        // Expect OpenGroup
-        if (aitTok->Type != eMathExprTokenType_OpenGroup) {
-          niError(niFmt(_A("OpenGroup expected after function '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
+      // Expect OpenGroup
+      if (aitTok->Type != eMathExprTokenType_OpenGroup) {
+        niError(niFmt(_A("OpenGroup expected after function '%s'."),
+                      token.strToken.Chars()));
+        return NULL;
+      }
 
-        // skip 'OpenGroup'
-        if (++aitTok == avToks.end()) {
-          niError(niFmt(_A("Unexpected end of tokens when processing tokens of function '%s' after OpenGroup."), token.strToken.Chars()));
-          return NULL;
-        }
+      // skip 'OpenGroup'
+      if (++aitTok == avToks.end()) {
+        niError(niFmt(
+          _A(
+            "Unexpected end of tokens when processing tokens of function '%s' after OpenGroup."),
+          token.strToken.Chars()));
+        return NULL;
+      }
 
-        ptrOp = _CreateOperation(token.strToken.Chars(),token.Type);
-        niCheck(ptrOp.IsOK(),NULL);
+      ptrOp = _CreateOperation(token.strToken.Chars(), token.Type);
+      niCheck(ptrOp.IsOK(), NULL);
 
-        tU32 nCurrentOperand = 0;
-        if (ptrOp->IsVarNumOperands()) {
+      tU32 nCurrentOperand = 0;
+      if (ptrOp->IsVarNumOperands()) {
 
-          tU32 i = 0;
-          if (aitTok->Type != eMathExprTokenType_CloseGroup)
-            while (1) {
-              Ptr<Op> processedOp = _ProcessToken(ptrOp,nCurrentOperand,avToks,aitTok);
-              if (processedOp != ptrOp) {
-                niError(niFmt(_A("Can't process tokens of parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-
-              ++aitTok;
-              if (aitTok == avToks.end()) {
-                niError(niFmt(_A("Unexpected end of tokens after processing parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-
-              if (aitTok->Type == eMathExprTokenType_CloseGroup) {
-                break;
-              }
-
-              if (aitTok->Type != eMathExprTokenType_Separator) {
-                niError(niFmt(_A("Separator expected after parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-
-              ++aitTok;
-              if (aitTok == avToks.end()) {
-                niError(niFmt(_A("Unexpected end of tokens after processing separator of parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-
-              ++i;
+        tU32 i = 0;
+        if (aitTok->Type != eMathExprTokenType_CloseGroup)
+          while (1) {
+            Ptr<Op> processedOp =
+              _ProcessToken(ptrOp, nCurrentOperand, avToks, aitTok);
+            if (processedOp != ptrOp) {
+              niError(niFmt(
+                _A("Can't process tokens of parameter %d of function '%s'."), i,
+                token.strToken.Chars()));
+              return NULL;
             }
+
+            ++aitTok;
+            if (aitTok == avToks.end()) {
+              niError(niFmt(
+                _A(
+                  "Unexpected end of tokens after processing parameter %d of function '%s'."),
+                i, token.strToken.Chars()));
+              return NULL;
+            }
+
+            if (aitTok->Type == eMathExprTokenType_CloseGroup) {
+              break;
+            }
+
+            if (aitTok->Type != eMathExprTokenType_Separator) {
+              niError(niFmt(
+                _A("Separator expected after parameter %d of function '%s'."),
+                i, token.strToken.Chars()));
+              return NULL;
+            }
+
+            ++aitTok;
+            if (aitTok == avToks.end()) {
+              niError(niFmt(
+                _A(
+                  "Unexpected end of tokens after processing separator of parameter %d of function '%s'."),
+                i, token.strToken.Chars()));
+              return NULL;
+            }
+
+            ++i;
+          }
+      }
+      else if (ptrOp->GetNumOperands() == 0) {
+        if (aitTok->Type != eMathExprTokenType_CloseGroup) {
+          niError(niFmt(
+            _A(
+              "CloseGroup expected after OpenGroup for zero parameters function '%s'."),
+            token.strToken.Chars()));
+          return NULL;
         }
-        else if (ptrOp->GetNumOperands() == 0) {
-          if (aitTok->Type != eMathExprTokenType_CloseGroup) {
-            niError(niFmt(_A("CloseGroup expected after OpenGroup for zero parameters function '%s'."), token.strToken.Chars()));
+      }
+      else {
+        for (tU32 i = 0; i < ptrOp->GetNumOperands(); ++i) {
+          if (aitTok == avToks.end()) {
+            niError(niFmt(
+              _A(
+                "Unexpected end of tokens when processing parameter %d of function '%s'."),
+              i, token.strToken.Chars()));
             return NULL;
           }
-        }
-        else {
-          for (tU32 i = 0; i < ptrOp->GetNumOperands(); ++i)
-          {
-            if (aitTok == avToks.end())
-            {
-              niError(niFmt(_A("Unexpected end of tokens when processing parameter %d of function '%s'."), i, token.strToken.Chars()));
+
+          Ptr<Op> processedOp =
+            _ProcessToken(ptrOp, nCurrentOperand, avToks, aitTok);
+          if (processedOp != ptrOp) {
+            niError(niFmt(
+              _A("Can't process tokens of parameter %d of function '%s'."), i,
+              token.strToken.Chars()));
+            return NULL;
+          }
+
+          if ((aitTok + 1) == avToks.end()) {
+            niError(niFmt(
+              _A(
+                "Unexpected end of tokens after processing parameter %d of function '%s'."),
+              i, token.strToken.Chars()));
+            return NULL;
+          }
+
+          if (i + 1 == ptrOp->GetNumOperands()) {
+            if ((aitTok + 1)->Type != eMathExprTokenType_CloseGroup) {
+              niError(niFmt(
+                _A(
+                  "CloseGroup expected after last parameter %d of function '%s'."),
+                i, token.strToken.Chars()));
               return NULL;
             }
-
-            Ptr<Op> processedOp = _ProcessToken(ptrOp,nCurrentOperand,avToks,aitTok);
-            if (processedOp != ptrOp) {
-              niError(niFmt(_A("Can't process tokens of parameter %d of function '%s'."), i, token.strToken.Chars()));
+            ++aitTok;
+          }
+          else {
+            if ((aitTok + 1)->Type != eMathExprTokenType_Separator) {
+              niError(niFmt(
+                _A("Separator expected after parameter %d of function '%s'."),
+                i, token.strToken.Chars()));
               return NULL;
             }
-
-            if ((aitTok+1) == avToks.end())
-            {
-              niError(niFmt(_A("Unexpected end of tokens after processing parameter %d of function '%s'."), i, token.strToken.Chars()));
-              return NULL;
-            }
-
-            if (i+1 == ptrOp->GetNumOperands())
-            {
-              if ((aitTok+1)->Type != eMathExprTokenType_CloseGroup)
-              {
-                niError(niFmt(_A("CloseGroup expected after last parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-              ++aitTok;
-            }
-            else
-            {
-              if ((aitTok+1)->Type != eMathExprTokenType_Separator)
-              {
-                niError(niFmt(_A("Separator expected after parameter %d of function '%s'."), i, token.strToken.Chars()));
-                return NULL;
-              }
-              aitTok += 2;
-            }
+            aitTok += 2;
           }
         }
-        break;
       }
-      case eMathExprTokenType_OpenGroup: {
-        // Left paranthesis token.
-        if ((aitTok+1) == avToks.end()) {
-          niError(niFmt(_A("Unexpected end of tokens when processing group - '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
-        ++aitTok;
-
-        ptrOp = niNew OpGroup();
-
-        tU32 nCurrentOperand = 0;
-        Ptr<Op> processedOp = _ProcessToken(ptrOp, nCurrentOperand, avToks, aitTok);
-        if (processedOp != ptrOp) {
-          niError(_A("Can't parse the group's tokens."));
-          return NULL;
-        }
-
-        if ((aitTok+1) == avToks.end())
-        {
-          niError(niFmt(_A("Unexpected end of tokens when processing group, close group expected - '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
-
-        if ((aitTok+1)->Type != eMathExprTokenType_CloseGroup)
-        {
-          niError(niFmt(_A("CloseGroup expected at the end of a group - '%s'."), token.strToken.Chars()));
-          return NULL;
-        }
-        ++aitTok;
-        break;
-      }
-      case eMathExprTokenType_CloseGroup: {
-        // Right paranthesis token.
-        niError(niFmt(_A("Unexpected close group - '%s'."), token.strToken.Chars()));
+      break;
+    }
+    case eMathExprTokenType_OpenGroup: {
+      // Left paranthesis token.
+      if ((aitTok + 1) == avToks.end()) {
+        niError(
+          niFmt(_A("Unexpected end of tokens when processing group - '%s'."),
+                token.strToken.Chars()));
         return NULL;
       }
-      case eMathExprTokenType_Separator: {
-        // Separator token.
-        niError(niFmt(_A("Unexpected separator - '%s'."), token.strToken.Chars()));
-        return NULL;
-      }
-      case eMathExprTokenType_URL: {
-        cString protocol = token.strToken.Before("://");
-        Ptr<iExpressionURLResolver> resolver = FindURLResolver(protocol.Chars());
-        if (!resolver.IsOK()) {
-          niError(niFmt(_A("Can't find resolver for URL protocol '%s' : '%s'."), protocol, token.strToken));
-          return NULL;
-        }
+      ++aitTok;
 
-        ptrOp = niNew OpURL(resolver,token.strToken.Chars());
-        if (!ptrOp.IsOK()) {
-          niError(niFmt(_A("Resolver '%s' couldnt create URL resolver operation : '%s'."),
-                        protocol, token.strToken));
-          return NULL;
-        }
-        break;
-      }
-      default: {
-        niError(niFmt(_A("Unknown token '%d' (%s, %g, %d)."), token.Type, token.strToken, token.fFloat, token.nGroupDepth));
+      ptrOp = niNew OpGroup();
+
+      tU32 nCurrentOperand = 0;
+      Ptr<Op> processedOp =
+        _ProcessToken(ptrOp, nCurrentOperand, avToks, aitTok);
+      if (processedOp != ptrOp) {
+        niError(_A("Can't parse the group's tokens."));
         return NULL;
       }
+
+      if ((aitTok + 1) == avToks.end()) {
+        niError(niFmt(
+          _A(
+            "Unexpected end of tokens when processing group, close group expected - '%s'."),
+          token.strToken.Chars()));
+        return NULL;
+      }
+
+      if ((aitTok + 1)->Type != eMathExprTokenType_CloseGroup) {
+        niError(niFmt(_A("CloseGroup expected at the end of a group - '%s'."),
+                      token.strToken.Chars()));
+        return NULL;
+      }
+      ++aitTok;
+      break;
+    }
+    case eMathExprTokenType_CloseGroup: {
+      // Right paranthesis token.
+      niError(
+        niFmt(_A("Unexpected close group - '%s'."), token.strToken.Chars()));
+      return NULL;
+    }
+    case eMathExprTokenType_Separator: {
+      // Separator token.
+      niError(
+        niFmt(_A("Unexpected separator - '%s'."), token.strToken.Chars()));
+      return NULL;
+    }
+    case eMathExprTokenType_URL: {
+      cString protocol = token.strToken.Before("://");
+      Ptr<iExpressionURLResolver> resolver = FindURLResolver(protocol.Chars());
+      if (!resolver.IsOK()) {
+        niError(niFmt(_A("Can't find resolver for URL protocol '%s' : '%s'."),
+                      protocol, token.strToken));
+        return NULL;
+      }
+
+      ptrOp = niNew OpURL(resolver, token.strToken.Chars());
+      if (!ptrOp.IsOK()) {
+        niError(niFmt(
+          _A("Resolver '%s' couldnt create URL resolver operation : '%s'."),
+          protocol, token.strToken));
+        return NULL;
+      }
+      break;
+    }
+    default: {
+      niError(niFmt(_A("Unknown token '%d' (%s, %g, %d)."), token.Type,
+                    token.strToken, token.fFloat, token.nGroupDepth));
+      return NULL;
+    }
     }
   }
 
@@ -6058,38 +6671,32 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
   };
 
   int mode = ModeProceed;
-  switch (apCurrentOp->GetType())
-  {
-    case eMathOperationType_UnaryOperator:
-      {
-        mode = ModeSetOperand;
-        break;
-      }
-
-    case eMathOperationType_Operator:
-      {
-        mode = ModeSaveOperationAndProceed;
-        break;
-      }
+  switch (apCurrentOp->GetType()) {
+  case eMathOperationType_UnaryOperator: {
+    mode = ModeSetOperand;
+    break;
   }
 
-  if (ptrOp.IsOK())
-  {
-    if (mode != ModeSetOperand &&
-        (aitTok+1) != avToks.end() &&
-        (aitTok+1)->Type == eMathExprTokenType_Operator)
+  case eMathOperationType_Operator: {
+    mode = ModeSaveOperationAndProceed;
+    break;
+  }
+  }
+
+  if (ptrOp.IsOK()) {
+    if (mode != ModeSetOperand && (aitTok + 1) != avToks.end() &&
+        (aitTok + 1)->Type == eMathExprTokenType_Operator)
     {
-      if (mode == ModeSaveOperationAndProceed)
-      {
-        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++,ptrOp))
-        {
-          niError(niFmt(_A("Can't set operation operand '%d'."), anCurrentOperand-1));
+      if (mode == ModeSaveOperationAndProceed) {
+        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++, ptrOp)) {
+          niError(niFmt(_A("Can't set operation operand '%d'."),
+                        anCurrentOperand - 1));
           return NULL;
         }
 
-        if (anCurrentOperand != apCurrentOp->GetNumOperands())
-        {
-          niError(_A("Not all operands set before proceeding to a new operation."));
+        if (anCurrentOperand != apCurrentOp->GetNumOperands()) {
+          niError(
+            _A("Not all operands set before proceeding to a new operation."));
           return NULL;
         }
 
@@ -6099,62 +6706,59 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
       ++aitTok;
       sMathExprToken& nexttoken = *aitTok;
       ++aitTok;
-      if (aitTok == avToks.end())
-      {
-        niError(niFmt(_A("Unexpected end of expression when processing operator '%s'."), nexttoken.strToken.Chars()));
+      if (aitTok == avToks.end()) {
+        niError(niFmt(
+          _A("Unexpected end of expression when processing operator '%s'."),
+          nexttoken.strToken.Chars()));
         return NULL;
       }
 
-      Ptr<Op> ptrNewOp = _CreateOperation(nexttoken.strToken.Chars(),nexttoken.Type);
-      niCheck(ptrNewOp.IsOK(),NULL);
-      ptrNewOp->SetOperandOperation(0,ptrOp);
+      Ptr<Op> ptrNewOp =
+        _CreateOperation(nexttoken.strToken.Chars(), nexttoken.Type);
+      niCheck(ptrNewOp.IsOK(), NULL);
+      ptrNewOp->SetOperandOperation(0, ptrOp);
 
       tU32 nCurrentOperand = 1;
-      ptrNewOp = _ProcessToken(ptrNewOp,nCurrentOperand,avToks,aitTok);
+      ptrNewOp = _ProcessToken(ptrNewOp, nCurrentOperand, avToks, aitTok);
       if (!ptrNewOp.IsOK()) {
-        niError(niFmt(_A("Can't process token for operator '%s'."), nexttoken.strToken.Chars()));
+        niError(niFmt(_A("Can't process token for operator '%s'."),
+                      nexttoken.strToken.Chars()));
         return NULL;
       }
 
-      if (mode != ModeSaveOperationAndProceed)
-      {
-        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++,ptrNewOp))
-        {
-          niError(niFmt(_A("Can't new operation operand '%d'."), anCurrentOperand-1));
+      if (mode != ModeSaveOperationAndProceed) {
+        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++, ptrNewOp)) {
+          niError(niFmt(_A("Can't new operation operand '%d'."),
+                        anCurrentOperand - 1));
           return NULL;
         }
       }
-      else
-      {
+      else {
         return ptrNewOp;
       }
     }
-    else
-    {
-      if (!apCurrentOp->SetOperandOperation(anCurrentOperand++,ptrOp))
-      {
-        niError(niFmt(_A("Can't set operation operand '%d'."), anCurrentOperand-1));
+    else {
+      if (!apCurrentOp->SetOperandOperation(anCurrentOperand++, ptrOp)) {
+        niError(
+          niFmt(_A("Can't set operation operand '%d'."), anCurrentOperand - 1));
         return NULL;
       }
     }
   }
-  else if (ptrVar.IsOK())
-  {
-    if (mode != ModeSetOperand &&
-        (aitTok+1) != avToks.end() &&
-        (aitTok+1)->Type == eMathExprTokenType_Operator)
+  else if (ptrVar.IsOK()) {
+    if (mode != ModeSetOperand && (aitTok + 1) != avToks.end() &&
+        (aitTok + 1)->Type == eMathExprTokenType_Operator)
     {
-      if (mode == ModeSaveOperationAndProceed)
-      {
-        if (!apCurrentOp->SetOperandVariable(anCurrentOperand++,ptrVar))
-        {
-          niError(niFmt(_A("Can't set operation operand '%d'."), anCurrentOperand-1));
+      if (mode == ModeSaveOperationAndProceed) {
+        if (!apCurrentOp->SetOperandVariable(anCurrentOperand++, ptrVar)) {
+          niError(niFmt(_A("Can't set operation operand '%d'."),
+                        anCurrentOperand - 1));
           return NULL;
         }
 
-        if (anCurrentOperand != apCurrentOp->GetNumOperands())
-        {
-          niError(_A("Not all operands set before proceeding to a new operation."));
+        if (anCurrentOperand != apCurrentOp->GetNumOperands()) {
+          niError(
+            _A("Not all operands set before proceeding to a new operation."));
           return NULL;
         }
 
@@ -6163,20 +6767,23 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
         ++aitTok;
         sMathExprToken& nexttoken = *aitTok;
         ++aitTok;
-        if (aitTok == avToks.end())
-        {
-          niError(niFmt(_A("Unexpected end of expression when processing operator '%s'."), nexttoken.strToken.Chars()));
+        if (aitTok == avToks.end()) {
+          niError(niFmt(
+            _A("Unexpected end of expression when processing operator '%s'."),
+            nexttoken.strToken.Chars()));
           return NULL;
         }
 
-        Ptr<Op> ptrNewOp = _CreateOperation(nexttoken.strToken.Chars(),nexttoken.Type);
-        niCheck(ptrNewOp.IsOK(),NULL);
-        ptrNewOp->SetOperandOperation(0,ptrOp);
+        Ptr<Op> ptrNewOp =
+          _CreateOperation(nexttoken.strToken.Chars(), nexttoken.Type);
+        niCheck(ptrNewOp.IsOK(), NULL);
+        ptrNewOp->SetOperandOperation(0, ptrOp);
 
         tU32 nCurrentOperand = 1;
-        ptrNewOp = _ProcessToken(ptrNewOp,nCurrentOperand,avToks,aitTok);
+        ptrNewOp = _ProcessToken(ptrNewOp, nCurrentOperand, avToks, aitTok);
         if (!ptrNewOp.IsOK()) {
-          niError(niFmt(_A("Can't process token for operator '%s'."), nexttoken.strToken.Chars()));
+          niError(niFmt(_A("Can't process token for operator '%s'."),
+                        nexttoken.strToken.Chars()));
           return NULL;
         }
 
@@ -6187,40 +6794,41 @@ Ptr<Op> Evaluator::_ProcessToken(Op* apCurrentOp, tU32& anCurrentOperand, tMathE
         //         return eFalse;
         //       }
       }
-      else
-      {
+      else {
         ++aitTok;
         sMathExprToken& nexttoken = *aitTok;
         ++aitTok;
-        if (aitTok == avToks.end())
-        {
-          niError(niFmt(_A("Unexpected end of expression when processing operator '%s'."), nexttoken.strToken.Chars()));
+        if (aitTok == avToks.end()) {
+          niError(niFmt(
+            _A("Unexpected end of expression when processing operator '%s'."),
+            nexttoken.strToken.Chars()));
           return NULL;
         }
 
-        Ptr<Op> ptrNewOp = _CreateOperation(nexttoken.strToken.Chars(),nexttoken.Type);
-        niCheck(ptrNewOp.IsOK(),NULL);
-        ptrNewOp->SetOperandVariable(0,ptrVar);
+        Ptr<Op> ptrNewOp =
+          _CreateOperation(nexttoken.strToken.Chars(), nexttoken.Type);
+        niCheck(ptrNewOp.IsOK(), NULL);
+        ptrNewOp->SetOperandVariable(0, ptrVar);
 
         tU32 nCurrentOperand = 1;
-        ptrNewOp = _ProcessToken(ptrNewOp,nCurrentOperand,avToks,aitTok);
+        ptrNewOp = _ProcessToken(ptrNewOp, nCurrentOperand, avToks, aitTok);
         if (!ptrNewOp.IsOK()) {
-          niError(niFmt(_A("Can't process token for operator '%s'."), nexttoken.strToken.Chars()));
+          niError(niFmt(_A("Can't process token for operator '%s'."),
+                        nexttoken.strToken.Chars()));
           return NULL;
         }
 
-        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++,ptrNewOp))
-        {
-          niError(niFmt(_A("Can't new operation operand '%d'."), anCurrentOperand-1));
+        if (!apCurrentOp->SetOperandOperation(anCurrentOperand++, ptrNewOp)) {
+          niError(niFmt(_A("Can't new operation operand '%d'."),
+                        anCurrentOperand - 1));
           return NULL;
         }
       }
     }
-    else
-    {
-      if (!apCurrentOp->SetOperandVariable(anCurrentOperand++,ptrVar))
-      {
-        niError(niFmt(_A("Can't set variable operand '%d'."), anCurrentOperand-1));
+    else {
+      if (!apCurrentOp->SetOperandVariable(anCurrentOperand++, ptrVar)) {
+        niError(
+          niFmt(_A("Can't set variable operand '%d'."), anCurrentOperand - 1));
         return NULL;
       }
     }
@@ -6242,12 +6850,14 @@ tBool Evaluator::GetUnknownSymbols(const achar* aaszExpr, tStringCVec* apList)
   tMathExprTokenVec vToks;
   vToks.reserve(128);
 
-  if (!TokenizeExpr(aaszExpr,vToks)) {
+  if (!TokenizeExpr(aaszExpr, vToks)) {
     niError(niFmt(_A("Can't tokenize expression '%s'."), aaszExpr));
     return eTrue;
   }
 
-  for (tMathExprTokenVec::iterator itTok = vToks.begin(); itTok != vToks.end(); ++itTok) {
+  for (tMathExprTokenVec::iterator itTok = vToks.begin(); itTok != vToks.end();
+       ++itTok)
+  {
     sMathExprToken& token = *itTok;
     if (token.Type == eMathExprTokenType_Unknown) {
       pList->push_back(token.strToken);
@@ -6260,8 +6870,7 @@ tBool Evaluator::GetUnknownSymbols(const achar* aaszExpr, tStringCVec* apList)
 ///////////////////////////////////////////////
 Op* __stdcall Evaluator::GetOperator(const achar* aaszName) const
 {
-  if (!mmapOperators.empty())
-  {
+  if (!mmapOperators.empty()) {
     tOperationMapCIt it = mmapOperators.find(aaszName);
     if (it != mmapOperators.end())
       return it->second;
@@ -6274,8 +6883,7 @@ Op* __stdcall Evaluator::GetOperator(const achar* aaszName) const
 ///////////////////////////////////////////////
 Op* __stdcall Evaluator::GetUnaryOperator(const achar* aaszName) const
 {
-  if (!mmapUnaryOperators.empty())
-  {
+  if (!mmapUnaryOperators.empty()) {
     tOperationMapCIt it = mmapUnaryOperators.find(aaszName);
     if (it != mmapUnaryOperators.end())
       return it->second;
@@ -6288,8 +6896,7 @@ Op* __stdcall Evaluator::GetUnaryOperator(const achar* aaszName) const
 ///////////////////////////////////////////////
 Op* __stdcall Evaluator::GetFunction(const achar* aaszName) const
 {
-  if (!mmapFunctions.empty())
-  {
+  if (!mmapFunctions.empty()) {
     cString strLower = aaszName;
     strLower.ToLower();
     tOperationMapCIt it = mmapFunctions.find(strLower.Chars());
@@ -6318,11 +6925,12 @@ const sEnumDef* Evaluator::GetEnumDef(const achar* aaszName) const
 }
 
 ///////////////////////////////////////////////
-const achar* __stdcall Evaluator::GetEnumName(tU32 anIndex) const {
+const achar* __stdcall Evaluator::GetEnumName(tU32 anIndex) const
+{
   if (anIndex >= mmapEnums.size())
     return AZEROSTR;
   tU32 i = 0;
-  niLoopit(tEnumMap::const_iterator,it,mmapEnums) {
+  niLoopit (tEnumMap::const_iterator, it, mmapEnums) {
     if (i++ == anIndex)
       return it->first.Chars();
   }
@@ -6330,7 +6938,8 @@ const achar* __stdcall Evaluator::GetEnumName(tU32 anIndex) const {
 }
 
 ///////////////////////////////////////////////
-void __stdcall Evaluator::SetDefaultEnumDef(const sEnumDef* apEnumDef) {
+void __stdcall Evaluator::SetDefaultEnumDef(const sEnumDef* apEnumDef)
+{
   mpDefaultEnum = apEnumDef;
   if (mpDefaultEnum) {
     tEnumMap::const_iterator it = mmapEnums.find(mpDefaultEnum->maszName);
@@ -6339,7 +6948,8 @@ void __stdcall Evaluator::SetDefaultEnumDef(const sEnumDef* apEnumDef) {
     }
   }
 }
-const sEnumDef* __stdcall Evaluator::GetDefaultEnumDef() const {
+const sEnumDef* __stdcall Evaluator::GetDefaultEnumDef() const
+{
   return mpDefaultEnum;
 }
 
@@ -6357,26 +6967,27 @@ tBool __stdcall Evaluator::GetGlobalEnumSearch() const
 
 ///////////////////////////////////////////////
 //! Create an operation.
-Ptr<Op> Evaluator::_CreateOperation(const achar* aaszName, eMathExprTokenType aOpType)
+Ptr<Op> Evaluator::_CreateOperation(const achar* aaszName,
+                                    eMathExprTokenType aOpType)
 {
   Ptr<Op> ptrOp = NULL;
   switch (aOpType) {
-    case eMathExprTokenType_Operator: {
-      ptrOp = GetOperator(aaszName);
-      break;
-    }
-    case eMathExprTokenType_UnaryOperator: {
-      ptrOp = GetUnaryOperator(aaszName);
-      break;
-    }
-    case eMathExprTokenType_Function: {
-      ptrOp = GetFunction(aaszName);
-      break;
-    }
-    default: {
-      niAssertUnreachable("Invalid operation type.");
-      return NULL;
-    }
+  case eMathExprTokenType_Operator: {
+    ptrOp = GetOperator(aaszName);
+    break;
+  }
+  case eMathExprTokenType_UnaryOperator: {
+    ptrOp = GetUnaryOperator(aaszName);
+    break;
+  }
+  case eMathExprTokenType_Function: {
+    ptrOp = GetFunction(aaszName);
+    break;
+  }
+  default: {
+    niAssertUnreachable("Invalid operation type.");
+    return NULL;
+  }
   }
 
   if (!ptrOp.IsOK()) {
@@ -6402,11 +7013,13 @@ Ptr<Op> Evaluator::_CreateOperation(const achar* aaszName, eMathExprTokenType aO
 //----------------------------------------------------------------------------
 #include "Lang.h"
 
-iExpressionContext* cLang::CreateExpressionContext() {
+iExpressionContext* cLang::CreateExpressionContext()
+{
   return niNew Evaluator(NULL);
 }
 
-iExpressionContext* cLang::GetExpressionContext() const {
+iExpressionContext* cLang::GetExpressionContext() const
+{
   if (!_ctx.IsOK()) {
     niThis(cLang)->_ctx = niNew Evaluator(NULL);
     _ctx->SetGlobalEnumSearch(eTrue);
@@ -6414,9 +7027,10 @@ iExpressionContext* cLang::GetExpressionContext() const {
   return _ctx;
 }
 
-Ptr<iExpressionVariable> cLang::Eval(const achar* aaszExpr) {
+Ptr<iExpressionVariable> cLang::Eval(const achar* aaszExpr)
+{
   static Ptr<ExprVarString> _exprVarEvalError =
-      niNew ExprVarString(_H("EVALERR"));
+    niNew ExprVarString(_H("EVALERR"));
   Ptr<iExpressionContext> ptrCtx = GetExpressionContext();
   Ptr<iExpressionVariable> r = ptrCtx->Eval(aaszExpr);
   if (r.IsOK())
@@ -6425,7 +7039,9 @@ Ptr<iExpressionVariable> cLang::Eval(const achar* aaszExpr) {
     return _exprVarEvalError.ptr();
 }
 
-tU32 cLang::StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags, tU32 aDefaultValue) {
+tU32 cLang::StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef,
+                                tEnumToStringFlags aFlags, tU32 aDefaultValue)
+{
   Ptr<iExpressionContext> ptrCtx;
   if (apEnumDef) {
     ptrCtx = GetExpressionContext()->CreateContext();
@@ -6433,10 +7049,10 @@ tU32 cLang::StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, t
       return aDefaultValue;
     }
     ptrCtx->AddEnumDef(apEnumDef);
-    if (!niFlagIs(aFlags,eEnumToStringFlags_Full)) {
+    if (!niFlagIs(aFlags, eEnumToStringFlags_Full)) {
       ptrCtx->SetDefaultEnumDef(apEnumDef);
     }
-    if (niFlagIs(aFlags,eEnumToStringFlags_GlobalSearch)) {
+    if (niFlagIs(aFlags, eEnumToStringFlags_GlobalSearch)) {
       ptrCtx->SetGlobalEnumSearch(eTrue);
     }
   }
@@ -6448,11 +7064,15 @@ tU32 cLang::StringToEnumDefault(const achar* aExpr, const sEnumDef* apEnumDef, t
   return niIsOK(pVar) ? (tU32)pVar->GetFloat() : aDefaultValue;
 }
 
-tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {
-  return StringToEnumDefault(aExpr,apEnumDef,aFlags,0);
+tU32 cLang::StringToEnum(const achar* aExpr, const sEnumDef* apEnumDef,
+                         tEnumToStringFlags aFlags)
+{
+  return StringToEnumDefault(aExpr, apEnumDef, aFlags, 0);
 }
 
-cString cLang::EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStringFlags aFlags) {
+cString cLang::EnumToString(tU32 anValue, const sEnumDef* apEnumDef,
+                            tEnumToStringFlags aFlags)
+{
   if (apEnumDef) {
     Ptr<iExpressionContext> ptrCtx = GetExpressionContext()->CreateContext();
     if (!ptrCtx.IsOK()) {
@@ -6460,10 +7080,10 @@ cString cLang::EnumToString(tU32 anValue, const sEnumDef* apEnumDef, tEnumToStri
     }
     else {
       ptrCtx->AddEnumDef(apEnumDef);
-      if (!niFlagIs(aFlags,eEnumToStringFlags_Full)) {
+      if (!niFlagIs(aFlags, eEnumToStringFlags_Full)) {
         ptrCtx->SetDefaultEnumDef(apEnumDef);
       }
-      if (niFlagIs(aFlags,eEnumToStringFlags_Flags)) {
+      if (niFlagIs(aFlags, eEnumToStringFlags_Flags)) {
         return ptrCtx->GetEnumFlagsString(anValue);
       }
       else {

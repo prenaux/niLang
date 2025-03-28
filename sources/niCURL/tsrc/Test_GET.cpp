@@ -6,13 +6,15 @@ using namespace ni;
 
 struct FCURLGet {
   QPtr<iCURL> _curl;
-  FCURLGet() {
+  FCURLGet()
+  {
     _curl = ni::New_niCURL_CURL(niVarNull, niVarNull);
   }
 };
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, HttpAuthBasic) {
+TEST_FIXTURE(FCURLGet, HttpAuthBasic)
+{
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0, "");
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
   QPtr<iFuture> futureValue;
@@ -23,10 +25,10 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasic) {
   _curl->SetUserPass("admin12345");
 
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler([=, &bCompleted, &futureValue](
-                         tU32 anMsg, const Var& A, const Var& B) {
-      futureValue = B;
-      switch (anMsg) {
+    ni::MessageHandler(
+      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
+        futureValue = B;
+        switch (anMsg) {
         case eCURLMessage_Started: {
           niDebugFmt(("... Started"));
           break;
@@ -60,19 +62,16 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasic) {
           niError(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
           break;
         }
-      }
-    }),
-    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
-    recvData,
+        }
+      }),
+    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(), recvData,
     recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Page Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Page Header: Received %d bytes\n%s", recvHeader->GetSize(),
+              recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   cString result = recvData->ReadString();
@@ -88,7 +87,8 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasic) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, HttpAuthBasicIncorrectPwd) {
+TEST_FIXTURE(FCURLGet, HttpAuthBasicIncorrectPwd)
+{
 
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0, "");
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
@@ -100,10 +100,10 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasicIncorrectPwd) {
   _curl->SetUserPass(NULL);
 
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler([=, &bCompleted, &futureValue](
-                         tU32 anMsg, const Var& A, const Var& B) {
-      futureValue = B;
-      switch (anMsg) {
+    ni::MessageHandler(
+      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
+        futureValue = B;
+        switch (anMsg) {
         case eCURLMessage_Started: {
           niDebugFmt(("... Started"));
           break;
@@ -137,19 +137,16 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasicIncorrectPwd) {
           niError(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
           break;
         }
-      }
-    }),
-    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(),
-    recvData,
+        }
+      }),
+    _GetHTTPSTestCasesUrl("Test_niCURL_basic_auth.php").c_str(), recvData,
     recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Page Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Page Header: Received %d bytes\n%s", recvHeader->GetSize(),
+              recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   cString result = recvData->ReadString();
@@ -165,16 +162,17 @@ TEST_FIXTURE(FCURLGet, HttpAuthBasicIncorrectPwd) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, GetPage) {
+TEST_FIXTURE(FCURLGet, GetPage)
+{
   Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0, "");
   Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
   QPtr<iFuture> futureValue;
   tBool bCompleted = eFalse;
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler([=, &bCompleted, &futureValue](
-                         tU32 anMsg, const Var& A, const Var& B) {
-      futureValue = B;
-      switch (anMsg) {
+    ni::MessageHandler(
+      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
+        futureValue = B;
+        switch (anMsg) {
         case eCURLMessage_Started: {
           niDebugFmt(("... Started"));
           break;
@@ -208,19 +206,15 @@ TEST_FIXTURE(FCURLGet, GetPage) {
           niError(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
           break;
         }
-      }
-    }),
-    _GetHTTPSTestCasesUrl("index.php").c_str(),
-    recvData,
-    recvHeader);
+        }
+      }),
+    _GetHTTPSTestCasesUrl("index.php").c_str(), recvData, recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Page Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Page Header: Received %d bytes\n%s", recvHeader->GetSize(),
+              recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   ni::cString content = recvData->ReadString();
@@ -236,7 +230,8 @@ TEST_FIXTURE(FCURLGet, GetPage) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, GetPageAsync) {
+TEST_FIXTURE(FCURLGet, GetPageAsync)
+{
 
   Ptr<iMessageQueue> mq =
     ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
@@ -245,49 +240,46 @@ TEST_FIXTURE(FCURLGet, GetPageAsync) {
   QPtr<iFuture> futureValue;
   tBool bCompleted = eFalse;
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler(
-      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
-        futureValue = B;
-        switch (anMsg) {
-          case eCURLMessage_Started: {
-            niDebugFmt(("... Started"));
-            break;
-          }
-          case eCURLMessage_ReceivingHeader: {
-            niDebugFmt(("... Receiving Header"));
-            break;
-          }
-          case eCURLMessage_ReceivingData: {
-            niDebugFmt(("... Receiving Data"));
-            break;
-          }
-          case eCURLMessage_Progress: {
-            niDebugFmt(("... Progress %s", A));
-            break;
-          }
-          case eCURLMessage_Completed: {
-            bCompleted = eTrue;
-            niDebugFmt(("... Completed"));
-            break;
-          }
-          case eCURLMessage_ResponseCode: {
-            niDebugFmt(("... ResponseCode: %d", A));
-            break;
-          }
-          case eCURLMessage_Failed: {
-            niDebugFmt(("... Failed: %s", A));
-            break;
-          }
-          default: {
-            niWarning(
-              niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
-            break;
-          }
-        }
-      }),
-    _GetHTTPSTestCasesUrl("index.php").c_str(),
-    recvData,
-    recvHeader);
+    ni::MessageHandler([=, &bCompleted, &futureValue](tU32 anMsg, const Var& A,
+                                                      const Var& B) {
+      futureValue = B;
+      switch (anMsg) {
+      case eCURLMessage_Started: {
+        niDebugFmt(("... Started"));
+        break;
+      }
+      case eCURLMessage_ReceivingHeader: {
+        niDebugFmt(("... Receiving Header"));
+        break;
+      }
+      case eCURLMessage_ReceivingData: {
+        niDebugFmt(("... Receiving Data"));
+        break;
+      }
+      case eCURLMessage_Progress: {
+        niDebugFmt(("... Progress %s", A));
+        break;
+      }
+      case eCURLMessage_Completed: {
+        bCompleted = eTrue;
+        niDebugFmt(("... Completed"));
+        break;
+      }
+      case eCURLMessage_ResponseCode: {
+        niDebugFmt(("... ResponseCode: %d", A));
+        break;
+      }
+      case eCURLMessage_Failed: {
+        niDebugFmt(("... Failed: %s", A));
+        break;
+      }
+      default: {
+        niWarning(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
+        break;
+      }
+      }
+    }),
+    _GetHTTPSTestCasesUrl("index.php").c_str(), recvData, recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
@@ -300,10 +292,8 @@ TEST_FIXTURE(FCURLGet, GetPageAsync) {
   }
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Async Page Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Async Page Header: Received %d bytes\n%s",
+              recvHeader->GetSize(), recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   ni::cString content = recvData->ReadString();
@@ -320,7 +310,8 @@ TEST_FIXTURE(FCURLGet, GetPageAsync) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, GetFileLocal) {
+TEST_FIXTURE(FCURLGet, GetFileLocal)
+{
 
   niDebugFmt(("... A: %x", ni::ThreadGetCurrentThreadID()));
   Ptr<iMessageQueue> mq =
@@ -343,49 +334,46 @@ TEST_FIXTURE(FCURLGet, GetFileLocal) {
   niDebugFmt(("... TESTPATH: %s", testPath.GetPath()));
 
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler(
-      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
-        futureValue = B;
-        switch (anMsg) {
-          case eCURLMessage_Started: {
-            niDebugFmt(("... Started"));
-            break;
-          }
-          case eCURLMessage_ReceivingHeader: {
-            niDebugFmt(("... Receiving Header"));
-            break;
-          }
-          case eCURLMessage_ReceivingData: {
-            niDebugFmt(("... Receiving Data"));
-            break;
-          }
-          case eCURLMessage_Progress: {
-            niDebugFmt(("... Progress %s", A));
-            break;
-          }
-          case eCURLMessage_Completed: {
-            bCompleted = eTrue;
-            niDebugFmt(("... Completed"));
-            break;
-          }
-          case eCURLMessage_ResponseCode: {
-            niDebugFmt(("... ResponseCode: %d", A));
-            break;
-          }
-          case eCURLMessage_Failed: {
-            niDebugFmt(("... Failed: %s", A));
-            break;
-          }
-          default: {
-            niWarning(
-              niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
-            break;
-          }
-        }
-      }),
-    testPath.GetPath().Chars(),
-    recvData,
-    recvHeader);
+    ni::MessageHandler([=, &bCompleted, &futureValue](tU32 anMsg, const Var& A,
+                                                      const Var& B) {
+      futureValue = B;
+      switch (anMsg) {
+      case eCURLMessage_Started: {
+        niDebugFmt(("... Started"));
+        break;
+      }
+      case eCURLMessage_ReceivingHeader: {
+        niDebugFmt(("... Receiving Header"));
+        break;
+      }
+      case eCURLMessage_ReceivingData: {
+        niDebugFmt(("... Receiving Data"));
+        break;
+      }
+      case eCURLMessage_Progress: {
+        niDebugFmt(("... Progress %s", A));
+        break;
+      }
+      case eCURLMessage_Completed: {
+        bCompleted = eTrue;
+        niDebugFmt(("... Completed"));
+        break;
+      }
+      case eCURLMessage_ResponseCode: {
+        niDebugFmt(("... ResponseCode: %d", A));
+        break;
+      }
+      case eCURLMessage_Failed: {
+        niDebugFmt(("... Failed: %s", A));
+        break;
+      }
+      default: {
+        niWarning(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
+        break;
+      }
+      }
+    }),
+    testPath.GetPath().Chars(), recvData, recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
@@ -398,10 +386,8 @@ TEST_FIXTURE(FCURLGet, GetFileLocal) {
   }
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Async File Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Async File Header: Received %d bytes\n%s",
+              recvHeader->GetSize(), recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   niDebugFmt(("I/Async File Data: Received %d bytes", recvData->GetSize()));
@@ -413,7 +399,8 @@ TEST_FIXTURE(FCURLGet, GetFileLocal) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, GetFileHTTPS) {
+TEST_FIXTURE(FCURLGet, GetFileHTTPS)
+{
 
   Ptr<iMessageQueue> mq =
     ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID());
@@ -426,49 +413,46 @@ TEST_FIXTURE(FCURLGet, GetFileHTTPS) {
   niDebugFmt(("... TESTPATH: %s", testURL));
 
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler(
-      [=, &bCompleted, &futureValue](tU32 anMsg, const Var& A, const Var& B) {
-        futureValue = B;
-        switch (anMsg) {
-          case eCURLMessage_Started: {
-            niDebugFmt(("... Started"));
-            break;
-          }
-          case eCURLMessage_ReceivingHeader: {
-            niDebugFmt(("... Receiving Header"));
-            break;
-          }
-          case eCURLMessage_ReceivingData: {
-            niDebugFmt(("... Receiving Data"));
-            break;
-          }
-          case eCURLMessage_Progress: {
-            niDebugFmt(("... Progress %s", A));
-            break;
-          }
-          case eCURLMessage_Completed: {
-            bCompleted = eTrue;
-            niDebugFmt(("... Completed"));
-            break;
-          }
-          case eCURLMessage_ResponseCode: {
-            niDebugFmt(("... ResponseCode: %d", A));
-            break;
-          }
-          case eCURLMessage_Failed: {
-            niDebugFmt(("... Failed: %s", A));
-            break;
-          }
-          default: {
-            niWarning(
-              niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
-            break;
-          }
-        }
-      }),
-    testURL.Chars(),
-    recvData,
-    recvHeader);
+    ni::MessageHandler([=, &bCompleted, &futureValue](tU32 anMsg, const Var& A,
+                                                      const Var& B) {
+      futureValue = B;
+      switch (anMsg) {
+      case eCURLMessage_Started: {
+        niDebugFmt(("... Started"));
+        break;
+      }
+      case eCURLMessage_ReceivingHeader: {
+        niDebugFmt(("... Receiving Header"));
+        break;
+      }
+      case eCURLMessage_ReceivingData: {
+        niDebugFmt(("... Receiving Data"));
+        break;
+      }
+      case eCURLMessage_Progress: {
+        niDebugFmt(("... Progress %s", A));
+        break;
+      }
+      case eCURLMessage_Completed: {
+        bCompleted = eTrue;
+        niDebugFmt(("... Completed"));
+        break;
+      }
+      case eCURLMessage_ResponseCode: {
+        niDebugFmt(("... ResponseCode: %d", A));
+        break;
+      }
+      case eCURLMessage_Failed: {
+        niDebugFmt(("... Failed: %s", A));
+        break;
+      }
+      default: {
+        niWarning(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
+        break;
+      }
+      }
+    }),
+    testURL.Chars(), recvData, recvHeader);
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
 
   Ptr<iFuture> thread = ni::GetConcurrent()->ThreadRun(runnable);
@@ -482,10 +466,8 @@ TEST_FIXTURE(FCURLGet, GetFileHTTPS) {
   }
 
   recvHeader->SeekSet(0);
-  niDebugFmt(
-    ("I/Async File Header: Received %d bytes\n%s",
-     recvHeader->GetSize(),
-     recvHeader->ReadString()));
+  niDebugFmt(("I/Async File Header: Received %d bytes\n%s",
+              recvHeader->GetSize(), recvHeader->ReadString()));
 
   recvData->SeekSet(0);
   niDebugFmt(("I/Async File Data: Received %d bytes", recvData->GetSize()));
@@ -498,7 +480,8 @@ TEST_FIXTURE(FCURLGet, GetFileHTTPS) {
 }
 
 ///////////////////////////////////////////////
-TEST_FIXTURE(FCURLGet, ChunkedTransfer) {
+TEST_FIXTURE(FCURLGet, ChunkedTransfer)
+{
 
   //_curl->SetTransferMode(eCURLTransferMode_Streaming);
   //CHECK_EQUAL(eCURLTransferMode_Streaming, _curl->GetTransferMode());
@@ -513,73 +496,66 @@ TEST_FIXTURE(FCURLGet, ChunkedTransfer) {
   tU32 numChunks = 0;
   tU32 lastDataSize = 0;
 
-  NN<tStringCVec> requestHeaders{tStringCVec::Create()};
+  NN<tStringCVec> requestHeaders{ tStringCVec::Create() };
   requestHeaders->push_back("Accept: text/event-stream");
 
   Ptr<iRunnable> runnable = _curl->URLGet(
-    ni::MessageHandler(
-      [=, &bCompleted, &futureValue, &numChunks, &lastDataSize](
-        tU32 anMsg, const Var& A, const Var& B) {
-        futureValue = B;
-        switch (anMsg) {
-          case eCURLMessage_Started: {
-            niDebugFmt(("... Started"));
-            break;
-          }
-          case eCURLMessage_ReceivingHeader: {
-            niDebugFmt(("... Receiving Header"));
-            break;
-          }
-          case eCURLMessage_ReceivingData: {
-            niDebugFmt(("... Receiving Data"));
-            break;
-          }
-          case eCURLMessage_Progress: {
-            // Get the latest chunk data
-            tU32 currentSize = recvData->GetSize();
-            if (currentSize > lastDataSize) {
-              recvData->SeekSet(lastDataSize);
+    ni::MessageHandler([=, &bCompleted, &futureValue, &numChunks,
+                        &lastDataSize](tU32 anMsg, const Var& A, const Var& B) {
+      futureValue = B;
+      switch (anMsg) {
+      case eCURLMessage_Started: {
+        niDebugFmt(("... Started"));
+        break;
+      }
+      case eCURLMessage_ReceivingHeader: {
+        niDebugFmt(("... Receiving Header"));
+        break;
+      }
+      case eCURLMessage_ReceivingData: {
+        niDebugFmt(("... Receiving Data"));
+        break;
+      }
+      case eCURLMessage_Progress: {
+        // Get the latest chunk data
+        tU32 currentSize = recvData->GetSize();
+        if (currentSize > lastDataSize) {
+          recvData->SeekSet(lastDataSize);
 
-              niLet chunkSize = currentSize - lastDataSize;
-              cString chunkData;
-              chunkData.resize(chunkSize);
-              recvData->ReadRaw(chunkData.data(), chunkSize);
+          niLet chunkSize = currentSize - lastDataSize;
+          cString chunkData;
+          chunkData.resize(chunkSize);
+          recvData->ReadRaw(chunkData.data(), chunkSize);
 
-              niDebugFmt(
-                ("... Received chunk #%d: %d bytes - %s",
-                 ++numChunks,
-                 currentSize - lastDataSize,
-                 chunkData));
+          niDebugFmt(("... Received chunk #%d: %d bytes - %s", ++numChunks,
+                      currentSize - lastDataSize, chunkData));
 
-              lastDataSize = currentSize;
-            }
-            break;
-          }
-          case eCURLMessage_Completed: {
-            bCompleted = eTrue;
-            niDebugFmt(("... Completed"));
-            break;
-          }
-          case eCURLMessage_ResponseCode: {
-            niDebugFmt(("... ResponseCode: %d", A));
-            break;
-          }
-          case eCURLMessage_Failed: {
-            niDebugFmt(("... Failed: %s", A));
-            break;
-          }
-          default: {
-            niWarning(
-              niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
-            break;
-          }
+          lastDataSize = currentSize;
         }
-      }),
+        break;
+      }
+      case eCURLMessage_Completed: {
+        bCompleted = eTrue;
+        niDebugFmt(("... Completed"));
+        break;
+      }
+      case eCURLMessage_ResponseCode: {
+        niDebugFmt(("... ResponseCode: %d", A));
+        break;
+      }
+      case eCURLMessage_Failed: {
+        niDebugFmt(("... Failed: %s", A));
+        break;
+      }
+      default: {
+        niWarning(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
+        break;
+      }
+      }
+    }),
     _GetHTTPSTestCasesUrl("Test_niCURL_Chunked.php?case=basic").c_str(),
     //_GetLocalTestCasesUrl("Test_niCURL_Chunked.php?case=basic").c_str(),
-    recvData,
-    recvHeader,
-    requestHeaders);
+    recvData, recvHeader, requestHeaders);
 
   CHECK_RETURN_IF_FAILED(runnable.IsOK());
   runnable->Run();

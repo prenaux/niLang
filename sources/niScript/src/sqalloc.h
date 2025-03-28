@@ -4,8 +4,11 @@
 #include "sqconfig.h"
 
 struct sSQDeepCloneGuardSet {
-  ni::tU32               _depth;
-  sSQDeepCloneGuardSet() : _depth(0) {}
+  ni::tU32 _depth;
+  sSQDeepCloneGuardSet()
+      : _depth(0)
+  {
+  }
 };
 typedef sSQDeepCloneGuardSet tSQDeepCloneGuardSet;
 

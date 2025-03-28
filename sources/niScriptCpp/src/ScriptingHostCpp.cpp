@@ -4,62 +4,71 @@
 
 #if defined niNoScriptCpp
 
-// Disabled, better to have a linker error than a runtime error. The correct way
-// to handle this is to not register the ScriptCpp host when its not supported.
-// The module still builds so that we can keep it as dependency and use the
-// niNoScriptCpp compilte time flag to check whether its actually supported.
-#if 0
+  // Disabled, better to have a linker error than a runtime error. The correct way
+  // to handle this is to not register the ScriptCpp host when its not supported.
+  // The module still builds so that we can keep it as dependency and use the
+  // niNoScriptCpp compilte time flag to check whether its actually supported.
+  #if 0
 namespace ni {
 niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
   niError("ScriptCpp not supported on this platform.");
   return NULL;
 }
 }
-#endif
+  #endif
 
 #else
 
-#include <niLang/StringDef.h>
-#include <niLang/Utils/Path.h>
-#include <niLang/Utils/ModuleUtils.h>
-#include <niLang/Utils/FileEnum.h>
-#include <niLang/Utils/Trace.h>
-#include <niLang/ITime.h>
+  #include <niLang/StringDef.h>
+  #include <niLang/Utils/Path.h>
+  #include <niLang/Utils/ModuleUtils.h>
+  #include <niLang/Utils/FileEnum.h>
+  #include <niLang/Utils/Trace.h>
+  #include <niLang/ITime.h>
 
 namespace ni {
 
-niDeclareModuleTrace_(niScriptCpp,Trace);
-#define SCRIPTCPP_TRACE(X) niModuleTrace_(niScriptCpp,Trace,X)
+niDeclareModuleTrace_(niScriptCpp, Trace);
+  #define SCRIPTCPP_TRACE(X) niModuleTrace_(niScriptCpp, Trace, X)
 
-typedef ni::iUnknown* (__ni_export_call_decl *tpfnNewInstance)();
+typedef ni::iUnknown*(__ni_export_call_decl* tpfnNewInstance)();
 
-#ifdef _DEBUG
-#define SCRIPTCPP_BUILD_DA
-#endif
+  #ifdef _DEBUG
+    #define SCRIPTCPP_BUILD_DA
+  #endif
 
-niExportFunc(tBool) ScriptCpp_GetCompileEnabled() {
-  return ni::GetProperty(SCRIPTCPP_COMPILE_PROPERTY,"0").Bool();
+niExportFunc(tBool) ScriptCpp_GetCompileEnabled()
+{
+  return ni::GetProperty(SCRIPTCPP_COMPILE_PROPERTY, "0").Bool();
 }
 
-niExportFuncCPP(cString) ScriptCpp_GetCompileModuleType() {
-  return ni::GetProperty(SCRIPTCPP_MODULE_TYPE_PROPERTY,niModuleFileNameBuildType);
+niExportFuncCPP(cString) ScriptCpp_GetCompileModuleType()
+{
+  return ni::GetProperty(SCRIPTCPP_MODULE_TYPE_PROPERTY,
+                         niModuleFileNameBuildType);
 }
 
-static cString _GetModuleFileName(const cString& aModuleName) {
-  return ni::GetModuleFileName(aModuleName.Chars(), niDLLSuffix, ScriptCpp_GetCompileModuleType().Chars());
+static cString _GetModuleFileName(const cString& aModuleName)
+{
+  return ni::GetModuleFileName(aModuleName.Chars(), niDLLSuffix,
+                               ScriptCpp_GetCompileModuleType().Chars());
 }
 
 static sScriptCppStats _scriptCppStates;
 
-niExportFunc(sScriptCppStats*) ScriptCpp_GetStats() {
+niExportFunc(sScriptCppStats*) ScriptCpp_GetStats()
+{
   return &_scriptCppStates;
 }
 
-inline cString ToString(iTime* apToString) {
+inline cString ToString(iTime* apToString)
+{
   return apToString ? apToString->Format(NULL) : _ASTR("NULLTIME");
 }
 
-inline tBool EnvCopyIfExists(tStringCMap* envMap, iLang* apLang, const achar* aEnvVarName) {
+inline tBool EnvCopyIfExists(tStringCMap* envMap, iLang* apLang,
+                             const achar* aEnvVarName)
+{
   cString v = apLang->GetEnv(aEnvVarName);
   if (v.IsNotEmpty()) {
     // niDebugFmt(("... Copying Env '%s': %s'.", aEnvVarName, v));
@@ -72,38 +81,40 @@ inline tBool EnvCopyIfExists(tStringCMap* envMap, iLang* apLang, const achar* aE
   }
 }
 
-static cString _GetStampString(const iTime* time) {
-  return niFmt("%04d%02d%02d_%02d%02d%02d_rtcpp",
-               time->GetYear(),
-               time->GetMonth(),
-               time->GetDay(),
-               time->GetHour(),
-               time->GetMinute(),
-               time->GetSecond());
+static cString _GetStampString(const iTime* time)
+{
+  return niFmt("%04d%02d%02d_%02d%02d%02d_rtcpp", time->GetYear(),
+               time->GetMonth(), time->GetDay(), time->GetHour(),
+               time->GetMinute(), time->GetSecond());
 }
 
-static Ptr<iTime> _GetFileTime(const cString& strFilePath) {
-  Ptr<iFile> fp = GetRootFS()->FileOpen(strFilePath.Chars(),eFileOpenMode_Read);
+static Ptr<iTime> _GetFileTime(const cString& strFilePath)
+{
+  Ptr<iFile> fp =
+    GetRootFS()->FileOpen(strFilePath.Chars(), eFileOpenMode_Read);
   if (!fp.IsOK()) {
     return NULL;
   }
   Ptr<iTime> fileTime = GetLang()->GetCurrentTime()->Clone();
-  fp->GetTime(eFileTime_LastWrite,fileTime);
+  fp->GetTime(eFileTime_LastWrite, fileTime);
   return fileTime;
 }
 
-static cString _FindHamPath(cString& hamHome) {
+static cString _FindHamPath(cString& hamHome)
+{
   // Note: Same logic getHamPath() in ham.ni
   {
     cPath hamHomePath;
     hamHomePath.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.ham_home"));
-    SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.ham_home '%s'.", hamHomePath.c_str()));
+    SCRIPTCPP_TRACE(
+      ("Try hamHomePath from ni.dirs.ham_home '%s'.", hamHomePath.c_str()));
     if (!ni::DirExists(hamHomePath.c_str())) {
       hamHomePath.SetDirectory(ni::GetToolkitDir("ham"));
       hamHome = GetRootFS()->GetAbsolutePath(hamHomePath.c_str());
-      SCRIPTCPP_TRACE(("Try hamHomePath from ni.dirs.bin '%s'.", hamHomePath.c_str()));
+      SCRIPTCPP_TRACE(
+        ("Try hamHomePath from ni.dirs.bin '%s'.", hamHomePath.c_str()));
       if (!ni::DirExists(hamHomePath.c_str())) {
-        niWarning(niFmt("Can't find ham home directory '%s'.",hamHome));
+        niWarning(niFmt("Can't find ham home directory '%s'.", hamHome));
         return AZEROSTR;
       }
     }
@@ -113,52 +124,58 @@ static cString _FindHamPath(cString& hamHome) {
   hamPath.SetDirectory(hamHome.Chars());
   hamPath.AddDirectoryBack("bin");
   hamPath.SetFile(SCRIPTCPP_HAMEXE);
-  if (!ni::GetRootFS()->FileExists(hamPath.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
-    niWarning(niFmt("Can't find " SCRIPTCPP_HAMEXE " script '%s'.",hamPath.GetPath()));
+  if (!ni::GetRootFS()->FileExists(hamPath.GetPath().Chars(),
+                                   eFileAttrFlags_AllFiles))
+  {
+    niWarning(
+      niFmt("Can't find " SCRIPTCPP_HAMEXE " script '%s'.", hamPath.GetPath()));
     return AZEROSTR;
   }
 
   return hamPath.GetPath();
 }
 
-static tBool ScriptCpp_TryCompileSource(
-  sScriptCppModuleCache& mc,
-  const cString& strSourcePath,
-  const cString& strSourceAppDir)
+static tBool ScriptCpp_TryCompileSource(sScriptCppModuleCache& mc,
+                                        const cString& strSourcePath,
+                                        const cString& strSourceAppDir)
 {
   if (!mc.date.IsOK()) {
     mc.date = _GetFileTime(mc.path);
     if (!mc.date.IsOK()) {
-      niError(niFmt("Module '%s': Can't get datetime of '%s'.", mc.name, mc.path));
+      niError(
+        niFmt("Module '%s': Can't get datetime of '%s'.", mc.name, mc.path));
       return eFalse;
     }
   }
-  SCRIPTCPP_TRACE(("Module '%s', date: '%s', path: '%s'.",mc.name,ToString(mc.date.ptr()),mc.path));
+  SCRIPTCPP_TRACE(("Module '%s', date: '%s', path: '%s'.", mc.name,
+                   ToString(mc.date.ptr()), mc.path));
 
   Ptr<iTime> sourceTime = _GetFileTime(strSourcePath);
   if (!sourceTime.IsOK()) {
-    niError(niFmt("Module '%s': Can't get datetime of source: %s.",
-                  mc.name, strSourcePath));
+    niError(niFmt("Module '%s': Can't get datetime of source: %s.", mc.name,
+                  strSourcePath));
     return eFalse;
   }
-  SCRIPTCPP_TRACE(("Module '%s', source date: '%s', source: %s.",mc.name,ToString(sourceTime.ptr()),strSourcePath));
+  SCRIPTCPP_TRACE(("Module '%s', source date: '%s', source: %s.", mc.name,
+                   ToString(sourceTime.ptr()), strSourcePath));
 
   if (mc.date->Compare(sourceTime) >= 0) {
     ++_scriptCppStates._numUpToDate;
-    SCRIPTCPP_TRACE(("'%s' up-to-date.",mc.path));
+    SCRIPTCPP_TRACE(("'%s' up-to-date.", mc.path));
     if (!mc.hDLL) {
       mc.hDLL = ni_dll_load(mc.path.Chars());
       if (!mc.hDLL) {
-        niError(niFmt("Module '%s': Can't load up-to-date dll: %s", mc.name, mc.path));
+        niError(niFmt("Module '%s': Can't load up-to-date dll: %s", mc.name,
+                      mc.path));
         return eFalse;
       }
-      SCRIPTCPP_TRACE(("Loaded up-to-date DLL '%s'.",mc.path));
+      SCRIPTCPP_TRACE(("Loaded up-to-date DLL '%s'.", mc.path));
     }
     return eTrue;
   }
   else {
     ++_scriptCppStates._numOutOfDate;
-    SCRIPTCPP_TRACE(("'%s' outdated by '%s'.",mc.path,strSourcePath));
+    SCRIPTCPP_TRACE(("'%s' outdated by '%s'.", mc.path, strSourcePath));
   }
 
   cString hamHome;
@@ -173,24 +190,26 @@ static tBool ScriptCpp_TryCompileSource(
 
   {
     cPath pathBash;
-#if defined niWindows
+  #if defined niWindows
     pathBash.SetDirectory(hamHome.Chars());
     pathBash.AddDirectoryBack("toolsets/repos/nt-x86/git/bin");
     pathBash.SetFile("bash.exe");
     if (!ni::GetRootFS()->FileExists(pathBash.GetPath().Chars(),
-                                     eFileAttrFlags_AllFiles)) {
+                                     eFileAttrFlags_AllFiles))
+    {
       pathBash.SetDirectory(hamHome.Chars());
       pathBash.AddDirectoryBack("bin/nt-x86");
       pathBash.SetFile("bash.exe");
     }
-#elif defined niOSX || defined niLinux
+  #elif defined niOSX || defined niLinux
     pathBash.SetFile("/bin/bash");
-#else
+  #else
     {
-      niError(niFmt("Module '%s': This platform can't runtime compile cpp.", mc.name));
+      niError(niFmt("Module '%s': This platform can't runtime compile cpp.",
+                    mc.name));
       return eFalse;
     }
-#endif
+  #endif
 
     SCRIPTCPP_TRACE(("pathBash: %s", pathBash.GetPath()));
     hamCmd << "\"" << pathBash.GetPath() << "\" ";
@@ -204,8 +223,8 @@ static tBool ScriptCpp_TryCompileSource(
   // hit - quite likely because of their humongous PATH, and the fact its
   // UTF16... Anyway it's also neater this way.
   {
-#define ENV_COPY(NAME) EnvCopyIfExists(envMap, ni::GetLang(), #NAME)
-#define ENV_SET(NAME,V) astl::upsert(*envMap, #NAME, V)
+  #define ENV_COPY(NAME) EnvCopyIfExists(envMap, ni::GetLang(), #NAME)
+  #define ENV_SET(NAME, V) astl::upsert(*envMap, #NAME, V)
 
     // Common
     ENV_COPY(CWD);
@@ -233,7 +252,7 @@ static tBool ScriptCpp_TryCompileSource(
     ENV_COPY(INSIDE_EMACS);
 
     // Windows only
-#ifdef niWindows
+  #ifdef niWindows
     ENV_COPY(ALLUSERSPROFILE);
     ENV_COPY(APPDATA);
     ENV_COPY(COMMONPROGRAMFILES(X86));
@@ -258,34 +277,33 @@ static tBool ScriptCpp_TryCompileSource(
     ENV_COPY(USERNAME);
     ENV_COPY(USERPROFILE);
     ENV_COPY(WINDIR);
-#endif
+  #endif
 
-#undef ENV_COPY
-#undef ENV_SET
+  #undef ENV_COPY
+  #undef ENV_SET
   }
 
   cString strSourceAppDirUrl;
-  StringEncodeUrl(strSourceAppDirUrl,strSourceAppDir);
+  StringEncodeUrl(strSourceAppDirUrl, strSourceAppDir);
 
   cString hamProject;
   {
     cPath pathHamProject(strSourceAppDir, "_ham_project");
     if (ni::GetRootFS()->FileExists(pathHamProject.c_str(),
-                                    eFileAttrFlags_AllFiles)) {
+                                    eFileAttrFlags_AllFiles))
+    {
       hamProject = pathHamProject.c_str();
-    } else {
+    }
+    else {
       hamProject = "default";
     }
   }
 
-  hamCmd << "\"" << hamPath << + "\""
+  hamCmd << "\"" << hamPath << +"\""
          << " -T \"" << hamProject << "\""
-         << " -D " << strSourceAppDirUrl
-         << " RTCPP=1"
-         << " BUILD=" << ScriptCpp_GetCompileModuleType()
-         << " STAMP=" << stamp
-         << " " << mc.name
-      ;
+         << " -D " << strSourceAppDirUrl << " RTCPP=1"
+         << " BUILD=" << ScriptCpp_GetCompileModuleType() << " STAMP=" << stamp
+         << " " << mc.name;
 
   SCRIPTCPP_TRACE(("hamPath: %s", hamPath));
   SCRIPTCPP_TRACE(("hamCmd: %s", hamCmd));
@@ -306,12 +324,13 @@ static tBool ScriptCpp_TryCompileSource(
   SCRIPTCPP_TRACE(("outputPathNotStamped: %s", pathOutputNotStamped.GetPath()));
   SCRIPTCPP_TRACE(("outputPath: %s", pathOutput.GetPath()));
 
-  niLog(Info,niFmt("Building Module '%s'.", mc.name));
+  niLog(Info, niFmt("Building Module '%s'.", mc.name));
 
   Ptr<iOSProcessManager> pm = GetLang()->GetProcessManager();
-  sVec2i procRet = {eFalse,0};
-  Ptr<iOSProcess> proc = pm->SpawnProcessEx(
-    hamCmd.Chars(), NULL, envMap, eOSProcessSpawnFlags_StdFiles|eOSProcessSpawnFlags_Detached);
+  sVec2i procRet = { eFalse, 0 };
+  Ptr<iOSProcess> proc = pm->SpawnProcessEx(hamCmd.Chars(), NULL, envMap,
+                                            eOSProcessSpawnFlags_StdFiles |
+                                              eOSProcessSpawnFlags_Detached);
   if (proc.IsOK()) {
     niLog(Info, "=== Build Output BEGIN ===");
     // drain stdout...
@@ -338,17 +357,20 @@ static tBool ScriptCpp_TryCompileSource(
     niLog(Info, "=== Build Output END ===");
   }
   if (procRet.x && procRet.y == 0) {
-    niLog(Info,niFmt("Module '%s': build succeeded: %s", mc.name, pathOutput.GetPath()));
+    niLog(Info, niFmt("Module '%s': build succeeded: %s", mc.name,
+                      pathOutput.GetPath()));
     mc.path = pathOutput.GetPath().Chars();
     mc.date = NULL;
     mc.hDLL = ni_dll_load(mc.path.Chars());
     if (!mc.hDLL) {
-      niError(niFmt("Module '%s': Can't load compiled dll '%s'.", mc.name, mc.path));
+      niError(
+        niFmt("Module '%s': Can't load compiled dll '%s'.", mc.name, mc.path));
       return eFalse;
     }
   }
   else {
-    niError(niFmt("Module '%s': Build of '%s' failed.", mc.name, pathOutput.GetPath()));
+    niError(niFmt("Module '%s': Build of '%s' failed.", mc.name,
+                  pathOutput.GetPath()));
     return eFalse;
   }
 
@@ -356,14 +378,18 @@ static tBool ScriptCpp_TryCompileSource(
   return eTrue;
 }
 
-static void _ScriptCpp_CleanupDLLs(const achar* aDir) {
+static void _ScriptCpp_CleanupDLLs(const achar* aDir)
+{
   if (!niStringIsOK(aDir))
     return;
 
   cPath path;
   path.SetDirectory(aDir);
-  if (!ni::GetRootFS()->FileExists(path.GetPath().c_str(), eFileAttrFlags_AllDirectories)) {
-    SCRIPTCPP_TRACE(("ScriptCpp Cleanup: Can't find directory: %s", path.GetPath()));
+  if (!ni::GetRootFS()->FileExists(path.GetPath().c_str(),
+                                   eFileAttrFlags_AllDirectories))
+  {
+    SCRIPTCPP_TRACE(
+      ("ScriptCpp Cleanup: Can't find directory: %s", path.GetPath()));
     return;
   }
   path.SetFile("*_*-*_rtcpp.*");
@@ -376,28 +402,31 @@ static void _ScriptCpp_CleanupDLLs(const achar* aDir) {
       path.SetFile(ff.FileName());
       tBool r = ni::GetRootFS()->FileDelete(path.GetPath().Chars());
       niLog(Info, niFmt("ScriptCpp Cleanup: Removing artifact %s: %s",
-                        r ? "succeeded" : "failed",
-                        path.GetPath()));
-    } while(ff.Next());
+                        r ? "succeeded" : "failed", path.GetPath()));
+    } while (ff.Next());
   }
 }
 
-niExportFunc(void) ScriptCpp_CleanupDLLs() {
+niExportFunc(void) ScriptCpp_CleanupDLLs()
+{
   _ScriptCpp_CleanupDLLs(ni::GetLang()->GetProperty("ni.dirs.bin").Chars());
 }
 
-static cString _FindModulePath(const cString& strModuleFileName) {
+static cString _FindModulePath(const cString& strModuleFileName)
+{
   const cString binDir = ni::GetLang()->GetProperty("ni.dirs.bin");
   if (binDir.IsNotEmpty()) {
     cPath pathAppModuleFileName;
     pathAppModuleFileName.SetDirectory(binDir.Chars());
     pathAppModuleFileName.SetFile(strModuleFileName.Chars());
-    if (ni::GetRootFS()->FileExists(
-          pathAppModuleFileName.GetPath().Chars(),eFileAttrFlags_AllFiles)) {
+    if (ni::GetRootFS()->FileExists(pathAppModuleFileName.GetPath().Chars(),
+                                    eFileAttrFlags_AllFiles))
+    {
       return pathAppModuleFileName.GetPath();
     }
     else {
-      niError(niFmt("Can't find module '%s' at '%s'", strModuleFileName, pathAppModuleFileName.GetPath()));
+      niError(niFmt("Can't find module '%s' at '%s'", strModuleFileName,
+                    pathAppModuleFileName.GetPath()));
     }
   }
   else {
@@ -411,40 +440,47 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
 
   tScriptCppModuleMap _modules;
 
-  CppScriptingHost() {
+  CppScriptingHost()
+  {
   }
-  ~CppScriptingHost() {
+  ~CppScriptingHost()
+  {
     this->Cleanup();
   }
 
-  virtual tBool __stdcall Cleanup() {
+  virtual tBool __stdcall Cleanup()
+  {
     if (ScriptCpp_GetCompileEnabled()) {
       ScriptCpp_CleanupDLLs();
     }
     return eTrue;
   }
 
-  virtual tBool __stdcall EvalString(iHString* ahspContext, const ni::achar* aaszCode) {
+  virtual tBool __stdcall EvalString(iHString* ahspContext,
+                                     const ni::achar* aaszCode)
+  {
     return eFalse;
   }
 
-  virtual tBool __stdcall CanEvalImpl(iHString* ahspContext, iHString* ahspCodeResource) {
-    return (
-      StrEndsWith(niHStr(ahspCodeResource),".cpp") ||
-      StrEndsWith(niHStr(ahspCodeResource),".cpp2") ||
-      StrEndsWith(niHStr(ahspCodeResource),".cni")
-    );
+  virtual tBool __stdcall CanEvalImpl(iHString* ahspContext,
+                                      iHString* ahspCodeResource)
+  {
+    return (StrEndsWith(niHStr(ahspCodeResource), ".cpp") ||
+            StrEndsWith(niHStr(ahspCodeResource), ".cpp2") ||
+            StrEndsWith(niHStr(ahspCodeResource), ".cni"));
   }
 
-  virtual iUnknown* __stdcall EvalImpl(iHString* ahspContext, iHString* ahspCodeResource, const tUUID& aIID) {
+  virtual iUnknown* __stdcall EvalImpl(iHString* ahspContext,
+                                       iHString* ahspCodeResource,
+                                       const tUUID& aIID)
+  {
 
-#define CHECK_SCRIPTCPP_RES(CHECK,DESC)                     \
-    if (!(CHECK)) {                                         \
-      niError(niFmt(                                        \
-        "Invalid ScriptCpp resource definition '%s'. " DESC \
-        " (Syntax: TOOLKIT/sources/MODULE/path/CLASS.cpp)",  \
-        ahspCodeResource));                                 \
-      return nullptr;                                       \
+  #define CHECK_SCRIPTCPP_RES(CHECK, DESC)                              \
+    if (!(CHECK)) {                                                     \
+      niError(niFmt("Invalid ScriptCpp resource definition '%s'. " DESC \
+                    " (Syntax: TOOLKIT/sources/MODULE/path/CLASS.cpp)", \
+                    ahspCodeResource));                                 \
+      return nullptr;                                                   \
     }
 
     const cString strResource = niHStr(ahspCodeResource);
@@ -463,19 +499,17 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     CHECK_SCRIPTCPP_RES(strClass.IsNotEmpty(), "No CLASS.");
 
     const cString strModuleFileName = _GetModuleFileName(strModule);
-    const cString strCreateFunctionName = _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
+    const cString strCreateFunctionName =
+      _ASTR("New_") + niHStr(ahspContext) + "_" + strClass;
 
     const cString strSourceAppDir = ni::GetToolkitDir(strTkName.c_str());
     const cString strSourcePath = strSourceAppDir + "sources/" + strPath;
 
     SCRIPTCPP_TRACE((
       "Context: %s, UUID: %s, Resource: %s, Toolkit: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s.",
-      ahspContext, aIID,
-      ahspCodeResource,
-      strTkName,
-      strModule, strModuleFileName,
-      strClass, strCreateFunctionName,
-      strSourcePath, strSourceAppDir));
+      ahspContext, aIID, ahspCodeResource, strTkName, strModule,
+      strModuleFileName, strClass, strCreateFunctionName, strSourcePath,
+      strSourceAppDir));
 
     tScriptCppModuleMap::iterator itModule = _modules.find(strModuleFileName);
     if (itModule != _modules.end()) {
@@ -488,20 +522,17 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
       if (newModule.path.empty()) {
         niError(niFmt(
           "Can't find module path. Context: %s, UUID: %s, Resource: %s, Toolkit: %s, Module: %s, ModuleFile: %s, Class: %s, CreateFun: %s, SourcePath: %s, SourceAppDir: %s.",
-          ahspContext, aIID,
-          ahspCodeResource,
-          strTkName,
-          strModule, strModuleFileName,
-          strClass, strCreateFunctionName,
-          strSourcePath, strSourceAppDir));
+          ahspContext, aIID, ahspCodeResource, strTkName, strModule,
+          strModuleFileName, strClass, strCreateFunctionName, strSourcePath,
+          strSourceAppDir));
         return nullptr;
       }
-      itModule = astl::upsert(_modules,strModuleFileName,newModule);
+      itModule = astl::upsert(_modules, strModuleFileName, newModule);
     }
 
     if (ScriptCpp_GetCompileEnabled()) {
-      if (!ScriptCpp_TryCompileSource(
-            itModule->second,strSourcePath,strSourceAppDir))
+      if (!ScriptCpp_TryCompileSource(itModule->second, strSourcePath,
+                                      strSourceAppDir))
       {
         niError(niFmt("Can't compile module '%s' for code resource '%s'.",
                       strModule, ahspCodeResource));
@@ -509,7 +540,9 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
       }
     }
     else {
-      SCRIPTCPP_TRACE(("ScriptCpp compile disabled. (use -D" SCRIPTCPP_COMPILE_PROPERTY "=1 to enable it)"));
+      SCRIPTCPP_TRACE(
+        ("ScriptCpp compile disabled. (use -D" SCRIPTCPP_COMPILE_PROPERTY
+         "=1 to enable it)"));
     }
 
     sScriptCppModuleCache& mc = itModule->second;
@@ -529,33 +562,32 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
       }
     }
 
-    tpfnNewInstance pfnNewInstance = (tpfnNewInstance)ni_dll_get_proc(
-        mc.hDLL,strCreateFunctionName.Chars());
+    tpfnNewInstance pfnNewInstance =
+      (tpfnNewInstance)ni_dll_get_proc(mc.hDLL, strCreateFunctionName.Chars());
     if (!pfnNewInstance) {
-      niError(niFmt("Can't get function '%s' from module file '%s' (%s) for code resource '%s'.",
-                    strCreateFunctionName,
-                    strModule, mc.path,
-                    ahspCodeResource));
+      niError(niFmt(
+        "Can't get function '%s' from module file '%s' (%s) for code resource '%s'.",
+        strCreateFunctionName, strModule, mc.path, ahspCodeResource));
       return NULL;
     }
 
     Ptr<iUnknown> ptrInst = pfnNewInstance();
     if (!ptrInst.IsOK()) {
-      niError(niFmt("Can't create instance with function '%s' from module file '%s' (%s) for code resource '%s'.",
-                    strCreateFunctionName,
-                    strModule, mc.path,
-                    ahspCodeResource));
+      niError(niFmt(
+        "Can't create instance with function '%s' from module file '%s' (%s) for code resource '%s'.",
+        strCreateFunctionName, strModule, mc.path, ahspCodeResource));
       return NULL;
     }
 
     if (aIID != kuuidZero) {
       ptrInst = ptrInst->QueryInterface(aIID);
       if (!ptrInst.IsOK()) {
-        const sInterfaceDef* pInterfaceDef = ni::GetLang()->GetInterfaceDefFromUUID(aIID);
-        niError(niFmt("Can't query interface '%s' (%s) on instance created by function '%s' from module file '%s' for code resource '%s'.",
-                      pInterfaceDef ? pInterfaceDef->maszName : "",
-                      aIID,
-                      strCreateFunctionName, strModule, ahspCodeResource));
+        const sInterfaceDef* pInterfaceDef =
+          ni::GetLang()->GetInterfaceDefFromUUID(aIID);
+        niError(niFmt(
+          "Can't query interface '%s' (%s) on instance created by function '%s' from module file '%s' for code resource '%s'.",
+          pInterfaceDef ? pInterfaceDef->maszName : "", aIID,
+          strCreateFunctionName, strModule, ahspCodeResource));
         return NULL;
       }
     }
@@ -563,18 +595,22 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     return ptrInst.GetRawAndSetNull();
   }
 
-  virtual void __stdcall Service(tBool abForceGC) {
+  virtual void __stdcall Service(tBool abForceGC)
+  {
   }
 
   niEndClass(CppScriptingHost);
 };
 
-niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost() {
+niExportFunc(iScriptingHost*) ScriptCpp_CreateScriptingHost()
+{
   return niNew CppScriptingHost();
 }
 
-niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/, const Var& /*avarB*/) {
+niExportFunc(ni::iUnknown*) New_niScriptCpp_ScriptingHost(const Var& /*avarA*/,
+                                                          const Var& /*avarB*/)
+{
   return ScriptCpp_CreateScriptingHost();
 }
-}
+} // namespace ni
 #endif

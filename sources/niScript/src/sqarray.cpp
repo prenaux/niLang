@@ -9,12 +9,11 @@
 #include "sqclosure.h"
 #include "sqarray.h"
 
-static inline tU32 _TranslateArrayIndex(const SQObjectPtr &idx) {
-  switch(_sqtype(idx)){
-    case OT_NULL:
-      return 0;
-    case OT_INTEGER:
-      return (tU32)_int(idx);
+static inline tU32 _TranslateArrayIndex(const SQObjectPtr& idx)
+{
+  switch (_sqtype(idx)) {
+  case OT_NULL: return 0;
+  case OT_INTEGER: return (tU32)_int(idx);
   }
   niPanicUnreachable("Invalid index type.");
   return 0;
@@ -50,10 +49,9 @@ void SQArray::Invalidate()
 }
 
 ///////////////////////////////////////////////
-bool SQArray::Get(const int nidx,SQObjectPtr &val)
+bool SQArray::Get(const int nidx, SQObjectPtr& val)
 {
-  if (nidx >= 0 && nidx < (int)_values.size())
-  {
+  if (nidx >= 0 && nidx < (int)_values.size()) {
     val = _values[nidx];
     return true;
   }
@@ -62,11 +60,10 @@ bool SQArray::Get(const int nidx,SQObjectPtr &val)
 }
 
 ///////////////////////////////////////////////
-bool SQArray::Set(const int nidx,const SQObjectPtr &val)
+bool SQArray::Set(const int nidx, const SQObjectPtr& val)
 {
-  if (nidx >= 0 && nidx < (int)_values.size())
-  {
-    _values[nidx]=val;
+  if (nidx >= 0 && nidx < (int)_values.size()) {
+    _values[nidx] = val;
     return true;
   }
   else
@@ -74,13 +71,14 @@ bool SQArray::Set(const int nidx,const SQObjectPtr &val)
 }
 
 ///////////////////////////////////////////////
-int SQArray::Next(const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval)
+int SQArray::Next(const SQObjectPtr& refpos, SQObjectPtr& outkey,
+                  SQObjectPtr& outval)
 {
   unsigned int idx = _TranslateArrayIndex(refpos);
   while (idx < _values.size()) {
     //first found
-    outkey=(SQInt)idx;
-    outval=_values[idx];
+    outkey = (SQInt)idx;
+    outval = _values[idx];
     //return idx for the next iteration
     return ++idx;
   }
@@ -90,9 +88,9 @@ int SQArray::Next(const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &o
 }
 
 ///////////////////////////////////////////////
-SQArray *SQArray::Clone(tSQDeepCloneGuardSet* apDeepClone)
+SQArray* SQArray::Clone(tSQDeepCloneGuardSet* apDeepClone)
 {
-  SQArray *anew = Create(Size());
+  SQArray* anew = Create(Size());
   anew->_values = _values;
   return anew;
 }
@@ -110,9 +108,9 @@ int SQArray::Capacity() const
 }
 
 ///////////////////////////////////////////////
-void SQArray::Resize(int size,SQObjectPtr &fill)
+void SQArray::Resize(int size, SQObjectPtr& fill)
 {
-  _values.resize(size,fill);
+  _values.resize(size, fill);
 }
 
 ///////////////////////////////////////////////
@@ -122,17 +120,16 @@ void SQArray::Reserve(int size)
 }
 
 ///////////////////////////////////////////////
-void SQArray::Append(const SQObject &o)
+void SQArray::Append(const SQObject& o)
 {
   _values.push_back(o);
 }
 
 ///////////////////////////////////////////////
-void SQArray::Extend(const SQArray *a)
+void SQArray::Extend(const SQArray* a)
 {
   int xlen = a->Size();
-  if (xlen)
-  {
+  if (xlen) {
     for (int i = 0; i < xlen; ++i)
       Append(a->_values[i]);
   }
@@ -144,7 +141,7 @@ void SQArray::Mark(SQCollectable** chain)
 {
   START_MARK();
   int len = (int)_values.size();
-  for (int i = 0;i < len; i++) {
+  for (int i = 0; i < len; i++) {
     SQGarbageCollector::MarkObject(_values[i], chain);
   }
   END_MARK(chain);
@@ -164,15 +161,15 @@ void SQArray::Pop()
 }
 
 ///////////////////////////////////////////////
-void SQArray::Insert(const SQObject& idx,const SQObject &val)
+void SQArray::Insert(const SQObject& idx, const SQObject& val)
 {
-  astl::insert_at(_values,toint(idx),val);
+  astl::insert_at(_values, toint(idx), val);
 }
 
 ///////////////////////////////////////////////
 void SQArray::Remove(unsigned int idx)
 {
-  astl::remove_at(_values,idx);
+  astl::remove_at(_values, idx);
 }
 
 ///////////////////////////////////////////////

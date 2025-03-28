@@ -36,22 +36,22 @@
 		</interface>
 		<enum min_features="15" name="eScriptRaiseErrorMode">
 			<comments desc="Script raise error mode "/>
-			<value min_features="15" name="eScriptRaiseErrorMode_Silent" value="0 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Silent" value="0">
 				<comments desc="Never automatically generate an error message "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Error" value="1 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Error" value="1">
 				<comments desc="Generates a simple error message "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_ShortCallstack" value="2 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortCallstack" value="2">
 				<comments desc="Generates a short callstack (default) "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Callstack" value="3 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Callstack" value="3">
 				<comments desc="Generates a verbose callstack "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_ShortLocals" value="4 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortLocals" value="4">
 				<comments desc="Generates a short callstack with locals "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Locals" value="5 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Locals" value="5">
 				<comments desc="Generates a verbose callstack with locals "/>
 			</value>
 		</enum>

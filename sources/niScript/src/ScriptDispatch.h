@@ -8,8 +8,7 @@
 // cScriptDispatch declaration.
 
 //! Script engine iDispatch implementation.
-class cScriptDispatch : public ImplAggregate<iDispatch>
-{
+class cScriptDispatch : public ImplAggregate<iDispatch> {
   niBeginClass(cScriptDispatch);
 
  protected:
@@ -28,8 +27,11 @@ class cScriptDispatch : public ImplAggregate<iDispatch>
   void __stdcall ListInterfaces(iMutableCollection* apLst, tU32) const niImpl;
 
   //// iDispatch ////////////////////////////////
-  tBool __stdcall InitializeMethods(const sMethodDef* const* apMethods, ni::tU32 anNumMethods);
-  tBool __stdcall CallMethod(const sMethodDef* const apMethodDef, ni::tU32 anMethodIndex, const Var* apParameters, tU32 anNumParameters, Var* apRet);
+  tBool __stdcall InitializeMethods(const sMethodDef* const* apMethods,
+                                    ni::tU32 anNumMethods);
+  tBool __stdcall CallMethod(const sMethodDef* const apMethodDef,
+                             ni::tU32 anMethodIndex, const Var* apParameters,
+                             tU32 anNumParameters, Var* apRet);
   //// iDispatch ////////////////////////////////
 
   virtual tI32 __stdcall AddRef();
@@ -39,22 +41,29 @@ class cScriptDispatch : public ImplAggregate<iDispatch>
 
   void _Unregister(iUnknown* apWrapper);
 
-  SQTable* _GetTable() { return down_cast<SQTable*>(mprotected_pAggregateParent); }
-  const SQTable* _GetTable() const { return down_cast<const SQTable*>(mprotected_pAggregateParent); }
+  SQTable* _GetTable()
+  {
+    return down_cast<SQTable*>(mprotected_pAggregateParent);
+  }
+  const SQTable* _GetTable() const
+  {
+    return down_cast<const SQTable*>(mprotected_pAggregateParent);
+  }
 
-  iUnknown* __stdcall _CreateInterfaceDispatchWrapper(const sInterfaceDef* apDef);
+  iUnknown* __stdcall _CreateInterfaceDispatchWrapper(
+    const sInterfaceDef* apDef);
 
  private:
   friend class cScriptAutomation;
 
   __sync_mutex();
   typedef astl::map<const sMethodDef*, SQObjectPtr> tMethodMap;
-  typedef astl::map<tUUID,iUnknown*> tInterfaceMap;
-  tMethodMap    mmapMethods;
+  typedef astl::map<tUUID, iUnknown*> tInterfaceMap;
+  tMethodMap mmapMethods;
   tInterfaceMap mmapInterfaces;
   Ptr<iScriptObject> mptrObj;
-  HSQUIRRELVM   mOwnerVM;
-  tBool         mbDidPrintMultiThreadedWarning;
+  HSQUIRRELVM mOwnerVM;
+  tBool mbDidPrintMultiThreadedWarning;
 
   niEndClass(cScriptDispatch);
 };

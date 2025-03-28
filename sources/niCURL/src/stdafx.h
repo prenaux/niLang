@@ -7,7 +7,7 @@
 using namespace ni;
 
 #if !defined niJSCC
-#define HAS_CURL
+  #define HAS_CURL
 #endif
 
 #endif // __STDAFX_H_6CE5C9D1_4AAD_4F97_ADE7_E4637A502BB9__

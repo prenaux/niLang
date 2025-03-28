@@ -2,10 +2,10 @@
 	<namespace name="ni">
 		<enum name="eFetchMethod">
 			<comments desc="HTTP method used to execute the fetch request. "/>
-			<value name="eFetchMethod_Get" value="0 ">
+			<value name="eFetchMethod_Get" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eFetchMethod_Post" value="1 ">
+			<value name="eFetchMethod_Post" value="1">
 				<comments desc=""/>
 			</value>
 		</enum>
@@ -13,19 +13,19 @@
 			<comments desc="State of the fetch request. ">
 				<remark text="See https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState "/>
 			</comments>
-			<value name="eFetchReadyState_Unsent" value="0 ">
+			<value name="eFetchReadyState_Unsent" value="0">
 				<comments desc="Request not sent yet "/>
 			</value>
-			<value name="eFetchReadyState_Opened" value="1 ">
+			<value name="eFetchReadyState_Opened" value="1">
 				<comments desc="Fetch has been sent. "/>
 			</value>
-			<value name="eFetchReadyState_HeadersReceived" value="2 ">
+			<value name="eFetchReadyState_HeadersReceived" value="2">
 				<comments desc="Headers and status are available. "/>
 			</value>
-			<value name="eFetchReadyState_Loading" value="3 ">
+			<value name="eFetchReadyState_Loading" value="3">
 				<comments desc="Download in progress. "/>
 			</value>
-			<value name="eFetchReadyState_Done" value="4 ">
+			<value name="eFetchReadyState_Done" value="4">
 				<comments desc="Download finished. "/>
 			</value>
 		</enum>

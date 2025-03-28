@@ -2,56 +2,56 @@
 	<namespace name="ni">
 		<enum name="eCURLMessage">
 			<comments desc="CURL message. "/>
-			<value name="eCURLMessage_Started" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;t&apos; ) ">
+			<value name="eCURLMessage_Started" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;t&apos;)">
 				<comments desc="The request started. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_ResponseCode" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;o&apos; ) ">
+			<value name="eCURLMessage_ResponseCode" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;o&apos;)">
 				<comments desc="Received a response code from the server. ">
 					<params text="A: the last received HTTP or FTP code. "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_ReceivingHeader" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;h&apos; ) ">
+			<value name="eCURLMessage_ReceivingHeader" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;h&apos;)">
 				<comments desc="Started receiving the header. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_ReceivingData" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;r&apos; ) ">
+			<value name="eCURLMessage_ReceivingData" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;r&apos;)">
 				<comments desc="Started receiving the data. Header has been received. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_ReceivedPart" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;m&apos; ) ">
+			<value name="eCURLMessage_ReceivedPart" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;m&apos;)">
 				<comments desc="Received a part. ">
 					<remark text="Sent by URLGetMultiPart, it includes the part&apos;s header which has a content type which looks like &apos;Content-Type: multipart/x-mixed-replace;boundary=ipcamera&apos;. "/>
 					<params text="A: iFile, buffer file which contains the data of the part. "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_Sending" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;s&apos; ) ">
+			<value name="eCURLMessage_Sending" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;s&apos;)">
 				<comments desc="Started sending data. ">
 					<params text="A: unused "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_Completed" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;C&apos; ) ">
+			<value name="eCURLMessage_Completed" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;C&apos;)">
 				<comments desc="The request has successfully completed. ">
 					<params text="A: Response code (200, 404, ...) "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_Failed" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;F&apos; ) ">
+			<value name="eCURLMessage_Failed" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;F&apos;)">
 				<comments desc="The request failed. ">
 					<params text="A: error message string "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
 				</comments>
 			</value>
-			<value name="eCURLMessage_Progress" value="niMessageID ( &apos;C&apos; , &apos;U&apos; , &apos;R&apos; , &apos;L&apos; , &apos;p&apos; ) ">
+			<value name="eCURLMessage_Progress" value="niMessageID(&apos;C&apos;,&apos;U&apos;,&apos;R&apos;,&apos;L&apos;,&apos;p&apos;)">
 				<comments desc="Progress message ">
 					<params text="A: Vec4i(dlNow,dlTotal,upNow,upTotal) "/>
 					<params text="B: iFuture, which can be used to cancel the request "/>
@@ -62,34 +62,34 @@
 			<comments desc="HTTP authentication modes ">
 				<remark text="This uses the same value as CURLOPT_HTTPAUTH options in libcurl for convenience. "/>
 			</comments>
-			<value name="eCURLHttpAuth_None" value="0 ">
+			<value name="eCURLHttpAuth_None" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Basic" value="niBit ( 0 ) ">
+			<value name="eCURLHttpAuth_Basic" value="niBit(0)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Digest" value="niBit ( 1 ) ">
+			<value name="eCURLHttpAuth_Digest" value="niBit(1)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Gssnegotiate" value="niBit ( 2 ) ">
+			<value name="eCURLHttpAuth_Gssnegotiate" value="niBit(2)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Ntlm" value="niBit ( 3 ) ">
+			<value name="eCURLHttpAuth_Ntlm" value="niBit(3)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_DigestIE" value="niBit ( 4 ) ">
+			<value name="eCURLHttpAuth_DigestIE" value="niBit(4)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_NtlmWB" value="niBit ( 5 ) ">
+			<value name="eCURLHttpAuth_NtlmWB" value="niBit(5)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Only" value="niBit ( 31 ) ">
+			<value name="eCURLHttpAuth_Only" value="niBit(31)">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_Any" value="~eCURLHttpAuth_DigestIE ">
+			<value name="eCURLHttpAuth_Any" value="~eCURLHttpAuth_DigestIE">
 				<comments desc=""/>
 			</value>
-			<value name="eCURLHttpAuth_AnySafe" value="~ ( eCURLHttpAuth_Basic|eCURLHttpAuth_DigestIE ) ">
+			<value name="eCURLHttpAuth_AnySafe" value="~(eCURLHttpAuth_Basic|eCURLHttpAuth_DigestIE)">
 				<comments desc=""/>
 			</value>
 		</enum>

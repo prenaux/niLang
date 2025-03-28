@@ -20,55 +20,55 @@
 	<namespace name="ni" source="niScript/src/_idl/IScriptObject.h.idl.xml">
 		<enum min_features="15" name="eScriptObjectType">
 			<comments desc="Script object type. "/>
-			<value min_features="15" name="eScriptObjectType_Unknown" value="0 ">
+			<value min_features="15" name="eScriptObjectType_Unknown" value="0">
 				<comments desc="Unknown object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Function" value="1 ">
+			<value min_features="15" name="eScriptObjectType_Function" value="1">
 				<comments desc="Function object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Table" value="2 ">
+			<value min_features="15" name="eScriptObjectType_Table" value="2">
 				<comments desc="Table object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Null" value="3 ">
+			<value min_features="15" name="eScriptObjectType_Null" value="3">
 				<comments desc="Null object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Int" value="4 ">
+			<value min_features="15" name="eScriptObjectType_Int" value="4">
 				<comments desc="Integer object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Float" value="5 ">
+			<value min_features="15" name="eScriptObjectType_Float" value="5">
 				<comments desc="Float object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_String" value="6 ">
+			<value min_features="15" name="eScriptObjectType_String" value="6">
 				<comments desc="String object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_UserData" value="7 ">
+			<value min_features="15" name="eScriptObjectType_UserData" value="7">
 				<comments desc="UserData object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Array" value="8 ">
+			<value min_features="15" name="eScriptObjectType_Array" value="8">
 				<comments desc="Array object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_VM" value="9 ">
+			<value min_features="15" name="eScriptObjectType_VM" value="9">
 				<comments desc="VM object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_IUnknown" value="0x0400 ">
+			<value min_features="15" name="eScriptObjectType_IUnknown" value="0x0400">
 				<comments desc="iUnknown object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Vec2" value="11 ">
+			<value min_features="15" name="eScriptObjectType_Vec2" value="11">
 				<comments desc="Vec2 object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Vec3" value="12 ">
+			<value min_features="15" name="eScriptObjectType_Vec3" value="12">
 				<comments desc="Vec3 object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Vec4" value="13 ">
+			<value min_features="15" name="eScriptObjectType_Vec4" value="13">
 				<comments desc="Vec4 object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Matrix" value="14 ">
+			<value min_features="15" name="eScriptObjectType_Matrix" value="14">
 				<comments desc="Matrix object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_UUID" value="15 ">
+			<value min_features="15" name="eScriptObjectType_UUID" value="15">
 				<comments desc="UUID object type. "/>
 			</value>
-			<value min_features="15" name="eScriptObjectType_Last" value="16 ">
+			<value min_features="15" name="eScriptObjectType_Last" value="16">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -340,22 +340,22 @@
 		</interface>
 		<enum min_features="15" name="eScriptRaiseErrorMode">
 			<comments desc="Script raise error mode "/>
-			<value min_features="15" name="eScriptRaiseErrorMode_Silent" value="0 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Silent" value="0">
 				<comments desc="Never automatically generate an error message "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Error" value="1 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Error" value="1">
 				<comments desc="Generates a simple error message "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_ShortCallstack" value="2 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortCallstack" value="2">
 				<comments desc="Generates a short callstack (default) "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Callstack" value="3 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Callstack" value="3">
 				<comments desc="Generates a verbose callstack "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_ShortLocals" value="4 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_ShortLocals" value="4">
 				<comments desc="Generates a short callstack with locals "/>
 			</value>
-			<value min_features="15" name="eScriptRaiseErrorMode_Locals" value="5 ">
+			<value min_features="15" name="eScriptRaiseErrorMode_Locals" value="5">
 				<comments desc="Generates a verbose callstack with locals "/>
 			</value>
 		</enum>

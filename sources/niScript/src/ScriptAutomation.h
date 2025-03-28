@@ -4,29 +4,31 @@
 // SPDX-License-Identifier: MIT
 #if niMinFeatures(15)
 
-#include <niLang/STL/hash_set.h>
-#include <niLang/STL/bimap.h>
-#include <niLang/ILang.h>
-#include "ScriptDispatch.h"
-#include "ScriptTypes.h"
+  #include <niLang/STL/hash_set.h>
+  #include <niLang/STL/bimap.h>
+  #include <niLang/ILang.h>
+  #include "ScriptDispatch.h"
+  #include "ScriptTypes.h"
 
-// One of the three should be defined
-#define GETIUNKNOWN_INDEX_VTABLE
-// #define GETIUNKNOWN_OBJECT
-// #define GETIUNKNOWN_SAFE
+  // One of the three should be defined
+  #define GETIUNKNOWN_INDEX_VTABLE
+  // #define GETIUNKNOWN_OBJECT
+  // #define GETIUNKNOWN_SAFE
 
-#define NI_VM(v) niUnsafeCast(cScriptVM*,sq_getforeignptr(v))
-#define NI_VMA(v) niUnsafeCast(cScriptVM*,sq_getforeignptr(v))->GetAutomation()
+  #define NI_VM(v) niUnsafeCast(cScriptVM*, sq_getforeignptr(v))
+  #define NI_VMA(v) \
+    niUnsafeCast(cScriptVM*, sq_getforeignptr(v))->GetAutomation()
 
-#ifdef GETIUNKNOWN_INDEX_VTABLE
+  #ifdef GETIUNKNOWN_INDEX_VTABLE
 static const tU32 knUnkTableMaxSize = 64;
-#elif defined GETIUNKNOWN_OBJECT
+  #elif defined GETIUNKNOWN_OBJECT
 static const tU32 knUnkTableMaxSize = 1024;
-#endif
+  #endif
 
 ///////////////////////////////////////////////
-template<typename T>
-inline SQFloat _toSQFloat(T a) {
+template <typename T>
+inline SQFloat _toSQFloat(T a)
+{
   return (SQFloat)a;
 }
 
@@ -35,7 +37,8 @@ inline SQFloat _toSQFloat(T a) {
 int indexedproperty_set(HSQUIRRELVM v);
 int indexedproperty_get(HSQUIRRELVM v);
 
-void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v, const iUnknown* apI);
+void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v,
+                             const iUnknown* apI);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cScriptAutomation declaration.
@@ -43,17 +46,16 @@ void iunknown_gettype_concat(cString& astrOut, HSQUIRRELVM v, const iUnknown* ap
 ASTL_RAW_ALLOCATOR_IMPL(ScriptDispatch);
 
 //! Script automation system.
-class cScriptAutomation : public ImplRC<iUnknown>
-{
+class cScriptAutomation : public ImplRC<iUnknown> {
   niBeginClass(cScriptAutomation);
 
-  typedef astl::hash_map<cString,Ptr<iModuleDef> > tModuleMap;
+  typedef astl::hash_map<cString, Ptr<iModuleDef>> tModuleMap;
   typedef tModuleMap::iterator tModuleMapIt;
   typedef tModuleMap::const_iterator tModuleMapCIt;
 
-  typedef astl::bimap<SQTable*,cScriptDispatch*> tDispatchMap;
+  typedef astl::bimap<SQTable*, cScriptDispatch*> tDispatchMap;
 
-#if 0
+  #if 0
   struct sIUnknownHash {
     size_t operator()(const iUnknown* __x) const {
       return (size_t)__x;
@@ -70,10 +72,10 @@ class cScriptAutomation : public ImplRC<iUnknown>
   typedef astl::list<sScriptTypeIUnknown*,
                      ASTL_ALLOCATOR(sScriptTypeIUnknown*,ScriptTypeIUnknown) >
   tScriptIUnknownLst;
-#endif
+  #endif
 
  public:
-#if 0
+  #if 0
   struct sIUnknown {
     iUnknown*     pObj;
     tScriptObjectPtrLst lstInterfaces;
@@ -91,7 +93,7 @@ class cScriptAutomation : public ImplRC<iUnknown>
   typedef astl::hash_map<iUnknown*,sIUnknown,sIUnknownHash> tIUnknownHMap;
   typedef tIUnknownHMap::iterator               tIUnknownHMapIt;
   typedef tIUnknownHMap::const_iterator           tIUnknownHMapCIt;
-#endif
+  #endif
 
  public:
   //! Constructor.
@@ -108,68 +110,76 @@ class cScriptAutomation : public ImplRC<iUnknown>
   void __stdcall Invalidate();
 
   int PushIUnknown(HSQUIRRELVM vm, iUnknown* apClass);
-  int GetIUnknown(HSQUIRRELVM vm, int idx, iUnknown** appIUnknown, const tUUID& aIID);
+  int GetIUnknown(HSQUIRRELVM vm, int idx, iUnknown** appIUnknown,
+                  const tUUID& aIID);
 
-#if 0
+  #if 0
   sScriptTypeIUnknown* NewIUnknown(SQVM* v, iUnknown* apIUnknown, sIUnknown*& apIU);
   void ReleaseIUnknownRef(sScriptTypeIUnknown* apScriptIUnknown);
   sIUnknown* GetIUnknown(iUnknown* apIUnknown);
-#endif
+  #endif
 
-  tBool IsValid() const { return mbIsValid; }
+  tBool IsValid() const
+  {
+    return mbIsValid;
+  }
 
-  bool Get(HSQUIRRELVM vm, iUnknown* apObj, const SQObjectPtr &key, SQObjectPtr &dest, int opExt);
-  bool Set(HSQUIRRELVM vm, iUnknown* apObj,const SQObjectPtr &key,const SQObjectPtr &val, int opExt);
+  bool Get(HSQUIRRELVM vm, iUnknown* apObj, const SQObjectPtr& key,
+           SQObjectPtr& dest, int opExt);
+  bool Set(HSQUIRRELVM vm, iUnknown* apObj, const SQObjectPtr& key,
+           const SQObjectPtr& val, int opExt);
 
   iFileSystem* _GetFS();
 
  private:
   Ptr<iFileSystem> mptrFS;
-  tBool           mbIsValid;
+  tBool mbIsValid;
 
   tModuleMap mmapModules;
 
   typedef astl::list<SQTable*> tIntfDelegateLst;
-  void InitIntfDelegateLst(
-      HSQUIRRELVM vm,
-      tIntfDelegateLst& alstInterfaces,
-      iUnknown* apObj
-#ifdef GETIUNKNOWN_INDEX_VTABLE
-      , tBool abDynamicOnly
-#endif
-                           );
+  void InitIntfDelegateLst(HSQUIRRELVM vm, tIntfDelegateLst& alstInterfaces,
+                           iUnknown* apObj
+  #ifdef GETIUNKNOWN_INDEX_VTABLE
+                           ,
+                           tBool abDynamicOnly
+  #endif
+  );
 
-#ifdef GETIUNKNOWN_INDEX_VTABLE
-  typedef astl::hash_map<tIntPtr,tIntfDelegateLst> tVTableMap;
+  #ifdef GETIUNKNOWN_INDEX_VTABLE
+  typedef astl::hash_map<tIntPtr, tIntfDelegateLst> tVTableMap;
   tIntfDelegateLst* GetIUnknownVTable(iUnknown* apIUnknown);
   tVTableMap mmapVTable;
-#endif
+  #endif
 
-#ifndef GETIUNKNOWN_SAFE
+  #ifndef GETIUNKNOWN_SAFE
   struct sIUnknownEntry {
-    tIntPtr     pUnknown;
-    tIntPtr     pVTable;
-    tIntfDelegateLst  lstInterfaces;
+    tIntPtr pUnknown;
+    tIntPtr pVTable;
+    tIntfDelegateLst lstInterfaces;
   };
 
   typedef astl::list<sIUnknownEntry*> tUEntryLst;
-  typedef astl::hash_map<tIntPtr,tUEntryLst::iterator> tUEntryMap;
+  typedef astl::hash_map<tIntPtr, tUEntryLst::iterator> tUEntryMap;
   sIUnknownEntry* NewIUnknownEntry(iUnknown* apIUnknown);
   sIUnknownEntry* GetIUnknownEntry(iUnknown* apIUnknown);
   sIUnknownEntry mvUnk[knUnkTableMaxSize];
   tUEntryLst mlstUnk;
   tUEntryMap mmapUnk;
-#endif
+  #endif
 
-  __forceinline bool GetIUnknownMethod(HSQUIRRELVM vm, iUnknown* apObj, const SQObjectPtr &aKey, SQObjectPtr& aMethod) {
-#ifdef GETIUNKNOWN_INDEX_VTABLE
+  __forceinline bool GetIUnknownMethod(HSQUIRRELVM vm, iUnknown* apObj,
+                                       const SQObjectPtr& aKey,
+                                       SQObjectPtr& aMethod)
+  {
+  #ifdef GETIUNKNOWN_INDEX_VTABLE
     {
       tIntfDelegateLst& lstInterfaces = *this->GetIUnknownVTable(apObj);
       if (lstInterfaces.empty()) {
-        InitIntfDelegateLst(vm,lstInterfaces,apObj,eFalse);
+        InitIntfDelegateLst(vm, lstInterfaces, apObj, eFalse);
       }
-      niLoopit(astl::list<SQTable*>::iterator,it,lstInterfaces) {
-        if ((*it)->Get(aKey,aMethod)) {
+      niLoopit (astl::list<SQTable*>::iterator, it, lstInterfaces) {
+        if ((*it)->Get(aKey, aMethod)) {
           return true;
         }
       }
@@ -185,9 +195,9 @@ class cScriptAutomation : public ImplRC<iUnknown>
     // See the implementation of InitIntfDelegateLst for more
     // details...
     {
-#ifdef _DEBUG
-      // niDebugFmt(("### MISSED METHOD '%s' FOR OBJECT '%p'",_stringhval(aKey),(tIntPtr)apObj));
-#endif
+    #ifdef _DEBUG
+            // niDebugFmt(("### MISSED METHOD '%s' FOR OBJECT '%p'",_stringhval(aKey),(tIntPtr)apObj));
+    #endif
       // sIUnknownEntry* e = this->GetIUnknownEntry(apObj);
       // tIntfDelegateLst& lstInterfaces = e->lstInterfaces;
       // if (lstInterfaces.empty()) {
@@ -198,39 +208,39 @@ class cScriptAutomation : public ImplRC<iUnknown>
       // }
       tIntfDelegateLst lstInterfaces;
       if (lstInterfaces.empty()) {
-        InitIntfDelegateLst(vm,lstInterfaces,apObj,eTrue);
+        InitIntfDelegateLst(vm, lstInterfaces, apObj, eTrue);
       }
-      niLoopit(astl::list<SQTable*>::iterator,it,lstInterfaces) {
-        if ((*it)->Get(aKey,aMethod)) {
+      niLoopit (astl::list<SQTable*>::iterator, it, lstInterfaces) {
+        if ((*it)->Get(aKey, aMethod)) {
           return true;
         }
       }
     }
 
-#elif defined GETIUNKNOWN_OBJECT
+  #elif defined GETIUNKNOWN_OBJECT
     sIUnknownEntry* e = this->GetIUnknownEntry(apObj);
     tIntfDelegateLst& lstInterfaces = e->lstInterfaces;
     if (lstInterfaces.empty()) {
-      InitIntfDelegateLst(vm,lstInterfaces,apObj);
+      InitIntfDelegateLst(vm, lstInterfaces, apObj);
     }
-    niLoopit(astl::list<SQTable*>::iterator,it,lstInterfaces) {
-      if ((*it)->Get(aKey,aMethod)) {
+    niLoopit (astl::list<SQTable*>::iterator, it, lstInterfaces) {
+      if ((*it)->Get(aKey, aMethod)) {
         return true;
       }
     }
-#elif defined GETIUNKNOWN_SAFE
+  #elif defined GETIUNKNOWN_SAFE
     tIntfDelegateLst lstInterfaces;
     if (lstInterfaces.empty()) {
-      InitIntfDelegateLst(lstInterfaces,apObj);
+      InitIntfDelegateLst(lstInterfaces, apObj);
     }
-    niLoopit(astl::list<SQTable*>::iterator,it,lstInterfaces) {
-      if ((*it)->Get(aKey,aMethod)) {
+    niLoopit (astl::list<SQTable*>::iterator, it, lstInterfaces) {
+      if ((*it)->Get(aKey, aMethod)) {
         return true;
       }
     }
-#else
-#error "No GETIUNKNOWN defined."
-#endif
+  #else
+    #error "No GETIUNKNOWN defined."
+  #endif
     return false;
   }
 

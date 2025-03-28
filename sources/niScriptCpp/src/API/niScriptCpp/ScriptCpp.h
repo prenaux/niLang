@@ -3,24 +3,25 @@
 
 #include <niLang/Types.h>
 
-#if defined niEmbedded || (!defined niWindows && !defined niOSX && !defined niLinux)
+#if defined niEmbedded || \
+  (!defined niWindows && !defined niOSX && !defined niLinux)
 
-#define niNoScriptCpp
+  #define niNoScriptCpp
 
 #else
 
-#include <niLang/StringDef.h>
-#include <niLang/ITime.h>
-#include "Utils/ScriptCppImpl.h"
+  #include <niLang/StringDef.h>
+  #include <niLang/ITime.h>
+  #include "Utils/ScriptCppImpl.h"
 
 namespace ni {
-/** \addtogroup niScriptCpp
+  /** \addtogroup niScriptCpp
  * @{
  */
 
-#define SCRIPTCPP_HAMEXE "ham-rtcpp"
-#define SCRIPTCPP_COMPILE_PROPERTY "niScriptCpp.Compile"
-#define SCRIPTCPP_MODULE_TYPE_PROPERTY "niScriptCpp.ModuleType"
+  #define SCRIPTCPP_HAMEXE "ham-rtcpp"
+  #define SCRIPTCPP_COMPILE_PROPERTY "niScriptCpp.Compile"
+  #define SCRIPTCPP_MODULE_TYPE_PROPERTY "niScriptCpp.ModuleType"
 
 struct sScriptCppModuleCache {
   ni::tIntPtr hDLL = 0;
@@ -29,7 +30,7 @@ struct sScriptCppModuleCache {
   ni::Ptr<ni::iTime> date;
 };
 
-typedef astl::map<ni::cString,sScriptCppModuleCache> tScriptCppModuleMap;
+typedef astl::map<ni::cString, sScriptCppModuleCache> tScriptCppModuleMap;
 
 struct sScriptCppStats {
   ni::tU32 _numCompiled = 0;
@@ -44,7 +45,7 @@ niExportFunc(void) ScriptCpp_CleanupDLLs();
 niExportFunc(ni::iScriptingHost*) ScriptCpp_CreateScriptingHost();
 
 /**@}*/
-}
+} // namespace ni
 
 #endif // niNoScriptCpp
 

@@ -12,34 +12,46 @@ class cScriptObject;
 
 #define GUARD 0
 
-#define niSqGuardEx(v)                                                  \
-  int __sq_top = sq_gettop(v); cString __sq_stack_str; sqGetStackDump(__sq_stack_str,v); const achar* __sq_stack = __sq_stack_str.Chars();
-#define niSqGuardEx_(v,op)                                              \
-  int __sq_top = sq_gettop(v) op; cString __sq_stack_str; sqGetStackDump(__sq_stack_str,v); const achar* __sq_stack = __sq_stack_str.Chars();
-#define niSqUnGuardEx(v)                                                \
-  if (sq_gettop(v) != __sq_top)                                         \
-  {                                                                     \
-  cString __sq_cur_stack_str; sqGetStackDump(__sq_cur_stack_str,v); const achar* __sq_cur_stack = __sq_cur_stack_str.Chars(); \
+#define niSqGuardEx(v)               \
+  int __sq_top = sq_gettop(v);       \
+  cString __sq_stack_str;            \
+  sqGetStackDump(__sq_stack_str, v); \
+  const achar* __sq_stack = __sq_stack_str.Chars();
+#define niSqGuardEx_(v, op)          \
+  int __sq_top = sq_gettop(v) op;    \
+  cString __sq_stack_str;            \
+  sqGetStackDump(__sq_stack_str, v); \
+  const achar* __sq_stack = __sq_stack_str.Chars();
+#define niSqUnGuardEx(v)                                                                                                                                                                                          \
+  if (sq_gettop(v) != __sq_top) {                                                                                                                                                                                 \
+    cString __sq_cur_stack_str;                                                                                                                                                                                   \
+    sqGetStackDump(__sq_cur_stack_str, v);                                                                                                                                                                        \
+    const achar* __sq_cur_stack = __sq_cur_stack_str.Chars();                                                                                                                                                     \
   niAssertMsg((sq_gettop(v) == __sq_top),niFmt(_A("VM stack corrupted, expected %d, have %d.\n--- START STACK ---\n%s\n--- CURRENT STACK ---\n%s)",__sq_top,sq_gettop(v),__sq_stack,__sq_cur_stack_str.Chars())); \
-              }
+  }
 
 #if GUARD == 2
-#define niSqGuard(v)    niSqGuardEx(v)
-#define niSqGuard_(v,op)  niSqGuardEx_(v,op)
-#define niSqUnGuard(v)    niSqUnGuardEx(v)
-#pragma message("==================================================================")
-#pragma message("WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
-#pragma message("WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
-#pragma message("WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
-#pragma message("==================================================================")
+  #define niSqGuard(v) niSqGuardEx(v)
+  #define niSqGuard_(v, op) niSqGuardEx_(v, op)
+  #define niSqUnGuard(v) niSqUnGuardEx(v)
+  #pragma message( \
+      "==================================================================")
+  #pragma message( \
+      "WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
+  #pragma message( \
+      "WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
+  #pragma message( \
+      "WARNING: GUARD 2 Actived, the vm speed will be greatly decreased.")
+  #pragma message( \
+      "==================================================================")
 #elif GUARD == 1
-#define niSqGuard(v)    niSqGuardSimple(v)
-#define niSqGuard_(v,op)  niSqGuardSimple_(v,op)
-#define niSqUnGuard(v)    niSqUnGuardSimple(v)
+  #define niSqGuard(v) niSqGuardSimple(v)
+  #define niSqGuard_(v, op) niSqGuardSimple_(v, op)
+  #define niSqUnGuard(v) niSqUnGuardSimple(v)
 #else
-#define niSqGuard(v)
-#define niSqGuard_(v,op)
-#define niSqUnGuard(v)
+  #define niSqGuard(v)
+  #define niSqGuard_(v, op)
+  #define niSqUnGuard(v)
 #endif
 
 ASTL_RAW_ALLOCATOR_IMPL(scriptobjectlist);
@@ -48,8 +60,8 @@ ASTL_RAW_ALLOCATOR_IMPL(scriptobjectlist);
 // cScriptVM declaration.
 
 //! Script VM.
-class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost>
-{
+class cScriptVM
+    : public ImplRC<iScriptVM, eImplFlags_DontInherit1, iScriptingHost> {
   niBeginClass(cScriptVM);
 
  public:
@@ -65,17 +77,34 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
   void __stdcall Invalidate();
 
   //// iScriptVM ////////////////////////////////
-  tIntPtr __stdcall GetHandle() const { return (tIntPtr)mptrVM.ptr(); }
-  iScriptVM* __stdcall GetParentVM() const { return mptrParentVM; }
-  tBool __stdcall InitializeMT() { return eFalse; }
-  tBool __stdcall ShutdownMT() { return eFalse; }
+  tIntPtr __stdcall GetHandle() const
+  {
+    return (tIntPtr)mptrVM.ptr();
+  }
+  iScriptVM* __stdcall GetParentVM() const
+  {
+    return mptrParentVM;
+  }
+  tBool __stdcall InitializeMT()
+  {
+    return eFalse;
+  }
+  tBool __stdcall ShutdownMT()
+  {
+    return eFalse;
+  }
 
   iScriptObject* __stdcall Compile(iFile* apFile, const achar* aaszName = NULL);
-  iScriptObject* __stdcall CompileString(const achar* aaszCode, const achar* aaszName = NULL);
-  iUnknown* __stdcall CompileGetIUnknownObject(iScriptObject* apThisTable, iFile* apFile, const achar* aaszObjectName, const tUUID& aIID);
+  iScriptObject* __stdcall CompileString(const achar* aaszCode,
+                                         const achar* aaszName = NULL);
+  iUnknown* __stdcall CompileGetIUnknownObject(iScriptObject* apThisTable,
+                                               iFile* apFile,
+                                               const achar* aaszObjectName,
+                                               const tUUID& aIID);
   void __stdcall SetErrorLineOffset(tI32 anOffset);
   tI32 __stdcall GetErrorLineOffset() const;
-  eScriptRaiseErrorMode __stdcall SetRaiseErrorMode(eScriptRaiseErrorMode aMode);
+  eScriptRaiseErrorMode __stdcall SetRaiseErrorMode(
+    eScriptRaiseErrorMode aMode);
   eScriptRaiseErrorMode __stdcall GetRaiseErrorMode() const;
   void __stdcall SetLogRaiseError(tLogFlags aLog);
   tLogFlags __stdcall GetLogRaiseError() const;
@@ -83,7 +112,8 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
   tBool __stdcall Run(iScriptObject* apThis, const achar* aaszCommand);
   tI32 __stdcall CollectGarbage();
 
-  tBool __stdcall RegisterFunction(const sMethodDef* apFunction, const achar* aaszName);
+  tBool __stdcall RegisterFunction(const sMethodDef* apFunction,
+                                   const achar* aaszName);
 
   tBool __stdcall PushRootTable();
   tBool __stdcall PushString(const iHString* ahspValue);
@@ -99,32 +129,46 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
 
   tInterfaceCVec<iFileSystem>* __stdcall GetImportFileSystems() const;
   iFile* __stdcall ImportFileOpen(const achar* aaszFile);
-  Ptr<iScriptObject>  __stdcall _DoImport(tBool abNew, iUnknown* apPathOrFile);
+  Ptr<iScriptObject> __stdcall _DoImport(tBool abNew, iUnknown* apPathOrFile);
   Ptr<iScriptObject> __stdcall Import(iUnknown* apPathOrFile);
   Ptr<iScriptObject> __stdcall NewImport(iUnknown* apPathOrFile);
 
-  iScriptObject* __stdcall CreateTable(iScriptObject* apDelegate, tI32 anNumPop);
+  iScriptObject* __stdcall CreateTable(iScriptObject* apDelegate,
+                                       tI32 anNumPop);
   iScriptObject* __stdcall CreateObject(tI32 anIndex, tI32 anNumPop);
-  iScriptObject* __stdcall CreateObjectGet(const achar* aaszKey, eScriptObjectType aRequiredType = eScriptObjectType_Last, tI32 anTablePos = -2, tBool abTry = eFalse);
+  iScriptObject* __stdcall CreateObjectGet(
+    const achar* aaszKey,
+    eScriptObjectType aRequiredType = eScriptObjectType_Last,
+    tI32 anTablePos = -2, tBool abTry = eFalse);
 
   tBool __stdcall Call(tU32 anNumParams, tBool abPushRet);
 
   tBool __stdcall WriteClosure(iFile* apFile, iScriptObject* apObject);
   iScriptObject* __stdcall ReadClosure(iFile* apFile);
 
-  tBool __stdcall ScriptCall(iScriptObject* apThis, const achar* aaszFunc, const Var* apParams, tU32 anNumParams, Var* apRet);
-  Ptr<iScriptObject> __stdcall ScriptVar(iScriptObject* apThis, const achar* aaszVar, tBool abTry);
+  tBool __stdcall ScriptCall(iScriptObject* apThis, const achar* aaszFunc,
+                             const Var* apParams, tU32 anNumParams, Var* apRet);
+  Ptr<iScriptObject> __stdcall ScriptVar(iScriptObject* apThis,
+                                         const achar* aaszVar, tBool abTry);
   //// iScriptVM ////////////////////////////////
 
   //// iScriptingHost ////////////////////////////////
   tBool __stdcall EvalString(iHString* ahspContext, const ni::achar* aaszCode);
-  tBool __stdcall CanEvalImpl(iHString* ahspContext, iHString* ahspCodeResource);
-  iUnknown* __stdcall EvalImpl(iHString* ahspContext, iHString* ahspCodeResource, const tUUID& aIID);
+  tBool __stdcall CanEvalImpl(iHString* ahspContext,
+                              iHString* ahspCodeResource);
+  iUnknown* __stdcall EvalImpl(iHString* ahspContext,
+                               iHString* ahspCodeResource, const tUUID& aIID);
   void __stdcall Service(tBool abForceGC);
   //// iScriptingHost ////////////////////////////////
 
-  inline operator HSQUIRRELVM () { return (HSQUIRRELVM)mptrVM.ptr(); }
-  inline cScriptAutomation* GetAutomation() const { return mptrScriptAutomation; }
+  inline operator HSQUIRRELVM()
+  {
+    return (HSQUIRRELVM)mptrVM.ptr();
+  }
+  inline cScriptAutomation* GetAutomation() const
+  {
+    return mptrScriptAutomation;
+  }
 
 #ifdef SCRIPTOBJECT_INVALIDATEPOLICY
   void RegisterScriptObject(cScriptObject* pObj);
@@ -139,7 +183,9 @@ class cScriptVM : public ImplRC<iScriptVM,eImplFlags_DontInherit1,iScriptingHost
   tBool mbDebug;
 
 #ifdef SCRIPTOBJECT_INVALIDATEPOLICY
-  typedef astl::list<cScriptObject*, ASTL_ALLOCATOR(cScriptObject*,scriptobjectlist)> tScriptObjectPLst;
+  typedef astl::list<cScriptObject*,
+                     ASTL_ALLOCATOR(cScriptObject*, scriptobjectlist)>
+    tScriptObjectPLst;
   typedef tScriptObjectPLst::iterator tScriptObjectPLstIt;
   typedef tScriptObjectPLst::const_iterator tScriptObjectPLstCIt;
   tScriptObjectPLst mlstScriptObjects;
@@ -152,12 +198,18 @@ cString& sqGetStackDump(cString& strOut, HSQUIRRELVM v);
 cString& sqGetCallstack(cString& astrOut, HSQUIRRELVM v, int aLevel);
 
 #ifdef _DEBUG
-#define niTraceSqCallStack(VM)  { cString str; sqGetStackDump(str,VM); niPrintln(str.Chars()); }
+  #define niTraceSqCallStack(VM) \
+    {                            \
+      cString str;               \
+      sqGetStackDump(str, VM);   \
+      niPrintln(str.Chars());    \
+    }
 #else
-#define niTraceSqCallStack(VM)
+  #define niTraceSqCallStack(VM)
 #endif
 
-void sqFormatError(HSQUIRRELVM v, const achar* aszErr, cString& strErr, int level);
+void sqFormatError(HSQUIRRELVM v, const achar* aszErr, cString& strErr,
+                   int level);
 
 extern const ni::sMethodDef kFuncDecl_vmprint;
 extern const ni::sMethodDef kFuncDecl_vmprintln;

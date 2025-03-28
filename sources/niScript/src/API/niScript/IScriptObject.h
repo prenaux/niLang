@@ -19,8 +19,7 @@ struct iScriptVM;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Script object type.
-enum eScriptObjectType
-{
+enum eScriptObjectType {
   //! Unknown object type.
   eScriptObjectType_Unknown = 0,
   //! Function object type.
@@ -63,8 +62,7 @@ enum eScriptObjectType
 typedef tInterfaceCVec<iScriptObject> tScriptObjectPtrCVec;
 
 //! Script object reference interface.
-struct iScriptObject : public iUnknown
-{
+struct iScriptObject : public iUnknown {
   niDeclareInterfaceUUID(iScriptObject,0x8359934f,0xec0d,0x4bb3,0x81,0x68,0xcd,0x78,0x2c,0x3e,0x5f,0xad);
 
   //! Parent script VM.
@@ -144,6 +142,6 @@ struct iScriptObject : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // niMinFeatures
 #endif // __ISCRIPTOBJECT_3733125_H__

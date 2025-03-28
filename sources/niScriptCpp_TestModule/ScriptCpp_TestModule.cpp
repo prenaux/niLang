@@ -5,7 +5,8 @@
 
 using namespace ni;
 
-Ptr<iRunnable> CreateTestModule() {
+Ptr<iRunnable> CreateTestModule()
+{
   return ni::Runnable([&]() {
 #ifdef _RTCPP
     // When compiling a scriptcpp module, so when dynamic compiling
@@ -17,4 +18,4 @@ Ptr<iRunnable> CreateTestModule() {
   });
 }
 
-niScriptCppExportFunc(TestScriptCpp,ScriptCpp_TestModule,CreateTestModule);
+niScriptCppExportFunc(TestScriptCpp, ScriptCpp_TestModule, CreateTestModule);

@@ -5,21 +5,26 @@
 #include "sqobject.h"
 #include "sqtable.h"
 
-SQUserData::SQUserData() {
+SQUserData::SQUserData()
+{
   mptrDelegate = _null_;
 }
-SQUserData::~SQUserData() {
+SQUserData::~SQUserData()
+{
 }
 
-void SQUserData::SetDelegate(SQTable *mt)
+void SQUserData::SetDelegate(SQTable* mt)
 {
   mptrDelegate = mt;
 }
-SQTable* SQUserData::GetDelegate() const {
+SQTable* SQUserData::GetDelegate() const
+{
   return _table(mptrDelegate);
 }
-SQUserData* SQUserData::Clone(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepClone) {
-  SQUserData* ud = this->CloneData(aSS,apDeepClone);
+SQUserData* SQUserData::Clone(SQSharedState& aSS,
+                              tSQDeepCloneGuardSet* apDeepClone)
+{
+  SQUserData* ud = this->CloneData(aSS, apDeepClone);
   if (!mptrDelegate.IsNull()) {
     ud->SetDelegate(_table(mptrDelegate));
   }
@@ -27,10 +32,12 @@ SQUserData* SQUserData::Clone(SQSharedState& aSS, tSQDeepCloneGuardSet* apDeepCl
 }
 
 #ifndef NO_GARBAGE_COLLECTOR
-void __stdcall SQUserData::Mark(SQCollectable**) {
+void __stdcall SQUserData::Mark(SQCollectable**)
+{
 }
 #endif
 
-void __stdcall SQUserData::Invalidate() {
+void __stdcall SQUserData::Invalidate()
+{
   SetDelegate(NULL);
 }

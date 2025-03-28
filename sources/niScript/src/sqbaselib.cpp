@@ -20,20 +20,21 @@
 #include <niLang/Utils/ModuleUtils.h>
 #include "sq_hstring.h"
 
-bool str2num(const SQChar *s,SQObjectPtr &res)
+bool str2num(const SQChar* s, SQObjectPtr& res)
 {
   if (*s == '#')
     ++s;
-  const SQChar *end;
-  const SQChar *t = s;
-  if (ni::StrNICmp(t,_A("0x"),2) == 0) {
+  const SQChar* end;
+  const SQChar* t = s;
+  if (ni::StrNICmp(t, _A("0x"), 2) == 0) {
     const SQChar* sTemp;
-    res = SQInt(ni::StrToUL(s,&sTemp,16));
+    res = SQInt(ni::StrToUL(s, &sTemp, 16));
   }
-  else
-  {
-    if (ni::StrStr(s,_A(".")) || ni::StrStr(s,_A("e"))  || ni::StrStr(s,_A("E"))){
-      SQFloat r = SQFloat(ni::StrToD(s,&end));
+  else {
+    if (ni::StrStr(s, _A(".")) || ni::StrStr(s, _A("e")) ||
+        ni::StrStr(s, _A("E")))
+    {
+      SQFloat r = SQFloat(ni::StrToD(s, &end));
       if (s == end)
         return false;
       while (StrIsSpace((*end)))
@@ -54,20 +55,22 @@ bool str2num(const SQChar *s,SQObjectPtr &res)
   return true;
 }
 
-static int base_getthisvm(HSQUIRRELVM v) {
+static int base_getthisvm(HSQUIRRELVM v)
+{
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
-  sqa_pushIUnknown(v,pVM);
+  sqa_pushIUnknown(v, pVM);
   return 1;
 }
 
 static int base_ObjectToIScriptObject(HSQUIRRELVM v)
 {
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
-  Ptr<iScriptObject> ptrIScriptObject = pVM->CreateObject(2,0);
+  Ptr<iScriptObject> ptrIScriptObject = pVM->CreateObject(2, 0);
   if (!ptrIScriptObject.IsOK()) {
-    return sq_throwerror(v,"base_ObjectToIScriptObject, Can't create IScriptObject.");
+    return sq_throwerror(
+      v, "base_ObjectToIScriptObject, Can't create IScriptObject.");
   }
-  sqa_pushIUnknown(v,ptrIScriptObject);
+  sqa_pushIUnknown(v, ptrIScriptObject);
   return 1;
 }
 
@@ -75,13 +78,19 @@ static int base_IScriptObjectToObject(HSQUIRRELVM v)
 {
   Ptr<iScriptObject> ptrIScriptObject;
   iUnknown* pIScriptObject;
-  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,&pIScriptObject,niGetInterfaceUUID(iScriptObject))))
-    return sq_throwerror(v,_A("base_IScriptObjectToObject, the given instance doesn't implement iScriptObject."));
+  if (!SQ_SUCCEEDED(sqa_getIUnknown(v, 2, &pIScriptObject,
+                                    niGetInterfaceUUID(iScriptObject))))
+    return sq_throwerror(
+      v,
+      _A(
+        "base_IScriptObjectToObject, the given instance doesn't implement iScriptObject."));
 
   ptrIScriptObject = (iScriptObject*)pIScriptObject;
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
   if (!pVM->PushObject(ptrIScriptObject)) {
-    return sq_throwerror(v,_A("base_IScriptObjectToObject, can't push IScriptObject on the stack."));
+    return sq_throwerror(
+      v,
+      _A("base_IScriptObjectToObject, can't push IScriptObject on the stack."));
   }
   return 1;
 }
@@ -96,8 +105,8 @@ static int base_collectgarbage(HSQUIRRELVM v)
 static int base_GetLangDelegate(HSQUIRRELVM v)
 {
   cScriptVM* pVM = (cScriptVM*)sq_getforeignptr(v);
-  const SQChar *str=NULL;
-  sq_getstring(v,-1,&str);
+  const SQChar* str = NULL;
+  sq_getstring(v, -1, &str);
   pVM->mptrVM->Push(v->_ss->GetLangDelegate(str));
   return 1;
 }
@@ -116,23 +125,26 @@ static int base_getroottable(HSQUIRRELVM v)
 
 static int base_setroottable(HSQUIRRELVM v)
 {
-  SQObjectPtr &o=stack_get(v,2);
-  if(SQ_FAILED(sq_setroottable(v))) return SQ_ERROR;
+  SQObjectPtr& o = stack_get(v, 2);
+  if (SQ_FAILED(sq_setroottable(v)))
+    return SQ_ERROR;
   v->Push(o);
   return 1;
 }
 
-static int base_setraiseerrormode(HSQUIRRELVM v) {
+static int base_setraiseerrormode(HSQUIRRELVM v)
+{
   SQInt cur = v->_raiseErrorMode;
   SQInt value;
-  sq_getint(v,-1,&value);
+  sq_getint(v, -1, &value);
   v->_raiseErrorMode = value;
-  sq_pushint(v,cur);
+  sq_pushint(v, cur);
   return 1;
 }
-static int base_getraiseerrormode(HSQUIRRELVM v) {
+static int base_getraiseerrormode(HSQUIRRELVM v)
+{
   SQInt cur = v->_raiseErrorMode;
-  sq_pushint(v,cur);
+  sq_pushint(v, cur);
   return 1;
 }
 
@@ -153,12 +165,13 @@ static int base_getbasestackinfos(HSQUIRRELVM v)
   SQInt level;
   SQStackInfos si;
   sq_getint(v, -1, &level);
-  if (SQ_SUCCEEDED(sq_stackinfos(v, level, &si)))
-  {
-    const SQChar *fn = _A("unknown");
-    const SQChar *src = _A("unknown");
-    if(si.funcname)fn = si.funcname;
-    if(si.source)src = si.source;
+  if (SQ_SUCCEEDED(sq_stackinfos(v, level, &si))) {
+    const SQChar* fn = _A("unknown");
+    const SQChar* src = _A("unknown");
+    if (si.funcname)
+      fn = si.funcname;
+    if (si.source)
+      src = si.source;
     sq_newtable(v);
     sq_pushstring(v, _HC(func));
     sq_pushstring(v, _H(fn));
@@ -183,14 +196,15 @@ static int base_getstackinfos(HSQUIRRELVM v)
   SQInt level;
   SQStackInfos si;
   int seq = 0;
-  const SQChar *name = NULL;
+  const SQChar* name = NULL;
   sq_getint(v, -1, &level);
-  if (SQ_SUCCEEDED(sq_stackinfos(v, level, &si)))
-  {
-    const SQChar *fn = _A("unknown");
-    const SQChar *src = _A("unknown");
-    if(si.funcname)fn = si.funcname;
-    if(si.source)src = si.source;
+  if (SQ_SUCCEEDED(sq_stackinfos(v, level, &si))) {
+    const SQChar* fn = _A("unknown");
+    const SQChar* src = _A("unknown");
+    if (si.funcname)
+      fn = si.funcname;
+    if (si.source)
+      src = si.source;
     sq_newtable(v);
     sq_pushstring(v, _HC(func));
     sq_pushstring(v, _H(fn));
@@ -206,10 +220,11 @@ static int base_getstackinfos(HSQUIRRELVM v)
     sq_createslot(v, -3);
     sq_pushstring(v, _HC(locals));
     sq_newtable(v);
-    seq=0;
+    seq = 0;
     for (;;) {
       name = sq_getlocal(v, level, seq);
-      if (!name) break;
+      if (!name)
+        break;
       sq_pushstring(v, _H(name));
       sq_push(v, -2);
       sq_createslot(v, -4);
@@ -225,10 +240,11 @@ static int base_getstackinfos(HSQUIRRELVM v)
 
 static int base_assert(HSQUIRRELVM v)
 {
-  if(sq_gettype(v,-1)!=OT_NULL){
+  if (sq_gettype(v, -1) != OT_NULL) {
     return 0;
   }
-  else return sq_throwerror(v,_A("assertion failed"));
+  else
+    return sq_throwerror(v, _A("assertion failed"));
 }
 
 static int base_debugbreak(HSQUIRRELVM v)
@@ -237,29 +253,30 @@ static int base_debugbreak(HSQUIRRELVM v)
   return 0;
 }
 
-static int get_slice_params(HSQUIRRELVM v,int &sidx,int &eidx,SQObjectPtr &o)
+static int get_slice_params(HSQUIRRELVM v, int& sidx, int& eidx, SQObjectPtr& o)
 {
   int top = sq_gettop(v);
-  sidx=0;
-  eidx=0;
-  o=stack_get(v,1);
-  SQObjectPtr &start=stack_get(v,2);
-  if(_sqtype(start)!=OT_NULL && sq_isnumeric(start)){
-    sidx=toint(start);
+  sidx = 0;
+  eidx = 0;
+  o = stack_get(v, 1);
+  SQObjectPtr& start = stack_get(v, 2);
+  if (_sqtype(start) != OT_NULL && sq_isnumeric(start)) {
+    sidx = toint(start);
   }
-  if(top>2){
-    SQObjectPtr &end=stack_get(v,3);
-    if(sq_isnumeric(end)){
-      eidx=toint(end);
+  if (top > 2) {
+    SQObjectPtr& end = stack_get(v, 3);
+    if (sq_isnumeric(end)) {
+      eidx = toint(end);
     }
   }
   else {
-    eidx = sq_getsize(v,1);
+    eidx = sq_getsize(v, 1);
   }
   return 1;
 }
 
-static void _doPrint(bool bNewLine, const ni::achar* str) {
+static void _doPrint(bool bNewLine, const ni::achar* str)
+{
   static ThreadMutex _printMutex;
   AutoThreadLock lock(_printMutex);
   iFile* fpStdOut = ni::GetStdOut();
@@ -273,37 +290,39 @@ static void _doPrint(bool bNewLine, const ni::achar* str) {
 
 static int base_print_(HSQUIRRELVM v, bool bNewLine)
 {
-  SQObjectPtr &o=stack_get(v,2);
-  switch(_sqtype(o)){
-    case OT_STRING: {
-      _doPrint(bNewLine,_stringval(o));
-      break;
-    }
-    case OT_INTEGER: {
-      _doPrint(bNewLine,niFmt(_A("%d"),_int(o)));
-      break;
-    }
-    case OT_FLOAT: {
-      cString out;
-      SQVM_CatFloatToString(out, _float(o));
-      _doPrint(bNewLine,out.Chars());
-      break;
-    }
-    default: {
-      SQObjectPtr tname;
-      v->TypeOf(o,tname);
-      _doPrint(bNewLine,niFmt(_A("(%s)"),_stringval(tname)));
-      break;
-    }
+  SQObjectPtr& o = stack_get(v, 2);
+  switch (_sqtype(o)) {
+  case OT_STRING: {
+    _doPrint(bNewLine, _stringval(o));
+    break;
+  }
+  case OT_INTEGER: {
+    _doPrint(bNewLine, niFmt(_A("%d"), _int(o)));
+    break;
+  }
+  case OT_FLOAT: {
+    cString out;
+    SQVM_CatFloatToString(out, _float(o));
+    _doPrint(bNewLine, out.Chars());
+    break;
+  }
+  default: {
+    SQObjectPtr tname;
+    v->TypeOf(o, tname);
+    _doPrint(bNewLine, niFmt(_A("(%s)"), _stringval(tname)));
+    break;
+  }
   }
   return 0;
 }
 
-static int base_print(HSQUIRRELVM v) {
-  return base_print_(v,false);
+static int base_print(HSQUIRRELVM v)
+{
+  return base_print_(v, false);
 }
-static int base_println(HSQUIRRELVM v) {
-  return base_print_(v,true);
+static int base_println(HSQUIRRELVM v)
+{
+  return base_print_(v, true);
 }
 
 static int base_compilestring(HSQUIRRELVM v)
@@ -311,12 +330,12 @@ static int base_compilestring(HSQUIRRELVM v)
   const int nargs = sq_gettop(v);
   const SQChar* src = nullptr;
   const SQChar* name = "unnamedbuffer";
-  sq_getstring(v,2,&src);
+  sq_getstring(v, 2, &src);
   if (nargs > 2) {
-    sq_getstring(v,3,&name);
+    sq_getstring(v, 3, &name);
   }
 
-  if (SQ_SUCCEEDED(sq_compilestring(v,_H(name),src))) {
+  if (SQ_SUCCEEDED(sq_compilestring(v, _H(name), src))) {
     return 1;
   }
   else {
@@ -328,7 +347,7 @@ static int base_Array(HSQUIRRELVM v)
 {
   SQInt reserveSize = 0;
   if (sq_gettop(v) > 1) {
-    sq_getint(v,2,&reserveSize);
+    sq_getint(v, 2, &reserveSize);
   }
   SQArray* a = SQArray::Create(0);
   if (reserveSize > 0) {
@@ -342,7 +361,7 @@ static int base_Table(HSQUIRRELVM v)
 {
   SQInt reserveSize = 0;
   if (sq_gettop(v) > 1) {
-    sq_getint(v,2,&reserveSize);
+    sq_getint(v, 2, &reserveSize);
   }
   SQTable* t = SQTable::Create();
   v->Push(t);
@@ -352,52 +371,56 @@ static int base_Table(HSQUIRRELVM v)
 static int base_ultof(HSQUIRRELVM v)
 {
   SQInt value;
-  sq_getint(v,-1,&value);
-  sq_pushf32(v,ni::ultof(value));
+  sq_getint(v, -1, &value);
+  sq_pushf32(v, ni::ultof(value));
   return 1;
 }
 
 static int base_ftoul(HSQUIRRELVM v)
 {
   tF32 value;
-  sq_getf32(v,-1,&value);
-  sq_pushint(v,ni::ftoul(value));
+  sq_getf32(v, -1, &value);
+  sq_pushint(v, ni::ftoul(value));
   return 1;
 }
 
 static int base_FourCC(HSQUIRRELVM v)
 {
-  SQInt a,b,c,d;
-  if (!SQ_SUCCEEDED(sq_getint(v,-4,&a))) return sq_throwerror(v,_A("Invalid parameter A."));
-  if (!SQ_SUCCEEDED(sq_getint(v,-3,&b))) return sq_throwerror(v,_A("Invalid parameter B."));
-  if (!SQ_SUCCEEDED(sq_getint(v,-2,&c))) return sq_throwerror(v,_A("Invalid parameter C."));
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&d))) return sq_throwerror(v,_A("Invalid parameter D."));
-  sq_pushint(v,niFourCC(a,b,c,d));
+  SQInt a, b, c, d;
+  if (!SQ_SUCCEEDED(sq_getint(v, -4, &a)))
+    return sq_throwerror(v, _A("Invalid parameter A."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -3, &b)))
+    return sq_throwerror(v, _A("Invalid parameter B."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -2, &c)))
+    return sq_throwerror(v, _A("Invalid parameter C."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &d)))
+    return sq_throwerror(v, _A("Invalid parameter D."));
+  sq_pushint(v, niFourCC(a,b,c,d));
   return 1;
 }
 
 static int base_MessageID_FromString(HSQUIRRELVM v)
 {
-  const SQChar *src=NULL;
-  if (!SQ_SUCCEEDED(sq_getstring(v,-1,&src)))
-    return sq_throwerror(v,_A("Invalid string parameter 0."));
-  sq_pushint(v,ni::MessageID_FromString(src));
+  const SQChar* src = NULL;
+  if (!SQ_SUCCEEDED(sq_getstring(v, -1, &src)))
+    return sq_throwerror(v, _A("Invalid string parameter 0."));
+  sq_pushint(v, ni::MessageID_FromString(src));
   return 1;
 }
 
 static int base_MessageID(HSQUIRRELVM v)
 {
   SQInt nByte;
-  const SQChar *src=NULL;
-  if (!SQ_SUCCEEDED(sq_getstring(v,-2,&src)))
-    return sq_throwerror(v,_A("param[0]: Not a string."));
+  const SQChar* src = NULL;
+  if (!SQ_SUCCEEDED(sq_getstring(v, -2, &src)))
+    return sq_throwerror(v, _A("param[0]: Not a string."));
   if (ni::StrLen(src) < 4)
-    return sq_throwerror(v,_A("param[0]: Invalid string length."));
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&nByte)))
-    return sq_throwerror(v,_A("param[1]: Not an integer."));
+    return sq_throwerror(v, _A("param[0]: Invalid string length."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &nByte)))
+    return sq_throwerror(v, _A("param[1]: Not an integer."));
 
-  sq_pushint(v,
-                 niMessageID(
+  sq_pushint(
+    v, niMessageID(
                      (tU8)src[0],
                      (tU8)src[1],
                      (tU8)src[2],
@@ -409,97 +432,97 @@ static int base_MessageID(HSQUIRRELVM v)
 static int base_MessageID_GetCharA(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_GetCharA(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_GetCharA(msgID));
   return 1;
 }
 static int base_MessageID_GetCharB(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_GetCharB(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_GetCharB(msgID));
   return 1;
 }
 static int base_MessageID_GetCharC(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_GetCharC(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_GetCharC(msgID));
   return 1;
 }
 static int base_MessageID_GetCharD(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_GetCharD(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_GetCharD(msgID));
   return 1;
 }
 static int base_MessageID_GetBYTE(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_GetBYTE(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_GetBYTE(msgID));
   return 1;
 }
 static int base_MessageID_MaskA(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_MaskA(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_MaskA(msgID));
   return 1;
 }
 static int base_MessageID_MaskAB(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_MaskAB(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_MaskAB(msgID));
   return 1;
 }
 static int base_MessageID_MaskABC(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_MaskABC(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_MaskABC(msgID));
   return 1;
 }
 static int base_MessageID_MaskABCD(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
-  sq_pushint(v,niMessageID_MaskABCD(msgID));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
+  sq_pushint(v, niMessageID_MaskABCD(msgID));
   return 1;
 }
 
 static int base_MessageID_ToString(HSQUIRRELVM v)
 {
   SQInt msgID;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&msgID)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &msgID)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
   cString str = ni::MessageID_ToString(msgID);
-  sq_pushstring(v,_H(str.Chars()));
+  sq_pushstring(v, _H(str.Chars()));
   return 1;
 }
 
 static int base_clockSecs(HSQUIRRELVM v)
 {
-  sq_pushf64(v,ni::TimerInSeconds());
+  sq_pushf64(v, ni::TimerInSeconds());
   return 1;
 }
 
 static int base_sleepMs(HSQUIRRELVM v)
 {
   SQInt ms;
-  if (!SQ_SUCCEEDED(sq_getint(v,-1,&ms)))
-    return sq_throwerror(v,_A("Invalid integer parameter 0."));
+  if (!SQ_SUCCEEDED(sq_getint(v, -1, &ms)))
+    return sq_throwerror(v, _A("Invalid integer parameter 0."));
   ni::SleepMs((tU32)ms);
   return 0;
 }
@@ -507,8 +530,8 @@ static int base_sleepMs(HSQUIRRELVM v)
 static int base_sleepSecsCoarse(HSQUIRRELVM v)
 {
   ni::tF64 secs;
-  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
-    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  if (!SQ_SUCCEEDED(sq_getf64(v, -1, &secs)))
+    return sq_throwerror(v, _A("Invalid float64 parameter 0."));
   ni::SleepSecsCoarse(secs);
   return 0;
 }
@@ -516,8 +539,8 @@ static int base_sleepSecsCoarse(HSQUIRRELVM v)
 static int base_sleepSecsSpin(HSQUIRRELVM v)
 {
   ni::tF64 secs;
-  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
-    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  if (!SQ_SUCCEEDED(sq_getf64(v, -1, &secs)))
+    return sq_throwerror(v, _A("Invalid float64 parameter 0."));
   ni::SleepSecsSpin(secs);
   return 0;
 }
@@ -525,8 +548,8 @@ static int base_sleepSecsSpin(HSQUIRRELVM v)
 static int base_sleepSecs(HSQUIRRELVM v)
 {
   ni::tF64 secs;
-  if (!SQ_SUCCEEDED(sq_getf64(v,-1,&secs)))
-    return sq_throwerror(v,_A("Invalid float64 parameter 0."));
+  if (!SQ_SUCCEEDED(sq_getf64(v, -1, &secs)))
+    return sq_throwerror(v, _A("Invalid float64 parameter 0."));
   ni::SleepSecs(secs);
   return 0;
 }
@@ -537,23 +560,24 @@ static int base_EnumToString(HSQUIRRELVM v)
 
   SQInt nEnumToStringFlags = 0;
   if (top >= 4) {
-    sq_getint(v,4,&nEnumToStringFlags);
+    sq_getint(v, 4, &nEnumToStringFlags);
   }
 
   const sEnumDef* enumDef = NULL;
   if (top >= 3) {
-    sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v,3);
+    sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v, 3);
     if (pV) {
       enumDef = pV->pEnumDef;
     }
   }
 
   SQInt nValue = 0;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&nValue)))
-    return sq_throwerror(v,_A("base_EnumToString: Can't get value."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &nValue)))
+    return sq_throwerror(v, _A("base_EnumToString: Can't get value."));
 
-  const cString str = ni::GetLang()->EnumToString(nValue, enumDef, nEnumToStringFlags);
-  sq_pushstring(v,_H(str));
+  const cString str =
+    ni::GetLang()->EnumToString(nValue, enumDef, nEnumToStringFlags);
+  sq_pushstring(v, _H(str));
   return 1;
 }
 
@@ -563,31 +587,31 @@ static int base_StringToEnum(HSQUIRRELVM v)
 
   SQInt nStringToEnumFlags = 0;
   if (top >= 4) {
-    sq_getint(v,4,&nStringToEnumFlags);
+    sq_getint(v, 4, &nStringToEnumFlags);
   }
 
   const sEnumDef* enumDef = NULL;
   if (top >= 3) {
-    sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v,3);
+    sScriptTypeEnumDef* pV = sqa_getud<sScriptTypeEnumDef>(v, 3);
     if (pV) {
       enumDef = pV->pEnumDef;
     }
   }
 
   const SQChar* str = NULL;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&str)))
-    return sq_throwerror(v,_A("base_StringToEnum: Can't get value."));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &str)))
+    return sq_throwerror(v, _A("base_StringToEnum: Can't get value."));
 
   const tU32 r = ni::GetLang()->StringToEnum(str, enumDef, nStringToEnumFlags);
-  sq_pushint(v,r);
+  sq_pushint(v, r);
   return 1;
 }
 
 static int base_FindEnumDef(HSQUIRRELVM v)
 {
   const SQChar* enumName = NULL;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&enumName)))
-    return sq_throwerror(v,_A("base_GetEnumDef: Can't get enum name."));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &enumName)))
+    return sq_throwerror(v, _A("base_GetEnumDef: Can't get enum name."));
 
   const sEnumDef* enumDef = ni::GetLang()->GetEnumDef(enumName);
   if (!enumDef) {
@@ -603,107 +627,118 @@ static int base_FindEnumDef(HSQUIRRELVM v)
 static int base_CreateCollectionVector(HSQUIRRELVM v)
 {
   SQInt valueType;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&valueType)))
-    return sq_throwerror(v,_A("Invalid integer parameter for ValueType."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &valueType)))
+    return sq_throwerror(v, _A("Invalid integer parameter for ValueType."));
   Ptr<iMutableCollection> coll = ni::CreateCollectionVector(valueType);
   if (!coll.IsOK())
-    return sq_throwerror(v,_A("Invalid Vector collection value type."));
-  sqa_pushIUnknown(v,coll);
+    return sq_throwerror(v, _A("Invalid Vector collection value type."));
+  sqa_pushIUnknown(v, coll);
   return 1;
 }
 
 static int base_CreateCollectionMap(HSQUIRRELVM v)
 {
   SQInt keyType, valueType;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&keyType)))
-    return sq_throwerror(v,_A("Invalid integer parameter for KeyType."));
-  if (!SQ_SUCCEEDED(sq_getint(v,3,&valueType)))
-    return sq_throwerror(v,_A("Invalid integer parameter for ValueType."));
-  Ptr<iMutableCollection> coll = ni::CreateCollectionMap(keyType,valueType);
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &keyType)))
+    return sq_throwerror(v, _A("Invalid integer parameter for KeyType."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 3, &valueType)))
+    return sq_throwerror(v, _A("Invalid integer parameter for ValueType."));
+  Ptr<iMutableCollection> coll = ni::CreateCollectionMap(keyType, valueType);
   if (!coll.IsOK())
-    return sq_throwerror(v,_A("Invalid Map collection key/value types."));
-  sqa_pushIUnknown(v,coll);
+    return sq_throwerror(v, _A("Invalid Map collection key/value types."));
+  sqa_pushIUnknown(v, coll);
   return 1;
 }
 
-static int base_GatherLastLogs(HSQUIRRELVM v) {
+static int base_GatherLastLogs(HSQUIRRELVM v)
+{
   SQInt count;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
-    return sq_throwerror(v,_A("Invalid integer parameter for count."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &count)))
+    return sq_throwerror(v, _A("Invalid integer parameter for count."));
   Ptr<tStringCVec> lastLogs = ni::tStringCVec::Create();
-  ni_get_last_logs(lastLogs,count);
-  sqa_pushIUnknown(v,lastLogs);
+  ni_get_last_logs(lastLogs, count);
+  sqa_pushIUnknown(v, lastLogs);
   return 1;
 }
 
 static int base_GetModuleFileName(HSQUIRRELVM v)
 {
-  const SQChar *src=NULL;
-  if (!SQ_SUCCEEDED(sq_getstring(v,-1,&src)))
-    return sq_throwerror(v,_A("Invalid string parameter 0."));
+  const SQChar* src = NULL;
+  if (!SQ_SUCCEEDED(sq_getstring(v, -1, &src)))
+    return sq_throwerror(v, _A("Invalid string parameter 0."));
   ni::cString moduleFilename = ni::GetModuleFileName(src);
-  sq_pushstring(v,_H(moduleFilename));
+  sq_pushstring(v, _H(moduleFilename));
   return 1;
 }
 
-static int base_SerializeReadObject(HSQUIRRELVM v) {
+static int base_SerializeReadObject(HSQUIRRELVM v)
+{
   SQObjectPtr o;
   iFile* pIFile;
-  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,(iUnknown**)&pIFile,niGetInterfaceUUID(iFile))) ||
+  if (!SQ_SUCCEEDED(sqa_getIUnknown(v, 2, (iUnknown**)&pIFile,
+                                    niGetInterfaceUUID(iFile))) ||
       !niIsOK(pIFile))
   {
-    return sq_throwerror(v,"base_SerializeReadObject, invalid source iFile.");
+    return sq_throwerror(v, "base_SerializeReadObject, invalid source iFile.");
   }
   if (!pIFile->GetCanRead()) {
-    return sq_throwerror(v,"base_SerializeWriteObject, can't read from the source iFile.");
+    return sq_throwerror(
+      v, "base_SerializeWriteObject, can't read from the source iFile.");
   }
-  if (!ReadSQObject(v,as_nn(pIFile),o)) {
+  if (!ReadSQObject(v, as_nn(pIFile), o)) {
     return -1;
   }
   v->Push(o);
   return 1;
 }
 
-static int base_SerializeWriteObject(HSQUIRRELVM v) {
+static int base_SerializeWriteObject(HSQUIRRELVM v)
+{
   iFile* pIFile;
-  if (!SQ_SUCCEEDED(sqa_getIUnknown(v,2,(iUnknown**)&pIFile,niGetInterfaceUUID(iFile))) ||
+  if (!SQ_SUCCEEDED(sqa_getIUnknown(v, 2, (iUnknown**)&pIFile,
+                                    niGetInterfaceUUID(iFile))) ||
       !niIsOK(pIFile))
   {
-    return sq_throwerror(v,"base_SerializeWriteObject, invalid destination iFile.");
+    return sq_throwerror(
+      v, "base_SerializeWriteObject, invalid destination iFile.");
   }
   if (!pIFile->GetCanWrite()) {
-    return sq_throwerror(v,"base_SerializeWriteObject, can't write in the destination iFile.");
+    return sq_throwerror(
+      v, "base_SerializeWriteObject, can't write in the destination iFile.");
   }
   tSize startPos = pIFile->Tell();
-  const SQObjectPtr& o = stack_get(v,3);
-  if (!WriteSQObject(v,as_nn(pIFile),o)) {
+  const SQObjectPtr& o = stack_get(v, 3);
+  if (!WriteSQObject(v, as_nn(pIFile), o)) {
     return -1;
   }
-  v->Push(SQInt(pIFile->Tell()-startPos));
+  v->Push(SQInt(pIFile->Tell() - startPos));
   return 1;
 }
 
-static int default_to_intptr(HSQUIRRELVM v) {
-  SQObjectPtr& o = stack_get(v,1);
-  sq_pushint(v,o._var.mIntPtr);
+static int default_to_intptr(HSQUIRRELVM v)
+{
+  SQObjectPtr& o = stack_get(v, 1);
+  sq_pushint(v, o._var.mIntPtr);
   return 1;
 }
 
-static int default_shallow_clone(HSQUIRRELVM v) {
+static int default_shallow_clone(HSQUIRRELVM v)
+{
   SQVM* vm = v;
-  SQObjectPtr &o=stack_get(v,1);
+  SQObjectPtr& o = stack_get(v, 1);
   SQObjectPtr target;
-  vm->Clone(o,target,NULL);
+  vm->Clone(o, target, NULL);
   vm->Push(target);
   return 1;
 }
 
-static int default_deep_clone(HSQUIRRELVM v) {
+static int default_deep_clone(HSQUIRRELVM v)
+{
   SQVM* vm = v;
   tSQDeepCloneGuardSet guardSet;
-  SQObjectPtr &o=stack_get(v,1);
+  SQObjectPtr& o = stack_get(v, 1);
   SQObjectPtr target;
-  if (!vm->Clone(o,target,&guardSet))
+  if (!vm->Clone(o, target, &guardSet))
     return -1; // throw the last error
   vm->Push(target);
   return 1;
@@ -711,119 +746,107 @@ static int default_deep_clone(HSQUIRRELVM v) {
 
 static int default_delegate_len(HSQUIRRELVM v)
 {
-  v->Push(SQInt(sq_getsize(v,1)));
+  v->Push(SQInt(sq_getsize(v, 1)));
   return 1;
 }
 
 static int default_delegate_empty(HSQUIRRELVM v)
 {
-  v->Push(SQInt(sq_getsize(v,1) == 0));
+  v->Push(SQInt(sq_getsize(v, 1) == 0));
   return 1;
 }
 
 static int default_delegate_notempty(HSQUIRRELVM v)
 {
-  v->Push(SQInt(sq_getsize(v,1) != 0));
+  v->Push(SQInt(sq_getsize(v, 1) != 0));
   return 1;
 }
 
 static int default_delegate_tofloat(HSQUIRRELVM v)
 {
-  SQObjectPtr &o=stack_get(v,1);
-  switch(_sqtype(o)){
-    case OT_STRING:{
-      SQObjectPtr res;
-      if (str2num(_stringval(o),res)) {
-        v->Push(SQObjectPtr(tofloat(res)));
-      }
-      else {
-        v->Push(_null_);
-      }
-      break;
+  SQObjectPtr& o = stack_get(v, 1);
+  switch (_sqtype(o)) {
+  case OT_STRING: {
+    SQObjectPtr res;
+    if (str2num(_stringval(o), res)) {
+      v->Push(SQObjectPtr(tofloat(res)));
     }
-    case OT_INTEGER:case OT_FLOAT:
-      v->Push(SQObjectPtr(tofloat(o)));
-      break;
-    default:
+    else {
       v->Push(_null_);
-      break;
+    }
+    break;
+  }
+  case OT_INTEGER:
+  case OT_FLOAT: v->Push(SQObjectPtr(tofloat(o))); break;
+  default: v->Push(_null_); break;
   }
   return 1;
 }
 
 static int default_delegate_toint(HSQUIRRELVM v)
 {
-  SQObjectPtr &o=stack_get(v,1);
-  switch(_sqtype(o)){
-    case OT_STRING:
-      {
-        SQObjectPtr res;
-        const achar* str = _stringval(o);
-        tU32 ch = StrGetNext(str);
-        if (!ch) {
-          v->Push(SQObjectPtr(eFalse));
-          break;
-        }
-        else if (!StrIsNumberPart(ch)) {
-          if (ni::StrICmp(str,_A("true")) == 0) {
-            v->Push(SQObjectPtr(eTrue));
-            break;
-          }
-          else if (ni::StrICmp(str,_A("false")) == 0) {
-            v->Push(SQObjectPtr(eFalse));
-            break;
-          }
-        }
-        else if (str2num(str,res)) {
-          v->Push(SQObjectPtr((SQInt)toint(res)));
-          break;
-        }
-        return sq_throwerror(v,niFmt(_A("toint, string '%s' can't be converted to a number."),_stringval(o)));
+  SQObjectPtr& o = stack_get(v, 1);
+  switch (_sqtype(o)) {
+  case OT_STRING: {
+    SQObjectPtr res;
+    const achar* str = _stringval(o);
+    tU32 ch = StrGetNext(str);
+    if (!ch) {
+      v->Push(SQObjectPtr(eFalse));
+      break;
+    }
+    else if (!StrIsNumberPart(ch)) {
+      if (ni::StrICmp(str, _A("true")) == 0) {
+        v->Push(SQObjectPtr(eTrue));
+        break;
       }
-    case OT_INTEGER:case OT_FLOAT:
-      v->Push(SQObjectPtr((SQInt)toint(o)));
+      else if (ni::StrICmp(str, _A("false")) == 0) {
+        v->Push(SQObjectPtr(eFalse));
+        break;
+      }
+    }
+    else if (str2num(str, res)) {
+      v->Push(SQObjectPtr((SQInt)toint(res)));
       break;
-    default:
-      v->Push(_null_);
-      break;
+    }
+    return sq_throwerror(
+      v, niFmt(_A("toint, string '%s' can't be converted to a number."),
+               _stringval(o)));
+  }
+  case OT_INTEGER:
+  case OT_FLOAT: v->Push(SQObjectPtr((SQInt)toint(o))); break;
+  default: v->Push(_null_); break;
   }
   return 1;
 }
 
 static int default_delegate_tostring(HSQUIRRELVM v)
 {
-  SQObjectPtr &o=stack_get(v,1);
-  switch(_sqtype(o)){
-    case OT_STRING:
-      v->Push(o);
-      break;
-    case OT_INTEGER:
-      v->Push(_H(niFmt(_A("%d"),_int(o))));
-      break;
-    case OT_FLOAT: {
-      cString out;
-      SQVM_CatFloatToString(out,_float(o));
-      v->Push(_H(out));
-      break;
-    }
-    default:
-      v->Push(_null_);
-      break;
+  SQObjectPtr& o = stack_get(v, 1);
+  switch (_sqtype(o)) {
+  case OT_STRING: v->Push(o); break;
+  case OT_INTEGER: v->Push(_H(niFmt(_A("%d"), _int(o)))); break;
+  case OT_FLOAT: {
+    cString out;
+    SQVM_CatFloatToString(out, _float(o));
+    v->Push(_H(out));
+    break;
+  }
+  default: v->Push(_null_); break;
   }
   return 1;
 }
 
 static int number_delegate_tochar(HSQUIRRELVM v)
 {
-  achar buffer[5] = {0,0,0,0,0};
+  achar buffer[5] = { 0, 0, 0, 0, 0 };
   niCAssert(sizeof(buffer) == 5);
-  SQObject &o = stack_get(v,1);
+  SQObject& o = stack_get(v, 1);
   const tU32 c = toint(o);
-  StrSetChar(buffer,c);
+  StrSetChar(buffer, c);
   v->Push(_H(buffer));
   return 1;
 }
-
 
 /////////////////////////////////////////////////////////////////
 //TABLE DEFAULT DELEGATE
@@ -831,53 +854,51 @@ static int number_delegate_tochar(HSQUIRRELVM v)
 static int table_rawdelete(HSQUIRRELVM v)
 {
   //return SQ_SUCCEEDED(sq_getdelegate(v,-1))?1:SQ_ERROR;
-  if(SQ_FAILED(sq_rawdeleteslot(v,1,1)))
+  if (SQ_FAILED(sq_rawdeleteslot(v, 1, 1)))
     return SQ_ERROR;
   return 1;
 }
 
-
 static int table_rawset(HSQUIRRELVM v)
 {
-  return sq_rawset(v,-3);
+  return sq_rawset(v, -3);
 }
-
 
 static int table_rawget(HSQUIRRELVM v)
 {
-  return SQ_SUCCEEDED(sq_rawget(v,-2))?1:SQ_ERROR;
+  return SQ_SUCCEEDED(sq_rawget(v, -2)) ? 1 : SQ_ERROR;
 }
 
 static int table_getkey(HSQUIRRELVM v)
 {
-  SQObject& table = stack_get(v,1);
-  SQObject& val = stack_get(v,2);
+  SQObject& table = stack_get(v, 1);
+  SQObject& val = stack_get(v, 2);
   SQObjectPtr o;
-  if (!_table(table)->GetKey(val,o))
+  if (!_table(table)->GetKey(val, o))
     sq_pushnull(v);
   else
-    sq_pushobject(v,o);
+    sq_pushobject(v, o);
   return 1;
 }
 
 static int table_clear(HSQUIRRELVM v)
 {
-  SQObject& table = stack_get(v,-1);
+  SQObject& table = stack_get(v, -1);
   _table(table)->Clear();
   return 1;
 }
 
 static int table_invalidate(HSQUIRRELVM v)
 {
-  SQObject& table = stack_get(v,-1);
+  SQObject& table = stack_get(v, -1);
   _table(table)->Invalidate();
   return 1;
 }
 
 static SQInt table_setdelegate(HSQUIRRELVM v)
 {
-  SQObject& table = stack_get(v,1);
-  SQObject& del = stack_get(v,2);
+  SQObject& table = stack_get(v, 1);
+  SQObject& del = stack_get(v, 2);
   if (!_table(table)->SetDelegate(_table(del))) {
     return sq_throwerror(v, "cant set delegate");
   }
@@ -887,13 +908,13 @@ static SQInt table_setdelegate(HSQUIRRELVM v)
 
 static SQInt table_getdelegate(HSQUIRRELVM v)
 {
-  return SQ_SUCCEEDED(sq_getdelegate(v,-1))?1:0;
+  return SQ_SUCCEEDED(sq_getdelegate(v, -1)) ? 1 : 0;
 }
 
 static SQInt table_hasdelegate(HSQUIRRELVM v)
 {
-  SQObject& t = stack_get(v,1);
-  SQObject& del = stack_get(v,2);
+  SQObject& t = stack_get(v, 1);
+  SQObject& del = stack_get(v, 2);
   tBool r = eFalse;
   SQTable* ct = _table(t)->GetDelegate();
   while (ct) {
@@ -903,21 +924,21 @@ static SQInt table_hasdelegate(HSQUIRRELVM v)
     }
     ct = ct->GetDelegate();
   }
-  sq_pushint(v,r);
+  sq_pushint(v, r);
   return 1;
 }
 
 static int table_GetThisTable(HSQUIRRELVM v)
 {
-  SQObject& table = stack_get(v,-1);
-  sq_pushobject(v,table);
+  SQObject& table = stack_get(v, -1);
+  sq_pushobject(v, table);
   return 1;
 }
 
 static int table_SetCanCallMetaMethod(HSQUIRRELVM v)
 {
-  SQObject &o = stack_get(v, 1);
-  SQObject &canCall = stack_get(v, 2);
+  SQObject& o = stack_get(v, 1);
+  SQObject& canCall = stack_get(v, 2);
   _table(o)->SetCanCallMetaMethod(toint(canCall));
   sq_pushnull(v);
   return 1;
@@ -925,8 +946,8 @@ static int table_SetCanCallMetaMethod(HSQUIRRELVM v)
 
 static int table_GetCanCallMetaMethod(HSQUIRRELVM v)
 {
-  SQObject &o = stack_get(v, 1);
-  sq_pushint(v,_table(o)->CanCallMetaMethod());
+  SQObject& o = stack_get(v, 1);
+  sq_pushint(v, _table(o)->CanCallMetaMethod());
   return 1;
 }
 
@@ -934,70 +955,74 @@ static int table_GetCanCallMetaMethod(HSQUIRRELVM v)
 
 static int array_capacity(HSQUIRRELVM v)
 {
-  v->Push(_array(stack_get(v,1))->Capacity());
+  v->Push(_array(stack_get(v, 1))->Capacity());
   return 1;
 }
 
 static int array_append(HSQUIRRELVM v)
 {
-  return sq_arrayappend(v,-2);
+  return sq_arrayappend(v, -2);
 }
 
 static int array_extend(HSQUIRRELVM v)
 {
-  _array(stack_get(v,1))->Extend(_array(stack_get(v,2)));
+  _array(stack_get(v, 1))->Extend(_array(stack_get(v, 2)));
   return 0;
 }
 
 static int array_reverse(HSQUIRRELVM v)
 {
-  return sq_arrayreverse(v,-1);
+  return sq_arrayreverse(v, -1);
 }
 
 static int array_pop(HSQUIRRELVM v)
 {
-  return SQ_SUCCEEDED(sq_arraypop(v,1,1))?1:SQ_ERROR;
+  return SQ_SUCCEEDED(sq_arraypop(v, 1, 1)) ? 1 : SQ_ERROR;
 }
 
 static int array_top(HSQUIRRELVM v)
 {
-  SQObject &o=stack_get(v,1);
-  if(_array(o)->Size()>0){
+  SQObject& o = stack_get(v, 1);
+  if (_array(o)->Size() > 0) {
     v->Push(_array(o)->Top());
     return 1;
   }
-  else return sq_throwerror(v,_A("top() on a empty array"));
+  else
+    return sq_throwerror(v, _A("top() on a empty array"));
 }
 
 static int array_clear(HSQUIRRELVM v)
 {
-  SQObject &o=stack_get(v,1);
+  SQObject& o = stack_get(v, 1);
   _array(o)->Clear();
   return 0;
 }
 
 static int array_insert(HSQUIRRELVM v)
 {
-  SQObject &o=stack_get(v,1);
-  SQObject &idx=stack_get(v,2);
-  SQObject &val=stack_get(v,3);
-  if (!sq_isnumeric(idx)) return sq_throwerror(v, _A("array wrong index type"));
+  SQObject& o = stack_get(v, 1);
+  SQObject& idx = stack_get(v, 2);
+  SQObject& val = stack_get(v, 3);
+  if (!sq_isnumeric(idx))
+    return sq_throwerror(v, _A("array wrong index type"));
 
   int intIdx = toint(idx);
   if (intIdx < 0 || intIdx > _array(o)->Size())
-    return sq_throwerror(v, niFmt("array index '%d' out of range [0 ; %d]'.", intIdx, _array(o)->Size()));
+    return sq_throwerror(v, niFmt("array index '%d' out of range [0 ; %d]'.",
+                                  intIdx, _array(o)->Size()));
 
-  _array(o)->Insert(idx,val);
+  _array(o)->Insert(idx, val);
   return 0;
 }
 
 static int array_remove(HSQUIRRELVM v)
 {
-  SQObject &o = stack_get(v, 1);
-  SQObject &idx = stack_get(v, 2);
-  if(!sq_isnumeric(idx)) return sq_throwerror(v, _A("array wrong index type"));
+  SQObject& o = stack_get(v, 1);
+  SQObject& idx = stack_get(v, 2);
+  if (!sq_isnumeric(idx))
+    return sq_throwerror(v, _A("array wrong index type"));
   SQObjectPtr val;
-  if(_array(o)->Get(toint(idx), val)) {
+  if (_array(o)->Get(toint(idx), val)) {
     _array(o)->Remove(toint(idx));
     v->Push(val);
     return 1;
@@ -1007,13 +1032,13 @@ static int array_remove(HSQUIRRELVM v)
 
 static int array_resize(HSQUIRRELVM v)
 {
-  SQObject &o = stack_get(v, 1);
-  SQObject &nsize = stack_get(v, 2);
+  SQObject& o = stack_get(v, 1);
+  SQObject& nsize = stack_get(v, 2);
   SQObjectPtr fill;
-  if(sq_isnumeric(nsize)) {
-    if(sq_gettop(v) > 2)
+  if (sq_isnumeric(nsize)) {
+    if (sq_gettop(v) > 2)
       fill = stack_get(v, 3);
-    _array(o)->Resize(toint(nsize),fill);
+    _array(o)->Resize(toint(nsize), fill);
     return 0;
   }
   return sq_throwerror(v, _A("size must be a number"));
@@ -1021,9 +1046,9 @@ static int array_resize(HSQUIRRELVM v)
 
 static int array_reserve(HSQUIRRELVM v)
 {
-  SQObject &o = stack_get(v, 1);
-  SQObject &nsize = stack_get(v, 2);
-  if(sq_isnumeric(nsize)) {
+  SQObject& o = stack_get(v, 1);
+  SQObject& nsize = stack_get(v, 2);
+  if (sq_isnumeric(nsize)) {
     _array(o)->Reserve(toint(nsize));
     return 0;
   }
@@ -1031,7 +1056,8 @@ static int array_reserve(HSQUIRRELVM v)
 }
 
 template <typename T, typename FUN_CMP, typename FUN_INVALID_CMP>
-bool quicksort(HSQUIRRELVM v, T& array, int hi, int lo, FUN_CMP& cmp, FUN_INVALID_CMP& invalidCmp)
+bool quicksort(HSQUIRRELVM v, T& array, int hi, int lo, FUN_CMP& cmp,
+               FUN_INVALID_CMP& invalidCmp)
 {
   int ret = 0;
   while (hi > lo) {
@@ -1039,7 +1065,7 @@ bool quicksort(HSQUIRRELVM v, T& array, int hi, int lo, FUN_CMP& cmp, FUN_INVALI
     int j = hi;
     do {
       for (;;) {
-        if (!cmp(v,array[i],array[lo],ret))
+        if (!cmp(v, array[i], array[lo], ret))
           return false;
         if (!((ret < 0) && (i < j)))
           break;
@@ -1051,27 +1077,27 @@ bool quicksort(HSQUIRRELVM v, T& array, int hi, int lo, FUN_CMP& cmp, FUN_INVALI
           invalidCmp(v);
           return false;
         }
-        if (!cmp(v,array[--j],array[lo],ret))
+        if (!cmp(v, array[--j], array[lo], ret))
           return false;
         if (!(ret > 0))
           break;
       }
 
       if (i < j) {
-        ni::Swap(array[i],array[j]);
+        ni::Swap(array[i], array[j]);
       }
     } while (i < j);
 
-    ni::Swap(array[lo],array[j]);
-    if ((j-lo) > (hi-(j+1))) {
-      if (!quicksort(v,array,j-1,lo,cmp,invalidCmp))
+    ni::Swap(array[lo], array[j]);
+    if ((j - lo) > (hi - (j + 1))) {
+      if (!quicksort(v, array, j - 1, lo, cmp, invalidCmp))
         return false;
-      lo = j+1;
+      lo = j + 1;
     }
     else {
-      if (!quicksort(v,array,hi,j+1,cmp,invalidCmp))
+      if (!quicksort(v, array, hi, j + 1, cmp, invalidCmp))
         return false;
-      hi = j-1;
+      hi = j - 1;
     }
   }
   return true;
@@ -1079,14 +1105,17 @@ bool quicksort(HSQUIRRELVM v, T& array, int hi, int lo, FUN_CMP& cmp, FUN_INVALI
 
 static int array_sort(HSQUIRRELVM v)
 {
-  SQObjectPtr &o = stack_get(v,1);
-  SQObject &funcobj = stack_get(v,2);
-  if(_array(o)->Size() > 1) {
+  SQObjectPtr& o = stack_get(v, 1);
+  SQObject& funcobj = stack_get(v, 2);
+  if (_array(o)->Size() > 1) {
     struct _Local {
-      static void funErr(HSQUIRRELVM v) {
+      static void funErr(HSQUIRRELVM v)
+      {
         v->Raise_MsgError("compare func is miss-behaved");
       };
-      static bool funCmp(HSQUIRRELVM v, const SQObjectPtr& a, const SQObjectPtr& b, int& ret) {
+      static bool funCmp(HSQUIRRELVM v, const SQObjectPtr& a,
+                         const SQObjectPtr& b, int& ret)
+      {
         ret = 0;
         int top = sq_gettop(v);
         sq_push(v, 2);
@@ -1101,19 +1130,22 @@ static int array_sort(HSQUIRRELVM v)
         sq_settop(v, top);
         return true;
       };
-      static bool objCmp(HSQUIRRELVM v, const SQObjectPtr& a, const SQObjectPtr& b, int& ret) {
-        if (!v->ObjCmp(a,b,ret))
+      static bool objCmp(HSQUIRRELVM v, const SQObjectPtr& a,
+                         const SQObjectPtr& b, int& ret)
+      {
+        if (!v->ObjCmp(a, b, ret))
           return false;
         return true;
       };
     };
-    if (_sqtype(funcobj) == OT_CLOSURE || _sqtype(funcobj) == OT_NATIVECLOSURE) {
-      if (!quicksort(v,_array(o)->_values, (int)_array(o)->_values.size(),0,
+    if (_sqtype(funcobj) == OT_CLOSURE || _sqtype(funcobj) == OT_NATIVECLOSURE)
+    {
+      if (!quicksort(v, _array(o)->_values, (int)_array(o)->_values.size(), 0,
                      _Local::funCmp, _Local::funErr))
         return SQ_ERROR;
     }
     else {
-      if (!quicksort(v,_array(o)->_values, (int)_array(o)->_values.size(), 0,
+      if (!quicksort(v, _array(o)->_values, (int)_array(o)->_values.size(), 0,
                      _Local::objCmp, _Local::funErr))
         return SQ_ERROR;
     }
@@ -1124,40 +1156,46 @@ static int array_sort(HSQUIRRELVM v)
 
 static int array_slice(HSQUIRRELVM v)
 {
-  int sidx,eidx;
+  int sidx, eidx;
   SQObjectPtr o;
-  if(get_slice_params(v,sidx,eidx,o)==-1)return -1;
-  if(sidx<0)sidx=_array(o)->Size()+sidx;
-  if(eidx<0)eidx=_array(o)->Size()+eidx;
-  if(eidx <= sidx)return sq_throwerror(v,_A("wrong indexes"));
-  SQArray *arr=SQArray::Create(eidx-sidx);
+  if (get_slice_params(v, sidx, eidx, o) == -1)
+    return -1;
+  if (sidx < 0)
+    sidx = _array(o)->Size() + sidx;
+  if (eidx < 0)
+    eidx = _array(o)->Size() + eidx;
+  if (eidx <= sidx)
+    return sq_throwerror(v, _A("wrong indexes"));
+  SQArray* arr = SQArray::Create(eidx - sidx);
   SQObjectPtr t;
-  int count=0;
-  for(int i=sidx;i<eidx;i++){
-    _array(o)->Get(i,t);
-    arr->Set(count++,t);
+  int count = 0;
+  for (int i = sidx; i < eidx; i++) {
+    _array(o)->Get(i, t);
+    arr->Set(count++, t);
   }
   v->Push(arr);
   return 1;
-
 }
 
 //STRING DEFAULT DELEGATE//////////////////////////
 
 static int string_size(HSQUIRRELVM v)
 {
-  v->Push(SQInt(sq_getsize(v,1)*sizeof(SQChar)));
+  v->Push(SQInt(sq_getsize(v, 1) * sizeof(SQChar)));
   return 1;
 }
 
 static int string_slice(HSQUIRRELVM v)
 {
-  int sidx,eidx;
+  int sidx, eidx;
   SQObjectPtr o;
-  if(SQ_FAILED(get_slice_params(v,sidx,eidx,o)))return -1;
-  if(sidx<0)sidx=_stringlen(o)+sidx;
-  if(eidx<0)eidx=_stringlen(o)+eidx;
-  if (eidx<sidx) {
+  if (SQ_FAILED(get_slice_params(v, sidx, eidx, o)))
+    return -1;
+  if (sidx < 0)
+    sidx = _stringlen(o) + sidx;
+  if (eidx < 0)
+    eidx = _stringlen(o) + eidx;
+  if (eidx < sidx) {
     v->Push(v->GetEmptyString());
   }
   else {
@@ -1167,10 +1205,10 @@ static int string_slice(HSQUIRRELVM v)
       v->Push(v->GetEmptyString());
     }
     else {
-      int count = eidx-sidx;
-      if ((sidx+count) >= slen)
+      int count = eidx - sidx;
+      if ((sidx + count) >= slen)
         count = slen - sidx;
-      v->Push(_H(cString(p,count)));
+      v->Push(_H(cString(p, count)));
     }
   }
   return 1;
@@ -1179,34 +1217,38 @@ static int string_slice(HSQUIRRELVM v)
 ///////////////////////////////////////////////
 static int string_split(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_split, Invalid parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_split, Invalid parameter."));
 
   astl::vector<cString> vToks;
-  StringSplit(cString(str),param,&vToks);
+  StringSplit(cString(str), param, &vToks);
 
-  sq_newarray(v,0);
+  sq_newarray(v, 0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,_H(vToks[i]));
-    sq_arrayappend(v,-2);
+    sq_pushstring(v, _H(vToks[i]));
+    sq_arrayappend(v, -2);
   }
 
   return 1;
 }
 static int string_split_sep(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_split, Invalid parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_split, Invalid parameter."));
 
   astl::vector<cString> vToks;
-  StringSplitSep(cString(str),param,&vToks);
+  StringSplitSep(cString(str), param, &vToks);
 
-  sq_newarray(v,0);
+  sq_newarray(v, 0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,_H(vToks[i]));
-    sq_arrayappend(v,-2);
+    sq_pushstring(v, _H(vToks[i]));
+    sq_arrayappend(v, -2);
   }
 
   return 1;
@@ -1214,19 +1256,24 @@ static int string_split_sep(HSQUIRRELVM v)
 
 static int string_split_sep_quoted(HSQUIRRELVM v)
 {
-  const SQChar *str,*delim;
+  const SQChar *str, *delim;
   SQInt quote;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&delim))) return sq_throwerror(v,_A("string_split_sep_quoted, Invalid delim parameter."));
-  if (!SQ_SUCCEEDED(sq_getint(v,3,&quote))) return sq_throwerror(v,_A("string_split_sep_quoted, Invalid quote parameter."));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &delim)))
+    return sq_throwerror(
+      v, _A("string_split_sep_quoted, Invalid delim parameter."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 3, &quote)))
+    return sq_throwerror(
+      v, _A("string_split_sep_quoted, Invalid quote parameter."));
 
   astl::vector<cString> vToks;
-  StringSplitSepQuoted(cString(str),delim,quote,&vToks);
+  StringSplitSepQuoted(cString(str), delim, quote, &vToks);
 
-  sq_newarray(v,0);
+  sq_newarray(v, 0);
   for (tU32 i = 0; i < vToks.size(); ++i) {
-    sq_pushstring(v,_H(vToks[i]));
-    sq_arrayappend(v,-2);
+    sq_pushstring(v, _H(vToks[i]));
+    sq_arrayappend(v, -2);
   }
 
   return 1;
@@ -1234,114 +1281,132 @@ static int string_split_sep_quoted(HSQUIRRELVM v)
 
 static int string_split_csv_fields(HSQUIRRELVM v)
 {
-  const SQChar *str,*delim;
+  const SQChar *str, *delim;
   SQInt quote;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&delim))) return sq_throwerror(v,_A("string_split_sep_quoted, Invalid delim parameter."));
-  if (!SQ_SUCCEEDED(sq_getint(v,3,&quote))) return sq_throwerror(v,_A("string_split_sep_quoted, Invalid quote parameter."));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &delim)))
+    return sq_throwerror(
+      v, _A("string_split_sep_quoted, Invalid delim parameter."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 3, &quote)))
+    return sq_throwerror(
+      v, _A("string_split_sep_quoted, Invalid quote parameter."));
 
   astl::vector<cString> vFields;
-  StringSplitCsvFields(cString(str),delim,quote,&vFields);
+  StringSplitCsvFields(cString(str), delim, quote, &vFields);
 
-  sq_newarray(v,0);
+  sq_newarray(v, 0);
   for (tU32 i = 0; i < vFields.size(); ++i) {
-    sq_pushstring(v,_H(vFields[i]));
-    sq_arrayappend(v,-2);
+    sq_pushstring(v, _H(vFields[i]));
+    sq_arrayappend(v, -2);
   }
 
   return 1;
 }
 
 ///////////////////////////////////////////////
-static int string_find(HSQUIRRELVM v) {
-  int top,start_idx=0;
-  const SQChar *str,*substr;
-  if (((top=sq_gettop(v))>1) && SQ_SUCCEEDED(sq_getstring(v,1,&str)) && SQ_SUCCEEDED(sq_getstring(v,2,&substr)))
+static int string_find(HSQUIRRELVM v)
+{
+  int top, start_idx = 0;
+  const SQChar *str, *substr;
+  if (((top = sq_gettop(v)) > 1) && SQ_SUCCEEDED(sq_getstring(v, 1, &str)) &&
+      SQ_SUCCEEDED(sq_getstring(v, 2, &substr)))
   {
-    if (top>2)
-      sq_getint(v,3,&start_idx);
-    tI32 ret = StrZFind(str,0,substr,0,start_idx);
+    if (top > 2)
+      sq_getint(v, 3, &start_idx);
+    tI32 ret = StrZFind(str, 0, substr, 0, start_idx);
     if (ret != -1) {
-      sq_pushint(v,ret);
+      sq_pushint(v, ret);
       return 1;
     }
     return 0;
   }
-  return sq_throwerror(v,_A("invalid param"));
+  return sq_throwerror(v, _A("invalid param"));
 }
 
-static int string_rfind(HSQUIRRELVM v) {
-  int top,start_idx=0x7fffffff;
-  const SQChar *str,*substr;
-  if (((top=sq_gettop(v))>1) && SQ_SUCCEEDED(sq_getstring(v,1,&str)) && SQ_SUCCEEDED(sq_getstring(v,2,&substr)))
+static int string_rfind(HSQUIRRELVM v)
+{
+  int top, start_idx = 0x7fffffff;
+  const SQChar *str, *substr;
+  if (((top = sq_gettop(v)) > 1) && SQ_SUCCEEDED(sq_getstring(v, 1, &str)) &&
+      SQ_SUCCEEDED(sq_getstring(v, 2, &substr)))
   {
-    if (top>2)
-      sq_getint(v,3,&start_idx);
-    tI32 ret = StrZRFind(str,0,substr,0,start_idx);
+    if (top > 2)
+      sq_getint(v, 3, &start_idx);
+    tI32 ret = StrZRFind(str, 0, substr, 0, start_idx);
     if (ret != -1) {
-      sq_pushint(v,ret);
+      sq_pushint(v, ret);
       return 1;
     }
     return 0;
   }
-  return sq_throwerror(v,_A("invalid param"));
+  return sq_throwerror(v, _A("invalid param"));
 }
-static int string_ifind(HSQUIRRELVM v) {
-  int top,start_idx=0;
-  const SQChar *str,*substr;
-  if (((top=sq_gettop(v))>1) && SQ_SUCCEEDED(sq_getstring(v,1,&str)) && SQ_SUCCEEDED(sq_getstring(v,2,&substr)))
+static int string_ifind(HSQUIRRELVM v)
+{
+  int top, start_idx = 0;
+  const SQChar *str, *substr;
+  if (((top = sq_gettop(v)) > 1) && SQ_SUCCEEDED(sq_getstring(v, 1, &str)) &&
+      SQ_SUCCEEDED(sq_getstring(v, 2, &substr)))
   {
-    if (top>2)
-      sq_getint(v,3,&start_idx);
-    tI32 ret = StrZFindI(str,0,substr,0,start_idx);
+    if (top > 2)
+      sq_getint(v, 3, &start_idx);
+    tI32 ret = StrZFindI(str, 0, substr, 0, start_idx);
     if (ret != -1) {
-      sq_pushint(v,ret);
+      sq_pushint(v, ret);
       return 1;
     }
     return 0;
   }
-  return sq_throwerror(v,_A("invalid param"));
+  return sq_throwerror(v, _A("invalid param"));
 }
-static int string_irfind(HSQUIRRELVM v) {
-  int top,start_idx=0x7fffffff;
-  const SQChar *str,*substr;
-  if (((top=sq_gettop(v))>1) && SQ_SUCCEEDED(sq_getstring(v,1,&str)) && SQ_SUCCEEDED(sq_getstring(v,2,&substr)))
+static int string_irfind(HSQUIRRELVM v)
+{
+  int top, start_idx = 0x7fffffff;
+  const SQChar *str, *substr;
+  if (((top = sq_gettop(v)) > 1) && SQ_SUCCEEDED(sq_getstring(v, 1, &str)) &&
+      SQ_SUCCEEDED(sq_getstring(v, 2, &substr)))
   {
-    if (top>2)
-      sq_getint(v,3,&start_idx);
-    tI32 ret = StrZRFindI(str,0,substr,0,start_idx);
+    if (top > 2)
+      sq_getint(v, 3, &start_idx);
+    tI32 ret = StrZRFindI(str, 0, substr, 0, start_idx);
     if (ret != -1) {
-      sq_pushint(v,ret);
+      sq_pushint(v, ret);
       return 1;
     }
     return 0;
   }
-  return sq_throwerror(v,_A("invalid param"));
+  return sq_throwerror(v, _A("invalid param"));
 }
 
 static int string_contains(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_contains, Invalid parameter."));
-  sq_pushint(v,StrZFind(str,0,param,0) != -1);
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_contains, Invalid parameter."));
+  sq_pushint(v, StrZFind(str, 0, param, 0) != -1);
   return 1;
 }
 
 static int string_icontains(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_contains, Invalid parameter."));
-  sq_pushint(v,StrZFindI(str,0,param,0) != -1);
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_contains, Invalid parameter."));
+  sq_pushint(v, StrZFindI(str, 0, param, 0) != -1);
   return 1;
 }
 
-#define MAX_FORMAT_LEN   20
-#define MAX_WFORMAT_LEN   3
-#define ADDITIONAL_FORMAT_SPACE (100*sizeof(SQChar))
+#define MAX_FORMAT_LEN 20
+#define MAX_WFORMAT_LEN 3
+#define ADDITIONAL_FORMAT_SPACE (100 * sizeof(SQChar))
 
-static int validate_format(HSQUIRRELVM v, SQChar *fmt, const SQChar *src, int n,int &width)
+static int validate_format(HSQUIRRELVM v, SQChar* fmt, const SQChar* src, int n,
+                           int& width)
 {
   SQChar swidth[MAX_WFORMAT_LEN];
   int wc = 0;
@@ -1354,11 +1419,11 @@ static int validate_format(HSQUIRRELVM v, SQChar *fmt, const SQChar *src, int n,
     swidth[wc] = src[n];
     n++;
     wc++;
-    if(wc>=MAX_WFORMAT_LEN)
-      return sq_throwerror(v,_A("width format too long"));
+    if (wc >= MAX_WFORMAT_LEN)
+      return sq_throwerror(v, _A("width format too long"));
   }
   swidth[wc] = '\0';
-  if(wc > 0) {
+  if (wc > 0) {
     width = (int)StrAToL(swidth);
   }
   else
@@ -1371,520 +1436,626 @@ static int validate_format(HSQUIRRELVM v, SQChar *fmt, const SQChar *src, int n,
       swidth[wc] = src[n];
       n++;
       wc++;
-      if(wc>=MAX_WFORMAT_LEN)
-        return sq_throwerror(v,_A("precision format too long"));
+      if (wc >= MAX_WFORMAT_LEN)
+        return sq_throwerror(v, _A("precision format too long"));
     }
     swidth[wc] = '\0';
-    if(wc > 0) {
+    if (wc > 0) {
       width += (int)StrAToL(swidth);
     }
   }
-  if (n-start > MAX_FORMAT_LEN )
-    return sq_throwerror(v,_A("format too long"));
-  memcpy(&fmt[1],&src[start],((n-start)+1)*sizeof(SQChar));
-  fmt[(n-start)+2] = '\0';
+  if (n - start > MAX_FORMAT_LEN)
+    return sq_throwerror(v, _A("format too long"));
+  memcpy(&fmt[1], &src[start], ((n - start) + 1) * sizeof(SQChar));
+  fmt[(n - start) + 2] = '\0';
   return n;
 }
 
 static int string_format(HSQUIRRELVM v)
 {
-  const SQChar *format;
+  const SQChar* format;
   cString strDest;
   SQChar fmt[MAX_FORMAT_LEN];
-  sq_getstring(v,2,&format);
+  sq_getstring(v, 2, &format);
   int n = 0, nparam = 3, w;
-  while(format[n] != '\0') {
-    if(format[n] != '%') {
+  while (format[n] != '\0') {
+    if (format[n] != '%') {
       strDest.appendChar(format[n]);
       n++;
     }
-    else if(format[n+1] == '%') {
+    else if (format[n + 1] == '%') {
       strDest.appendChar('%');
       n += 2;
     }
     else {
       n++;
-      if( nparam > sq_gettop(v) )
-        return sq_throwerror(v,_A("not enough paramters for the given format string"));
-      n = validate_format(v,fmt,format,n,w);
-      if(n < 0) return -1;
+      if (nparam > sq_gettop(v))
+        return sq_throwerror(
+          v, _A("not enough paramters for the given format string"));
+      n = validate_format(v, fmt, format, n, w);
+      if (n < 0)
+        return -1;
       int valtype = 0;
-      const SQChar *ts = "";
+      const SQChar* ts = "";
       SQInt ti = 0;
       SQFloat tf = 0;
-      switch(format[n]) {
-        case 's':
-          switch (sq_gettype(v,nparam)) {
-            case OT_NULL:
-              ts = _A("{NULL}");
-              break;
-            case OT_STRING:
-              sq_getstring(v,nparam,&ts);
-              break;
-            default:
-              return sq_throwerror(v,_A("string expected for the specified format"));
-          }
-          valtype = 's';
-          break;
-        case 'i': case 'd': case 'c':case 'o':  case 'u':  case 'x':  case 'X':
-          if(SQ_FAILED(sq_getint(v,nparam,&ti)))
-            return sq_throwerror(v,_A("int expected for the specified format"));
-          valtype = 'i';
-          break;
-        case 'f': case 'g': case 'G': case 'e':  case 'E':
-          if(SQ_FAILED(sq_getf64(v,nparam,&tf)))
-            return sq_throwerror(v,_A("float expected for the specified format"));
-          valtype = 'f';
-          break;
+      switch (format[n]) {
+      case 's':
+        switch (sq_gettype(v, nparam)) {
+        case OT_NULL: ts = _A("{NULL}"); break;
+        case OT_STRING: sq_getstring(v, nparam, &ts); break;
         default:
-          return sq_throwerror(v,_A("invalid format"));
+          return sq_throwerror(v,
+                               _A("string expected for the specified format"));
+        }
+        valtype = 's';
+        break;
+      case 'i':
+      case 'd':
+      case 'c':
+      case 'o':
+      case 'u':
+      case 'x':
+      case 'X':
+        if (SQ_FAILED(sq_getint(v, nparam, &ti)))
+          return sq_throwerror(v, _A("int expected for the specified format"));
+        valtype = 'i';
+        break;
+      case 'f':
+      case 'g':
+      case 'G':
+      case 'e':
+      case 'E':
+        if (SQ_FAILED(sq_getf64(v, nparam, &tf)))
+          return sq_throwerror(v,
+                               _A("float expected for the specified format"));
+        valtype = 'f';
+        break;
+      default: return sq_throwerror(v, _A("invalid format"));
       }
       n++;
-      switch(valtype) {
-        case 's': strDest += niFmt(fmt,ts); break;
-        case 'i': strDest += niFmt(fmt,ti); break;
-        case 'f': strDest += niFmt(fmt,tf); break;
+      switch (valtype) {
+      case 's': strDest += niFmt(fmt, ts); break;
+      case 'i': strDest += niFmt(fmt, ti); break;
+      case 'f': strDest += niFmt(fmt, tf); break;
       };
-      nparam ++;
+      nparam++;
     }
   }
-  sq_pushstring(v,_H(strDest));
+  sq_pushstring(v, _H(strDest));
   return 1;
 }
 
 static int string_compare(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_compare, Invalid parameter."));
-  sq_pushint(v,ni::StrCmp(str,param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_compare, Invalid parameter."));
+  sq_pushint(v, ni::StrCmp(str, param));
   return 1;
 }
 
 static int string_icompare(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_icompare, Invalid parameter."));
-  sq_pushint(v,ni::StrICmp(str,param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_icompare, Invalid parameter."));
+  sq_pushint(v, ni::StrICmp(str, param));
   return 1;
 }
 
 static int string_fpatmatch(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_fpatmatch, Invalid parameter."));
-  sq_pushint(v,afilepattern_match(param,str));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_fpatmatch, Invalid parameter."));
+  sq_pushint(v, afilepattern_match(param, str));
   return 1;
 }
 
 static int string_eq(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_eq, Invalid parameter."));
-  sq_pushint(v,ni::StrCmp(str,param) == 0);
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_eq, Invalid parameter."));
+  sq_pushint(v, ni::StrCmp(str, param) == 0);
   return 1;
 }
 
 static int string_ieq(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_ieq, Invalid parameter."));
-  sq_pushint(v,ni::StrICmp(str,param) == 0);
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_ieq, Invalid parameter."));
+  sq_pushint(v, ni::StrICmp(str, param) == 0);
   return 1;
 }
 
 static int string_setfile(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid file parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid file parameter."));
   cPath path(str);
   path.SetFile(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_getfile(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cPath(str).GetFile()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cPath(str).GetFile()));
   return 1;
 }
 
 static int string_getpath(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cPath(str).GetPath()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cPath(str).GetPath()));
   return 1;
 }
 
 static int string_setfilenoext(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid file parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid file parameter."));
   cPath pathCur(str);
   cString curExt = pathCur.GetExtension();
   pathCur.SetFile(cPath(param).GetFile().Chars());
   pathCur.SetExtension(curExt.Chars());
-  sq_pushstring(v,_H(pathCur.GetPath()));
+  sq_pushstring(v, _H(pathCur.GetPath()));
   return 1;
 }
 
 static int string_getfilenoext(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
   cPath path(str);
   path.SetExtension(NULL);
-  sq_pushstring(v,_H(path.GetFile()));
+  sq_pushstring(v, _H(path.GetFile()));
   return 1;
 }
 
 static int string_setext(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid extension parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid extension parameter."));
   cPath path(str);
   path.SetExtension(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_getext(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cPath(str).GetExtension()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cPath(str).GetExtension()));
   return 1;
 }
 
 static int string_setdir(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid directory parameter."));
   cPath path(str);
   path.SetDirectory(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_getdir(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cPath(str).GetDirectory()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cPath(str).GetDirectory()));
   return 1;
 }
 
 static int string_setprotocol(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid extension parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid extension parameter."));
   cPath path(str);
   path.SetProtocol(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_getprotocol(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cPath(str).GetProtocol()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cPath(str).GetProtocol()));
   return 1;
 }
 
 static int string_adddirfront(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid directory parameter."));
   cPath path(str);
   path.AddDirectoryFront(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_adddirback(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("Invalid directory parameter."));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("Invalid directory parameter."));
   cPath path(str);
   path.AddDirectoryBack(param);
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_removedirback(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
   cPath path(str);
   path.RemoveDirectoryBack();
-  sq_pushstring(v,_H(path.GetPath()));
+  sq_pushstring(v, _H(path.GetPath()));
   return 1;
 }
 
 static int string_startswith(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_startswith, Invalid parameter."));
-  sq_pushint(v,cString(str).StartsWith(param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_startswith, Invalid parameter."));
+  sq_pushint(v, cString(str).StartsWith(param));
   return 1;
 }
 
 static int string_endswith(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_endswith, Invalid parameter."));
-  sq_pushint(v,cString(str).EndsWith(param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_endswith, Invalid parameter."));
+  sq_pushint(v, cString(str).EndsWith(param));
   return 1;
 }
 
 static int string_startswithi(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_startswithi, Invalid parameter."));
-  sq_pushint(v,cString(str).StartsWithI(param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_startswithi, Invalid parameter."));
+  sq_pushint(v, cString(str).StartsWithI(param));
   return 1;
 }
 
 static int string_endswithi(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_endswithi, Invalid parameter."));
-  sq_pushint(v,cString(str).EndsWithI(param));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_endswithi, Invalid parameter."));
+  sq_pushint(v, cString(str).EndsWithI(param));
   return 1;
 }
 
 static int string_trimrightex(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimrightex, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).TrimRightEx(param)));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_trimrightex, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).TrimRightEx(param)));
   return 1;
 }
 
 static int string_trimright(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cString(str).TrimRight()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cString(str).TrimRight()));
   return 1;
 }
 
 static int string_trimleftex(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimleftex, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).TrimLeftEx(param)));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_trimleftex, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).TrimLeftEx(param)));
   return 1;
 }
 
 static int string_trimleft(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cString(str).TrimLeft()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cString(str).TrimLeft()));
   return 1;
 }
 
 static int string_trimex(HSQUIRRELVM v)
 {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_trimex, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).TrimEx(param)));
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_trimex, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).TrimEx(param)));
   return 1;
 }
 
 static int string_trim(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cString(str).Trim()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cString(str).Trim()));
   return 1;
 }
 
 static int string_normalize(HSQUIRRELVM v)
 {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  sq_pushstring(v,_H(cString(str).Normalize()));
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  sq_pushstring(v, _H(cString(str).Normalize()));
   return 1;
 }
 
-static int string_before(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_before, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).Before(param).Chars()));
+static int string_before(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_before, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).Before(param).Chars()));
   return 1;
 }
-static int string_rbefore(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rbefore, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).RBefore(param)));
+static int string_rbefore(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_rbefore, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).RBefore(param)));
   return 1;
 }
-static int string_after(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_after, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).After(param)));
+static int string_after(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_after, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).After(param)));
   return 1;
 }
-static int string_rafter(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rafter, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).RAfter(param)));
-  return 1;
-}
-
-static int string_beforei(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_beforei, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).BeforeI(param)));
-  return 1;
-}
-static int string_rbeforei(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rbeforei, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).RBeforeI(param)));
-  return 1;
-}
-static int string_afteri(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_afteri, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).AfterI(param)));
-  return 1;
-}
-static int string_rafteri(HSQUIRRELVM v) {
-  const SQChar *str,*param;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getstring(v,2,&param))) return sq_throwerror(v,_A("string_rafteri, Invalid parameter."));
-  sq_pushstring(v,_H(cString(str).RAfterI(param)));
+static int string_rafter(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_rafter, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).RAfter(param)));
   return 1;
 }
 
-static int string_left(HSQUIRRELVM v) {
-  const SQChar *str;
+static int string_beforei(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_beforei, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).BeforeI(param)));
+  return 1;
+}
+static int string_rbeforei(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_rbeforei, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).RBeforeI(param)));
+  return 1;
+}
+static int string_afteri(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_afteri, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).AfterI(param)));
+  return 1;
+}
+static int string_rafteri(HSQUIRRELVM v)
+{
+  const SQChar *str, *param;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 2, &param)))
+    return sq_throwerror(v, _A("string_rafteri, Invalid parameter."));
+  sq_pushstring(v, _H(cString(str).RAfterI(param)));
+  return 1;
+}
+
+static int string_left(HSQUIRRELVM v)
+{
+  const SQChar* str;
   SQInt count;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
-    return sq_throwerror(v,_A("string_left, Invalid count parameter."));
-  sq_pushstring(v,_H(cString(str).Left(count)));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &count)))
+    return sq_throwerror(v, _A("string_left, Invalid count parameter."));
+  sq_pushstring(v, _H(cString(str).Left(count)));
   return 1;
 }
-static int string_right(HSQUIRRELVM v) {
-  const SQChar *str;
+static int string_right(HSQUIRRELVM v)
+{
+  const SQChar* str;
   SQInt count;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&count)))
-    return sq_throwerror(v,_A("string_right, Invalid count parameter."));
-  sq_pushstring(v,_H(cString(str).Right(count)));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &count)))
+    return sq_throwerror(v, _A("string_right, Invalid count parameter."));
+  sq_pushstring(v, _H(cString(str).Right(count)));
   return 1;
 }
-static int string_mid(HSQUIRRELVM v) {
-  const SQChar *str;
+static int string_mid(HSQUIRRELVM v)
+{
+  const SQChar* str;
   SQInt first;
   SQInt count;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str))) return -1;
-  if (!SQ_SUCCEEDED(sq_getint(v,2,&first)))
-    return sq_throwerror(v,_A("string_mid, Invalid first parameter."));
-  if (!SQ_SUCCEEDED(sq_getint(v,3,&count)))
-    return sq_throwerror(v,_A("string_mid, Invalid count parameter."));
-  sq_pushstring(v,_H(cString(str).Mid(first,count)));
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
+    return -1;
+  if (!SQ_SUCCEEDED(sq_getint(v, 2, &first)))
+    return sq_throwerror(v, _A("string_mid, Invalid first parameter."));
+  if (!SQ_SUCCEEDED(sq_getint(v, 3, &count)))
+    return sq_throwerror(v, _A("string_mid, Invalid count parameter."));
+  sq_pushstring(v, _H(cString(str).Mid(first, count)));
   return 1;
 }
 
-static int string_tolower(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
+static int string_tolower(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
   cString str(_stringval(s));
   str.ToLower();
   v->Push(_H(str));
   return 1;
 }
-static int string_toupper(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
+static int string_toupper(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
   cString str(_stringval(s));
   str.ToUpper();
   v->Push(_H(str));
   return 1;
 }
 
-static int string_topropertyname(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringToPropertyName(str,_stringval(s));
+static int string_topropertyname(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringToPropertyName(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
-static int string_topropertymethodname(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringToPropertyMethodName(str,_stringval(s));
-  v->Push(_H(str));
-  return 1;
-}
-
-static int string_topropertyname2(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringToPropertyName2(str,_stringval(s));
-  v->Push(_H(str));
-  return 1;
-}
-static int string_topropertymethodname2(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringToPropertyMethodName2(str,_stringval(s));
+static int string_topropertymethodname(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringToPropertyMethodName(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
 
-static int string_encodexml(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringEncodeXml(str,_stringval(s));
+static int string_topropertyname2(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringToPropertyName2(str, _stringval(s));
+  v->Push(_H(str));
+  return 1;
+}
+static int string_topropertymethodname2(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringToPropertyMethodName2(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
 
-static int string_decodexml(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringDecodeXml(str,_stringval(s));
+static int string_encodexml(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringEncodeXml(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
 
-static int string_encodeurl(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringEncodeUrl(str,_stringval(s));
+static int string_decodexml(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringDecodeXml(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
 
-static int string_decodeurl(HSQUIRRELVM v) {
-  SQObject& s=stack_get(v,1);
-  cString str; StringDecodeUrl(str,_stringval(s));
+static int string_encodeurl(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringEncodeUrl(str, _stringval(s));
+  v->Push(_H(str));
+  return 1;
+}
+
+static int string_decodeurl(HSQUIRRELVM v)
+{
+  SQObject& s = stack_get(v, 1);
+  cString str;
+  StringDecodeUrl(str, _stringval(s));
   v->Push(_H(str));
   return 1;
 }
@@ -1892,50 +2063,52 @@ static int string_decodeurl(HSQUIRRELVM v) {
 static int string_getlocalized(HSQUIRRELVM v)
 {
   iHString *hspLocale, *hspText;
-  if (!SQ_SUCCEEDED(sq_gethstring(v,1,&hspText))) {
-    return sq_throwerror(v,_A("string_getlocalized, can't get this string."));
+  if (!SQ_SUCCEEDED(sq_gethstring(v, 1, &hspText))) {
+    return sq_throwerror(v, _A("string_getlocalized, can't get this string."));
   }
-  if ((sq_gettop(v) > 1) && SQ_SUCCEEDED(sq_gethstring(v,2,&hspLocale))) {
-    sq_pushstring(v,hspText->GetLocalizedEx(hspLocale));
+  if ((sq_gettop(v) > 1) && SQ_SUCCEEDED(sq_gethstring(v, 2, &hspLocale))) {
+    sq_pushstring(v, hspText->GetLocalizedEx(hspLocale));
   }
   else {
-    sq_pushstring(v,hspText->GetLocalized());
+    sq_pushstring(v, hspText->GetLocalized());
   }
   return 1;
 }
 
 // string::CharIt(offset = 0, size = -1)
-static int string_charIt(HSQUIRRELVM v) {
-  iHString *hspText;
-  if (!SQ_SUCCEEDED(sq_gethstring(v,1,&hspText))) {
-    return sq_throwerror(v,_A("string_charIt, can't get this string."));
+static int string_charIt(HSQUIRRELVM v)
+{
+  iHString* hspText;
+  if (!SQ_SUCCEEDED(sq_gethstring(v, 1, &hspText))) {
+    return sq_throwerror(v, _A("string_charIt, can't get this string."));
   }
   Ptr<iHStringCharIt> it;
   int offset = 0;
   int size = -1;
   const int top = sq_gettop(v);
   if (top > 1) {
-    sq_getint(v,2,&offset);
+    sq_getint(v, 2, &offset);
   }
   if (top > 2) {
-    sq_getint(v,3,&size);
-    it = hspText->CreateRangeIt(offset,size);
+    sq_getint(v, 3, &size);
+    it = hspText->CreateRangeIt(offset, size);
   }
   else {
     it = hspText->CreateCharIt(offset);
   }
   if (!it.IsOK()) {
-    return sq_throwerror(v,_A("string_charIt, invalid param"));
+    return sq_throwerror(v, _A("string_charIt, invalid param"));
   }
-  sqa_pushIUnknown(v,it);
+  sqa_pushIUnknown(v, it);
   return 1;
 }
 
 // $SYMBOL[FOO=BAR,STUFF=BLI]
-static int string_parsesymbol(HSQUIRRELVM v) {
-  iHString *hspText;
-  if (!SQ_SUCCEEDED(sq_gethstring(v,1,&hspText))) {
-    return sq_throwerror(v,_A("string_parsesymbol, can't get this string."));
+static int string_parsesymbol(HSQUIRRELVM v)
+{
+  iHString* hspText;
+  if (!SQ_SUCCEEDED(sq_gethstring(v, 1, &hspText))) {
+    return sq_throwerror(v, _A("string_parsesymbol, can't get this string."));
   }
   const char* b = hspText->GetChars();
   if (*b != '$' && *b != '#') {
@@ -1945,25 +2118,26 @@ static int string_parsesymbol(HSQUIRRELVM v) {
     ++b; // skip the '$' or '#'
     const char* e = b;
     while (*e) {
-      if (*e == '[' && *(e+1) != '[')
+      if (*e == '[' && *(e + 1) != '[')
         break;
       ++e;
     }
-    v->Push(_H(cString(b,e)));
+    v->Push(_H(cString(b, e)));
   }
   return 1;
 }
 
 // $SYMBOL[META=DATA,FOO=BAR,STUFF=BLI]
-static int string_parsemetadata(HSQUIRRELVM v) {
-  iHString *hspText;
-  if (!SQ_SUCCEEDED(sq_gethstring(v,1,&hspText))) {
-    return sq_throwerror(v,_A("string_parsemetadata, can't get this string."));
+static int string_parsemetadata(HSQUIRRELVM v)
+{
+  iHString* hspText;
+  if (!SQ_SUCCEEDED(sq_gethstring(v, 1, &hspText))) {
+    return sq_throwerror(v, _A("string_parsemetadata, can't get this string."));
   }
   SQTable* t = SQTable::Create();
   const char* p = hspText->GetChars();
   while (*p) {
-    if (*p == '[' && *(p+1) != '[')
+    if (*p == '[' && *(p + 1) != '[')
       break;
     ++p;
   }
@@ -1983,15 +2157,18 @@ static int string_parsemetadata(HSQUIRRELVM v) {
         while (*p && *p != '=' && *p != ',' && *p != ']') {
           ++p;
         }
-        const char* endKey = (*p == '=' || *p == ',' || *p == ']' || !*p) ? (p-1) : p;
+        const char* endKey =
+          (*p == '=' || *p == ',' || *p == ']' || !*p) ? (p - 1) : p;
 
         {
           // skip trailing spaces
-          while (beginKey != endKey && (*endKey == ' ' || *endKey == '\t' || *endKey == ']')) {
+          while (beginKey != endKey &&
+                 (*endKey == ' ' || *endKey == '\t' || *endKey == ']'))
+          {
             --endKey;
           }
           if (beginKey <= endKey) {
-            key = _H(cString(beginKey,endKey+1));
+            key = _H(cString(beginKey, endKey + 1));
           }
         }
       }
@@ -2003,21 +2180,24 @@ static int string_parsemetadata(HSQUIRRELVM v) {
         while (*p && *p != ',' && *p != ']') {
           ++p;
         }
-        const char* endVal = (*p == ',' || *p == ']' || !*p) ? (p-1) : p;
+        const char* endVal = (*p == ',' || *p == ']' || !*p) ? (p - 1) : p;
         if (*p == ',')
           ++p; // skip the comma
 
         if (niIsOK(key)) {
           // skip leading spaces
-          while (beginVal != endVal && (*beginVal == ' ' || *beginVal == '\t')) {
+          while (beginVal != endVal && (*beginVal == ' ' || *beginVal == '\t'))
+          {
             ++beginVal;
           }
           // skip trailing spaces
-          while (beginVal != endVal && (*endVal == ' ' || *endVal == '\t'|| *endVal == ']')) {
+          while (beginVal != endVal &&
+                 (*endVal == ' ' || *endVal == '\t' || *endVal == ']'))
+          {
             --endVal;
           }
           if (beginVal <= endVal) {
-            val = _H(cString(beginVal,endVal+1));
+            val = _H(cString(beginVal, endVal + 1));
           }
         }
       }
@@ -2035,9 +2215,10 @@ static int string_parsemetadata(HSQUIRRELVM v) {
   return 1;
 }
 
-static int string_IsCIdentifier(HSQUIRRELVM v) {
-  const SQChar *str;
-  if (!SQ_SUCCEEDED(sq_getstring(v,1,&str)))
+static int string_IsCIdentifier(HSQUIRRELVM v)
+{
+  const SQChar* str;
+  if (!SQ_SUCCEEDED(sq_getstring(v, 1, &str)))
     return -1;
 
   int result = eTrue;
@@ -2049,10 +2230,8 @@ static int string_IsCIdentifier(HSQUIRRELVM v) {
   else {
     while (*p) {
       const int c = *p;
-      if ((c >= '0' && c <= '9') ||
-          (c >= 'a' && c <= 'z') ||
-          (c >= 'A' && c <= 'Z') ||
-          c == '_')
+      if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+          (c >= 'A' && c <= 'Z') || c == '_')
       {
         // valid indentifier character, go on
       }
@@ -2064,7 +2243,7 @@ static int string_IsCIdentifier(HSQUIRRELVM v) {
       ++p;
     }
   }
-  sq_pushint(v,result);
+  sq_pushint(v, result);
   return 1;
 }
 
@@ -2073,26 +2252,26 @@ static int string_IsCIdentifier(HSQUIRRELVM v) {
 // closure.acall(this table, ...arguments)
 static int closure_call(HSQUIRRELVM v)
 {
-  return SQ_SUCCEEDED(sq_call(v,sq_gettop(v)-1,1))?1:SQ_ERROR;
+  return SQ_SUCCEEDED(sq_call(v, sq_gettop(v) - 1, 1)) ? 1 : SQ_ERROR;
 }
 
 // closure.acall([this table, arguments])
 static int closure_acall(HSQUIRRELVM v)
 {
-  SQArray *aparams = _array(stack_get(v,2));
+  SQArray* aparams = _array(stack_get(v, 2));
   int nparams = aparams->Size();
-  v->Push(stack_get(v,1));
+  v->Push(stack_get(v, 1));
   for (int i = 0; i < nparams; ++i)
     v->Push(aparams->_values[i]);
-  return SQ_SUCCEEDED(sq_call(v,nparams,1))?1:SQ_ERROR;
+  return SQ_SUCCEEDED(sq_call(v, nparams, 1)) ? 1 : SQ_ERROR;
 }
 
 // closure.athiscall(this table, [arguments])
 static int closure_athiscall(HSQUIRRELVM v)
 {
-  SQObjectPtr& athis = stack_get(v,2);
-  SQObjectPtr& aparams = stack_get(v,3);
-  v->Push(stack_get(v,1));
+  SQObjectPtr& athis = stack_get(v, 2);
+  SQObjectPtr& aparams = stack_get(v, 3);
+  v->Push(stack_get(v, 1));
   v->Push(athis);
   int nparams = 0;
   if (sq_isnull(aparams)) {
@@ -2105,25 +2284,26 @@ static int closure_athiscall(HSQUIRRELVM v)
       v->Push(params->_values[i]);
   }
   else {
-    return sq_throwerror(v,niFmt("closure_athiscall, unexpected params type '%s'.",
-                                 sqa_gettypestring(sq_type(aparams))));
+    return sq_throwerror(
+      v, niFmt("closure_athiscall, unexpected params type '%s'.",
+               sqa_gettypestring(sq_type(aparams))));
   }
 
-  int r = SQ_SUCCEEDED(sq_call(v,nparams+1,1))?1:SQ_ERROR;
+  int r = SQ_SUCCEEDED(sq_call(v, nparams + 1, 1)) ? 1 : SQ_ERROR;
   return r;
 }
 
 static int closure_GetNumParams(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    SQFunctionProto *proto = _funcproto(c->_function);
-    sq_pushint(v,(tU32)proto->_parameters.size());
+    SQClosure* c = _closure(that);
+    SQFunctionProto* proto = _funcproto(c->_function);
+    sq_pushint(v, (tU32)proto->_parameters.size());
   }
   else if (sq_isnativeclosure(that)) {
-    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
-    sq_pushint(v,c->_nparamscheck);
+    SQNativeClosure* c = _nativeclosure(stack_get(v, 1));
+    sq_pushint(v, c->_nparamscheck);
     return 1;
   }
   else {
@@ -2134,20 +2314,20 @@ static int closure_GetNumParams(HSQUIRRELVM v)
 
 static int closure_GetParamName(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
-  SQInt index = _int(stack_get(v,2));
+  niLet& that = stack_get(v, 1);
+  SQInt index = _int(stack_get(v, 2));
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    SQFunctionProto *proto = _funcproto(c->_function);
+    SQClosure* c = _closure(that);
+    SQFunctionProto* proto = _funcproto(c->_function);
     if ((tSize)index >= proto->_parameters.size()) {
-      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+      return sq_throwerror(v, niFmt("invalid parameter index '%d'.", index));
     }
-    sq_pushobject(v,proto->_parameters[index]._name);
+    sq_pushobject(v, proto->_parameters[index]._name);
   }
   else if (sq_isnativeclosure(that)) {
-    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
+    SQNativeClosure* c = _nativeclosure(stack_get(v, 1));
     if (index >= c->_nparamscheck) {
-      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+      return sq_throwerror(v, niFmt("invalid parameter index '%d'.", index));
     }
   }
   else {
@@ -2158,20 +2338,20 @@ static int closure_GetParamName(HSQUIRRELVM v)
 
 static int closure_GetParamType(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
-  SQInt index = _int(stack_get(v,2));
+  niLet& that = stack_get(v, 1);
+  SQInt index = _int(stack_get(v, 2));
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    SQFunctionProto *proto = _funcproto(c->_function);
+    SQClosure* c = _closure(that);
+    SQFunctionProto* proto = _funcproto(c->_function);
     if ((tSize)index >= proto->_parameters.size()) {
-      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+      return sq_throwerror(v, niFmt("invalid parameter index '%d'.", index));
     }
-    sq_pushobject(v,proto->_parameters[index]._type);
+    sq_pushobject(v, proto->_parameters[index]._type);
   }
   else if (sq_isnativeclosure(that)) {
-    SQNativeClosure *c = _nativeclosure(stack_get(v,1));
+    SQNativeClosure* c = _nativeclosure(stack_get(v, 1));
     if (index >= c->_nparamscheck) {
-      return sq_throwerror(v,niFmt("invalid parameter index '%d'.",index));
+      return sq_throwerror(v, niFmt("invalid parameter index '%d'.", index));
     }
   }
   else {
@@ -2182,15 +2362,15 @@ static int closure_GetParamType(HSQUIRRELVM v)
 
 static int closure_GetReturnType(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    SQFunctionProto *proto = _funcproto(c->_function);
-    sq_pushobject(v,proto->_returntype);
+    SQClosure* c = _closure(that);
+    SQFunctionProto* proto = _funcproto(c->_function);
+    sq_pushobject(v, proto->_returntype);
   }
   else if (sq_isnativeclosure(that)) {
     SQNativeClosure* nc = _nativeclosure(that);
-    sq_pushobject(v,nc->_returntype);
+    sq_pushobject(v, nc->_returntype);
   }
   else {
     sq_pushnull(v);
@@ -2200,45 +2380,46 @@ static int closure_GetReturnType(HSQUIRRELVM v)
 
 static int closure_GetNumFreeVars(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    sq_pushint(v,(tU32)c->_outervalues.size());
+    SQClosure* c = _closure(that);
+    sq_pushint(v, (tU32)c->_outervalues.size());
   }
   else {
-    sq_pushint(v,0);
+    sq_pushint(v, 0);
   }
   return 1;
 }
 
 static int closure_GetFreeVar(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
-  SQInt index = _int(stack_get(v,2));
+  niLet& that = stack_get(v, 1);
+  SQInt index = _int(stack_get(v, 2));
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
+    SQClosure* c = _closure(that);
     if ((tSize)index >= c->_outervalues.size()) {
-      return sq_throwerror(v,niFmt("invalid free variable index '%d'.",index));
+      return sq_throwerror(v,
+                           niFmt("invalid free variable index '%d'.", index));
     }
-    sq_pushobject(v,c->_outervalues[index]);
+    sq_pushobject(v, c->_outervalues[index]);
   }
   else {
-    return sq_throwerror(v,niFmt("invalid free variable index '%d'.",index));
+    return sq_throwerror(v, niFmt("invalid free variable index '%d'.", index));
   }
   return 1;
 }
 
 static int closure_SafeGetFreeVar(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
-  SQInt index = _int(stack_get(v,2));
+  niLet& that = stack_get(v, 1);
+  SQInt index = _int(stack_get(v, 2));
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
+    SQClosure* c = _closure(that);
     if ((tSize)index >= c->_outervalues.size()) {
       sq_pushnull(v);
     }
     else {
-      sq_pushobject(v,c->_outervalues[index]);
+      sq_pushobject(v, c->_outervalues[index]);
     }
   }
   else {
@@ -2247,10 +2428,11 @@ static int closure_SafeGetFreeVar(HSQUIRRELVM v)
   return 1;
 }
 
-static int closure_GetRoot(HSQUIRRELVM v) {
-  niLet& that = stack_get(v,1);
+static int closure_GetRoot(HSQUIRRELVM v)
+{
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
+    SQClosure* c = _closure(that);
     QPtr<SQTable> t = c->_root;
     sq_pushobject(v, t.IsOK() ? SQObjectPtr(t.ptr()) : _null_);
   }
@@ -2260,11 +2442,12 @@ static int closure_GetRoot(HSQUIRRELVM v) {
   return 1;
 }
 
-static int closure_SetRoot(HSQUIRRELVM v) {
-  niLet& that = stack_get(v,1);
+static int closure_SetRoot(HSQUIRRELVM v)
+{
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
-    SQTable *t = _table(stack_get(v,2));
+    SQClosure* c = _closure(that);
+    SQTable* t = _table(stack_get(v, 2));
     c->_root = t;
     sq_pushobject(v, t ? SQObjectPtr(t) : _null_);
   }
@@ -2276,357 +2459,411 @@ static int closure_SetRoot(HSQUIRRELVM v) {
 
 static int closure_lint(HSQUIRRELVM v)
 {
-  niLet& that = stack_get(v,1);
+  niLet& that = stack_get(v, 1);
   if (sq_isclosure(that)) {
-    SQClosure *c = _closure(that);
+    SQClosure* c = _closure(that);
     if (sq_isfuncproto(c->_function)) {
-       niLet numLintErrors = _funcproto(c->_function)->LintTraceRoot();
-       sq_pushint(v, (int)numLintErrors);
-       return 1;
+      niLet numLintErrors = _funcproto(c->_function)->LintTraceRoot();
+      sq_pushint(v, (int)numLintErrors);
+      return 1;
     }
     else {
-      return sq_throwerror(v,"closure_lint: No vm bytecode function in vm closure.");
+      return sq_throwerror(
+        v, "closure_lint: No vm bytecode function in vm closure.");
     }
   }
   else {
-    return sq_throwerror(v,"closure_lint: Can only lint vm bytecode closures.");
+    return sq_throwerror(v,
+                         "closure_lint: Can only lint vm bytecode closures.");
   }
 }
 
-SQRegFunction SQSharedState::_table_default_delegate_funcz[]={
-  {_A("ToIntPtr"),default_to_intptr,1, _A("t"), _HC(typestr_int)},
-  {_A("ShallowClone"),default_shallow_clone,1, _A("t"), _HC(typestr_table)},
-  {_A("DeepClone"),default_deep_clone,1, _A("t"), _HC(typestr_table)},
-  {_A("len"),default_delegate_len,1, _A("t"), _HC(typestr_int)},
-  {_A("Len"),default_delegate_len,1, _A("t"), _HC(typestr_int)},
-  {_A("empty"),default_delegate_empty,1, _A("t"), _HC(typestr_bool)},
-  {_A("Empty"),default_delegate_empty,1, _A("t"), _HC(typestr_bool)},
-  {_A("notempty"),default_delegate_notempty,1, _A("t"), _HC(typestr_bool)},
-  {_A("NotEmpty"),default_delegate_notempty,1, _A("t"), _HC(typestr_bool)},
-  {_A("clear"),table_clear,1, _A("t"), _HC(typestr_void)},
-  {_A("Clear"),table_clear,1, _A("t"), _HC(typestr_void)},
-  {_A("rawget"),table_rawget,2, _A("t")},
-  {_A("RawGet"),table_rawget,2, _A("t")},
-  {_A("rawset"),table_rawset,3, _A("t")},
-  {_A("RawSet"),table_rawset,3, _A("t")},
-  {_A("rawdelete"),table_rawdelete,2, _A("t")},
-  {_A("RawDelete"),table_rawdelete,2, _A("t")},
-  {_A("getkey"),table_getkey,2, _A("t")},
-  {_A("GetKey"),table_getkey,2, _A("t")},
-  {_A("setdelegate"),table_setdelegate,2, _A(".t"), _HC(this)},
-  {_A("SetDelegate"),table_setdelegate,2, _A(".t"), _HC(this)},
-  {_A("getdelegate"),table_getdelegate,1, _A(".")},
-  {_A("GetDelegate"),table_getdelegate,1, _A(".")},
-  {_A("hasdelegate"),table_hasdelegate,2, _A("tt"), _HC(typestr_bool)},
-  {_A("HasDelegate"),table_hasdelegate,2, _A("tt"), _HC(typestr_bool)},
-  {_A("Invalidate"),table_invalidate,1, _A("t"), _HC(typestr_void)},
-  {_A("__GetThisTable"),table_GetThisTable,1,"t"},
-  {_A("__SetCanCallMetaMethod"),table_SetCanCallMetaMethod,2,"tn"},
-  {_A("__GetCanCallMetaMethod"),table_GetCanCallMetaMethod,1,"t"},
-  {0,0}
+SQRegFunction SQSharedState::_table_default_delegate_funcz[] = {
+  { _A("ToIntPtr"), default_to_intptr, 1, _A("t"), _HC(typestr_int) },
+  { _A("ShallowClone"), default_shallow_clone, 1, _A("t"), _HC(typestr_table) },
+  { _A("DeepClone"), default_deep_clone, 1, _A("t"), _HC(typestr_table) },
+  { _A("len"), default_delegate_len, 1, _A("t"), _HC(typestr_int) },
+  { _A("Len"), default_delegate_len, 1, _A("t"), _HC(typestr_int) },
+  { _A("empty"), default_delegate_empty, 1, _A("t"), _HC(typestr_bool) },
+  { _A("Empty"), default_delegate_empty, 1, _A("t"), _HC(typestr_bool) },
+  { _A("notempty"), default_delegate_notempty, 1, _A("t"), _HC(typestr_bool) },
+  { _A("NotEmpty"), default_delegate_notempty, 1, _A("t"), _HC(typestr_bool) },
+  { _A("clear"), table_clear, 1, _A("t"), _HC(typestr_void) },
+  { _A("Clear"), table_clear, 1, _A("t"), _HC(typestr_void) },
+  { _A("rawget"), table_rawget, 2, _A("t") },
+  { _A("RawGet"), table_rawget, 2, _A("t") },
+  { _A("rawset"), table_rawset, 3, _A("t") },
+  { _A("RawSet"), table_rawset, 3, _A("t") },
+  { _A("rawdelete"), table_rawdelete, 2, _A("t") },
+  { _A("RawDelete"), table_rawdelete, 2, _A("t") },
+  { _A("getkey"), table_getkey, 2, _A("t") },
+  { _A("GetKey"), table_getkey, 2, _A("t") },
+  { _A("setdelegate"), table_setdelegate, 2, _A(".t"), _HC(this) },
+  { _A("SetDelegate"), table_setdelegate, 2, _A(".t"), _HC(this) },
+  { _A("getdelegate"), table_getdelegate, 1, _A(".") },
+  { _A("GetDelegate"), table_getdelegate, 1, _A(".") },
+  { _A("hasdelegate"), table_hasdelegate, 2, _A("tt"), _HC(typestr_bool) },
+  { _A("HasDelegate"), table_hasdelegate, 2, _A("tt"), _HC(typestr_bool) },
+  { _A("Invalidate"), table_invalidate, 1, _A("t"), _HC(typestr_void) },
+  { _A("__GetThisTable"), table_GetThisTable, 1, "t" },
+  { _A("__SetCanCallMetaMethod"), table_SetCanCallMetaMethod, 2, "tn" },
+  { _A("__GetCanCallMetaMethod"), table_GetCanCallMetaMethod, 1, "t" },
+  { 0, 0 }
 };
 
-SQRegFunction SQSharedState::_array_default_delegate_funcz[]={
-  {_A("ToIntPtr"),default_to_intptr,1, _A("a"), _HC(typestr_int)},
-  {_A("ShallowClone"),default_shallow_clone,1, _A("a"), _HC(typestr_array)},
-  {_A("DeepClone"),default_deep_clone,1, _A("a"), _HC(typestr_array)},
-  {_A("len"),default_delegate_len,1, _A("a"), _HC(typestr_int)},
-  {_A("Len"),default_delegate_len,1, _A("a"), _HC(typestr_int)},
-  {_A("empty"),default_delegate_empty,1, _A("a"), _HC(typestr_bool)},
-  {_A("Empty"),default_delegate_empty,1, _A("a"), _HC(typestr_bool)},
-  {_A("notempty"),default_delegate_notempty,1, _A("a"), _HC(typestr_bool)},
-  {_A("NotEmpty"),default_delegate_notempty,1, _A("a"), _HC(typestr_bool)},
-  {_A("append"),array_append,2, _A("a"), _HC(typestr_void)},
-  {_A("Append"),array_append,2, _A("a"), _HC(typestr_void)},
-  {_A("extend"),array_extend,2, _A("aa"), _HC(typestr_void)},
-  {_A("Extend"),array_extend,2, _A("aa"), _HC(typestr_void)},
-  {_A("push"),array_append,2, _A("a"), _HC(typestr_void)},
-  {_A("Push"),array_append,2, _A("a"), _HC(typestr_void)},
-  {_A("pop"),array_pop,1, _A("a"), _HC(typestr_void)},
-  {_A("Pop"),array_pop,1, _A("a"), _HC(typestr_void)},
-  {_A("top"),array_top,1, _A("a")},
-  {_A("Top"),array_top,1, _A("a")},
-  {_A("clear"),array_clear,1, _A("a"), _HC(typestr_void)},
-  {_A("Clear"),array_clear,1, _A("a"), _HC(typestr_void)},
-  {_A("insert"),array_insert,3, _A("an"), _HC(typestr_void)},
-  {_A("Insert"),array_insert,3, _A("an"), _HC(typestr_void)},
-  {_A("remove"),array_remove,2, _A("an")},
-  {_A("Remove"),array_remove,2, _A("an")},
-  {_A("resize"),array_resize,-2, _A("an"), _HC(typestr_void)},
-  {_A("Resize"),array_resize,-2, _A("an"), _HC(typestr_void)},
-  {_A("reserve"),array_reserve,-2, _A("an"), _HC(typestr_void)},
-  {_A("Reserve"),array_reserve,-2, _A("an"), _HC(typestr_void)},
-  {_A("reverse"),array_reverse,1, _A("a"), _HC(typestr_void)},
-  {_A("Reverse"),array_reverse,1, _A("a"), _HC(typestr_void)},
+SQRegFunction SQSharedState::_array_default_delegate_funcz[] = {
+  { _A("ToIntPtr"), default_to_intptr, 1, _A("a"), _HC(typestr_int) },
+  { _A("ShallowClone"), default_shallow_clone, 1, _A("a"), _HC(typestr_array) },
+  { _A("DeepClone"), default_deep_clone, 1, _A("a"), _HC(typestr_array) },
+  { _A("len"), default_delegate_len, 1, _A("a"), _HC(typestr_int) },
+  { _A("Len"), default_delegate_len, 1, _A("a"), _HC(typestr_int) },
+  { _A("empty"), default_delegate_empty, 1, _A("a"), _HC(typestr_bool) },
+  { _A("Empty"), default_delegate_empty, 1, _A("a"), _HC(typestr_bool) },
+  { _A("notempty"), default_delegate_notempty, 1, _A("a"), _HC(typestr_bool) },
+  { _A("NotEmpty"), default_delegate_notempty, 1, _A("a"), _HC(typestr_bool) },
+  { _A("append"), array_append, 2, _A("a"), _HC(typestr_void) },
+  { _A("Append"), array_append, 2, _A("a"), _HC(typestr_void) },
+  { _A("extend"), array_extend, 2, _A("aa"), _HC(typestr_void) },
+  { _A("Extend"), array_extend, 2, _A("aa"), _HC(typestr_void) },
+  { _A("push"), array_append, 2, _A("a"), _HC(typestr_void) },
+  { _A("Push"), array_append, 2, _A("a"), _HC(typestr_void) },
+  { _A("pop"), array_pop, 1, _A("a"), _HC(typestr_void) },
+  { _A("Pop"), array_pop, 1, _A("a"), _HC(typestr_void) },
+  { _A("top"), array_top, 1, _A("a") },
+  { _A("Top"), array_top, 1, _A("a") },
+  { _A("clear"), array_clear, 1, _A("a"), _HC(typestr_void) },
+  { _A("Clear"), array_clear, 1, _A("a"), _HC(typestr_void) },
+  { _A("insert"), array_insert, 3, _A("an"), _HC(typestr_void) },
+  { _A("Insert"), array_insert, 3, _A("an"), _HC(typestr_void) },
+  { _A("remove"), array_remove, 2, _A("an") },
+  { _A("Remove"), array_remove, 2, _A("an") },
+  { _A("resize"), array_resize, -2, _A("an"), _HC(typestr_void) },
+  { _A("Resize"), array_resize, -2, _A("an"), _HC(typestr_void) },
+  { _A("reserve"), array_reserve, -2, _A("an"), _HC(typestr_void) },
+  { _A("Reserve"), array_reserve, -2, _A("an"), _HC(typestr_void) },
+  { _A("reverse"), array_reverse, 1, _A("a"), _HC(typestr_void) },
+  { _A("Reverse"), array_reverse, 1, _A("a"), _HC(typestr_void) },
   // array_sort returns the array but it sorts in place. So for the purpose of
   // linting we return void so that there's no temptation to assume that a
   // different array is returned which is how the other APIs work.
-  {_A("sort"),array_sort,-1, _A("ac"), _HC(typestr_void)},
-  {_A("Sort"),array_sort,-1, _A("ac"), _HC(typestr_void)},
-  {_A("slice"),array_slice,-1, _A("ann"), _HC(typestr_array)},
-  {_A("Slice"),array_slice,-1, _A("ann"), _HC(typestr_array)},
-  {_A("capacity"),array_capacity,1, _A("a"), _HC(typestr_int)},
-  {_A("Capacity"),array_capacity,1, _A("a"), _HC(typestr_int)},
-  {0,0}
+  { _A("sort"), array_sort, -1, _A("ac"), _HC(typestr_void) },
+  { _A("Sort"), array_sort, -1, _A("ac"), _HC(typestr_void) },
+  { _A("slice"), array_slice, -1, _A("ann"), _HC(typestr_array) },
+  { _A("Slice"), array_slice, -1, _A("ann"), _HC(typestr_array) },
+  { _A("capacity"), array_capacity, 1, _A("a"), _HC(typestr_int) },
+  { _A("Capacity"), array_capacity, 1, _A("a"), _HC(typestr_int) },
+  { 0, 0 }
 };
 
-SQRegFunction SQSharedState::_string_default_delegate_funcz[]={
-  {_A("ToIntPtr"),default_to_intptr,1, _A("s"), _HC(typestr_int)},
-  {_A("len"),default_delegate_len,1, _A("s"), _HC(typestr_int)},
-  {_A("Len"),default_delegate_len,1, _A("s"), _HC(typestr_int)},
-  {_A("empty"),default_delegate_empty,1, _A("s"), _HC(typestr_bool)},
-  {_A("Empty"),default_delegate_empty,1, _A("s"), _HC(typestr_bool)},
-  {_A("notempty"),default_delegate_notempty,1, _A("s"), _HC(typestr_bool)},
-  {_A("NotEmpty"),default_delegate_notempty,1, _A("s"), _HC(typestr_bool)},
-  {_A("size"),string_size,1, _A("s"), _HC(typestr_int)},
-  {_A("Size"),string_size,1, _A("s"), _HC(typestr_int)},
-  {_A("toint"),default_delegate_toint,1, _A("s"), _HC(typestr_int)},
-  {_A("ToInt"),default_delegate_toint,1, _A("s"), _HC(typestr_int)},
-  {_A("tofloat"),default_delegate_tofloat,1, _A("s"), _HC(typestr_float)},
-  {_A("ToFloat"),default_delegate_tofloat,1, _A("s"), _HC(typestr_float)},
-  {_A("tostring"),default_delegate_tostring,1, _A("s"), _HC(typestr_string)},
-  {_A("ToString"),default_delegate_tostring,1, _A("s"), _HC(typestr_string)},
-  {_A("slice"),string_slice,-1, _A("snn"), _HC(typestr_string)},
-  {_A("Slice"),string_slice,-1, _A("snn"), _HC(typestr_string)},
-  {_A("split"),string_split,2, _A("ss"), _HC(typestr_array)},
-  {_A("Split"),string_split,2, _A("ss"), _HC(typestr_array)},
-  {_A("splitsep"),string_split_sep,2, _A("ss"), _HC(typestr_array)},
-  {_A("SplitSep"),string_split_sep,2, _A("ss"), _HC(typestr_array)},
-  {_A("splitsepquoted"),string_split_sep_quoted,3, _A("ssn"), _HC(typestr_array)},
-  {_A("SplitSepQuoted"),string_split_sep_quoted,3, _A("ssn"), _HC(typestr_array)},
-  {_A("splitcsvfields"),string_split_csv_fields,3, _A("ssn"), _HC(typestr_array)},
-  {_A("Splitcsvfields"),string_split_csv_fields,3, _A("ssn"), _HC(typestr_array)},
-  {_A("find"),string_find,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("Find"),string_find,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("rfind"),string_rfind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("RFind"),string_rfind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("ifind"),string_ifind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("IFind"),string_ifind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("irfind"),string_irfind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("IRFind"),string_irfind,-2, _A("ssn"), _HC(typestr_int)},
-  {_A("contains"),string_contains, 2, _A("ss"), _HC(typestr_bool)},
-  {_A("Contains"),string_contains, 2, _A("ss"), _HC(typestr_bool)},
-  {_A("icontains"),string_icontains, 2, _A("ss"), _HC(typestr_bool)},
-  {_A("IContains"),string_icontains, 2, _A("ss"), _HC(typestr_bool)},
-  {_A("tolower"),string_tolower,1, _A("s"), _HC(typestr_string)},
-  {_A("ToLower"),string_tolower,1, _A("s"), _HC(typestr_string)},
-  {_A("toupper"),string_toupper,1, _A("s"), _HC(typestr_string)},
-  {_A("ToUpper"),string_toupper,1, _A("s"), _HC(typestr_string)},
-  {_A("compare"),string_compare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("Compare"),string_compare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("icompare"),string_icompare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("ICompare"),string_icompare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("fpatmatch"),string_fpatmatch,-2, _A("ss"), _HC(typestr_int)},
-  {_A("FPatMatch"),string_fpatmatch,-2, _A("ss"), _HC(typestr_int)},
-  {_A("cmp"),string_compare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("Cmp"),string_compare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("icmp"),string_icompare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("ICmp"),string_icompare,-2, _A("ss"), _HC(typestr_int)},
-  {_A("eq"),string_eq,-2, _A("ss"), _HC(typestr_bool)},
-  {_A("Eq"),string_eq,-2, _A("ss"), _HC(typestr_bool)},
-  {_A("ieq"),string_ieq,-2, _A("ss"), _HC(typestr_bool)},
-  {_A("IEq"),string_ieq,-2, _A("ss"), _HC(typestr_bool)},
-  {_A("getpath"),string_getpath,1, _A("s"), _HC(typestr_string)},
-  {_A("GetPath"),string_getpath,1, _A("s"), _HC(typestr_string)},
-  {_A("setfile"),string_setfile,2, _A("ss"), _HC(typestr_string)},
-  {_A("SetFile"),string_setfile,2, _A("ss"), _HC(typestr_string)},
-  {_A("getfile"),string_getfile,1, _A("s"), _HC(typestr_string)},
-  {_A("GetFile"),string_getfile,1, _A("s"), _HC(typestr_string)},
-  {_A("setfilenoext"),string_setfilenoext,2, _A("ss"), _HC(typestr_string)},
-  {_A("SetFileNoExt"),string_setfilenoext,2, _A("ss"), _HC(typestr_string)},
-  {_A("getfilenoext"),string_getfilenoext,1, _A("s"), _HC(typestr_string)},
-  {_A("GetFileNoExt"),string_getfilenoext,1, _A("s"), _HC(typestr_string)},
-  {_A("setext"),string_setext,2, _A("ss"), _HC(typestr_string)},
-  {_A("SetExt"),string_setext,2, _A("ss"), _HC(typestr_string)},
-  {_A("getext"),string_getext,1, _A("s"), _HC(typestr_string)},
-  {_A("GetExt"),string_getext,1, _A("s"), _HC(typestr_string)},
-  {_A("setprotocol"),string_setprotocol,2, _A("ss"), _HC(typestr_string)},
-  {_A("SetProtocol"),string_setprotocol,2, _A("ss"), _HC(typestr_string)},
-  {_A("getprotocol"),string_getprotocol,1, _A("s"), _HC(typestr_string)},
-  {_A("GetProtocol"),string_getprotocol,1, _A("s"), _HC(typestr_string)},
-  {_A("setdir"),string_setdir,2, _A("ss"), _HC(typestr_string)},
-  {_A("SetDir"),string_setdir,2, _A("ss"), _HC(typestr_string)},
-  {_A("adddirfront"),string_adddirfront,2,_A("ss"), _HC(typestr_string)},
-  {_A("AddDirFront"),string_adddirfront,2,_A("ss"), _HC(typestr_string)},
-  {_A("adddirback"),string_adddirback,2,_A("ss"), _HC(typestr_string)},
-  {_A("AddDirBack"),string_adddirback,2,_A("ss"), _HC(typestr_string)},
-  {_A("removedirback"),string_removedirback,1,_A("s"), _HC(typestr_string)},
-  {_A("RemoveDirBack"),string_removedirback,1,_A("s"), _HC(typestr_string)},
-  {_A("getdir"),string_getdir,1, _A("s"), _HC(typestr_string)},
-  {_A("GetDir"),string_getdir,1, _A("s"), _HC(typestr_string)},
-  {_A("startswith"),string_startswith,2, _A("ss"), _HC(typestr_bool)},
-  {_A("StartsWith"),string_startswith,2, _A("ss"), _HC(typestr_bool)},
-  {_A("endswith"),string_endswith,2, _A("ss"), _HC(typestr_bool)},
-  {_A("EndsWith"),string_endswith,2, _A("ss"), _HC(typestr_bool)},
-  {_A("startswithi"),string_startswithi,2, _A("ss"), _HC(typestr_bool)},
-  {_A("StartsWithI"),string_startswithi,2, _A("ss"), _HC(typestr_bool)},
-  {_A("endswithi"),string_endswithi,2, _A("ss"), _HC(typestr_bool)},
-  {_A("EndsWithI"),string_endswithi,2, _A("ss"), _HC(typestr_bool)},
-  {_A("trimleftex"),  string_trimleftex,  2, _A("ss"), _HC(typestr_string)},
-  {_A("TrimLeftEx"),  string_trimleftex,  2, _A("ss"), _HC(typestr_string)},
-  {_A("trimleft"),  string_trimleft,  1, _A("s"), _HC(typestr_string)},
-  {_A("TrimLeft"),  string_trimleft,  1, _A("s"), _HC(typestr_string)},
-  {_A("trimrightex"),string_trimrightex,  2, _A("ss"), _HC(typestr_string)},
-  {_A("TrimRightEx"),string_trimrightex,  2, _A("ss"), _HC(typestr_string)},
-  {_A("trimright"), string_trimright, 1, _A("s"), _HC(typestr_string)},
-  {_A("TrimRight"), string_trimright, 1, _A("s"), _HC(typestr_string)},
-  {_A("trimex"),    string_trimex,    2, _A("ss"), _HC(typestr_string)},
-  {_A("TrimEx"),    string_trimex,    2, _A("ss"), _HC(typestr_string)},
-  {_A("trim"),    string_trim,    1, _A("s"), _HC(typestr_string)},
-  {_A("Trim"),    string_trim,    1, _A("s"), _HC(typestr_string)},
-  {_A("normalize"), string_normalize, 1, _A("s"), _HC(typestr_string)},
-  {_A("Normalize"), string_normalize, 1, _A("s"), _HC(typestr_string)},
-  {_A("before"),    string_before,    2, _A("ss"), _HC(typestr_string)},
-  {_A("Before"),    string_before,    2, _A("ss"), _HC(typestr_string)},
-  {_A("rbefore"), string_rbefore,   2, _A("ss"), _HC(typestr_string)},
-  {_A("RBefore"), string_rbefore,   2, _A("ss"), _HC(typestr_string)},
-  {_A("after"),   string_after,   2, _A("ss"), _HC(typestr_string)},
-  {_A("After"),   string_after,   2, _A("ss"), _HC(typestr_string)},
-  {_A("rafter"), string_rafter,    2, _A("ss"), _HC(typestr_string)},
-  {_A("RAfter"),    string_rafter,    2, _A("ss"), _HC(typestr_string)},
-  {_A("beforei"),   string_beforei,   2, _A("ss"), _HC(typestr_string)},
-  {_A("BeforeI"),   string_beforei,   2, _A("ss"), _HC(typestr_string)},
-  {_A("rbeforei"),  string_rbeforei,  2, _A("ss"), _HC(typestr_string)},
-  {_A("RBeforeI"),  string_rbeforei,  2, _A("ss"), _HC(typestr_string)},
-  {_A("afteri"),    string_afteri,    2, _A("ss"), _HC(typestr_string)},
-  {_A("AfterI"),    string_afteri,    2, _A("ss"), _HC(typestr_string)},
-  {_A("rafteri"),   string_rafteri,   2, _A("ss"), _HC(typestr_string)},
-  {_A("RAfterI"),   string_rafteri,   2, _A("ss"), _HC(typestr_string)},
-  {_A("left"),string_left, 2, _A("sn"), _HC(typestr_string)},
-  {_A("Left"),string_left, 2, _A("sn"), _HC(typestr_string)},
-  {_A("right"),string_right, 2, _A("sn"), _HC(typestr_string)},
-  {_A("Right"),string_right, 2, _A("sn"), _HC(typestr_string)},
-  {_A("mid"),string_mid, 3, _A("snn"), _HC(typestr_string)},
-  {_A("Mid"),string_mid, 3, _A("snn"), _HC(typestr_string)},
-  {_A("topropertyname"),string_topropertyname,1, _A("s"), _HC(typestr_string)},
-  {_A("ToPropertyName"),string_topropertyname,1, _A("s"), _HC(typestr_string)},
-  {_A("topropertymethodname"),string_topropertymethodname,1, _A("s"), _HC(typestr_string)},
-  {_A("ToPropertyMethodName"),string_topropertymethodname,1, _A("s"), _HC(typestr_string)},
-  {_A("topropertyname2"),string_topropertyname2,1, _A("s"), _HC(typestr_string)},
-  {_A("ToPropertyName2"),string_topropertyname2,1, _A("s"), _HC(typestr_string)},
-  {_A("topropertymethodname2"),string_topropertymethodname2,1, _A("s"), _HC(typestr_string)},
-  {_A("ToPropertyMethodName2"),string_topropertymethodname2,1, _A("s"), _HC(typestr_string)},
-  {_A("encodexml"),string_encodexml,1, _A("s"), _HC(typestr_string)},
-  {_A("EncodeXml"),string_encodexml,1, _A("s"), _HC(typestr_string)},
-  {_A("decodexml"),string_decodexml,1, _A("s"), _HC(typestr_string)},
-  {_A("DecodeXml"),string_decodexml,1, _A("s"), _HC(typestr_string)},
-  {_A("encodeurl"),string_encodeurl,1, _A("s"), _HC(typestr_string)},
-  {_A("EncodeUrl"),string_encodeurl,1, _A("s"), _HC(typestr_string)},
-  {_A("decodeurl"),string_decodeurl,1, _A("s"), _HC(typestr_string)},
-  {_A("DecodeUrl"),string_decodeurl,1, _A("s"), _HC(typestr_string)},
-  {_A("GetLocalized"),string_getlocalized,-1, _A("ss"), _HC(typestr_string)},
-  {_A("CharIt"),string_charIt,-1,_A("snn"),_HC(typestr_iHStringCharIt)},
-  {_A("CreateCharIt"),string_charIt,-2,_A("snn"),_HC(typestr_iHStringCharIt)},
-  {_A("parsesymbol"),string_parsesymbol,1,_A("s"),_HC(typestr_string)},
-  {_A("parsemetadata"),string_parsemetadata,1,_A("s"),_HC(typestr_string)},
-  {_A("IsCIdentifier"),string_IsCIdentifier,1,_A("s"),_HC(typestr_bool)},
-  {0,0}
+SQRegFunction SQSharedState::_string_default_delegate_funcz[] = {
+  { _A("ToIntPtr"), default_to_intptr, 1, _A("s"), _HC(typestr_int) },
+  { _A("len"), default_delegate_len, 1, _A("s"), _HC(typestr_int) },
+  { _A("Len"), default_delegate_len, 1, _A("s"), _HC(typestr_int) },
+  { _A("empty"), default_delegate_empty, 1, _A("s"), _HC(typestr_bool) },
+  { _A("Empty"), default_delegate_empty, 1, _A("s"), _HC(typestr_bool) },
+  { _A("notempty"), default_delegate_notempty, 1, _A("s"), _HC(typestr_bool) },
+  { _A("NotEmpty"), default_delegate_notempty, 1, _A("s"), _HC(typestr_bool) },
+  { _A("size"), string_size, 1, _A("s"), _HC(typestr_int) },
+  { _A("Size"), string_size, 1, _A("s"), _HC(typestr_int) },
+  { _A("toint"), default_delegate_toint, 1, _A("s"), _HC(typestr_int) },
+  { _A("ToInt"), default_delegate_toint, 1, _A("s"), _HC(typestr_int) },
+  { _A("tofloat"), default_delegate_tofloat, 1, _A("s"), _HC(typestr_float) },
+  { _A("ToFloat"), default_delegate_tofloat, 1, _A("s"), _HC(typestr_float) },
+  { _A("tostring"), default_delegate_tostring, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("ToString"), default_delegate_tostring, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("slice"), string_slice, -1, _A("snn"), _HC(typestr_string) },
+  { _A("Slice"), string_slice, -1, _A("snn"), _HC(typestr_string) },
+  { _A("split"), string_split, 2, _A("ss"), _HC(typestr_array) },
+  { _A("Split"), string_split, 2, _A("ss"), _HC(typestr_array) },
+  { _A("splitsep"), string_split_sep, 2, _A("ss"), _HC(typestr_array) },
+  { _A("SplitSep"), string_split_sep, 2, _A("ss"), _HC(typestr_array) },
+  { _A("splitsepquoted"), string_split_sep_quoted, 3, _A("ssn"),
+    _HC(typestr_array) },
+  { _A("SplitSepQuoted"), string_split_sep_quoted, 3, _A("ssn"),
+    _HC(typestr_array) },
+  { _A("splitcsvfields"), string_split_csv_fields, 3, _A("ssn"),
+    _HC(typestr_array) },
+  { _A("Splitcsvfields"), string_split_csv_fields, 3, _A("ssn"),
+    _HC(typestr_array) },
+  { _A("find"), string_find, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("Find"), string_find, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("rfind"), string_rfind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("RFind"), string_rfind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("ifind"), string_ifind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("IFind"), string_ifind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("irfind"), string_irfind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("IRFind"), string_irfind, -2, _A("ssn"), _HC(typestr_int) },
+  { _A("contains"), string_contains, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("Contains"), string_contains, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("icontains"), string_icontains, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("IContains"), string_icontains, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("tolower"), string_tolower, 1, _A("s"), _HC(typestr_string) },
+  { _A("ToLower"), string_tolower, 1, _A("s"), _HC(typestr_string) },
+  { _A("toupper"), string_toupper, 1, _A("s"), _HC(typestr_string) },
+  { _A("ToUpper"), string_toupper, 1, _A("s"), _HC(typestr_string) },
+  { _A("compare"), string_compare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("Compare"), string_compare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("icompare"), string_icompare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("ICompare"), string_icompare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("fpatmatch"), string_fpatmatch, -2, _A("ss"), _HC(typestr_int) },
+  { _A("FPatMatch"), string_fpatmatch, -2, _A("ss"), _HC(typestr_int) },
+  { _A("cmp"), string_compare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("Cmp"), string_compare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("icmp"), string_icompare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("ICmp"), string_icompare, -2, _A("ss"), _HC(typestr_int) },
+  { _A("eq"), string_eq, -2, _A("ss"), _HC(typestr_bool) },
+  { _A("Eq"), string_eq, -2, _A("ss"), _HC(typestr_bool) },
+  { _A("ieq"), string_ieq, -2, _A("ss"), _HC(typestr_bool) },
+  { _A("IEq"), string_ieq, -2, _A("ss"), _HC(typestr_bool) },
+  { _A("getpath"), string_getpath, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetPath"), string_getpath, 1, _A("s"), _HC(typestr_string) },
+  { _A("setfile"), string_setfile, 2, _A("ss"), _HC(typestr_string) },
+  { _A("SetFile"), string_setfile, 2, _A("ss"), _HC(typestr_string) },
+  { _A("getfile"), string_getfile, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetFile"), string_getfile, 1, _A("s"), _HC(typestr_string) },
+  { _A("setfilenoext"), string_setfilenoext, 2, _A("ss"), _HC(typestr_string) },
+  { _A("SetFileNoExt"), string_setfilenoext, 2, _A("ss"), _HC(typestr_string) },
+  { _A("getfilenoext"), string_getfilenoext, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetFileNoExt"), string_getfilenoext, 1, _A("s"), _HC(typestr_string) },
+  { _A("setext"), string_setext, 2, _A("ss"), _HC(typestr_string) },
+  { _A("SetExt"), string_setext, 2, _A("ss"), _HC(typestr_string) },
+  { _A("getext"), string_getext, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetExt"), string_getext, 1, _A("s"), _HC(typestr_string) },
+  { _A("setprotocol"), string_setprotocol, 2, _A("ss"), _HC(typestr_string) },
+  { _A("SetProtocol"), string_setprotocol, 2, _A("ss"), _HC(typestr_string) },
+  { _A("getprotocol"), string_getprotocol, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetProtocol"), string_getprotocol, 1, _A("s"), _HC(typestr_string) },
+  { _A("setdir"), string_setdir, 2, _A("ss"), _HC(typestr_string) },
+  { _A("SetDir"), string_setdir, 2, _A("ss"), _HC(typestr_string) },
+  { _A("adddirfront"), string_adddirfront, 2, _A("ss"), _HC(typestr_string) },
+  { _A("AddDirFront"), string_adddirfront, 2, _A("ss"), _HC(typestr_string) },
+  { _A("adddirback"), string_adddirback, 2, _A("ss"), _HC(typestr_string) },
+  { _A("AddDirBack"), string_adddirback, 2, _A("ss"), _HC(typestr_string) },
+  { _A("removedirback"), string_removedirback, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("RemoveDirBack"), string_removedirback, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("getdir"), string_getdir, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetDir"), string_getdir, 1, _A("s"), _HC(typestr_string) },
+  { _A("startswith"), string_startswith, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("StartsWith"), string_startswith, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("endswith"), string_endswith, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("EndsWith"), string_endswith, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("startswithi"), string_startswithi, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("StartsWithI"), string_startswithi, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("endswithi"), string_endswithi, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("EndsWithI"), string_endswithi, 2, _A("ss"), _HC(typestr_bool) },
+  { _A("trimleftex"), string_trimleftex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("TrimLeftEx"), string_trimleftex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("trimleft"), string_trimleft, 1, _A("s"), _HC(typestr_string) },
+  { _A("TrimLeft"), string_trimleft, 1, _A("s"), _HC(typestr_string) },
+  { _A("trimrightex"), string_trimrightex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("TrimRightEx"), string_trimrightex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("trimright"), string_trimright, 1, _A("s"), _HC(typestr_string) },
+  { _A("TrimRight"), string_trimright, 1, _A("s"), _HC(typestr_string) },
+  { _A("trimex"), string_trimex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("TrimEx"), string_trimex, 2, _A("ss"), _HC(typestr_string) },
+  { _A("trim"), string_trim, 1, _A("s"), _HC(typestr_string) },
+  { _A("Trim"), string_trim, 1, _A("s"), _HC(typestr_string) },
+  { _A("normalize"), string_normalize, 1, _A("s"), _HC(typestr_string) },
+  { _A("Normalize"), string_normalize, 1, _A("s"), _HC(typestr_string) },
+  { _A("before"), string_before, 2, _A("ss"), _HC(typestr_string) },
+  { _A("Before"), string_before, 2, _A("ss"), _HC(typestr_string) },
+  { _A("rbefore"), string_rbefore, 2, _A("ss"), _HC(typestr_string) },
+  { _A("RBefore"), string_rbefore, 2, _A("ss"), _HC(typestr_string) },
+  { _A("after"), string_after, 2, _A("ss"), _HC(typestr_string) },
+  { _A("After"), string_after, 2, _A("ss"), _HC(typestr_string) },
+  { _A("rafter"), string_rafter, 2, _A("ss"), _HC(typestr_string) },
+  { _A("RAfter"), string_rafter, 2, _A("ss"), _HC(typestr_string) },
+  { _A("beforei"), string_beforei, 2, _A("ss"), _HC(typestr_string) },
+  { _A("BeforeI"), string_beforei, 2, _A("ss"), _HC(typestr_string) },
+  { _A("rbeforei"), string_rbeforei, 2, _A("ss"), _HC(typestr_string) },
+  { _A("RBeforeI"), string_rbeforei, 2, _A("ss"), _HC(typestr_string) },
+  { _A("afteri"), string_afteri, 2, _A("ss"), _HC(typestr_string) },
+  { _A("AfterI"), string_afteri, 2, _A("ss"), _HC(typestr_string) },
+  { _A("rafteri"), string_rafteri, 2, _A("ss"), _HC(typestr_string) },
+  { _A("RAfterI"), string_rafteri, 2, _A("ss"), _HC(typestr_string) },
+  { _A("left"), string_left, 2, _A("sn"), _HC(typestr_string) },
+  { _A("Left"), string_left, 2, _A("sn"), _HC(typestr_string) },
+  { _A("right"), string_right, 2, _A("sn"), _HC(typestr_string) },
+  { _A("Right"), string_right, 2, _A("sn"), _HC(typestr_string) },
+  { _A("mid"), string_mid, 3, _A("snn"), _HC(typestr_string) },
+  { _A("Mid"), string_mid, 3, _A("snn"), _HC(typestr_string) },
+  { _A("topropertyname"), string_topropertyname, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("ToPropertyName"), string_topropertyname, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("topropertymethodname"), string_topropertymethodname, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("ToPropertyMethodName"), string_topropertymethodname, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("topropertyname2"), string_topropertyname2, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("ToPropertyName2"), string_topropertyname2, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("topropertymethodname2"), string_topropertymethodname2, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("ToPropertyMethodName2"), string_topropertymethodname2, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("encodexml"), string_encodexml, 1, _A("s"), _HC(typestr_string) },
+  { _A("EncodeXml"), string_encodexml, 1, _A("s"), _HC(typestr_string) },
+  { _A("decodexml"), string_decodexml, 1, _A("s"), _HC(typestr_string) },
+  { _A("DecodeXml"), string_decodexml, 1, _A("s"), _HC(typestr_string) },
+  { _A("encodeurl"), string_encodeurl, 1, _A("s"), _HC(typestr_string) },
+  { _A("EncodeUrl"), string_encodeurl, 1, _A("s"), _HC(typestr_string) },
+  { _A("decodeurl"), string_decodeurl, 1, _A("s"), _HC(typestr_string) },
+  { _A("DecodeUrl"), string_decodeurl, 1, _A("s"), _HC(typestr_string) },
+  { _A("GetLocalized"), string_getlocalized, -1, _A("ss"),
+    _HC(typestr_string) },
+  { _A("CharIt"), string_charIt, -1, _A("snn"), _HC(typestr_iHStringCharIt) },
+  { _A("CreateCharIt"), string_charIt, -2, _A("snn"),
+    _HC(typestr_iHStringCharIt) },
+  { _A("parsesymbol"), string_parsesymbol, 1, _A("s"), _HC(typestr_string) },
+  { _A("parsemetadata"), string_parsemetadata, 1, _A("s"),
+    _HC(typestr_string) },
+  { _A("IsCIdentifier"), string_IsCIdentifier, 1, _A("s"), _HC(typestr_bool) },
+  { 0, 0 }
 };
 
-SQRegFunction SQSharedState::_number_default_delegate_funcz[]={
-  {_A("toint"),default_delegate_toint,1, _A("n"), _HC(typestr_int)},
-  {_A("ToInt"),default_delegate_toint,1, _A("n"), _HC(typestr_int)},
-  {_A("tofloat"),default_delegate_tofloat,1, _A("n"), _HC(typestr_float)},
-  {_A("ToFloat"),default_delegate_tofloat,1, _A("n"), _HC(typestr_float)},
-  {_A("tostring"),default_delegate_tostring,1, _A("n"), _HC(typestr_string)},
-  {_A("ToString"),default_delegate_tostring,1, _A("n"), _HC(typestr_string)},
-  {_A("tochar"),number_delegate_tochar,1, _A("n"), _HC(typestr_string)},
-  {_A("ToChar"),number_delegate_tochar,1, _A("n"), _HC(typestr_string)},
-  {0,0}
+SQRegFunction SQSharedState::_number_default_delegate_funcz[] = {
+  { _A("toint"), default_delegate_toint, 1, _A("n"), _HC(typestr_int) },
+  { _A("ToInt"), default_delegate_toint, 1, _A("n"), _HC(typestr_int) },
+  { _A("tofloat"), default_delegate_tofloat, 1, _A("n"), _HC(typestr_float) },
+  { _A("ToFloat"), default_delegate_tofloat, 1, _A("n"), _HC(typestr_float) },
+  { _A("tostring"), default_delegate_tostring, 1, _A("n"),
+    _HC(typestr_string) },
+  { _A("ToString"), default_delegate_tostring, 1, _A("n"),
+    _HC(typestr_string) },
+  { _A("tochar"), number_delegate_tochar, 1, _A("n"), _HC(typestr_string) },
+  { _A("ToChar"), number_delegate_tochar, 1, _A("n"), _HC(typestr_string) },
+  { 0, 0 }
 };
 
 // TODO: Should we split that into two delegates? one for nativeclosures and one for vmclosures?
-SQRegFunction SQSharedState::_closure_default_delegate_funcz[]={
-  {_A("ToIntPtr"),default_to_intptr,1, _A("c"), _HC(typestr_int)},
-  {_A("call"),closure_call,-1, _A("c")},
-  {_A("Call"),closure_call,-1, _A("c")},
-  {_A("acall"),closure_acall,2, _A("ca")},
-  {_A("ACall"),closure_acall,2, _A("ca")},
-  {_A("athiscall"),closure_athiscall,3, _A("ct.")},
-  {_A("GetNumParams"),closure_GetNumParams,1, _A("c"), _HC(typestr_int)},
-  {_A("GetParamName"),closure_GetParamName,2, _A("cn"), _HC(typestr_string)},
-  {_A("GetParamType"),closure_GetParamType,2, _A("cn")},
-  {_A("GetReturnType"),closure_GetReturnType,1, _A("c")},
-  {_A("GetNumFreeVars"),closure_GetNumFreeVars,1, _A("c"), _HC(typestr_int)},
-  {_A("GetFreeVar"),closure_GetFreeVar,2, _A("cn")},
-  {_A("SafeGetFreeVar"),closure_SafeGetFreeVar,2, _A("cn")},
-  {_A("GetRoot"),closure_GetRoot,1, _A("c"), _HC(typestr_table)},
-  {_A("SetRoot"),closure_SetRoot,2, _A("ct")},
-  {_A("lint"),closure_lint,1, _A("c"), _HC(typestr_int)},
-  {0,0}
+SQRegFunction SQSharedState::_closure_default_delegate_funcz[] = {
+  { _A("ToIntPtr"), default_to_intptr, 1, _A("c"), _HC(typestr_int) },
+  { _A("call"), closure_call, -1, _A("c") },
+  { _A("Call"), closure_call, -1, _A("c") },
+  { _A("acall"), closure_acall, 2, _A("ca") },
+  { _A("ACall"), closure_acall, 2, _A("ca") },
+  { _A("athiscall"), closure_athiscall, 3, _A("ct.") },
+  { _A("GetNumParams"), closure_GetNumParams, 1, _A("c"), _HC(typestr_int) },
+  { _A("GetParamName"), closure_GetParamName, 2, _A("cn"),
+    _HC(typestr_string) },
+  { _A("GetParamType"), closure_GetParamType, 2, _A("cn") },
+  { _A("GetReturnType"), closure_GetReturnType, 1, _A("c") },
+  { _A("GetNumFreeVars"), closure_GetNumFreeVars, 1, _A("c"),
+    _HC(typestr_int) },
+  { _A("GetFreeVar"), closure_GetFreeVar, 2, _A("cn") },
+  { _A("SafeGetFreeVar"), closure_SafeGetFreeVar, 2, _A("cn") },
+  { _A("GetRoot"), closure_GetRoot, 1, _A("c"), _HC(typestr_table) },
+  { _A("SetRoot"), closure_SetRoot, 2, _A("ct") },
+  { _A("lint"), closure_lint, 1, _A("c"), _HC(typestr_int) },
+  { 0, 0 }
 };
 
 SQRegFunction SQSharedState::_base_funcs[] = {
   // constructors
-  {_A("Array"),base_Array,-1, _A(".n"), _HC(typestr_array)},
-  {_A("Table"),base_Table,-1, _A(".n"), _HC(typestr_table)},
+  { _A("Array"), base_Array, -1, _A(".n"), _HC(typestr_array) },
+  { _A("Table"), base_Table, -1, _A(".n"), _HC(typestr_table) },
   //generic
-  {_A("GetThisVM"),base_getthisvm,1, _A("t"), _HC(typestr_iScriptVM)},
-  {_A("ObjectToIScriptObject"),base_ObjectToIScriptObject,2, _A("t."),_HC(typestr_iScriptObject)},
-  {_A("IScriptObjectToObject"),base_IScriptObjectToObject,2, _A("t.")},
-  {_A("LockLangDelegates"), base_LockLangDelegates, 1, _A("."), _HC(typestr_void)},
-  {_A("GetLangDelegate"),base_GetLangDelegate, 2, _A(".s"), _HC(typestr_table)},
-  {_A("seterrorhandler"),base_seterrorhandler,2, _A("tc"), _HC(typestr_void)},
-  {_A("SetErrorHandler"),base_seterrorhandler,2, _A("tc"), _HC(typestr_void)},
-  {_A("setraiseerrormode"),base_setraiseerrormode,2, _A("tn"), _HC(typestr_int)},
-  {_A("SetRaiseErrorMode"),base_setraiseerrormode,2, _A("tn"), _HC(typestr_int)},
-  {_A("getraiseerrormode"),base_getraiseerrormode,1, _A("t"), _HC(typestr_int)},
-  {_A("GetRaiseErrorMode"),base_getraiseerrormode,1, _A("t"), _HC(typestr_int)},
-  {_A("setdebughook"),base_setdebughook,2, _A("tc"), _HC(typestr_void)},
-  {_A("SetDebugHook"),base_setdebughook,2, _A("tc"), _HC(typestr_void)},
-  {_A("getstackinfos"),base_getstackinfos,2, _A("tn"), _HC(typestr_table)},
-  {_A("GetStackInfos"),base_getstackinfos,2, _A("tn"), _HC(typestr_table)},
-  {_A("getbasestackinfos"),base_getbasestackinfos,2, _A("tn"), _HC(typestr_table)},
-  {_A("GetBaseStackInfos"),base_getbasestackinfos,2, _A("tn"), _HC(typestr_table)},
+  { _A("GetThisVM"), base_getthisvm, 1, _A("t"), _HC(typestr_iScriptVM) },
+  { _A("ObjectToIScriptObject"), base_ObjectToIScriptObject, 2, _A("t."),
+    _HC(typestr_iScriptObject) },
+  { _A("IScriptObjectToObject"), base_IScriptObjectToObject, 2, _A("t.") },
+  { _A("LockLangDelegates"), base_LockLangDelegates, 1, _A("."),
+    _HC(typestr_void) },
+  { _A("GetLangDelegate"), base_GetLangDelegate, 2, _A(".s"),
+    _HC(typestr_table) },
+  { _A("seterrorhandler"), base_seterrorhandler, 2, _A("tc"),
+    _HC(typestr_void) },
+  { _A("SetErrorHandler"), base_seterrorhandler, 2, _A("tc"),
+    _HC(typestr_void) },
+  { _A("setraiseerrormode"), base_setraiseerrormode, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("SetRaiseErrorMode"), base_setraiseerrormode, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("getraiseerrormode"), base_getraiseerrormode, 1, _A("t"),
+    _HC(typestr_int) },
+  { _A("GetRaiseErrorMode"), base_getraiseerrormode, 1, _A("t"),
+    _HC(typestr_int) },
+  { _A("setdebughook"), base_setdebughook, 2, _A("tc"), _HC(typestr_void) },
+  { _A("SetDebugHook"), base_setdebughook, 2, _A("tc"), _HC(typestr_void) },
+  { _A("getstackinfos"), base_getstackinfos, 2, _A("tn"), _HC(typestr_table) },
+  { _A("GetStackInfos"), base_getstackinfos, 2, _A("tn"), _HC(typestr_table) },
+  { _A("getbasestackinfos"), base_getbasestackinfos, 2, _A("tn"),
+    _HC(typestr_table) },
+  { _A("GetBaseStackInfos"), base_getbasestackinfos, 2, _A("tn"),
+    _HC(typestr_table) },
   // getrootable is the current context's roottable, modules have a different roottable
-  {_A("getroottable"),base_getroottable,1, _A("t"), _HC(typestr_table)},
+  { _A("getroottable"), base_getroottable, 1, _A("t"), _HC(typestr_table) },
   // getvmroottable always returns the root table of the current vm
-  {_A("getvmroottable"),base_getroottable,1, _A("t"), _HC(typestr_table)},
-  {_A("debugbreak"),base_debugbreak,1, _A("t"), _HC(typestr_void)},
-  {_A("DebugBreak"),base_debugbreak,1, _A("t"), _HC(typestr_void)},
-  {_A("assert"),base_assert,2, _A("t"), _HC(typestr_void)},
-  {_A("Assert"),base_assert,2, _A("t"), _HC(typestr_void)},
-  {_A("compilestring"),base_compilestring,-2, _A(".ss")},
-  {_A("CompileString"),base_compilestring,-2, _A(".ss")},
-  {_A("collectgarbage"),base_collectgarbage,1, _A("t"), _HC(typestr_int)},
-  {_A("CollectGarbage"),base_collectgarbage,1, _A("t"), _HC(typestr_int)},
-  {_A("ultof"), base_ultof, 2, _A("tn"), _HC(typestr_float)},
-  {_A("ULToF"), base_ultof, 2, _A("tn"), _HC(typestr_float)},
-  {_A("ftoul"), base_ftoul, 2, _A("tn"), _HC(typestr_int)},
-  {_A("FToUL"), base_ftoul, 2, _A("tn"), _HC(typestr_int)},
-  {_A("FourCC"), base_FourCC, 5, _A("tnnnn"), _HC(typestr_int)},
-  {_A("clock"), base_clockSecs, -1, _A("t"), _HC(typestr_float)},
-  {_A("Clock"), base_clockSecs, -1, _A("t"), _HC(typestr_float)},
-  {_A("sleepms"), base_sleepMs, 2, _A("tn"), _HC(typestr_void)},
-  {_A("SleepMs"), base_sleepMs, 2, _A("tn"), _HC(typestr_void)},
-  {_A("sleepsecs"), base_sleepSecs, 2, _A("tn"), _HC(typestr_void)},
-  {_A("SleepSecs"), base_sleepSecs, 2, _A("tn"), _HC(typestr_void)},
-  {_A("sleepsecscoarse"), base_sleepSecsCoarse, 2, _A("tn"), _HC(typestr_void)},
-  {_A("SleepSecsCoarse"), base_sleepSecsCoarse, 2, _A("tn"), _HC(typestr_void)},
-  {_A("sleepsecsspin"), base_sleepSecsSpin, 2, _A("tn"), _HC(typestr_void)},
-  {_A("SleepSecsSpin"), base_sleepSecsSpin, 2, _A("tn"), _HC(typestr_void)},
-  {_A("EnumToString"), base_EnumToString, -2, _A(".n"), _HC(typestr_string)},
-  {_A("StringToEnum"), base_StringToEnum, -2, _A(".s"), _HC(typestr_int)},
-  {_A("FindEnumDef"), base_FindEnumDef, 2, _A(".s"), _HC(typestr_enum)},
-  {_A("format"),string_format,-2,_A(".s"), _HC(typestr_string)},
-  {_A("Format"),string_format,-2,_A(".s"), _HC(typestr_string)},
-  {_A("MessageID"), base_MessageID, 3, _A("tsn"), _HC(typestr_int)},
-  {_A("MessageID_ToString"), base_MessageID_ToString, 2, _A("tn"), _HC(typestr_string)},
-  {_A("MessageID_FromString"), base_MessageID_FromString, 2, _A("ts"), _HC(typestr_int)},
-  {_A("MessageID_GetCharA"), base_MessageID_GetCharA, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_GetCharB"), base_MessageID_GetCharB, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_GetCharC"), base_MessageID_GetCharC, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_GetCharD"), base_MessageID_GetCharD, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_GetBYTE"), base_MessageID_GetBYTE, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_MaskA"), base_MessageID_MaskA, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_MaskAB"), base_MessageID_MaskAB, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_MaskABC"), base_MessageID_MaskABC, 2, _A("tn"), _HC(typestr_int)},
-  {_A("MessageID_MaskABCD"), base_MessageID_MaskABCD, 2, _A("tn"), _HC(typestr_int)},
-  {_A("CreateCollectionVector"), base_CreateCollectionVector, 2, _A("tn"), _HC(typestr_iMutableCollection)},
-  {_A("CreateCollectionMap"), base_CreateCollectionMap, 3, _A("tnn"), _HC(typestr_iMutableCollection)},
-  {_A("GetModuleFileName"), base_GetModuleFileName, 2, _A("ts"), _HC(typestr_string)},
-  {_A("GatherLastLogs"), base_GatherLastLogs, 2, _A("tn"), _HC(typestr_iCollection)},
-  {_A("SerializeReadObject"), base_SerializeReadObject, 2, _A("t.")},
-  {_A("SerializeWriteObject"), base_SerializeWriteObject, 3, _A("t.."), _HC(typestr_int)},
-  {0,0}
+  { _A("getvmroottable"), base_getroottable, 1, _A("t"), _HC(typestr_table) },
+  { _A("debugbreak"), base_debugbreak, 1, _A("t"), _HC(typestr_void) },
+  { _A("DebugBreak"), base_debugbreak, 1, _A("t"), _HC(typestr_void) },
+  { _A("assert"), base_assert, 2, _A("t"), _HC(typestr_void) },
+  { _A("Assert"), base_assert, 2, _A("t"), _HC(typestr_void) },
+  { _A("compilestring"), base_compilestring, -2, _A(".ss") },
+  { _A("CompileString"), base_compilestring, -2, _A(".ss") },
+  { _A("collectgarbage"), base_collectgarbage, 1, _A("t"), _HC(typestr_int) },
+  { _A("CollectGarbage"), base_collectgarbage, 1, _A("t"), _HC(typestr_int) },
+  { _A("ultof"), base_ultof, 2, _A("tn"), _HC(typestr_float) },
+  { _A("ULToF"), base_ultof, 2, _A("tn"), _HC(typestr_float) },
+  { _A("ftoul"), base_ftoul, 2, _A("tn"), _HC(typestr_int) },
+  { _A("FToUL"), base_ftoul, 2, _A("tn"), _HC(typestr_int) },
+  { _A("FourCC"), base_FourCC, 5, _A("tnnnn"), _HC(typestr_int) },
+  { _A("clock"), base_clockSecs, -1, _A("t"), _HC(typestr_float) },
+  { _A("Clock"), base_clockSecs, -1, _A("t"), _HC(typestr_float) },
+  { _A("sleepms"), base_sleepMs, 2, _A("tn"), _HC(typestr_void) },
+  { _A("SleepMs"), base_sleepMs, 2, _A("tn"), _HC(typestr_void) },
+  { _A("sleepsecs"), base_sleepSecs, 2, _A("tn"), _HC(typestr_void) },
+  { _A("SleepSecs"), base_sleepSecs, 2, _A("tn"), _HC(typestr_void) },
+  { _A("sleepsecscoarse"), base_sleepSecsCoarse, 2, _A("tn"),
+    _HC(typestr_void) },
+  { _A("SleepSecsCoarse"), base_sleepSecsCoarse, 2, _A("tn"),
+    _HC(typestr_void) },
+  { _A("sleepsecsspin"), base_sleepSecsSpin, 2, _A("tn"), _HC(typestr_void) },
+  { _A("SleepSecsSpin"), base_sleepSecsSpin, 2, _A("tn"), _HC(typestr_void) },
+  { _A("EnumToString"), base_EnumToString, -2, _A(".n"), _HC(typestr_string) },
+  { _A("StringToEnum"), base_StringToEnum, -2, _A(".s"), _HC(typestr_int) },
+  { _A("FindEnumDef"), base_FindEnumDef, 2, _A(".s"), _HC(typestr_enum) },
+  { _A("format"), string_format, -2, _A(".s"), _HC(typestr_string) },
+  { _A("Format"), string_format, -2, _A(".s"), _HC(typestr_string) },
+  { _A("MessageID"), base_MessageID, 3, _A("tsn"), _HC(typestr_int) },
+  { _A("MessageID_ToString"), base_MessageID_ToString, 2, _A("tn"),
+    _HC(typestr_string) },
+  { _A("MessageID_FromString"), base_MessageID_FromString, 2, _A("ts"),
+    _HC(typestr_int) },
+  { _A("MessageID_GetCharA"), base_MessageID_GetCharA, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_GetCharB"), base_MessageID_GetCharB, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_GetCharC"), base_MessageID_GetCharC, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_GetCharD"), base_MessageID_GetCharD, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_GetBYTE"), base_MessageID_GetBYTE, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_MaskA"), base_MessageID_MaskA, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_MaskAB"), base_MessageID_MaskAB, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_MaskABC"), base_MessageID_MaskABC, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("MessageID_MaskABCD"), base_MessageID_MaskABCD, 2, _A("tn"),
+    _HC(typestr_int) },
+  { _A("CreateCollectionVector"), base_CreateCollectionVector, 2, _A("tn"),
+    _HC(typestr_iMutableCollection) },
+  { _A("CreateCollectionMap"), base_CreateCollectionMap, 3, _A("tnn"),
+    _HC(typestr_iMutableCollection) },
+  { _A("GetModuleFileName"), base_GetModuleFileName, 2, _A("ts"),
+    _HC(typestr_string) },
+  { _A("GatherLastLogs"), base_GatherLastLogs, 2, _A("tn"),
+    _HC(typestr_iCollection) },
+  { _A("SerializeReadObject"), base_SerializeReadObject, 2, _A("t.") },
+  { _A("SerializeWriteObject"), base_SerializeWriteObject, 3, _A("t.."),
+    _HC(typestr_int) },
+  { 0, 0 }
 };

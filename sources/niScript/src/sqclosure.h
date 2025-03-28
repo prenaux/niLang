@@ -5,52 +5,61 @@
 #include "sqtable.h"
 
 struct SQFunctionProto;
-struct SQClosure : public SQCollectable, public SQ_ALLOCATOR(SQClosure)
-{
-  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
-    return this->_DoQueryInterface(this,aIID);
+struct SQClosure : public SQCollectable, public SQ_ALLOCATOR(SQClosure) {
+  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID)
+  {
+    return this->_DoQueryInterface(this, aIID);
   }
 
-protected:
-  SQClosure(SQFunctionProto *func) {
-    _function=func;
+ protected:
+  SQClosure(SQFunctionProto* func)
+  {
+    _function = func;
     INIT_CHAIN();
     ADD_TO_CHAIN(this);
   }
 
-public:
-  static SQClosure *Create(SQFunctionProto *func, SQTable* root) {
+ public:
+  static SQClosure* Create(SQFunctionProto* func, SQTable* root)
+  {
     SQClosure* c = niNew SQClosure(func);
     niAssert(root != NULL);
     c->_root = root;
     return c;
   }
-  ~SQClosure() {
+  ~SQClosure()
+  {
     REMOVE_FROM_CHAIN(this);
   }
 #ifndef NO_GARBAGE_COLLECTOR
-  virtual void __stdcall Mark(SQCollectable **chain);
+  virtual void __stdcall Mark(SQCollectable** chain);
 #endif
-  virtual void __stdcall Invalidate() {_outervalues.resize(0); }
+  virtual void __stdcall Invalidate()
+  {
+    _outervalues.resize(0);
+  }
   SQObjectPtr _function;
   SQObjectPtrVec _outervalues;
   WeakPtr<SQTable> _root;
 };
 
-struct SQNativeClosure : public SQCollectable, SQ_ALLOCATOR(SQNativeClosure)
-{
-  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
-    return this->_DoQueryInterface(this,aIID);
+struct SQNativeClosure : public SQCollectable, SQ_ALLOCATOR(SQNativeClosure) {
+  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID)
+  {
+    return this->_DoQueryInterface(this, aIID);
   }
 
-private:
-  SQNativeClosure(SQFUNCTION func) {
+ private:
+  SQNativeClosure(SQFUNCTION func)
+  {
     _function = func;
     INIT_CHAIN();
     ADD_TO_CHAIN(this);
   }
-public:
-  static SQNativeClosure *Create(SQFUNCTION func) {
+
+ public:
+  static SQNativeClosure* Create(SQFUNCTION func)
+  {
     return niNew SQNativeClosure(func);
   }
   ~SQNativeClosure()
@@ -58,9 +67,11 @@ public:
     REMOVE_FROM_CHAIN(this);
   }
 #ifndef NO_GARBAGE_COLLECTOR
-  virtual void __stdcall Mark(SQCollectable **chain);
+  virtual void __stdcall Mark(SQCollectable** chain);
 #endif
-  virtual void __stdcall Invalidate() {}
+  virtual void __stdcall Invalidate()
+  {
+  }
   SQFUNCTION _function = nullptr;
   tHStringPtr _name;
   SQIntVec _typecheck;

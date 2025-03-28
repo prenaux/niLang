@@ -18,24 +18,24 @@
 //
 //----------------------------------------------------------------------------
 
-#define niScriptCppExportClass(CATEGORY,NAME,CLASS)     \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(  \
-    const ni::Var&,const ni::Var&)                      \
-  {                                                     \
-    return niNew CLASS();                               \
+#define niScriptCppExportClass(CATEGORY, NAME, CLASS)                 \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(const ni::Var&, \
+                                                      const ni::Var&) \
+  {                                                                   \
+    return niNew CLASS();                                             \
   }
 
-#define niScriptCppExportFunc(CATEGORY,NAME,CONSTRUCTOR)                \
-  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(                  \
-    const ni::Var&,const ni::Var&)                                      \
-  {                                                                     \
+#define niScriptCppExportFunc(CATEGORY, NAME, CONSTRUCTOR)               \
+  niExportFunc(ni::iUnknown*) New_##CATEGORY##_##NAME(const ni::Var&,    \
+                                                      const ni::Var&)    \
+  {                                                                      \
     ni::Ptr<ni::iUnknown> scriptCppObjectInstance = CONSTRUCTOR().ptr(); \
-    niCheck(scriptCppObjectInstance.IsOK(),NULL);                       \
-    return scriptCppObjectInstance.GetRawAndSetNull();                  \
+    niCheck(scriptCppObjectInstance.IsOK(), NULL);                       \
+    return scriptCppObjectInstance.GetRawAndSetNull();                   \
   }
 
-#define niScriptCppExport(CATEGORY,CLASS)       \
-  niScriptCppExportClass(CATEGORY,CLASS,CLASS)
+#define niScriptCppExport(CATEGORY, CLASS) \
+  niScriptCppExportClass(CATEGORY, CLASS, CLASS)
 
 /**@}*/
 

@@ -5,7 +5,7 @@
 #include <niLang/Utils/TimerSleep.h>
 
 #ifdef niJSCC
-#include <emscripten.h>
+  #include <emscripten.h>
 #endif
 
 namespace {
@@ -15,26 +15,27 @@ using namespace ni;
 struct MyFetchSink : public ImplRC<iFetchSink> {
   cString result = "";
 
-  virtual void __stdcall OnFetchSink_Success(iFetchRequest* apFetch) {
+  virtual void __stdcall OnFetchSink_Success(iFetchRequest* apFetch)
+  {
     niDebugFmt(("... OnFetchSink_Success: status: %d, got %d bytes",
-                apFetch->GetStatus(),
-                apFetch->GetReceivedData()->GetSize()));
+                apFetch->GetStatus(), apFetch->GetReceivedData()->GetSize()));
     result = "success";
   }
-  virtual void __stdcall OnFetchSink_Error(iFetchRequest* apFetch) {
+  virtual void __stdcall OnFetchSink_Error(iFetchRequest* apFetch)
+  {
     niDebugFmt(("... OnFetchSink_Error: status: %d, got %d bytes",
-                apFetch->GetStatus(),
-                apFetch->GetReceivedData()->GetSize()));
+                apFetch->GetStatus(), apFetch->GetReceivedData()->GetSize()));
     result = "error";
   }
-  virtual void __stdcall OnFetchSink_Progress(iFetchRequest* apFetch) {
+  virtual void __stdcall OnFetchSink_Progress(iFetchRequest* apFetch)
+  {
     niDebugFmt(("... OnFetchSink_Progress: status: %d, got %d bytes",
-                apFetch->GetStatus(),
-                apFetch->GetReceivedData()->GetSize()));
+                apFetch->GetStatus(), apFetch->GetReceivedData()->GetSize()));
   }
-  virtual void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest* apFetch) {
+  virtual void __stdcall OnFetchSink_ReadyStateChange(iFetchRequest* apFetch)
+  {
     niDebugFmt(("... OnFetchSink_ReadyStateChange: %s",
-                niEnumToChars(eFetchReadyState,apFetch->GetReadyState())));
+                niEnumToChars(eFetchReadyState, apFetch->GetReadyState())));
   }
 };
 
@@ -43,10 +44,13 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
   NN<iMessageQueue> _mq = niDeferredInit(NN<iMessageQueue>);
   NN<iFetchRequest> _request = niDeferredInit(NN<iFetchRequest>);
 
-  virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) = 0;
-  virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) = 0;
+  virtual NN<iFetchRequest> CreateRequest(
+    UnitTest::TestResults& testResults_) = 0;
+  virtual void CheckResult(UnitTest::TestResults& testResults_,
+                           const cString& aHeaders, const cString& aData) = 0;
 
-  virtual NN<iCURL> CreateCURL() {
+  virtual NN<iCURL> CreateCURL()
+  {
 #ifdef niJSCC
     // We remove any JSCC extension to have a clean test.
     // TODO: This shouldn't be a global module thing ideally.
@@ -56,18 +60,20 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
       }
     })""");
 #endif
-    QPtr<iCURL> curl = ni::New_niCURL_CURL(niVarNull,niVarNull);
+    QPtr<iCURL> curl = ni::New_niCURL_CURL(niVarNull, niVarNull);
     return curl.non_null();
   }
 
-  niFn(tBool) Start(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) Start(UnitTest::TestResults& testResults_) niImpl
+  {
     _curl = this->CreateCURL();
     _mq = AsNN(ni::GetOrCreateMessageQueue(ni::ThreadGetCurrentThreadID()));
     _request = this->CreateRequest(testResults_);
     return eTrue;
   }
 
-  niFn(tBool) Step(UnitTest::TestResults& testResults_) niImpl {
+  niFn(tBool) Step(UnitTest::TestResults& testResults_) niImpl
+  {
     //niDebugFmt(("... RunImpl"));
     if (!_mq->PollAndDispatch()) {
       ni::SleepMs(100); // Avoid busy loop
@@ -79,44 +85,48 @@ struct sFCURLFetch_Base : public UnitTest::iTestClass {
     return eTrue;
   }
 
-  niFn(void) End(UnitTest::TestResults& testResults_) niImpl {
+  niFn(void) End(UnitTest::TestResults& testResults_) niImpl
+  {
     cString headers = _request->GetReceivedHeaders()->ReadString();
     niDebugFmt(("... headers: %d bytes, %s",
-                _request->GetReceivedHeaders()->GetSize(),
-                headers));
+                _request->GetReceivedHeaders()->GetSize(), headers));
 
     cString data = _request->GetReceivedData()->ReadString();
-    niDebugFmt(("... data: %d bytes, %s",
-                _request->GetReceivedData()->GetSize(),
-                data));
+    niDebugFmt(
+      ("... data: %d bytes, %s", _request->GetReceivedData()->GetSize(), data));
 
     this->CheckResult(testResults_, headers, data);
   }
 };
 
 struct sFCURLFetch_Get : public sFCURLFetch_Base {
-  virtual NN<iFetchRequest> CreateRequest(UnitTest::TestResults& testResults_) niImpl {
-    NN<tStringCVec> requestHeaders { tStringCVec::Create() };
+  virtual NN<iFetchRequest> CreateRequest(
+    UnitTest::TestResults& testResults_) niImpl
+  {
+    NN<tStringCVec> requestHeaders{ tStringCVec::Create() };
     requestHeaders->push_back("X-Ni-Header: HdrNarf");
 
     Nonnull<MyFetchSink> sink = ni::MakeNonnull<MyFetchSink>();
-    return _curl->FetchGet(
-      _GetHTTPSTestCasesUrl("Test_niCURL_FetchGet.php?param=test_value").c_str(),
-      sink,
-      requestHeaders).non_null();
+    return _curl
+      ->FetchGet(
+        _GetHTTPSTestCasesUrl("Test_niCURL_FetchGet.php?param=test_value")
+          .c_str(),
+        sink, requestHeaders)
+      .non_null();
   }
 
-  virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) niImpl {
+  virtual void CheckResult(UnitTest::TestResults& testResults_,
+                           const cString& aHeaders, const cString& aData) niImpl
+  {
 #if !defined niJSCC
     CHECK(aHeaders.icontains("Access-Control-Allow-Origin: *"));
 #endif
-    CHECK_EQUAL(_ASTR("Test_niCURL_FetchGet:HdrNarf:test_value"),aData);
+    CHECK_EQUAL(_ASTR("Test_niCURL_FetchGet:HdrNarf:test_value"), aData);
     CHECK_EQUAL(eFalse, _request->GetHasFailed());
   }
 };
 
-TEST_CLASS_EX(FCURLFetch,Get,UnitTest::Test::GetTestList());
-
+TEST_CLASS_EX(FCURLFetch, Get, UnitTest::Test::GetTestList());
 
 #if 0
 struct sFCURLFetch_Post : public sFCURLFetch_Base {
@@ -140,9 +150,9 @@ struct sFCURLFetch_Post : public sFCURLFetch_Base {
   }
 
   virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) niImpl {
-#if !defined niJSCC
+  #if !defined niJSCC
     CHECK(aHeaders.icontains("Access-Control-Allow-Origin: *"));
-#endif
+  #endif
     CHECK_EQUAL(_ASTR("Test_niCURL_FetchPost:HdrNarf:posted_value"),aData);
     CHECK_EQUAL(eFalse, _request->GetHasFailed());
   }
@@ -167,9 +177,9 @@ struct sFCURLFetch_GetJson : public sFCURLFetch_Base {
   }
 
   virtual void CheckResult(UnitTest::TestResults& testResults_, const cString& aHeaders, const cString& aData) niImpl {
-#if !defined niJSCC
+  #if !defined niJSCC
     CHECK(aHeaders.icontains("Access-Control-Allow-Origin: *"));
-#endif
+  #endif
     CHECK(aHeaders.icontains("Content-Type: application/json"));
     CHECK_EQUAL(eFalse, _request->GetHasFailed());
     CHECK_EQUAL(_sink->result, "success");
@@ -183,7 +193,7 @@ struct sFCURLFetch_GetJson : public sFCURLFetch_Base {
 };
 TEST_CLASS(sFCURLFetch_GetJson);
 
-#ifdef niJSCC
+  #ifdef niJSCC
 
 struct sFCURLFetch_JSCC_OverrideNull : public sFCURLFetch_Base {
   NN<MyFetchSink> _sink = niDeferredInit(NN<MyFetchSink>);
@@ -472,7 +482,7 @@ struct sFCURLFetch_JSCC_OverrideError : public sFCURLFetch_Base {
 };
 TEST_CLASS(sFCURLFetch_JSCC_OverrideError);
 
-#endif // #ifdef niJSCC
+  #endif // #ifdef niJSCC
 
 #endif
-}
+} // namespace

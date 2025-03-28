@@ -7,33 +7,33 @@
 #include <niLang/Utils/DataTableUtils.h>
 
 #ifdef niWindows
-#include <niLang/Platforms/Win32/Win32_Redef.h>
+  #include <niLang/Platforms/Win32/Win32_Redef.h>
 #endif
 #ifdef niMSVC
-#pragma comment(lib,"ws2_32.lib")
-#pragma comment(lib,"wldap32.lib")
-#pragma comment(lib,"Advapi32.lib")
+  #pragma comment(lib, "ws2_32.lib")
+  #pragma comment(lib, "wldap32.lib")
+  #pragma comment(lib, "Advapi32.lib")
 #endif
 
 #ifdef HAS_CURL
-#include "curl/curl.h"
+  #include "curl/curl.h"
 #elif defined niJSCC
-#include <emscripten/fetch.h>
+  #include <emscripten/fetch.h>
 #else
-#error "Unsupported platform for CURL implementation."
+  #error "Unsupported platform for CURL implementation."
 #endif
 
-niDeclareModuleTrace_(niCURL,Verbose);
-#define SHOULD_TRACE_CURL() niModuleShouldTrace_(niCURL,Verbose)
+niDeclareModuleTrace_(niCURL, Verbose);
+#define SHOULD_TRACE_CURL() niModuleShouldTrace_(niCURL, Verbose)
 
-niDeclareModuleTrace_(niCURL,TraceGetMultiPart);
-#define TRACE_GET_MULTIPART(FMT) niModuleTrace_(niCURL,TraceGetMultiPart,FMT)
+niDeclareModuleTrace_(niCURL, TraceGetMultiPart);
+#define TRACE_GET_MULTIPART(FMT) niModuleTrace_(niCURL, TraceGetMultiPart, FMT)
 
-niDeclareModuleTrace_(niCURL,TraceGetString);
-#define TRACE_GET_STRING(FMT) niModuleTrace_(niCURL,TraceGetString,FMT)
+niDeclareModuleTrace_(niCURL, TraceGetString);
+#define TRACE_GET_STRING(FMT) niModuleTrace_(niCURL, TraceGetString, FMT)
 
-niDeclareModuleTrace_(niCURL,TraceFetch);
-#define TRACE_FETCH(FMT) niModuleTrace_(niCURL,TraceFetch,FMT)
+niDeclareModuleTrace_(niCURL, TraceFetch);
+#define TRACE_FETCH(FMT) niModuleTrace_(niCURL, TraceFetch, FMT)
 
 // XXX: This is not fully thread safe. Especially _fpHeaders & _fpData if the
 // caller starts to screw around with it while the data is being loaded,
@@ -59,12 +59,8 @@ struct sFetchRequest : public ImplRC<iFetchRequest> {
   const char** _emHeaders = NULL;
 #endif
 
-  sFetchRequest(
-    eFetchMethod aMethod,
-    const char* aURL,
-    iFile* apHeaders,
-    iFile* apData,
-    iFetchSink* apSink)
+  sFetchRequest(eFetchMethod aMethod, const char* aURL, iFile* apHeaders,
+                iFile* apData, iFetchSink* apSink)
       : _method(aMethod)
       , _url(aURL)
       , _fpHeaders(apHeaders)
@@ -74,7 +70,8 @@ struct sFetchRequest : public ImplRC<iFetchRequest> {
     // niDebugFmt(("... sFetchRequest::sFetchRequest"));
   }
 
-  virtual ~sFetchRequest() {
+  virtual ~sFetchRequest()
+  {
     // niDebugFmt(("... ~sFetchRequest::sFetchRequest"));
 #ifdef niJSCC
     if (_emHeaders) {
@@ -87,31 +84,38 @@ struct sFetchRequest : public ImplRC<iFetchRequest> {
 #endif
   }
 
-  virtual eFetchMethod __stdcall GetMethod() const {
+  virtual eFetchMethod __stdcall GetMethod() const
+  {
     return _method;
   }
 
-  virtual eFetchReadyState __stdcall GetReadyState() const {
+  virtual eFetchReadyState __stdcall GetReadyState() const
+  {
     return _readyState;
   }
 
-  virtual tU32 __stdcall GetStatus() const {
+  virtual tU32 __stdcall GetStatus() const
+  {
     return _status;
   }
 
-  virtual iFile* __stdcall GetReceivedHeaders() const {
+  virtual iFile* __stdcall GetReceivedHeaders() const
+  {
     return _fpHeaders;
   }
 
-  virtual iFile* __stdcall GetReceivedData() const {
+  virtual iFile* __stdcall GetReceivedData() const
+  {
     return _fpData;
   }
 
-  virtual tBool __stdcall GetHasFailed() const {
+  virtual tBool __stdcall GetHasFailed() const
+  {
     return _hasFailed;
   }
 
-  tBool _UpdateReadyState(eFetchReadyState aNewReadyState) {
+  tBool _UpdateReadyState(eFetchReadyState aNewReadyState)
+  {
     if (aNewReadyState == _readyState)
       return eFalse;
     _readyState = aNewReadyState;
@@ -126,99 +130,104 @@ struct sFetchRequest : public ImplRC<iFetchRequest> {
 struct _JsonParseToDataTableSink : public ImplLocal<iJsonParserSink> {
   cString _keyName;
   iDataTable* _dt;
-  _JsonParseToDataTableSink(iDataTable* apDT) : _dt(apDT) {}
+  _JsonParseToDataTableSink(iDataTable* apDT)
+      : _dt(apDT)
+  {
+  }
 
   //! Called when a parsing error occured.
-  virtual void __stdcall OnJsonParserSink_Error(const achar* aaszReason, tU32 anLine, tU32 anCol)
+  virtual void __stdcall OnJsonParserSink_Error(const achar* aaszReason,
+                                                tU32 anLine, tU32 anCol)
   {
-    niWarning(niFmt("JsonParseToDataTableSink error:%d:%d: %s",
-                    anLine, anCol, aaszReason));
+    niWarning(niFmt("JsonParseToDataTableSink error:%d:%d: %s", anLine, anCol,
+                    aaszReason));
   }
 
   //! Called when a value is parsed
-  virtual void __stdcall OnJsonParserSink_Value(eJsonType aType, const achar* aValue) {
+  virtual void __stdcall OnJsonParserSink_Value(eJsonType aType,
+                                                const achar* aValue)
+  {
     switch (aType) {
-      case eJsonType_Name: {
-        _keyName = aValue;
-        break;
+    case eJsonType_Name: {
+      _keyName = aValue;
+      break;
+    }
+    case eJsonType_String: {
+      _dt->SetString(_keyName.Chars(), aValue);
+      break;
+    }
+    case eJsonType_Number: {
+      if (StrChr(aValue, '.') || StrChr(aValue, 'e')) {
+        _dt->SetFloat(_keyName.Chars(), StrAToF(aValue));
       }
-      case eJsonType_String: {
-        _dt->SetString(_keyName.Chars(), aValue);
-        break;
+      else {
+        _dt->SetInt(_keyName.Chars(), StrAToL(aValue));
       }
-      case eJsonType_Number: {
-        if (StrChr(aValue,'.') || StrChr(aValue,'e')) {
-          _dt->SetFloat(_keyName.Chars(), StrAToF(aValue));
-        }
-        else {
-          _dt->SetInt(_keyName.Chars(), StrAToL(aValue));
-        }
-        break;
-      }
-      case eJsonType_True: {
-        _dt->SetBool(_keyName.Chars(), eTrue);
-        break;
-      }
-      case eJsonType_False: {
-        _dt->SetBool(_keyName.Chars(), eFalse);
-        break;
-      }
-      case eJsonType_Null: {
-        _dt->SetVar(_keyName.Chars(), niVarNull);
-        break;
-      }
+      break;
+    }
+    case eJsonType_True: {
+      _dt->SetBool(_keyName.Chars(), eTrue);
+      break;
+    }
+    case eJsonType_False: {
+      _dt->SetBool(_keyName.Chars(), eFalse);
+      break;
+    }
+    case eJsonType_Null: {
+      _dt->SetVar(_keyName.Chars(), niVarNull);
+      break;
+    }
     }
   }
 };
 
-static ni::tBool __stdcall _JsonParseFileToDataTable(ni::iFile* apFile, ni::iDataTable* apDT) {
+static ni::tBool __stdcall _JsonParseFileToDataTable(ni::iFile* apFile,
+                                                     ni::iDataTable* apDT)
+{
   niCheckIsOK(apFile, ni::eFalse);
   niCheckIsOK(apDT, ni::eFalse);
   _JsonParseToDataTableSink sinkParser(apDT);
-  return JsonParseFile(apFile,&sinkParser);
+  return JsonParseFile(apFile, &sinkParser);
 }
 
-static ni::tBool __stdcall _JsonParseStringToDataTable(const cString& aString, ni::iDataTable* apDT) {
+static ni::tBool __stdcall _JsonParseStringToDataTable(const cString& aString,
+                                                       ni::iDataTable* apDT)
+{
   niCheckIsOK(apDT, ni::eFalse);
   _JsonParseToDataTableSink sinkParser(apDT);
-  return JsonParseString(aString,&sinkParser);
+  return JsonParseString(aString, &sinkParser);
 }
 
 #ifdef HAS_CURL
-static int _curlTrace(CURL *handle, curl_infotype type,
-                      char *data, size_t size,
-                      void *userp)
+static int _curlTrace(CURL* handle, curl_infotype type, char* data, size_t size,
+                      void* userp)
 {
   niUnused(handle);
-  switch(type) {
-    case CURLINFO_TEXT:
-      niDebugFmt(("CURL: (%db) %s",size,cString(data,data+size)));
-    default: /* in case a new one is introduced to shock us */
-      return 0;
-    case CURLINFO_HEADER_OUT:
-      niDebugFmt(("CURL: => Send header: (%db) %s",size,cString(data,data+size)));
-      break;
-    case CURLINFO_DATA_OUT:
-      niDebugFmt(("CURL: => Send data: %db",size));
-      break;
-    case CURLINFO_SSL_DATA_OUT:
-      niDebugFmt(("CURL: => Send SSL data: %db",size));
-      break;
-    case CURLINFO_HEADER_IN:
-      niDebugFmt(("CURL: <= Recv header: (%db) %s",size,cString(data,data+size)));
-      break;
-    case CURLINFO_DATA_IN:
-      niDebugFmt(("CURL: <= Recv data: %db",size));
-      break;
-    case CURLINFO_SSL_DATA_IN:
-      niDebugFmt(("CURL: <= Recv SSL data: %db",size));
-      break;
+  switch (type) {
+  case CURLINFO_TEXT:
+    niDebugFmt(("CURL: (%db) %s", size, cString(data, data + size)));
+  default: /* in case a new one is introduced to shock us */ return 0;
+  case CURLINFO_HEADER_OUT:
+    niDebugFmt(
+      ("CURL: => Send header: (%db) %s", size, cString(data, data + size)));
+    break;
+  case CURLINFO_DATA_OUT: niDebugFmt(("CURL: => Send data: %db", size)); break;
+  case CURLINFO_SSL_DATA_OUT:
+    niDebugFmt(("CURL: => Send SSL data: %db", size));
+    break;
+  case CURLINFO_HEADER_IN:
+    niDebugFmt(
+      ("CURL: <= Recv header: (%db) %s", size, cString(data, data + size)));
+    break;
+  case CURLINFO_DATA_IN: niDebugFmt(("CURL: <= Recv data: %db", size)); break;
+  case CURLINFO_SSL_DATA_IN:
+    niDebugFmt(("CURL: <= Recv SSL data: %db", size));
+    break;
   }
   return 0;
 }
 
-struct CURLRunnable : public ImplRC<iRunnable>
-{
+struct CURLRunnable : public ImplRC<iRunnable> {
   CURL* _curl;
   CURL* _multiHandle;
   curl_httppost* _formPost;
@@ -228,12 +237,15 @@ struct CURLRunnable : public ImplRC<iRunnable>
   Ptr<iFile> _recvData;
   Ptr<iFile> _postData;
   Ptr<iMessageHandler> _msgHandler;
-  tU32    _state;
-  long    _responseCode;
-  sVec4i  _lastProgress;
-  tSize   _recvDataSize, _recvHeaderSize;
+  tU32 _state;
+  long _responseCode;
+  sVec4i _lastProgress;
+  tSize _recvDataSize, _recvHeaderSize;
 
-  CURLRunnable(CURL* aCURL, CURLM* aMultiHandle) : _curl(aCURL), _multiHandle(aMultiHandle) {
+  CURLRunnable(CURL* aCURL, CURLM* aMultiHandle)
+      : _curl(aCURL)
+      , _multiHandle(aMultiHandle)
+  {
     _formPost = NULL;
     _headerList = NULL;
     _lastProgress = sVec4i::Zero();
@@ -242,11 +254,13 @@ struct CURLRunnable : public ImplRC<iRunnable>
     _future = ni::GetConcurrent()->CreateFutureValue();
   }
 
-  ~CURLRunnable() {
+  ~CURLRunnable()
+  {
     Invalidate();
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     if (_multiHandle) {
       curl_multi_cleanup(_multiHandle);
       _multiHandle = NULL;
@@ -271,18 +285,21 @@ struct CURLRunnable : public ImplRC<iRunnable>
     }
   }
 
-  Var __stdcall _RunSingle() {
+  Var __stdcall _RunSingle()
+  {
     niCheck(_curl, eFalse);
 
     tBool bRet = eTrue;
     CURLcode res = curl_easy_perform(_curl);
 
     if (bRet && _recvDataSize <= 0 && _recvHeaderSize <= 0) {
-      _UpdateState(eCURLMessage_Failed, "CURL single perform error, no header received.");
+      _UpdateState(eCURLMessage_Failed,
+                   "CURL single perform error, no header received.");
       bRet = eFalse;
     }
     if (bRet && _recvDataSize <= 0) {
-      _UpdateState(eCURLMessage_Failed, "CURL single perform error, no data received.");
+      _UpdateState(eCURLMessage_Failed,
+                   "CURL single perform error, no data received.");
       bRet = eFalse;
     }
 
@@ -307,7 +324,8 @@ struct CURLRunnable : public ImplRC<iRunnable>
     return bRet;
   }
 
-  Var __stdcall _RunMulti() {
+  Var __stdcall _RunMulti()
+  {
     niCheck(_curl, eFalse);
 
     tBool bRet = eTrue;
@@ -316,7 +334,7 @@ struct CURLRunnable : public ImplRC<iRunnable>
 
     do {
       struct timeval timeout;
-      int rc; /* select() return code */
+      int rc;       /* select() return code */
       CURLMcode mc; /* curl_multi_fdset() return code */
 
       fd_set fdread;
@@ -335,9 +353,9 @@ struct CURLRunnable : public ImplRC<iRunnable>
       timeout.tv_usec = 0;
 
       curl_multi_timeout(_multiHandle, &curl_timeo);
-      if(curl_timeo >= 0) {
+      if (curl_timeo >= 0) {
         timeout.tv_sec = curl_timeo / 1000;
-        if(timeout.tv_sec > 1)
+        if (timeout.tv_sec > 1)
           timeout.tv_sec = 1;
         else
           timeout.tv_usec = (curl_timeo % 1000) * 1000;
@@ -345,8 +363,9 @@ struct CURLRunnable : public ImplRC<iRunnable>
 
       /* get file descriptors from the transfers */
       mc = curl_multi_fdset(_multiHandle, &fdread, &fdwrite, &fdexcep, &maxfd);
-      if(mc != CURLM_OK) {
-        _UpdateState(eCURLMessage_Failed, niFmt("CURL multi perform error: %d.", (tI32)mc));
+      if (mc != CURLM_OK) {
+        _UpdateState(eCURLMessage_Failed,
+                     niFmt("CURL multi perform error: %d.", (tI32)mc));
         bRet = eFalse;
         break;
       }
@@ -356,43 +375,45 @@ struct CURLRunnable : public ImplRC<iRunnable>
          no fds ready yet so we call select(0, ...) --or Sleep() on Windows--
          to sleep 100ms, which is the minimum suggested value in the
          curl_multi_fdset() doc. */
-      if(maxfd == -1) {
-#ifdef _WIN32
+      if (maxfd == -1) {
+  #ifdef _WIN32
         Sleep(100);
         rc = 0;
-#else
+  #else
         /* Portable sleep for platforms other than Windows. */
         struct timeval wait = { 0, 100 * 1000 }; /* 100ms */
         rc = select(0, NULL, NULL, NULL, &wait);
-#endif
+  #endif
       }
       else {
         /* Note that on some platforms 'timeout' may be modified by select().
            If you need access to the original value save a copy beforehand. */
-        rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+        rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
       }
 
-      switch(rc) {
-        case -1:
-          /* select error */
-          break;
-        case 0:
-        default:
-          /* timeout or readable/writable sockets */
-          // niDebugFmt(("... CURL multi perform."));
-          curl_multi_perform(_multiHandle, &still_running);
-          // niDebugFmt(("... CURL multi perform, running %d.", still_running));
-          break;
+      switch (rc) {
+      case -1:
+        /* select error */
+        break;
+      case 0:
+      default:
+        /* timeout or readable/writable sockets */
+        // niDebugFmt(("... CURL multi perform."));
+        curl_multi_perform(_multiHandle, &still_running);
+        // niDebugFmt(("... CURL multi perform, running %d.", still_running));
+        break;
       }
-    } while(still_running);
+    } while (still_running);
 
     if (bRet && _recvHeaderSize <= 0) {
-      _UpdateState(eCURLMessage_Failed, "CURL multi perform error, no header received.");
+      _UpdateState(eCURLMessage_Failed,
+                   "CURL multi perform error, no header received.");
       bRet = eFalse;
     }
 
     if (bRet && _recvDataSize <= 0) {
-      _UpdateState(eCURLMessage_Failed, "CURL multi perform error, no data received.");
+      _UpdateState(eCURLMessage_Failed,
+                   "CURL multi perform error, no data received.");
       bRet = eFalse;
     }
 
@@ -406,7 +427,8 @@ struct CURLRunnable : public ImplRC<iRunnable>
     return bRet;
   }
 
-  virtual Var __stdcall Run() {
+  virtual Var __stdcall Run()
+  {
     _recvDataSize = _recvHeaderSize = 0;
 
     if (_multiHandle) {
@@ -417,80 +439,94 @@ struct CURLRunnable : public ImplRC<iRunnable>
     }
   }
 
-  void _UpdateState(tU32 aNewState, const Var& avarA = niVarNull) {
+  void _UpdateState(tU32 aNewState, const Var& avarA = niVarNull)
+  {
     _UpdateResponseCode();
     if (_state == 0) {
       _state = eCURLMessage_Started;
       // niDebugFmt(("... _UpdateState Started: %d, %s", aNewState, avarA));
       if (_msgHandler.IsOK()) {
-        ni::GetConcurrent()->SendMessage(_msgHandler, _state, niVarNull, _future.ptr());
+        ni::GetConcurrent()->SendMessage(_msgHandler, _state, niVarNull,
+                                         _future.ptr());
       }
     }
     else if (_state != aNewState) {
       _state = aNewState;
       // niDebugFmt(("... _UpdateState: %d, %p, %s", aNewState, (tIntPtr)_msgHandler.ptr(), avarA));
       if (_msgHandler.IsOK()) {
-        ni::GetConcurrent()->SendMessage(_msgHandler, _state, avarA, _future.ptr());
+        ni::GetConcurrent()->SendMessage(_msgHandler, _state, avarA,
+                                         _future.ptr());
       }
     }
   }
 
-  void _UpdateResponseCode() {
+  void _UpdateResponseCode()
+  {
     long newResponseCode = 0;
     curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &newResponseCode);
     if (_responseCode != newResponseCode) {
       _responseCode = newResponseCode;
       if (_msgHandler.IsOK()) {
-        ni::GetConcurrent()->SendMessage(_msgHandler, eCURLMessage_ResponseCode, _responseCode, _future.ptr());
+        ni::GetConcurrent()->SendMessage(_msgHandler, eCURLMessage_ResponseCode,
+                                         _responseCode, _future.ptr());
       }
     }
   }
 
-  size_t __cdecl _ReadPostData(void* buffer, size_t size, size_t nmemb) {
+  size_t __cdecl _ReadPostData(void* buffer, size_t size, size_t nmemb)
+  {
     _UpdateResponseCode();
     _UpdateState(eCURLMessage_Sending);
     if (_postData.IsOK()) {
-      return _postData->ReadRaw(buffer,size*nmemb);
+      return _postData->ReadRaw(buffer, size * nmemb);
     }
     else {
       return 0;
     }
   }
-  static size_t __cdecl _ReadPostDataCallback(void* buffer, size_t size, size_t nmemb, void* userp) {
+  static size_t __cdecl _ReadPostDataCallback(void* buffer, size_t size,
+                                              size_t nmemb, void* userp)
+  {
     CURLRunnable* _this = (CURLRunnable*)userp;
-    return _this->_ReadPostData(buffer,size,nmemb);
+    return _this->_ReadPostData(buffer, size, nmemb);
   }
 
-  size_t __cdecl _WriteRecvData(void* buffer, size_t size, size_t nmemb) {
+  size_t __cdecl _WriteRecvData(void* buffer, size_t size, size_t nmemb)
+  {
     _UpdateResponseCode();
     _UpdateState(eCURLMessage_ReceivingData, _recvData.ptr());
-    _recvDataSize += size*nmemb;
+    _recvDataSize += size * nmemb;
     if (_recvData.IsOK()) {
-      return _recvData->WriteRaw(buffer, size*nmemb);
+      return _recvData->WriteRaw(buffer, size * nmemb);
     }
     else {
       return 0;
     }
   }
-  static size_t __cdecl _WriteRecvDataCallback(void* buffer, size_t size, size_t nmemb, void* userp) {
+  static size_t __cdecl _WriteRecvDataCallback(void* buffer, size_t size,
+                                               size_t nmemb, void* userp)
+  {
     CURLRunnable* _this = (CURLRunnable*)userp;
-    return _this->_WriteRecvData(buffer,size,nmemb);
+    return _this->_WriteRecvData(buffer, size, nmemb);
   }
 
-  size_t __cdecl _WriteRecvHeader(void* buffer, size_t size, size_t nmemb) {
+  size_t __cdecl _WriteRecvHeader(void* buffer, size_t size, size_t nmemb)
+  {
     _UpdateResponseCode();
-    _UpdateState(eCURLMessage_ReceivingHeader,_recvHeader);
-    _recvHeaderSize += size*nmemb;
+    _UpdateState(eCURLMessage_ReceivingHeader, _recvHeader);
+    _recvHeaderSize += size * nmemb;
     if (_recvHeader.IsOK()) {
-      return _recvHeader->WriteRaw(buffer,size*nmemb);
+      return _recvHeader->WriteRaw(buffer, size * nmemb);
     }
     else {
       return 0;
     }
   }
-  static size_t __cdecl _WriteRecvHeaderCallback(void* buffer, size_t size, size_t nmemb, void* userp) {
+  static size_t __cdecl _WriteRecvHeaderCallback(void* buffer, size_t size,
+                                                 size_t nmemb, void* userp)
+  {
     CURLRunnable* _this = (CURLRunnable*)userp;
-    return _this->_WriteRecvHeader(buffer,size,nmemb);
+    return _this->_WriteRecvHeader(buffer, size, nmemb);
   }
 
   int _Progress(double dltotal, double dlnow, double ultotal, double ulnow)
@@ -500,15 +536,14 @@ struct CURLRunnable : public ImplRC<iRunnable>
       _UpdateState(eCURLMessage_Started);
     }
 
-    const sVec4i progress = Vec4<tI32>((tI32)dlnow,(tI32)dltotal,
-                                       (tI32)ulnow,(tI32)ultotal);
+    const sVec4i progress =
+      Vec4<tI32>((tI32)dlnow, (tI32)dltotal, (tI32)ulnow, (tI32)ultotal);
     // CURL triggers the progress callback before any data is retrieved, with
     // zero as value for all parameters,
     if (progress != _lastProgress) {
       if (_msgHandler.IsOK()) {
-        ni::GetConcurrent()->SendMessage(
-            _msgHandler,eCURLMessage_Progress,
-            progress,_future.ptr());
+        ni::GetConcurrent()->SendMessage(_msgHandler, eCURLMessage_Progress,
+                                         progress, _future.ptr());
       }
       _lastProgress = progress;
     }
@@ -520,40 +555,75 @@ struct CURLRunnable : public ImplRC<iRunnable>
       return 0;
     }
   };
-  static size_t __cdecl _ProgressCallback(void* clientp,
-                                          double dltotal, double dlnow,
-                                          double ultotal, double ulnow)
+  static size_t __cdecl _ProgressCallback(void* clientp, double dltotal,
+                                          double dlnow, double ultotal,
+                                          double ulnow)
   {
     CURLRunnable* _this = (CURLRunnable*)clientp;
-    return _this->_Progress(dltotal,dlnow,ultotal,ulnow);
+    return _this->_Progress(dltotal, dlnow, ultotal, ulnow);
   }
 };
 
-
-struct FileWritePart : public ImplRC<iFileBase,eImplFlags_Default>
-{
-  FileWritePart(const char* aURL, const char* aExt, iMessageHandler* apHandler) {
+struct FileWritePart : public ImplRC<iFileBase, eImplFlags_Default> {
+  FileWritePart(const char* aURL, const char* aExt, iMessageHandler* apHandler)
+  {
     _numParts = 0;
     _msgHandler = apHandler;
-    ResetPart(niFmt("$CURL-GET-PART$%s$%s",aURL,aExt));
+    ResetPart(niFmt("$CURL-GET-PART$%s$%s", aURL, aExt));
   }
 
-  void ResetPart(const char* aFileName) {
-    _fpPart = ni::CreateFileDynamicMemory(0,aFileName);
+  void ResetPart(const char* aFileName)
+  {
+    _fpPart = ni::CreateFileDynamicMemory(0, aFileName);
   }
 
-  tFileFlags __stdcall GetFileFlags() const { return eFileFlags_Write; }
-  tBool  __stdcall Seek(tI64 offset) { return eTrue; }
-  tBool  __stdcall SeekSet(tI64 offset) { return eTrue; }
-  tBool __stdcall SeekEnd(tI64 offset) { return eTrue; }
-  tSize  __stdcall ReadRaw(void* pOut, tSize nSize) { return 0; }
-  const achar* __stdcall GetSourcePath() const { return NULL; }
-  tBool __stdcall Flush()  { return eTrue; }
-  tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const { niUnused(aFileTime);niUnused(apTime); return eFalse; }
-  tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime) { niUnused(aFileTime);niUnused(apTime); return eFalse; }
-  tBool __stdcall Resize(tI64 newSize) { return eFalse; }
+  tFileFlags __stdcall GetFileFlags() const
+  {
+    return eFileFlags_Write;
+  }
+  tBool __stdcall Seek(tI64 offset)
+  {
+    return eTrue;
+  }
+  tBool __stdcall SeekSet(tI64 offset)
+  {
+    return eTrue;
+  }
+  tBool __stdcall SeekEnd(tI64 offset)
+  {
+    return eTrue;
+  }
+  tSize __stdcall ReadRaw(void* pOut, tSize nSize)
+  {
+    return 0;
+  }
+  const achar* __stdcall GetSourcePath() const
+  {
+    return NULL;
+  }
+  tBool __stdcall Flush()
+  {
+    return eTrue;
+  }
+  tBool __stdcall GetTime(eFileTime aFileTime, iTime* apTime) const
+  {
+    niUnused(aFileTime);
+    niUnused(apTime);
+    return eFalse;
+  }
+  tBool __stdcall SetTime(eFileTime aFileTime, const iTime* apTime)
+  {
+    niUnused(aFileTime);
+    niUnused(apTime);
+    return eFalse;
+  }
+  tBool __stdcall Resize(tI64 newSize)
+  {
+    return eFalse;
+  }
 
-  tSize  __stdcall WriteRaw(const void* apIn, tSize anSize) {
+  tSize __stdcall WriteRaw(const void* apIn, tSize anSize)
+  {
     const char* p = (const char*)apIn;
     TRACE_GET_MULTIPART(("... URLGetMultiPart: RECEIVED DATA: %db", anSize, p));
 
@@ -562,9 +632,11 @@ struct FileWritePart : public ImplRC<iFileBase,eImplFlags_Default>
 
     // look for the delimiter
     if (!_partDelimiter.empty() && anSize > _partDelimiter.size()) {
-      niLoop(i,anSize-_partDelimiter.size()) {
-        if (*p == '-' && *(p+1) == '-') {
-          if (ni::MemCmp((tPtr)p,(tPtr)_partDelimiter.Chars(),_partDelimiter.size()) == 0) {
+      niLoop (i, anSize - _partDelimiter.size()) {
+        if (*p == '-' && *(p + 1) == '-') {
+          if (ni::MemCmp((tPtr)p, (tPtr)_partDelimiter.Chars(),
+                         _partDelimiter.size()) == 0)
+          {
             foundDelimiter = i;
             delimiterSize = _partDelimiter.size();
             break;
@@ -573,9 +645,11 @@ struct FileWritePart : public ImplRC<iFileBase,eImplFlags_Default>
           // delimiter starts with `--`. But when the boundary starts with
           // `--` some encoder do not output `----` but only two `-` thus we
           // need to handle that case.
-          if (ni::MemCmp((tPtr)p,(tPtr)_partDelimiter.Chars()+2,_partDelimiter.size()-2) == 0) {
+          if (ni::MemCmp((tPtr)p, (tPtr)_partDelimiter.Chars() + 2,
+                         _partDelimiter.size() - 2) == 0)
+          {
             foundDelimiter = i;
-            delimiterSize = _partDelimiter.size()-2;
+            delimiterSize = _partDelimiter.size() - 2;
             break;
           }
         }
@@ -584,48 +658,59 @@ struct FileWritePart : public ImplRC<iFileBase,eImplFlags_Default>
     }
 
     if (foundDelimiter >= 0) {
-      TRACE_GET_MULTIPART(("... URLGetMultiPart: FOUND DELIMITER[%d]: %d.", _numParts, foundDelimiter));
+      TRACE_GET_MULTIPART(("... URLGetMultiPart: FOUND DELIMITER[%d]: %d.",
+                           _numParts, foundDelimiter));
       {
-        TRACE_GET_MULTIPART(("... URLGetMultiPart: CURRENT PART ADDED %d BYTES.", foundDelimiter));
-        _fpPart->WriteRaw(apIn,foundDelimiter);
+        TRACE_GET_MULTIPART((
+          "... URLGetMultiPart: CURRENT PART ADDED %d BYTES.", foundDelimiter));
+        _fpPart->WriteRaw(apIn, foundDelimiter);
       }
       {
         ReadPartFromFile();
       }
-      const tU32 startSize = anSize-(p-(char*)apIn);
-      TRACE_GET_MULTIPART(("... URLGetMultiPart: NEW PART %d BYTES.", foundDelimiter));
-      _fpPart->WriteRaw((tPtr)p+delimiterSize,startSize-delimiterSize);
+      const tU32 startSize = anSize - (p - (char*)apIn);
+      TRACE_GET_MULTIPART(
+        ("... URLGetMultiPart: NEW PART %d BYTES.", foundDelimiter));
+      _fpPart->WriteRaw((tPtr)p + delimiterSize, startSize - delimiterSize);
     }
     else {
-      TRACE_GET_MULTIPART(("... URLGetMultiPart: CURRENT PART ADDED %d BYTES.", anSize));
-      _fpPart->WriteRaw(apIn,anSize);
+      TRACE_GET_MULTIPART(
+        ("... URLGetMultiPart: CURRENT PART ADDED %d BYTES.", anSize));
+      _fpPart->WriteRaw(apIn, anSize);
     }
 
     _size += anSize;
     return anSize;
   }
-  tI64 __stdcall Tell() {
+  tI64 __stdcall Tell()
+  {
     return _size;
   }
-  inline tI64 __stdcall GetSize() const {
+  inline tI64 __stdcall GetSize() const
+  {
     return _size;
   }
 
-  void ReadPartFromFile() {
+  void ReadPartFromFile()
+  {
     if (_fpPart->GetSize() <= 0) {
       return;
     }
-    ni::GetConcurrent()->SendMessage(
-        _msgHandler,eCURLMessage_ReceivedPart,
-        _fpPart.ptr(),_future.ptr());
+    ni::GetConcurrent()->SendMessage(_msgHandler, eCURLMessage_ReceivedPart,
+                                     _fpPart.ptr(), _future.ptr());
     ++_numParts;
     ResetPart(_fpPart->GetSourcePath());
   }
 
-  tBool ReadPartDelimiter(const cString& aHTTPHeader) {
+  tBool ReadPartDelimiter(const cString& aHTTPHeader)
+  {
     ReadPartFromFile();
     _partDelimiter = "--";
-    _partDelimiter << aHTTPHeader.AfterI("Content-Type:").Before("\r\n").AfterI("boundary").After("=").Trim();
+    _partDelimiter << aHTTPHeader.AfterI("Content-Type:")
+                        .Before("\r\n")
+                        .AfterI("boundary")
+                        .After("=")
+                        .Trim();
     if (_partDelimiter.empty()) {
       return eFalse;
     }
@@ -646,9 +731,9 @@ typedef astl::hash_map<cString, Ptr<sFetchRequest>> turlToRequestCache;
 static turlToRequestCache kmapurlToRequestCache;
 #endif
 
-class cCURL : public ImplRC<iCURL>
-{
+class cCURL : public ImplRC<iCURL> {
   niBeginClass(cCURL);
+
  public:
   tU32 mnRequestTimeoutInSecs = 10;
   tU32 mnConnectionTimeoutInSecs = 60;
@@ -661,7 +746,8 @@ class cCURL : public ImplRC<iCURL>
   tBool _hasFetchOverride;
 #endif
 
-  cCURL() {
+  cCURL()
+  {
 #ifdef niJSCC
     _hasFetchOverride = static_cast<tBool>(EM_ASM_INT({
       if (typeof Module["niCURL"] != "undefined") {
@@ -676,61 +762,77 @@ class cCURL : public ImplRC<iCURL>
 #endif
   }
 
-  virtual void __stdcall SetConnectionTimeoutInSecs(tU32 anInSecs) {
+  virtual void __stdcall SetConnectionTimeoutInSecs(tU32 anInSecs)
+  {
     mnConnectionTimeoutInSecs = anInSecs;
   }
-  virtual tU32 __stdcall GetConnectionTimeoutInSecs() const {
+  virtual tU32 __stdcall GetConnectionTimeoutInSecs() const
+  {
     return mnConnectionTimeoutInSecs;
   }
 
-  virtual void __stdcall SetRequestTimeoutInSecs(tU32 anInSecs) {
+  virtual void __stdcall SetRequestTimeoutInSecs(tU32 anInSecs)
+  {
     mnRequestTimeoutInSecs = anInSecs;
   }
-  virtual tU32 __stdcall GetRequestTimeoutInSecs() const {
+  virtual tU32 __stdcall GetRequestTimeoutInSecs() const
+  {
     return mnRequestTimeoutInSecs;
   }
 
-  virtual void __stdcall SetUserAgent(const achar* aaszUserAgent) niImpl {
+  virtual void __stdcall SetUserAgent(const achar* aaszUserAgent) niImpl
+  {
     mhspUserAgent = _H(aaszUserAgent);
   }
-  virtual const achar* __stdcall GetUserAgent() const {
+  virtual const achar* __stdcall GetUserAgent() const
+  {
     return niHStr(mhspUserAgent);
   }
 
-  virtual void __stdcall SetUserName(const achar* aaszUserName) {
+  virtual void __stdcall SetUserName(const achar* aaszUserName)
+  {
     mhspUserName = _H(aaszUserName);
   }
-  virtual const achar* __stdcall GetUserName() const {
+  virtual const achar* __stdcall GetUserName() const
+  {
     return niHStr(mhspUserName);
   }
 
-  virtual void __stdcall SetUserPass(const achar* aaszUserPass) {
+  virtual void __stdcall SetUserPass(const achar* aaszUserPass)
+  {
     mhspUserPass = _H(aaszUserPass);
   }
-  virtual const achar* __stdcall GetUserPass() const {
+  virtual const achar* __stdcall GetUserPass() const
+  {
     return niHStr(mhspUserPass);
   }
 
-  virtual void __stdcall SetHttpAuth(eCURLHttpAuth aHttpAuth) {
+  virtual void __stdcall SetHttpAuth(eCURLHttpAuth aHttpAuth)
+  {
     mHttpAuth = aHttpAuth;
   }
-  virtual const eCURLHttpAuth __stdcall GetHttpAuth() const {
+  virtual const eCURLHttpAuth __stdcall GetHttpAuth() const
+  {
     return mHttpAuth;
   }
 
-  virtual void __stdcall SetBufferSize(tSize anSizeInBytes) {
+  virtual void __stdcall SetBufferSize(tSize anSizeInBytes)
+  {
     mnBufferSize = anSizeInBytes;
   }
-  virtual tSize __stdcall GetBufferSize() const {
+  virtual tSize __stdcall GetBufferSize() const
+  {
     return mnBufferSize;
   }
 
 #ifdef HAS_CURL
-  virtual cString __stdcall GetVersion() const {
+  virtual cString __stdcall GetVersion() const
+  {
     return _ASTR(curl_version());
   }
 
-  virtual cString __stdcall GetProtocols() const {
+  virtual cString __stdcall GetProtocols() const
+  {
     cString o;
     curl_version_info_data* curlInfo = curl_version_info(CURLVERSION_NOW);
     for (int i = 0; curlInfo->protocols[i]; ++i) {
@@ -742,13 +844,11 @@ class cCURL : public ImplRC<iCURL>
     return o;
   }
 
-  void _CURLSetBase(
-      CURLRunnable* runnable, CURL* curl,
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader)
+  void _CURLSetBase(CURLRunnable* runnable, CURL* curl,
+                    iMessageHandler* apMessageHandler, const achar* aURL,
+                    iFile* apRecvData, iFile* apRecvHeader)
   {
     runnable->_msgHandler = apMessageHandler;
-
 
     if (SHOULD_TRACE_CURL()) {
       curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
@@ -758,8 +858,12 @@ class cCURL : public ImplRC<iCURL>
 
     curl_easy_setopt(curl, CURLOPT_USERAGENT, niHStr(mhspUserAgent));
 
-    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, mnConnectionTimeoutInSecs); // timeout for the connection in secs
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, mnRequestTimeoutInSecs); // timeout for the whole query in secs
+    curl_easy_setopt(
+      curl, CURLOPT_CONNECTTIMEOUT,
+      mnConnectionTimeoutInSecs); // timeout for the connection in secs
+    curl_easy_setopt(
+      curl, CURLOPT_TIMEOUT,
+      mnRequestTimeoutInSecs); // timeout for the whole query in secs
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
 
     if (mnBufferSize > 0) {
@@ -772,14 +876,17 @@ class cCURL : public ImplRC<iCURL>
     curl_easy_setopt(curl, CURLOPT_URL, aURL);
 
     runnable->_recvData = apRecvData;
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CURLRunnable::_WriteRecvDataCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+                     CURLRunnable::_WriteRecvDataCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, runnable);
 
     runnable->_recvHeader = apRecvHeader;
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, CURLRunnable::_WriteRecvHeaderCallback);
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION,
+                     CURLRunnable::_WriteRecvHeaderCallback);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, runnable);
 
-    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION,CURLRunnable::_ProgressCallback);
+    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION,
+                     CURLRunnable::_ProgressCallback);
     curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, runnable);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 
@@ -791,31 +898,32 @@ class cCURL : public ImplRC<iCURL>
     }
   }
 
-  void _CURLSetPostData(
-      CURLRunnable* runnable, CURL* curl,
-      iFile* apPostData)
+  void _CURLSetPostData(CURLRunnable* runnable, CURL* curl, iFile* apPostData)
   {
-    curl_easy_setopt(curl,CURLOPT_POSTFIELDSIZE,apPostData?apPostData->GetSize():0);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE,
+                     apPostData ? apPostData->GetSize() : 0);
     runnable->_postData = apPostData;
     if (runnable->_postData.IsOK()) {
-      curl_easy_setopt(curl,CURLOPT_READFUNCTION, CURLRunnable::_ReadPostDataCallback);
-      curl_easy_setopt(curl,CURLOPT_READDATA, runnable);
+      curl_easy_setopt(curl, CURLOPT_READFUNCTION,
+                       CURLRunnable::_ReadPostDataCallback);
+      curl_easy_setopt(curl, CURLOPT_READDATA, runnable);
     }
   }
 
-  void _CURLSetHeaders(
-      CURLRunnable* runnable, CURL* curl,
-      const tStringCVec* apHeaders, const achar* aContentType)
+  void _CURLSetHeaders(CURLRunnable* runnable, CURL* curl,
+                       const tStringCVec* apHeaders, const achar* aContentType)
   {
     niUnused(runnable);
     if (niStringIsOK(aContentType)) {
       cString contentFull = "Content-Type: ";
       contentFull += aContentType;
-      runnable->_headerList = curl_slist_append(runnable->_headerList, contentFull.Chars());
+      runnable->_headerList =
+        curl_slist_append(runnable->_headerList, contentFull.Chars());
     }
     if (apHeaders != NULL && !apHeaders->empty()) {
-      niLoop(i,apHeaders->size()) {
-        runnable->_headerList = curl_slist_append(runnable->_headerList, apHeaders->at(i).Chars());
+      niLoop (i, apHeaders->size()) {
+        runnable->_headerList =
+          curl_slist_append(runnable->_headerList, apHeaders->at(i).Chars());
       }
     }
     if (runnable->_headerList != NULL) {
@@ -823,31 +931,11 @@ class cCURL : public ImplRC<iCURL>
     }
   }
 
-  virtual Ptr<iRunnable> __stdcall URLGet(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData = NULL, iFile* apRecvHeader = NULL, const tStringCVec* apHeaders = NULL)
-  {
-    niCheckIsOK(apRecvData,NULL);
-    niCheckIsOK(apRecvHeader,NULL);
-
-    CURL* curl = curl_easy_init();
-    if (!curl) {
-      niError("Can't create CURL handle.");
-      return NULL;
-    }
-
-    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl,NULL);
-    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData, apRecvHeader);
-    _CURLSetHeaders(runnable, curl, apHeaders, NULL);
-
-    return runnable.ptr();
-  }
-
-  virtual Ptr<iRunnable> __stdcall URLPostFile(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      iFile* apPostData, const tStringCVec* apHeaders,
-      const achar* aContentType)
+  virtual Ptr<iRunnable> __stdcall URLGet(iMessageHandler* apMessageHandler,
+                                          const achar* aURL,
+                                          iFile* apRecvData = NULL,
+                                          iFile* apRecvHeader = NULL,
+                                          const tStringCVec* apHeaders = NULL)
   {
     niCheckIsOK(apRecvData, NULL);
     niCheckIsOK(apRecvHeader, NULL);
@@ -858,8 +946,31 @@ class cCURL : public ImplRC<iCURL>
       return NULL;
     }
 
-    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl,NULL);
-    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData, apRecvHeader);
+    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl, NULL);
+    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData,
+                 apRecvHeader);
+    _CURLSetHeaders(runnable, curl, apHeaders, NULL);
+
+    return runnable.ptr();
+  }
+
+  virtual Ptr<iRunnable> __stdcall URLPostFile(
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, iFile* apPostData, const tStringCVec* apHeaders,
+    const achar* aContentType)
+  {
+    niCheckIsOK(apRecvData, NULL);
+    niCheckIsOK(apRecvHeader, NULL);
+
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+      niError("Can't create CURL handle.");
+      return NULL;
+    }
+
+    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl, NULL);
+    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData,
+                 apRecvHeader);
     _CURLSetHeaders(runnable, curl, apHeaders, aContentType);
     _CURLSetPostData(runnable, curl, apPostData);
 
@@ -869,39 +980,39 @@ class cCURL : public ImplRC<iCURL>
   }
 
   virtual Ptr<iRunnable> __stdcall URLPostFields(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      const achar* aPostFields, const tStringCVec* apHeaders, const achar* aContentType)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, const achar* aPostFields, const tStringCVec* apHeaders,
+    const achar* aContentType)
   {
     Ptr<iFile> ptrPostData;
     if (niStringIsOK(aPostFields)) {
-      ptrPostData = ni::CreateFileDynamicMemory(0,NULL);
-      niCheckIsOK(ptrPostData,NULL);
+      ptrPostData = ni::CreateFileDynamicMemory(0, NULL);
+      niCheckIsOK(ptrPostData, NULL);
       ptrPostData->WriteString(aPostFields);
       ptrPostData->SeekSet(0);
     }
-    return URLPostFile(apMessageHandler, aURL, apRecvData, apRecvHeader, ptrPostData, apHeaders, aContentType);
+    return URLPostFile(apMessageHandler, aURL, apRecvData, apRecvHeader,
+                       ptrPostData, apHeaders, aContentType);
   }
 
   //! {NoAutomation}
   virtual Ptr<iRunnable> __stdcall URLPostRaw(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tPtr aPostData, tSize anPostDataSize,
-      const tStringCVec* apHeaders, const achar* aContentType)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tPtr aPostData, tSize anPostDataSize,
+    const tStringCVec* apHeaders, const achar* aContentType)
   {
-    Ptr<iFile> ptrPostData = ni::CreateFileDynamicMemory(0,NULL);
-    niCheckIsOK(ptrPostData,NULL);
+    Ptr<iFile> ptrPostData = ni::CreateFileDynamicMemory(0, NULL);
+    niCheckIsOK(ptrPostData, NULL);
     ptrPostData->WriteRaw(aPostData, anPostDataSize);
     ptrPostData->SeekSet(0);
-    return URLPostFile(apMessageHandler, aURL, apRecvData, apRecvHeader, ptrPostData, apHeaders, aContentType);
+    return URLPostFile(apMessageHandler, aURL, apRecvData, apRecvHeader,
+                       ptrPostData, apHeaders, aContentType);
   }
 
   //! Post with Content-Type: multipart/form-data.
   virtual Ptr<iRunnable> __stdcall URLPostMultiPart(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tStringCMap* apPostFields)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tStringCMap* apPostFields)
   {
     niCheckIsOK(apRecvData, NULL);
     niCheckIsOK(apRecvHeader, NULL);
@@ -923,30 +1034,27 @@ class cCURL : public ImplRC<iCURL>
       return NULL;
     }
 
-    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl,multi_handle);
-    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData, apRecvHeader);
+    Ptr<CURLRunnable> runnable = niNew CURLRunnable(curl, multi_handle);
+    _CURLSetBase(runnable, curl, apMessageHandler, aURL, apRecvData,
+                 apRecvHeader);
 
-    struct curl_httppost* lastptr=NULL;
-    for (tStringCMap::const_iterator it = apPostFields->begin(); it != apPostFields->end(); ++it) {
+    struct curl_httppost* lastptr = NULL;
+    for (tStringCMap::const_iterator it = apPostFields->begin();
+         it != apPostFields->end(); ++it)
+    {
       const achar* name = it->first.Chars();
       const achar* val = it->second.Chars();
       if (*val == '@') {
         ++val; // skip the @
         /* Fill in the file upload field. This makes libcurl load data from
            the given file name when curl_easy_perform() is called. */
-        curl_formadd(&runnable->_formPost,
-                     &lastptr,
-                     CURLFORM_COPYNAME, name,
-                     CURLFORM_FILE, val,
-                     CURLFORM_END);
+        curl_formadd(&runnable->_formPost, &lastptr, CURLFORM_COPYNAME, name,
+                     CURLFORM_FILE, val, CURLFORM_END);
       }
       else {
         /* Fill in the submit field too, even if this is rarely needed */
-        curl_formadd(&runnable->_formPost,
-                     &lastptr,
-                     CURLFORM_COPYNAME, name,
-                     CURLFORM_COPYCONTENTS, val,
-                     CURLFORM_END);
+        curl_formadd(&runnable->_formPost, &lastptr, CURLFORM_COPYNAME, name,
+                     CURLFORM_COPYCONTENTS, val, CURLFORM_END);
       }
     }
 
@@ -963,121 +1071,123 @@ class cCURL : public ImplRC<iCURL>
     return runnable.ptr();
   }
 
-  Ptr<iRunnable> __stdcall URLGetMultiPart(
-      iMessageHandler* apMessageHandler, const achar* aURL, const achar* aPartExt)
+  Ptr<iRunnable> __stdcall URLGetMultiPart(iMessageHandler* apMessageHandler,
+                                           const achar* aURL,
+                                           const achar* aPartExt)
   {
-    niCheckIsOK(apMessageHandler,NULL);
-    niCheck(niStringIsOK(aURL),NULL);
+    niCheckIsOK(apMessageHandler, NULL);
+    niCheck(niStringIsOK(aURL), NULL);
 
-    Ptr<FileWritePart> writePart = niNew FileWritePart(aURL,aPartExt,apMessageHandler);
+    Ptr<FileWritePart> writePart =
+      niNew FileWritePart(aURL, aPartExt, apMessageHandler);
     Ptr<iFile> recvData = ni::CreateFile(writePart);
-    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
+    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
     Ptr<iRunnable> runnable = this->URLGet(
-        ni::MessageHandler([=] (tU32 anMsg, const Var& A, const Var& B) {
-            writePart->_future = B;
-            switch (anMsg) {
-              case eCURLMessage_Started: {
-                // niDebugFmt(("... Started"));
-                break;
-              }
-              case eCURLMessage_ReceivingHeader: {
-                recvHeader->Reset();
-                // niDebugFmt(("... Receiving Header"));
-                break;
-              }
-              case eCURLMessage_ReceivingData: {
-                recvHeader->SeekSet(0);
-                const cString header = recvHeader->ReadString();
-                writePart->ReadPartDelimiter(header);
-                // niDebugFmt(("... Received Header:---HTTP HEADER---\n%s------\nDelimiter: '%s'", header, writePart->_partDelimiter));
-                // niDebugFmt(("... Receiving Data"));
-                break;
-              }
-              case eCURLMessage_Progress: {
-                // niDebugFmt(("... Progress %s", A));
-                break;
-              }
-              case eCURLMessage_Completed: {
-                // niDebugFmt(("... Completed"));
-                break;
-              }
-              case eCURLMessage_ResponseCode: {
-                // niDebugFmt(("... ResponseCode: %d", A));
-                break;
-              }
-              case eCURLMessage_Failed: {
-                // niDebugFmt(("... Failed: %s", A));
-                break;
-              }
-              default: {
-                niWarning(niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
-                break;
-              }
-            }
-            ni::GetConcurrent()->SendMessage(
-                writePart->_msgHandler,anMsg,A,B);
-          },
-          // eInvalidHandle as threadId indicates that we want the message
-          // handle to always be called from the caller thread. This implies
-          // that the message handler is thread safe.
-          eInvalidHandle),
-        aURL,
-        recvData,
-        recvHeader);
-    return runnable;
-  }
-
-  cString __stdcall URLGetString(const achar* aURL) {
-    Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
-    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
-    cString responseString;
-    tI32 responseCode = -1;
-    Ptr<iRunnable> runnable = this->URLGet(
-      ni::MessageHandler([&] (tU32 anMsg, const Var& A, const Var& B) {
-        switch (anMsg) {
+      ni::MessageHandler(
+        [=](tU32 anMsg, const Var& A, const Var& B) {
+          writePart->_future = B;
+          switch (anMsg) {
           case eCURLMessage_Started: {
-            TRACE_GET_STRING(("... URLGetString[%s]: Started", aURL));
+            // niDebugFmt(("... Started"));
             break;
           }
           case eCURLMessage_ReceivingHeader: {
-            TRACE_GET_STRING(("... URLGetString[%s]: Receiving Header", aURL));
+            recvHeader->Reset();
+            // niDebugFmt(("... Receiving Header"));
             break;
           }
           case eCURLMessage_ReceivingData: {
-            TRACE_GET_STRING(("... URLGetString[%s]: Receiving Data", aURL));
+            recvHeader->SeekSet(0);
+            const cString header = recvHeader->ReadString();
+            writePart->ReadPartDelimiter(header);
+            // niDebugFmt(("... Received Header:---HTTP HEADER---\n%s------\nDelimiter: '%s'", header, writePart->_partDelimiter));
+            // niDebugFmt(("... Receiving Data"));
             break;
           }
           case eCURLMessage_Progress: {
-            TRACE_GET_STRING(("... URLGetString[%s]: Progress %s", aURL, A));
+            // niDebugFmt(("... Progress %s", A));
             break;
           }
           case eCURLMessage_Completed: {
-            responseCode = A.GetIntValue();
-            recvData->SeekSet(0);
-            responseString = recvData->ReadString();
-            if (niModuleShouldTrace_(niCURL,TraceGetString)) {
-              TRACE_GET_STRING(("... URLGetString[%s]: Response: %d, Completed: %s",
-                              aURL, responseCode, responseString));
-            }
+            // niDebugFmt(("... Completed"));
             break;
           }
           case eCURLMessage_ResponseCode: {
-            TRACE_GET_STRING(("... URLGetString[%s]: ResponseCode: %d", aURL, A));
+            // niDebugFmt(("... ResponseCode: %d", A));
             break;
           }
           case eCURLMessage_Failed: {
-            niError(niFmt("URLGetString[%s]: Request Failed: '%s'.", aURL, A));
+            // niDebugFmt(("... Failed: %s", A));
             break;
           }
           default: {
-            niError(niFmt("URLGetString[%s]: Unexpected message '%s'.", aURL, MessageID_ToString(anMsg)));
+            niWarning(
+              niFmt("Unexpected message '%s'.", MessageID_ToString(anMsg)));
             break;
           }
+          }
+          ni::GetConcurrent()->SendMessage(writePart->_msgHandler, anMsg, A, B);
+        },
+        // eInvalidHandle as threadId indicates that we want the message
+        // handle to always be called from the caller thread. This implies
+        // that the message handler is thread safe.
+        eInvalidHandle),
+      aURL, recvData, recvHeader);
+    return runnable;
+  }
+
+  cString __stdcall URLGetString(const achar* aURL)
+  {
+    Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0, "");
+    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
+    cString responseString;
+    tI32 responseCode = -1;
+    Ptr<iRunnable> runnable = this->URLGet(
+      ni::MessageHandler([&](tU32 anMsg, const Var& A, const Var& B) {
+        switch (anMsg) {
+        case eCURLMessage_Started: {
+          TRACE_GET_STRING(("... URLGetString[%s]: Started", aURL));
+          break;
+        }
+        case eCURLMessage_ReceivingHeader: {
+          TRACE_GET_STRING(("... URLGetString[%s]: Receiving Header", aURL));
+          break;
+        }
+        case eCURLMessage_ReceivingData: {
+          TRACE_GET_STRING(("... URLGetString[%s]: Receiving Data", aURL));
+          break;
+        }
+        case eCURLMessage_Progress: {
+          TRACE_GET_STRING(("... URLGetString[%s]: Progress %s", aURL, A));
+          break;
+        }
+        case eCURLMessage_Completed: {
+          responseCode = A.GetIntValue();
+          recvData->SeekSet(0);
+          responseString = recvData->ReadString();
+          if (niModuleShouldTrace_(niCURL, TraceGetString)) {
+            TRACE_GET_STRING(
+              ("... URLGetString[%s]: Response: %d, Completed: %s", aURL,
+               responseCode, responseString));
+          }
+          break;
+        }
+        case eCURLMessage_ResponseCode: {
+          TRACE_GET_STRING(("... URLGetString[%s]: ResponseCode: %d", aURL, A));
+          break;
+        }
+        case eCURLMessage_Failed: {
+          niError(niFmt("URLGetString[%s]: Request Failed: '%s'.", aURL, A));
+          break;
+        }
+        default: {
+          niError(niFmt("URLGetString[%s]: Unexpected message '%s'.", aURL,
+                        MessageID_ToString(anMsg)));
+          break;
+        }
         }
       }),
-      aURL,
-      recvData,
-      recvHeader);
+      aURL, recvData, recvHeader);
     if (!niIsOK(runnable)) {
       niError(niFmt("Can't create URLGet runnable"));
       return AZEROSTR;
@@ -1087,59 +1197,60 @@ class cCURL : public ImplRC<iCURL>
     return responseString;
   }
 
-  tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apDT) {
-    Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0,"");
-    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0,"");
+  tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apDT)
+  {
+    Ptr<iFile> recvData = ni::CreateFileDynamicMemory(0, "");
+    Ptr<iFile> recvHeader = ni::CreateFileDynamicMemory(0, "");
     tI32 responseCode = -1;
 
     ni::cString url = aURL;
     Ptr<iRunnable> runnable = this->URLGet(
-      ni::MessageHandler([&] (tU32 anMsg, const Var& A, const Var& B) {
+      ni::MessageHandler([&](tU32 anMsg, const Var& A, const Var& B) {
         switch (anMsg) {
-          case eCURLMessage_Started: {
-            TRACE_GET_STRING(("... URLGetDataTable[%s]: Started", aURL));
-            break;
+        case eCURLMessage_Started: {
+          TRACE_GET_STRING(("... URLGetDataTable[%s]: Started", aURL));
+          break;
+        }
+        case eCURLMessage_ReceivingHeader: {
+          TRACE_GET_STRING(("... URLGetDataTable[%s]: Receiving Header", aURL));
+          break;
+        }
+        case eCURLMessage_ReceivingData: {
+          TRACE_GET_STRING(("... URLGetDataTable[%s]: Receiving Data", aURL));
+          break;
+        }
+        case eCURLMessage_Progress: {
+          TRACE_GET_STRING(("... URLGetDataTable[%s]: Progress %s", aURL, A));
+          break;
+        }
+        case eCURLMessage_Completed: {
+          responseCode = A.GetIntValue();
+          if (apDT) {
+            // for now we assume it's a json output
+            recvData->SeekSet(0);
+            _JsonParseFileToDataTable(recvData, apDT);
           }
-          case eCURLMessage_ReceivingHeader: {
-            TRACE_GET_STRING(("... URLGetDataTable[%s]: Receiving Header", aURL));
-            break;
+          if (niModuleShouldTrace_(niCURL, TraceGetString)) {
+            recvData->SeekSet(0);
+            const cString content = recvData->ReadString();
+            TRACE_GET_STRING(
+              ("... URLGetDataTable[%s]: Response: %d, Completed: %s", aURL,
+               responseCode, content));
           }
-          case eCURLMessage_ReceivingData: {
-            TRACE_GET_STRING(("... URLGetDataTable[%s]: Receiving Data", aURL));
-            break;
-          }
-          case eCURLMessage_Progress: {
-            TRACE_GET_STRING(("... URLGetDataTable[%s]: Progress %s", aURL, A));
-            break;
-          }
-          case eCURLMessage_Completed: {
-            responseCode = A.GetIntValue();
-            if (apDT) {
-              // for now we assume it's a json output
-              recvData->SeekSet(0);
-              _JsonParseFileToDataTable(recvData,apDT);
-            }
-            if (niModuleShouldTrace_(niCURL,TraceGetString)) {
-              recvData->SeekSet(0);
-              const cString content = recvData->ReadString();
-              TRACE_GET_STRING(("... URLGetDataTable[%s]: Response: %d, Completed: %s",
-                              aURL, responseCode, content));
-            }
-            break;
-          }
-          case eCURLMessage_ResponseCode: {
-            TRACE_GET_STRING(("... URLGetDataTable[%s]: ResponseCode: %d", aURL, A));
-            break;
-          }
-          case eCURLMessage_Failed: {
-            niError(niFmt("URLGetDataTable[%s]: Request Failed: '%s'.", aURL, A));
-            break;
-          }
+          break;
+        }
+        case eCURLMessage_ResponseCode: {
+          TRACE_GET_STRING(
+            ("... URLGetDataTable[%s]: ResponseCode: %d", aURL, A));
+          break;
+        }
+        case eCURLMessage_Failed: {
+          niError(niFmt("URLGetDataTable[%s]: Request Failed: '%s'.", aURL, A));
+          break;
+        }
         }
       }),
-      aURL,
-      recvData,
-      recvHeader);
+      aURL, recvData, recvHeader);
     if (!niIsOK(runnable)) {
       niError(niFmt("Can't create URLGet runnable"));
       return -1;
@@ -1149,23 +1260,18 @@ class cCURL : public ImplRC<iCURL>
     return responseCode;
   }
 
-  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod,
-                                      const achar* aURL,
-                                      iFile* apPostData,
-                                      iFetchSink* apSink,
+  Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod, const achar* aURL,
+                                      iFile* apPostData, iFetchSink* apSink,
                                       const tStringCVec* apHeaders)
   {
     Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-      aMethod,
-      aURL,
-      ni::CreateFileDynamicMemory(128,""),
-      ni::CreateFileDynamicMemory(128,""),
-      apSink
-    );
+      aMethod, aURL, ni::CreateFileDynamicMemory(128, ""),
+      ni::CreateFileDynamicMemory(128, ""), apSink);
     TRACE_FETCH(("... Fetch[%s]: Created request object", request->_url));
 
-    Nonnull<iMessageHandler> msgHandler = ni::MessageHandler([request] (tU32 anMsg, const Var& A, const Var& B) {
-      switch (anMsg) {
+    Nonnull<iMessageHandler> msgHandler =
+      ni::MessageHandler([request](tU32 anMsg, const Var& A, const Var& B) {
+        switch (anMsg) {
         case eCURLMessage_Started: {
           TRACE_FETCH(("... Fetch[%s]: Started", request->_url));
           request->_UpdateReadyState(eFetchReadyState_Opened);
@@ -1213,40 +1319,29 @@ class cCURL : public ImplRC<iCURL>
           }
           break;
         }
-      }
-    });
+        }
+      });
 
     Ptr<iRunnable> runnable;
     switch (aMethod) {
-      case eFetchMethod_Get:
-        runnable = this->URLGet(
-          msgHandler,
-          aURL,
-          request->_fpData,
-          request->_fpHeaders,
-          apHeaders);
-        if (!niIsOK(runnable)) {
-          niError(niFmt("Can't create URLGet runnable"));
-          return NULL;
-        }
-        break;
-      case eFetchMethod_Post:
-        runnable = this->URLPostFile(
-          msgHandler,
-          aURL,
-          request->_fpData,
-          request->_fpHeaders,
-          apPostData,
-          apHeaders,
-          NULL);
-        if (!niIsOK(runnable)) {
-          niError(niFmt("Can't create URLPostFile runnable"));
-          return NULL;
-        }
-        break;
-      default:
-        niError(niFmt("Unknown method '%d'.", aMethod));
+    case eFetchMethod_Get:
+      runnable = this->URLGet(msgHandler, aURL, request->_fpData,
+                              request->_fpHeaders, apHeaders);
+      if (!niIsOK(runnable)) {
+        niError(niFmt("Can't create URLGet runnable"));
         return NULL;
+      }
+      break;
+    case eFetchMethod_Post:
+      runnable =
+        this->URLPostFile(msgHandler, aURL, request->_fpData,
+                          request->_fpHeaders, apPostData, apHeaders, NULL);
+      if (!niIsOK(runnable)) {
+        niError(niFmt("Can't create URLPostFile runnable"));
+        return NULL;
+      }
+      break;
+    default: niError(niFmt("Unknown method '%d'.", aMethod)); return NULL;
     }
 
     if (!ni::GetConcurrent()->GetExecutorIO()->Execute(runnable)) {
@@ -1256,12 +1351,17 @@ class cCURL : public ImplRC<iCURL>
 
     return request;
   }
-  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(
+    const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL)
+  {
     niCheck(niStringIsOK(aURL), NULL);
     return _Fetch(eFetchMethod_Get, aURL, NULL, apSink, apHeaders);
   }
 
-  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(
+    const achar* aURL, iFile* apData, iFetchSink* apSink,
+    const tStringCVec* apHeaders = NULL)
+  {
     niCheck(niStringIsOK(aURL), NULL);
     niCheckIsOK(apData, NULL);
     return _Fetch(eFetchMethod_Post, aURL, apData, apSink, apHeaders);
@@ -1269,106 +1369,111 @@ class cCURL : public ImplRC<iCURL>
 
 #elif defined niJSCC
 
-  virtual cString __stdcall GetVersion() const {
+  virtual cString __stdcall GetVersion() const
+  {
     return "web-js";
   }
 
-  virtual cString __stdcall GetProtocols() const {
+  virtual cString __stdcall GetProtocols() const
+  {
     return "http,https";
   }
 
-  virtual Ptr<iRunnable> __stdcall URLGet(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader, const tStringCVec* apHeaders)
+  virtual Ptr<iRunnable> __stdcall URLGet(iMessageHandler* apMessageHandler,
+                                          const achar* aURL, iFile* apRecvData,
+                                          iFile* apRecvHeader,
+                                          const tStringCVec* apHeaders)
   {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
   virtual Ptr<iRunnable> __stdcall URLPostFile(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      iFile* apPostData,
-      const tStringCVec* apHeaders, const achar* aContentType)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, iFile* apPostData, const tStringCVec* apHeaders,
+    const achar* aContentType)
   {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
   virtual Ptr<iRunnable> __stdcall URLPostFields(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      const achar* aPostFields,
-      const tStringCVec* apHeaders, const achar* aContentType)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, const achar* aPostFields, const tStringCVec* apHeaders,
+    const achar* aContentType)
   {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
   virtual Ptr<iRunnable> __stdcall URLPostRaw(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tPtr aPostData, tSize anPostDataSize,
-      const tStringCVec* apHeaders, const achar* aContentType)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tPtr aPostData, tSize anPostDataSize,
+    const tStringCVec* apHeaders, const achar* aContentType)
   {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
   virtual Ptr<iRunnable> __stdcall URLPostMultiPart(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tStringCMap* apPostFields)
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tStringCMap* apPostFields)
   {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
   virtual Ptr<iRunnable> __stdcall URLGetMultiPart(
-      iMessageHandler* apMessageHandler, const achar* aURL, const achar* aPartExt)   {
+    iMessageHandler* apMessageHandler, const achar* aURL, const achar* aPartExt)
+  {
     niError("Blocking requests not allowed on this platform.");
     return NULL;
   }
 
-  virtual cString __stdcall URLGetString(const achar* aURL)   {
+  virtual cString __stdcall URLGetString(const achar* aURL)
+  {
     niError("Blocking requests not allowed on this platform.");
     return "";
   }
 
-  virtual tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apResult)   {
+  virtual tI32 __stdcall URLGetDataTable(const achar* aURL,
+                                         iDataTable* apResult)
+  {
     niError("Blocking requests not allowed on this platform.");
     return 0;
   }
 
-  static tU32 _EmscriptenFetch_ReadData(emscripten_fetch_t *fetch) {
+  static tU32 _EmscriptenFetch_ReadData(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_ReadData"));
     if (fetch->data && fetch->numBytes) {
-      r->_fpData->WriteRaw(fetch->data,fetch->numBytes);
+      r->_fpData->WriteRaw(fetch->data, fetch->numBytes);
       r->_fpData->SeekSet(0);
       return fetch->numBytes;
     }
     return 0;
   }
 
-  static tU32 _EmscriptenFetch_ReadHeaders(emscripten_fetch_t *fetch) {
+  static tU32 _EmscriptenFetch_ReadHeaders(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_ReadHeaders"));
     size_t headerLen = emscripten_fetch_get_response_headers_length(fetch);
     if (headerLen > 0) {
       r->_fpHeaders->Resize(headerLen);
       niPanicAssert(r->_fpHeaders->GetBase() != NULL);
-      emscripten_fetch_get_response_headers(
-        fetch,
-        (char*)r->_fpHeaders->GetBase(),
-        (size_t)r->_fpHeaders->GetSize());
+      emscripten_fetch_get_response_headers(fetch,
+                                            (char*)r->_fpHeaders->GetBase(),
+                                            (size_t)r->_fpHeaders->GetSize());
       r->_fpHeaders->SeekSet(0);
       return headerLen;
     }
     return 0;
   }
 
-  static void _EmscriptenFetch_OnSuccess(emscripten_fetch_t *fetch) {
+  static void _EmscriptenFetch_OnSuccess(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_OnSuccess"));
     _EmscriptenFetch_ReadData(fetch);
@@ -1381,7 +1486,8 @@ class cCURL : public ImplRC<iCURL>
     r->Release();
   }
 
-  static void _EmscriptenFetch_OnError(emscripten_fetch_t *fetch) {
+  static void _EmscriptenFetch_OnError(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_OnError"));
     _EmscriptenFetch_ReadData(fetch);
@@ -1394,7 +1500,8 @@ class cCURL : public ImplRC<iCURL>
     r->Release();
   }
 
-  static void _EmscriptenFetch_OnProgress(emscripten_fetch_t *fetch) {
+  static void _EmscriptenFetch_OnProgress(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_OnProgress"));
     r->_readyState = (eFetchReadyState)fetch->readyState;
@@ -1404,7 +1511,8 @@ class cCURL : public ImplRC<iCURL>
     }
   }
 
-  static void _EmscriptenFetch_OnReadyStateChange(emscripten_fetch_t *fetch) {
+  static void _EmscriptenFetch_OnReadyStateChange(emscripten_fetch_t* fetch)
+  {
     sFetchRequest* r = (sFetchRequest*)fetch->userData;
     TRACE_FETCH(("... _EmscriptenFetch_OnReadyStateChange"));
     r->_status = fetch->status;
@@ -1418,9 +1526,12 @@ class cCURL : public ImplRC<iCURL>
     }
   }
 
-  Ptr<iFetchRequest> __stdcall _FetchWithOverride(
-      eFetchMethod aMethod, const achar* aURL, iFile* apPostData,
-      iFetchSink* apSink, const tStringCVec* apHeaders) {
+  Ptr<iFetchRequest> __stdcall _FetchWithOverride(eFetchMethod aMethod,
+                                                  const achar* aURL,
+                                                  iFile* apPostData,
+                                                  iFetchSink* apSink,
+                                                  const tStringCVec* apHeaders)
+  {
     TRACE_FETCH(("...Override Fetch[%s]: Using JS fetch override."));
     tBool isFetching = kmapurlToRequestCache.count(aURL) > 0;
     // if is a request from a new URL we create it
@@ -1428,12 +1539,12 @@ class cCURL : public ImplRC<iCURL>
       // we create the request and cache it for later use when the fetch is ready.
       Ptr<iFile> headersFp = ni::CreateFileDynamicMemory(0, NULL);
       Ptr<iFile> dataFile = ni::CreateFileDynamicMemory(128, "");
-      Ptr<sFetchRequest> request = ni::MakePtr<sFetchRequest>(
-          aMethod, aURL, headersFp, dataFile, apSink);
-      TRACE_FETCH(
-          ("...Override Fetch[%s]: New request added to the CACHE.", request->_url));
+      Ptr<sFetchRequest> request =
+        ni::MakePtr<sFetchRequest>(aMethod, aURL, headersFp, dataFile, apSink);
+      TRACE_FETCH(("...Override Fetch[%s]: New request added to the CACHE.",
+                   request->_url));
 
-      kmapurlToRequestCache.insert({aURL, request.ptr()});
+      kmapurlToRequestCache.insert({ aURL, request.ptr() });
       // if wants the override we create the callback and call the override
       // function in JavaScript
       tBool shouldOverrideFetch = EM_ASM_INT(
@@ -1441,7 +1552,8 @@ class cCURL : public ImplRC<iCURL>
           // console.log("Fetching using Module.niCURL.handleFetchOverride");
           var url = UTF8ToString($0);
           if (Module.niCURL.shouldOverrideFetch(url)) {
-            var onSuccess = function(result) {
+            var onSuccess = function(result)
+            {
               var urlStrPtr = niSys_AllocUTF8(url);
               var resultStrPtr = niSys_AllocUTF8(result);
 
@@ -1453,7 +1565,8 @@ class cCURL : public ImplRC<iCURL>
               Module._free(urlStrPtr);
             };
 
-            var onError = function(result) {
+            var onError = function(result)
+            {
               var urlStrPtr = niSys_AllocUTF8(url);
               var resultStrPtr = niSys_AllocUTF8(result);
 
@@ -1465,7 +1578,8 @@ class cCURL : public ImplRC<iCURL>
               Module._free(urlStrPtr);
             };
 
-            var onProgress = function(result) {
+            var onProgress = function(result)
+            {
               var urlStrPtr = niSys_AllocUTF8(url);
               var resultStrPtr = niSys_AllocUTF8(result);
 
@@ -1481,39 +1595,43 @@ class cCURL : public ImplRC<iCURL>
             Module.niCURL.handleFetchOverride(url, onSuccess, onError,
                                               onProgress);
             return true;
-          } else {
+          }
+          else {
             return false;
           }
         },
         aURL);
 
-        if (shouldOverrideFetch) {
-          TRACE_FETCH(("...Override Fetch[%s]: The override IS FETCHING.", aURL));
-          return request;
+      if (shouldOverrideFetch) {
+        TRACE_FETCH(("...Override Fetch[%s]: The override IS FETCHING.", aURL));
+        return request;
+      }
+      else {
+        TRACE_FETCH(
+          ("...Override Fetch[%s]: Override SKIPPED the request.", aURL));
+        if (kmapurlToRequestCache.count(aURL) > 0) {
+          TRACE_FETCH(("Deletes [%d] from cache", aURL));
+          kmapurlToRequestCache.erase(aURL);
         }
-        else {
-          TRACE_FETCH(("...Override Fetch[%s]: Override SKIPPED the request.", aURL));
-          if (kmapurlToRequestCache.count(aURL) > 0) {
-            TRACE_FETCH(("Deletes [%d] from cache", aURL));
-            kmapurlToRequestCache.erase(aURL);
-          }
-          return NULL; // this will force to use Emscripten Fetch
-        }
+        return NULL; // this will force to use Emscripten Fetch
+      }
     }
     else {
-      return kmapurlToRequestCache[aURL]; // this request is already being handled, just return it
+      return kmapurlToRequestCache
+        [aURL]; // this request is already being handled, just return it
     }
   }
 
   Ptr<iFetchRequest> __stdcall _EmscriptenFetch(eFetchMethod aMethod,
-                                                 const achar* aURL,
-                                                 iFile* apPostData,
-                                                 iFetchSink* apSink,
-                                                 const tStringCVec* apHeaders) {
+                                                const achar* aURL,
+                                                iFile* apPostData,
+                                                iFetchSink* apSink,
+                                                const tStringCVec* apHeaders)
+  {
     TRACE_FETCH(("Using emscripten fetch..."));
     Nonnull<sFetchRequest> request = ni::MakeNonnull<sFetchRequest>(
-        aMethod, aURL, ni::CreateFileDynamicMemory(128, ""),
-        ni::CreateFileDynamicMemory(128, ""), apSink);
+      aMethod, aURL, ni::CreateFileDynamicMemory(128, ""),
+      ni::CreateFileDynamicMemory(128, ""), apSink);
     TRACE_FETCH(("... Fetch[%s]: Created request object", request->_url));
 
     emscripten_fetch_attr_t attrs = {};
@@ -1529,27 +1647,24 @@ class cCURL : public ImplRC<iCURL>
     // XXX: Consider adding EMSCRIPTEN_FETCH_STREAM_DATA
     attrs.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
     switch (aMethod) {
-      case eFetchMethod_Get:
-        ni::StrZCpy(attrs.requestMethod, niCountOf(attrs.requestMethod), "GET");
-        break;
-      case eFetchMethod_Post:
-        ni::StrZCpy(attrs.requestMethod, niCountOf(attrs.requestMethod),
-                    "POST");
-        if (apPostData) {
-          tSize toRead = apPostData->GetSize() - apPostData->Tell();
-          if (toRead > 0) {
-            request->_emfetchPostData.resize(toRead);
-            tSize read =
-                apPostData->ReadRaw(request->_emfetchPostData.data(), toRead);
-            niCheck(read == toRead, NULL);
-            attrs.requestData = (const char*)request->_emfetchPostData.data();
-            attrs.requestDataSize = request->_emfetchPostData.size();
-          }
+    case eFetchMethod_Get:
+      ni::StrZCpy(attrs.requestMethod, niCountOf(attrs.requestMethod), "GET");
+      break;
+    case eFetchMethod_Post:
+      ni::StrZCpy(attrs.requestMethod, niCountOf(attrs.requestMethod), "POST");
+      if (apPostData) {
+        tSize toRead = apPostData->GetSize() - apPostData->Tell();
+        if (toRead > 0) {
+          request->_emfetchPostData.resize(toRead);
+          tSize read =
+            apPostData->ReadRaw(request->_emfetchPostData.data(), toRead);
+          niCheck(read == toRead, NULL);
+          attrs.requestData = (const char*)request->_emfetchPostData.data();
+          attrs.requestDataSize = request->_emfetchPostData.size();
         }
-        break;
-      default:
-        niPanicUnreachable("Unknown method.");
-        return NULL;
+      }
+      break;
+    default: niPanicUnreachable("Unknown method."); return NULL;
     }
 
     if (apHeaders && !apHeaders->empty()) {
@@ -1563,7 +1678,7 @@ class cCURL : public ImplRC<iCURL>
       const astl::vector<ni::cString>& sh = *apHeaders;
       const char** rh = request->_emHeaders;
       request->_emHeadersKV.reserve(sh.size() * 2);
-      niLoop(i, sh.size()) {
+      niLoop (i, sh.size()) {
         *rh++ = request->_emHeadersKV.emplace_back(sh[i].Before(":")).c_str();
         *rh++ = request->_emHeadersKV.emplace_back(sh[i].After(":")).c_str();
         // niDebugFmt(("... HEADER[%d]: %s = %s", i, *(rh - 2), *(rh - 1)));
@@ -1581,10 +1696,11 @@ class cCURL : public ImplRC<iCURL>
   // https://github.com/emscripten-core/emscripten/blob/37909f7e618a8193a25efbc8b79a834fec4e93b8/test/fetch/to_memory.cpp
   Ptr<iFetchRequest> __stdcall _Fetch(eFetchMethod aMethod, const achar* aURL,
                                       iFile* apPostData, iFetchSink* apSink,
-                                      const tStringCVec* apHeaders) {
+                                      const tStringCVec* apHeaders)
+  {
     if (_hasFetchOverride) {
       Ptr<iFetchRequest> request =
-          _FetchWithOverride(aMethod, aURL, apPostData, apSink, apHeaders);
+        _FetchWithOverride(aMethod, aURL, apPostData, apSink, apHeaders);
       if (request.IsOK()) {
         return request;
       }
@@ -1592,40 +1708,49 @@ class cCURL : public ImplRC<iCURL>
     return _EmscriptenFetch(aMethod, aURL, apPostData, apSink, apHeaders);
   }
 
-  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(
+    const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL)
+  {
     niCheck(niStringIsOK(aURL), NULL);
     return _Fetch(eFetchMethod_Get, aURL, NULL, apSink, apHeaders);
   }
 
-  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) {
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(
+    const achar* aURL, iFile* apData, iFetchSink* apSink,
+    const tStringCVec* apHeaders = NULL)
+  {
     niCheck(niStringIsOK(aURL), NULL);
     niCheckIsOK(apData, NULL);
     return _Fetch(eFetchMethod_Post, aURL, apData, apSink, apHeaders);
   }
 
 #else
-#error "Unsupported platform for CURL implementation."
+  #error "Unsupported platform for CURL implementation."
 #endif
 
   niEndClass(cCURL);
 };
 #ifdef niJSCC
-static Ptr<iDataTable> _GetFetchResultDataTable(const cString& retString) {
+static Ptr<iDataTable> _GetFetchResultDataTable(const cString& retString)
+{
   Ptr<iDataTable> dt = CreateDataTable("FetchResult");
-  Ptr<iFile> retFile = ni::CreateFileMemory((tPtr)retString.c_str(), retString.size(), eFalse, "---CURL---");
-  if (!ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt, retFile))
+  Ptr<iFile> retFile = ni::CreateFileMemory(
+    (tPtr)retString.c_str(), retString.size(), eFalse, "---CURL---");
+  if (!ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt,
+                                         retFile))
     return nullptr;
   return dt->GetChild("jobj");
 }
 
 Ptr<iFetchRequest> __stdcall _UpdateFetchRequestWithError(
-    Ptr<sFetchRequest> request, const achar* errorMsg) {
+  Ptr<sFetchRequest> request, const achar* errorMsg)
+{
   TRACE_FETCH((errorMsg));
   Nonnull<iFile> dataFp = request->_fpData;
   cString url = request->_url;
-  cString payload = cString(
-      niFmt(R"""({ "status": "ERROR", "url": "%s", "payload": "%s" })""",
-            url, errorMsg));
+  cString payload =
+    cString(niFmt(R"""({ "status": "ERROR", "url": "%s", "payload": "%s" })""",
+                  url, errorMsg));
   dataFp->WriteString(payload.Chars());
   dataFp->SeekSet(0);
   Ptr<iFile> headers = request->_fpHeaders;
@@ -1643,11 +1768,12 @@ Ptr<iFetchRequest> __stdcall _UpdateFetchRequestWithError(
   return request;
 }
 
-niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
+niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr)
+{
   cString retString = (const char*)resultPtr;
   cString url = (const char*)urlPtr;
   TRACE_FETCH(
-      ("... FetchOverride_Success: url: %s, result: %s", url, retString));
+    ("... FetchOverride_Success: url: %s, result: %s", url, retString));
 
   // niLoopit(turlToRequestCache::const_iterator, it, kmapurlToRequestCache) {
   //   niDebugFmt(("URL IN SUCCESS: %s", it->first));
@@ -1663,13 +1789,15 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
 
     Ptr<iDataTable> payloadDT = jobj->GetChild("payload");
     if (!payloadDT.IsOK()) {
-      _UpdateFetchRequestWithError(request, "Error JSON result has not payload field.");
+      _UpdateFetchRequestWithError(request,
+                                   "Error JSON result has not payload field.");
       return;
     }
 
     Ptr<iDataTable> headersDT = jobj->GetChild("headers");
     if (!headersDT.IsOK()) {
-      _UpdateFetchRequestWithError(request, "Error JSON result has not headers field.");
+      _UpdateFetchRequestWithError(request,
+                                   "Error JSON result has not headers field.");
       return;
     }
 
@@ -1679,13 +1807,14 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
 
     {
       auto& fpData = request->_fpData;
-      ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write, payloadDT, fpData);
+      ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Write,
+                                        payloadDT, fpData);
       fpData->SeekSet(0);
     }
 
     {
       auto& fpHeaders = request->_fpHeaders;
-      niLoop(i, headersDT->GetNumProperties()) {
+      niLoop (i, headersDT->GetNumProperties()) {
         fpHeaders->WriteString(headersDT->GetPropertyName(i));
         fpHeaders->WriteString(": ");
         fpHeaders->WriteString(headersDT->GetStringFromIndex(i).c_str());
@@ -1703,19 +1832,21 @@ niExportFunc(void) FetchOverride_Success(tU32 resultPtr, tU32 urlPtr) {
       TRACE_FETCH(("Deletes [%d] from cache", url));
       kmapurlToRequestCache.erase(url);
     }
-  } else {
+  }
+  else {
     TRACE_FETCH(
-        ("... FetchOverride_Success[%s]: This url is not in the list of "
-         "requests anymore, have you call onSuccess twice? ",
-         url));
+      ("... FetchOverride_Success[%s]: This url is not in the list of "
+       "requests anymore, have you call onSuccess twice? ",
+       url));
   }
 }
 
-niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr) {
+niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr)
+{
   cString retString = (const char*)resultPtr;
   cString url = (const char*)urlPtr;
   TRACE_FETCH(
-      ("... FetchOverride_Error: { url = %s, result: %s }", url, retString));
+    ("... FetchOverride_Error: { url = %s, result: %s }", url, retString));
 
   Ptr<sFetchRequest> request = kmapurlToRequestCache[url];
   if (request.IsOK()) {
@@ -1733,22 +1864,23 @@ niExportFunc(void) FetchOverride_Error(tU32 resultPtr, tU32 urlPtr) {
     return;
   }
   else {
-    TRACE_FETCH(
-        ("... FetchOverride_Error[%s]: This url is not in the list of "
-         "requests anymore, have you call onError twice? ",
-         url));
+    TRACE_FETCH(("... FetchOverride_Error[%s]: This url is not in the list of "
+                 "requests anymore, have you call onError twice? ",
+                 url));
   }
 }
 
-niExportFunc(void) FetchOverride_Progress(tU32 resultPtr, tU32 urlPtr) {
+niExportFunc(void) FetchOverride_Progress(tU32 resultPtr, tU32 urlPtr)
+{
   const char* result = (const char*)resultPtr;
   const char* url = (const char*)urlPtr;
   TRACE_FETCH(
-      ("... FetchOverride_Progress: { url = %s, result: %s }", url, result));
+    ("... FetchOverride_Progress: { url = %s, result: %s }", url, result));
   // WIP
 }
 #endif
 
-niExportFunc(iUnknown*) New_niCURL_CURL(const Var&, const Var&) {
+niExportFunc(iUnknown*) New_niCURL_CURL(const Var&, const Var&)
+{
   return niNew cCURL();
 }

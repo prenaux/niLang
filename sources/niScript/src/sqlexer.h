@@ -4,7 +4,7 @@
 
 #define MAX_STRING 2024
 
-SQ_VECTOR_TYPEDEF(SQChar,SQCharVec);
+SQ_VECTOR_TYPEDEF(SQChar, SQCharVec);
 
 enum eReadRawStringMode {
   eReadRawStringMode_CurlySquareBrackets = 0,
@@ -12,8 +12,7 @@ enum eReadRawStringMode {
   eReadRawStringMode_TripleDoubleQuote = 2,
 };
 
-struct SQLexer
-{
+struct SQLexer {
   SQLexer(ain<nn<iHString>> ahspSourceName, ain<tChars> aaszSourceCode);
   ~SQLexer();
 
@@ -23,14 +22,20 @@ struct SQLexer
   sVec2i GetLastTokenLineCol() const;
 
  private:
-  eCompileResult LexScript(sCompileErrors& errors, int* apTok, tU32 backToSExpChar);
-  eCompileResult LexSExp(sCompileErrors& errors, int* apTok, const int aSExpType);
-  int GetIDType(const SQChar *s);
-  eCompileResult ReadString(sCompileErrors& errors, int* apTok, tU32 ndelim, ni::tBool abFormat, int preChar = 0);
-  eCompileResult ReadRawString(sCompileErrors& errors, const int preChar, const eReadRawStringMode aRawStringMode);
-  eCompileResult ReadNumber(sCompileErrors& errors, int* apTok, int preChar = 0);
+  eCompileResult LexScript(sCompileErrors& errors, int* apTok,
+                           tU32 backToSExpChar);
+  eCompileResult LexSExp(sCompileErrors& errors, int* apTok,
+                         const int aSExpType);
+  int GetIDType(const SQChar* s);
+  eCompileResult ReadString(sCompileErrors& errors, int* apTok, tU32 ndelim,
+                            ni::tBool abFormat, int preChar = 0);
+  eCompileResult ReadRawString(sCompileErrors& errors, const int preChar,
+                               const eReadRawStringMode aRawStringMode);
+  eCompileResult ReadNumber(sCompileErrors& errors, int* apTok,
+                            int preChar = 0);
   eCompileResult LexBlockComment(sCompileErrors& errors);
-  int FinalizeSExpStringLiteral(const int aSExpType, const tU32 aSymbolPrefix, const achar* kind);
+  int FinalizeSExpStringLiteral(const int aSExpType, const tU32 aSymbolPrefix,
+                                const achar* kind);
   int ReadSExpID(int preChar, const int aSExpType, const tU32 anPrevChar);
   int ReadScriptID();
   void ReadCompilerCommand();
@@ -40,12 +45,18 @@ struct SQLexer
   tHStringNN _sourceName;
   const achar* _sourceIt;
   int _curtoken;
-  SQTable *_keywords;
+  SQTable* _keywords;
   struct sState {
     int _id;
     int _flags;
-    sState() {}
-    sState(int id, int flags) : _id(id), _flags(flags) {}
+    sState()
+    {
+    }
+    sState(int id, int flags)
+        : _id(id)
+        , _flags(flags)
+    {
+    }
   };
   astl::stack<sState> _stateStack;
   int _prevtoken;

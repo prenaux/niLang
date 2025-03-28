@@ -11,20 +11,19 @@ struct SQTable;
 struct SQObjectPtr;
 
 struct SQRegFunction {
-  const SQChar *name = AZEROSTR;
+  const SQChar* name = AZEROSTR;
   SQFUNCTION f = nullptr;
   int nparamscheck = 0;
-  const SQChar *typemask = AZEROSTR;
+  const SQChar* typemask = AZEROSTR;
   tHStringPtr rettype;
 };
 
-struct SQSharedState : public ni::ImplRC<ni::iUnknown>
-{
+struct SQSharedState : public ni::ImplRC<ni::iUnknown> {
  public:
   SQSharedState();
   ~SQSharedState();
 #ifndef NO_GARBAGE_COLLECTOR
-  virtual void __stdcall Mark(SQCollectable **chain);
+  virtual void __stdcall Mark(SQCollectable** chain);
 #endif
 
   SQObjectPtr _refs_table;
@@ -33,7 +32,7 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
 
   static SQRegFunction _base_funcs[];
   static SQRegFunction _automation_funcs[]; // in ScriptAutomation.cpp
-  static SQRegFunction _lint_funcs[]; // in sqlinter.cpp
+  static SQRegFunction _lint_funcs[];       // in sqlinter.cpp
   static SQRegFunction _concurrent_funcs[]; // in ScriptVM_Concurrent.cpp
 
   SQObjectPtr _table_default_delegate;
@@ -73,11 +72,11 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   SQCOMPILERERROR _compilererrorhandler;
 
   const SQObjectPtr& GetInterfaceDelegate(const tUUID& aID);
-  typedef astl::hash_map<tUUID,SQObjectPtr> tDelegateMap;
-  tDelegateMap  mmapDelegates;
+  typedef astl::hash_map<tUUID, SQObjectPtr> tDelegateMap;
+  tDelegateMap mmapDelegates;
 
   const SQObjectPtr& GetEnumDefTable(const sEnumDef* apEnumDef);
-  typedef astl::hash_map<tIntPtr,SQObjectPtr> tEnumDefMap;
+  typedef astl::hash_map<tIntPtr, SQObjectPtr> tEnumDefMap;
   tEnumDefMap mmapEnumDefs;
 
   SQObjectPtr _typeStr_null;
@@ -93,10 +92,12 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   const SQObjectPtr& GetTypeNameObj(SQObjectType type) const;
   const iHString* GetTypeNameHStr(SQObjectType type) const;
   const achar* GetTypeNameStr(SQObjectType type) const;
-  const SQObjectPtr& GetTypeNameObj(const SQObject& o) const {
+  const SQObjectPtr& GetTypeNameObj(const SQObject& o) const
+  {
     return GetTypeNameObj(_sqtype(o));
   }
-  const achar* GetTypeNameStr(const SQObject& o) const {
+  const achar* GetTypeNameStr(const SQObject& o) const
+  {
     return GetTypeNameStr(_sqtype(o));
   }
 
@@ -105,40 +106,42 @@ struct SQSharedState : public ni::ImplRC<ni::iUnknown>
   void LockLangDelegates();
 };
 
-#define _ddel(ss,basename) _table((ss)._##basename##_default_delegate)
+#define _ddel(ss, basename) _table((ss)._##basename##_default_delegate)
 
 #ifdef SQUNICODE //rsl REAL STRING LEN
-#define rsl(l) ((l)<<1)
+  #define rsl(l) ((l) << 1)
 #else
-#define rsl(l) (l)
+  #define rsl(l) (l)
 #endif
 
 Ptr<SQNativeClosure> CreateSQNativeClosure(ain<SQRegFunction> aRegFunc);
-tBool RegisterSQRegFunction(ain<nn<SQTable>> aTable, ain<SQRegFunction> aRegFunc);
-tBool RegisterSQRegFunctions(ain<nn<SQTable>> aTable, ain<SQRegFunction*> aRegFuncs);
+tBool RegisterSQRegFunction(ain<nn<SQTable>> aTable,
+                            ain<SQRegFunction> aRegFunc);
+tBool RegisterSQRegFunctions(ain<nn<SQTable>> aTable,
+                             ain<SQRegFunction*> aRegFuncs);
 
-void *sq_vm_malloc(unsigned int size);
-void *sq_vm_realloc(void *p,unsigned int oldsize,unsigned int size);
-void sq_vm_free(void *p,unsigned int size);
+void* sq_vm_malloc(unsigned int size);
+void* sq_vm_realloc(void* p, unsigned int oldsize, unsigned int size);
+void sq_vm_free(void* p, unsigned int size);
 
 #ifndef NO_GARBAGE_COLLECTOR
 struct SQGarbageCollector {
   SQGarbageCollector();
   int CollectGarbage(SQCollectable** tchain);
-  static void MarkObject(SQObjectPtr &o,SQCollectable **chain);
+  static void MarkObject(SQObjectPtr& o, SQCollectable** chain);
   bool _isCollecting;
   SQCollectable* _gc_chain_ptr;
   ThreadMutex _gc_chain_mutex;
   int _gc_chain_sync;
   int _gc_chain_lastgc_sync;
-  astl::set<SQObjectPtr,SQObjectPtrSortByPtr> _gc_roots;
+  astl::set<SQObjectPtr, SQObjectPtrSortByPtr> _gc_roots;
   int GetNumRoots();
   int AddRoot(const SQObjectPtr& o);
   int RemoveRoot(const SQObjectPtr& o);
 };
 
 extern SQGarbageCollector* _gGC;
-#define _gc() _gGC
+  #define _gc() _gGC
 #endif
 
 extern SQObjectPtr _sq_metamethods[MT__LAST];

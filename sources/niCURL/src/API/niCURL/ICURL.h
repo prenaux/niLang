@@ -14,8 +14,7 @@ struct iCURL;
  */
 
 //! CURL message.
-enum eCURLMessage
-{
+enum eCURLMessage {
   //! The request started.
   //! \param A: unused
   //! \param B: iFuture, which can be used to cancel the request
@@ -59,25 +58,23 @@ enum eCURLMessage
 
 //! HTTP authentication modes
 //! \remark This uses the same value as CURLOPT_HTTPAUTH options in libcurl for convenience.
-enum eCURLHttpAuth
-{
-  eCURLHttpAuth_None         = 0,
-  eCURLHttpAuth_Basic        = niBit(0),
-  eCURLHttpAuth_Digest       = niBit(1),
+enum eCURLHttpAuth {
+  eCURLHttpAuth_None = 0,
+  eCURLHttpAuth_Basic = niBit(0),
+  eCURLHttpAuth_Digest = niBit(1),
   eCURLHttpAuth_Gssnegotiate = niBit(2),
-  eCURLHttpAuth_Ntlm         = niBit(3),
-  eCURLHttpAuth_DigestIE     = niBit(4),
-  eCURLHttpAuth_NtlmWB       = niBit(5),
-  eCURLHttpAuth_Only         = niBit(31),
-  eCURLHttpAuth_Any          = ~eCURLHttpAuth_DigestIE,
-  eCURLHttpAuth_AnySafe      = ~(eCURLHttpAuth_Basic|eCURLHttpAuth_DigestIE),
+  eCURLHttpAuth_Ntlm = niBit(3),
+  eCURLHttpAuth_DigestIE = niBit(4),
+  eCURLHttpAuth_NtlmWB = niBit(5),
+  eCURLHttpAuth_Only = niBit(31),
+  eCURLHttpAuth_Any = ~eCURLHttpAuth_DigestIE,
+  eCURLHttpAuth_AnySafe = ~(eCURLHttpAuth_Basic | eCURLHttpAuth_DigestIE),
   //! \internal
   eCURLHttpAuth_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! CURL interface.
-struct iCURL : public iUnknown
-{
+struct iCURL : public iUnknown {
   niDeclareInterfaceUUID(iCURL,0x5266eb8e,0xa915,0x42f8,0x99,0x38,0xc8,0xa1,0x87,0x0f,0x4e,0x02);
 
   //! {Property}
@@ -123,38 +120,35 @@ struct iCURL : public iUnknown
   virtual tSize __stdcall GetBufferSize() const = 0;
 
   virtual Ptr<iRunnable> __stdcall URLGet(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader, const tStringCVec* apHeaders = NULL) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, const tStringCVec* apHeaders = NULL) = 0;
 
   virtual Ptr<iRunnable> __stdcall URLPostFile(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      iFile* apPostData,
-      const tStringCVec* apHeaders = NULL, const achar* aContentType = NULL) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, iFile* apPostData, const tStringCVec* apHeaders = NULL,
+    const achar* aContentType = NULL) = 0;
 
   virtual Ptr<iRunnable> __stdcall URLPostFields(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      const achar* aPostFields,
-      const tStringCVec* apHeaders = NULL, const achar* aContentType = NULL) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, const achar* aPostFields,
+    const tStringCVec* apHeaders = NULL, const achar* aContentType = NULL) = 0;
 
   //! {NoAutomation}
   virtual Ptr<iRunnable> __stdcall URLPostRaw(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tPtr aPostData, tSize anPostDataSize,
-      const tStringCVec* apHeaders = NULL, const achar* aContentType = NULL) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tPtr aPostData, tSize anPostDataSize,
+    const tStringCVec* apHeaders = NULL, const achar* aContentType = NULL) = 0;
 
   //! Post with Content-Type: multipart/form-data. Fields are similar to the
   //! command line version of CURL, @path will upload the file located at the
   //! specified location.
   virtual Ptr<iRunnable> __stdcall URLPostMultiPart(
-      iMessageHandler* apMessageHandler,
-      const achar* aURL, iFile* apRecvData, iFile* apRecvHeader,
-      tStringCMap* apPostFields) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL, iFile* apRecvData,
+    iFile* apRecvHeader, tStringCMap* apPostFields) = 0;
 
   virtual Ptr<iRunnable> __stdcall URLGetMultiPart(
-      iMessageHandler* apMessageHandler, const achar* aURL, const achar* aPartExt) = 0;
+    iMessageHandler* apMessageHandler, const achar* aURL,
+    const achar* aPartExt) = 0;
 
   //! Does a simple get on a URL and return the result as a string.
   virtual cString __stdcall URLGetString(const achar* aURL) = 0;
@@ -163,23 +157,28 @@ struct iCURL : public iUnknown
   //! \remark The json reponse is flattened in the datatable, it doesnt handle
   //!         nested objects or arrays. If the same key is present multiple time
   //!         the last value seen is the one that'll be stored in the datatable.
-  virtual tI32 __stdcall URLGetDataTable(const achar* aURL, iDataTable* apResult) = 0;
+  virtual tI32 __stdcall URLGetDataTable(const achar* aURL,
+                                         iDataTable* apResult) = 0;
 
   //! Start a GET fetch request.
   //! \remark The request is executed by iConcurrent::GetExecutorIO() or the
   //!         platforms' native system. It should be assumed that it runs in a
   //!         separated thread and thus the sink needs to be thread safe.
-  virtual Ptr<iFetchRequest> __stdcall FetchGet(const achar* aURL, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) = 0;
+  virtual Ptr<iFetchRequest> __stdcall FetchGet(
+    const achar* aURL, iFetchSink* apSink,
+    const tStringCVec* apHeaders = NULL) = 0;
 
   //! Start a POST fetch request.
   //! \remark The request is executed by iConcurrent::GetExecutorIO() or the
   //!         platforms' native system. It should be assumed that it runs in a
   //!         separated thread and thus the sink needs to be thread safe.
-  virtual Ptr<iFetchRequest> __stdcall FetchPost(const achar* aURL, iFile* apData, iFetchSink* apSink, const tStringCVec* apHeaders = NULL) = 0;
+  virtual Ptr<iFetchRequest> __stdcall FetchPost(
+    const achar* aURL, iFile* apData, iFetchSink* apSink,
+    const tStringCVec* apHeaders = NULL) = 0;
 };
 
-niExportFunc(ni::iUnknown*) New_niCURL_CURL(const ni::Var&,const ni::Var&);
+niExportFunc(ni::iUnknown*) New_niCURL_CURL(const ni::Var&, const ni::Var&);
 
 /**@}*/
-}
+} // namespace ni
 #endif // __ICURL_H_585EE2CB_EA5B_4D4E_9943_891B1A03A152__

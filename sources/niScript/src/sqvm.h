@@ -10,20 +10,32 @@
 #include <niLang/STL/stack.h>
 
 #define MAX_NATIVE_CALLS 256 // out of stack on Windows at around ~300
-#define MIN_STACK_OVERHEAD  8
+#define MIN_STACK_OVERHEAD 8
 
 struct sScriptTypeMethodDef;
 
-#define niRTError(v,desc) {                     \
-    v->Raise_MsgError(desc);                    \
+#define niRTError(v, desc)   \
+  {                          \
+    v->Raise_MsgError(desc); \
   }
 
-#define VM_ERRORB_(v,err) { niRTError(v,err); return false;  }
-#define VM_ERRORB(err)    { niRTError(this,err); return false; }
+#define VM_ERRORB_(v, err) \
+  {                        \
+    niRTError(v, err);     \
+    return false;          \
+  }
+#define VM_ERRORB(err)    \
+  {                       \
+    niRTError(this, err); \
+    return false;         \
+  }
 
-#define VM_STACK_TOP() (_stack[_top-1])
+#define VM_STACK_TOP() (_stack[_top - 1])
 
-static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable *mt,SQMetaMethod mm,tBool abOneLevel=eFalse) {
+static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable* mt,
+                                              SQMetaMethod mm,
+                                              tBool abOneLevel = eFalse)
+{
   if (abOneLevel) {
     if (mt->Get(_sq_metamethods[mm], closure)) {
       return true;
@@ -31,8 +43,7 @@ static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable *mt,
   }
   else {
     SQTable* ct = mt;
-    while (ct)
-    {
+    while (ct) {
       if (ct->Get(_sq_metamethods[mm], closure)) {
         return true;
       }
@@ -42,61 +53,79 @@ static __forceinline bool Table_GetMetaMethod(SQObjectPtr& closure, SQTable *mt,
   return false;
 }
 
-struct SQExceptionTrap{
-  SQExceptionTrap() {}
-  SQExceptionTrap(int ss, int stackbase,const SQInstruction *ip, int ex_target){ _stacksize = ss; _stackbase = stackbase; _ip = ip; _extarget = ex_target;}
-  SQExceptionTrap(const SQExceptionTrap &et) { (*this) = et;  }
+struct SQExceptionTrap {
+  SQExceptionTrap()
+  {
+  }
+  SQExceptionTrap(int ss, int stackbase, const SQInstruction* ip, int ex_target)
+  {
+    _stacksize = ss;
+    _stackbase = stackbase;
+    _ip = ip;
+    _extarget = ex_target;
+  }
+  SQExceptionTrap(const SQExceptionTrap& et)
+  {
+    (*this) = et;
+  }
   int _stackbase;
   int _stacksize;
-  const SQInstruction *_ip;
+  const SQInstruction* _ip;
   int _extarget;
 };
 
-SQ_VECTOR_TYPEDEF(SQExceptionTrap,ExceptionsTraps);
+SQ_VECTOR_TYPEDEF(SQExceptionTrap, ExceptionsTraps);
 
 struct SQCallInfo {
-  SQCallInfo() {}
-  const SQInstructionVec *_iv;
-  const SQObjectPtrVec *_literals;
+  SQCallInfo()
+  {
+  }
+  const SQInstructionVec* _iv;
+  const SQObjectPtrVec* _literals;
   SQObjectPtr _closurePtr;
   int _etraps;
   int _prevstkbase;
   int _prevtop;
   int _target;
-  const SQInstruction *_ip;
+  const SQInstruction* _ip;
   int _ncalls;
   bool _root;
 };
-SQ_VECTOR_TYPEDEF(SQCallInfo,SQCallInfoVec);
+SQ_VECTOR_TYPEDEF(SQCallInfo, SQCallInfoVec);
 
-struct SQVM : public SQCollectable, public Impl_HeapAlloc
-{
-  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID) {
-    return this->_DoQueryInterface(this,aIID);
+struct SQVM : public SQCollectable, public Impl_HeapAlloc {
+  virtual ni::iUnknown* __stdcall QueryInterface(const ni::tUUID& aIID)
+  {
+    return this->_DoQueryInterface(this, aIID);
   }
 
  public:
   SQVM(SQSharedState* aSS);
   ~SQVM();
   bool Init(bool abInitRootTable);
-  bool Execute(const SQObjectPtr &func, int target, int nargs, int stackbase, SQObjectPtr &outres);
+  bool Execute(const SQObjectPtr& func, int target, int nargs, int stackbase,
+               SQObjectPtr& outres);
 
   // start a native call return when the NATIVE closure returns
-  bool CallNative(SQNativeClosure *nclosure,int nargs,int stackbase,SQObjectPtr &retval);
-  bool CallMethodDef(sScriptTypeMethodDef* apMethodDef, int nargs, int stackbase, SQObjectPtr &retval);
+  bool CallNative(SQNativeClosure* nclosure, int nargs, int stackbase,
+                  SQObjectPtr& retval);
+  bool CallMethodDef(sScriptTypeMethodDef* apMethodDef, int nargs,
+                     int stackbase, SQObjectPtr& retval);
   //start a SQUIRREL call in the same "Execution loop"
-  bool StartCall(SQClosure *closure, int target, int nargs, int stackbase, bool tailcall);
+  bool StartCall(SQClosure* closure, int target, int nargs, int stackbase,
+                 bool tailcall);
   //call a generic closure pure SQUIRREL or NATIVE
-  bool Call(SQObjectPtr &closure, int nparams, int stackbase, SQObjectPtr &outres);
+  bool Call(SQObjectPtr& closure, int nparams, int stackbase,
+            SQObjectPtr& outres);
 
-  void CallDebugHook(int type,int forcedline=0);
+  void CallDebugHook(int type, int forcedline = 0);
 
-  bool DoGet(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest,
+  bool DoGet(const SQObjectPtr& self, const SQObjectPtr& key, SQObjectPtr& dest,
              const SQObjectPtr* root, int opExt);
-  __forceinline  bool Get(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &dest,
-                          const SQObjectPtr* root, int opExt)
+  __forceinline bool Get(const SQObjectPtr& self, const SQObjectPtr& key,
+                         SQObjectPtr& dest, const SQObjectPtr* root, int opExt)
   {
-    bool r = DoGet(self,key,dest,root,opExt);
+    bool r = DoGet(self, key, dest, root, opExt);
     if (!r) {
       if (opExt & _OPEXT_GET_SAFE) {
         dest = _null_;
@@ -106,93 +135,134 @@ struct SQVM : public SQCollectable, public Impl_HeapAlloc
     }
     return true;
   }
-  bool DoSet(const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt);
-  __forceinline bool Set(const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val,
-                         int opExt)
+  bool DoSet(const SQObjectPtr& self, const SQObjectPtr& key,
+             const SQObjectPtr& val, int opExt);
+  __forceinline bool Set(const SQObjectPtr& self, const SQObjectPtr& key,
+                         const SQObjectPtr& val, int opExt)
   {
-    bool r = DoSet(self,key,val,opExt);
+    bool r = DoSet(self, key, val, opExt);
     if (!r && !(opExt & _OPEXT_GET_SAFE)) {
       return false;
     }
     return true;
   }
 
-  bool NewSlot(const SQObjectPtr &self, const SQObjectPtr &key, const SQObjectPtr &val, int opExt);
+  bool NewSlot(const SQObjectPtr& self, const SQObjectPtr& key,
+               const SQObjectPtr& val, int opExt);
 
-  bool DeleteSlot(const SQObjectPtr &self, const SQObjectPtr &key, SQObjectPtr &res, int opExt);
-  bool Clone(const SQObjectPtr &self, SQObjectPtr &target, tSQDeepCloneGuardSet* apDeepClone);
-  bool ObjCmp(const SQObjectPtr &o1, const SQObjectPtr &o2, int& res);
-  bool ObjEq(const SQObjectPtr &o1, const SQObjectPtr &o2, int& res);
-  bool StringCat(const SQObjectPtr &str, const SQObjectPtr &obj, SQObjectPtr &dest);
+  bool DeleteSlot(const SQObjectPtr& self, const SQObjectPtr& key,
+                  SQObjectPtr& res, int opExt);
+  bool Clone(const SQObjectPtr& self, SQObjectPtr& target,
+             tSQDeepCloneGuardSet* apDeepClone);
+  bool ObjCmp(const SQObjectPtr& o1, const SQObjectPtr& o2, int& res);
+  bool ObjEq(const SQObjectPtr& o1, const SQObjectPtr& o2, int& res);
+  bool StringCat(const SQObjectPtr& str, const SQObjectPtr& obj,
+                 SQObjectPtr& dest);
 
-  void Raise_ObjError(const SQObjectPtr &desc, bool aPrint);
+  void Raise_ObjError(const SQObjectPtr& desc, bool aPrint);
   void Raise_MsgError(const cString& s);
-  void Raise_IdxError(const SQObject &o);
-  void Raise_CompareError(const SQObject &o1, const SQObject &o2);
-  void Raise_ParamTypeError(int nparam,int typemask,int type);
+  void Raise_IdxError(const SQObject& o);
+  void Raise_CompareError(const SQObject& o1, const SQObject& o2);
+  void Raise_ParamTypeError(int nparam, int typemask, int type);
 
-  SQObjectPtr PrintObjVal(const SQObject &o);
-  void TypeOf(const SQObjectPtr &obj1, SQObjectPtr &dest);
+  SQObjectPtr PrintObjVal(const SQObject& o);
+  void TypeOf(const SQObjectPtr& obj1, SQObjectPtr& dest);
 
-  __forceinline bool CallMetaMethod(SQObjectPtr& closure, int nparams, SQObjectPtr &outres) {
-    bool r = Call(closure, nparams, _top-nparams, outres);
+  __forceinline bool CallMetaMethod(SQObjectPtr& closure, int nparams,
+                                    SQObjectPtr& outres)
+  {
+    bool r = Call(closure, nparams, _top - nparams, outres);
     Pop(nparams);
     return r;
   }
 
-  __forceinline bool CallMetaMethod(SQTable *mt,SQMetaMethod mm,int nparams,SQObjectPtr &outres,tBool abOneLevel = eFalse) {
+  __forceinline bool CallMetaMethod(SQTable* mt, SQMetaMethod mm, int nparams,
+                                    SQObjectPtr& outres,
+                                    tBool abOneLevel = eFalse)
+  {
     SQObjectPtr closure;
-    if (!Table_GetMetaMethod(closure,mt,mm,abOneLevel)) {
+    if (!Table_GetMetaMethod(closure, mt, mm, abOneLevel)) {
       return false;
     }
-    return CallMetaMethod(closure,nparams,outres);
+    return CallMetaMethod(closure, nparams, outres);
   }
 
-  bool CallIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm, int nparams, SQObjectPtr &outres);
-  bool CallIUnknownMetaMethod(iUnknown* o, SQObjectPtr& closure, int nparams, SQObjectPtr &outres);
-  bool GetIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm, SQObjectPtr &closure);
-  bool ArithMetaMethod(int op, const SQObjectPtr &o1, const SQObjectPtr &o2, SQObjectPtr &dest);
-  bool Modulo(const SQObjectPtr &o1, const SQObjectPtr &o2, SQObjectPtr &dest);
-  bool Div(const SQObjectPtr &o1, const SQObjectPtr &o2, SQObjectPtr &dest);
-  bool Return(int _arg0, int _arg1, SQObjectPtr &retval);
+  bool CallIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm, int nparams,
+                              SQObjectPtr& outres);
+  bool CallIUnknownMetaMethod(iUnknown* o, SQObjectPtr& closure, int nparams,
+                              SQObjectPtr& outres);
+  bool GetIUnknownMetaMethod(iUnknown* o, SQMetaMethod mm,
+                             SQObjectPtr& closure);
+  bool ArithMetaMethod(int op, const SQObjectPtr& o1, const SQObjectPtr& o2,
+                       SQObjectPtr& dest);
+  bool Modulo(const SQObjectPtr& o1, const SQObjectPtr& o2, SQObjectPtr& dest);
+  bool Div(const SQObjectPtr& o1, const SQObjectPtr& o2, SQObjectPtr& dest);
+  bool Return(int _arg0, int _arg1, SQObjectPtr& retval);
 
-  bool DerefInc(SQObjectPtr &target, SQObjectPtr &self, SQObjectPtr &key, SQObjectPtr &incr, bool postfix, int opExt);
-  void dumpstack(int stackbase=-1, bool dumpall = false);
+  bool DerefInc(SQObjectPtr& target, SQObjectPtr& self, SQObjectPtr& key,
+                SQObjectPtr& incr, bool postfix, int opExt);
+  void dumpstack(int stackbase = -1, bool dumpall = false);
   bool _execDumpStack;
 
 #ifndef NO_GARBAGE_COLLECTOR
   // DOES NOT Mark the SQSharedState since those shouldn't be marked more than once.
-  virtual void __stdcall Mark(SQCollectable **chain);
+  virtual void __stdcall Mark(SQCollectable** chain);
 #endif
   virtual void __stdcall Invalidate();
 
   ////////////////////////////////////////////////////////////////////////////
   //stack functions for the api
-  __forceinline void Pop() {
+  __forceinline void Pop()
+  {
     _stack[--_top] = _null_;
   }
-  __forceinline void Pop(int n) {
-    for(int i = 0; i < n; i++){
+  __forceinline void Pop(int n)
+  {
+    for (int i = 0; i < n; i++) {
       _stack[--_top] = _null_;
     }
   }
-  __forceinline void Remove(int n) {
-    n = (n >= 0)?n + _stackbase - 1:_top + n;
+  __forceinline void Remove(int n)
+  {
+    n = (n >= 0) ? n + _stackbase - 1 : _top + n;
     niAssert(_top <= (int)_stack.size());
-    for(int i = n; i < _top; i++){
-      _stack[i] = _stack[i+1];
+    for (int i = n; i < _top; i++) {
+      _stack[i] = _stack[i + 1];
     }
     _stack[_top] = _null_;
     _top--;
   }
 
-  __forceinline void Push(const SQObjectPtr &o) { niAssert(_top+1 < (int)_stack.size()); _stack[_top++] = o; }
-  __forceinline SQObjectPtr &Top() { niAssert(_top-1 < (int)_stack.size()); return _stack[_top-1]; }
-  __forceinline SQObjectPtr &PopGet() { niAssert(_top-1 < (int)_stack.size()); return _stack[--_top]; }
-  __forceinline SQObjectPtr &GetUp(int n) { niAssert(_top+n < (int)_stack.size()); return _stack[_top+n]; }
-  __forceinline SQObjectPtr &GetAt(int n) { niAssert(n < (int)_stack.size()); return _stack[n]; }
-  __forceinline int GetCallStackBase(int numParams) { return _top-_stackbase-numParams+1; }
-  SQObjectPtr &GetEmptyString();
+  __forceinline void Push(const SQObjectPtr& o)
+  {
+    niAssert(_top + 1 < (int)_stack.size());
+    _stack[_top++] = o;
+  }
+  __forceinline SQObjectPtr& Top()
+  {
+    niAssert(_top - 1 < (int)_stack.size());
+    return _stack[_top - 1];
+  }
+  __forceinline SQObjectPtr& PopGet()
+  {
+    niAssert(_top - 1 < (int)_stack.size());
+    return _stack[--_top];
+  }
+  __forceinline SQObjectPtr& GetUp(int n)
+  {
+    niAssert(_top + n < (int)_stack.size());
+    return _stack[_top + n];
+  }
+  __forceinline SQObjectPtr& GetAt(int n)
+  {
+    niAssert(n < (int)_stack.size());
+    return _stack[n];
+  }
+  __forceinline int GetCallStackBase(int numParams)
+  {
+    return _top - _stackbase - numParams + 1;
+  }
+  SQObjectPtr& GetEmptyString();
 
   Ptr<SQSharedState> _ss;
 
@@ -212,21 +282,27 @@ struct SQVM : public SQCollectable, public Impl_HeapAlloc
 
   SQCallInfoVec _callsstack;
   ExceptionsTraps _etraps;
-  SQCallInfo *_ci;
-  void *_foreignptr;
+  SQCallInfo* _ci;
+  void* _foreignptr;
   int _nnativecalls;
 };
 
 struct AutoDec {
   AutoDec() = delete;
-  AutoDec(int *n) { _n = n; }
-  ~AutoDec() { (*_n)--; }
-  int *_n;
+  AutoDec(int* n)
+  {
+    _n = n;
+  }
+  ~AutoDec()
+  {
+    (*_n)--;
+  }
+  int* _n;
 };
 
 __forceinline SQObjectPtr& stack_get(HSQUIRRELVM v, int idx)
 {
-  return ((idx>=0) ? (v->GetAt(idx + v->_stackbase - 1)) : (v->GetUp(idx)));
+  return ((idx >= 0) ? (v->GetAt(idx + v->_stackbase - 1)) : (v->GetUp(idx)));
 }
 __forceinline void stack_set(HSQUIRRELVM v, int idx, SQObjectPtr& o)
 {
@@ -238,18 +314,23 @@ __forceinline void stack_set(HSQUIRRELVM v, int idx, SQObjectPtr& o)
   }
 }
 
-__forceinline void push_callinfo(HSQUIRRELVM v, const SQCallInfo& nci) {
+__forceinline void push_callinfo(HSQUIRRELVM v, const SQCallInfo& nci)
+{
   v->_callsstack.push_back(nci);
   v->_ci = &v->_callsstack.back();
 }
 
-__forceinline void pop_callinfo(HSQUIRRELVM v) {
+__forceinline void pop_callinfo(HSQUIRRELVM v)
+{
   v->_callsstack.pop_back();
-  if(v->_callsstack.size())  v->_ci = &v->_callsstack.back();
-  else                       v->_ci = NULL;
+  if (v->_callsstack.size())
+    v->_ci = &v->_callsstack.back();
+  else
+    v->_ci = NULL;
 }
 
-__forceinline cString& SQVM_CatFloatToString(cString& out, const SQFloat val) {
+__forceinline cString& SQVM_CatFloatToString(cString& out, const SQFloat val)
+{
   if (ni::Floor(val) == val) {
     out.CatFormat("%.1f", val);
   }

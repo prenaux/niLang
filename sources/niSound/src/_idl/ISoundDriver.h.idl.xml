@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eSoundDriverCapFlags">
 			<comments desc="Sound driver caps. "/>
-			<value name="eSoundDriverCapFlags_Buffer" value="niBit ( 0 ) ">
+			<value name="eSoundDriverCapFlags_Buffer" value="niBit(0)">
 				<comments desc="Access directly the primary sound buffer. "/>
 			</value>
-			<value name="eSoundDriverCapFlags_Mixer" value="niBit ( 1 ) ">
+			<value name="eSoundDriverCapFlags_Mixer" value="niBit(1)">
 				<comments desc="Own 2d sound mixer. "/>
 			</value>
-			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit ( 2 ) ">
+			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit(2)">
 				<comments desc="Own 3d sound mixer. "/>
 			</value>
 		</enum>

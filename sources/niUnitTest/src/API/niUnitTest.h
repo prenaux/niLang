@@ -15,36 +15,36 @@
 //
 //----------------------------------------------------------------------------
 #if defined _MSC_VER
-#  ifndef _DEBUG
-#    pragma warning(disable:4702)  // bogus unreachable code in release mode
-#  endif
+  #ifndef _DEBUG
+    #pragma warning(disable : 4702) // bogus unreachable code in release mode
+  #endif
 #endif
 
 #if !defined TEST_NO_EXCEPTIONS
-#  if defined niBuildType && !defined niNoExceptions
-#    define TEST_NO_EXCEPTIONS 0
-#  else
-#    define TEST_NO_EXCEPTIONS 1
-#  endif
+  #if defined niBuildType && !defined niNoExceptions
+    #define TEST_NO_EXCEPTIONS 0
+  #else
+    #define TEST_NO_EXCEPTIONS 1
+  #endif
 #endif
 
 #if TEST_NO_EXCEPTIONS == 0
-#  define TEST_NITHROWASSERT
-#  include <niLang/STL/exception.h>
-//
-// niUnitTest catches all exceptions. This has the disavantage of producing
-// stack traces that originate in a signal/exception handlers instead of the
-// actual origin of the crash so it disabled by default since it makes
-// debugging more difficult.
-//
-//#  define TEST_NICATCHALL
-#  define TEST_TRY niTry
-#  define TEST_CATCH niCatch
-#  define TEST_CATCHALL niCatchAll
+  #define TEST_NITHROWASSERT
+  #include <niLang/STL/exception.h>
+  //
+  // niUnitTest catches all exceptions. This has the disavantage of producing
+  // stack traces that originate in a signal/exception handlers instead of the
+  // actual origin of the crash so it disabled by default since it makes
+  // debugging more difficult.
+  //
+  //#  define TEST_NICATCHALL
+  #define TEST_TRY niTry
+  #define TEST_CATCH niCatch
+  #define TEST_CATCHALL niCatchAll
 #else
-#  define TEST_TRY
-#  define TEST_CATCH(T,X) if(const T EXC = {}; 0)
-#  define TEST_CATCHALL() if(0)
+  #define TEST_TRY
+  #define TEST_CATCH(T, X) if (const T EXC = {}; 0)
+  #define TEST_CATCHALL() if (0)
 #endif
 
 namespace UnitTest {
@@ -53,9 +53,8 @@ class TestResults;
 
 _HSymExport(unittest_assert);
 
-static inline ni::cString GetTestOutputFilePath(
-  const ni::achar* aTestName,
-  const ni::achar* fn)
+static inline ni::cString GetTestOutputFilePath(const ni::achar* aTestName,
+                                                const ni::achar* fn)
 {
   ni::cString dir = ni::GetLang()->GetProperty("ni.dirs.niApp");
   dir += "Tests/";
@@ -69,7 +68,8 @@ static inline ni::cString GetTestOutputFilePath(
 
 }
 
-#define TEST_FILEPATH(FILENAME) UnitTest::GetTestOutputFilePath(m_testName,FILENAME).Chars()
+#define TEST_FILEPATH(FILENAME) \
+  UnitTest::GetTestOutputFilePath(m_testName, FILENAME).Chars()
 
 //----------------------------------------------------------------------------
 //
@@ -79,10 +79,10 @@ static inline ni::cString GetTestOutputFilePath(
 namespace UnitTest {
 
 #ifdef TEST
-#  error "TEST macro already defined."
+  #error "TEST macro already defined."
 #endif
 #ifdef TEST_FIXTURE
-#  error "TEST_FIXTURE macro already defined."
+  #error "TEST_FIXTURE macro already defined."
 #endif
 
 //
@@ -99,112 +99,132 @@ namespace UnitTest {
 //    new MyTestRun(TEST_PARAMS_CALL);
 //  }
 //
-#define TEST_PARAMS_DECL                        \
-  UnitTest::TestResults& testResults_;          \
-  char const* const m_testName;                 \
-  bool& m_timeReport;                           \
+#define TEST_PARAMS_DECL               \
+  UnitTest::TestResults& testResults_; \
+  char const* const m_testName;        \
+  bool& m_timeReport;                  \
   int& m_numSteps;
 
-#define TEST_PARAMS_FUNC                        \
-  UnitTest::TestResults& testResults_,          \
-    char const* const m_testName,               \
-    bool& m_timeReport,                         \
-    int& m_numSteps
+#define TEST_PARAMS_FUNC                                             \
+  UnitTest::TestResults &testResults_, char const *const m_testName, \
+    bool &m_timeReport, int &m_numSteps
 
-#define TEST_PARAMS_CONS testResults_(testResults_), m_testName(m_testName), m_timeReport(m_timeReport), m_numSteps(m_numSteps)
+#define TEST_PARAMS_CONS                              \
+  testResults_(testResults_), m_testName(m_testName), \
+    m_timeReport(m_timeReport), m_numSteps(m_numSteps)
 
 #define TEST_PARAMS_CALL testResults_, m_testName, m_timeReport, m_numSteps
 
-#define TEST_PARAMS_LAMBDA  &testResults_, m_testName = m_testName
+#define TEST_PARAMS_LAMBDA &testResults_, m_testName = m_testName
 
-#define TEST_PARAMS_LAMBDA_UNUSED niUnused(testResults_); niUnused(m_testName)
+#define TEST_PARAMS_LAMBDA_UNUSED \
+  niUnused(testResults_);         \
+  niUnused(m_testName)
 
 struct sNoCatchAllException {};
 
-#define TEST_CONSTRUCTOR(NAME)                  \
-  TEST_PARAMS_DECL;                             \
-  NAME(TEST_PARAMS_FUNC) : TEST_PARAMS_CONS
+#define TEST_CONSTRUCTOR(NAME) \
+  TEST_PARAMS_DECL;            \
+  NAME(TEST_PARAMS_FUNC)       \
+      : TEST_PARAMS_CONS
 
-#define TEST_CONSTRUCTOR_BASE(NAME,BASE)          \
-  NAME(TEST_PARAMS_FUNC) : BASE(TEST_PARAMS_CALL)
+#define TEST_CONSTRUCTOR_BASE(NAME, BASE) \
+  NAME(TEST_PARAMS_FUNC)                  \
+      : BASE(TEST_PARAMS_CALL)
 
 #ifdef TEST_NICATCHALL
-#  define TEST_CATCH_ALL_EXCEPTIONS(MSG)                                \
-  TEST_CATCHALL() {                                                      \
-    testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, MSG);  \
-  }
+  #define TEST_CATCH_ALL_EXCEPTIONS(MSG)                               \
+    TEST_CATCHALL()                                                    \
+    {                                                                  \
+      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, MSG); \
+    }
 #else
-#  define TEST_CATCH_ALL_EXCEPTIONS(MSG) TEST_CATCH(UnitTest::sNoCatchAllException,_) {}
+  #define TEST_CATCH_ALL_EXCEPTIONS(MSG)          \
+    TEST_CATCH(UnitTest::sNoCatchAllException, _) \
+    {                                             \
+    }
 #endif
 
-#define TEST_FIXTURE_EX(Fixture, Name, List)                            \
-  struct Fixture##Name##Helper : public Fixture {                       \
-    Fixture##Name##Helper(char const* testName) : m_testName(testName) {} \
-    void RunTest(UnitTest::TestResults& testResults_,                   \
-                 char const* const& m_testName,                         \
-                 char const* const& m_filename,                         \
-                 int const& m_lineNumber,                               \
-                 bool& m_timeConstraintExempt,                          \
-                 ni::tF64& m_timeStart,                                 \
-                 bool& m_timeReport,                                    \
-                 int& m_numSteps);                                      \
-    char const* const m_testName;                                       \
-   private:                                                             \
-   Fixture##Name##Helper(Fixture##Name##Helper const&);                 \
-   Fixture##Name##Helper& operator =(Fixture##Name##Helper const&);     \
-  };                                                                    \
-  class Test##Fixture##Name : public UnitTest::Test                     \
-  {                                                                     \
-   public:                                                              \
-   Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
-   private:                                                             \
-   mutable Fixture##Name##Helper* _mt;                                  \
-   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-     TEST_TRY {                                                          \
-       _mt = new Fixture##Name##Helper(m_testName);                     \
-     }                                                                  \
-     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture)\
-   }                                                                    \
-   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
-     TEST_TRY {                                                         \
-       _mt->RunTest(testResults_,m_testName,m_filename,m_lineNumber,m_timeConstraintExempt,m_timeStart,m_timeReport,m_numSteps); \
-     }                                                                  \
-     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
-   }                                                                    \
-   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-     TEST_TRY {                                                         \
-       delete _mt;                                                      \
-       _mt = NULL;                                                      \
-     }                                                                  \
-     TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture) \
-   }                                                                    \
-  } test##Fixture##Name##Instance;                                      \
-  UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance); \
-  void Fixture##Name##Helper::RunTest(UnitTest::TestResults& testResults_, \
-                                      char const* const& m_testName,    \
-                                      char const* const& m_filename,    \
-                                      int const& m_lineNumber,          \
-                                      bool& m_timeConstraintExempt,     \
-                                      ni::tF64& m_timeStart,            \
-                                      bool& m_timeReport,               \
-                                      int& m_numSteps)
+#define TEST_FIXTURE_EX(Fixture, Name, List)                                   \
+  struct Fixture##Name##Helper : public Fixture {                              \
+    Fixture##Name##Helper(char const* testName)                                \
+        : m_testName(testName)                                                 \
+    {                                                                          \
+    }                                                                          \
+    void RunTest(UnitTest::TestResults& testResults_,                          \
+                 char const* const& m_testName, char const* const& m_filename, \
+                 int const& m_lineNumber, bool& m_timeConstraintExempt,        \
+                 ni::tF64& m_timeStart, bool& m_timeReport, int& m_numSteps);  \
+    char const* const m_testName;                                              \
+                                                                               \
+   private:                                                                    \
+    Fixture##Name##Helper(Fixture##Name##Helper const&);                       \
+    Fixture##Name##Helper& operator=(Fixture##Name##Helper const&);            \
+  };                                                                           \
+  class Test##Fixture##Name : public UnitTest::Test {                          \
+   public:                                                                     \
+    Test##Fixture##Name()                                                      \
+        : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture)               \
+    {                                                                          \
+    }                                                                          \
+                                                                               \
+   private:                                                                    \
+    mutable Fixture##Name##Helper* _mt;                                        \
+    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const      \
+    {                                                                          \
+      TEST_TRY                                                                 \
+      {                                                                        \
+        _mt = new Fixture##Name##Helper(m_testName);                           \
+      }                                                                        \
+      TEST_CATCH_ALL_EXCEPTIONS(                                               \
+        "Unhandled exception in fixture constructor " #Fixture)                \
+    }                                                                          \
+    virtual void RunImpl(UnitTest::TestResults& testResults_) const            \
+    {                                                                          \
+      TEST_TRY                                                                 \
+      {                                                                        \
+        _mt->RunTest(testResults_, m_testName, m_filename, m_lineNumber,       \
+                     m_timeConstraintExempt, m_timeStart, m_timeReport,        \
+                     m_numSteps);                                              \
+      }                                                                        \
+      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture)    \
+    }                                                                          \
+    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const       \
+    {                                                                          \
+      TEST_TRY                                                                 \
+      {                                                                        \
+        delete _mt;                                                            \
+        _mt = NULL;                                                            \
+      }                                                                        \
+      TEST_CATCH_ALL_EXCEPTIONS(                                               \
+        "Unhandled exception in fixture destructor " #Fixture)                 \
+    }                                                                          \
+  } test##Fixture##Name##Instance;                                             \
+  UnitTest::ListAdder adder##Fixture##Name(List,                               \
+                                           &test##Fixture##Name##Instance);    \
+  void Fixture##Name##Helper::RunTest(                                         \
+    UnitTest::TestResults& testResults_, char const* const& m_testName,        \
+    char const* const& m_filename, int const& m_lineNumber,                    \
+    bool& m_timeConstraintExempt, ni::tF64& m_timeStart, bool& m_timeReport,   \
+    int& m_numSteps)
 
-#define TEST_FIXTURE(Fixture,Name) TEST_FIXTURE_EX(Fixture,Name,UnitTest::Test::GetTestList())
+#define TEST_FIXTURE(Fixture, Name) \
+  TEST_FIXTURE_EX(Fixture, Name, UnitTest::Test::GetTestList())
 
-#define TEST_FIXTURE_DISABLED(FIXTURE,NAME)                             \
-  void DisabledTest##FIXTURE##NAME(UnitTest::TestResults& testResults_, \
-                                   char const* const m_testName,        \
-                                   char const* const m_filename,        \
-                                   int const m_lineNumber,              \
-                                   bool m_timeConstraintExempt,         \
-                                   ni::tF64& m_timeStart,               \
-                                   bool m_timeReport,                   \
-                                   int m_numSteps)
+#define TEST_FIXTURE_DISABLED(FIXTURE, NAME)                               \
+  void DisabledTest##FIXTURE##NAME(                                        \
+    UnitTest::TestResults& testResults_, char const* const m_testName,     \
+    char const* const m_filename, int const m_lineNumber,                  \
+    bool m_timeConstraintExempt, ni::tF64& m_timeStart, bool m_timeReport, \
+    int m_numSteps)
 
-#define TEST_FIXTURE_EX_DISABLED(FIXTURE,NAME,LIST) TEST_FIXTURE_DISABLED(FIXTURE,NAME)
+#define TEST_FIXTURE_EX_DISABLED(FIXTURE, NAME, LIST) \
+  TEST_FIXTURE_DISABLED(FIXTURE, NAME)
 
 struct iTestClass {
-  virtual ~iTestClass() {}
+  virtual ~iTestClass()
+  {
+  }
   const ni::achar* m_testName = AZEROSTR;
 
   niFnV(ni::tBool) Start(UnitTest::TestResults& testResults_) = 0;
@@ -213,193 +233,254 @@ struct iTestClass {
   niFnV(void) End(UnitTest::TestResults& testResults_) = 0;
 };
 
-#define TEST_CLASS_EX(Fixture, Name, List)                              \
-  class Test##Fixture##Name : public UnitTest::Test {                   \
-   public:                                                              \
-   Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {} \
-   private:                                                             \
-   mutable UnitTest::iTestClass* _mt;                                   \
-   virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const { \
-     this->m_numSteps = ni::eInvalidHandle;                             \
-     _mt = new s##Fixture##_##Name();                                   \
-     _mt->m_testName = this->m_testName;                                \
-     if (!_mt->Start(testResults_)) {                                   \
-       testResults_.OnTestFailure(                                      \
-         __FILE__, __LINE__, m_testName,                                \
-         niFmt("Cant start class fixture: " #Fixture "-" #Name));       \
-       _mt->End(testResults_);                                          \
-       delete _mt;                                                      \
-       _mt = nullptr;                                                   \
-     }                                                                  \
-   }                                                                    \
-   virtual void RunImpl(UnitTest::TestResults& testResults_) const  {   \
-     if (_mt && !_mt->Step(testResults_)) {                             \
-       this->m_numSteps = 0;                                            \
-     }                                                                  \
-   }                                                                    \
-   virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const { \
-     if (_mt) {                                                         \
-       _mt->End(testResults_);                                          \
-       delete _mt;                                                      \
-       _mt = nullptr;                                                   \
-     }                                                                  \
-   }                                                                    \
-  } test##Fixture##Name##Instance;                                      \
-  UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
+#define TEST_CLASS_EX(Fixture, Name, List)                                \
+  class Test##Fixture##Name : public UnitTest::Test {                     \
+   public:                                                                \
+    Test##Fixture##Name()                                                 \
+        : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture)          \
+    {                                                                     \
+    }                                                                     \
+                                                                          \
+   private:                                                               \
+    mutable UnitTest::iTestClass* _mt;                                    \
+    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const \
+    {                                                                     \
+      this->m_numSteps = ni::eInvalidHandle;                              \
+      _mt = new s##Fixture##_##Name();                                    \
+      _mt->m_testName = this->m_testName;                                 \
+      if (!_mt->Start(testResults_)) {                                    \
+        testResults_.OnTestFailure(                                       \
+          __FILE__, __LINE__, m_testName,                                 \
+          niFmt("Cant start class fixture: " #Fixture "-" #Name));        \
+        _mt->End(testResults_);                                           \
+        delete _mt;                                                       \
+        _mt = nullptr;                                                    \
+      }                                                                   \
+    }                                                                     \
+    virtual void RunImpl(UnitTest::TestResults& testResults_) const       \
+    {                                                                     \
+      if (_mt && !_mt->Step(testResults_)) {                              \
+        this->m_numSteps = 0;                                             \
+      }                                                                   \
+    }                                                                     \
+    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const  \
+    {                                                                     \
+      if (_mt) {                                                          \
+        _mt->End(testResults_);                                           \
+        delete _mt;                                                       \
+        _mt = nullptr;                                                    \
+      }                                                                   \
+    }                                                                     \
+  } test##Fixture##Name##Instance;                                        \
+  UnitTest::ListAdder adder##Fixture##Name(List,                          \
+                                           &test##Fixture##Name##Instance);
 
-#define TEST_CLASS(Fixture,Name) TEST_CLASS_EX(Fixture,Name,UnitTest::Test::GetTestList())
+#define TEST_CLASS(Fixture, Name) \
+  TEST_CLASS_EX(Fixture, Name, UnitTest::Test::GetTestList())
 
-#define TEST_WIDGET_EX(Name, List)                                               \
-class Test##Name : public UnitTest::Test                                         \
-{                                                                                \
- public:                                                                         \
- Test##Name() : Test(#Name, __FILE__, __LINE__) {}                               \
- private:                                                                        \
- virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {         \
-   TEST_TRY {                                                           \
-     TEST_STEPS(5);                                                              \
-     UnitTest::TestAppSetCurrentTestWidgetSink(                                  \
-       niNew Name(TEST_PARAMS_CALL),                                             \
-       TEST_IS_INTERACTIVE());                                                   \
-   }                                                                             \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Name) \
- }                                                                               \
- virtual void RunImpl(UnitTest::TestResults& testResults_) const  {              \
-   TEST_TRY {                                                                  \
-   }                                                                             \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name)            \
- }                                                                               \
- virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {          \
-   TEST_TRY {                                                                  \
-     UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                     \
-   }                                                                             \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Name)  \
- }                                                                               \
-} test##Name##Instance;                                                          \
-UnitTest::ListAdder adder##Name (List, &test##Name##Instance);
+#define TEST_WIDGET_EX(Name, List)                                        \
+  class Test##Name : public UnitTest::Test {                              \
+   public:                                                                \
+    Test##Name()                                                          \
+        : Test(#Name, __FILE__, __LINE__)                                 \
+    {                                                                     \
+    }                                                                     \
+                                                                          \
+   private:                                                               \
+    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const \
+    {                                                                     \
+      TEST_TRY                                                            \
+      {                                                                   \
+        TEST_STEPS(5);                                                    \
+        UnitTest::TestAppSetCurrentTestWidgetSink(                        \
+          niNew Name(TEST_PARAMS_CALL), TEST_IS_INTERACTIVE());           \
+      }                                                                   \
+      TEST_CATCH_ALL_EXCEPTIONS(                                          \
+        "Unhandled exception in widget constructor " #Name)               \
+    }                                                                     \
+    virtual void RunImpl(UnitTest::TestResults& testResults_) const       \
+    {                                                                     \
+      TEST_TRY                                                            \
+      {                                                                   \
+      }                                                                   \
+      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Name)  \
+    }                                                                     \
+    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const  \
+    {                                                                     \
+      TEST_TRY                                                            \
+      {                                                                   \
+        UnitTest::TestAppSetCurrentTestWidgetSink(NULL, eFalse);          \
+      }                                                                   \
+      TEST_CATCH_ALL_EXCEPTIONS(                                          \
+        "Unhandled exception in widget destructor " #Name)                \
+    }                                                                     \
+  } test##Name##Instance;                                                 \
+  UnitTest::ListAdder adder##Name(List, &test##Name##Instance);
 
-#define TEST_WIDGET(Name) TEST_WIDGET_EX(Name,UnitTest::Test::GetTestList())
+#define TEST_WIDGET(Name) TEST_WIDGET_EX(Name, UnitTest::Test::GetTestList())
 
 #define TEST_WIDGET_DISABLED(NAME)
-#define TEST_WIDGET_EX_DISABLED(NAME,LIST)
+#define TEST_WIDGET_EX_DISABLED(NAME, LIST)
 
-#define TEST_FIXTURE_WIDGET_EX(Fixture, Name, List)                                  \
-struct Fixture##Name##Helper : public Fixture {                                      \
-  Fixture##Name##Helper(char const* testName) : m_testName(testName) {}              \
-  char const* const m_testName;                                                      \
- private:                                                                            \
- Fixture##Name##Helper(Fixture##Name##Helper const&);                                \
- Fixture##Name##Helper& operator =(Fixture##Name##Helper const&);                    \
-};                                                                                   \
-class Test##Fixture##Name : public UnitTest::Test                                    \
-{                                                                                    \
- public:                                                                             \
- Test##Fixture##Name() : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture) {}   \
- private:                                                                            \
- mutable Fixture##Name##Helper* _mt;                                                 \
- virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const {             \
-   TEST_TRY {                                                                      \
-     _mt = new Fixture##Name##Helper(m_testName);                                    \
-   }                                                                                 \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture constructor " #Fixture) \
-   TEST_TRY {                                                                      \
-     TEST_STEPS(5);                                                                  \
-     UnitTest::TestAppSetCurrentTestWidgetSink(                                      \
-       niNew Name(TEST_PARAMS_CALL),                                                 \
-       TEST_IS_INTERACTIVE());                                                       \
-   }                                                                                 \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget constructor " #Fixture)  \
- }                                                                                   \
- virtual void RunImpl(UnitTest::TestResults& testResults_) const  {                  \
-   TEST_TRY {                                                                      \
-   }                                                                                 \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture)             \
- }                                                                                   \
- virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const {              \
-   TEST_TRY {                                                                      \
-     UnitTest::TestAppSetCurrentTestWidgetSink(NULL,eFalse);                         \
-   }                                                                                 \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in widget destructor " #Fixture)   \
-   TEST_TRY {                                                                      \
-     delete _mt;                                                                     \
-     _mt = NULL;                                                                     \
-   }                                                                                 \
-   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture destructor " #Fixture)  \
- }                                                                                   \
-} test##Fixture##Name##Instance;                                                     \
-UnitTest::ListAdder adder##Fixture##Name (List, &test##Fixture##Name##Instance);
+#define TEST_FIXTURE_WIDGET_EX(Fixture, Name, List)                         \
+  struct Fixture##Name##Helper : public Fixture {                           \
+    Fixture##Name##Helper(char const* testName)                             \
+        : m_testName(testName)                                              \
+    {                                                                       \
+    }                                                                       \
+    char const* const m_testName;                                           \
+                                                                            \
+   private:                                                                 \
+    Fixture##Name##Helper(Fixture##Name##Helper const&);                    \
+    Fixture##Name##Helper& operator=(Fixture##Name##Helper const&);         \
+  };                                                                        \
+  class Test##Fixture##Name : public UnitTest::Test {                       \
+   public:                                                                  \
+    Test##Fixture##Name()                                                   \
+        : Test(#Fixture "-" #Name, __FILE__, __LINE__, #Fixture)            \
+    {                                                                       \
+    }                                                                       \
+                                                                            \
+   private:                                                                 \
+    mutable Fixture##Name##Helper* _mt;                                     \
+    virtual void BeforeRunImpl(UnitTest::TestResults& testResults_) const   \
+    {                                                                       \
+      TEST_TRY                                                              \
+      {                                                                     \
+        _mt = new Fixture##Name##Helper(m_testName);                        \
+      }                                                                     \
+      TEST_CATCH_ALL_EXCEPTIONS(                                            \
+        "Unhandled exception in fixture constructor " #Fixture)             \
+      TEST_TRY                                                              \
+      {                                                                     \
+        TEST_STEPS(5);                                                      \
+        UnitTest::TestAppSetCurrentTestWidgetSink(                          \
+          niNew Name(TEST_PARAMS_CALL), TEST_IS_INTERACTIVE());             \
+      }                                                                     \
+      TEST_CATCH_ALL_EXCEPTIONS(                                            \
+        "Unhandled exception in widget constructor " #Fixture)              \
+    }                                                                       \
+    virtual void RunImpl(UnitTest::TestResults& testResults_) const         \
+    {                                                                       \
+      TEST_TRY                                                              \
+      {                                                                     \
+      }                                                                     \
+      TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in fixture " #Fixture) \
+    }                                                                       \
+    virtual void AfterRunImpl(UnitTest::TestResults& testResults_) const    \
+    {                                                                       \
+      TEST_TRY                                                              \
+      {                                                                     \
+        UnitTest::TestAppSetCurrentTestWidgetSink(NULL, eFalse);            \
+      }                                                                     \
+      TEST_CATCH_ALL_EXCEPTIONS(                                            \
+        "Unhandled exception in widget destructor " #Fixture)               \
+      TEST_TRY                                                              \
+      {                                                                     \
+        delete _mt;                                                         \
+        _mt = NULL;                                                         \
+      }                                                                     \
+      TEST_CATCH_ALL_EXCEPTIONS(                                            \
+        "Unhandled exception in fixture destructor " #Fixture)              \
+    }                                                                       \
+  } test##Fixture##Name##Instance;                                          \
+  UnitTest::ListAdder adder##Fixture##Name(List,                            \
+                                           &test##Fixture##Name##Instance);
 
-#define TEST_FIXTURE_WIDGET(Fixture,Name) TEST_FIXTURE_WIDGET_EX(Fixture,Name,UnitTest::Test::GetTestList())
+#define TEST_FIXTURE_WIDGET(Fixture, Name) \
+  TEST_FIXTURE_WIDGET_EX(Fixture, Name, UnitTest::Test::GetTestList())
 
-#define TEST_FIXTURE_WIDGET_DISABLED(FIXTURE,NAME)
-#define TEST_FIXTURE_WIDGET_EX_DISABLED(FIXTURE,NAME,LIST)
+#define TEST_FIXTURE_WIDGET_DISABLED(FIXTURE, NAME)
+#define TEST_FIXTURE_WIDGET_EX_DISABLED(FIXTURE, NAME, LIST)
 
 #ifdef TEST_NITHROWASSERT
-#  define TEST_THROW_ASSERT(DESC)  niThrowPanic(UnitTest,unittest_assert,DESC)
-#  undef niAssert
-#  undef niAssertMsg
-#  undef niAssertUnreachable
-#  define niAssert(exp)            if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp)); }
-#  define niAssertMsg(exp,msg)     if (!(exp)) { TEST_THROW_ASSERT("ASSERT: " _A(#exp) ": " msg); }
-#  define niAssertUnreachable(...) TEST_THROW_ASSERT("ASSERT UNREACHABLE: " __VA_ARGS__);
+  #define TEST_THROW_ASSERT(DESC) niThrowPanic(UnitTest, unittest_assert, DESC)
+  #undef niAssert
+  #undef niAssertMsg
+  #undef niAssertUnreachable
+  #define niAssert(exp)                       \
+    if (!(exp)) {                             \
+      TEST_THROW_ASSERT("ASSERT: " _A(#exp)); \
+    }
+  #define niAssertMsg(exp, msg)                        \
+    if (!(exp)) {                                      \
+      TEST_THROW_ASSERT("ASSERT: " _A(#exp) ": " msg); \
+    }
+  #define niAssertUnreachable(...) \
+    TEST_THROW_ASSERT("ASSERT UNREACHABLE: " __VA_ARGS__);
 #else
-#  define TEST_THROW_ASSERT(DESC)
+  #define TEST_THROW_ASSERT(DESC)
 #endif
 
-#define TEST_LOG_NORMAL   (1<<0)
-#define TEST_LOG_ERROR    (1<<1)
-#define TEST_LOG_DEBUG    (1<<2)
-#define TEST_LOG_WARNING  (1<<3)
-#define TEST_LOG_CONSOLE  (1<<4)
-#define TEST_LOG_MEMORY   (1<<5)
+#define TEST_LOG_NORMAL (1 << 0)
+#define TEST_LOG_ERROR (1 << 1)
+#define TEST_LOG_DEBUG (1 << 2)
+#define TEST_LOG_WARNING (1 << 3)
+#define TEST_LOG_CONSOLE (1 << 4)
+#define TEST_LOG_MEMORY (1 << 5)
 
-#define TEST_UNUSED(X)    X;
+#define TEST_UNUSED(X) X;
 
-#define TEST_TIMEREPORT()   m_timeReport = true;
+#define TEST_TIMEREPORT() m_timeReport = true;
 
 #define TEST_INTERACTIVE_STEPS_COUNT 0xffffff
 #define TEST_IS_INTERACTIVE() (m_numSteps == TEST_INTERACTIVE_STEPS_COUNT)
 
 // run interactively when the passed fixture name is the same as the test name
-#define TEST_STEPS(COUNT)                                             \
-  if (UnitTest::runFixtureName.IEq(m_testName)) {                     \
-    m_numSteps = TEST_INTERACTIVE_STEPS_COUNT;                        \
-  }                                                                   \
-  else {                                                              \
-    m_numSteps = COUNT;                                               \
+#define TEST_STEPS(COUNT)                         \
+  if (UnitTest::runFixtureName.IEq(m_testName)) { \
+    m_numSteps = TEST_INTERACTIVE_STEPS_COUNT;    \
+  }                                               \
+  else {                                          \
+    m_numSteps = COUNT;                           \
   }
 
-#define TEST_PRINT(FMT)        {niPrintln(FMT);}
+#define TEST_PRINT(FMT) \
+  {                     \
+    niPrintln(FMT);     \
+  }
 
-#define TEST_DEBUGFMT(STR,...) niDebugFmt(("[%s] " STR, m_testName, __VA_ARGS__))
+#define TEST_DEBUGFMT(STR, ...) \
+  niDebugFmt(("[%s] " STR, m_testName, __VA_ARGS__))
 
 #ifndef _A
-#  define _A(X) X
+  #define _A(X) X
 #endif
 
-#define TEST_TIMING_BLOCK_(NAME,FMTDATA,FMT)                            \
-  struct sUnitTestTimingBlock_##NAME {                                  \
-    void*             _fmtData;                                         \
-    char const* const _testName;                                        \
-    char const* const _Name;                                            \
-    double        _startTime;                                           \
-    sUnitTestTimingBlock_##NAME(char const* const aTestName, char const* const aName, void* aFmtData) : \
-    _fmtData(aFmtData),                                                 \
-      _testName(aTestName),                                             \
-      _Name(aName),                                                     \
-      _startTime(ni::TimerInSeconds()) {}                               \
-    ~sUnitTestTimingBlock_##NAME() {                                    \
-      double timing = ni::TimerInSeconds()-_startTime;                  \
-      TEST_PRINT(niFmt FMT);                                            \
-    }                                                                   \
-  };  sUnitTestTimingBlock_##NAME _timing_##NAME(m_testName,#NAME,(void*)(FMTDATA));
+#define TEST_TIMING_BLOCK_(NAME, FMTDATA, FMT)                           \
+  struct sUnitTestTimingBlock_##NAME {                                   \
+    void* _fmtData;                                                      \
+    char const* const _testName;                                         \
+    char const* const _Name;                                             \
+    double _startTime;                                                   \
+    sUnitTestTimingBlock_##NAME(char const* const aTestName,             \
+                                char const* const aName, void* aFmtData) \
+        : _fmtData(aFmtData)                                             \
+        , _testName(aTestName)                                           \
+        , _Name(aName)                                                   \
+        , _startTime(ni::TimerInSeconds())                               \
+    {                                                                    \
+    }                                                                    \
+    ~sUnitTestTimingBlock_##NAME()                                       \
+    {                                                                    \
+      double timing = ni::TimerInSeconds() - _startTime;                 \
+      TEST_PRINT(niFmt FMT);                                             \
+    }                                                                    \
+  };                                                                     \
+  sUnitTestTimingBlock_##NAME _timing_##NAME(m_testName, #NAME,          \
+                                             (void*)(FMTDATA));
 
-#define TEST_TIMING_BLOCK(NAME) TEST_TIMING_BLOCK_(NAME,NULL,("[Timing-%s] [%s] %.5f secs\n",_testName,_Name,timing))
+#define TEST_TIMING_BLOCK(NAME) \
+  TEST_TIMING_BLOCK_(           \
+    NAME, NULL, ("[Timing-%s] [%s] %.5f secs\n", _testName, _Name, timing))
 
-#define TEST_TIMING_BEGIN_(NAME,FMTDATA,FMT) {  \
-  TEST_TIMING_BLOCK_(NAME,FMTDATA,FMT);
+#define TEST_TIMING_BEGIN_(NAME, FMTDATA, FMT) \
+  {                                            \
+    TEST_TIMING_BLOCK_(NAME, FMTDATA, FMT);
 
-#define TEST_TIMING_BEGIN(NAME) TEST_TIMING_BEGIN_(NAME,NULL,("[Timing-%s] [%s] %.5f secs\n",_testName,_Name,timing))
+#define TEST_TIMING_BEGIN(NAME) \
+  TEST_TIMING_BEGIN_(           \
+    NAME, NULL, ("[Timing-%s] [%s] %.5f secs\n", _testName, _Name, timing))
 
 #define TEST_TIMING_END() }
 #define TEST_TIMING_END() }
@@ -418,15 +499,19 @@ struct sAutoWarningMode {
       ++_warningMode;
     }
   }
-  ~sAutoWarningMode() {
+  ~sAutoWarningMode()
+  {
     if (_enableWarningMode) {
       --_warningMode;
     }
   }
 };
 
-#define AUTO_WARNING_MODE_IF(COND) UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode, !!(COND))
-#define AUTO_WARNING_MODE() UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode)
+#define AUTO_WARNING_MODE_IF(COND)                                         \
+  UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode, \
+                                               !!(COND))
+#define AUTO_WARNING_MODE() \
+  UnitTest::sAutoWarningMode __autoWarningMode(testResults_.m_warningMode)
 
 struct UnitTestMemDelta {
   const char* _file;
@@ -440,34 +525,43 @@ struct UnitTestMemDelta {
   {
     ni_mem_get_stats(&_memStart);
   }
-  ~UnitTestMemDelta() {
+  ~UnitTestMemDelta()
+  {
     EndTracking();
   }
-  ni::sVec4i GetCurrentAllocsDelta() {
+  ni::sVec4i GetCurrentAllocsDelta()
+  {
     ni::sVec4i delta;
     ni_mem_get_stats(&delta);
     delta -= _memStart;
     return delta;
   }
-  void EndTracking() {
+  void EndTracking()
+  {
     if (_memStart == ni::sVec4i::Zero())
       return;
     const ni::sVec4i delta = GetCurrentAllocsDelta();
     ni::ni_log(
       ni::eLogFlags_Info,
-      niFmt("MemTracking delta: numAlloc: %d, numFree: %d, numObjectAlloc: %d, numObjectFree: %d",
-            delta.x, delta.y, delta.z, delta.w),
+      niFmt(
+        "MemTracking delta: numAlloc: %d, numFree: %d, numObjectAlloc: %d, numObjectFree: %d",
+        delta.x, delta.y, delta.z, delta.w),
       _file, _line, _func);
     _memStart = ni::sVec4i::Zero();
   }
 };
 
-#define TEST_TRACK_MEMORY_BEGIN() UnitTest::UnitTestMemDelta __memtrack(__FILE__,__LINE__,__FUNCTION__);
+#define TEST_TRACK_MEMORY_BEGIN() \
+  UnitTest::UnitTestMemDelta __memtrack(__FILE__, __LINE__, __FUNCTION__);
 #define TEST_TRACK_MEMORY_END() __memtrack.EndTracking();
-#define TEST_TRACK_MEMORY_EXPECTED_ALLOCS(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().x)
-#define TEST_TRACK_MEMORY_EXPECTED_FREES(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().y)
-#define TEST_TRACK_MEMORY_EXPECTED_OBJ_ALLOCS(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().z)
-#define TEST_TRACK_MEMORY_EXPECTED_OBJ_FREES(EXPECTED) CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().w)
+#define TEST_TRACK_MEMORY_EXPECTED_ALLOCS(EXPECTED) \
+  CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().x)
+#define TEST_TRACK_MEMORY_EXPECTED_FREES(EXPECTED) \
+  CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().y)
+#define TEST_TRACK_MEMORY_EXPECTED_OBJ_ALLOCS(EXPECTED) \
+  CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().z)
+#define TEST_TRACK_MEMORY_EXPECTED_OBJ_FREES(EXPECTED) \
+  CHECK_EQUAL(EXPECTED, __memtrack.GetCurrentAllocsDelta().w)
 }
 
 //----------------------------------------------------------------------------
@@ -476,126 +570,169 @@ struct UnitTestMemDelta {
 //
 //----------------------------------------------------------------------------
 #ifdef CHECK
-#  error UnitTest++ redefines CHECK
+  #error UnitTest++ redefines CHECK
 #endif
 
-#define CHECK(value)                                                    \
-  TEST_TRY {                                                             \
-    if (!UnitTest::Check(value))                                        \
+#define CHECK(value)                                                      \
+  TEST_TRY                                                                \
+  {                                                                       \
+    if (!UnitTest::Check(value))                                          \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #value); \
-  }                                                                     \
+  }                                                                       \
   TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")")
 
-#define CHECK_RETURN_IF_FAILED(value)                                   \
-  TEST_TRY {                                                             \
-    if (!UnitTest::Check(value)) {                                      \
+#define CHECK_RETURN_IF_FAILED(value)                                     \
+  TEST_TRY                                                                \
+  {                                                                       \
+    if (!UnitTest::Check(value)) {                                        \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #value); \
-      return;                                                           \
-    }                                                                   \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")") \
+      return;                                                             \
+    }                                                                     \
+  }                                                                       \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #value ")")
 
-#define CHECK_RET(VALUE,RET)                                            \
-  TEST_TRY {                                                            \
-    if (!UnitTest::Check(VALUE)) {                                      \
+#define CHECK_RET(VALUE, RET)                                             \
+  TEST_TRY                                                                \
+  {                                                                       \
+    if (!UnitTest::Check(VALUE)) {                                        \
       testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, #VALUE); \
-      return RET;                                                       \
-    }                                                                   \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #VALUE ")") \
+      return RET;                                                         \
+    }                                                                     \
+  }                                                                       \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK(" #VALUE ")")
 
-#define CHECK_EQUAL(expected, actual)                                   \
-  TEST_TRY {                                                             \
-    UnitTest::CheckEqual(testResults_, "CHECK_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected ", " #actual ")")
+#define CHECK_EQUAL(expected, actual)                                         \
+  TEST_TRY                                                                    \
+  {                                                                           \
+    UnitTest::CheckEqual(testResults_,                                        \
+                         "CHECK_EQUAL(" #expected ", " #actual ")", expected, \
+                         actual, m_testName, __FILE__, __LINE__);             \
+  }                                                                           \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_EQUAL(" #expected   \
+                            ", " #actual ")")
 
-#define CHECK_NOT_EQUAL(expected, actual)                               \
-  TEST_TRY {                                                             \
-    UnitTest::CheckNotEqual(testResults_, "CHECK_NOT_EQUAL(" #expected ", " #actual ")", expected, actual, m_testName, __FILE__, __LINE__); \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")")
+#define CHECK_NOT_EQUAL(expected, actual)                                      \
+  TEST_TRY                                                                     \
+  {                                                                            \
+    UnitTest::CheckNotEqual(testResults_,                                      \
+                            "CHECK_NOT_EQUAL(" #expected ", " #actual ")",     \
+                            expected, actual, m_testName, __FILE__, __LINE__); \
+  }                                                                            \
+  TEST_CATCH_ALL_EXCEPTIONS(                                                   \
+    "Unhandled exception in CHECK_NOT_EQUAL(" #expected ", " #actual ")")
 
-#define CHECK_CLOSE(expected, actual, tolerance)                        \
-  TEST_TRY {                                                             \
-    UnitTest::CheckClose(testResults_, expected, actual, tolerance, m_testName, __FILE__, __LINE__); \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_CLOSE(" #expected ", " #actual ")")
+#define CHECK_CLOSE(expected, actual, tolerance)                            \
+  TEST_TRY                                                                  \
+  {                                                                         \
+    UnitTest::CheckClose(testResults_, expected, actual, tolerance,         \
+                         m_testName, __FILE__, __LINE__);                   \
+  }                                                                         \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_CLOSE(" #expected \
+                            ", " #actual ")")
 
-#define CHECK_ARRAY_CLOSE(expected, actual, count, tolerance)           \
-  TEST_TRY {                                                             \
-    UnitTest::CheckArrayClose(testResults_, expected, actual, count, tolerance, m_testName, __FILE__, __LINE__); \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")")
+#define CHECK_ARRAY_CLOSE(expected, actual, count, tolerance)             \
+  TEST_TRY                                                                \
+  {                                                                       \
+    UnitTest::CheckArrayClose(testResults_, expected, actual, count,      \
+                              tolerance, m_testName, __FILE__, __LINE__); \
+  }                                                                       \
+  TEST_CATCH_ALL_EXCEPTIONS(                                              \
+    "Unhandled exception in CHECK_ARRAY_CLOSE(" #expected ", " #actual ")")
 
-#define CHECK_THROW(expression, ExpectedExceptionType)                  \
-  {                                                                     \
-    bool caught_ = false;                                               \
-    TEST_TRY { expression; }                                             \
-    TEST_CATCH(ExpectedExceptionType,_) { caught_ = true; }          \
-    if (!caught_) {                                                     \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, "Expected exception: \"" #ExpectedExceptionType "\" not thrown"); \
-    }                                                                   \
+#define CHECK_THROW(expression, ExpectedExceptionType)                    \
+  {                                                                       \
+    bool caught_ = false;                                                 \
+    TEST_TRY                                                              \
+    {                                                                     \
+      expression;                                                         \
+    }                                                                     \
+    TEST_CATCH(ExpectedExceptionType, _)                                  \
+    {                                                                     \
+      caught_ = true;                                                     \
+    }                                                                     \
+    if (!caught_) {                                                       \
+      testResults_.OnTestFailure(                                         \
+        __FILE__, __LINE__, m_testName,                                   \
+        "Expected exception: \"" #ExpectedExceptionType "\" not thrown"); \
+    }                                                                     \
   }
 
-#define CHECK_THROW_ANY(expression)                                     \
-  {                                                                     \
-    bool caught_ = false;                                               \
-    TEST_TRY { expression; }                                             \
-    TEST_CATCHALL() { caught_ = true; }                                   \
-    if (!caught_)                                                       \
-      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName, "Expected any exception, none thrown"); \
+#define CHECK_THROW_ANY(expression)                                      \
+  {                                                                      \
+    bool caught_ = false;                                                \
+    TEST_TRY                                                             \
+    {                                                                    \
+      expression;                                                        \
+    }                                                                    \
+    TEST_CATCHALL()                                                      \
+    {                                                                    \
+      caught_ = true;                                                    \
+    }                                                                    \
+    if (!caught_)                                                        \
+      testResults_.OnTestFailure(__FILE__, __LINE__, m_testName,         \
+                                 "Expected any exception, none thrown"); \
   }
 
-#define CHECK_LOGERROR_BEGIN()  testResults_.PushLogErrors();
-#define CHECK_LOGERROR_END(EXPECTED)  CHECK_EQUAL(EXPECTED,testResults_.GetLogErrorsDelta());
-#define CHECK_LOGERROR_END_CLOSE(EXPECTED,DELTA)  CHECK_CLOSE(EXPECTED,testResults_.GetLogErrorsDelta(),DELTA);
+#define CHECK_LOGERROR_BEGIN() testResults_.PushLogErrors();
+#define CHECK_LOGERROR_END(EXPECTED) \
+  CHECK_EQUAL(EXPECTED, testResults_.GetLogErrorsDelta());
+#define CHECK_LOGERROR_END_CLOSE(EXPECTED, DELTA) \
+  CHECK_CLOSE(EXPECTED, testResults_.GetLogErrorsDelta(), DELTA);
 
-#define CHECK_LOGWARNING_BEGIN()  testResults_.PushLogWarnings();
-#define CHECK_LOGWARNING_END(EXPECTED,DELTA)  CHECK_EQUAL(EXPECTED,testResults_.GetLogWarningsDelta());
-#define CHECK_LOGWARNING_END_CLOSE(EXPECTED,DELTA)  CHECK_CLOSE(EXPECTED,testResults_.GetLogWarningsDelta(),DELTA);
+#define CHECK_LOGWARNING_BEGIN() testResults_.PushLogWarnings();
+#define CHECK_LOGWARNING_END(EXPECTED, DELTA) \
+  CHECK_EQUAL(EXPECTED, testResults_.GetLogWarningsDelta());
+#define CHECK_LOGWARNING_END_CLOSE(EXPECTED, DELTA) \
+  CHECK_CLOSE(EXPECTED, testResults_.GetLogWarningsDelta(), DELTA);
 
-#define CHECK_PRED(expected, actual, name, pred)                        \
-  TEST_TRY {                                                             \
-    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, #name, pred); \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_PRED(" #expected ", " #actual ", " #name ")")
+#define CHECK_PRED(expected, actual, name, pred)                              \
+  TEST_TRY                                                                    \
+  {                                                                           \
+    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, \
+                        __LINE__, #name, pred);                               \
+  }                                                                           \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_PRED(" #expected    \
+                            ", " #actual ", " #name ")")
 
-#define CHECK_LE(expected, actual)                                      \
-  TEST_TRY {                                                             \
-    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
-                        "<=", [&](auto aLeft, auto aRight) {            \
-                          return aLeft <= aRight;                       \
-                        });                                             \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LE(" #expected ", " #actual ")")
+#define CHECK_LE(expected, actual)                                       \
+  TEST_TRY                                                               \
+  {                                                                      \
+    UnitTest::CheckPred(                                                 \
+      testResults_, expected, actual, m_testName, __FILE__, __LINE__,    \
+      "<=", [&](auto aLeft, auto aRight) { return aLeft <= aRight; });   \
+  }                                                                      \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LE(" #expected \
+                            ", " #actual ")")
 
-#define CHECK_LT(expected, actual)                                      \
-  TEST_TRY {                                                             \
-    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
-                        "<", [&](auto aLeft, auto aRight) {             \
-                          return aLeft < aRight;                        \
-                        });                                             \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LT(" #expected ", " #actual ")")
+#define CHECK_LT(expected, actual)                                         \
+  TEST_TRY                                                                 \
+  {                                                                        \
+    UnitTest::CheckPred(                                                   \
+      testResults_, expected, actual, m_testName, __FILE__, __LINE__, "<", \
+      [&](auto aLeft, auto aRight) { return aLeft < aRight; });            \
+  }                                                                        \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_LT(" #expected   \
+                            ", " #actual ")")
 
-#define CHECK_GE(expected, actual)                                      \
-  TEST_TRY {                                                             \
-    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FIGE__, __LINE__, \
-                        ">=", [&](auto aLeft, auto aRight) {            \
-                          return aLeft >= aRight;                       \
-                        });                                             \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GE(" #expected ", " #actual ")")
+#define CHECK_GE(expected, actual)                                       \
+  TEST_TRY                                                               \
+  {                                                                      \
+    UnitTest::CheckPred(                                                 \
+      testResults_, expected, actual, m_testName, __FIGE__, __LINE__,    \
+      ">=", [&](auto aLeft, auto aRight) { return aLeft >= aRight; });   \
+  }                                                                      \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GE(" #expected \
+                            ", " #actual ")")
 
-#define CHECK_GT(expected, actual)                                      \
-  TEST_TRY {                                                             \
-    UnitTest::CheckPred(testResults_, expected, actual, m_testName, __FILE__, __LINE__, \
-                        ">", [&](auto aLeft, auto aRight) {             \
-                          return aLeft > aRight;                        \
-                        });                                             \
-  }                                                                     \
-  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GT(" #expected ", " #actual ")")
+#define CHECK_GT(expected, actual)                                         \
+  TEST_TRY                                                                 \
+  {                                                                        \
+    UnitTest::CheckPred(                                                   \
+      testResults_, expected, actual, m_testName, __FILE__, __LINE__, ">", \
+      [&](auto aLeft, auto aRight) { return aLeft > aRight; });            \
+  }                                                                        \
+  TEST_CATCH_ALL_EXCEPTIONS("Unhandled exception in CHECK_GT(" #expected   \
+                            ", " #actual ")")
 
 //----------------------------------------------------------------------------
 //
@@ -606,11 +743,10 @@ namespace UnitTest {
 
 class Test;
 
-class TestList
-{
+class TestList {
  public:
   TestList();
-  void Add (Test* test);
+  void Add(Test* test);
 
   const Test* GetHead() const;
 
@@ -619,9 +755,7 @@ class TestList
   Test* m_tail;
 };
 
-
-class ListAdder
-{
+class ListAdder {
  public:
   ListAdder(TestList& list, Test* test);
 };
@@ -635,11 +769,10 @@ class ListAdder
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-class Test
-{
+class Test {
  public:
-  Test(char const* testName, char const* filename = "",
-       int lineNumber = 0, char const* fixtureName = "");
+  Test(char const* testName, char const* filename = "", int lineNumber = 0,
+       char const* fixtureName = "");
   virtual ~Test();
   bool BeforeRun(TestResults& testResults) const;
   bool Run(TestResults& testResults) const;
@@ -658,13 +791,19 @@ class Test
   static TestList& GetTestList();
 
  private:
-  virtual void BeforeRunImpl(TestResults& testResults_) const {}
-  virtual void AfterRunImpl(TestResults& testResults_) const {}
-  virtual void RunImpl(TestResults& testResults_) const {}
+  virtual void BeforeRunImpl(TestResults& testResults_) const
+  {
+  }
+  virtual void AfterRunImpl(TestResults& testResults_) const
+  {
+  }
+  virtual void RunImpl(TestResults& testResults_) const
+  {
+  }
 
   // revoked
   Test(Test const&);
-  Test& operator =(Test const&);
+  Test& operator=(Test const&);
 };
 
 }
@@ -678,15 +817,15 @@ namespace UnitTest {
 
 class TestReporter;
 
-class TestResults
-{
+class TestResults {
  public:
   explicit TestResults(TestReporter* reporter, int numTests);
 
   void OnTestStart(char const* testName);
   void OnCountLog(int type);
   void OnTestTime(char const* testName, ni::tF64 secondsElapsed);
-  void OnTestFailure(char const* file, int line, char const* testName, char const* failure);
+  void OnTestFailure(char const* file, int line, char const* testName,
+                     char const* failure);
   void OnTestFinish(char const* testName, ni::tF64 secondsElapsed);
 
   int GetTestCount() const;
@@ -718,7 +857,7 @@ class TestResults
  private:
   // revoked
   TestResults(TestResults const&);
-  TestResults& operator =(TestResults const&);
+  TestResults& operator=(TestResults const&);
 };
 
 }
@@ -730,20 +869,23 @@ class TestResults
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-class TestReporter
-{
+class TestReporter {
  public:
-  virtual ~TestReporter() {}
+  virtual ~TestReporter()
+  {
+  }
 
   virtual void ReportTestStart(char const* testName) = 0;
   virtual void ReportTime(char const* testName, ni::tF64 secondsElapsed) = 0;
-  virtual void ReportFailure(char const* file, int line, char const* testName, char const* failure) = 0;
-  virtual void ReportWarning(char const* file, int line, char const* testName, char const* failure) = 0;
-  virtual void ReportTestFinish(char const* testName, ni::tF64 secondsElapsed) = 0;
-  virtual void ReportSummary(int testCount,
-                             int failedCount, int totalFailedCount,
-                             int warnedCount, int totalWarnedCount,
-                             ni::tF64 secondsElapsed) = 0;
+  virtual void ReportFailure(char const* file, int line, char const* testName,
+                             char const* failure) = 0;
+  virtual void ReportWarning(char const* file, int line, char const* testName,
+                             char const* failure) = 0;
+  virtual void ReportTestFinish(char const* testName,
+                                ni::tF64 secondsElapsed) = 0;
+  virtual void ReportSummary(int testCount, int failedCount,
+                             int totalFailedCount, int warnedCount,
+                             int totalWarnedCount, ni::tF64 secondsElapsed) = 0;
 };
 
 }
@@ -755,18 +897,18 @@ class TestReporter
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-class TestReporterStdout : public TestReporter
-{
+class TestReporterStdout : public TestReporter {
  private:
   virtual void ReportTestStart(char const* testName);
   virtual void ReportTime(char const* testName, ni::tF64 secondsElapsed);
-  virtual void ReportFailure(char const* file, int line, char const* testName, char const* failure);
-  virtual void ReportWarning(char const* file, int line, char const* testName, char const* failure);
+  virtual void ReportFailure(char const* file, int line, char const* testName,
+                             char const* failure);
+  virtual void ReportWarning(char const* file, int line, char const* testName,
+                             char const* failure);
   virtual void ReportTestFinish(char const* testName, ni::tF64 secondsElapsed);
-  virtual void ReportSummary(int testCount,
-                             int failedCount, int totalFailedCount,
-                             int warnedCount, int totalWarnedCount,
-                             ni::tF64 secondsElapsed);
+  virtual void ReportSummary(int testCount, int failedCount,
+                             int totalFailedCount, int warnedCount,
+                             int totalWarnedCount, ni::tF64 secondsElapsed);
 
   astl::vector<ni::cString> _warnings;
   astl::vector<ni::cString> _failures;
@@ -781,11 +923,10 @@ class TestReporterStdout : public TestReporter
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-class TimeConstraint
-{
+class TimeConstraint {
  public:
-  TimeConstraint(int ms, TestResults& result, char const* filename, int lineNumber,
-                 char const* testName);
+  TimeConstraint(int ms, TestResults& result, char const* filename,
+                 int lineNumber, char const* testName);
   ~TimeConstraint();
 
  private:
@@ -799,7 +940,8 @@ class TimeConstraint
   ni::tF64 m_timeStart;
 };
 
-#define TEST_TIME_CONSTRAINT(ms)    UnitTest::TimeConstraint t__(ms,testResults_,__FILE__,__LINE__,m_testName)
+#define TEST_TIME_CONSTRAINT(ms) \
+  UnitTest::TimeConstraint t__(ms, testResults_, __FILE__, __LINE__, m_testName)
 #define TEST_TIME_CONSTRAINT_EXEMPT() m_timeConstraintExempt = true
 
 }
@@ -811,17 +953,17 @@ class TimeConstraint
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-template< typename Value >
+template <typename Value>
 bool Check(Value const value)
 {
   return !!value; // doing double negative to avoid silly VS warnings
 }
 
-template< typename Expected, typename Actual >
-void CheckEqual(TestResults& results,
-                char const* const msg,
+template <typename Expected, typename Actual>
+void CheckEqual(TestResults& results, char const* const msg,
                 Expected const expected, Actual const actual,
-                char const* const testName, char const* const filename, int const line)
+                char const* const testName, char const* const filename,
+                int const line)
 {
   if constexpr (astl::is_null_pointer_v<Expected>) {
     if (!(expected == actual)) {
@@ -839,11 +981,11 @@ void CheckEqual(TestResults& results,
   }
 }
 
-template< typename Expected, typename Actual >
-void CheckNotEqual(TestResults& results,
-                   char const* const msg,
+template <typename Expected, typename Actual>
+void CheckNotEqual(TestResults& results, char const* const msg,
                    Expected const expected, Actual const actual,
-                   char const* const testName, char const* const filename, int const line)
+                   char const* const testName, char const* const filename,
+                   int const line)
 {
   if constexpr (astl::is_null_pointer_v<Expected>) {
     if (!(expected != actual)) {
@@ -861,45 +1003,47 @@ void CheckNotEqual(TestResults& results,
   }
 }
 
-void CheckEqual(TestResults& results,
-                char const* msg,
-                char const* expected, char const* actual,
-                char const* testName, char const* filename, int line);
+void CheckEqual(TestResults& results, char const* msg, char const* expected,
+                char const* actual, char const* testName, char const* filename,
+                int line);
 
-void CheckNotEqual(TestResults& results,
-                   char const* msg,
-                   char const* expected, char const* actual,
-                   char const* testName, char const* filename, int line);
+void CheckNotEqual(TestResults& results, char const* msg, char const* expected,
+                   char const* actual, char const* testName,
+                   char const* filename, int line);
 
-template< typename Expected, typename Actual, typename Tolerance >
-bool AreClose(Expected const expected, Actual const actual, Tolerance const tolerance)
+template <typename Expected, typename Actual, typename Tolerance>
+bool AreClose(Expected const expected, Actual const actual,
+              Tolerance const tolerance)
 {
-  return (actual >= Actual(expected - tolerance)) && (actual <= Actual(expected + tolerance));
+  return (actual >= Actual(expected - tolerance)) &&
+         (actual <= Actual(expected + tolerance));
 }
 
-template< typename Expected, typename Actual, typename Tolerance >
-void CheckClose(TestResults& results, Expected const expected, Actual const actual, Tolerance const tolerance,
-                char const* const testName, char const* const filename, int const line)
+template <typename Expected, typename Actual, typename Tolerance>
+void CheckClose(TestResults& results, Expected const expected,
+                Actual const actual, Tolerance const tolerance,
+                char const* const testName, char const* const filename,
+                int const line)
 {
-  if (!AreClose(expected, actual, tolerance))
-  {
+  if (!AreClose(expected, actual, tolerance)) {
     ni::cString stream;
-    stream << "Expected [" << expected << "] {+/- " << tolerance << "} but was [" << actual << "]";
+    stream << "Expected [" << expected << "] {+/- " << tolerance
+           << "} but was [" << actual << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
 
-
-template< typename Expected, typename Actual >
-void CheckArrayEqual(TestResults& results, Expected const expected, Actual const actual,
-                     int const count, char const* const testName, char const* const filename, int const line)
+template <typename Expected, typename Actual>
+void CheckArrayEqual(TestResults& results, Expected const expected,
+                     Actual const actual, int const count,
+                     char const* const testName, char const* const filename,
+                     int const line)
 {
   bool equal = true;
   for (int i = 0; i < count; ++i)
     equal &= (expected[i] == actual[i]);
 
-  if (!equal)
-  {
+  if (!equal) {
     ni::cString stream;
     stream << "Expected [ ";
     for (int i = 0; i < count; ++i)
@@ -912,17 +1056,17 @@ void CheckArrayEqual(TestResults& results, Expected const expected, Actual const
   }
 }
 
-template< typename Expected, typename Actual, typename Tolerance >
-void CheckArrayClose(TestResults& results, Expected const expected, Actual const actual,
-                     int const count, Tolerance const tolerance, char const* const testName,
+template <typename Expected, typename Actual, typename Tolerance>
+void CheckArrayClose(TestResults& results, Expected const expected,
+                     Actual const actual, int const count,
+                     Tolerance const tolerance, char const* const testName,
                      char const* const filename, int const line)
 {
   bool equal = true;
   for (int i = 0; i < count; ++i)
     equal &= AreClose(expected[i], actual[i], tolerance);
 
-  if (!equal)
-  {
+  if (!equal) {
     ni::cString stream;
     stream << "Expected [ ";
     for (int i = 0; i < count; ++i)
@@ -935,15 +1079,16 @@ void CheckArrayClose(TestResults& results, Expected const expected, Actual const
   }
 }
 
-template< typename Expected, typename Actual, typename Pred >
-void CheckPred(TestResults& results, Expected const expected, Actual const actual,
-               char const* const testName, char const* const filename, int const line,
+template <typename Expected, typename Actual, typename Pred>
+void CheckPred(TestResults& results, Expected const expected,
+               Actual const actual, char const* const testName,
+               char const* const filename, int const line,
                char const* const predName, Pred&& aPred)
 {
-  if (!aPred(expected,actual))
-  {
+  if (!aPred(expected, actual)) {
     ni::cString stream;
-    stream << "Expected [" << expected << "] " << predName << " [" << actual << "]";
+    stream << "Expected [" << expected << "] " << predName << " [" << actual
+           << "]";
     results.OnTestFailure(filename, line, testName, stream.c_str());
   }
 }
@@ -972,10 +1117,8 @@ class TestList;
 
 ni::tBool IsRunningInCI();
 
-bool TestRunner_Startup(TestReporter& reporter,
-                        const TestList& list,
-                        const int maxTestTimeInMs,
-                        const char* fixtureName);
+bool TestRunner_Startup(TestReporter& reporter, const TestList& list,
+                        const int maxTestTimeInMs, const char* fixtureName);
 bool TestRunner_Startup(const char* fixtureName);
 void TestRunner_Shutdown();
 void TestRunner_Reset();
@@ -984,14 +1127,13 @@ const char* TestRunner_GetCurrentTestName();
 int TestRunner_ReportSummary();
 
 int RunAllTests(const char* fixtureName = NULL);
-int RunAllTests(TestReporter& reporter,
-                const TestList& list,
-                const int maxTestTimeInMs = 0,
-                const char* fixtureName = NULL);
+int RunAllTests(TestReporter& reporter, const TestList& list,
+                const int maxTestTimeInMs = 0, const char* fixtureName = NULL);
 
 int TestAppNativeMainLoop(const char* aTitle, const char* aDefaultFixtureName);
 int TestAppNativeMainLoop(const char* aTitle, int argc, const char** argv);
-void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink, ni::tBool abInteractive);
+void TestAppSetCurrentTestWidgetSink(ni::iWidgetSink* apSink,
+                                     ni::tBool abInteractive);
 
 astl::non_null<app::AppContext*> GetTestAppContext();
 

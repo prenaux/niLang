@@ -11,8 +11,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Sound factory interface
-struct iSoundFactory : public iUnknown
-{
+struct iSoundFactory : public iUnknown {
   niDeclareInterfaceUUID(iSoundFactory,0x76551a09,0x010b,0x4074,0x97,0xc3,0x54,0x58,0x2b,0x3c,0xe6,0x55);
 
   //########################################################################################
@@ -46,7 +45,9 @@ struct iSoundFactory : public iUnknown
   //!     the full SDK, since the SDK will already holds a proper window handle.
   //! \remark The bits, channels and frequency parameters are used mostly by the software sound mixer,
   //!     with a hardware accelerated mixer driver those parameters might be ignored.
-  virtual tBool __stdcall StartupDriver(tU32 anDriver, eSoundFormat aFormat, tU32 anFrequency, tIntPtr aWindowHandle) = 0;
+  virtual tBool __stdcall StartupDriver(tU32 anDriver, eSoundFormat aFormat,
+                                        tU32 anFrequency,
+                                        tIntPtr aWindowHandle) = 0;
   //! Shutdown the current sound driver.
   virtual tBool __stdcall ShutdownDriver() = 0;
 
@@ -77,7 +78,8 @@ struct iSoundFactory : public iUnknown
   //! Find the first free channel.
   tU32 __stdcall FindFreeChannel(eSoundMode aMode) const;
   //! Find the first free channel, possibily over a used channel with the specified priority.
-  tU32 __stdcall FindFreeChannelPriority(eSoundMode aMode, tU32 anPriority) const;
+  tU32 __stdcall FindFreeChannelPriority(eSoundMode aMode,
+                                         tU32 anPriority) const;
   //! Update the sounds.
   virtual tBool __stdcall Update(ni::tF64 afDeltaTime) = 0;
   //! @}
@@ -91,12 +93,15 @@ struct iSoundFactory : public iUnknown
   virtual iSoundData* __stdcall LoadSoundData(iFile* apFile) = 0;
 
   //! Create a sound buffer from the specified sound data.
-  virtual iSoundBuffer* __stdcall CreateSoundBufferEx(iSoundData* apData, tBool abStream, iHString* ahspName = NULL) = 0;
+  virtual iSoundBuffer* __stdcall CreateSoundBufferEx(
+    iSoundData* apData, tBool abStream, iHString* ahspName = NULL) = 0;
   //! Create a sound buffer from the specified file.
   //! \remark This method will load sound data internally.
-  virtual iSoundBuffer* __stdcall CreateSoundBuffer(iFile* apFile, tBool abStream, iHString* ahspName = NULL) = 0;
+  virtual iSoundBuffer* __stdcall CreateSoundBuffer(
+    iFile* apFile, tBool abStream, iHString* ahspName = NULL) = 0;
   //! Create a sound buffer from the specified resource.
-  virtual ni::iSoundBuffer* __stdcall CreateSoundBufferFromRes(ni::iHString* ahspName, ni::tBool abStream) = 0;
+  virtual ni::iSoundBuffer* __stdcall CreateSoundBufferFromRes(
+    ni::iHString* ahspName, ni::tBool abStream) = 0;
   //! Get the sound buffer with the given name.
   //! {Property}
   virtual iSoundBuffer* __stdcall GetSoundBuffer(iHString* ahspName) = 0;
@@ -161,17 +166,21 @@ struct iSoundFactory : public iUnknown
   //! @{
 
   //! Play a music.
-  virtual ni::tBool __stdcall MusicPlay(iSoundSource* apSoundSource, ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afBlendTime) = 0;
+  virtual ni::tBool __stdcall MusicPlay(iSoundSource* apSoundSource,
+                                        ni::tF32 afVolume, ni::tF32 afSpeed,
+                                        ni::tF32 afBlendTime) = 0;
   //! Stop the current music.
   virtual ni::tBool __stdcall MusicStop(ni::tF32 afBlendTime) = 0;
   //! Set the new speed of the music.
-  virtual ni::tBool __stdcall MusicSpeed(ni::tF32 afSpeed, ni::tF32 afBlendTime) = 0;
+  virtual ni::tBool __stdcall MusicSpeed(ni::tF32 afSpeed,
+                                         ni::tF32 afBlendTime) = 0;
   //! Set the new volume of the music.
-  virtual ni::tBool __stdcall MusicVolume(ni::tF32 afVolume, ni::tF32 afBlendTime) = 0;
+  virtual ni::tBool __stdcall MusicVolume(ni::tF32 afVolume,
+                                          ni::tF32 afBlendTime) = 0;
   //! @}
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __NIISOUNDFACTORY_H__

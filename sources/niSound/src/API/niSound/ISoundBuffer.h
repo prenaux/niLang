@@ -9,8 +9,7 @@ namespace ni {
  */
 
 //! Sound buffer interface.
-struct iSoundBuffer : public iDeviceResource
-{
+struct iSoundBuffer : public iDeviceResource {
   niDeclareInterfaceUUID(iSoundBuffer,0xca0f6aff,0x998c,0x401f,0x9a,0xff,0xad,0xaf,0x39,0xba,0x76,0xb3);
 
   //! Create an instance of this sound buffer.
@@ -41,5 +40,5 @@ struct iSoundBuffer : public iDeviceResource
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISOUNDBUFFER_22652770_H__

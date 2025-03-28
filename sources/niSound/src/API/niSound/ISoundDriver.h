@@ -11,8 +11,7 @@ namespace ni {
  */
 
 //! Sound driver caps.
-enum eSoundDriverCapFlags
-{
+enum eSoundDriverCapFlags {
   //! Access directly the primary sound buffer.
   eSoundDriverCapFlags_Buffer = niBit(0),
   //! Own 2d sound mixer.
@@ -27,8 +26,7 @@ enum eSoundDriverCapFlags
 typedef tU32 tSoundDriverCapFlags;
 
 //! Sound driver data callback.
-struct iSoundDriverBufferDataSink : public iUnknown
-{
+struct iSoundDriverBufferDataSink : public iUnknown {
   niDeclareInterfaceUUID(iSoundDriverBufferDataSink,0x17f3f5d0,0xa4fe,0x4e30,0xbb,0x8c,0x9b,0x7b,0xcd,0x75,0x91,0x85);
 
   //! Called when data needs to be written to the buffer.
@@ -36,8 +34,7 @@ struct iSoundDriverBufferDataSink : public iUnknown
 };
 
 //! Sound driver buffer.
-struct iSoundDriverBuffer : public iUnknown
-{
+struct iSoundDriverBuffer : public iUnknown {
   niDeclareInterfaceUUID(iSoundDriverBuffer,0xfe0e1afa,0x668c,0x43bc,0x90,0x03,0x50,0xfa,0x77,0x59,0x41,0xa3);
 
   //! Switch in the application.
@@ -59,8 +56,7 @@ struct iSoundDriverBuffer : public iUnknown
 };
 
 //! Sound driver interface.
-struct iSoundDriver : public iUnknown
-{
+struct iSoundDriver : public iUnknown {
   niDeclareInterfaceUUID(iSoundDriver,0x9b0219cb,0x3f6b,0x4c8b,0x91,0x00,0xe3,0x1d,0xb7,0x72,0x41,0x69);
 
   //! Get the driver's name.
@@ -71,7 +67,8 @@ struct iSoundDriver : public iUnknown
   virtual tSoundDriverCapFlags __stdcall GetCaps() const = 0;
 
   //! Startup the sound driver.
-  virtual tBool __stdcall Startup(eSoundFormat aFormat, tU32 anFrequency, tIntPtr aWindowHandle) = 0;
+  virtual tBool __stdcall Startup(eSoundFormat aFormat, tU32 anFrequency,
+                                  tIntPtr aWindowHandle) = 0;
   //! Shutdown the sound driver.
   virtual tBool __stdcall Shutdown() = 0;
 
@@ -96,5 +93,5 @@ struct iSoundDriver : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISOUNDDRIVER_142023_H__

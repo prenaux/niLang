@@ -8,19 +8,25 @@
 #include <pthread.h>
 #include <atomic>
 
-iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq, iSoundDriverBuffer* apBuffer, tU32 anNumChannels);
-iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNum3DChannels, tU32 anNumAudioChannels);
+iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq,
+                                              iSoundDriverBuffer* apBuffer,
+                                              tU32 anNumChannels);
+iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase,
+                                                  tU32 anNum3DChannels,
+                                                  tU32 anNumAudioChannels);
 
 _HDecl(ALSA);
 
 ////////////////////////////////////////////////////////////////////////////
 // ni_dll_load_alsa
-#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS)
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) \
+  NI_DLL_PROC_DECL(RET, CALLCONV, NAME, PARAMS)
 #include "ni_dll_sym_alsa.h"
 #undef NI_DLL_PROC
 
 NI_DLL_BEGIN_LOADER(alsa, "libasound.so");
-#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS)
+#define NI_DLL_PROC(RET, CALLCONV, NAME, PARAMS) \
+  NI_DLL_PROC_LOAD(RET, CALLCONV, NAME, PARAMS)
 #include "ni_dll_sym_alsa.h"
 #undef NI_DLL_PROC
 NI_DLL_END_LOADER(alsa);
@@ -30,12 +36,13 @@ NI_DLL_END_LOADER(alsa);
 
 //#define THREADED_ALSA
 
-class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Default>
-{
+class cSoundDriverBufferALSA
+    : public ImplRC<iSoundDriverBuffer, eImplFlags_Default> {
   niBeginClass(cSoundDriverBufferALSA);
 
  public:
-  cSoundDriverBufferALSA() {
+  cSoundDriverBufferALSA()
+  {
     mpPcmHandle = nullptr;
     mbIsPlaying.Set(0);
     mptrSink = nullptr;
@@ -49,31 +56,45 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
     mnFrameSize = 0;
   }
 
-  ~cSoundDriverBufferALSA() {
+  ~cSoundDriverBufferALSA()
+  {
     Invalidate();
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Stop();
   }
 
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
-  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) {
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  {
     Stop();
 
     mnFrequency = anFreq;
 
     switch (aFormat) {
-      case eSoundFormat_Mono8:    mnFormat = SND_PCM_FORMAT_U8; mnChannels = 1; break;
-      case eSoundFormat_Mono16:   mnFormat = SND_PCM_FORMAT_S16_LE; mnChannels = 1; break;
-      case eSoundFormat_Stereo8:  mnFormat = SND_PCM_FORMAT_U8; mnChannels = 2; break;
-      case eSoundFormat_Stereo16: mnFormat = SND_PCM_FORMAT_S16_LE; mnChannels = 2; break;
-      default:
-        niError(_A("Unsupported sound format."));
-        return eFalse;
+    case eSoundFormat_Mono8:
+      mnFormat = SND_PCM_FORMAT_U8;
+      mnChannels = 1;
+      break;
+    case eSoundFormat_Mono16:
+      mnFormat = SND_PCM_FORMAT_S16_LE;
+      mnChannels = 1;
+      break;
+    case eSoundFormat_Stereo8:
+      mnFormat = SND_PCM_FORMAT_U8;
+      mnChannels = 2;
+      break;
+    case eSoundFormat_Stereo16:
+      mnFormat = SND_PCM_FORMAT_S16_LE;
+      mnChannels = 2;
+      break;
+    default: niError(_A("Unsupported sound format.")); return eFalse;
     }
 
     mnFrameSize = (dll_snd_pcm_format_width(mnFormat) / 8) * mnChannels;
@@ -87,7 +108,9 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
     mbIsPlaying.Set(1);
 
 #ifdef THREADED_ALSA
-    if (pthread_create(&mhPlaybackThread, nullptr, _PlaybackThreadProc, this) != 0) {
+    if (pthread_create(&mhPlaybackThread, nullptr, _PlaybackThreadProc, this) !=
+        0)
+    {
       niError(_A("Failed to create playback thread."));
       mbIsPlaying.Set(0);
       return eFalse;
@@ -97,7 +120,8 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
     return eTrue;
   }
 
-  tBool __stdcall Stop() {
+  tBool __stdcall Stop()
+  {
     mbIsPlaying.Set(0);
 
 #ifdef THREADED_ALSA
@@ -118,27 +142,33 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
     return eTrue;
   }
 
-  tSize __stdcall GetSize() const {
+  tSize __stdcall GetSize() const
+  {
     return mnBufferSize;
   }
 
-  void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) {
+  void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  {
     mptrSink = apSink;
   }
 
-  iSoundDriverBufferDataSink* __stdcall GetSink() const {
+  iSoundDriverBufferDataSink* __stdcall GetSink() const
+  {
     return mptrSink;
   }
 
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     return eTrue;
   }
 
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     return eTrue;
   }
 
-  void __stdcall UpdateBuffer() {
+  void __stdcall UpdateBuffer()
+  {
 #ifndef THREADED_ALSA
     _FillAudioBuffer();
 #endif
@@ -146,7 +176,8 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
 
  private:
 #ifdef THREADED_ALSA
-  static void* _PlaybackThreadProc(void* arg) {
+  static void* _PlaybackThreadProc(void* arg)
+  {
     cSoundDriverBufferALSA* self = static_cast<cSoundDriverBufferALSA*>(arg);
     while (self->mbIsPlaying.Get()) {
       self->_FillAudioBuffer();
@@ -155,8 +186,10 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
   }
 #endif
 
-  void _FillAudioBuffer() {
-    if (!mptrSink.IsOK()) return;
+  void _FillAudioBuffer()
+  {
+    if (!mptrSink.IsOK())
+      return;
 
     mptrSink->OnSoundDriverBufferDataSink(mvBuffer.data(), mnBufferSize);
 
@@ -173,7 +206,8 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
         }
         status = dll_snd_pcm_recover(mpPcmHandle, status, 0);
         if (status < 0) {
-          niError(niFmt(_A("ALSA write failed (unrecoverable): %s"), dll_snd_strerror(status)));
+          niError(niFmt(_A("ALSA write failed (unrecoverable): %s"),
+                        dll_snd_strerror(status)));
           mbIsPlaying.Set(0);
           return;
         }
@@ -188,54 +222,70 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
     }
   }
 
-  tBool _InitializeALSA() {
+  tBool _InitializeALSA()
+  {
     int err;
 
-    if ((err = dll_snd_pcm_open(&mpPcmHandle, "default", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    if ((err = dll_snd_pcm_open(&mpPcmHandle, "default",
+                                SND_PCM_STREAM_PLAYBACK, 0)) < 0)
+    {
       niError(niFmt(_A("Cannot open audio device: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
 
-    snd_pcm_hw_params_t *hwParams;
+    snd_pcm_hw_params_t* hwParams;
     err = dll_snd_pcm_hw_params_malloc(&hwParams);
     if (err < 0) {
-      niError(niFmt(_A("Cannot allocate hardware parameter structure: %s"), dll_snd_strerror(err)));
+      niError(niFmt(_A("Cannot allocate hardware parameter structure: %s"),
+                    dll_snd_strerror(err)));
       return eFalse;
     }
-    niDefer {
+    niDefer
+    {
       dll_snd_pcm_hw_params_free(hwParams);
     };
     dll_snd_pcm_hw_params_any(mpPcmHandle, hwParams);
 
-    if ((err = dll_snd_pcm_hw_params_set_access(mpPcmHandle, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
+    if ((err = dll_snd_pcm_hw_params_set_access(
+           mpPcmHandle, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
+    {
       niError(niFmt(_A("Cannot set access type: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
 
-    if ((err = dll_snd_pcm_hw_params_set_format(mpPcmHandle, hwParams, mnFormat)) < 0) {
+    if ((err = dll_snd_pcm_hw_params_set_format(mpPcmHandle, hwParams,
+                                                mnFormat)) < 0)
+    {
       niError(niFmt(_A("Cannot set sample format: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
 
-    if ((err = dll_snd_pcm_hw_params_set_channels(mpPcmHandle, hwParams, mnChannels)) < 0) {
+    if ((err = dll_snd_pcm_hw_params_set_channels(mpPcmHandle, hwParams,
+                                                  mnChannels)) < 0)
+    {
       niError(niFmt(_A("Cannot set channel count: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
 
     unsigned int rate = mnFrequency;
-    if ((err = dll_snd_pcm_hw_params_set_rate_near(mpPcmHandle, hwParams, &rate, 0)) < 0) {
+    if ((err = dll_snd_pcm_hw_params_set_rate_near(mpPcmHandle, hwParams, &rate,
+                                                   0)) < 0)
+    {
       niError(niFmt(_A("Cannot set sample rate: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
 
     snd_pcm_uframes_t bufferSize =
 #ifdef THREADED_ALSA
-        mnFrequency / 10 // 100ms buffer
+      mnFrequency / 10 // 100ms buffer
 #else
-        mnFrequency / 50 // 20ms buffer... blocking non-threaded is a bit of a hack
+      mnFrequency /
+      50 // 20ms buffer... blocking non-threaded is a bit of a hack
 #endif
-        ;
-    if ((err = dll_snd_pcm_hw_params_set_buffer_size_near(mpPcmHandle, hwParams, &bufferSize)) < 0) {
+      ;
+    if ((err = dll_snd_pcm_hw_params_set_buffer_size_near(mpPcmHandle, hwParams,
+                                                          &bufferSize)) < 0)
+    {
       niError(niFmt(_A("Cannot set buffer size: %s"), dll_snd_strerror(err)));
       return eFalse;
     }
@@ -247,14 +297,12 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
 
     mnBufferSize = bufferSize * mnFrameSize;
 
-    niLog(Info, niFmt(
-      "ALSA sound driver initialized: format: %s, channels: %d, frequency: %d Hz, frame size: %d bytes, buffer: %d frames (%d bytes)",
-      dll_snd_pcm_format_name(mnFormat),
-      mnChannels,
-      mnFrequency,
-      mnFrameSize,
-      mnBufferSize / mnFrameSize,
-      mnBufferSize));
+    niLog(
+      Info,
+      niFmt(
+        "ALSA sound driver initialized: format: %s, channels: %d, frequency: %d Hz, frame size: %d bytes, buffer: %d frames (%d bytes)",
+        dll_snd_pcm_format_name(mnFormat), mnChannels, mnFrequency, mnFrameSize,
+        mnBufferSize / mnFrameSize, mnBufferSize));
 
     return eTrue;
   }
@@ -277,31 +325,37 @@ class cSoundDriverBufferALSA : public ImplRC<iSoundDriverBuffer, eImplFlags_Defa
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cSoundDriverALSA declaration.
-class cSoundDriverALSA : public ImplRC<iSoundDriver>
-{
+class cSoundDriverALSA : public ImplRC<iSoundDriver> {
   niBeginClass(cSoundDriverALSA);
 
  public:
-  cSoundDriverALSA() {
+  cSoundDriverALSA()
+  {
   }
 
-  ~cSoundDriverALSA() {
+  ~cSoundDriverALSA()
+  {
     Invalidate();
   }
 
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundDriverALSA);
     return eTrue;
   }
 
-  virtual iHString* __stdcall GetName() const {
+  virtual iHString* __stdcall GetName() const
+  {
     return _HC(ALSA);
   }
- tSoundDriverCapFlags __stdcall GetCaps() const {
+  tSoundDriverCapFlags __stdcall GetCaps() const
+  {
     return eSoundDriverCapFlags_Buffer;
   }
 
-  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle) {
+  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
+                          tIntPtr aWindowHandle)
+  {
     mbHasALSA = ni_dll_load_alsa();
     niCheck(mbHasALSA, eFalse);
 
@@ -311,13 +365,19 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
       return eFalse;
     }
 
-    mptrMixer = New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
+    mptrMixer =
+      New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
     if (!mptrMixer.IsOK()) {
       niError(_A("Can't create the software mixer."));
       return eFalse;
     }
 
-    mptrMixer3D = New_SoundMixerSoftware3D(mptrMixer, 32, (aSoundFormat == eSoundFormat_Stereo16 || aSoundFormat == eSoundFormat_Stereo8) ? 2 : 1);
+    mptrMixer3D =
+      New_SoundMixerSoftware3D(mptrMixer, 32,
+                               (aSoundFormat == eSoundFormat_Stereo16 ||
+                                aSoundFormat == eSoundFormat_Stereo8)
+                                 ? 2
+                                 : 1);
     if (!mptrMixer3D.IsOK()) {
       niError(_A("Can't create the 3d software mixer."));
       return eFalse;
@@ -332,7 +392,8 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
     return eTrue;
   }
 
-  tBool __stdcall Shutdown() {
+  tBool __stdcall Shutdown()
+  {
     mptrMixer3D = NULL;
     if (mptrMixer.IsOK()) {
       mptrMixer->Invalidate();
@@ -345,11 +406,13 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
     return eTrue;
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Shutdown();
   }
 
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     if (mptrBuffer.IsOK())
       mptrBuffer->SwitchIn();
     if (mptrMixer.IsOK())
@@ -357,7 +420,8 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
     return eTrue;
   }
 
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     if (mptrMixer.IsOK())
       mptrMixer->SwitchOut();
     if (mptrBuffer.IsOK())
@@ -365,19 +429,23 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
     return eTrue;
   }
 
-  iSoundDriverBuffer* __stdcall GetBuffer() const {
+  iSoundDriverBuffer* __stdcall GetBuffer() const
+  {
     return mptrBuffer;
   }
 
-  iSoundMixer* __stdcall GetMixer() const {
+  iSoundMixer* __stdcall GetMixer() const
+  {
     return mptrMixer;
   }
 
-  iSoundMixer3D* __stdcall GetMixer3D() const {
+  iSoundMixer3D* __stdcall GetMixer3D() const
+  {
     return mptrMixer3D;
   }
 
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (mptrBuffer.IsOK()) {
       mptrBuffer->UpdateBuffer();
     }
@@ -390,15 +458,16 @@ class cSoundDriverALSA : public ImplRC<iSoundDriver>
   }
 
  public:
-  tBool                   mbHasALSA = eFalse;
+  tBool mbHasALSA = eFalse;
   Ptr<iSoundDriverBuffer> mptrBuffer;
-  Ptr<iSoundMixer>        mptrMixer;
-  Ptr<iSoundMixer3D>      mptrMixer3D;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
 
   niEndClass(cSoundDriverALSA);
 };
 
 ///////////////////////////////////////////////
-iSoundDriver* __stdcall New_SoundDriverALSA() {
+iSoundDriver* __stdcall New_SoundDriverALSA()
+{
   return niNew cSoundDriverALSA();
 }

@@ -11,9 +11,8 @@ namespace app {
 //! Send a notification to application host.
 extern void AppNotifyHost(const char* aCmd);
 
-void AppConsoleLoop(const ni::achar* aAppName,
-                    ni::Ptr<ni::iRunnable> aLoop,
+void AppConsoleLoop(const ni::achar* aAppName, ni::Ptr<ni::iRunnable> aLoop,
                     ni::Ptr<ni::iRunnable> aShutdown);
 
-}
+} // namespace app
 #endif // __NIAPPLIBCONSOLE_H_F3321484_AFBF_7F4A_8033_62F8E236E019__

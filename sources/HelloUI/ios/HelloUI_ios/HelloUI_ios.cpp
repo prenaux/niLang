@@ -6,7 +6,8 @@ using namespace ni;
 
 extern astl::non_null<app::AppContext*> GetMyAppContext();
 
-ni::Var OnAppStarted() {
+ni::Var OnAppStarted()
+{
   GetMyAppContext()->_config.drawFPS = 2;
   GetMyAppContext()->_uiContext->GetRootWidget()->AddSink(New_HelloUI_Widget());
   return ni::eTrue;

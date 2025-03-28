@@ -9,8 +9,7 @@ namespace ni {
  */
 
 //! Sound source interface.
-struct iSoundSource : public iDeviceResource
-{
+struct iSoundSource : public iDeviceResource {
   niDeclareInterfaceUUID(iSoundSource,0x6fae2f58,0x754c,0x4369,0xa3,0xf6,0x51,0x71,0xfc,0x7c,0xa2,0x3e);
 
   //! Set the sound buffer.
@@ -98,12 +97,17 @@ struct iSoundSource : public iDeviceResource
   virtual tBool __stdcall GetIsPaused() const = 0;
 
   //! Play as a 2d sound FX.
-  virtual ni::tBool __stdcall Play2D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afPan) = 0;
+  virtual ni::tBool __stdcall Play2D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                                     ni::tF32 afPan) = 0;
   //! Play as a 3d sound FX.
-  virtual ni::tBool __stdcall Play3D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::sVec3f avPosition, ni::tBool abListenerRelative, ni::tF32 afMinDistance, ni::tF32 afMaxDistance) = 0;
+  virtual ni::tBool __stdcall Play3D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                                     ni::sVec3f avPosition,
+                                     ni::tBool abListenerRelative,
+                                     ni::tF32 afMinDistance,
+                                     ni::tF32 afMaxDistance) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISOUNDSOURCE_29833722_H__

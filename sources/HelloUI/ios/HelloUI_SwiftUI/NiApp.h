@@ -13,7 +13,7 @@
 #import <MetalKit/MTKView.h>
 #include "ShaderDefs.h"
 #ifdef __cplusplus
-#import <niAppLib.h>
+  #import <niAppLib.h>
 #endif
 
 @interface NiApp : NSObject

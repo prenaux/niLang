@@ -3,14 +3,14 @@
 #if defined TARGET_OS_IPHONE
 // nothing to define...
 #elif defined HAM_LOA_OS_OSX
-#define MACOSX_COREAUDIO 1
+  #define MACOSX_COREAUDIO 1
 #else
-#error "SoundDriverOSX: Unknown OS."
+  #error "SoundDriverOSX: Unknown OS."
 #endif
 
 #if MACOSX_COREAUDIO
-#include <CoreAudio/CoreAudio.h>
-#include <CoreServices/CoreServices.h>
+  #include <CoreAudio/CoreAudio.h>
+  #include <CoreServices/CoreServices.h>
 #endif
 
 #include <AudioToolbox/AudioToolbox.h>
@@ -19,12 +19,16 @@
 #include "../stdafx.h"
 #include "../SoundMixerBufferSize.h"
 
-iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq, iSoundDriverBuffer* apBuffer, tU32 anNumChannels);
-iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNum3DChannels, tU32 anNumAudioChannels);
+iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq,
+                                              iSoundDriverBuffer* apBuffer,
+                                              tU32 anNumChannels);
+iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase,
+                                                  tU32 anNum3DChannels,
+                                                  tU32 anNumAudioChannels);
 
 _HDecl(OSX);
 
-typedef void (*tpfnFillAudio)(void *udata, ni::tU8 *stream, int len);
+typedef void (*tpfnFillAudio)(void* udata, ni::tU8* stream, int len);
 
 struct MyCoreAudio {
 #if MACOSX_COREAUDIO
@@ -34,7 +38,7 @@ struct MyCoreAudio {
   int audioUnitOpened;
   void* fillAudioCallbackUserdata;
   tpfnFillAudio fillAudioCallback;
-  void *buffer;
+  void* buffer;
   UInt32 bufferOffset;
   UInt32 bufferSize;
   bool playing;
@@ -45,7 +49,7 @@ static void MyCoreAudio_Destroy(MyCoreAudio* apCoreAudio);
 
 #define CHECK_RESULT(msg)                                         \
   if (result != noErr) {                                          \
-    MyCoreAudio_Destroy(apCoreAudio);                           \
+    MyCoreAudio_Destroy(apCoreAudio);                             \
     niError(niFmt("CoreAudio error (%s): %d", msg, (int)result)); \
     return 0;                                                     \
   }
@@ -58,16 +62,16 @@ struct sAudioDevice {
 };
 
 static const AudioObjectPropertyAddress devlist_address = {
-  kAudioHardwarePropertyDevices,
-  kAudioObjectPropertyScopeGlobal,
+  kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal,
   kAudioObjectPropertyElementMaster
 };
 
-static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool iscapture)
+static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices,
+                             const tBool iscapture)
 {
   OSStatus result = noErr;
   UInt32 size = 0;
-  AudioDeviceID *devs = NULL;
+  AudioDeviceID* devs = NULL;
   UInt32 i = 0;
   UInt32 max = 0;
 
@@ -76,7 +80,7 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
   if (result != kAudioHardwareNoError)
     return;
 
-  devs = (AudioDeviceID *) alloca(size);
+  devs = (AudioDeviceID*)alloca(size);
   if (devs == NULL)
     return;
 
@@ -85,23 +89,25 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
   if (result != kAudioHardwareNoError)
     return;
 
-  max = size / sizeof (AudioDeviceID);
+  max = size / sizeof(AudioDeviceID);
   for (i = 0; i < max; i++) {
     CFStringRef cfstr = NULL;
-    char *ptr = NULL;
+    char* ptr = NULL;
     AudioDeviceID dev = devs[i];
-    AudioBufferList *buflist = NULL;
+    AudioBufferList* buflist = NULL;
     int usable = 0;
     CFIndex len = 0;
     const AudioObjectPropertyAddress addr = {
       kAudioDevicePropertyStreamConfiguration,
-      iscapture ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
+      iscapture ? kAudioDevicePropertyScopeInput
+                : kAudioDevicePropertyScopeOutput,
       kAudioObjectPropertyElementMaster
     };
 
     const AudioObjectPropertyAddress nameaddr = {
       kAudioObjectPropertyName,
-      iscapture ? kAudioDevicePropertyScopeInput : kAudioDevicePropertyScopeOutput,
+      iscapture ? kAudioDevicePropertyScopeInput
+                : kAudioDevicePropertyScopeOutput,
       kAudioObjectPropertyElementMaster
     };
 
@@ -109,12 +115,11 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
     if (result != noErr)
       continue;
 
-    buflist = (AudioBufferList *)niMalloc(size);
+    buflist = (AudioBufferList*)niMalloc(size);
     if (buflist == NULL)
       continue;
 
-    result = AudioObjectGetPropertyData(dev, &addr, 0, NULL,
-                                        &size, buflist);
+    result = AudioObjectGetPropertyData(dev, &addr, 0, NULL, &size, buflist);
 
     if (result == noErr) {
       UInt32 j;
@@ -130,8 +135,7 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
     if (!usable)
       continue;
 
-
-    size = sizeof (CFStringRef);
+    size = sizeof(CFStringRef);
     result = AudioObjectGetPropertyData(dev, &nameaddr, 0, NULL, &size, &cfstr);
     if (result != kAudioHardwareNoError)
       continue;
@@ -139,10 +143,9 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
     len = CFStringGetMaximumSizeForEncoding(CFStringGetLength(cfstr),
                                             kCFStringEncodingUTF8);
 
-    ptr = (char *)niMalloc(len + 1);
+    ptr = (char*)niMalloc(len + 1);
     usable = ((ptr != NULL) &&
-              (CFStringGetCString
-               (cfstr, ptr, len + 1, kCFStringEncodingUTF8)));
+              (CFStringGetCString(cfstr, ptr, len + 1, kCFStringEncodingUTF8)));
 
     CFRelease(cfstr);
 
@@ -158,30 +161,29 @@ static void _BuildDeviceList(astl::vector<sAudioDevice>& aDevices, const tBool i
     if (usable) {
       ptr[len] = '\0';
 
-#if DEBUG_COREAUDIO
+  #if DEBUG_COREAUDIO
       printf("COREAUDIO: Found %s device #%d: '%s' (devid %d)\n",
-             ((iscapture) ? "capture" : "output"),
-             (int) *devCount, ptr, (int) dev);
-#endif
+             ((iscapture) ? "capture" : "output"), (int)*devCount, ptr,
+             (int)dev);
+  #endif
       aDevices.push_back({ ptr, iscapture, dev });
     }
-    niFree(ptr);  /* addfn() would have copied the string. */
+    niFree(ptr); /* addfn() would have copied the string. */
   }
 }
 #endif
 
 /* The CoreAudio callback */
-static OSStatus _OutputCallback(
-  void *inRefCon,
-  AudioUnitRenderActionFlags * ioActionFlags,
-  const AudioTimeStamp * inTimeStamp,
-  UInt32 inBusNumber, UInt32 inNumberFrames,
-  AudioBufferList * ioData)
+static OSStatus _OutputCallback(void* inRefCon,
+                                AudioUnitRenderActionFlags* ioActionFlags,
+                                const AudioTimeStamp* inTimeStamp,
+                                UInt32 inBusNumber, UInt32 inNumberFrames,
+                                AudioBufferList* ioData)
 {
   MyCoreAudio* pCoreAudio = (MyCoreAudio*)inRefCon;
-  AudioBuffer *abuf;
+  AudioBuffer* abuf;
   UInt32 remaining, len;
-  void *ptr;
+  void* ptr;
   UInt32 i;
 
   /* Only do anything if audio is enabled and not paused */
@@ -202,16 +204,18 @@ static OSStatus _OutputCallback(
     ptr = abuf->mData;
     while (remaining > 0) {
       if (pCoreAudio->bufferOffset >= pCoreAudio->bufferSize) {
-        pCoreAudio->fillAudioCallback(
-          pCoreAudio->fillAudioCallbackUserdata, (ni::tU8*)pCoreAudio->buffer, pCoreAudio->bufferSize);
+        pCoreAudio->fillAudioCallback(pCoreAudio->fillAudioCallbackUserdata,
+                                      (ni::tU8*)pCoreAudio->buffer,
+                                      pCoreAudio->bufferSize);
         pCoreAudio->bufferOffset = 0;
       }
 
       len = pCoreAudio->bufferSize - pCoreAudio->bufferOffset;
       if (len > remaining)
         len = remaining;
-      ni::MemCopy((tPtr)ptr, (tPtr)pCoreAudio->buffer+pCoreAudio->bufferOffset, len);
-      ptr = (char *)ptr + len;
+      ni::MemCopy((tPtr)ptr,
+                  (tPtr)pCoreAudio->buffer + pCoreAudio->bufferOffset, len);
+      ptr = (char*)ptr + len;
       remaining -= len;
       pCoreAudio->bufferOffset += len;
     }
@@ -220,12 +224,11 @@ static OSStatus _OutputCallback(
   return 0;
 }
 
-static OSStatus _InputCallback(
-  void *inRefCon,
-  AudioUnitRenderActionFlags * ioActionFlags,
-  const AudioTimeStamp * inTimeStamp,
-  UInt32 inBusNumber, UInt32 inNumberFrames,
-  AudioBufferList * ioData)
+static OSStatus _InputCallback(void* inRefCon,
+                               AudioUnitRenderActionFlags* ioActionFlags,
+                               const AudioTimeStamp* inTimeStamp,
+                               UInt32 inBusNumber, UInt32 inNumberFrames,
+                               AudioBufferList* ioData)
 {
   // TODO: Implement
   return noErr;
@@ -233,30 +236,32 @@ static OSStatus _InputCallback(
 
 #if MACOSX_COREAUDIO
 static const AudioObjectPropertyAddress _kAliveAddress = {
-  kAudioDevicePropertyDeviceIsAlive,
-  kAudioObjectPropertyScopeGlobal,
+  kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal,
   kAudioObjectPropertyElementMaster
 };
 
-static OSStatus _DeviceUnplugged(AudioObjectID devid, UInt32 num_addr, const AudioObjectPropertyAddress *addrs, void *data)
+static OSStatus _DeviceUnplugged(AudioObjectID devid, UInt32 num_addr,
+                                 const AudioObjectPropertyAddress* addrs,
+                                 void* data)
 {
   MyCoreAudio* myCoreAudio = (MyCoreAudio*)data;
   tBool dead = eFalse;
   UInt32 isAlive = 1;
-  UInt32 size = sizeof (isAlive);
+  UInt32 size = sizeof(isAlive);
   OSStatus error;
 
   if (!myCoreAudio->enabled) {
-    return 0;  /* already known to be dead. */
+    return 0; /* already known to be dead. */
   }
 
-  error = AudioObjectGetPropertyData(myCoreAudio->deviceID, &_kAliveAddress,
-                                     0, NULL, &size, &isAlive);
+  error = AudioObjectGetPropertyData(myCoreAudio->deviceID, &_kAliveAddress, 0,
+                                     NULL, &size, &isAlive);
 
   if (error == kAudioHardwareBadDeviceError) {
-    dead = eTrue;  /* device was unplugged. */
-  } else if ((error == kAudioHardwareNoError) && (!isAlive)) {
-    dead = eTrue;  /* device died in some other way. */
+    dead = eTrue; /* device was unplugged. */
+  }
+  else if ((error == kAudioHardwareNoError) && (!isAlive)) {
+    dead = eTrue; /* device died in some other way. */
   }
 
   if (dead) {
@@ -268,34 +273,31 @@ static OSStatus _DeviceUnplugged(AudioObjectID devid, UInt32 num_addr, const Aud
   return 0;
 }
 
-static int _PrepareDevice(MyCoreAudio* apCoreAudio, AudioDeviceID devid, int iscapture)
+static int _PrepareDevice(MyCoreAudio* apCoreAudio, AudioDeviceID devid,
+                          int iscapture)
 {
   OSStatus result = noErr;
   UInt32 size = 0;
   UInt32 alive = 0;
   pid_t pid = 0;
 
-  AudioObjectPropertyAddress addr = {
-    0,
-    kAudioObjectPropertyScopeGlobal,
-    kAudioObjectPropertyElementMaster
-  };
+  AudioObjectPropertyAddress addr = { 0, kAudioObjectPropertyScopeGlobal,
+                                      kAudioObjectPropertyElementMaster };
 
   if (devid == NULL) {
-    size = sizeof (AudioDeviceID);
-    addr.mSelector =
-        ((iscapture) ? kAudioHardwarePropertyDefaultInputDevice :
-         kAudioHardwarePropertyDefaultOutputDevice);
-    result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr,
-                                        0, NULL, &size, &devid);
+    size = sizeof(AudioDeviceID);
+    addr.mSelector = ((iscapture) ? kAudioHardwarePropertyDefaultInputDevice
+                                  : kAudioHardwarePropertyDefaultOutputDevice);
+    result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &addr, 0,
+                                        NULL, &size, &devid);
     CHECK_RESULT("AudioHardwareGetProperty (default device)");
   }
 
   addr.mSelector = kAudioDevicePropertyDeviceIsAlive;
-  addr.mScope = iscapture ? kAudioDevicePropertyScopeInput :
-      kAudioDevicePropertyScopeOutput;
+  addr.mScope = iscapture ? kAudioDevicePropertyScopeInput
+                          : kAudioDevicePropertyScopeOutput;
 
-  size = sizeof (alive);
+  size = sizeof(alive);
   result = AudioObjectGetPropertyData(devid, &addr, 0, NULL, &size, &alive);
   CHECK_RESULT("AudioDeviceGetProperty (kAudioDevicePropertyDeviceIsAlive)");
 
@@ -305,7 +307,7 @@ static int _PrepareDevice(MyCoreAudio* apCoreAudio, AudioDeviceID devid, int isc
   }
 
   addr.mSelector = kAudioDevicePropertyHogMode;
-  size = sizeof (pid);
+  size = sizeof(pid);
   result = AudioObjectGetPropertyData(devid, &addr, 0, NULL, &size, &pid);
 
   /* some devices don't support this property, so errors are fine here. */
@@ -319,9 +321,9 @@ static int _PrepareDevice(MyCoreAudio* apCoreAudio, AudioDeviceID devid, int isc
 }
 #endif
 
-static int _PrepareAudioUnit(
-  MyCoreAudio* apCoreAudio, tIntPtr devId, int iscapture,
-  const AudioStreamBasicDescription * strdesc)
+static int _PrepareAudioUnit(MyCoreAudio* apCoreAudio, tIntPtr devId,
+                             int iscapture,
+                             const AudioStreamBasicDescription* strdesc)
 {
   OSStatus result = noErr;
   AURenderCallbackStruct callback;
@@ -330,8 +332,8 @@ static int _PrepareAudioUnit(
   const AudioUnitElement output_bus = 0;
   const AudioUnitElement input_bus = 1;
   const AudioUnitElement bus = ((iscapture) ? input_bus : output_bus);
-  const AudioUnitScope scope = ((iscapture) ? kAudioUnitScope_Output :
-                                kAudioUnitScope_Input);
+  const AudioUnitScope scope =
+    ((iscapture) ? kAudioUnitScope_Output : kAudioUnitScope_Input);
 
 #if MACOSX_COREAUDIO
   if (!_PrepareDevice(apCoreAudio, devId, iscapture)) {
@@ -339,7 +341,7 @@ static int _PrepareAudioUnit(
   }
 #endif
 
-  ni::MemSet((tPtr)&desc,0,sizeof(desc));
+  ni::MemSet((tPtr)&desc, 0, sizeof(desc));
   desc.componentType = kAudioUnitType_Output;
   desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 
@@ -362,18 +364,16 @@ static int _PrepareAudioUnit(
   apCoreAudio->audioUnitOpened = 1;
 
 #if MACOSX_COREAUDIO
-  result = AudioUnitSetProperty(apCoreAudio->audioUnit,
-                                kAudioOutputUnitProperty_CurrentDevice,
-                                kAudioUnitScope_Global, 0,
-                                &apCoreAudio->deviceID,
-                                sizeof(AudioDeviceID));
+  result = AudioUnitSetProperty(
+    apCoreAudio->audioUnit, kAudioOutputUnitProperty_CurrentDevice,
+    kAudioUnitScope_Global, 0, &apCoreAudio->deviceID, sizeof(AudioDeviceID));
   CHECK_RESULT("AudioUnitSetProperty (kAudioOutputUnitProperty_CurrentDevice)");
 #endif
 
   /* Set the data format of the audio unit. */
   result = AudioUnitSetProperty(apCoreAudio->audioUnit,
-                                kAudioUnitProperty_StreamFormat,
-                                scope, bus, strdesc, sizeof(*strdesc));
+                                kAudioUnitProperty_StreamFormat, scope, bus,
+                                strdesc, sizeof(*strdesc));
   CHECK_RESULT("AudioUnitSetProperty (kAudioUnitProperty_StreamFormat)");
 
   /* Set the audio callback */
@@ -381,8 +381,8 @@ static int _PrepareAudioUnit(
   callback.inputProc = ((iscapture) ? _InputCallback : _OutputCallback);
   callback.inputProcRefCon = apCoreAudio;
   result = AudioUnitSetProperty(apCoreAudio->audioUnit,
-                                kAudioUnitProperty_SetRenderCallback,
-                                scope, bus, &callback, sizeof(callback));
+                                kAudioUnitProperty_SetRenderCallback, scope,
+                                bus, &callback, sizeof(callback));
   CHECK_RESULT("AudioUnitSetProperty (kAudioUnitProperty_SetRenderCallback)");
 
   /* Allocate a sample buffer */
@@ -398,19 +398,17 @@ static int _PrepareAudioUnit(
 
 #if MACOSX_COREAUDIO
   /* Fire a callback if the device stops being "alive" (disconnected, etc). */
-  AudioObjectAddPropertyListener(apCoreAudio->deviceID, &_kAliveAddress, _DeviceUnplugged, apCoreAudio);
+  AudioObjectAddPropertyListener(apCoreAudio->deviceID, &_kAliveAddress,
+                                 _DeviceUnplugged, apCoreAudio);
 #endif
 
   /* We're running! */
   return 1;
 }
 
-static tBool MyCoreAudio_Init(
-  MyCoreAudio* apCoreAudio,
-  tIntPtr devId,
-  int isCapture,
-  eSoundFormat aSoundFormat,
-  tU32 anFrequency)
+static tBool MyCoreAudio_Init(MyCoreAudio* apCoreAudio, tIntPtr devId,
+                              int isCapture, eSoundFormat aSoundFormat,
+                              tU32 anFrequency)
 {
   AudioStreamBasicDescription strdesc;
   int valid_datatype = 0;
@@ -423,31 +421,32 @@ static tBool MyCoreAudio_Init(
   strdesc.mFormatFlags = kLinearPCMFormatFlagIsPacked;
   strdesc.mSampleRate = anFrequency;
   strdesc.mFramesPerPacket = 1;
-  strdesc.mChannelsPerFrame =
-      ((aSoundFormat == eSoundFormat_Stereo16) ||
-       (aSoundFormat == eSoundFormat_Stereo8)) ? 2 : 1;
-  strdesc.mBitsPerChannel = ((int)aSoundFormat)&0xFF;
+  strdesc.mChannelsPerFrame = ((aSoundFormat == eSoundFormat_Stereo16) ||
+                               (aSoundFormat == eSoundFormat_Stereo8))
+                                ? 2
+                                : 1;
+  strdesc.mBitsPerChannel = ((int)aSoundFormat) & 0xFF;
   // strdesc.mFormatFlags |= kLinearPCMFormatFlagIsBigEndian;
   // strdesc.mFormatFlags |= kLinearPCMFormatFlagIsFloat;
   if (strdesc.mBitsPerChannel == 16)
     strdesc.mFormatFlags |= kLinearPCMFormatFlagIsSignedInteger;
 
   strdesc.mBytesPerFrame =
-      strdesc.mBitsPerChannel * strdesc.mChannelsPerFrame / 8;
-  strdesc.mBytesPerPacket =
-      strdesc.mBytesPerFrame * strdesc.mFramesPerPacket;
+    strdesc.mBitsPerChannel * strdesc.mChannelsPerFrame / 8;
+  strdesc.mBytesPerPacket = strdesc.mBytesPerFrame * strdesc.mFramesPerPacket;
 
   // setup the core audio buffer size
-  apCoreAudio->bufferSize = 1024; // Number of samples, good low-latency value for callback
+  apCoreAudio->bufferSize =
+    1024; // Number of samples, good low-latency value for callback
   apCoreAudio->bufferSize *= strdesc.mChannelsPerFrame;
-  apCoreAudio->bufferSize *= strdesc.mBitsPerChannel/8;
+  apCoreAudio->bufferSize *= strdesc.mBitsPerChannel / 8;
   if (!_PrepareAudioUnit(apCoreAudio, devId, isCapture, &strdesc)) {
     MyCoreAudio_Destroy(apCoreAudio);
     return eFalse;
   }
 
   apCoreAudio->enabled = eTrue;
-  return eTrue;   /* good to go. */
+  return eTrue; /* good to go. */
 }
 
 static void MyCoreAudio_Destroy(MyCoreAudio* apCoreAudio)
@@ -466,9 +465,8 @@ static void MyCoreAudio_Destroy(MyCoreAudio* apCoreAudio)
     /* Remove the input callback */
     ni::MemSet((tPtr)&callback, 0, sizeof(AURenderCallbackStruct));
     result = AudioUnitSetProperty(apCoreAudio->audioUnit,
-                                  kAudioUnitProperty_SetRenderCallback,
-                                  scope, bus, &callback,
-                                  sizeof(callback));
+                                  kAudioUnitProperty_SetRenderCallback, scope,
+                                  bus, &callback, sizeof(callback));
 
 #if MACOSX_COREAUDIO
     CloseComponent(apCoreAudio->audioUnit);
@@ -485,39 +483,43 @@ static void MyCoreAudio_Destroy(MyCoreAudio* apCoreAudio)
 }
 
 //! Sound driver buffer osx implementation.
-class cSoundDriverBufferOSX : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
-{
+class cSoundDriverBufferOSX
+    : public ImplRC<iSoundDriverBuffer, eImplFlags_Default> {
   niBeginClass(cSoundDriverBufferOSX);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverBufferOSX() {
+  cSoundDriverBufferOSX()
+  {
     sink = NULL;
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverBufferOSX() {
+  ~cSoundDriverBufferOSX()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Stop();
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) {
-    if (!MyCoreAudio_Init(
-          &mCoreAudio,
-          // Here we could specify a devId as found by _BuildDeviceList to output audio from a specific audio device
-          NULL, 0,
-          aFormat,
-          anFreq))
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  {
+    if (
+      !MyCoreAudio_Init(
+        &mCoreAudio,
+        // Here we could specify a devId as found by _BuildDeviceList to output audio from a specific audio device
+        NULL, 0, aFormat, anFreq))
     {
       niError("MyCoreAudio_Init failed.");
       return eFalse;
@@ -530,7 +532,8 @@ class cSoundDriverBufferOSX : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall Stop() {
+  virtual tBool __stdcall Stop()
+  {
     if (!mCoreAudio.playing)
       return eTrue;
     mCoreAudio.playing = false;
@@ -539,36 +542,43 @@ class cSoundDriverBufferOSX : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
   }
 
   ///////////////////////////////////////////////
-  virtual tSize __stdcall GetSize() const {
+  virtual tSize __stdcall GetSize() const
+  {
     return mCoreAudio.bufferSize;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) {
+  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  {
     sink = apSink;
   }
 
   ///////////////////////////////////////////////
-  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const {
+  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const
+  {
     return sink;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchIn() {
+  virtual tBool __stdcall SwitchIn()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchOut() {
+  virtual tBool __stdcall SwitchOut()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall UpdateBuffer() {
+  void __stdcall UpdateBuffer()
+  {
   }
 
   ///////////////////////////////////////////////
-  static void _FillAudio(void *udata, ni::tU8 *stream, int len) {
+  static void _FillAudio(void* udata, ni::tU8* stream, int len)
+  {
     cSoundDriverBufferOSX* buffer = (cSoundDriverBufferOSX*)udata;
     if (buffer->sink.IsOK()) {
       buffer->sink->OnSoundDriverBufferDataSink(stream, len);
@@ -582,43 +592,50 @@ class cSoundDriverBufferOSX : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverOSX : public ImplRC<iSoundDriver>
-{
+class cSoundDriverOSX : public ImplRC<iSoundDriver> {
   niBeginClass(cSoundDriverOSX);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverOSX() {
+  cSoundDriverOSX()
+  {
     ZeroMembers();
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverOSX() {
+  ~cSoundDriverOSX()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
+  void __stdcall ZeroMembers()
+  {
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundDriverOSX);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iHString* __stdcall GetName() const {
+  virtual iHString* __stdcall GetName() const
+  {
     return _HC(OSX);
   }
 
   ///////////////////////////////////////////////
-  virtual tSoundDriverCapFlags __stdcall GetCaps() const {
+  virtual tSoundDriverCapFlags __stdcall GetCaps() const
+  {
     return eSoundDriverCapFlags_Buffer;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle) {
+  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
+                          tIntPtr aWindowHandle)
+  {
     _InitDeviceList();
 
     mptrBuffer = niNew cSoundDriverBufferOSX();
@@ -627,13 +644,19 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
       return eFalse;
     }
 
-    mptrMixer = New_SoundMixerSoftware(aSoundFormat,anFrequency,mptrBuffer,64);
+    mptrMixer =
+      New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
     if (!mptrMixer.IsOK()) {
       niError(_A("Can't create the software mixer."));
       return eFalse;
     }
 
-    mptrMixer3D = New_SoundMixerSoftware3D(mptrMixer,32,(aSoundFormat==eSoundFormat_Stereo16||aSoundFormat==eSoundFormat_Stereo8)?2:1);
+    mptrMixer3D =
+      New_SoundMixerSoftware3D(mptrMixer, 32,
+                               (aSoundFormat == eSoundFormat_Stereo16 ||
+                                aSoundFormat == eSoundFormat_Stereo8)
+                                 ? 2
+                                 : 1);
     if (!mptrMixer3D.IsOK()) {
       niError(_A("Can't create the 3d software mixer."));
       return eFalse;
@@ -649,7 +672,8 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Shutdown() {
+  tBool __stdcall Shutdown()
+  {
     mptrMixer3D = NULL;
     if (mptrMixer.IsOK()) {
       mptrMixer->Invalidate();
@@ -663,12 +687,14 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Shutdown();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     if (mptrBuffer.IsOK())
       mptrBuffer->SwitchIn();
     if (mptrMixer.IsOK())
@@ -677,7 +703,8 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     if (mptrMixer.IsOK())
       mptrMixer->SwitchOut();
     if (mptrBuffer.IsOK())
@@ -686,22 +713,26 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  iSoundDriverBuffer* __stdcall GetBuffer() const {
+  iSoundDriverBuffer* __stdcall GetBuffer() const
+  {
     return mptrBuffer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer* __stdcall GetMixer() const {
+  iSoundMixer* __stdcall GetMixer() const
+  {
     return mptrMixer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer3D* __stdcall GetMixer3D() const {
+  iSoundMixer3D* __stdcall GetMixer3D() const
+  {
     return mptrMixer3D;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (mptrBuffer.IsOK()) {
       mptrBuffer->UpdateBuffer();
     }
@@ -714,15 +745,17 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  void _InitDeviceList() {
+  void _InitDeviceList()
+  {
 #ifdef MACOSX_COREAUDIO
     if (mDeviceList.empty()) {
       _BuildDeviceList(mDeviceList, 0);
       _BuildDeviceList(mDeviceList, 1);
       niLog(Info, niFmt("Found %d audio devices.", mDeviceList.size()));
-      niLoop(i, mDeviceList.size()) {
-        niLog(Info, niFmt("- Device %d: name: %s, isCapture: %d, devId: %d.",
-                          i, mDeviceList[i].name, mDeviceList[i].isCapture, (tIntPtr)mDeviceList[i].devId));
+      niLoop (i, mDeviceList.size()) {
+        niLog(Info, niFmt("- Device %d: name: %s, isCapture: %d, devId: %d.", i,
+                          mDeviceList[i].name, mDeviceList[i].isCapture,
+                          (tIntPtr)mDeviceList[i].devId));
       }
     }
 #endif
@@ -733,13 +766,14 @@ class cSoundDriverOSX : public ImplRC<iSoundDriver>
   astl::vector<sAudioDevice> mDeviceList;
 #endif
   ni::Ptr<iSoundDriverBuffer> mptrBuffer;
-  ni::Ptr<iSoundMixer>      mptrMixer;
-  ni::Ptr<iSoundMixer3D>    mptrMixer3D;
+  ni::Ptr<iSoundMixer> mptrMixer;
+  ni::Ptr<iSoundMixer3D> mptrMixer3D;
 
   niEndClass(cSoundDriverOSX);
 };
 
 ///////////////////////////////////////////////
-iSoundDriver* __stdcall New_SoundDriverOSX() {
+iSoundDriver* __stdcall New_SoundDriverOSX()
+{
   return niNew cSoundDriverOSX();
 }

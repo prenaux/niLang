@@ -3,76 +3,90 @@
 #include <stdafx.h>
 #include "SoundMixerBufferSize.h"
 
-iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq, iSoundDriverBuffer* apBuffer, tU32 anNumChannels);
-iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNum3DChannels, tU32 anNumAudioChannels);
+iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq,
+                                              iSoundDriverBuffer* apBuffer,
+                                              tU32 anNumChannels);
+iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase,
+                                                  tU32 anNum3DChannels,
+                                                  tU32 anNumAudioChannels);
 
 _HDecl(Silent);
 
-class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
-{
+class cSoundDriverBufferSilent
+    : public ImplRC<iSoundDriverBuffer, eImplFlags_Default> {
   niBeginClass(cSoundDriverBufferSilent);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverBufferSilent() {
+  cSoundDriverBufferSilent()
+  {
     mbIsPlaying = false;
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverBufferSilent() {
+  ~cSoundDriverBufferSilent()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Stop();
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) {
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  {
     tBool bStereo = eFalse;
     tU32 nBits = 0;
     switch (aFormat) {
-      case eSoundFormat_Mono8:
-        nBits = 8;
-        bStereo = eFalse;
-        break;
-      case eSoundFormat_Mono16:
-        nBits = 16;
-        bStereo = eFalse;
-        break;
-      case eSoundFormat_Stereo8:
-        nBits = 8;
-        bStereo = eTrue;
-        break;
-      case eSoundFormat_Stereo16:
-        nBits = 16;
-        bStereo = eTrue;
-        break;
+    case eSoundFormat_Mono8:
+      nBits = 8;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Mono16:
+      nBits = 16;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Stereo8:
+      nBits = 8;
+      bStereo = eTrue;
+      break;
+    case eSoundFormat_Stereo16:
+      nBits = 16;
+      bStereo = eTrue;
+      break;
     }
-    if ((nBits != 8) && (nBits!= 16)) {
-      niError(niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."),nBits));
+    if ((nBits != 8) && (nBits != 16)) {
+      niError(
+        niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."), nBits));
       return eFalse;
     }
 
     const tU32 samples = 1024;
-    const tU32 channels = bStereo ? 2 : 1;    /* 1 = mono, 2 = stereo */
+    const tU32 channels = bStereo ? 2 : 1; /* 1 = mono, 2 = stereo */
     mvBuffer.resize(samples * channels * ((nBits == 16) ? 2 : 1));
 
-    niLog(Info,niFmt("Silent sound driver started with bits: %d, freq: %d, channels: %d, buffer size: %d",
-                     nBits, anFreq, channels, mvBuffer.size()));
+    niLog(
+      Info,
+      niFmt(
+        "Silent sound driver started with bits: %d, freq: %d, channels: %d, buffer size: %d",
+        nBits, anFreq, channels, mvBuffer.size()));
 
     mbIsPlaying = true;
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall Stop() {
+  virtual tBool __stdcall Stop()
+  {
     if (!mbIsPlaying)
       return eTrue;
     mbIsPlaying = false;
@@ -80,32 +94,38 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  virtual tSize __stdcall GetSize() const {
+  virtual tSize __stdcall GetSize() const
+  {
     return mvBuffer.size();
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) {
-     mSink = apSink;
+  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  {
+    mSink = apSink;
   }
 
   ///////////////////////////////////////////////
-  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const {
+  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const
+  {
     return mSink;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchIn() {
+  virtual tBool __stdcall SwitchIn()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchOut() {
+  virtual tBool __stdcall SwitchOut()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall UpdateBuffer() {
+  void __stdcall UpdateBuffer()
+  {
     if (mSink.IsOK()) {
       mSink->OnSoundDriverBufferDataSink(mvBuffer.data(), mvBuffer.size());
     }
@@ -119,51 +139,63 @@ class cSoundDriverBufferSilent : public ImplRC<iSoundDriverBuffer,eImplFlags_Def
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverSilent : public ImplRC<iSoundDriver>
-{
+class cSoundDriverSilent : public ImplRC<iSoundDriver> {
   niBeginClass(cSoundDriverSilent);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverSilent() {
+  cSoundDriverSilent()
+  {
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverSilent() {
+  ~cSoundDriverSilent()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundDriverSilent);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iHString* __stdcall GetName() const {
+  virtual iHString* __stdcall GetName() const
+  {
     return _HC(Silent);
   }
 
   ///////////////////////////////////////////////
-  virtual tSoundDriverCapFlags __stdcall GetCaps() const {
+  virtual tSoundDriverCapFlags __stdcall GetCaps() const
+  {
     return eSoundDriverCapFlags_Buffer;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle) {
+  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
+                          tIntPtr aWindowHandle)
+  {
     mptrBuffer = niNew cSoundDriverBufferSilent();
     if (!mptrBuffer.IsOK()) {
       niError(_A("Can't create the sound driver buffer."));
       return eFalse;
     }
 
-    mptrMixer = New_SoundMixerSoftware(aSoundFormat,anFrequency,mptrBuffer,64);
+    mptrMixer =
+      New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
     if (!mptrMixer.IsOK()) {
       niError(_A("Can't create the software mixer."));
       return eFalse;
     }
 
-    mptrMixer3D = New_SoundMixerSoftware3D(mptrMixer,32,(aSoundFormat==eSoundFormat_Stereo16||aSoundFormat==eSoundFormat_Stereo8)?2:1);
+    mptrMixer3D =
+      New_SoundMixerSoftware3D(mptrMixer, 32,
+                               (aSoundFormat == eSoundFormat_Stereo16 ||
+                                aSoundFormat == eSoundFormat_Stereo8)
+                                 ? 2
+                                 : 1);
     if (!mptrMixer3D.IsOK()) {
       niError(_A("Can't create the 3d software mixer."));
       return eFalse;
@@ -179,7 +211,8 @@ class cSoundDriverSilent : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Shutdown() {
+  tBool __stdcall Shutdown()
+  {
     mptrMixer3D = NULL;
     if (mptrMixer.IsOK()) {
       mptrMixer->Invalidate();
@@ -193,12 +226,14 @@ class cSoundDriverSilent : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Shutdown();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     if (mptrBuffer.IsOK())
       mptrBuffer->SwitchIn();
     if (mptrMixer.IsOK())
@@ -207,7 +242,8 @@ class cSoundDriverSilent : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     if (mptrMixer.IsOK())
       mptrMixer->SwitchOut();
     if (mptrBuffer.IsOK())
@@ -216,22 +252,26 @@ class cSoundDriverSilent : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  iSoundDriverBuffer* __stdcall GetBuffer() const {
+  iSoundDriverBuffer* __stdcall GetBuffer() const
+  {
     return mptrBuffer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer* __stdcall GetMixer() const {
+  iSoundMixer* __stdcall GetMixer() const
+  {
     return mptrMixer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer3D* __stdcall GetMixer3D() const {
+  iSoundMixer3D* __stdcall GetMixer3D() const
+  {
     return mptrMixer3D;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (mptrBuffer.IsOK()) {
       mptrBuffer->UpdateBuffer();
     }
@@ -245,13 +285,14 @@ class cSoundDriverSilent : public ImplRC<iSoundDriver>
 
  public:
   Ptr<iSoundDriverBuffer> mptrBuffer;
-  Ptr<iSoundMixer>      mptrMixer;
-  Ptr<iSoundMixer3D>    mptrMixer3D;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
 
   niEndClass(cSoundDriverSilent);
 };
 
 ///////////////////////////////////////////////
-iSoundDriver* __stdcall New_SoundDriverSilent() {
+iSoundDriver* __stdcall New_SoundDriverSilent()
+{
   return niNew cSoundDriverSilent();
 }

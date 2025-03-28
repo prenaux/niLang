@@ -6,18 +6,22 @@
 
 //#define STREAMING_TRACE
 
-#define SETMIXER(VAR,VAL) {                     \
-    tU32 nChannel = GetChannel();               \
-    if (nChannel != eInvalidHandle) {           \
-      mptrMixer->SetChannel##VAR(nChannel,VAL); \
-    }                                           \
+#define SETMIXER(VAR, VAL)                       \
+  {                                              \
+    tU32 nChannel = GetChannel();                \
+    if (nChannel != eInvalidHandle) {            \
+      mptrMixer->SetChannel##VAR(nChannel, VAL); \
+    }                                            \
   }
 
-#define SETMIXER3D(VAR,VAL) {                                           \
-    tU32 nChannel = GetChannel();                                       \
-    if (nChannel != eInvalidHandle && niFlagIs(mFlags,eSoundSourceFlags_Channel3D)) { \
-      mptrMixer3D->SetChannel##VAR(nChannel,VAL);                       \
-    }                                                                   \
+#define SETMIXER3D(VAR, VAL)                           \
+  {                                                    \
+    tU32 nChannel = GetChannel();                      \
+    if (nChannel != eInvalidHandle &&                  \
+        niFlagIs(mFlags, eSoundSourceFlags_Channel3D)) \
+    {                                                  \
+      mptrMixer3D->SetChannel##VAR(nChannel, VAL);     \
+    }                                                  \
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +123,7 @@ eSoundMode __stdcall cSoundSource::GetMode() const
 void __stdcall cSoundSource::SetPosition(const sVec3f& avPos)
 {
   mvPosition = avPos;
-  SETMIXER3D(Position,mvPosition);
+  SETMIXER3D(Position, mvPosition);
 }
 
 ///////////////////////////////////////////////
@@ -134,7 +138,7 @@ sVec3f __stdcall cSoundSource::GetPosition() const
 void __stdcall cSoundSource::SetVelocity(const sVec3f& avVel)
 {
   mvVelocity = avVel;
-  SETMIXER3D(Velocity,mvVelocity);
+  SETMIXER3D(Velocity, mvVelocity);
 }
 
 ///////////////////////////////////////////////
@@ -149,7 +153,7 @@ sVec3f __stdcall cSoundSource::GetVelocity() const
 void __stdcall cSoundSource::SetMinDistance(tF32 afMin)
 {
   mfMinDistance = afMin;
-  SETMIXER3D(MinDistance,mfMinDistance);
+  SETMIXER3D(MinDistance, mfMinDistance);
 }
 
 ///////////////////////////////////////////////
@@ -164,7 +168,7 @@ tF32 __stdcall cSoundSource::GetMinDistance() const
 void __stdcall cSoundSource::SetMaxDistance(tF32 afMax)
 {
   mfMaxDistance = afMax;
-  SETMIXER3D(MaxDistance,mfMaxDistance);
+  SETMIXER3D(MaxDistance, mfMaxDistance);
 }
 
 ///////////////////////////////////////////////
@@ -175,11 +179,13 @@ tF32 __stdcall cSoundSource::GetMaxDistance() const
 }
 
 ///////////////////////////////////////////////
-void __stdcall cSoundSource::SetPan(tF32 afPan) {
-  mfPan = ni::Clamp(afPan,-1.0f,1.0f);
-  SETMIXER(Pan,int(mfPan*0.5f*255.0f)+128);
+void __stdcall cSoundSource::SetPan(tF32 afPan)
+{
+  mfPan = ni::Clamp(afPan, -1.0f, 1.0f);
+  SETMIXER(Pan, int(mfPan * 0.5f * 255.0f) + 128);
 }
-tF32 __stdcall cSoundSource::GetPan() const {
+tF32 __stdcall cSoundSource::GetPan() const
+{
   return mfPan;
 }
 
@@ -188,7 +194,7 @@ tF32 __stdcall cSoundSource::GetPan() const {
 void __stdcall cSoundSource::SetVolume(tF32 afVolume)
 {
   mfVolume = afVolume;
-  SETMIXER(Volume,int(afVolume*255.0f));
+  SETMIXER(Volume, int(afVolume * 255.0f));
 }
 
 ///////////////////////////////////////////////
@@ -202,9 +208,9 @@ tF32 __stdcall cSoundSource::GetVolume() const
 //! Set the sound pitch.
 void __stdcall cSoundSource::SetSpeed(tF32 afSpeed)
 {
-  mfSpeed  = afSpeed;
+  mfSpeed = afSpeed;
   if (mptrBuffer.IsOK()) {
-    SETMIXER(Frequency,tI32(mptrBuffer->GetFrequency()*mfSpeed));
+    SETMIXER(Frequency, tI32(mptrBuffer->GetFrequency() * mfSpeed));
   }
 }
 
@@ -220,8 +226,8 @@ tF32 __stdcall cSoundSource::GetSpeed() const
 //! \remark eFalse by default.
 void __stdcall cSoundSource::SetLoop(tBool abLoop)
 {
-  niFlagOnIf(mFlags,eSoundSourceFlags_Loop, abLoop);
-  SETMIXER(Loop,niFlagTest(mFlags, eSoundSourceFlags_Loop));
+  niFlagOnIf(mFlags, eSoundSourceFlags_Loop, abLoop);
+  SETMIXER(Loop, niFlagTest(mFlags, eSoundSourceFlags_Loop));
 }
 
 ///////////////////////////////////////////////
@@ -235,22 +241,24 @@ tBool __stdcall cSoundSource::GetLoop() const
 //! Starts playing the sound.
 tBool __stdcall cSoundSource::Play()
 {
-  niFlagOff(mFlags,eSoundSourceFlags_Paused); // one way or another wont be in paused state anymore
+  niFlagOff(
+    mFlags,
+    eSoundSourceFlags_Paused); // one way or another wont be in paused state anymore
 
   tU32 nChannel = GetChannel();
   if (nChannel != eInvalidHandle) {
-    if (niFlagIs(mFlags,eSoundSourceFlags_Paused)) {
+    if (niFlagIs(mFlags, eSoundSourceFlags_Paused)) {
       // just unpause...
-      SETMIXER(Pause,eFalse);
+      SETMIXER(Pause, eFalse);
       return eTrue;
     }
     Stop();
   }
   else {
-    nChannel = mptrSoundFactory->FindFreeChannelPriority(mMode,mnPriority);
+    nChannel = mptrSoundFactory->FindFreeChannelPriority(mMode, mnPriority);
   }
 
-  if (!mptrSoundFactory->_PlaySoundSource(this,nChannel,mnPriority)) {
+  if (!mptrSoundFactory->_PlaySoundSource(this, nChannel, mnPriority)) {
     return eFalse;
   }
   return eTrue;
@@ -264,7 +272,7 @@ tBool __stdcall cSoundSource::Stop()
   if (nChannel != eInvalidHandle) {
     mptrMixer->StopChannel(nChannel);
   }
-  niFlagOff(mFlags,eSoundSourceFlags_Paused);
+  niFlagOff(mFlags, eSoundSourceFlags_Paused);
   return eTrue;
 }
 
@@ -273,7 +281,7 @@ tBool __stdcall cSoundSource::Stop()
 tBool __stdcall cSoundSource::Pause()
 {
   mFlags |= eSoundSourceFlags_Paused;
-  SETMIXER(Pause,eTrue);
+  SETMIXER(Pause, eTrue);
   return eTrue;
 }
 
@@ -298,13 +306,14 @@ tBool __stdcall cSoundSource::GetIsPlaying() const
 }
 
 ///////////////////////////////////////////////
-tBool cSoundSource::SetChannel(iSoundMixer* apMixer, iSoundMixer3D* apMixer3D, tU32 anChannel)
+tBool cSoundSource::SetChannel(iSoundMixer* apMixer, iSoundMixer3D* apMixer3D,
+                               tU32 anChannel)
 {
-  niCheckSilent(apMixer,eFalse);
-  niCheckSilent(mptrBuffer.IsOK(),eFalse);
+  niCheckSilent(apMixer, eFalse);
+  niCheckSilent(mptrBuffer.IsOK(), eFalse);
 
   mptrBuffer->ResetPosition();
-  if (!apMixer->SetChannelBuffer(anChannel,mptrBuffer)) {
+  if (!apMixer->SetChannelBuffer(anChannel, mptrBuffer)) {
     mnChannel = eInvalidHandle;
     mptrMixer = NULL;
     mptrMixer3D = apMixer3D;
@@ -315,24 +324,27 @@ tBool cSoundSource::SetChannel(iSoundMixer* apMixer, iSoundMixer3D* apMixer3D, t
     mptrMixer = apMixer;
   }
 
-  mptrMixer->SetChannelVolume(anChannel, int(mfVolume*255.0f));
-  mptrMixer->SetChannelFrequency(anChannel, int(mfSpeed*mptrBuffer->GetFrequency()));
-  mptrMixer->SetChannelLoop(anChannel, niFlagIs(mFlags,eSoundSourceFlags_Loop));
-  mptrMixer->SetChannelPause(anChannel, niFlagIs(mFlags,eSoundSourceFlags_Paused));
+  mptrMixer->SetChannelVolume(anChannel, int(mfVolume * 255.0f));
+  mptrMixer->SetChannelFrequency(anChannel,
+                                 int(mfSpeed * mptrBuffer->GetFrequency()));
+  mptrMixer->SetChannelLoop(anChannel,
+                            niFlagIs(mFlags, eSoundSourceFlags_Loop));
+  mptrMixer->SetChannelPause(anChannel,
+                             niFlagIs(mFlags, eSoundSourceFlags_Paused));
   mptrMixer->SetChannelUserID(anChannel, tIntPtr(this));
   if (apMixer3D && apMixer3D->GetIsChannel3D(anChannel)) {
     mptrMixer3D = apMixer3D;
-    niFlagOn(mFlags,eSoundSourceFlags_Channel3D);
-    mptrMixer3D->SetChannelMode(anChannel,mMode);
-    mptrMixer3D->SetChannelPosition(anChannel,mvPosition);
-    mptrMixer3D->SetChannelVelocity(anChannel,mvVelocity);
-    mptrMixer3D->SetChannelMinDistance(anChannel,mfMinDistance);
-    mptrMixer3D->SetChannelMaxDistance(anChannel,mfMaxDistance);
+    niFlagOn(mFlags, eSoundSourceFlags_Channel3D);
+    mptrMixer3D->SetChannelMode(anChannel, mMode);
+    mptrMixer3D->SetChannelPosition(anChannel, mvPosition);
+    mptrMixer3D->SetChannelVelocity(anChannel, mvVelocity);
+    mptrMixer3D->SetChannelMinDistance(anChannel, mfMinDistance);
+    mptrMixer3D->SetChannelMaxDistance(anChannel, mfMaxDistance);
   }
   else {
     mptrMixer3D = NULL;
-    niFlagOff(mFlags,eSoundSourceFlags_Channel3D);
-    mptrMixer->SetChannelPan(anChannel, int(mfPan*0.5f*255.0f)+128);
+    niFlagOff(mFlags, eSoundSourceFlags_Channel3D);
+    mptrMixer->SetChannelPan(anChannel, int(mfPan * 0.5f * 255.0f) + 128);
   }
   return eTrue;
 }
@@ -351,9 +363,11 @@ tU32 cSoundSource::GetChannel() const
 }
 
 ///////////////////////////////////////////////
-ni::tBool __stdcall cSoundSource::Play2D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afPan)
+ni::tBool __stdcall cSoundSource::Play2D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                                         ni::tF32 afPan)
 {
-  if (!mptrBuffer.IsOK()) return ni::eFalse;
+  if (!mptrBuffer.IsOK())
+    return ni::eFalse;
   Stop();
   this->SetMode(ni::eSoundMode_Normal2D);
   this->SetPan(afPan);
@@ -364,11 +378,17 @@ ni::tBool __stdcall cSoundSource::Play2D(ni::tF32 afVolume, ni::tF32 afSpeed, ni
 }
 
 ///////////////////////////////////////////////
-ni::tBool __stdcall cSoundSource::Play3D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::sVec3f avPosition, ni::tBool abListenerRelative, ni::tF32 afMinDistance, ni::tF32 afMaxDistance)
+ni::tBool __stdcall cSoundSource::Play3D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                                         ni::sVec3f avPosition,
+                                         ni::tBool abListenerRelative,
+                                         ni::tF32 afMinDistance,
+                                         ni::tF32 afMaxDistance)
 {
-  if (!mptrBuffer.IsOK()) return ni::eFalse;
+  if (!mptrBuffer.IsOK())
+    return ni::eFalse;
   Stop();
-  this->SetMode(abListenerRelative?ni::eSoundMode_Relative3D:ni::eSoundMode_Normal3D);
+  this->SetMode(abListenerRelative ? ni::eSoundMode_Relative3D
+                                   : ni::eSoundMode_Normal3D);
   this->SetPosition(avPosition);
   this->SetMinDistance(afMinDistance);
   this->SetMaxDistance(afMaxDistance);

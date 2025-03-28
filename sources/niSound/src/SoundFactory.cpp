@@ -7,12 +7,16 @@
 #include "SoundSource.h"
 
 #ifdef niWindows
-#pragma comment(lib,"msacm32.lib")
-#pragma comment(lib,"winmm.lib")
+  #pragma comment(lib, "msacm32.lib")
+  #pragma comment(lib, "winmm.lib")
 #endif
 
-#define CheckValid(RET) if (!mptrMixer.IsOK()) return RET;
-#define CheckValid3D(RET) if (!mptrMixer3D.IsOK()) return RET;
+#define CheckValid(RET)  \
+  if (!mptrMixer.IsOK()) \
+    return RET;
+#define CheckValid3D(RET)  \
+  if (!mptrMixer3D.IsOK()) \
+    return RET;
 
 iSoundDriver* __stdcall New_SoundDriverSilent();
 iSoundDataLoader* New_SoundDataLoaderWAV();
@@ -21,8 +25,11 @@ iSoundDataLoader* New_SoundDataLoaderOGG_STB();
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cSoundFactory implementation.
 
-static inline void _RegisterSoundDataLoader(const achar* aName, iUnknown* apInstance) {
-  ni::GetLang()->SetGlobalInstance(niFmt("SoundDataLoader.%s",aName), apInstance);
+static inline void _RegisterSoundDataLoader(const achar* aName,
+                                            iUnknown* apInstance)
+{
+  ni::GetLang()->SetGlobalInstance(niFmt("SoundDataLoader.%s", aName),
+                                   apInstance);
 }
 
 ///////////////////////////////////////////////
@@ -33,38 +40,45 @@ cSoundFactory::cSoundFactory()
   // register drivers
 #if !defined NO_SOUND
 
-#if defined niWindows
+  #if defined niWindows
   mvDrivers.push_back(New_SoundDriverWaveOut());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
-#elif defined niAndroid
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  #elif defined niAndroid
   mvDrivers.push_back(New_SoundDriverJNI());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
-#elif defined niOSX || defined niIOS
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  #elif defined niOSX || defined niIOS
   mvDrivers.push_back(New_SoundDriverOSX());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
-#elif defined niLinuxDesktop
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  #elif defined niLinuxDesktop
   mvDrivers.push_back(New_SoundDriverALSA());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
-#else
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  #else
   mvDrivers.push_back(New_SoundDriverSDL());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
-#endif
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  #endif
 
 #endif
 
   mvDrivers.push_back(New_SoundDriverSilent());
-  if (!niIsOK(mvDrivers.back())) mvDrivers.erase(mvDrivers.begin()+mvDrivers.size()-1);
+  if (!niIsOK(mvDrivers.back()))
+    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
 
   // sound buffer manager
-  mptrSoundBufferMgr = ni::GetLang()->CreateDeviceResourceManager(_A("SoundBuffer"));
+  mptrSoundBufferMgr =
+    ni::GetLang()->CreateDeviceResourceManager(_A("SoundBuffer"));
   if (!niIsOK(mptrSoundBufferMgr)) {
     niError(_A("Can't create the sound buffer resource manager."));
     return;
   }
 
   // plugins
-  _RegisterSoundDataLoader("wav",New_SoundDataLoaderWAV());
-  _RegisterSoundDataLoader("ogg",New_SoundDataLoaderOGG_STB());
+  _RegisterSoundDataLoader("wav", New_SoundDataLoaderWAV());
+  _RegisterSoundDataLoader("ogg", New_SoundDataLoaderOGG_STB());
 
   SetListenerPosition(sVec3f::Zero());
   SetListenerVelocity(sVec3f::Zero());
@@ -76,12 +90,13 @@ cSoundFactory::cSoundFactory()
 
   // Log drivers available
   if (!GetNumDrivers()) {
-    niLog(Info,niFmt(_A("No sound driver available.")));
+    niLog(Info, niFmt(_A("No sound driver available.")));
   }
   else {
-    niLoop(i,GetNumDrivers()) {
+    niLoop (i, GetNumDrivers()) {
       iSoundDriver* pDrv = GetDriver(i);
-      niLog(Info,niFmt(_A("Sound driver '%s' found."),niHStr(pDrv->GetName())));
+      niLog(Info,
+            niFmt(_A("Sound driver '%s' found."), niHStr(pDrv->GetName())));
     }
   }
 }
@@ -101,21 +116,21 @@ tU32 __stdcall cSoundFactory::GetNumDrivers() const
 ///////////////////////////////////////////////
 iSoundDriver* __stdcall cSoundFactory::GetDriver(tU32 anIndex) const
 {
-  niCheckSilent(anIndex < mvDrivers.size(),NULL);
+  niCheckSilent(anIndex < mvDrivers.size(), NULL);
   return mvDrivers[anIndex];
 }
 
 ///////////////////////////////////////////////
 iHString* __stdcall cSoundFactory::GetDriverName(tU32 anIndex) const
 {
-  niCheckSilent(anIndex < mvDrivers.size(),NULL);
+  niCheckSilent(anIndex < mvDrivers.size(), NULL);
   return mvDrivers[anIndex]->GetName();
 }
 
 ///////////////////////////////////////////////
 tSoundDriverCapFlags __stdcall cSoundFactory::GetDriverCaps(tU32 anIndex) const
 {
-  niCheckSilent(anIndex < mvDrivers.size(),0);
+  niCheckSilent(anIndex < mvDrivers.size(), 0);
   return mvDrivers[anIndex]->GetCaps();
 }
 
@@ -130,14 +145,17 @@ tU32 __stdcall cSoundFactory::GetDriverIndex(iHString* ahspName) const
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundFactory::StartupDriver(tU32 anDriver, eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle)
+tBool __stdcall cSoundFactory::StartupDriver(tU32 anDriver,
+                                             eSoundFormat aSoundFormat,
+                                             tU32 anFrequency,
+                                             tIntPtr aWindowHandle)
 {
   ShutdownDriver();
 
   if (anDriver == eInvalidHandle) {
-    niLoop(i,mvDrivers.size()) {
+    niLoop (i, mvDrivers.size()) {
       Ptr<iSoundDriver> ptrDrv = mvDrivers[i];
-      if (ptrDrv->Startup(aSoundFormat,anFrequency,aWindowHandle)) {
+      if (ptrDrv->Startup(aSoundFormat, anFrequency, aWindowHandle)) {
         mnActiveDriver = i;
         mptrDriver = ptrDrv;
         break;
@@ -148,11 +166,12 @@ tBool __stdcall cSoundFactory::StartupDriver(tU32 anDriver, eSoundFormat aSoundF
       return eFalse;
     }
   }
-  else{
-    niCheck(anDriver < GetNumDrivers(),eFalse);
+  else {
+    niCheck(anDriver < GetNumDrivers(), eFalse);
     Ptr<iSoundDriver> ptrDrv = mvDrivers[anDriver];
-    if (!ptrDrv->Startup(aSoundFormat,anFrequency,aWindowHandle)) {
-      niError(niFmt(_A("Can't startup the driver '%s'."),niHStr(mvDrivers[mnActiveDriver]->GetName())));
+    if (!ptrDrv->Startup(aSoundFormat, anFrequency, aWindowHandle)) {
+      niError(niFmt(_A("Can't startup the driver '%s'."),
+                    niHStr(mvDrivers[mnActiveDriver]->GetName())));
       return eFalse;
     }
     mptrDriver = ptrDrv;
@@ -171,9 +190,10 @@ tBool __stdcall cSoundFactory::StartupDriver(tU32 anDriver, eSoundFormat aSoundF
     mvChannels.resize(mptrMixer->GetNumChannels());
     sChannel c;
     c.nPriority = 0;
-    astl::fill(mvChannels,c);
+    astl::fill(mvChannels, c);
   }
-  niLog(Info,niFmt(_A("Sound driver '%s' started."),niHStr(mptrDriver->GetName())));
+  niLog(Info,
+        niFmt(_A("Sound driver '%s' started."), niHStr(mptrDriver->GetName())));
   return eTrue;
 }
 
@@ -186,7 +206,7 @@ tBool __stdcall cSoundFactory::ShutdownDriver()
   if (mptrMixer.IsOK()) {
     for (tU32 i = 0; i < mptrMixer->GetNumChannels(); ++i) {
       mptrMixer->StopChannel(i);
-      mptrMixer->SetChannelBuffer(i,NULL);
+      mptrMixer->SetChannelBuffer(i, NULL);
     }
     mptrMixer = NULL;
   }
@@ -207,7 +227,7 @@ tU32 __stdcall cSoundFactory::GetActiveDriver() const
 ///////////////////////////////////////////////
 iSoundDriverBuffer* __stdcall cSoundFactory::GetBuffer() const
 {
-  niCheckSilent(mptrDriver.IsOK(),NULL);
+  niCheckSilent(mptrDriver.IsOK(), NULL);
   return mptrDriver->GetBuffer();
 }
 
@@ -259,12 +279,13 @@ tBool __stdcall cSoundFactory::IsOK() const
 //! Load sound data from the specified file.
 iSoundData* __stdcall cSoundFactory::LoadSoundData(iFile* apFile)
 {
-  niCheckIsOK(apFile,NULL);
+  niCheckIsOK(apFile, NULL);
 
   cString ext = _ASTR(apFile->GetSourcePath()).RAfter(".").ToLower();
-  QPtr<iSoundDataLoader> ptrLoader = ni::GetLang()->GetGlobalInstance(niFmt("SoundDataLoader.%s",ext));
+  QPtr<iSoundDataLoader> ptrLoader =
+    ni::GetLang()->GetGlobalInstance(niFmt("SoundDataLoader.%s", ext));
   if (!ptrLoader.IsOK()) {
-    niError(niFmt("Can't find a sound data loader for file type '%s'.",ext));
+    niError(niFmt("Can't find a sound data loader for file type '%s'.", ext));
     return NULL;
   }
 
@@ -273,7 +294,9 @@ iSoundData* __stdcall cSoundFactory::LoadSoundData(iFile* apFile)
 
 ///////////////////////////////////////////////
 //! Create a sound buffer from the specified sound data.
-iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferEx(iSoundData* apData, tBool abStream, iHString* ahspName)
+iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferEx(iSoundData* apData,
+                                                           tBool abStream,
+                                                           iHString* ahspName)
 {
   iSoundBuffer* pBuffer = NULL;
   if (HStringIsNotEmpty(ahspName)) {
@@ -283,13 +306,13 @@ iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferEx(iSoundData* apData, t
   }
 
   if (abStream) {
-    pBuffer = niNew cSoundBufferStream(mptrSoundBufferMgr, apData, ahspName, eFalse);
+    pBuffer =
+      niNew cSoundBufferStream(mptrSoundBufferMgr, apData, ahspName, eFalse);
   }
   else {
     pBuffer = niNew cSoundBufferMem(mptrSoundBufferMgr, apData, ahspName);
   }
-  if (!niIsOK(pBuffer))
-  {
+  if (!niIsOK(pBuffer)) {
     niSafeRelease(pBuffer);
     niError(_A("Can't create new sound buffer."));
     return NULL;
@@ -301,7 +324,9 @@ iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferEx(iSoundData* apData, t
 ///////////////////////////////////////////////
 //! Create a sound buffer from the specified file.
 //! \remark This method will load sound data internally.
-iSoundBuffer* __stdcall cSoundFactory::CreateSoundBuffer(iFile* apFile, tBool abStream, iHString* ahspName)
+iSoundBuffer* __stdcall cSoundFactory::CreateSoundBuffer(iFile* apFile,
+                                                         tBool abStream,
+                                                         iHString* ahspName)
 {
   iSoundBuffer* pBuffer = NULL;
   if (HStringIsNotEmpty(ahspName)) {
@@ -317,7 +342,8 @@ iSoundBuffer* __stdcall cSoundFactory::CreateSoundBuffer(iFile* apFile, tBool ab
   }
 
   if (abStream) {
-    pBuffer = niNew cSoundBufferStream(mptrSoundBufferMgr, ptrData, ahspName, eFalse);
+    pBuffer =
+      niNew cSoundBufferStream(mptrSoundBufferMgr, ptrData, ahspName, eFalse);
   }
   else {
     pBuffer = niNew cSoundBufferMem(mptrSoundBufferMgr, ptrData, ahspName);
@@ -357,7 +383,8 @@ tU32 __stdcall cSoundFactory::FindFreeChannel(eSoundMode aMode) const
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cSoundFactory::FindFreeChannelPriority(eSoundMode aMode, tU32 anPriority) const
+tU32 __stdcall cSoundFactory::FindFreeChannelPriority(eSoundMode aMode,
+                                                      tU32 anPriority) const
 {
   CheckValid(eInvalidHandle);
   tU32 nStart = 0;
@@ -484,25 +511,31 @@ tF32 __stdcall cSoundFactory::GetListenerDopplerScale() const
 }
 
 ///////////////////////////////////////////////
-ni::iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferFromRes(ni::iHString* ahspName, ni::tBool abStream) {
+ni::iSoundBuffer* __stdcall cSoundFactory::CreateSoundBufferFromRes(
+  ni::iHString* ahspName, ni::tBool abStream)
+{
   ni::Ptr<ni::iSoundBuffer> ptrBuffer = GetSoundBuffer(ahspName);
   if (!ptrBuffer.IsOK()) {
     ni::Ptr<ni::iFile> ptrFile = ni::GetLang()->URLOpen(niHStr(ahspName));
     if (ptrFile.IsOK()) {
-      ptrBuffer = CreateSoundBuffer(ptrFile,abStream,ahspName);
+      ptrBuffer = CreateSoundBuffer(ptrFile, abStream, ahspName);
       if (!ptrBuffer.IsOK()) {
-        niWarning(niFmt(_A("Can't create sound buffer '%s'."),niHStr(ahspName)));
+        niWarning(
+          niFmt(_A("Can't create sound buffer '%s'."), niHStr(ahspName)));
       }
     }
     else {
-      niWarning(niFmt(_A("Can't open sound file '%s'."),niHStr(ahspName)));
+      niWarning(niFmt(_A("Can't open sound file '%s'."), niHStr(ahspName)));
     }
   }
   return ptrBuffer.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
-ni::tBool __stdcall cSoundFactory::MusicPlay(iSoundSource* apSoundSource, ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afBlendTime)
+ni::tBool __stdcall cSoundFactory::MusicPlay(iSoundSource* apSoundSource,
+                                             ni::tF32 afVolume,
+                                             ni::tF32 afSpeed,
+                                             ni::tF32 afBlendTime)
 {
   ni::Ptr<ni::iSoundSource> ptrSource = apSoundSource;
   if (!ptrSource.IsOK()) {
@@ -519,14 +552,14 @@ ni::tBool __stdcall cSoundFactory::MusicPlay(iSoundSource* apSoundSource, ni::tF
   if (mptrMusicCurrent.IsOK()) {
     mbMusicFadeOut = ni::eTrue;
     mMusicFadeOut.SetValue(mptrMusicCurrent->GetVolume());
-    mMusicFadeOut.SetTarget(0.0f,afBlendTime);
+    mMusicFadeOut.SetTarget(0.0f, afBlendTime);
   }
   else {
     mbMusicFadeOut = ni::eFalse;
   }
   mbMusicFadeIn = ni::eTrue;
   mMusicFadeIn.SetValue(0.0f);
-  mMusicFadeIn.SetTarget(afVolume,afBlendTime);
+  mMusicFadeIn.SetTarget(afVolume, afBlendTime);
   return ni::eTrue;
 }
 
@@ -537,29 +570,31 @@ ni::tBool __stdcall cSoundFactory::MusicStop(ni::tF32 afBlendTime)
     niDebugFmt(("... MusicStop: %g -> %g", mptrMusicCurrent->GetVolume(), 0));
     mbMusicFadeOut = ni::eTrue;
     mMusicFadeOut.SetValue(mptrMusicCurrent->GetVolume());
-    mMusicFadeOut.SetTarget(0.0f,afBlendTime);
+    mMusicFadeOut.SetTarget(0.0f, afBlendTime);
   }
   return ni::eTrue;
 }
 
 ///////////////////////////////////////////////
-ni::tBool __stdcall cSoundFactory::MusicSpeed(ni::tF32 afSpeed, ni::tF32 afBlendTime)
+ni::tBool __stdcall cSoundFactory::MusicSpeed(ni::tF32 afSpeed,
+                                              ni::tF32 afBlendTime)
 {
   if (mptrMusicCurrent.IsOK()) {
     mbMusicSpeed = ni::eTrue;
     mMusicNewSpeed.SetValue(mptrMusicCurrent->GetSpeed());
-    mMusicNewSpeed.SetTarget(afSpeed,afBlendTime);
+    mMusicNewSpeed.SetTarget(afSpeed, afBlendTime);
   }
   return ni::eTrue;
 }
 
 ///////////////////////////////////////////////
-ni::tBool __stdcall cSoundFactory::MusicVolume(ni::tF32 afVolume, ni::tF32 afBlendTime)
+ni::tBool __stdcall cSoundFactory::MusicVolume(ni::tF32 afVolume,
+                                               ni::tF32 afBlendTime)
 {
   if (mptrMusicCurrent.IsOK()) {
     mbMusicVolume = ni::eTrue;
     mMusicNewVolume.SetValue(mptrMusicCurrent->GetVolume());
-    mMusicNewVolume.SetTarget(afVolume,afBlendTime);
+    mMusicNewVolume.SetTarget(afVolume, afBlendTime);
   }
   return ni::eFalse;
 }
@@ -625,7 +660,8 @@ tBool __stdcall cSoundFactory::Update(ni::tF64 afUpdateTime)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundFactory::SwitchIn() {
+tBool __stdcall cSoundFactory::SwitchIn()
+{
   if (mptrMixer.IsOK()) {
     mptrMixer->SwitchIn();
   }
@@ -633,7 +669,8 @@ tBool __stdcall cSoundFactory::SwitchIn() {
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundFactory::SwitchOut() {
+tBool __stdcall cSoundFactory::SwitchOut()
+{
   if (mptrMixer.IsOK()) {
     mptrMixer->SwitchOut();
   }
@@ -643,18 +680,21 @@ tBool __stdcall cSoundFactory::SwitchOut() {
 ///////////////////////////////////////////////
 iSoundSource* __stdcall cSoundFactory::CreateSoundSource(iSoundBuffer* apBuffer)
 {
-  niCheckIsOK(apBuffer,NULL);
-  return niNew cSoundSource(this,apBuffer);
+  niCheckIsOK(apBuffer, NULL);
+  return niNew cSoundSource(this, apBuffer);
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundFactory::_PlaySoundSource(iSoundSource* apSource, tU32 anChannel, tU32 anPriority)
+tBool __stdcall cSoundFactory::_PlaySoundSource(iSoundSource* apSource,
+                                                tU32 anChannel, tU32 anPriority)
 {
   CheckValid(eFalse);
-  niCheckSilent(niIsOK(apSource),eFalse);
-  niCheckSilent(anChannel < mvChannels.size(),eFalse);
+  niCheckSilent(niIsOK(apSource), eFalse);
+  niCheckSilent(anChannel < mvChannels.size(), eFalse);
   mptrMixer->StopChannel(anChannel);
-  if (!((cSoundSource*)(apSource))->SetChannel(mptrMixer,mptrMixer3D,anChannel)) {
+  if (!((cSoundSource*)(apSource))
+         ->SetChannel(mptrMixer, mptrMixer3D, anChannel))
+  {
     return eFalse;
   }
   mvChannels[anChannel].nPriority = anPriority;
@@ -662,6 +702,7 @@ tBool __stdcall cSoundFactory::_PlaySoundSource(iSoundSource* apSource, tU32 anC
   return eTrue;
 }
 
-niExportFunc(iUnknown*) New_niSound_SoundFactory(const Var&, const Var&) {
+niExportFunc(iUnknown*) New_niSound_SoundFactory(const Var&, const Var&)
+{
   return niNew cSoundFactory();
 }

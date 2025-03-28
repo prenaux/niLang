@@ -2,19 +2,19 @@
 	<namespace name="ni">
 		<enum name="eSoundFormat">
 			<comments desc="Common sound formats. "/>
-			<value name="eSoundFormat_Unknown" value="0 ">
+			<value name="eSoundFormat_Unknown" value="0">
 				<comments desc="Unknown format "/>
 			</value>
-			<value name="eSoundFormat_Mono8" value="( 8 ) | ( ( 1 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Mono8" value="(8)|((1)&lt;&lt;8)">
 				<comments desc="Mono 8 bits. "/>
 			</value>
-			<value name="eSoundFormat_Stereo8" value="( 8 ) | ( ( 2 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Stereo8" value="(8)|((2)&lt;&lt;8)">
 				<comments desc="Stereo 8 bits. "/>
 			</value>
-			<value name="eSoundFormat_Mono16" value="( 16 ) | ( ( 1 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Mono16" value="(16)|((1)&lt;&lt;8)">
 				<comments desc="Mono 16 bits. "/>
 			</value>
-			<value name="eSoundFormat_Stereo16" value="( 16 ) | ( ( 2 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Stereo16" value="(16)|((2)&lt;&lt;8)">
 				<comments desc="Stereo 16 bits. "/>
 			</value>
 		</enum>

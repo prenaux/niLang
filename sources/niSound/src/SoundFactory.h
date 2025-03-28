@@ -11,8 +11,7 @@ class cSoundSource;
 // cSoundFactory declaration.
 
 //! Sound factory implementation.
-class cSoundFactory : public ImplRC<iSoundFactory>
-{
+class cSoundFactory : public ImplRC<iSoundFactory> {
   niBeginClass(cSoundFactory);
 
   typedef astl::list<cSoundSource*> tSoundSourceLst;
@@ -39,7 +38,8 @@ class cSoundFactory : public ImplRC<iSoundFactory>
   iHString* __stdcall GetDriverName(tU32 anIndex) const;
   tSoundDriverCapFlags __stdcall GetDriverCaps(tU32 anIndex) const;
   tU32 __stdcall GetDriverIndex(iHString* ahspName) const;
-  tBool __stdcall StartupDriver(tU32 anDriver, eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle);
+  tBool __stdcall StartupDriver(tU32 anDriver, eSoundFormat aSoundFormat,
+                                tU32 anFrequency, tIntPtr aWindowHandle);
   tBool __stdcall ShutdownDriver();
   tU32 __stdcall GetActiveDriver() const;
   iSoundDriverBuffer* __stdcall GetBuffer() const;
@@ -50,9 +50,13 @@ class cSoundFactory : public ImplRC<iSoundFactory>
 
   iSoundData* __stdcall LoadSoundData(iFile* apFile);
 
-  iSoundBuffer* __stdcall CreateSoundBufferEx(iSoundData* apData, tBool abStream, iHString* ahspName);
-  iSoundBuffer* __stdcall CreateSoundBuffer(iFile* apFile, tBool abStream, iHString* ahspName);
-  ni::iSoundBuffer* __stdcall CreateSoundBufferFromRes(ni::iHString* ahspName, ni::tBool abStream);
+  iSoundBuffer* __stdcall CreateSoundBufferEx(iSoundData* apData,
+                                              tBool abStream,
+                                              iHString* ahspName);
+  iSoundBuffer* __stdcall CreateSoundBuffer(iFile* apFile, tBool abStream,
+                                            iHString* ahspName);
+  ni::iSoundBuffer* __stdcall CreateSoundBufferFromRes(ni::iHString* ahspName,
+                                                       ni::tBool abStream);
   iSoundBuffer* __stdcall GetSoundBuffer(iHString* ahspName);
 
   //! Update the sounds.
@@ -74,45 +78,48 @@ class cSoundFactory : public ImplRC<iSoundFactory>
   tF32 __stdcall GetListenerDopplerScale() const;
 
   tU32 __stdcall FindFreeChannel(eSoundMode aMode) const;
-  tU32 __stdcall FindFreeChannelPriority(eSoundMode aMode, tU32 anPriority) const;
+  tU32 __stdcall FindFreeChannelPriority(eSoundMode aMode,
+                                         tU32 anPriority) const;
 
   iSoundSource* __stdcall CreateSoundSource(iSoundBuffer* apBuffer);
 
-  ni::tBool __stdcall MusicPlay(iSoundSource* apSoundSource, ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afBlendTime);
+  ni::tBool __stdcall MusicPlay(iSoundSource* apSoundSource, ni::tF32 afVolume,
+                                ni::tF32 afSpeed, ni::tF32 afBlendTime);
   ni::tBool __stdcall MusicStop(ni::tF32 afBlendTime);
   ni::tBool __stdcall MusicSpeed(ni::tF32 afSpeed, ni::tF32 afBlendTime);
   ni::tBool __stdcall MusicVolume(ni::tF32 afVolume, ni::tF32 afBlendTime);
   //// iSoundFactory ////////////////////////////
 
   //! Play a sound source on the specified channel.
-  tBool __stdcall _PlaySoundSource(iSoundSource* apSource, tU32 anChannel, tU32 anPriority);
+  tBool __stdcall _PlaySoundSource(iSoundSource* apSource, tU32 anChannel,
+                                   tU32 anPriority);
 
  private:
-  astl::vector<Ptr<iSoundDriver> >  mvDrivers;
+  astl::vector<Ptr<iSoundDriver>> mvDrivers;
 
   // sound driver
-  tU32                mnActiveDriver;
-  Ptr<iSoundDriver>   mptrDriver;
-  Ptr<iSoundMixer>    mptrMixer;
-  Ptr<iSoundMixer3D>  mptrMixer3D;
+  tU32 mnActiveDriver;
+  Ptr<iSoundDriver> mptrDriver;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
 
   // sounds
   Ptr<iDeviceResourceManager> mptrSoundBufferMgr;
 
   // channels
   struct sChannel {
-    tU32          nPriority;
+    tU32 nPriority;
   };
-  astl::vector<sChannel>    mvChannels;
+  astl::vector<sChannel> mvChannels;
 
   ni::sAnimatedVariable<ni::tF32> mMusicFadeOut;
-  ni::tBool             mbMusicFadeOut;
+  ni::tBool mbMusicFadeOut;
   ni::sAnimatedVariable<ni::tF32> mMusicFadeIn;
-  ni::tBool             mbMusicFadeIn;
+  ni::tBool mbMusicFadeIn;
   ni::sAnimatedVariable<ni::tF32> mMusicNewSpeed;
-  ni::tBool             mbMusicSpeed;
+  ni::tBool mbMusicSpeed;
   ni::sAnimatedVariable<ni::tF32> mMusicNewVolume;
-  ni::tBool             mbMusicVolume;
+  ni::tBool mbMusicVolume;
   ni::Ptr<ni::iSoundSource> mptrMusicCurrent;
   ni::Ptr<ni::iSoundSource> mptrMusicNext;
 

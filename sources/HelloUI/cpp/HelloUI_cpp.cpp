@@ -11,20 +11,25 @@ niExportFunc(iWidgetSink*) New_HelloUI_Widget();
 niExportFunc(iWidgetSink*) New_HelloUI_Shader();
 niExportFunc(iWidgetSink*) New_HelloUI_AR();
 
-static Nonnull<app::AppContext> gAppContext = ni::MakeNonnull<app::AppContext>();
+static Nonnull<app::AppContext> gAppContext =
+  ni::MakeNonnull<app::AppContext>();
 
-ni::Var OnAppStarted() {
+ni::Var OnAppStarted()
+{
   niInitScriptVMForDebugUI();
 
   Ptr<iWidgetSink> sink;
   // if (!sink.IsOK()) { sink = New_HelloUI_AR(); }
   // if (!sink.IsOK()) { sink = New_HelloUI_Shader(); }
-  if (!sink.IsOK()) { sink = New_HelloUI_Widget(); }
+  if (!sink.IsOK()) {
+    sink = New_HelloUI_Widget();
+  }
   gAppContext->_uiContext->GetRootWidget()->AddSink(sink);
   return ni::eTrue;
 }
 
-niWindowedMain() {
+niWindowedMain()
+{
   ni_log_system_info_once();
   ni_set_show_fatal_error_message_box(1);
 
@@ -32,8 +37,10 @@ niWindowedMain() {
   // bg update, makes profiling/debugging a lot simpler
   gAppContext->_config.backgroundUpdate = eTrue;
 #ifdef niJSCC
-  const tBool bWebGLTranslucent = ni::GetProperty("WebGL.Translucent", "false").Bool();
-  gAppContext->_config.clearColor = bWebGLTranslucent ? 0 : ULColorBuild(88,33,33,0);
+  const tBool bWebGLTranslucent =
+    ni::GetProperty("WebGL.Translucent", "false").Bool();
+  gAppContext->_config.clearColor =
+    bWebGLTranslucent ? 0 : ULColorBuild(88, 33, 33, 0);
 #else
   gAppContext->_config.clearColor = 0xFF333333;
 #endif

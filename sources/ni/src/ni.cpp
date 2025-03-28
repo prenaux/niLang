@@ -2,16 +2,16 @@
 // SPDX-License-Identifier: MIT
 
 #if defined _FLYMAKE
-#define NI_CONSOLE
+  #define NI_CONSOLE
 #endif
 
 #if defined NI_CONSOLE
-#pragma message("Building Console Ni")
-#define NI_REPL
+  #pragma message("Building Console Ni")
+  #define NI_REPL
 #elif defined NI_WINDOWED
-#pragma message("Building Windowed Ni")
+  #pragma message("Building Windowed Ni")
 #else
-#error "Ni Build type not defined."
+  #error "Ni Build type not defined."
 #endif
 
 #include <niLang/Utils/CrashReport.h>
@@ -36,26 +36,27 @@ using namespace ni;
 _HDecl(REPL_PrintResult);
 
 #if defined NI_CONSOLE && defined NI_WINDOWED
-#error "F/Invalid ni cli mode set, NI_CONSOLE and NI_WINDOWED shouldn't be defined at the same time."
+  #error \
+    "F/Invalid ni cli mode set, NI_CONSOLE and NI_WINDOWED shouldn't be defined at the same time."
 #endif
 
 #if defined NI_CONSOLE
 
 // VM version string.
 static const achar* _aszVersion = _A("9.0");
-#ifndef NI_EXE_NAME
-#define NI_EXE_NAME "ni"
-#endif
+  #ifndef NI_EXE_NAME
+    #define NI_EXE_NAME "ni"
+  #endif
 
 #elif defined NI_WINDOWED
 
 static const achar* _aszVersion = _A("9.0w");
-#ifndef NI_EXE_NAME
-#define NI_EXE_NAME "niw"
-#endif
+  #ifndef NI_EXE_NAME
+    #define NI_EXE_NAME "niw"
+  #endif
 
 #else
-#error "F/No ni cli mode set, NI_CONSOLE or NI_WINDOWED should be defined."
+  #error "F/No ni cli mode set, NI_CONSOLE or NI_WINDOWED should be defined."
 #endif
 
 #ifdef NI_REPL
@@ -92,7 +93,8 @@ struct sOptions {
   astl::vector<cString> _vREPLStartupExec;
 #endif
 
-  void Invalidate() {
+  void Invalidate()
+  {
     _strOutput = _strInput = _strEntryPoint = _strScriptMain = AZEROSTR;
     _vIncludes.clear();
     _vLibraries.clear();
@@ -103,7 +105,8 @@ struct sOptions {
 #endif
   }
 };
-static sOptions* _GetOptions() {
+static sOptions* _GetOptions()
+{
   static sOptions _options;
   return &_options;
 }
@@ -113,70 +116,72 @@ static sOptions* _GetOptions() {
 #include <niLang/Utils/VMCallCImpl.h>
 
 ///////////////////////////////////////////////
-const iCollection* __stdcall GetArgs() {
+const iCollection* __stdcall GetArgs()
+{
   return _GetOptions()->_vArgs;
 }
 const sMethodDef kFuncDecl_GetArgs =
-    vmbind::static_registrar::make_static<GetArgs>("GetArgs");
+  vmbind::static_registrar::make_static<GetArgs>("GetArgs");
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-cString GetVersionString() {
+cString GetVersionString()
+{
   return niFmt(NI_EXE_NAME " version %s\n"
-               "Build %s, built on %s at %s\n"
-               "%s\n",
-               _aszVersion,
-               niBuildType,
-               __DATE__,
-               __TIME__,
-               niCopyright);
+                           "Build %s, built on %s at %s\n"
+                           "%s\n",
+               _aszVersion, niBuildType, __DATE__, __TIME__, niCopyright);
 }
 
-cString GetHelpString() {
+cString GetHelpString()
+{
   cString strHelp =
-      _A("usage: " NI_EXE_NAME " [ option... ] scriptfilename... [ script arguments... ]\n")
-      _A("\n")
-      _A("Available options are:\n")
-      _A("   -v             \t displays the version infos\n")
-      _A("   -h             \t prints help\n")
-      _A("   -c             \t compiles only (no output by default)\n")
-      _A("   -F logfilter   \t sets the logs to filter out\n")
-      _A("   -o filename    \t specifies output file for the -c option\n")
-      _A("   -I directory   \t add a lookup folder for import scripts\n")
-      _A("   -L directory   \t add a lookup folder for DLL imports\n")
-      _A("   -D pname=value \t set the value of a system property\n")
-      _A("   -E filename    \t set the entry point script (default: main.niw)\n")
-      _A("   -M entrypoint  \t set the main script function (default: try this.main and then ::main)\n")
-      _A("   -A appName     \t run as hosted app, the main function is ran in OnAppStarted\n")
+    "usage: " NI_EXE_NAME
+    " [ option... ] scriptfilename... [ script arguments... ]\n"
+    "\n"
+    "Available options are:\n"
+    "   -v             \t displays the version infos\n"
+    "   -h             \t prints help\n"
+    "   -c             \t compiles only (no output by default)\n"
+    "   -F logfilter   \t sets the logs to filter out\n"
+    "   -o filename    \t specifies output file for the -c option\n"
+    "   -I directory   \t add a lookup folder for import scripts\n"
+    "   -L directory   \t add a lookup folder for DLL imports\n"
+    "   -D pname=value \t set the value of a system property\n"
+    "   -E filename    \t set the entry point script (default: main.niw)\n"
+    "   -M entrypoint  \t set the main script function (default: try this.main and then ::main)\n"
+    "   -A appName     \t run as hosted app, the main function is ran in OnAppStarted\n"
 #ifdef NI_REPL
-      _A("   -i             \t run the repl after executing the script\n")
-      _A("   -x cmd         \t run the specifed command when the repl starts\n")
-      _A("\n")
-      _A("If the REPL is not ran the script's ::main function is called.")
+    "   -i             \t run the repl after executing the script\n"
+    "   -x cmd         \t run the specifed command when the repl starts\n"
+    "\n"
+    "If the REPL is not ran the script's ::main function is called."
 #endif
-      _A("\n")
-      ;
+    "\n";
   return strHelp;
 }
 
-static void PutString(iFile* f, const ni::achar* str, bool bForceNewLine = true) {
+static void PutString(iFile* f, const ni::achar* str, bool bForceNewLine = true)
+{
   f->WriteString(str);
   if (bForceNewLine) {
-    if (str[ni::StrSize(str)-1] != '\n') {
+    if (str[ni::StrSize(str) - 1] != '\n') {
       f->WriteString("\n");
     }
   }
   f->Flush();
 }
 
-void InfoExit(const achar* aszMsg) {
-  PutString(ni::GetStdOut(),aszMsg);
+void InfoExit(const achar* aszMsg)
+{
+  PutString(ni::GetStdOut(), aszMsg);
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(aszMsg);
 #endif
   ni::GetLang()->Exit(0);
 }
 
-void ErrorHelp(const achar* aszMsg) {
+void ErrorHelp(const achar* aszMsg)
+{
   cString str;
   str += GetVersionString();
   str += _A("\n");
@@ -185,48 +190,51 @@ void ErrorHelp(const achar* aszMsg) {
   str += _A("\n");
   str += GetHelpString();
   str += _A("\n");
-  PutString(ni::GetStdOut(),str.Chars());
+  PutString(ni::GetStdOut(), str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
   ni::GetLang()->Exit(0x99);
 }
 
-void ErrorExit(const achar* aszMsg) {
+void ErrorExit(const achar* aszMsg)
+{
   cString str;
   str = _A("Error: ");
   str += aszMsg;
   str += _A("\n");
-  PutString(ni::GetStdOut(),str.Chars());
+  PutString(ni::GetStdOut(), str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
   ni::GetLang()->Exit(0x99);
 }
 
-void ErrorScript(const astl::vector<cString>* apErrors, const achar* aszMsg) {
+void ErrorScript(const astl::vector<cString>* apErrors, const achar* aszMsg)
+{
   cString str;
   str = _A("Error:\n");
   str += aszMsg;
   if (apErrors) {
     str += "\nDetails:\n";
-    niLoop(i,apErrors->size()) {
+    niLoop (i, apErrors->size()) {
       if (i != 0) {
-        if ((*apErrors)[i] == (*apErrors)[i-1])
+        if ((*apErrors)[i] == (*apErrors)[i - 1])
           continue;
       }
       str << (*apErrors)[i].Chars();
     }
   }
   str += _A("\n");
-  PutString(ni::GetStdOut(),str.Chars());
+  PutString(ni::GetStdOut(), str.Chars());
 #ifdef NI_WINDOWED
   ni::GetLang()->FatalError(str.Chars());
 #endif
   ni::GetLang()->Exit(0x99);
 }
 
-tBool parseCommandLine(const achar* aaszCmdLine) {
+tBool parseCommandLine(const achar* aaszCmdLine)
+{
   // niDebugFmt(("parseCommandLine: %s", aaszCmdLine));
 
   cString strCmdLine = aaszCmdLine;
@@ -243,115 +251,115 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
     const tU32 c = it.next();
     if (prevChar == '-') {
       switch (c) {
-        case 'v': {
-          cString msg;
-          msg << GetVersionString();
-          InfoExit(msg.Chars());
-          break;
-        }
-        case '?':
-        case 'h': {
-          cString msg;
-          msg << GetVersionString();
-          msg << "\n";
-          msg << GetHelpString();
-          InfoExit(msg.Chars());
-          break;
-        }
-        case 'e':
-          // Ignored, not removed because its used in old scripts
-          break;
-        case 'F': {
-          cString strLogFilter = ni::CmdLineStrCharItReadFile(it,0);
-          tU32 filter = 0;
-          StrCharIt it = strLogFilter.charIt(0);
-          while (!it.is_end()) {
-            tU32 c = it.next();
-            switch (c) {
-              case 'R': filter |= eLogFlags_Raw; break;
-              case 'D': filter |= eLogFlags_Debug; break;
-              case 'I': filter |= eLogFlags_Info; break;
-              case 'W': filter |= eLogFlags_Warning; break;
-              case 'E': filter |= eLogFlags_Error; break;
-              default: {
-                niWarning(niFmt("Unknown log filter '%c' (%d).",c,c));
-                break;
-              }
-            }
+      case 'v': {
+        cString msg;
+        msg << GetVersionString();
+        InfoExit(msg.Chars());
+        break;
+      }
+      case '?':
+      case 'h': {
+        cString msg;
+        msg << GetVersionString();
+        msg << "\n";
+        msg << GetHelpString();
+        InfoExit(msg.Chars());
+        break;
+      }
+      case 'e':
+        // Ignored, not removed because its used in old scripts
+        break;
+      case 'F': {
+        cString strLogFilter = ni::CmdLineStrCharItReadFile(it, 0);
+        tU32 filter = 0;
+        StrCharIt it = strLogFilter.charIt(0);
+        while (!it.is_end()) {
+          tU32 c = it.next();
+          switch (c) {
+          case 'R': filter |= eLogFlags_Raw; break;
+          case 'D': filter |= eLogFlags_Debug; break;
+          case 'I': filter |= eLogFlags_Info; break;
+          case 'W': filter |= eLogFlags_Warning; break;
+          case 'E': filter |= eLogFlags_Error; break;
+          default: {
+            niWarning(niFmt("Unknown log filter '%c' (%d).", c, c));
+            break;
           }
-          ni::GetLang()->SetLogFilter(filter);
-          break;
-        }
-        case 'c':
-          // niDebugFmt(("compile only"));
-          _GetOptions()->_bRun = ni::eFalse;
-          break;
-        case 'o': {
-          cString outputFile = ni::CmdLineStrCharItReadFile(it);
-          // niDebugFmt(("compile output file: %s",outputFile));
-          if (outputFile.empty()) {
-            ErrorHelp("-o option, invalid output file name.");
           }
-          _GetOptions()->_strOutput = outputFile;
-          break;
         }
-        case '-': // -- is a synonym for -D
-        case 'D': {
-          cString pname = ni::CmdLineStrCharItReadFile(it,'=');
-          cString pvalue = ni::CmdLineStrCharItReadFile(it);
-          // niDebugFmt(("system property: %s = %s",pname,pvalue));
-          ni::GetLang()->SetProperty(pname.Chars(),pvalue.Chars());
-          break;
+        ni::GetLang()->SetLogFilter(filter);
+        break;
+      }
+      case 'c':
+        // niDebugFmt(("compile only"));
+        _GetOptions()->_bRun = ni::eFalse;
+        break;
+      case 'o': {
+        cString outputFile = ni::CmdLineStrCharItReadFile(it);
+        // niDebugFmt(("compile output file: %s",outputFile));
+        if (outputFile.empty()) {
+          ErrorHelp("-o option, invalid output file name.");
         }
-        case 'I': {
-          cString incl = ni::CmdLineStrCharItReadFile(it,0);
-          // niDebugFmt(("add include: %s",incl));
-          _GetOptions()->_vIncludes.push_back(incl);
-          break;
-        }
-        case 'L': {
-          cString incl = ni::CmdLineStrCharItReadFile(it,0);
-          // niDebugFmt(("add library: %s",incl));
-          _GetOptions()->_vLibraries.push_back(incl);
-          break;
-        }
-        case 'E': {
-          _GetOptions()->_strEntryPoint = ni::CmdLineStrCharItReadFile(it,0);
-          break;
-        }
-        case 'M': {
-          _GetOptions()->_strScriptMain = ni::CmdLineStrCharItReadFile(it,0);
-          break;
-        }
-        case 'A': {
-          _GetOptions()->_strHostedAppName = ni::CmdLineStrCharItReadFile(it,0);
-          niDebugFmt(("run as hosted app: %s", _GetOptions()->_strHostedAppName));
-          break;
-        }
+        _GetOptions()->_strOutput = outputFile;
+        break;
+      }
+      case '-': // -- is a synonym for -D
+      case 'D': {
+        cString pname = ni::CmdLineStrCharItReadFile(it, '=');
+        cString pvalue = ni::CmdLineStrCharItReadFile(it);
+        // niDebugFmt(("system property: %s = %s",pname,pvalue));
+        ni::GetLang()->SetProperty(pname.Chars(), pvalue.Chars());
+        break;
+      }
+      case 'I': {
+        cString incl = ni::CmdLineStrCharItReadFile(it, 0);
+        // niDebugFmt(("add include: %s",incl));
+        _GetOptions()->_vIncludes.push_back(incl);
+        break;
+      }
+      case 'L': {
+        cString incl = ni::CmdLineStrCharItReadFile(it, 0);
+        // niDebugFmt(("add library: %s",incl));
+        _GetOptions()->_vLibraries.push_back(incl);
+        break;
+      }
+      case 'E': {
+        _GetOptions()->_strEntryPoint = ni::CmdLineStrCharItReadFile(it, 0);
+        break;
+      }
+      case 'M': {
+        _GetOptions()->_strScriptMain = ni::CmdLineStrCharItReadFile(it, 0);
+        break;
+      }
+      case 'A': {
+        _GetOptions()->_strHostedAppName = ni::CmdLineStrCharItReadFile(it, 0);
+        niDebugFmt(("run as hosted app: %s", _GetOptions()->_strHostedAppName));
+        break;
+      }
 #ifdef NI_REPL
-        case 'i': {
-          // niDebugFmt(("repl"));
-          _GetOptions()->_bRunREPL = ni::eTrue;
-          ni::GetLang()->SetProperty("ni.repl.version",_kaszREPLVersion);
-          break;
-        }
-        case 'x': {
-          cString cmd = ni::CmdLineStrCharItReadFile(it,0);
-          // niDebugFmt(("repl exec: %s",cmd));
-          _GetOptions()->_vREPLStartupExec.push_back(cmd);
-          break;
-        }
+      case 'i': {
+        // niDebugFmt(("repl"));
+        _GetOptions()->_bRunREPL = ni::eTrue;
+        ni::GetLang()->SetProperty("ni.repl.version", _kaszREPLVersion);
+        break;
+      }
+      case 'x': {
+        cString cmd = ni::CmdLineStrCharItReadFile(it, 0);
+        // niDebugFmt(("repl exec: %s",cmd));
+        _GetOptions()->_vREPLStartupExec.push_back(cmd);
+        break;
+      }
 #endif
-        default: {
-          ErrorHelp(niFmt("Unknown option -%c",c));
-        }
+      default: {
+        ErrorHelp(niFmt("Unknown option -%c", c));
+      }
       }
       prevChar = 0;
     }
     else if (StrIsSpace(c)) {
       continue;
     }
-    else  {
+    else {
       prevChar = c;
       if (prevChar != '-') {
         it.prior();
@@ -382,7 +390,7 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
 
   // get the other arguments...
   while (!it.is_end()) {
-    cString arg = ni::CmdLineStrCharItReadFile(it,0,0);
+    cString arg = ni::CmdLineStrCharItReadFile(it, 0, 0);
     if (!arg.empty()) {
       _GetOptions()->_vArgs->Add(arg);
       // niDebugFmt(("script arg[%d]: %s",
@@ -401,28 +409,33 @@ tBool parseCommandLine(const achar* aaszCmdLine) {
 //----------------------------------------------------------------------------
 #ifdef NI_REPL
 
-#include <niScript/VMAPI.h>
+  #include <niScript/VMAPI.h>
 
 struct sMonitoredFile {
-  cString          fileName;
+  cString fileName;
   Ptr<iTime> fileTime;
-  sMonitoredFile() {
+  sMonitoredFile()
+  {
   }
-  sMonitoredFile(const achar* aaszFileName) {
+  sMonitoredFile(const achar* aaszFileName)
+  {
     fileName = aaszFileName;
   }
-  bool operator < (const sMonitoredFile& aRight) const {
+  bool operator<(const sMonitoredFile& aRight) const
+  {
     return fileName.cmp(aRight.fileName) < 0;
   }
-  bool updateFileTime() const {
-    Ptr<iFile> fp = _GetOptions()->_ptrScriptVM->ImportFileOpen(fileName.Chars());
+  bool updateFileTime() const
+  {
+    Ptr<iFile> fp =
+      _GetOptions()->_ptrScriptVM->ImportFileOpen(fileName.Chars());
     if (!fp.IsOK()) {
-      niLog(Error,niFmt("isOutOfDate: can't open '%s'.",fileName));
+      niLog(Error, niFmt("isOutOfDate: can't open '%s'.", fileName));
       return false;
     }
 
     Ptr<iTime> newFileTime = ni::GetLang()->GetCurrentTime()->Clone();
-    fp->GetTime(eFileTime_LastWrite,newFileTime);
+    fp->GetTime(eFileTime_LastWrite, newFileTime);
 
     if (!fileTime.IsOK() || (newFileTime->Compare(fileTime) != 0)) {
       niThis(sMonitoredFile)->fileTime = newFileTime;
@@ -434,21 +447,22 @@ struct sMonitoredFile {
 };
 typedef astl::set<sMonitoredFile> tMonitoredFiles;
 
-void monitoredImport(tMonitoredFiles& aSet, const achar* aaszFileName) {
+void monitoredImport(tMonitoredFiles& aSet, const achar* aaszFileName)
+{
   Ptr<iFile> fp = _GetOptions()->_ptrScriptVM->ImportFileOpen(aaszFileName);
   if (!fp.IsOK()) {
-    niLog(Error,niFmt("import: can't find file '%s'.",aaszFileName));
+    niLog(Error, niFmt("import: can't find file '%s'.", aaszFileName));
     return;
   }
 
   tMonitoredFiles::iterator itFile = aSet.find(aaszFileName);
   if (itFile != aSet.end()) {
-    niLog(Info,niFmt("import: already monitoring '%s'.",aaszFileName));
+    niLog(Info, niFmt("import: already monitoring '%s'.", aaszFileName));
     return;
   }
 
   if (!_GetOptions()->_ptrScriptVM->NewImport(_H(aaszFileName)).IsOK()) {
-    niLog(Info,niFmt("import: can't import '%s'.",aaszFileName));
+    niLog(Info, niFmt("import: can't import '%s'.", aaszFileName));
     return;
   }
 
@@ -457,91 +471,94 @@ void monitoredImport(tMonitoredFiles& aSet, const achar* aaszFileName) {
   mf.updateFileTime();
   aSet.insert(mf);
 
-  niLog(Info,niFmt("import: monitoring '%s'.",aaszFileName));
+  niLog(Info, niFmt("import: monitoring '%s'.", aaszFileName));
 }
 
-void monitoredUpdate(tMonitoredFiles& aSet) {
-  niLoopit(tMonitoredFiles::iterator,it,aSet) {
+void monitoredUpdate(tMonitoredFiles& aSet)
+{
+  niLoopit (tMonitoredFiles::iterator, it, aSet) {
     if (it->updateFileTime()) {
       if (_GetOptions()->_ptrScriptVM->NewImport(_H(it->fileName)).IsOK()) {
-        niLog(Info,niFmt("import: updated '%s'.",it->fileName));
+        niLog(Info, niFmt("import: updated '%s'.", it->fileName));
       }
       else {
-        niLog(Error,niFmt("import: can't update '%s'.",it->fileName));
+        niLog(Error, niFmt("import: can't update '%s'.", it->fileName));
       }
     }
     else {
-      niLog(Info,niFmt("import: '%s' up-to-date.",it->fileName));
+      niLog(Info, niFmt("import: '%s' up-to-date.", it->fileName));
     }
   }
 }
 
-#ifdef niWindows
-#include <niLang/Platforms/Win32/Win32_File.h>
-static cOSWinFile winStdIn(
-    ::GetStdHandle(STD_INPUT_HANDLE),
-    ::GetStdHandle(STD_INPUT_HANDLE),
-    eOSWinFileFlags_DontOwnRW,
-    "STDIN");
-#endif
+  #ifdef niWindows
+    #include <niLang/Platforms/Win32/Win32_File.h>
+static cOSWinFile winStdIn(::GetStdHandle(STD_INPUT_HANDLE),
+                           ::GetStdHandle(STD_INPUT_HANDLE),
+                           eOSWinFileFlags_DontOwnRW, "STDIN");
+  #endif
 
 static tBool _bREPLClose = eFalse;
 static int _lastCompilerErrorLine = -1;
 static int _lastCompilerErrorColumn = -1;
 
 ///////////////////////////////////////////////
-void __stdcall REPL_Close() {
+void __stdcall REPL_Close()
+{
   _bREPLClose = eTrue;
 }
 const sMethodDef kFuncDecl_REPL_Close =
-    vmbind::static_registrar::make_static<REPL_Close>("REPL_Close");
+  vmbind::static_registrar::make_static<REPL_Close>("REPL_Close");
 
 ///////////////////////////////////////////////
 static Ptr<iCallback> _REPLRunCallback = NULL;
-tBool __stdcall REPL_SetRunCallback(iCallback* apCallback) {
+tBool __stdcall REPL_SetRunCallback(iCallback* apCallback)
+{
   _REPLRunCallback = apCallback;
   return _REPLRunCallback.IsOK();
 }
 const sMethodDef kFuncDecl_REPL_SetRunCallback =
-    vmbind::static_registrar::make_static<REPL_SetRunCallback>("REPL_SetRunCallback");
+  vmbind::static_registrar::make_static<REPL_SetRunCallback>(
+    "REPL_SetRunCallback");
 
 ///////////////////////////////////////////////
-static void REPL_CompilerErrorHandler(HSQUIRRELVM v, const SQChar *desc, const SQChar *source, int line, int column)
+static void REPL_CompilerErrorHandler(HSQUIRRELVM v, const SQChar* desc,
+                                      const SQChar* source, int line,
+                                      int column)
 {
   cString strDesc;
   ni_log_format_message(
-      strDesc,eLogFlags_Error,
-      NULL,0,NULL,
-      niFmt("Compilation Error (L%d C%d): %s",line,column,desc),
-      -1,-1);
+    strDesc, eLogFlags_Error, NULL, 0, NULL,
+    niFmt("Compilation Error (L%d C%d): %s", line, column, desc), -1, -1);
   PutString(ni::GetStdErr(), strDesc.Chars());
   _lastCompilerErrorLine = line;
   _lastCompilerErrorColumn = column;
 }
 
-#if defined niPosix
+  #if defined niPosix
 niExportFunc(int) waitForNextTerminalChar();
-#else
-static int waitForNextTerminalChar() {
+  #else
+static int waitForNextTerminalChar()
+{
   return getchar();
 }
-#endif
+  #endif
 
 ///////////////////////////////////////////////
 void REPL(iScriptVM* apVM)
 {
   HSQUIRRELVM v = (HSQUIRRELVM)_GetOptions()->_ptrScriptVM->GetHandle();
 
-#ifdef niWindows
+  #ifdef niWindows
   static HANDLE _hStdIn = ::GetStdHandle(STD_INPUT_HANDLE);
   DWORD dwConsoleMode = 0;
-  GetConsoleMode(_hStdIn,&dwConsoleMode);
+  GetConsoleMode(_hStdIn, &dwConsoleMode);
   dwConsoleMode |= ENABLE_QUICK_EDIT_MODE | ENABLE_PROCESSED_OUTPUT;
-  SetConsoleMode(_hStdIn,dwConsoleMode);
-#endif
+  SetConsoleMode(_hStdIn, dwConsoleMode);
+  #endif
 
-  niConstValue auto maxBufferSize = 64*1024;
-  SQChar buffer[maxBufferSize] = {0};
+  niConstValue auto maxBufferSize = 64 * 1024;
+  SQChar buffer[maxBufferSize] = { 0 };
   SQInt blocks = 0;
   SQInt string = 0;
   astl::set<sMonitoredFile> monitored;
@@ -551,11 +568,13 @@ void REPL(iScriptVM* apVM)
     return;
   }
 
-  niLog(Info,GetVersionString().Chars());
-  niLog(Info,niFmt("REPL running in '%s' thread '0x%x'",
-                   (ni::GetConcurrent()->GetMainThreadID() ==
-                    ni::GetConcurrent()->GetCurrentThreadID()) ? "main" : "background",
-                   ni::GetConcurrent()->GetCurrentThreadID()));
+  niLog(Info, GetVersionString().Chars());
+  niLog(Info, niFmt("REPL running in '%s' thread '0x%x'",
+                    (ni::GetConcurrent()->GetMainThreadID() ==
+                     ni::GetConcurrent()->GetCurrentThreadID())
+                      ? "main"
+                      : "background",
+                    ni::GetConcurrent()->GetCurrentThreadID()));
 
   auto isCmd = [](auto& aBuffer) {
     return (aBuffer[0] == ':' && aBuffer[1] != ':');
@@ -579,22 +598,22 @@ void REPL(iScriptVM* apVM)
   auto runCode = [&v](const cString& aCodeToRun) -> tBool {
     SQInt oldtop = sq_gettop(v);
     sq_setcompilererrorhandler(v, REPL_CompilerErrorHandler);
-    if (SQ_SUCCEEDED(sq_compilestring(v,_H("REPL"),aCodeToRun.Chars()))) {
+    if (SQ_SUCCEEDED(sq_compilestring(v, _H("REPL"), aCodeToRun.Chars()))) {
       sq_pushroottable(v);
       int retval = 1;
-      if (SQ_SUCCEEDED(sq_call(v,1,retval)) && retval) {
+      if (SQ_SUCCEEDED(sq_call(v, 1, retval)) && retval) {
         if (aCodeToRun.contains("print") && !aCodeToRun.contains("println")) {
-          PutString(ni::GetStdOut(),_A("\n==> "),false);
+          PutString(ni::GetStdOut(), _A("\n==> "), false);
         }
         else {
-          PutString(ni::GetStdOut(),_A("==> "),false);
+          PutString(ni::GetStdOut(), _A("==> "), false);
         }
         sq_pushroottable(v);
-        sq_pushstring(v,_HC(REPL_PrintResult));
-        sq_get(v,-2);
+        sq_pushstring(v, _HC(REPL_PrintResult));
+        sq_get(v, -2);
         sq_pushroottable(v);
-        sq_push(v,-4);
-        sq_call(v,2,ni::eFalse);
+        sq_push(v, -4);
+        sq_call(v, 2, ni::eFalse);
         retval = 0;
       }
     }
@@ -602,35 +621,34 @@ void REPL(iScriptVM* apVM)
       int line = 1;
       StrBreakIt<StrBreakLine> breaker(aCodeToRun.charIt());
       while (!breaker.is_end()) {
-        PutString(ni::GetStdErr(),cString(breaker.current()).Chars());
+        PutString(ni::GetStdErr(), cString(breaker.current()).Chars());
         if (_lastCompilerErrorLine == line &&
-            (_lastCompilerErrorColumn > 0 &&
-             _lastCompilerErrorColumn < 120))
+            (_lastCompilerErrorColumn > 0 && _lastCompilerErrorColumn < 120))
         {
           cString marker;
-          marker.reserve(_lastCompilerErrorColumn+2);
-          niLoop(i,_lastCompilerErrorColumn-1) {
+          marker.reserve(_lastCompilerErrorColumn + 2);
+          niLoop (i, _lastCompilerErrorColumn - 1) {
             marker.appendChar(' ');
           }
           marker.appendChar('^');
-          PutString(ni::GetStdErr(),marker.Chars());
+          PutString(ni::GetStdErr(), marker.Chars());
         }
         ++line;
         breaker.next();
       }
     }
     sq_setcompilererrorhandler(v, NULL);
-    sq_settop(v,oldtop);
+    sq_settop(v, oldtop);
     return eTrue;
   };
 
   // Run REPL startup code
   if (!_GetOptions()->_vREPLStartupExec.empty()) {
-    niLoopit(auto,it,_GetOptions()->_vREPLStartupExec) {
+    niLoopit (auto, it, _GetOptions()->_vREPLStartupExec) {
       tBool ret;
       const cString& l = *it;
-      PutString(ni::GetStdOut(),_A("ni$ "),false);
-      PutString(ni::GetStdOut(),l.Chars());
+      PutString(ni::GetStdOut(), _A("ni$ "), false);
+      PutString(ni::GetStdOut(), l.Chars());
       if (isCmd(l)) {
         ret = runCmd(l);
       }
@@ -647,21 +665,17 @@ void REPL(iScriptVM* apVM)
         return;
       }
     }
-    niLog(
-      Info,
-      niFmt(
-        "Ran '%d' startup commands.",
-        _GetOptions()->_vREPLStartupExec.size()));
+    niLog(Info, niFmt("Ran '%d' startup commands.",
+                      _GetOptions()->_vREPLStartupExec.size()));
   }
 
   // Print startup text
-  niLog(Info,"Input ':q' to exit the REPL");
-  niLog(Info,"Input ':import filename' to import a script to be monitored");
-  PutString(ni::GetStdOut(),"ni> ",false);
+  niLog(Info, "Input ':q' to exit the REPL");
+  niLog(Info, "Input ':import filename' to import a script to be monitored");
+  PutString(ni::GetStdOut(), "ni> ", false);
 
   // Interactive REPL
-  while (!_bREPLClose)
-  {
+  while (!_bREPLClose) {
     int lastNonEmptyCharOfLine = 0;
     tBool isMultiLine = ni::eFalse;
     SQInt i = 0;
@@ -671,8 +685,8 @@ void REPL(iScriptVM* apVM)
       if (_bREPLClose)
         return;
 
-      if ((i+2+(blocks*2)) >= maxBufferSize) {
-        niLog(Error,"Input too long.");
+      if ((i + 2 + (blocks * 2)) >= maxBufferSize) {
+        niLog(Error, "Input too long.");
         i = 0;
         break;
       }
@@ -681,26 +695,25 @@ void REPL(iScriptVM* apVM)
         lastNonEmptyCharOfLine = c;
 
       if (c == _A('\n')) {
-        if (i>0 && buffer[i-1] == _A('\\')) {
-          buffer[i-1] = _A('\n');
+        if (i > 0 && buffer[i - 1] == _A('\\')) {
+          buffer[i - 1] = _A('\n');
         }
         else if (blocks == 0) {
-          if (i > 0 &&
-              (lastNonEmptyCharOfLine == _A('&') ||
-               lastNonEmptyCharOfLine == _A('|') ||
-               lastNonEmptyCharOfLine == _A('^') ||
-               lastNonEmptyCharOfLine == _A('<') ||
-               lastNonEmptyCharOfLine == _A('>') ||
-               lastNonEmptyCharOfLine == _A('=') ||
-               lastNonEmptyCharOfLine == _A('%') ||
-               lastNonEmptyCharOfLine == _A('+') ||
-               lastNonEmptyCharOfLine == _A('-') ||
-               lastNonEmptyCharOfLine == _A('*') ||
-               lastNonEmptyCharOfLine == _A('/') ||
-               lastNonEmptyCharOfLine == _A('?') ||
-               lastNonEmptyCharOfLine == _A(':') ||
-               lastNonEmptyCharOfLine == _A(',') ||
-               lastNonEmptyCharOfLine == _A('!')))
+          if (i > 0 && (lastNonEmptyCharOfLine == _A('&') ||
+                        lastNonEmptyCharOfLine == _A('|') ||
+                        lastNonEmptyCharOfLine == _A('^') ||
+                        lastNonEmptyCharOfLine == _A('<') ||
+                        lastNonEmptyCharOfLine == _A('>') ||
+                        lastNonEmptyCharOfLine == _A('=') ||
+                        lastNonEmptyCharOfLine == _A('%') ||
+                        lastNonEmptyCharOfLine == _A('+') ||
+                        lastNonEmptyCharOfLine == _A('-') ||
+                        lastNonEmptyCharOfLine == _A('*') ||
+                        lastNonEmptyCharOfLine == _A('/') ||
+                        lastNonEmptyCharOfLine == _A('?') ||
+                        lastNonEmptyCharOfLine == _A(':') ||
+                        lastNonEmptyCharOfLine == _A(',') ||
+                        lastNonEmptyCharOfLine == _A('!')))
           {
             // continue to the next line
           }
@@ -712,34 +725,34 @@ void REPL(iScriptVM* apVM)
         buffer[i++] = _A('\n');
 
         static cString indent;
-        const tU32 indentLen = 4 + blocks*2;
+        const tU32 indentLen = 4 + blocks * 2;
         if (indent.size() < indentLen) {
           indent.resize(indentLen);
         }
         {
           achar* pWriteBuffer = indent.data();
           pWriteBuffer[indentLen] = 0;
-          memset(pWriteBuffer,' ',indentLen);
-          PutString(ni::GetStdOut(),pWriteBuffer,false);
+          memset(pWriteBuffer, ' ', indentLen);
+          PutString(ni::GetStdOut(), pWriteBuffer, false);
         }
 
-        niLoop(j,blocks*2) {
+        niLoop (j, blocks * 2) {
           buffer[i++] = ' ';
         }
 
         lastNonEmptyCharOfLine = 0;
         isMultiLine = ni::eTrue;
       }
-      else if (!string && (c==_A('}') || c==_A(']') || c==_A(')'))) {
+      else if (!string && (c == _A('}') || c == _A(']') || c == _A(')'))) {
         blocks--;
         buffer[i++] = (SQChar)c;
       }
-      else if (!string && (c==_A('{') || c==_A('[') || c==_A('('))) {
+      else if (!string && (c == _A('{') || c == _A('[') || c == _A('('))) {
         blocks++;
         buffer[i++] = (SQChar)c;
       }
-      else if(c==_A('"') || c==_A('\'')){
-        string=!string;
+      else if (c == _A('"') || c == _A('\'')) {
+        string = !string;
         buffer[i++] = (SQChar)c;
       }
       else {
@@ -757,18 +770,16 @@ void REPL(iScriptVM* apVM)
     // :repl commands
     if (!isMultiLine && isCmd(buffer)) {
       if (!runCmd(buffer)) {
-        niLog(Warning,niFmt("Unknown repl command '%s'",buffer));
-        PutString(ni::GetStdOut(),_A("\nni> "),false);
+        niLog(Warning, niFmt("Unknown repl command '%s'", buffer));
+        PutString(ni::GetStdOut(), _A("\nni> "), false);
         continue;
       }
     }
     else {
       codeToRun << buffer;
       codeToRun.Trim();
-      if (!codeToRun.StartsWith("for") &&
-          !codeToRun.StartsWith("if") &&
-          !codeToRun.StartsWith("do") &&
-          !codeToRun.StartsWith("while") &&
+      if (!codeToRun.StartsWith("for") && !codeToRun.StartsWith("if") &&
+          !codeToRun.StartsWith("do") && !codeToRun.StartsWith("while") &&
           !codeToRun.StartsWith("switch"))
       {
         codeToRun = _ASTR("return ") + codeToRun;
@@ -779,15 +790,17 @@ void REPL(iScriptVM* apVM)
 
     // niDebugFmt(("COMPILING: %s", codeToRun));
     if (_REPLRunCallback.IsOK()) {
-      _REPLRunCallback->RunCallback(ni::Runnable([&runCode,&codeToRun]() -> tBool {
-        const tBool r = runCode(codeToRun);
-        PutString(ni::GetStdOut(),_A("\nni> "),false);
-        return r;
-      }),codeToRun);
+      _REPLRunCallback->RunCallback(
+        ni::Runnable([&runCode, &codeToRun]() -> tBool {
+          const tBool r = runCode(codeToRun);
+          PutString(ni::GetStdOut(), _A("\nni> "), false);
+          return r;
+        }),
+        codeToRun);
     }
     else {
       runCode(codeToRun);
-      PutString(ni::GetStdOut(),_A("\nni> "),false);
+      PutString(ni::GetStdOut(), _A("\nni> "), false);
     }
   }
 }
@@ -801,11 +814,13 @@ void REPL(iScriptVM* apVM)
 struct URLFileHandler_Zip_ScriptHandler : public ImplRC<iURLFileHandler> {
   Ptr<iURLFileHandler> _zipURLFileHandler;
 
-  URLFileHandler_Zip_ScriptHandler(iURLFileHandler* zipURLFileHandler) {
+  URLFileHandler_Zip_ScriptHandler(iURLFileHandler* zipURLFileHandler)
+  {
     _zipURLFileHandler = zipURLFileHandler;
   }
 
-  virtual iFile* __stdcall URLOpen(const achar* aURL) {
+  virtual iFile* __stdcall URLOpen(const achar* aURL)
+  {
     cString path = StringURLGetPath(aURL);
     Ptr<iFile> fp = _zipURLFileHandler->URLOpen(path.Chars());
     if (!fp.IsOK()) {
@@ -816,7 +831,8 @@ struct URLFileHandler_Zip_ScriptHandler : public ImplRC<iURLFileHandler> {
     return fp.GetRawAndSetNull();
   }
 
-  virtual tBool __stdcall URLExists(const achar* aURL) {
+  virtual tBool __stdcall URLExists(const achar* aURL)
+  {
     cString path = StringURLGetPath(aURL);
     if (!_zipURLFileHandler->URLExists(path.Chars())) {
       path = "scripts/";
@@ -832,32 +848,40 @@ struct URLFileHandler_Zip_ScriptHandler : public ImplRC<iURLFileHandler> {
 struct URLFileHandler_Directory : public ImplRC<iURLFileHandler> {
   astl::vector<cString> _dirs;
 
-  URLFileHandler_Directory() {
+  URLFileHandler_Directory()
+  {
     cPath path;
     path.SetDirectory(ni::GetLang()->GetProperty("ni.dirs.data").Chars());
     _dirs.push_back(path.GetPath());
   }
 
-  virtual iFile* __stdcall URLOpen(const achar* aURL) {
+  virtual iFile* __stdcall URLOpen(const achar* aURL)
+  {
     const cString path = _FindFile(StringURLGetPath(aURL));
     // niDebugFmt(("... URLFileHandler.dir.URLOpen: %s -> %s", aURL, path));
-    if (path.IsEmpty()) return NULL;
-    return ni::GetRootFS()->FileOpen(path.Chars(),eFileOpenMode_Read);
+    if (path.IsEmpty())
+      return NULL;
+    return ni::GetRootFS()->FileOpen(path.Chars(), eFileOpenMode_Read);
   }
 
-  virtual tBool __stdcall URLExists(const achar* aURL) {
+  virtual tBool __stdcall URLExists(const achar* aURL)
+  {
     const cString path = _FindFile(StringURLGetPath(aURL));
-    if (path.IsEmpty()) return eFalse;
+    if (path.IsEmpty())
+      return eFalse;
     return eTrue;
   }
 
-  cString __stdcall _FindFile(const cString& basePath) {
-    if (ni::GetRootFS()->FileExists(basePath.Chars(),eFileAttrFlags_AllFiles)) {
+  cString __stdcall _FindFile(const cString& basePath)
+  {
+    if (ni::GetRootFS()->FileExists(basePath.Chars(), eFileAttrFlags_AllFiles))
+    {
       return basePath;
     }
-    niLoopr(i,(tU32)_dirs.size()) {
+    niLoopr (i, (tU32)_dirs.size()) {
       cString tryPath = _dirs[i] + basePath;
-      if (ni::GetRootFS()->FileExists(tryPath.Chars(),eFileAttrFlags_AllFiles)) {
+      if (ni::GetRootFS()->FileExists(tryPath.Chars(), eFileAttrFlags_AllFiles))
+      {
         return tryPath;
       }
     }
@@ -871,29 +895,31 @@ struct URLFileHandler_Directory : public ImplRC<iURLFileHandler> {
 //
 //----------------------------------------------------------------------------
 #ifdef niWindows
-#include <niLang/Platforms/Win32/Win32_Registry.h>
+  #include <niLang/Platforms/Win32/Win32_Registry.h>
 
-static cString MyWinRegRead(const achar* aaszPath) {
-  achar ret[4096] = {0};
-  return Windows::WinRegRead(ret,aaszPath);
+static cString MyWinRegRead(const achar* aaszPath)
+{
+  achar ret[4096] = { 0 };
+  return Windows::WinRegRead(ret, aaszPath);
 }
 const sMethodDef kFuncDecl_WinRegRead =
-    vmbind::static_registrar::make_static<MyWinRegRead>("WinRegRead");
+  vmbind::static_registrar::make_static<MyWinRegRead>("WinRegRead");
 
 // redeclare it here because we cant register overloaded functions...
 static ni::tBool __stdcall MyWinRegWrite(const ni::achar* aaszPath,
                                          const ni::achar* aaszVal,
                                          const ni::achar* aaszType)
 {
-  return Windows::WinRegWrite(aaszPath,aaszVal,aaszType);
+  return Windows::WinRegWrite(aaszPath, aaszVal, aaszType);
 }
 
 const sMethodDef kFuncDecl_WinRegWrite =
-    vmbind::static_registrar::make_static<MyWinRegWrite>("WinRegWrite");
+  vmbind::static_registrar::make_static<MyWinRegWrite>("WinRegWrite");
 
 ///////////////////////////////////////////////
-void __stdcall MsWin_ScriptRegister(iScriptVM* apVM) {
-  apVM->RegisterFunction(&kFuncDecl_WinRegWrite,_A("MsWinRegWrite"));
+void __stdcall MsWin_ScriptRegister(iScriptVM* apVM)
+{
+  apVM->RegisterFunction(&kFuncDecl_WinRegWrite, _A("MsWinRegWrite"));
   apVM->RegisterFunction(&kFuncDecl_WinRegRead, _A("MsWinRegRead"));
 }
 #endif
@@ -903,11 +929,13 @@ void __stdcall MsWin_ScriptRegister(iScriptVM* apVM) {
 // Section: Main function
 //
 //----------------------------------------------------------------------------
-static Var OnExit() {
+static Var OnExit()
+{
   ni::GetStdOut()->Flush();
   ni::GetStdErr()->Flush();
   _GetOptions()->_vArgs = NULL;
-#pragma niNote("The script VM HAS to be invalidated before being released, otherwise resources will leak, this is because an instance of an object created in a table may contain a reference to this VM and so create a cycle.")
+#pragma niNote( \
+    "The script VM HAS to be invalidated before being released, otherwise resources will leak, this is because an instance of an object created in a table may contain a reference to this VM and so create a cycle.")
   if (_GetOptions()->_ptrScriptVM.IsOK()) {
     _GetOptions()->_ptrScriptVM->Invalidate();
     _GetOptions()->_ptrScriptVM = (iScriptVM*)NULL;
@@ -943,17 +971,21 @@ ni_main
 
   // Initialize the VM
   {
-    _GetOptions()->_ptrScriptVM = niCreateInstance(niScript,ScriptVM,ni::GetConcurrent(),0);
+    _GetOptions()->_ptrScriptVM =
+      niCreateInstance(niScript, ScriptVM, ni::GetConcurrent(), 0);
     if (!niIsOK(_GetOptions()->_ptrScriptVM))
       ErrorExit(_A("Cant create the virtual machine !\n"));
 
-    ni::GetLang()->AddScriptingHost(_H("ni"),_GetOptions()->_ptrScriptVM);
+    ni::GetLang()->AddScriptingHost(_H("ni"), _GetOptions()->_ptrScriptVM);
 
-    _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_GetArgs,"GetArgs");
+    _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_GetArgs,
+                                                  "GetArgs");
 #ifdef NI_REPL
     if (_GetOptions()->_bRunREPL) {
-      _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_REPL_Close,"REPL_Close");
-      _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_REPL_SetRunCallback,"REPL_SetRunCallback");
+      _GetOptions()->_ptrScriptVM->RegisterFunction(&kFuncDecl_REPL_Close,
+                                                    "REPL_Close");
+      _GetOptions()->_ptrScriptVM->RegisterFunction(
+        &kFuncDecl_REPL_SetRunCallback, "REPL_SetRunCallback");
     }
 #endif // #ifdef NI_REPL
 
@@ -963,56 +995,57 @@ ni_main
   }
 
   // Add the library directories...
-  if (!_GetOptions()->_vLibraries.empty())
-  {
+  if (!_GetOptions()->_vLibraries.empty()) {
     cString envPATH = ni::GetLang()->GetEnv("PATH");
     // niDebugFmt(("PATH: %s", envPATH));
-    const cString binLOA = niFmt("%s-%s",
-                                 ni::GetLang()->GetProperty("ni.loa.os"),
-                                 ni::GetLang()->GetProperty("ni.loa.arch"));
-    niLoop(i,_GetOptions()->_vLibraries.size()) {
+    const cString binLOA =
+      niFmt("%s-%s", ni::GetLang()->GetProperty("ni.loa.os"),
+            ni::GetLang()->GetProperty("ni.loa.arch"));
+    niLoop (i, _GetOptions()->_vLibraries.size()) {
       cPath path;
       path.SetDirectory(_GetOptions()->_vLibraries[i].Chars());
       path.AddDirectoryBack(binLOA.Chars());
       if (!ni::GetLang()->GetRootFS()->FileExists(
-              path.GetPath().Chars(),ni::eFileAttrFlags_AllDirectories))
+            path.GetPath().Chars(), ni::eFileAttrFlags_AllDirectories))
       {
         // remove the binLOA folder
         path.RemoveDirectoryBack();
         if (!ni::GetLang()->GetRootFS()->FileExists(
-                path.GetPath().Chars(),ni::eFileAttrFlags_AllDirectories))
+              path.GetPath().Chars(), ni::eFileAttrFlags_AllDirectories))
         {
-          niWarning(niFmt("Can't add library directory '%s'.",path.GetPath().Chars()));
+          niWarning(
+            niFmt("Can't add library directory '%s'.", path.GetPath().Chars()));
           continue;
         }
       }
 
       envPATH = path.GetPath() +
 #ifdef niWindows
-          ";"
+                ";"
 #else
-          ":"
+                ":"
 #endif
-          + envPATH;
+                + envPATH;
     }
     // niDebugFmt(("NEWPATH: %s", envPATH));
-    ni::GetLang()->SetEnv("PATH",envPATH.Chars());
+    ni::GetLang()->SetEnv("PATH", envPATH.Chars());
   }
 
   // Add the include directories...
   {
-    niLoop(i,_GetOptions()->_vIncludes.size()) {
+    niLoop (i, _GetOptions()->_vIncludes.size()) {
       cString path = _GetOptions()->_vIncludes[i];
       if (ni::GetLang()->GetRootFS()->FileExists(
-              path.Chars(),ni::eFileAttrFlags_AllDirectories))
+            path.Chars(), ni::eFileAttrFlags_AllDirectories))
       {
         path = ni::GetLang()->GetRootFS()->GetAbsolutePath(path.Chars());
         Ptr<iFileSystem> scriptsDirFS = ni::GetLang()->CreateFileSystemDir(
-            path.Chars(),ni::eFileSystemRightsFlags_ReadOnly);
-        _GetOptions()->_ptrScriptVM->GetImportFileSystems()->Add(scriptsDirFS.ptr());
+          path.Chars(), ni::eFileSystemRightsFlags_ReadOnly);
+        _GetOptions()->_ptrScriptVM->GetImportFileSystems()->Add(
+          scriptsDirFS.ptr());
       }
       else {
-        niWarning(niFmt("Can't add include directory '%s'.",path));
+        niWarning(niFmt("Can't add include directory '%s'.", path));
       }
     }
   }
@@ -1033,18 +1066,21 @@ ni_main
       if (!strInput.empty()) {
         strInput = strInput.GetWithoutBEQuote();
         {
-          ptrInputFile = ni::GetRootFS()->FileOpen(strInput.Chars(), eFileOpenMode_Read);
+          ptrInputFile =
+            ni::GetRootFS()->FileOpen(strInput.Chars(), eFileOpenMode_Read);
           if (!ptrInputFile.IsOK()) {
-            ptrInputFile = _GetOptions()->_ptrScriptVM->ImportFileOpen(strInput.Chars());
+            ptrInputFile =
+              _GetOptions()->_ptrScriptVM->ImportFileOpen(strInput.Chars());
           }
         }
 
         if (!ptrInputFile.IsOK()) {
-          cString msg = niFmt(_A("Can't open input file '%s' !\n"),_GetOptions()->_strInput);
+          cString msg = niFmt(_A("Can't open input file '%s' !\n"),
+                              _GetOptions()->_strInput);
 #ifdef NI_REPL
           if (_GetOptions()->_bRunREPL) {
             if (!_GetOptions()->_strInput.empty()) {
-              niLog(Warning,msg.Chars());
+              niLog(Warning, msg.Chars());
             }
           }
           else
@@ -1056,29 +1092,33 @@ ni_main
       }
 
       if (ptrInputFile.IsOK()) {
-        if (strInput.EndsWithI(".exe") ||
-            strInput.EndsWithI(".jar") ||
-            strInput.EndsWithI(".zip") ||
-            strInput.EndsWithI(".niz"))
+        if (strInput.EndsWithI(".exe") || strInput.EndsWithI(".jar") ||
+            strInput.EndsWithI(".zip") || strInput.EndsWithI(".niz"))
         {
-          QPtr<iURLFileHandler> zipURLFileHandler = niCreateInstance(niLang,URLFileHandlerZip,ptrInputFile.ptr(),niVarNull);
+          QPtr<iURLFileHandler> zipURLFileHandler = niCreateInstance(
+            niLang, URLFileHandlerZip, ptrInputFile.ptr(), niVarNull);
           if (!zipURLFileHandler.IsOK()) {
 #ifdef NI_REPL
             if (!_GetOptions()->_bRunREPL) {
-              ErrorExit(niFmt(_A("Can't open '%s' as an archive !\n"),strInput.Chars()));
+              ErrorExit(niFmt(_A("Can't open '%s' as an archive !\n"),
+                              strInput.Chars()));
             }
 #endif
             ptrInputFile = NULL;
           }
           else {
-            ni::GetLang()->SetGlobalInstance("URLFileHandler.default",zipURLFileHandler);
-            ni::GetLang()->SetGlobalInstance("URLFileHandler.script",niNew URLFileHandler_Zip_ScriptHandler(zipURLFileHandler));
+            ni::GetLang()->SetGlobalInstance("URLFileHandler.default",
+                                             zipURLFileHandler);
+            ni::GetLang()->SetGlobalInstance(
+              "URLFileHandler.script",
+              niNew URLFileHandler_Zip_ScriptHandler(zipURLFileHandler));
 
-            ptrInputFile = zipURLFileHandler->URLOpen(_GetOptions()->_strEntryPoint.Chars());
+            ptrInputFile =
+              zipURLFileHandler->URLOpen(_GetOptions()->_strEntryPoint.Chars());
             if (!ptrInputFile.IsOK()) {
-              ErrorExit(niFmt(_A("Can't find entry point script '%s' in archive '%s' !\n"),
-                              _GetOptions()->_strEntryPoint,
-                              strInput.Chars()));
+              ErrorExit(niFmt(
+                _A("Can't find entry point script '%s' in archive '%s' !\n"),
+                _GetOptions()->_strEntryPoint, strInput.Chars()));
             }
 
             // The input is now the entry point in the archive
@@ -1086,14 +1126,17 @@ ni_main
           }
         }
         else {
-          Ptr<URLFileHandler_Directory> dirURLHandler = niNew URLFileHandler_Directory();
-          niLoop(i,_GetOptions()->_vIncludes.size()) {
+          Ptr<URLFileHandler_Directory> dirURLHandler =
+            niNew URLFileHandler_Directory();
+          niLoop (i, _GetOptions()->_vIncludes.size()) {
             cString path = _GetOptions()->_vIncludes[i];
             dirURLHandler->_dirs.push_back(path);
           }
           // ni::GetLang()->SetGlobalInstance("URLFileHandler.script", dirURLHandler);
-          ni::GetLang()->SetGlobalInstance("URLFileHandler.file", dirURLHandler);
-          ni::GetLang()->SetGlobalInstance("URLFileHandler.default", dirURLHandler);
+          ni::GetLang()->SetGlobalInstance("URLFileHandler.file",
+                                           dirURLHandler);
+          ni::GetLang()->SetGlobalInstance("URLFileHandler.default",
+                                           dirURLHandler);
         }
       }
     }
@@ -1101,19 +1144,21 @@ ni_main
 
   // output
   if (!_GetOptions()->_bRun || _GetOptions()->_strOutput.IsNotEmpty()) {
-      Ptr<iScriptObject> ptrCompiled = _GetOptions()->_ptrScriptVM->Compile(ptrInputFile);
+    Ptr<iScriptObject> ptrCompiled =
+      _GetOptions()->_ptrScriptVM->Compile(ptrInputFile);
     if (!niIsOK(ptrCompiled)) {
-      ErrorExit(niFmt(_A("Script compilation error in '%s' !\n"),strInput.Chars()));
+      ErrorExit(
+        niFmt(_A("Script compilation error in '%s' !\n"), strInput.Chars()));
     }
 
     if (_GetOptions()->_strOutput.IsNotEmpty()) {
       ni::Ptr<ni::iFile> ptrOutFile = ni::GetRootFS()->FileOpen(
-        _GetOptions()->_strOutput.Chars(),eFileOpenMode_Write);
+        _GetOptions()->_strOutput.Chars(), eFileOpenMode_Write);
       if (!niIsOK(ptrOutFile)) {
         ErrorHelp(niFmt(_A("Can't open the output file '%s'."),
                         _GetOptions()->_strOutput.Chars()));
       }
-      if (!_GetOptions()->_ptrScriptVM->WriteClosure(ptrOutFile,ptrCompiled)) {
+      if (!_GetOptions()->_ptrScriptVM->WriteClosure(ptrOutFile, ptrCompiled)) {
         ErrorHelp(niFmt(_A("Can't write the closure to the output file '%s'."),
                         _GetOptions()->_strOutput.Chars()));
       }
@@ -1128,7 +1173,7 @@ ni_main
   if (_GetOptions()->_bRunREPL) {
     Ptr<iExecutor> replExecutor;
     if (!_GetOptions()->_ptrScriptVM->Import(_H("repl.ni")).IsOK()) {
-      niLog(Warning,"REPL startup: Can't open repl.ni");
+      niLog(Warning, "REPL startup: Can't open repl.ni");
     }
 
     if (hasMainScript) {
@@ -1152,7 +1197,8 @@ ni_main
       // Import the script
       Ptr<iScriptObject> importedTable = vm->Import(ptrInputFile);
       if (!importedTable.IsOK()) {
-        ErrorExit(niFmt("Running script '%s' failed.", ptrInputFile->GetSourcePath()));
+        ErrorExit(
+          niFmt("Running script '%s' failed.", ptrInputFile->GetSourcePath()));
       }
 
       // Figure out the script's main function
@@ -1165,51 +1211,53 @@ ni_main
           scriptMainFn = "::main";
         }
         else {
-          ErrorExit(niFmt("Couldn't find this.main or ::main in '%s'.", ptrInputFile->GetSourcePath()));
+          ErrorExit(niFmt("Couldn't find this.main or ::main in '%s'.",
+                          ptrInputFile->GetSourcePath()));
         }
       }
       else {
-        if (vm->ScriptVar(importedTable, _GetOptions()->_strScriptMain.Chars(), eTrue).IsOK()) {
+        if (vm->ScriptVar(importedTable, _GetOptions()->_strScriptMain.Chars(),
+                          eTrue)
+              .IsOK())
+        {
           scriptMainFn = _GetOptions()->_strScriptMain;
         }
         else {
-          ErrorExit(niFmt("Couldn't find '%s' in '%s'.", _GetOptions()->_strScriptMain, ptrInputFile->GetSourcePath()));
+          ErrorExit(niFmt("Couldn't find '%s' in '%s'.",
+                          _GetOptions()->_strScriptMain,
+                          ptrInputFile->GetSourcePath()));
         }
       }
 
       // Run the script's main function
       Var ret((ni::tU32)1);
       Var params[1] = { _GetOptions()->_vArgs.ptr() };
-      if (!vm->ScriptCall(
-            importedTable,
-            scriptMainFn.c_str(),
-            params, niCountOf(params),
-            &ret))
+      if (!vm->ScriptCall(importedTable, scriptMainFn.c_str(), params,
+                          niCountOf(params), &ret))
       {
-        ErrorExit(niFmt("Call to '%s' in '%s' failed.", _GetOptions()->_strScriptMain, ptrInputFile->GetSourcePath()));
+        ErrorExit(niFmt("Call to '%s' in '%s' failed.",
+                        _GetOptions()->_strScriptMain,
+                        ptrInputFile->GetSourcePath()));
       }
 
       return ret.mU32;
     };
 
     if (_GetOptions()->_strHostedAppName.IsNotEmpty()) {
-      niLog(Info,niFmt("Starting hosted app '%s'.", _GetOptions()->_strHostedAppName));
+      niLog(Info, niFmt("Starting hosted app '%s'.",
+                        _GetOptions()->_strHostedAppName));
       ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
       Nonnull<app::AppContext> appContext = ni::MakeNonnull<app::AppContext>();
       if (!app::AppNativeStartup(
-            appContext,
-            _GetOptions()->_strHostedAppName.Chars(),
-            0, 0,
-            ni::Runnable([&]() { return runMain(); }),
-            NULL))
+            appContext, _GetOptions()->_strHostedAppName.Chars(), 0, 0,
+            ni::Runnable([&]() { return runMain(); }), NULL))
       {
         ErrorExit("Can't start hosted application.");
       }
       nRet = app::AppNativeMainLoop(appContext);
     }
-    else
-    {
+    else {
       nRet = runMain();
     }
   }
@@ -1225,30 +1273,36 @@ ni_main
 }
 
 #if !defined NI_NO_MAIN
-#include <niLang/Utils/MainImpl.h>
+  #include <niLang/Utils/MainImpl.h>
 
-#ifdef NI_WINDOWED
+  #ifdef NI_WINDOWED
 niWindowedMain()
 {
-  TryCatchPanic([&]() {
-    ni::GetLang()->SetProperty("ni.app.name","niw");
-    return niw_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
-  },[&](const ni::sPanicException& e) {
-    ni::GetLang()->FatalError(e.GetDesc().Chars());
-    return (int)eInvalidHandle;
-  });
+  TryCatchPanic(
+    [&]() {
+      ni::GetLang()->SetProperty("ni.app.name", "niw");
+      return niw_main(
+        ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+    },
+    [&](const ni::sPanicException& e) {
+      ni::GetLang()->FatalError(e.GetDesc().Chars());
+      return (int)eInvalidHandle;
+    });
 }
-#else
+  #else
 niConsoleMain()
 {
-  TryCatchPanic([&]() {
-    ni::GetLang()->SetProperty("ni.app.name","ni");
-    return ni_main(ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
-  },[&](const ni::sPanicException& e) {
-    ni::GetLang()->FatalError(e.GetDesc().Chars());
-    return (int)eInvalidHandle;
-  });
+  TryCatchPanic(
+    [&]() {
+      ni::GetLang()->SetProperty("ni.app.name", "ni");
+      return ni_main(
+        ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
+    },
+    [&](const ni::sPanicException& e) {
+      ni::GetLang()->FatalError(e.GetDesc().Chars());
+      return (int)eInvalidHandle;
+    });
 }
-#endif
+  #endif
 
 #endif

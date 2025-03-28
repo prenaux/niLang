@@ -118,19 +118,19 @@
 	<namespace name="ni" source="niSound/src/_idl/ISoundData.h.idl.xml">
 		<enum name="eSoundFormat">
 			<comments desc="Common sound formats. "/>
-			<value name="eSoundFormat_Unknown" value="0 ">
+			<value name="eSoundFormat_Unknown" value="0">
 				<comments desc="Unknown format "/>
 			</value>
-			<value name="eSoundFormat_Mono8" value="( 8 ) | ( ( 1 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Mono8" value="(8)|((1)&lt;&lt;8)">
 				<comments desc="Mono 8 bits. "/>
 			</value>
-			<value name="eSoundFormat_Stereo8" value="( 8 ) | ( ( 2 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Stereo8" value="(8)|((2)&lt;&lt;8)">
 				<comments desc="Stereo 8 bits. "/>
 			</value>
-			<value name="eSoundFormat_Mono16" value="( 16 ) | ( ( 1 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Mono16" value="(16)|((1)&lt;&lt;8)">
 				<comments desc="Mono 16 bits. "/>
 			</value>
-			<value name="eSoundFormat_Stereo16" value="( 16 ) | ( ( 2 ) &lt;&lt;8 ) ">
+			<value name="eSoundFormat_Stereo16" value="(16)|((2)&lt;&lt;8)">
 				<comments desc="Stereo 16 bits. "/>
 			</value>
 		</enum>
@@ -225,13 +225,13 @@
 	<namespace name="ni" source="niSound/src/_idl/ISoundDriver.h.idl.xml">
 		<enum name="eSoundDriverCapFlags">
 			<comments desc="Sound driver caps. "/>
-			<value name="eSoundDriverCapFlags_Buffer" value="niBit ( 0 ) ">
+			<value name="eSoundDriverCapFlags_Buffer" value="niBit(0)">
 				<comments desc="Access directly the primary sound buffer. "/>
 			</value>
-			<value name="eSoundDriverCapFlags_Mixer" value="niBit ( 1 ) ">
+			<value name="eSoundDriverCapFlags_Mixer" value="niBit(1)">
 				<comments desc="Own 2d sound mixer. "/>
 			</value>
-			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit ( 2 ) ">
+			<value name="eSoundDriverCapFlags_Mixer3D" value="niBit(2)">
 				<comments desc="Own 3d sound mixer. "/>
 			</value>
 		</enum>
@@ -1088,17 +1088,17 @@
 	<namespace name="ni" source="niSound/src/_idl/ISoundMixer.h.idl.xml">
 		<enum name="eSoundMode">
 			<comments desc="Sound mode "/>
-			<value name="eSoundMode_Normal2D" value="0 ">
+			<value name="eSoundMode_Normal2D" value="0">
 				<comments desc="Normal 2D sound playing. ">
 					<remark text="Ignores all 3d properties. "/>
 				</comments>
 			</value>
-			<value name="eSoundMode_Normal3D" value="1 ">
+			<value name="eSoundMode_Normal3D" value="1">
 				<comments desc="Normal 3D sound playing. ">
 					<remark text="Ignores panning. "/>
 				</comments>
 			</value>
-			<value name="eSoundMode_Relative3D" value="2 ">
+			<value name="eSoundMode_Relative3D" value="2">
 				<comments desc="Listener relative 3d sound playing. ">
 					<remark text="Ignores panning. "/>
 				</comments>

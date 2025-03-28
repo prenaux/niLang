@@ -5,6 +5,6 @@
 
 @interface niUIView : GLKView
 
-- (instancetype)initWithFrame:(CGRect)frame context: (EAGLContext*)context;
+- (instancetype)initWithFrame:(CGRect)frame context:(EAGLContext*)context;
 
 @end

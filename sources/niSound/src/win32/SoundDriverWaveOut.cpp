@@ -3,16 +3,20 @@
 #include "../stdafx.h"
 #include "../SoundMixerBufferSize.h"
 
-iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq, iSoundDriverBuffer* apBuffer, tU32 anNumChannels);
-iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNum3DChannels, tU32 anNumAudioChannels);
+iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq,
+                                              iSoundDriverBuffer* apBuffer,
+                                              tU32 anNumChannels);
+iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase,
+                                                  tU32 anNum3DChannels,
+                                                  tU32 anNumAudioChannels);
 
 #include <niLang/Platforms/Win32/Win32_Redef.h>
 
-#define NSPLIT             8
-#define NSPLIT_SHIFT       3
-#define NFIXED             12
-#define NBUFFERS           2
-#define WAVE_BUFFER_SIZE   2048
+#define NSPLIT 8
+#define NSPLIT_SHIFT 3
+#define NFIXED 12
+#define NBUFFERS 2
+#define WAVE_BUFFER_SIZE 2048
 #include <mmsystem.h>
 
 _HDecl(WaveOut);
@@ -25,29 +29,33 @@ _HDecl(WaveOut);
 static DWORD WINAPI _WaveOutThreadProc(LPVOID apData);
 
 //! Sound driver buffer waveout implementation.
-class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
-{
+class cSoundDriverBufferWaveOut
+    : public ImplRC<iSoundDriverBuffer, eImplFlags_Default> {
   niBeginClass(cSoundDriverBufferWaveOut);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverBufferWaveOut() {
+  cSoundDriverBufferWaveOut()
+  {
     ZeroMembers();
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverBufferWaveOut() {
+  ~cSoundDriverBufferWaveOut()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Stop();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
-    memset(waves,0,sizeof(waves));
+  void __stdcall ZeroMembers()
+  {
+    memset(waves, 0, sizeof(waves));
     wave_device = NULL;
     wave_buffer_size = 0;
     is_playing = false;
@@ -59,49 +67,64 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Play (eSoundFormat aFormat, tU32 anFreq) {
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  {
     int i;
     HRESULT hr;
     WAVEFORMATEX pcmwf;
     tBool bStereo = eFalse;
     WORD nBits = 0;
     switch (aFormat) {
-      case eSoundFormat_Mono8:    nBits = 8; bStereo = eFalse; break;
-      case eSoundFormat_Mono16:   nBits = 16; bStereo = eFalse; break;
-      case eSoundFormat_Stereo8:    nBits = 8; bStereo = eTrue; break;
-      case eSoundFormat_Stereo16:   nBits = 16; bStereo = eTrue; break;
+    case eSoundFormat_Mono8:
+      nBits = 8;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Mono16:
+      nBits = 16;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Stereo8:
+      nBits = 8;
+      bStereo = eTrue;
+      break;
+    case eSoundFormat_Stereo16:
+      nBits = 16;
+      bStereo = eTrue;
+      break;
     }
 
-    if ((nBits != 8) && (nBits!= 16)) {
-      niError(niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."),nBits));
+    if ((nBits != 8) && (nBits != 16)) {
+      niError(
+        niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."), nBits));
       return eFalse;
     }
 
-    wave_buffer_size = sMixerBufferSize(200,anFreq,bStereo).mnBufferSize;
+    wave_buffer_size = sMixerBufferSize(200, anFreq, bStereo).mnBufferSize;
 
     is_playing = false;
 
-    if(bStereo)
+    if (bStereo)
       wave_buffer_size <<= 1;
-    if(nBits == 16)
+    if (nBits == 16)
       wave_buffer_size <<= 1;
-    wave_buffer_size = (wave_buffer_size<<2)>>NSPLIT_SHIFT;
+    wave_buffer_size = (wave_buffer_size << 2) >> NSPLIT_SHIFT;
 
     pcmwf.wFormatTag = WAVE_FORMAT_PCM;
 
-    if(bStereo == false)
+    if (bStereo == false)
       pcmwf.nChannels = 1;
     else
       pcmwf.nChannels = 2;
     pcmwf.nSamplesPerSec = anFreq;
     pcmwf.wBitsPerSample = (WORD)nBits;
-    pcmwf.nBlockAlign = pcmwf.wBitsPerSample*pcmwf.nChannels/8;
-    pcmwf.nAvgBytesPerSec = pcmwf.nSamplesPerSec*pcmwf.nBlockAlign;
+    pcmwf.nBlockAlign = pcmwf.wBitsPerSample * pcmwf.nChannels / 8;
+    pcmwf.nAvgBytesPerSec = pcmwf.nSamplesPerSec * pcmwf.nBlockAlign;
     pcmwf.cbSize = 0;
 
     hr = waveOutOpen(&wave_device, WAVE_MAPPER, &pcmwf, 0, 0, 0);
@@ -110,8 +133,7 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
       goto error;
     }
 
-    for(i = 0; i < NBUFFERS; i++)
-    {
+    for (i = 0; i < NBUFFERS; i++) {
       waves[i].dwBufferLength = wave_buffer_size;
       waves[i].lpData = (char*)niMalloc(waves[i].dwBufferLength);
       if (!waves[i].lpData) {
@@ -127,7 +149,8 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
     }
 
 #ifdef THREADED_WAVEOUT
-    wait_thread = CreateThread(0, 0, _WaveOutThreadProc, (LPVOID)this, CREATE_SUSPENDED, &wait_thread_id);
+    wait_thread = CreateThread(0, 0, _WaveOutThreadProc, (LPVOID)this,
+                               CREATE_SUSPENDED, &wait_thread_id);
     SetThreadPriority(wait_thread, THREAD_PRIORITY_TIME_CRITICAL);
 #endif
 
@@ -136,82 +159,86 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
 
     return eTrue;
 
- error:;
+error:;
     Stop();
     return eFalse;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall Stop() {
+  virtual tBool __stdcall Stop()
+  {
     int i;
 
     is_playing = false;
 
 #ifdef THREADED_WAVEOUT
-    if(wait_thread)
-    {
+    if (wait_thread) {
       WaitForSingleObject(wait_thread, 1000);
       CloseHandle(wait_thread);
       wait_thread = NULL;
     }
 #endif
 
-    if(wave_device)
-    {
+    if (wave_device) {
       waveOutReset(wave_device);
-      for(i = 0; i < NBUFFERS; i++) {
+      for (i = 0; i < NBUFFERS; i++) {
         waveOutUnprepareHeader(wave_device, &waves[i], sizeof(WAVEHDR));
       }
       waveOutClose(wave_device);
       wave_device = NULL;
     }
 
-    for(i = 0; i < NBUFFERS; i++)
-    {
+    for (i = 0; i < NBUFFERS; i++) {
       niFree(waves[i].lpData);
     }
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tSize __stdcall GetSize() const {
+  virtual tSize __stdcall GetSize() const
+  {
     return wave_buffer_size;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) {
+  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  {
     sink = apSink;
     ThreadPlay();
   }
 
   ///////////////////////////////////////////////
-  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const {
+  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const
+  {
     return sink;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchIn() {
+  virtual tBool __stdcall SwitchIn()
+  {
     ThreadPlay();
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchOut() {
+  virtual tBool __stdcall SwitchOut()
+  {
     ThreadStop();
     return eTrue;
   }
 
-  void __stdcall UpdateBuffer() {
+  void __stdcall UpdateBuffer()
+  {
 #ifndef THREADED_WAVEOUT
     DoUpdate();
 #endif
   }
 
   //! Update the sound buffer.
-  void __stdcall DoUpdate() {
+  void __stdcall DoUpdate()
+  {
     if (sink.IsOK()) {
-      for (tU32 i = 0; i < NBUFFERS; i++)
-      {
+      for (tU32 i = 0; i < NBUFFERS; i++) {
         if (waves[i].dwFlags & WHDR_DONE) {
           sink->OnSoundDriverBufferDataSink(waves[i].lpData, wave_buffer_size);
           waveOutWrite(wave_device, &waves[i], sizeof(WAVEHDR));
@@ -221,14 +248,16 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
   }
 
   ///////////////////////////////////////////////
-  void ThreadPlay() {
+  void ThreadPlay()
+  {
 #ifdef THREADED_WAVEOUT
     if (is_playing && wait_thread && sink.IsOK()) {
       ResumeThread(wait_thread);
     }
 #endif
   }
-  void ThreadStop() {
+  void ThreadStop()
+  {
 #ifdef THREADED_WAVEOUT
     if (wait_thread)
       SuspendThread(wait_thread);
@@ -256,10 +285,10 @@ class cSoundDriverBufferWaveOut : public ImplRC<iSoundDriverBuffer,eImplFlags_De
 // Thread that fills the sound buffer
 static DWORD WINAPI _WaveOutThreadProc(LPVOID apData)
 {
-  cSoundDriverBufferWaveOut* pBuf = niUnsafeCast(cSoundDriverBufferWaveOut*,apData);
+  cSoundDriverBufferWaveOut* pBuf =
+    niUnsafeCast(cSoundDriverBufferWaveOut*, apData);
 
-  while (pBuf->is_playing)
-  {
+  while (pBuf->is_playing) {
     pBuf->DoUpdate();
     Sleep(1);
   }
@@ -270,8 +299,7 @@ static DWORD WINAPI _WaveOutThreadProc(LPVOID apData)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
-{
+class cSoundDriverWaveOut : public ImplRC<iSoundDriver> {
   niBeginClass(cSoundDriverWaveOut);
 
  public:
@@ -282,45 +310,58 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverWaveOut() {
+  ~cSoundDriverWaveOut()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
+  void __stdcall ZeroMembers()
+  {
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundDriverWaveOut);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iHString* __stdcall GetName() const {
+  virtual iHString* __stdcall GetName() const
+  {
     return _HC(WaveOut);
   }
 
   ///////////////////////////////////////////////
-  virtual tSoundDriverCapFlags __stdcall GetCaps() const {
+  virtual tSoundDriverCapFlags __stdcall GetCaps() const
+  {
     return eSoundDriverCapFlags_Buffer;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle) {
+  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
+                          tIntPtr aWindowHandle)
+  {
     mptrBuffer = niNew cSoundDriverBufferWaveOut();
     if (!mptrBuffer.IsOK()) {
       niError(_A("Can't create the sound driver buffer."));
       return eFalse;
     }
 
-    mptrMixer = New_SoundMixerSoftware(aSoundFormat,anFrequency,mptrBuffer,64);
+    mptrMixer =
+      New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
     if (!mptrMixer.IsOK()) {
       niError(_A("Can't create the software mixer."));
       return eFalse;
     }
 
-    mptrMixer3D = New_SoundMixerSoftware3D(mptrMixer,32,(aSoundFormat==eSoundFormat_Stereo16||aSoundFormat==eSoundFormat_Stereo8)?2:1);
+    mptrMixer3D =
+      New_SoundMixerSoftware3D(mptrMixer, 32,
+                               (aSoundFormat == eSoundFormat_Stereo16 ||
+                                aSoundFormat == eSoundFormat_Stereo8)
+                                 ? 2
+                                 : 1);
     if (!mptrMixer3D.IsOK()) {
       niError(_A("Can't create the 3d software mixer."));
       return eFalse;
@@ -336,7 +377,8 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Shutdown() {
+  tBool __stdcall Shutdown()
+  {
     mptrMixer3D = NULL;
     if (mptrMixer.IsOK()) {
       mptrMixer->Invalidate();
@@ -350,12 +392,14 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Shutdown();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     if (mptrBuffer.IsOK())
       mptrBuffer->SwitchIn();
     if (mptrMixer.IsOK())
@@ -364,7 +408,8 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     if (mptrMixer.IsOK())
       mptrMixer->SwitchOut();
     if (mptrBuffer.IsOK())
@@ -373,22 +418,26 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  iSoundDriverBuffer* __stdcall GetBuffer() const {
+  iSoundDriverBuffer* __stdcall GetBuffer() const
+  {
     return mptrBuffer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer* __stdcall GetMixer() const {
+  iSoundMixer* __stdcall GetMixer() const
+  {
     return mptrMixer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer3D* __stdcall GetMixer3D() const {
+  iSoundMixer3D* __stdcall GetMixer3D() const
+  {
     return mptrMixer3D;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (mptrBuffer.IsOK()) {
       mptrBuffer->UpdateBuffer();
     }
@@ -402,13 +451,14 @@ class cSoundDriverWaveOut : public ImplRC<iSoundDriver>
 
  public:
   Ptr<iSoundDriverBuffer> mptrBuffer;
-  Ptr<iSoundMixer>      mptrMixer;
-  Ptr<iSoundMixer3D>    mptrMixer3D;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
 
   niEndClass(cSoundDriverWaveOut);
 };
 
 ///////////////////////////////////////////////
-iSoundDriver* __stdcall New_SoundDriverWaveOut() {
+iSoundDriver* __stdcall New_SoundDriverWaveOut()
+{
   return niNew cSoundDriverWaveOut();
 }

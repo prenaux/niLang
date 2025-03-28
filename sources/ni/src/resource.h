@@ -1,1 +1,1 @@
-#define IDR_MAINFRAME                   101
+#define IDR_MAINFRAME 101

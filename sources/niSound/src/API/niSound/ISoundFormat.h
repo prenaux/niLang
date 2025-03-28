@@ -9,8 +9,7 @@ namespace ni {
  */
 
 //! Utility format object.
-struct iSoundFormat : public iUnknown
-{
+struct iSoundFormat : public iUnknown {
   niDeclareInterfaceUUID(iSoundFormat,0x03d84992,0xae0a,0x4ebc,0xbe,0xff,0x9a,0x4b,0x68,0x16,0xf1,0x9d);
 
   //! Get the full format.
@@ -49,5 +48,5 @@ struct iSoundFormat : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __SOUNDFORMAT_20163826_H__

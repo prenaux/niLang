@@ -15,8 +15,7 @@ typedef tU32 tSoundSourceFlags;
 // cSoundSource declaration.
 
 //! Sound source implementation.
-class cSoundSource : public ImplRC<iSoundSource>
-{
+class cSoundSource : public ImplRC<iSoundSource> {
   niBeginClass(cSoundSource);
 
  public:
@@ -35,7 +34,10 @@ class cSoundSource : public ImplRC<iSoundSource>
   tBool __stdcall SetSoundBuffer(iSoundBuffer* apBuffer);
   iSoundBuffer* __stdcall GetSoundBuffer() const;
   iHString* __stdcall GetDeviceResourceName() const;
-  iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
+  iDeviceResource* __stdcall Bind(iUnknown*)
+  {
+    return this;
+  }
   void __stdcall SetMode(eSoundMode aMode);
   eSoundMode __stdcall GetMode() const;
   void __stdcall SetPosition(const sVec3f& avPos);
@@ -59,32 +61,37 @@ class cSoundSource : public ImplRC<iSoundSource>
   tBool __stdcall Pause();
   tBool __stdcall GetIsPaused() const;
   tBool __stdcall GetIsPlaying() const;
-  ni::tBool __stdcall Play2D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::tF32 afPan);
-  ni::tBool __stdcall Play3D(ni::tF32 afVolume, ni::tF32 afSpeed, ni::sVec3f avPosition, ni::tBool abListenerRelative, ni::tF32 afMinDistance, ni::tF32 afMaxDistance);
+  ni::tBool __stdcall Play2D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                             ni::tF32 afPan);
+  ni::tBool __stdcall Play3D(ni::tF32 afVolume, ni::tF32 afSpeed,
+                             ni::sVec3f avPosition,
+                             ni::tBool abListenerRelative,
+                             ni::tF32 afMinDistance, ni::tF32 afMaxDistance);
   //// iSoundSource /////////////////////////////
 
-  tBool SetChannel(iSoundMixer* apMixer, iSoundMixer3D* apMixer3D, tU32 anChannel);
+  tBool SetChannel(iSoundMixer* apMixer, iSoundMixer3D* apMixer3D,
+                   tU32 anChannel);
   tU32 GetChannel() const;
   void UpdateChannel();
 
  private:
-  Ptr<cSoundFactory>  mptrSoundFactory;
-  Ptr<iSoundMixer>    mptrMixer;
-  Ptr<iSoundMixer3D>  mptrMixer3D;
-  Ptr<iSoundBuffer>   mptrBuffer;
+  Ptr<cSoundFactory> mptrSoundFactory;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
+  Ptr<iSoundBuffer> mptrBuffer;
 
-  tU32    mnChannel;
-  tU32    mnPriority;
+  tU32 mnChannel;
+  tU32 mnPriority;
 
   eSoundMode mMode;
   sVec3f mvPosition;
   sVec3f mvVelocity;
-  tF32    mfAttFactory;
-  tF32    mfMinDistance;
-  tF32    mfMaxDistance;
-  tF32    mfPan;
-  tF32    mfVolume;
-  tF32    mfSpeed;
+  tF32 mfAttFactory;
+  tF32 mfMinDistance;
+  tF32 mfMaxDistance;
+  tF32 mfPan;
+  tF32 mfVolume;
+  tF32 mfSpeed;
   tSoundSourceFlags mFlags;
 
   niEndClass(cSoundSource);

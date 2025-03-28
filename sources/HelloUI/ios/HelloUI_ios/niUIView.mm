@@ -5,8 +5,10 @@
 
 #define TRACE_INPUT(FMT) //niDebugFmt(FMT)
 
-astl::non_null<app::AppContext*> GetMyAppContext() {
-  static ni::Nonnull<app::AppContext> _appContext = ni::MakeNonnull<app::AppContext>();
+astl::non_null<app::AppContext*> GetMyAppContext()
+{
+  static ni::Nonnull<app::AppContext> _appContext =
+    ni::MakeNonnull<app::AppContext>();
   return _appContext;
 }
 
@@ -14,42 +16,45 @@ ni::Var OnAppStarted();
 
 ni::tF32 kSettings_ScaleFactor = 1.0f;
 
-static bool _GetSettingsBool(NSString* aString) {
+static bool _GetSettingsBool(NSString* aString)
+{
   return [[NSUserDefaults standardUserDefaults] boolForKey:aString];
 }
 
-static void _InitializeSettings() {
-  NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+static void _InitializeSettings()
+{
+  NSUserDefaults* defs = [NSUserDefaults standardUserDefaults];
   [defs synchronize];
 
-  NSString *settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"bundle"];
+  NSString* settingsBundle = [[NSBundle mainBundle] pathForResource:@"Settings"
+                                                             ofType:@"bundle"];
   if (!settingsBundle) {
     NSLog(@"Could not find Settings.bundle");
     return;
   }
 
-  NSDictionary *settings = [NSDictionary dictionaryWithContentsOfFile:[settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
-  NSArray *preferences = [settings objectForKey:@"PreferenceSpecifiers"];
-  NSMutableDictionary *defaultsToRegister = [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
+  NSDictionary* settings = [NSDictionary
+    dictionaryWithContentsOfFile:
+      [settingsBundle stringByAppendingPathComponent:@"Root.plist"]];
+  NSArray* preferences = [settings objectForKey:@"PreferenceSpecifiers"];
+  NSMutableDictionary* defaultsToRegister =
+    [[NSMutableDictionary alloc] initWithCapacity:[preferences count]];
 
-  for (NSDictionary *prefSpecification in preferences)
-  {
-    NSString *key = [prefSpecification objectForKey:@"Key"];
-    if (key)
-    {
+  for (NSDictionary* prefSpecification in preferences) {
+    NSString* key = [prefSpecification objectForKey:@"Key"];
+    if (key) {
       // Check if value is registered or not in userDefaults
       id currentObject = [defs objectForKey:key];
-      if (currentObject == nil)
-      {
+      if (currentObject == nil) {
         // Not registered: set value from Settings.bundle
         id objectToSet = [prefSpecification objectForKey:@"DefaultValue"];
         [defaultsToRegister setObject:objectToSet forKey:key];
         NSLog(@"Setting object %@ for key %@", objectToSet, key);
       }
-      else
-      {
+      else {
         // Already registered
-        NSLog(@"Key %@ is already registered with Value: %@).", key, currentObject);
+        NSLog(@"Key %@ is already registered with Value: %@).", key,
+              currentObject);
       }
     }
   }
@@ -59,7 +64,7 @@ static void _InitializeSettings() {
   [defs synchronize];
 }
 
-@interface niUIView() {
+@interface niUIView () {
 }
 - (void)setupGL;
 - (void)tearDownGL;
@@ -78,9 +83,9 @@ static void _InitializeSettings() {
   [super dealloc];
 }
 
-- (instancetype)initWithFrame:(CGRect)frame context: (EAGLContext*)context
+- (instancetype)initWithFrame:(CGRect)frame context:(EAGLContext*)context
 {
-  self = [super initWithFrame:frame context: context];
+  self = [super initWithFrame:frame context:context];
   if (!self) {
     NSLog(@"Failed to create self !");
     return self;
@@ -108,7 +113,8 @@ static void _InitializeSettings() {
   // Setup the view
   self.multipleTouchEnabled = bSettingMultiTouch;
   self.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-  self.drawableMultisample = bSettingMSAA4X ? GLKViewDrawableMultisample4X : GLKViewDrawableMultisampleNone;
+  self.drawableMultisample = bSettingMSAA4X ? GLKViewDrawableMultisample4X
+                                            : GLKViewDrawableMultisampleNone;
   if (!bSettingRetina) {
     self.contentScaleFactor = 1.0;
   }
@@ -123,7 +129,8 @@ static void _InitializeSettings() {
 {
   [EAGLContext setCurrentContext:self.context];
   niAppLib_SetBuildText();
-  app::AppGenericStartup(GetMyAppContext(), "HelloUI", 400, 300, ni::Runnable<ni::tpfnRunnable>(OnAppStarted), NULL);
+  app::AppGenericStartup(GetMyAppContext(), "HelloUI", 400, 300,
+                         ni::Runnable<ni::tpfnRunnable>(OnAppStarted), NULL);
 }
 
 - (void)tearDownGL
@@ -157,10 +164,11 @@ static void _InitializeSettings() {
 }
 
 const int MAX_TOUCHES = 10;
-static ni::sVec2f  _lastTouchPosition[MAX_TOUCHES] = {0};
-static ni::tIntPtr _touches[MAX_TOUCHES] = {0};
+static ni::sVec2f _lastTouchPosition[MAX_TOUCHES] = { 0 };
+static ni::tIntPtr _touches[MAX_TOUCHES] = { 0 };
 
-static int _GetFingerIdFromTouch(UITouch* touch) {
+static int _GetFingerIdFromTouch(UITouch* touch)
+{
   for (int i = 0; i < MAX_TOUCHES; ++i) {
     if (_touches[i] == (ni::tIntPtr)touch) {
       return i;
@@ -168,7 +176,8 @@ static int _GetFingerIdFromTouch(UITouch* touch) {
   }
   return -1;
 }
-static int _AddNewTouch(UITouch* touch) {
+static int _AddNewTouch(UITouch* touch)
+{
   for (int i = 0; i < MAX_TOUCHES; ++i) {
     if (!_touches[i]) {
       _touches[i] = (ni::tIntPtr)touch;
@@ -177,12 +186,14 @@ static int _AddNewTouch(UITouch* touch) {
   }
   return -1;
 }
-static int _RemoveTouch(const int fingerId) {
+static int _RemoveTouch(const int fingerId)
+{
   niAssert(fingerId < MAX_TOUCHES);
   _touches[fingerId] = 0;
   return -1;
 }
-static int _CountNumTouches() {
+static int _CountNumTouches()
+{
   int count = 0;
   for (int i = 0; i < MAX_TOUCHES; ++i) {
     if (_touches[i]) {
@@ -191,11 +202,9 @@ static int _CountNumTouches() {
   }
   return count;
 }
-const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
-  ni::sVec2f r = {
-    (float)locationInView.x * 1,
-    (float)locationInView.y * 1
-  };
+const ni::sVec2f _GetTouchLocation(CGPoint locationInView)
+{
+  ni::sVec2f r = { (float)locationInView.x * 1, (float)locationInView.y * 1 };
   // niLog(Info,niFmt("_GetTouchLocation(%g,%g,%g) -> %g, %g",
   //                  locationInView.x, locationInView.y,
   //                  mainScreenScale,
@@ -203,7 +212,8 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
   return r;
 }
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event{
+- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
+{
   for (UITouch* touch in touches) {
     int fingerId = _GetFingerIdFromTouch(touch);
     if (fingerId == -1) {
@@ -213,15 +223,18 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
       continue;
     }
 
-    const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
+    const ni::sVec2f vTouchLocation =
+      _GetTouchLocation([touch locationInView:self]);
     _lastTouchPosition[fingerId] = vTouchLocation;
-    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eTrue, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eTrue,
+                               vTouchLocation.x, vTouchLocation.y, 1.0f);
 
     TRACE_INPUT(("iOS FINGER DOWN[%d]: %s", fingerId, vTouchLocation));
   }
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event{
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
+{
   for (UITouch* touch in touches) {
     const int fingerId = _GetFingerIdFromTouch(touch);
     if (fingerId == -1) {
@@ -229,23 +242,28 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
       continue;
     }
 
-    const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
-    app::AppGenericFingerMove(GetMyAppContext(), fingerId, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    const ni::sVec2f vTouchLocation =
+      _GetTouchLocation([touch locationInView:self]);
+    app::AppGenericFingerMove(GetMyAppContext(), fingerId, vTouchLocation.x,
+                              vTouchLocation.y, 1.0f);
     {
       // Apply scaling to the relative move speed so that the movement speed is consistent with the
       // screen's DPI relative to the actual scale currently active. (So that a retina display's
       // relative movement isn't halved when using a kSettings_ScaleFactor of 1)
       const ni::tF32 relativeMoveSpeedScale = [UIScreen mainScreen].scale;
-      const ni::sVec2f delta = (vTouchLocation - _lastTouchPosition[fingerId]) * relativeMoveSpeedScale;
+      const ni::sVec2f delta = (vTouchLocation - _lastTouchPosition[fingerId]) *
+                               relativeMoveSpeedScale;
       _lastTouchPosition[fingerId] = vTouchLocation;
-      app::AppGenericFingerRelativeMove(GetMyAppContext(), fingerId, delta.x, delta.y, 1.0f);
+      app::AppGenericFingerRelativeMove(GetMyAppContext(), fingerId, delta.x,
+                                        delta.y, 1.0f);
     }
 
     TRACE_INPUT(("iOS FINGER[%d]: MOVE: %s", fingerId, vTouchLocation));
   }
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event{
+- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
+{
   for (UITouch* touch in touches) {
     const int fingerId = _GetFingerIdFromTouch(touch);
     if (fingerId == -1) {
@@ -253,16 +271,19 @@ const ni::sVec2f _GetTouchLocation(CGPoint locationInView) {
       continue;
     }
 
-    const ni::sVec2f vTouchLocation = _GetTouchLocation([touch locationInView:self]);
-    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eFalse, vTouchLocation.x, vTouchLocation.y, 1.0f);
+    const ni::sVec2f vTouchLocation =
+      _GetTouchLocation([touch locationInView:self]);
+    app::AppGenericFingerPress(GetMyAppContext(), fingerId, ni::eFalse,
+                               vTouchLocation.x, vTouchLocation.y, 1.0f);
 
     TRACE_INPUT(("iOS FINGER UP[%d]: %s", fingerId, vTouchLocation));
     _RemoveTouch(fingerId);
   }
 }
 
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event{
+- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
+{
   // Redirect to touchesEnded
-  [self touchesEnded:touches withEvent: event];
+  [self touchesEnded:touches withEvent:event];
 }
 @end

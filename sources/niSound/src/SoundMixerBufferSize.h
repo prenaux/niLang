@@ -6,41 +6,45 @@
 const tU32 kMixerDefaultBlockSizeMs = 25;
 
 struct sMixerBufferSize {
-  sMixerBufferSize() {
+  sMixerBufferSize()
+  {
     mnBufferSize = 0;
     mnBufferSizeMs = 0;
     mnBlockSize = 0;
     mnBlockSizeMs = 0;
   }
 
-  sMixerBufferSize(const tU32 anLenMs, const tU32 anMixerRate, tBool abStereo) {
+  sMixerBufferSize(const tU32 anLenMs, const tU32 anMixerRate, tBool abStereo)
+  {
     mnBufferSize = 0;
     mnBufferSizeMs = 0;
     mnBlockSize = 0;
     mnBlockSizeMs = 0;
-    Initialize(anLenMs,anMixerRate,abStereo?2:1);
+    Initialize(anLenMs, anMixerRate, abStereo ? 2 : 1);
   }
 
   ///////////////////////////////////////////////
   // anLenMs: Smaller buffer reduce latency and memory usage but are more unstable. Default to 50ms for
   //          a good hardware driver, and 200ms for emulated drivers (waveout, dsound buff, ...)
-  void Initialize(tU32 anLenMs, const tU32 anMixerRate, tU32 anChannels) {
+  void Initialize(tU32 anLenMs, const tU32 anMixerRate, tU32 anChannels)
+  {
 
     // Needs to be at least the sizeof the latency
     if (anLenMs < kMixerDefaultBlockSizeMs) {
       anLenMs = kMixerDefaultBlockSizeMs;
     }
-    mnBufferSizeMs = (anLenMs / kMixerDefaultBlockSizeMs) * kMixerDefaultBlockSizeMs;
+    mnBufferSizeMs =
+      (anLenMs / kMixerDefaultBlockSizeMs) * kMixerDefaultBlockSizeMs;
 
     mnBlockSize = anMixerRate * kMixerDefaultBlockSizeMs / 1000;
 
 #ifdef niWindowsCE
-#define SOFTWARE_GRANULARITY  1024
+  #define SOFTWARE_GRANULARITY 1024
 #else
-#define SOFTWARE_GRANULARITY  256
+  #define SOFTWARE_GRANULARITY 256
 #endif
 
-    mnBlockSize &= ~(SOFTWARE_GRANULARITY-1);
+    mnBlockSize &= ~(SOFTWARE_GRANULARITY - 1);
     if (mnBlockSize < SOFTWARE_GRANULARITY) {
       mnBlockSize = SOFTWARE_GRANULARITY;
     }

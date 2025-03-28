@@ -4,65 +4,75 @@
 #include "../SoundMixerBufferSize.h"
 #include <SDL/SDL_audio.h>
 
-iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq, iSoundDriverBuffer* apBuffer, tU32 anNumChannels);
-iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase, tU32 anNum3DChannels, tU32 anNumAudioChannels);
+iSoundMixer* __stdcall New_SoundMixerSoftware(eSoundFormat aFormat, tU32 anFreq,
+                                              iSoundDriverBuffer* apBuffer,
+                                              tU32 anNumChannels);
+iSoundMixer3D* __stdcall New_SoundMixerSoftware3D(iSoundMixer* apBase,
+                                                  tU32 anNum3DChannels,
+                                                  tU32 anNumAudioChannels);
 
 _HDecl(SDL);
 
 //! Sound driver buffer waveout implementation.
-class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Default>
-{
+class cSoundDriverBufferSDL
+    : public ImplRC<iSoundDriverBuffer, eImplFlags_Default> {
   niBeginClass(cSoundDriverBufferSDL);
 
  public:
   ///////////////////////////////////////////////
-  cSoundDriverBufferSDL() {
+  cSoundDriverBufferSDL()
+  {
     wave_buffer_size = 0;
     is_playing = false;
     sink = NULL;
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverBufferSDL() {
+  ~cSoundDriverBufferSDL()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Stop();
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) {
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  {
     int i;
     tBool bStereo = eFalse;
     tU32 nBits = 0;
     switch (aFormat) {
-      case eSoundFormat_Mono8:
-        nBits = 8;
-        bStereo = eFalse;
-        break;
-      case eSoundFormat_Mono16:
-        nBits = 16;
-        bStereo = eFalse;
-        break;
-      case eSoundFormat_Stereo8:
-        nBits = 8;
-        bStereo = eTrue;
-        break;
-      case eSoundFormat_Stereo16:
-        nBits = 16;
-        bStereo = eTrue;
-        break;
+    case eSoundFormat_Mono8:
+      nBits = 8;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Mono16:
+      nBits = 16;
+      bStereo = eFalse;
+      break;
+    case eSoundFormat_Stereo8:
+      nBits = 8;
+      bStereo = eTrue;
+      break;
+    case eSoundFormat_Stereo16:
+      nBits = 16;
+      bStereo = eTrue;
+      break;
     }
 
-    if ((nBits != 8) && (nBits!= 16)) {
-      niError(niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."),nBits));
+    if ((nBits != 8) && (nBits != 16)) {
+      niError(
+        niFmt(_A("Bad bits format [%d], only 8 & 16 are supported."), nBits));
       return eFalse;
     }
 
@@ -70,13 +80,13 @@ class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
     SDL_AudioSpec wanted, obtained;
     wanted.freq = anFreq;
     wanted.format = nBits == 8 ? AUDIO_U8 : AUDIO_S16;
-    wanted.channels = bStereo ? 2 : 1;    /* 1 = mono, 2 = stereo */
-    wanted.samples = 1024;                /* Good low-latency value for callback */
+    wanted.channels = bStereo ? 2 : 1; /* 1 = mono, 2 = stereo */
+    wanted.samples = 1024;             /* Good low-latency value for callback */
     wanted.callback = _FillAudio;
     wanted.userdata = this;
 
     /* Open the audio device, forcing the desired format */
-    if (SDL_OpenAudio(&wanted, &obtained) < 0 ) {
+    if (SDL_OpenAudio(&wanted, &obtained) < 0) {
       niError(niFmt("Couldn't open audio: %s\n", SDL_GetError()));
       goto error;
     }
@@ -86,21 +96,23 @@ class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
     if (nBits == 16)
       wave_buffer_size *= 2;
 
-    niLog(Info,niFmt("SDL_audio started with freq: %d, channels: %d, samples: %d",
-                     obtained.freq, obtained.channels, obtained.samples));
+    niLog(Info,
+          niFmt("SDL_audio started with freq: %d, channels: %d, samples: %d",
+                obtained.freq, obtained.channels, obtained.samples));
 
     SDL_PauseAudio(0);
 
     is_playing = true;
     return eTrue;
 
- error:;
+error:;
     Stop();
     return eFalse;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall Stop() {
+  virtual tBool __stdcall Stop()
+  {
     if (!is_playing)
       return eTrue;
     is_playing = false;
@@ -109,36 +121,43 @@ class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
   }
 
   ///////////////////////////////////////////////
-  virtual tSize __stdcall GetSize() const {
+  virtual tSize __stdcall GetSize() const
+  {
     return wave_buffer_size;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) {
+  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  {
     sink = apSink;
   }
 
   ///////////////////////////////////////////////
-  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const {
+  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const
+  {
     return sink;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchIn() {
+  virtual tBool __stdcall SwitchIn()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchOut() {
+  virtual tBool __stdcall SwitchOut()
+  {
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall UpdateBuffer() {
+  void __stdcall UpdateBuffer()
+  {
   }
 
   ///////////////////////////////////////////////
-  static void _FillAudio(void *udata, Uint8 *stream, int len) {
+  static void _FillAudio(void* udata, Uint8* stream, int len)
+  {
     cSoundDriverBufferSDL* buffer = (cSoundDriverBufferSDL*)udata;
     if (buffer->sink.IsOK()) {
       buffer->sink->OnSoundDriverBufferDataSink(stream, len);
@@ -153,8 +172,7 @@ class cSoundDriverBufferSDL : public ImplRC<iSoundDriverBuffer,eImplFlags_Defaul
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cSoundDriverSDL : public ImplRC<iSoundDriver>
-{
+class cSoundDriverSDL : public ImplRC<iSoundDriver> {
   niBeginClass(cSoundDriverSDL);
 
  public:
@@ -165,45 +183,58 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDriverSDL() {
+  ~cSoundDriverSDL()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers() {
+  void __stdcall ZeroMembers()
+  {
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundDriverSDL);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual iHString* __stdcall GetName() const {
+  virtual iHString* __stdcall GetName() const
+  {
     return _HC(SDL);
   }
 
   ///////////////////////////////////////////////
-  virtual tSoundDriverCapFlags __stdcall GetCaps() const {
+  virtual tSoundDriverCapFlags __stdcall GetCaps() const
+  {
     return eSoundDriverCapFlags_Buffer;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency, tIntPtr aWindowHandle) {
+  tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
+                          tIntPtr aWindowHandle)
+  {
     mptrBuffer = niNew cSoundDriverBufferSDL();
     if (!mptrBuffer.IsOK()) {
       niError(_A("Can't create the sound driver buffer."));
       return eFalse;
     }
 
-    mptrMixer = New_SoundMixerSoftware(aSoundFormat,anFrequency,mptrBuffer,64);
+    mptrMixer =
+      New_SoundMixerSoftware(aSoundFormat, anFrequency, mptrBuffer, 64);
     if (!mptrMixer.IsOK()) {
       niError(_A("Can't create the software mixer."));
       return eFalse;
     }
 
-    mptrMixer3D = New_SoundMixerSoftware3D(mptrMixer,32,(aSoundFormat==eSoundFormat_Stereo16||aSoundFormat==eSoundFormat_Stereo8)?2:1);
+    mptrMixer3D =
+      New_SoundMixerSoftware3D(mptrMixer, 32,
+                               (aSoundFormat == eSoundFormat_Stereo16 ||
+                                aSoundFormat == eSoundFormat_Stereo8)
+                                 ? 2
+                                 : 1);
     if (!mptrMixer3D.IsOK()) {
       niError(_A("Can't create the 3d software mixer."));
       return eFalse;
@@ -219,7 +250,8 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Shutdown() {
+  tBool __stdcall Shutdown()
+  {
     mptrMixer3D = NULL;
     if (mptrMixer.IsOK()) {
       mptrMixer->Invalidate();
@@ -233,12 +265,14 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     Shutdown();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchIn() {
+  tBool __stdcall SwitchIn()
+  {
     if (mptrBuffer.IsOK())
       mptrBuffer->SwitchIn();
     if (mptrMixer.IsOK())
@@ -247,7 +281,8 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SwitchOut() {
+  tBool __stdcall SwitchOut()
+  {
     if (mptrMixer.IsOK())
       mptrMixer->SwitchOut();
     if (mptrBuffer.IsOK())
@@ -256,22 +291,26 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
   }
 
   ///////////////////////////////////////////////
-  iSoundDriverBuffer* __stdcall GetBuffer() const {
+  iSoundDriverBuffer* __stdcall GetBuffer() const
+  {
     return mptrBuffer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer* __stdcall GetMixer() const {
+  iSoundMixer* __stdcall GetMixer() const
+  {
     return mptrMixer;
   }
 
   ///////////////////////////////////////////////
-  iSoundMixer3D* __stdcall GetMixer3D() const {
+  iSoundMixer3D* __stdcall GetMixer3D() const
+  {
     return mptrMixer3D;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (mptrBuffer.IsOK()) {
       mptrBuffer->UpdateBuffer();
     }
@@ -285,13 +324,14 @@ class cSoundDriverSDL : public ImplRC<iSoundDriver>
 
  public:
   Ptr<iSoundDriverBuffer> mptrBuffer;
-  Ptr<iSoundMixer>      mptrMixer;
-  Ptr<iSoundMixer3D>    mptrMixer3D;
+  Ptr<iSoundMixer> mptrMixer;
+  Ptr<iSoundMixer3D> mptrMixer3D;
 
   niEndClass(cSoundDriverSDL);
 };
 
 ///////////////////////////////////////////////
-iSoundDriver* __stdcall New_SoundDriverSDL() {
+iSoundDriver* __stdcall New_SoundDriverSDL()
+{
   return niNew cSoundDriverSDL();
 }

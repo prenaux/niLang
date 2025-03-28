@@ -7,13 +7,13 @@
 // cSoundBufferStream declaration.
 
 //! Sound buffer implementation.
-class cSoundBufferStream : public ImplRC<iSoundBuffer>
-{
+class cSoundBufferStream : public ImplRC<iSoundBuffer> {
   niBeginClass(cSoundBufferStream);
 
  public:
   //! Constructor.
-  cSoundBufferStream(iDeviceResourceManager* apRM, iSoundData* apData, iHString* ahspName, tBool abInstance);
+  cSoundBufferStream(iDeviceResourceManager* apRM, iSoundData* apData,
+                     iHString* ahspName, tBool abInstance);
   //! Destructor.
   ~cSoundBufferStream();
 
@@ -29,9 +29,15 @@ class cSoundBufferStream : public ImplRC<iSoundBuffer>
   iSoundBuffer* __stdcall CreateInstance();
   tBool __stdcall GetIsInstance() const;
   iHString* __stdcall GetDeviceResourceName() const;
-  iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
+  iDeviceResource* __stdcall Bind(iUnknown*)
+  {
+    return this;
+  }
   tBool __stdcall GetIsStreamed() const;
-  iSoundData* __stdcall GetStreamSoundData() const { return mptrData; }
+  iSoundData* __stdcall GetStreamSoundData() const
+  {
+    return mptrData;
+  }
   eSoundFormat __stdcall GetFormat() const;
   tU32 __stdcall GetFrequency() const;
   void __stdcall ResetPosition();
@@ -40,9 +46,9 @@ class cSoundBufferStream : public ImplRC<iSoundBuffer>
 
  private:
   iDeviceResourceManager* mpRM;
-  tHStringPtr       mhspName;
+  tHStringPtr mhspName;
   Ptr<iSoundData> mptrData;
-  tBool         mbInstance;
+  tBool mbInstance;
 
   niEndClass(cSoundBufferStream);
 };

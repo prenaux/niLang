@@ -2,12 +2,12 @@
 #include "HelloUI_data.h"
 using namespace ni;
 
-struct HelloUIShader : public cWidgetSinkImpl<>
-{
+struct HelloUIShader : public cWidgetSinkImpl<> {
   Ptr<iOverlay> _overlay;
   float _iconX = 0, _iconY = 0, _velX = 0, _velY = 0;
 
-  tBool __stdcall OnSinkAttached() niImpl {
+  tBool __stdcall OnSinkAttached() niImpl
+  {
     niAppLib_SetBuildText();
 
     _velX = 15;
@@ -17,7 +17,8 @@ struct HelloUIShader : public cWidgetSinkImpl<>
       if (niIsOK(fp)) {
         QPtr<iBitmap2D> bmp = mpWidget->GetGraphics()->LoadBitmap(fp);
         if (niIsOK(bmp)) {
-          Ptr<iTexture> tex = mpWidget->GetGraphics()->CreateTextureFromBitmap(_H(fp->GetSourcePath()),bmp,0);
+          Ptr<iTexture> tex = mpWidget->GetGraphics()->CreateTextureFromBitmap(
+            _H(fp->GetSourcePath()), bmp, 0);
           _overlay = mpWidget->GetGraphics()->CreateOverlayTexture(tex);
         }
       }
@@ -26,11 +27,13 @@ struct HelloUIShader : public cWidgetSinkImpl<>
     return eTrue;
   };
 
-  tBool __stdcall OnCommand(iWidgetCommand* apCmd) niImpl {
+  tBool __stdcall OnCommand(iWidgetCommand* apCmd) niImpl
+  {
     return eFalse;
   }
 
-  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl {
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl
+  {
     if (niIsOK(_overlay)) {
       apCanvas->Flush();
 
@@ -46,8 +49,8 @@ struct HelloUIShader : public cWidgetSinkImpl<>
         _iconX = widgetRect.x;
         _velX = -_velX;
       }
-      else if (_iconX > (widgetRect.z-w)) {
-        _iconX = (widgetRect.z-w);
+      else if (_iconX > (widgetRect.z - w)) {
+        _iconX = (widgetRect.z - w);
         _velX = -_velX;
       }
 
@@ -55,18 +58,19 @@ struct HelloUIShader : public cWidgetSinkImpl<>
         _iconY = widgetRect.y;
         _velY = -_velY;
       }
-      else if (_iconY > (widgetRect.w-h)) {
-        _iconY = (widgetRect.w-h);
+      else if (_iconY > (widgetRect.w - h)) {
+        _iconY = (widgetRect.w - h);
         _velY = -_velY;
       }
 
-      apCanvas->BlitOverlay(sRectf(_iconX,_iconY,w,h),_overlay);
+      apCanvas->BlitOverlay(sRectf(_iconX, _iconY, w, h), _overlay);
     }
 
     return eFalse;
   }
 };
 
-niExportFunc(iWidgetSink*) New_HelloUI_Shader() {
+niExportFunc(iWidgetSink*) New_HelloUI_Shader()
+{
   return niNew HelloUIShader();
 }

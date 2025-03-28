@@ -5,12 +5,10 @@
 #define STB_VORBIS_HEADER_ONLY
 #include "stb_vorbis.c"
 
-class cSoundDataOGG_STB : public ImplRC<iSoundData>
-{
+class cSoundDataOGG_STB : public ImplRC<iSoundData> {
   niBeginClass(cSoundDataOGG_STB);
 
  public:
-
   ///////////////////////////////////////////////
   cSoundDataOGG_STB(iFile* apFile)
   {
@@ -23,13 +21,15 @@ class cSoundDataOGG_STB : public ImplRC<iSoundData>
     // Copy to memory if it isn't already
     if (!mptrFile->GetBase()) {
       Ptr<iFile> origFile = apFile;
-      mptrFile = ni::CreateFileMemoryAlloc(origFile->GetSize(),origFile->GetSourcePath());
+      mptrFile = ni::CreateFileMemoryAlloc(origFile->GetSize(),
+                                           origFile->GetSourcePath());
       origFile->SeekSet(0);
-      mptrFile->WriteFile(origFile->GetFileBase(),origFile->GetSize());
+      mptrFile->WriteFile(origFile->GetFileBase(), origFile->GetSize());
     }
 
     int vorbisError = 0;
-    mStream = stb_vorbis_open_memory(mptrFile->GetBase(),mptrFile->GetSize(),&vorbisError,NULL);
+    mStream = stb_vorbis_open_memory(mptrFile->GetBase(), mptrFile->GetSize(),
+                                     &vorbisError, NULL);
     if (!mStream) {
       niError(niFmt("Can't open ogg file: %d.", vorbisError));
       return;
@@ -42,7 +42,8 @@ class cSoundDataOGG_STB : public ImplRC<iSoundData>
     else if (mInfo.channels == 2)
       mFormat = eSoundFormat_Stereo16;
     else {
-      niError(niFmt(_A("Unsupported number of channels '%d'."),mInfo.channels));
+      niError(
+        niFmt(_A("Unsupported number of channels '%d'."), mInfo.channels));
       return;
     }
 
@@ -53,11 +54,12 @@ class cSoundDataOGG_STB : public ImplRC<iSoundData>
     }
 
     mnLength = (tU32)totalPCM;
-    mnSize = mnLength*SoundFormatGetFrameSize(mFormat);
+    mnSize = mnLength * SoundFormatGetFrameSize(mFormat);
   }
 
   ///////////////////////////////////////////////
-  ~cSoundDataOGG_STB() {
+  ~cSoundDataOGG_STB()
+  {
     stb_vorbis_close(mStream);
   }
 
@@ -92,7 +94,8 @@ class cSoundDataOGG_STB : public ImplRC<iSoundData>
 
     tU32 size = 0;
     while (size < anSize) {
-      int ns = stb_vorbis_get_samples_short_interleaved(mStream, mInfo.channels, (short*)(apOut+size), (anSize-size)/2);
+      int ns = stb_vorbis_get_samples_short_interleaved(
+        mStream, mInfo.channels, (short*)(apOut + size), (anSize - size) / 2);
       if (ns < 0) {
         // decoding error...
         niError(niFmt("OGG decoding error: %d", ns));
@@ -109,45 +112,52 @@ class cSoundDataOGG_STB : public ImplRC<iSoundData>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Reset() {
+  void __stdcall Reset()
+  {
     stb_vorbis_close(mStream);
     mptrFile->SeekSet(0);
     int vorbisError = 0;
-    mStream = stb_vorbis_open_memory(mptrFile->GetBase(),mptrFile->GetSize(),&vorbisError,NULL);
+    mStream = stb_vorbis_open_memory(mptrFile->GetBase(), mptrFile->GetSize(),
+                                     &vorbisError, NULL);
     mnPosition = 0;
   }
 
   ///////////////////////////////////////////////
-  iSoundData* __stdcall Clone() const {
+  iSoundData* __stdcall Clone() const
+  {
 #pragma niTodo("Should reopen a file handle and not use auto seek...")
-    if (!mptrFile.IsOK()) return NULL;
-    Ptr<iFile> ptrFile = ni::CreateFileWindow(mptrFile->GetFileBase(),0,0,NULL,eTrue);
+    if (!mptrFile.IsOK())
+      return NULL;
+    Ptr<iFile> ptrFile =
+      ni::CreateFileWindow(mptrFile->GetFileBase(), 0, 0, NULL, eTrue);
     return niNew cSoundDataOGG_STB(ptrFile);
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetLength() const {
+  tU32 __stdcall GetLength() const
+  {
     return (tU32)mnLength;
   }
 
-  tU32           mnLength;
-  Ptr<iFile>     mptrFile;
-  eSoundFormat   mFormat;
-  tU32           mnSize;
-  tU32           mnPosition;
-  stb_vorbis*     mStream;
+  tU32 mnLength;
+  Ptr<iFile> mptrFile;
+  eSoundFormat mFormat;
+  tU32 mnSize;
+  tU32 mnPosition;
+  stb_vorbis* mStream;
   stb_vorbis_info mInfo;
 
   niEndClass(cSoundDataOGG_STB);
 };
 
-class cSoundDataLoaderOGG_STB : public ImplRC<iSoundDataLoader>
-{
-  iSoundData* __stdcall LoadSoundData(iFile* apFile) {
+class cSoundDataLoaderOGG_STB : public ImplRC<iSoundDataLoader> {
+  iSoundData* __stdcall LoadSoundData(iFile* apFile)
+  {
     return niNew cSoundDataOGG_STB(apFile);
   }
 };
 
-iSoundDataLoader* New_SoundDataLoaderOGG_STB() {
+iSoundDataLoader* New_SoundDataLoaderOGG_STB()
+{
   return niNew cSoundDataLoaderOGG_STB();
 }

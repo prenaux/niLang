@@ -25,8 +25,7 @@ enum eSoundMode {
 };
 
 //! Sound mixer interface.
-struct iSoundMixer : public iUnknown
-{
+struct iSoundMixer : public iUnknown {
   niDeclareInterfaceUUID(iSoundMixer,0xa45cfb5d,0x7391,0x4bf6,0x92,0xd9,0x6d,0x4e,0x74,0x1f,0xf1,0x14);
 
   //########################################################################################
@@ -46,18 +45,18 @@ struct iSoundMixer : public iUnknown
   virtual void __stdcall SetAmplification(tI32 ampli) = 0;
   //! Get the amplification of the mixer.
   //! {Property}
-  virtual tI32  __stdcall GetAmplification(void) const = 0;
+  virtual tI32 __stdcall GetAmplification(void) const = 0;
 
   //! Set the saturation check of the mixer.
   //! {Property}
-  virtual void  __stdcall SetSaturationCheck(tBool check) = 0;
+  virtual void __stdcall SetSaturationCheck(tBool check) = 0;
   //! Get the saturation check of the mixer.
   //! {Property}
   virtual tBool __stdcall GetSaturationCheck(void) const = 0;
 
   //! Set the reverse stereo of the mixer.
   //! {Property}
-  virtual void  __stdcall SetReverseStereo(tBool reverse) = 0;
+  virtual void __stdcall SetReverseStereo(tBool reverse) = 0;
   //! Get the reverse stereo of the mixer.
   //! {Property}
   virtual tBool __stdcall GetReverseStereo(void) const = 0;
@@ -90,18 +89,19 @@ struct iSoundMixer : public iUnknown
   virtual void __stdcall SetChannelMasterVolume(tU32 nchan, tI32 vol) = 0;
   //! Get the master volume of the specified channel.
   //! {Property}
-  virtual tI32  __stdcall GetChannelMasterVolume(tU32 nchan) const = 0;
+  virtual tI32 __stdcall GetChannelMasterVolume(tU32 nchan) const = 0;
 
   //! Set the master pan of the specified channel.
   //! {Property}
   virtual void __stdcall SetChannelMasterPan(tU32 nchan, tI32 pan) = 0;
   //! Get the master pan of the specified channel.
   //! {Property}
-  virtual tI32  __stdcall GetChannelMasterPan(tU32 nchan) const = 0;
+  virtual tI32 __stdcall GetChannelMasterPan(tU32 nchan) const = 0;
 
   //! Set the buffer of the specified channel.
   //! {Property}
-  virtual tBool __stdcall SetChannelBuffer(tU32 anChan, iSoundBuffer* apBuffer) = 0;
+  virtual tBool __stdcall SetChannelBuffer(tU32 anChan,
+                                           iSoundBuffer* apBuffer) = 0;
   //! Get the buffer of the specified channel.
   //! {Property}
   virtual iSoundBuffer* __stdcall GetChannelBuffer(tU32 anChan) const = 0;
@@ -111,21 +111,21 @@ struct iSoundMixer : public iUnknown
   virtual void __stdcall SetChannelVolume(tU32 nchan, tI32 vol) = 0;
   //! Get the volume of the specified channel.
   //! {Property}
-  virtual tI32  __stdcall GetChannelVolume(tU32 nchan) const = 0;
+  virtual tI32 __stdcall GetChannelVolume(tU32 nchan) const = 0;
 
   //! Set the panning of the specified channel.
   //! {Property}
   virtual void __stdcall SetChannelPan(tU32 nchan, tI32 pan) = 0;
   //! Get the panning of the specified channel.
   //! {Property}
-  virtual tI32  __stdcall GetChannelPan(tU32 nchan) const = 0;
+  virtual tI32 __stdcall GetChannelPan(tU32 nchan) const = 0;
 
   //! Set the frequency of the specified channel.
   //! {Property}
   virtual void __stdcall SetChannelFrequency(tU32 nchan, tI32 frequency) = 0;
   //! Get the frequency of the specified channel.
   //! {Property}
-  virtual tI32  __stdcall GetChannelFrequency(tU32 nchan) const = 0;
+  virtual tI32 __stdcall GetChannelFrequency(tU32 nchan) const = 0;
 
   //! Set whether the specified channel loops.
   //! {Property}
@@ -166,8 +166,7 @@ struct iSoundMixer : public iUnknown
 };
 
 //! Sound mixer 3d interface.
-struct iSoundMixer3D : public iUnknown
-{
+struct iSoundMixer3D : public iUnknown {
   niDeclareInterfaceUUID(iSoundMixer3D,0xededed66,0xbea9,0x4dc4,0xac,0xd5,0x27,0x6c,0xfe,0x1f,0x72,0xfb);
 
   //########################################################################################
@@ -193,28 +192,32 @@ struct iSoundMixer3D : public iUnknown
 
   //! Set the channel's 3d Position.
   //! {Property}
-  virtual void __stdcall SetChannelPosition(tU32 nchan, const sVec3f& avPosition) = 0;
+  virtual void __stdcall SetChannelPosition(tU32 nchan,
+                                            const sVec3f& avPosition) = 0;
   //! Get the channel's 3d Position.
   //! {Property}
   virtual sVec3f __stdcall GetChannelPosition(tU32 nchan) = 0;
 
   //! Set the channel's 3d Velocity.
   //! {Property}
-  virtual void __stdcall SetChannelVelocity(tU32 nchan, const sVec3f& avVelocity) = 0;
+  virtual void __stdcall SetChannelVelocity(tU32 nchan,
+                                            const sVec3f& avVelocity) = 0;
   //! Get the channel's 3d Velocity.
   //! {Property}
   virtual sVec3f __stdcall GetChannelVelocity(tU32 nchan) = 0;
 
   //! Set the channel's 3D minimum distance.
   //! {Property}
-  virtual void __stdcall SetChannelMinDistance(tU32 nchan, tF32 afMinDistance) = 0;
+  virtual void __stdcall SetChannelMinDistance(tU32 nchan,
+                                               tF32 afMinDistance) = 0;
   //! Set the channel's 3D minimum distance.
   //! {Property}
   virtual tF32 __stdcall GetChannelMinDistance(tU32 nchan) const = 0;
 
   //! Set the channel's 3D maximum distance.
   //! {Property}
-  virtual void __stdcall SetChannelMaxDistance(tU32 nchan, tF32 afMaxDistance) = 0;
+  virtual void __stdcall SetChannelMaxDistance(tU32 nchan,
+                                               tF32 afMaxDistance) = 0;
   //! Set the channel's 3D maximum distance.
   //! {Property}
   virtual tF32 __stdcall GetChannelMaxDistance(tU32 nchan) const = 0;
@@ -223,7 +226,8 @@ struct iSoundMixer3D : public iUnknown
   //! {Property}
   //! \remark The angle's range is 0 (no cone) to 2pi/360deg (full sphere). The angle is in radian.
   //! \remark Default is zero, no cone attenuation.
-  virtual void __stdcall SetChannelConeInner(tU32 nchan, tF32 afInsideAngle) = 0;
+  virtual void __stdcall SetChannelConeInner(tU32 nchan,
+                                             tF32 afInsideAngle) = 0;
   //! Set the channel's 3D cone inside angle.
   //! {Property}
   virtual tF32 __stdcall GetChannelConeInner(tU32 nchan) const = 0;
@@ -232,26 +236,28 @@ struct iSoundMixer3D : public iUnknown
   //! {Property}
   //! \remark The angle's range is 0 (no cone) to 2pi/360deg (full sphere). The angle is in radian.
   //! \remark Default is zero, no cone attenuation.
-  virtual void __stdcall SetChannelConeOuter(tU32 nchan, tF32 afOutsideAngle) = 0;
+  virtual void __stdcall SetChannelConeOuter(tU32 nchan,
+                                             tF32 afOutsideAngle) = 0;
   //! Set the channel's 3D cone outside angle.
   //! {Property}
   virtual tF32 __stdcall GetChannelConeOuter(tU32 nchan) const = 0;
 
   //! Sets the volume of the sound outside the outer angle of the sound projection cone.
   //! {Property}
-  virtual void __stdcall SetChannelConeOuterVolume(tU32 nchan, tU32 anOuterVolume) = 0;
+  virtual void __stdcall SetChannelConeOuterVolume(tU32 nchan,
+                                                   tU32 anOuterVolume) = 0;
   //! Set the channel's 3D cone outside angle.
   //! {Property}
   virtual tU32 __stdcall GetChannelConeOuterVolume(tU32 nchan) const = 0;
 
   //! Set the channel's 3D cone direction.
   //! {Property}
-  virtual void __stdcall SetChannelConeDirection(tU32 nchan, const sVec3f& avDir) = 0;
+  virtual void __stdcall SetChannelConeDirection(tU32 nchan,
+                                                 const sVec3f& avDir) = 0;
   //! Set the channel's 3D cone direction.
   //! {Property}
   virtual sVec3f __stdcall GetChannelConeDirection(tU32 nchan) const = 0;
   //! @}
-
 
   //########################################################################################
   //! \name Listener
@@ -317,5 +323,5 @@ struct iSoundMixer3D : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISOUNDMIXER_6451531_H__

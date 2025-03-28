@@ -3,42 +3,49 @@
 #include "stdafx.h"
 #include "SoundBufferMem.h"
 
-#pragma niTodo("Mix the two stereo channels in a mono channel for 3d output, add a 3d sound flag to the creation method.")
+#pragma niTodo( \
+    "Mix the two stereo channels in a mono channel for 3d output, add a 3d sound flag to the creation method.")
 #pragma niTodo("3D Sounds works only with mono sounds.")
 
 //! Sound buffer instance implementation.
-class cSoundBufferMemInstance : public ImplRC<iSoundBuffer>
-{
+class cSoundBufferMemInstance : public ImplRC<iSoundBuffer> {
   niBeginClass(cSoundBufferMemInstance);
 
  public:
   //! Constructor.
-  cSoundBufferMemInstance(iDeviceResourceManager* apRM, cSoundBufferMem* apBuffer) {
+  cSoundBufferMemInstance(iDeviceResourceManager* apRM,
+                          cSoundBufferMem* apBuffer)
+  {
     ZeroMembers();
     mptrBase = apBuffer;
-    mhspName = _H(niFmt(_A("%s_I%p"),niHStr(apBuffer->GetDeviceResourceName()),this));
+    mhspName =
+      _H(niFmt(_A("%s_I%p"), niHStr(apBuffer->GetDeviceResourceName()), this));
     mpRM = apRM;
     mpRM->Register(this);
   }
   //! Destructor.
-  ~cSoundBufferMemInstance() {
+  ~cSoundBufferMemInstance()
+  {
     Invalidate();
   }
 
   //! Zeros all the class members.
-  void ZeroMembers() {
+  void ZeroMembers()
+  {
     mnPos = 0;
     mpRM = NULL;
   }
 
   //! Sanity check.
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cSoundBufferMemInstance);
     return eTrue;
   }
 
   //! Invalidate.
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     if (mpRM) {
       mptrBase = NULL;
       mpRM->Unregister(this);
@@ -47,46 +54,62 @@ class cSoundBufferMemInstance : public ImplRC<iSoundBuffer>
   }
 
   //// iSoundBuffer /////////////////////////////
-  iSoundBuffer* __stdcall CreateInstance() {
+  iSoundBuffer* __stdcall CreateInstance()
+  {
     if (!mptrBase.IsOK())
       return NULL;
-    return niNew cSoundBufferMemInstance(mpRM,mptrBase);
+    return niNew cSoundBufferMemInstance(mpRM, mptrBase);
   }
-  tBool __stdcall GetIsInstance() const {
+  tBool __stdcall GetIsInstance() const
+  {
     return eTrue;
   }
-  iHString* __stdcall GetDeviceResourceName() const {
+  iHString* __stdcall GetDeviceResourceName() const
+  {
     return mhspName;
   }
-  iDeviceResource* __stdcall Bind(iUnknown*) { return this; }
-  tBool __stdcall GetIsStreamed() const {
-    if (!mptrBase.IsOK()) return eFalse;
+  iDeviceResource* __stdcall Bind(iUnknown*)
+  {
+    return this;
+  }
+  tBool __stdcall GetIsStreamed() const
+  {
+    if (!mptrBase.IsOK())
+      return eFalse;
     return mptrBase->GetIsStreamed();
   }
-  iSoundData* __stdcall GetStreamSoundData() const {
+  iSoundData* __stdcall GetStreamSoundData() const
+  {
     return NULL;
   }
-  eSoundFormat __stdcall GetFormat() const {
-    if (!mptrBase.IsOK()) return eSoundFormat_Unknown;
+  eSoundFormat __stdcall GetFormat() const
+  {
+    if (!mptrBase.IsOK())
+      return eSoundFormat_Unknown;
     return mptrBase->GetFormat();
   }
-  tU32 __stdcall GetFrequency() const {
-    if (!mptrBase.IsOK()) return 0;
+  tU32 __stdcall GetFrequency() const
+  {
+    if (!mptrBase.IsOK())
+      return 0;
     return mptrBase->GetFrequency();
   }
-  void __stdcall ResetPosition() {
+  void __stdcall ResetPosition()
+  {
     mnPos = 0;
   }
-  tBool __stdcall ReadRaw(tPtr apOut, tU32 anBytes, tBool abLoop) {
-    if (!mptrBase.IsOK()) return eFalse;
-    return mptrBase->InstanceRead(mnPos,apOut,anBytes,abLoop);
+  tBool __stdcall ReadRaw(tPtr apOut, tU32 anBytes, tBool abLoop)
+  {
+    if (!mptrBase.IsOK())
+      return eFalse;
+    return mptrBase->InstanceRead(mnPos, apOut, anBytes, abLoop);
   }
   //// iSoundBuffer /////////////////////////////
 
  private:
-  tHStringPtr       mhspName;
+  tHStringPtr mhspName;
   iDeviceResourceManager* mpRM;
-  Ptr<cSoundBufferMem>  mptrBase;
+  Ptr<cSoundBufferMem> mptrBase;
   tSize mnPos;
 
   niEndClass(cSoundBufferMemInstance);
@@ -96,7 +119,8 @@ class cSoundBufferMemInstance : public ImplRC<iSoundBuffer>
 // cSoundBufferMem implementation.
 
 ///////////////////////////////////////////////
-cSoundBufferMem::cSoundBufferMem(iDeviceResourceManager* apRM, iSoundData* apData, iHString* ahspName)
+cSoundBufferMem::cSoundBufferMem(iDeviceResourceManager* apRM,
+                                 iSoundData* apData, iHString* ahspName)
 {
   mFormat = eSoundFormat_Unknown;
   mnFrequency = 0;
@@ -126,13 +150,13 @@ cSoundBufferMem::cSoundBufferMem(iDeviceResourceManager* apRM, iSoundData* apDat
   //
   astl::vector<tU8> vBuffer;
   vBuffer.resize(0xFFFF);
-  mptrFile = ni::CreateFileDynamicMemory(0,NULL);
+  mptrFile = ni::CreateFileDynamicMemory(0, NULL);
   tU32 numRead = 0;
   while (1) {
     numRead = apData->ReadRaw(vBuffer.data(), vBuffer.size());
     if (numRead == 0)
       break;
-    mptrFile->WriteRaw(vBuffer.data(),numRead);
+    mptrFile->WriteRaw(vBuffer.data(), numRead);
   }
 
   mhspName = ahspName;
@@ -178,7 +202,7 @@ tBool __stdcall cSoundBufferMem::IsOK() const
 ///////////////////////////////////////////////
 iSoundBuffer* __stdcall cSoundBufferMem::CreateInstance()
 {
-  return niNew cSoundBufferMemInstance(mpRM,this);
+  return niNew cSoundBufferMemInstance(mpRM, this);
 }
 
 ///////////////////////////////////////////////
@@ -222,14 +246,14 @@ tBool __stdcall cSoundBufferMem::ReadRaw(tPtr apOut, tU32 anBytes, tBool abLoop)
   //niPrintln(niFmt(_A("BUFFER READ: %d, %d\n"),anBytes,mptrFile->Tell()));
   tSize read = 0;
   while (read < anBytes) {
-    read += mptrFile->ReadRaw(apOut+read,anBytes-read);
+    read += mptrFile->ReadRaw(apOut + read, anBytes - read);
     if (mptrFile->GetPartialRead()) {
       if (abLoop) {
         mptrFile->SeekSet(0);
       }
       else {
-        if (anBytes-read)
-          memset(apOut+read,0,anBytes-read);
+        if (anBytes - read)
+          memset(apOut + read, 0, anBytes - read);
         return eFalse;
       }
     }
@@ -238,7 +262,8 @@ tBool __stdcall cSoundBufferMem::ReadRaw(tPtr apOut, tU32 anBytes, tBool abLoop)
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundBufferMem::InstanceRead(tSize& anPos, tPtr apOut, tU32 anBytes, tBool abLoop)
+tBool __stdcall cSoundBufferMem::InstanceRead(tSize& anPos, tPtr apOut,
+                                              tU32 anBytes, tBool abLoop)
 {
   if (!mptrFile.IsOK())
     return eFalse;
@@ -248,15 +273,15 @@ tBool __stdcall cSoundBufferMem::InstanceRead(tSize& anPos, tPtr apOut, tU32 anB
   tSize size = mptrFile->GetSize();
   while (read < anBytes) {
     mptrFile->SeekSet(anPos);
-    read += mptrFile->ReadRaw(apOut+read,anBytes-read);
+    read += mptrFile->ReadRaw(apOut + read, anBytes - read);
     anPos += read;
     if (anPos > size) {
       if (abLoop) {
         anPos = 0;
       }
       else {
-        if (anBytes-read)
-          memset(apOut+read,0,anBytes-read);
+        if (anBytes - read)
+          memset(apOut + read, 0, anBytes - read);
         return eFalse;
       }
     }

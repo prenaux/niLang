@@ -8,31 +8,31 @@
 #include <niLang/IRegex.h>
 
 #ifdef niWindows
-#  ifdef niMSVC
-#    include <windows.h>
-#    include <winbase.h>
-#  elif defined TEST_NICATCHALL && !defined __JSCC__
-#    define USE_SIGNALS
-#    include <signal.h>
-#  endif
+  #ifdef niMSVC
+    #include <windows.h>
+    #include <winbase.h>
+  #elif defined TEST_NICATCHALL && !defined __JSCC__
+    #define USE_SIGNALS
+    #include <signal.h>
+  #endif
 #elif defined niUnix
-#  if defined TEST_NICATCHALL && !defined __JSCC__
-#    define USE_SIGNALS
-#    include <signal.h>
-#    include <setjmp.h>
-#  endif
-#  include <stdio.h>
+  #if defined TEST_NICATCHALL && !defined __JSCC__
+    #define USE_SIGNALS
+    #include <signal.h>
+    #include <setjmp.h>
+  #endif
+  #include <stdio.h>
 #endif
 
 #ifdef niJSCC
-#include <emscripten.h>
+  #include <emscripten.h>
 namespace ni {
 niExportFuncCPP(ni::cString) niJSCC_Get_NIAPP_CONFIG(const char* aProperty);
 }
 #endif
 
 #if defined USE_SIGNALS && !defined TEST_NICATCHALL
-#error "USE_SIGNALS should only be used with TEST_NICATCHALL"
+  #error "USE_SIGNALS should only be used with TEST_NICATCHALL"
 #endif
 
 //----------------------------------------------------------------------------
@@ -51,14 +51,12 @@ TestList::TestList()
 
 void TestList::Add(Test* test)
 {
-  if (m_tail == 0)
-  {
+  if (m_tail == 0) {
     niAssert(m_head == 0);
     m_head = test;
     m_tail = test;
   }
-  else
-  {
+  else {
     m_tail->next = test;
     m_tail = test;
   }
@@ -74,7 +72,7 @@ ListAdder::ListAdder(TestList& list, Test* test)
   list.Add(test);
 }
 
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -84,8 +82,7 @@ ListAdder::ListAdder(TestList& list, Test* test)
 #ifdef USE_SIGNALS
 namespace UnitTest {
 
-class SignalTranslator
-{
+class SignalTranslator {
  public:
   SignalTranslator();
   ~SignalTranslator();
@@ -104,26 +101,24 @@ class SignalTranslator
   struct sigaction m_old_SIGALRM_action;
 };
 
-
-#define TEST_THROW_SIGNALS                                \
-  SignalTranslator sig;                                       \
-  if (sigsetjmp( *SignalTranslator::s_jumpTarget, 1 ) != 0) { \
-    niThrow ("Unhandled system exception");                   \
-  }
+  #define TEST_THROW_SIGNALS                                  \
+    SignalTranslator sig;                                     \
+    if (sigsetjmp(*SignalTranslator::s_jumpTarget, 1) != 0) { \
+      niThrow("Unhandled system exception");                  \
+    }
 
 sigjmp_buf* SignalTranslator::s_jumpTarget = 0;
 
 namespace {
 
-void SignalHandler (int sig)
+void SignalHandler(int sig)
 {
-  siglongjmp(*SignalTranslator::s_jumpTarget, sig );
+  siglongjmp(*SignalTranslator::s_jumpTarget, sig);
 }
 
-}
+} // namespace
 
-
-SignalTranslator::SignalTranslator ()
+SignalTranslator::SignalTranslator()
 {
   m_oldJumpTarget = s_jumpTarget;
   s_jumpTarget = &m_currentJumpTarget;
@@ -131,30 +126,29 @@ SignalTranslator::SignalTranslator ()
   struct sigaction action;
   action.sa_flags = 0;
   action.sa_handler = SignalHandler;
-  sigemptyset( &action.sa_mask );
+  sigemptyset(&action.sa_mask);
 
-  sigaction( SIGSEGV, &action, &m_old_SIGSEGV_action );
-  sigaction( SIGFPE , &action, &m_old_SIGFPE_action  );
-  sigaction( SIGTRAP, &action, &m_old_SIGTRAP_action );
-  sigaction( SIGBUS , &action, &m_old_SIGBUS_action  );
-  sigaction( SIGABRT, &action, &m_old_SIGABRT_action  );
-  sigaction( SIGALRM, &action, &m_old_SIGALRM_action  );
+  sigaction(SIGSEGV, &action, &m_old_SIGSEGV_action);
+  sigaction(SIGFPE, &action, &m_old_SIGFPE_action);
+  sigaction(SIGTRAP, &action, &m_old_SIGTRAP_action);
+  sigaction(SIGBUS, &action, &m_old_SIGBUS_action);
+  sigaction(SIGABRT, &action, &m_old_SIGABRT_action);
+  sigaction(SIGALRM, &action, &m_old_SIGALRM_action);
 }
 
 SignalTranslator::~SignalTranslator()
 {
-  sigaction( SIGBUS , &m_old_SIGBUS_action , 0 );
-  sigaction( SIGTRAP, &m_old_SIGTRAP_action, 0 );
-  sigaction( SIGFPE , &m_old_SIGFPE_action , 0 );
-  sigaction( SIGSEGV, &m_old_SIGSEGV_action, 0 );
-  sigaction( SIGABRT, &m_old_SIGABRT_action, 0 );
-  sigaction( SIGALRM, &m_old_SIGALRM_action, 0 );
+  sigaction(SIGBUS, &m_old_SIGBUS_action, 0);
+  sigaction(SIGTRAP, &m_old_SIGTRAP_action, 0);
+  sigaction(SIGFPE, &m_old_SIGFPE_action, 0);
+  sigaction(SIGSEGV, &m_old_SIGSEGV_action, 0);
+  sigaction(SIGABRT, &m_old_SIGABRT_action, 0);
+  sigaction(SIGALRM, &m_old_SIGALRM_action, 0);
 
   s_jumpTarget = m_oldJumpTarget;
 }
 
-
-}
+} // namespace UnitTest
 #endif
 
 //----------------------------------------------------------------------------
@@ -165,46 +159,48 @@ SignalTranslator::~SignalTranslator()
 
 #ifdef USE_SIGNALS
 
-
 class SignalException
-#ifndef niNoExceptions
+  #ifndef niNoExceptions
     : public astl::exception
-#endif
+  #endif
 {
  public:
-  SignalException(int signal, int subcode) {
+  SignalException(int signal, int subcode)
+  {
     switch (signal) {
-      case SIGABRT: m_desc = "SIGABRT"; break;
-      case SIGFPE: m_desc = "SIGFPE"; break;
-      case SIGILL: m_desc = "SIGILL"; break;
-      case SIGINT: m_desc = "SIGINT"; break;
-      case SIGSEGV: m_desc = "SIGSEGV"; break;
-      case SIGTERM: m_desc = "SIGTERM"; break;
-      default:
-        m_desc.Format("SIGUNK : %d",signal);
-        break;
+    case SIGABRT: m_desc = "SIGABRT"; break;
+    case SIGFPE: m_desc = "SIGFPE"; break;
+    case SIGILL: m_desc = "SIGILL"; break;
+    case SIGINT: m_desc = "SIGINT"; break;
+    case SIGSEGV: m_desc = "SIGSEGV"; break;
+    case SIGTERM: m_desc = "SIGTERM"; break;
+    default: m_desc.Format("SIGUNK : %d", signal); break;
     }
   }
-  virtual ~SignalException() niThrowSpec() {
+  virtual ~SignalException() niThrowSpec()
+  {
   }
-  const char* what() const niThrowSpec() {
+  const char* what() const niThrowSpec()
+  {
     return m_desc.c_str();
   }
 
   ni::cString m_desc;
 };
 
-class SignalTranslator
-{
+class SignalTranslator {
  public:
-  SignalTranslator() {
-    signal(SIGSEGV,_trap);
+  SignalTranslator()
+  {
+    signal(SIGSEGV, _trap);
   }
-  ~SignalTranslator() {
+  ~SignalTranslator()
+  {
   }
 
-  static void __cdecl _trap(int signal) {
-    niThrow(SignalException(signal,0));
+  static void __cdecl _trap(int signal)
+  {
+    niThrow(SignalException(signal, 0));
   }
 };
 
@@ -227,8 +223,8 @@ TestList& Test::GetTestList()
   return s_list;
 }
 
-Test::Test(char const* testName, char const* filename,
-           int const lineNumber, char const* fixtureName)
+Test::Test(char const* testName, char const* filename, int const lineNumber,
+           char const* fixtureName)
     : next(0)
     , m_testName(testName)
     , m_filename(filename)
@@ -246,112 +242,134 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  return ni::TryCatchPanic([&]() {
+  return ni::TryCatchPanic(
+    [&]() {
 #if defined TEST_NICATCHALL
-    TEST_TRY
+      TEST_TRY
 #endif
-    {
+      {
 #ifdef USE_SIGNALS
-      TEST_THROW_SIGNALS;
+        TEST_THROW_SIGNALS;
 #endif
 #ifndef TEST_DONT_PRINT_TEST_NAMES
-      niPrintln(niFmt(_A("## [%d/%d] Test: %s ##\n"),
-        testResults.m_testCount,testResults.m_numTests,m_testName));
+        niPrintln(niFmt(_A("## [%d/%d] Test: %s ##\n"), testResults.m_testCount,
+                        testResults.m_numTests, m_testName));
 #endif
-      m_timeStart = ni::TimerInSeconds();
-      BeforeRunImpl(testResults);
-    }
+        m_timeStart = ni::TimerInSeconds();
+        BeforeRunImpl(testResults);
+      }
 #if defined TEST_NICATCHALL
-    TEST_CATCH(astl::exception, e) {
-      ni::cString stream;
-      stream << "Unhandled exception: " << e.what();
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-      return false;
-    }
-    TEST_CATCHALL() {
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-      return false;
-    }
+      TEST_CATCH(astl::exception, e)
+      {
+        ni::cString stream;
+        stream << "Unhandled exception: " << e.what();
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  stream.c_str());
+        return false;
+      }
+      TEST_CATCHALL()
+      {
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  "Unhandled exception: Crash.");
+        return false;
+      }
 #endif
-    return true;
-  }, [&](const ni::sPanicException& e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.GetDesc();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  });
+      return true;
+    },
+    [&](const ni::sPanicException& e) {
+      ni::cString stream;
+      stream << "Unhandled panic: " << e.GetDesc();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                stream.c_str());
+      return false;
+    });
 }
 
 bool Test::Run(TestResults& testResults) const
 {
-  return ni::TryCatchPanic([&]() {
+  return ni::TryCatchPanic(
+    [&]() {
 #if defined TEST_NICATCHALL
-    TEST_TRY
+      TEST_TRY
 #endif
-    {
+      {
 #ifdef USE_SIGNALS
-      TEST_THROW_SIGNALS;
+        TEST_THROW_SIGNALS;
 #endif
-      RunImpl(testResults);
-    }
+        RunImpl(testResults);
+      }
 #if defined TEST_NICATCHALL
-    TEST_CATCH(astl::exception, e) {
-      ni::cString stream;
-      stream << "Unhandled exception: " << e.what();
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-      return false;
-    }
-    TEST_CATCHALL() {
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-      return false;
-    }
+      TEST_CATCH(astl::exception, e)
+      {
+        ni::cString stream;
+        stream << "Unhandled exception: " << e.what();
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  stream.c_str());
+        return false;
+      }
+      TEST_CATCHALL()
+      {
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  "Unhandled exception: Crash.");
+        return false;
+      }
 #endif
-    return true;
-  }, [&](const ni::sPanicException& e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.GetDesc();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  });
+      return true;
+    },
+    [&](const ni::sPanicException& e) {
+      ni::cString stream;
+      stream << "Unhandled panic: " << e.GetDesc();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                stream.c_str());
+      return false;
+    });
 }
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  return ni::TryCatchPanic([&]() {
+  return ni::TryCatchPanic(
+    [&]() {
 #if defined TEST_NICATCHALL
-    TEST_TRY
+      TEST_TRY
 #endif
-    {
+      {
 #ifdef USE_SIGNALS
-      TEST_THROW_SIGNALS;
+        TEST_THROW_SIGNALS;
 #endif
-      AfterRunImpl(testResults);
-      if (m_timeReport) {
-        testResults.OnTestTime(m_testName, ni::TimerInSeconds() - m_timeStart);
+        AfterRunImpl(testResults);
+        if (m_timeReport) {
+          testResults.OnTestTime(m_testName,
+                                 ni::TimerInSeconds() - m_timeStart);
+        }
       }
-    }
 #if defined TEST_NICATCHALL
-    TEST_CATCH(astl::exception, e) {
-      ni::cString stream;
-      stream << "Unhandled exception: " << e.what();
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-      return false;
-    }
-    TEST_CATCHALL() {
-      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, "Unhandled exception: Crash.");
-      return false;
-    }
+      TEST_CATCH(astl::exception, e)
+      {
+        ni::cString stream;
+        stream << "Unhandled exception: " << e.what();
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  stream.c_str());
+        return false;
+      }
+      TEST_CATCHALL()
+      {
+        testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                  "Unhandled exception: Crash.");
+        return false;
+      }
 #endif
-    return true;
-  }, [&](const ni::sPanicException& e) {
-    ni::cString stream;
-    stream << "Unhandled panic: " << e.GetDesc();
-    testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
-    return false;
-  });
+      return true;
+    },
+    [&](const ni::sPanicException& e) {
+      ni::cString stream;
+      stream << "Unhandled panic: " << e.GetDesc();
+      testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                                stream.c_str());
+      return false;
+    });
 }
 
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -364,14 +382,18 @@ TestResults::TestResults(TestReporter* testReporter, int numTests)
     : m_testReporter(testReporter)
     , m_numTests(numTests)
     , m_testCount(0)
-    , m_testFailedCount(0), m_testWarnedCount(0)
-    , m_logErrors(0), m_logErrorsPush(0)
-    , m_logWarnings(0), m_logWarningsPush(0)
+    , m_testFailedCount(0)
+    , m_testWarnedCount(0)
+    , m_logErrors(0)
+    , m_logErrorsPush(0)
+    , m_logWarnings(0)
+    , m_logWarningsPush(0)
     , m_warningMode(0)
-    , m_totalFailureCount(0), m_totalFailureCountPush(0)
-    , m_totalWarningCount(0), m_totalWarningCountPush(0)
+    , m_totalFailureCount(0)
+    , m_totalFailureCountPush(0)
+    , m_totalWarningCount(0)
+    , m_totalWarningCountPush(0)
 {
-
 }
 
 void TestResults::OnTestStart(char const* testName)
@@ -418,33 +440,36 @@ void TestResults::OnTestFailure(char const* file, int const line,
 
 void TestResults::OnTestFinish(char const* testName, ni::tF64 secondsElapsed)
 {
-  if (m_totalFailureCount-m_totalFailureCountPush > 0) {
+  if (m_totalFailureCount - m_totalFailureCountPush > 0) {
     ++m_testFailedCount;
   }
-  if (m_totalWarningCount-m_totalWarningCountPush > 0) {
+  if (m_totalWarningCount - m_totalWarningCountPush > 0) {
     ++m_testWarnedCount;
   }
   if (m_testReporter)
     m_testReporter->ReportTestFinish(testName, secondsElapsed);
 }
 
-
 int TestResults::GetTestCount() const
 {
   return m_testCount;
 }
 
-int TestResults::GetTestFailedCount() const {
+int TestResults::GetTestFailedCount() const
+{
   return m_testFailedCount;
 }
-int TestResults::GetTestWarnedCount() const {
+int TestResults::GetTestWarnedCount() const
+{
   return m_testWarnedCount;
 }
 
-int TestResults::GetTotalFailureCount() const {
+int TestResults::GetTotalFailureCount() const
+{
   return m_totalFailureCount;
 }
-int TestResults::GetTotalWarningCount() const {
+int TestResults::GetTotalWarningCount() const
+{
   return m_totalWarningCount;
 }
 
@@ -470,16 +495,15 @@ void TestResults::PushLogWarnings()
 
 int TestResults::GetLogErrorsDelta() const
 {
-  return m_logErrors-m_logErrorsPush;
+  return m_logErrors - m_logErrorsPush;
 }
 
 int TestResults::GetLogWarningsDelta() const
 {
-  return m_logWarnings-m_logWarningsPush;
+  return m_logWarnings - m_logWarningsPush;
 }
 
-
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -488,13 +512,17 @@ int TestResults::GetLogWarningsDelta() const
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-void TestReporterStdout::ReportTime(char const* testName, ni::tF64 secondsElapsed)
+void TestReporterStdout::ReportTime(char const* testName,
+                                    ni::tF64 secondsElapsed)
 {
-  ni::cString str = niFmt(_A("Test %s took %.5f seconds.\n"),_ASZ(testName),secondsElapsed);
+  ni::cString str =
+    niFmt(_A("Test %s took %.5f seconds.\n"), _ASZ(testName), secondsElapsed);
   niPrintln(str.Chars());
 }
 
-void TestReporterStdout::ReportFailure(char const* file, int const line,  char const* testName, char const* failure)
+void TestReporterStdout::ReportFailure(char const* file, int const line,
+                                       char const* testName,
+                                       char const* failure)
 {
   ni::cString str;
 #ifdef niWindows
@@ -507,13 +535,17 @@ void TestReporterStdout::ReportFailure(char const* file, int const line,  char c
   _failures.push_back(str);
 }
 
-void TestReporterStdout::ReportWarning(char const* file, int const line,  char const* testName, char const* failure)
+void TestReporterStdout::ReportWarning(char const* file, int const line,
+                                       char const* testName,
+                                       char const* failure)
 {
   ni::cString str;
 #ifdef niWindows
-  ni::achar const* const warningFormat = _A("%s(%d): warning: Failure in %s: %s\n");
+  ni::achar const* const warningFormat =
+    _A("%s(%d): warning: Failure in %s: %s\n");
 #else
-  ni::achar const* const warningFormat = _A("%s:%d: warning: Failure in %s: %s\n");
+  ni::achar const* const warningFormat =
+    _A("%s:%d: warning: Failure in %s: %s\n");
 #endif
   str.Format(warningFormat, _ASZ(file), line, _ASZ(testName), _ASZ(failure));
   niPrintln(str.Chars());
@@ -530,9 +562,9 @@ void TestReporterStdout::ReportTestFinish(char const* test, ni::tF64)
   niUnused(test);
 }
 
-void TestReporterStdout::ReportSummary(int testCount,
-                                       int failedCount, int totalFailedCount,
-                                       int warnedCount, int totalWarnedCount,
+void TestReporterStdout::ReportSummary(int testCount, int failedCount,
+                                       int totalFailedCount, int warnedCount,
+                                       int totalWarnedCount,
                                        ni::tF64 secondsElapsed)
 {
   ni::cString str;
@@ -549,29 +581,27 @@ void TestReporterStdout::ReportSummary(int testCount,
   }
   if (_warnings.size() > 0) {
     str << "WARNINGS:\n";
-    niLoop(i,_warnings.size()) {
+    niLoop (i, _warnings.size()) {
       str << "- " << _warnings[i];
     }
   }
   if (_failures.size() > 0) {
     str << "FAILURES:\n";
-    niLoop(i,_failures.size()) {
+    niLoop (i, _failures.size()) {
       str << "- " << _failures[i];
     }
   }
 
   ni::sVec4i memStats;
   ni_mem_get_stats(&memStats);
-  str += niFmt(
-    "Total Allocs: %d (objs: %d), Live Allocs: %d (objs: %d)",
-    memStats.x, memStats.z,
-    memStats.x - memStats.y,
-    memStats.z - memStats.w);
+  str +=
+    niFmt("Total Allocs: %d (objs: %d), Live Allocs: %d (objs: %d)", memStats.x,
+          memStats.z, memStats.x - memStats.y, memStats.z - memStats.w);
   str += niFmt(_A("Test time: %g seconds.\n"), secondsElapsed);
   niPrintln(str.Chars());
 }
 
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -580,30 +610,32 @@ void TestReporterStdout::ReportSummary(int testCount,
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-
-TimeConstraint::TimeConstraint(int ms, TestResults& result, char const* filename, int lineNumber,
+TimeConstraint::TimeConstraint(int ms, TestResults& result,
+                               char const* filename, int lineNumber,
                                char const* testName)
-    : m_result (result)
-    , m_maxMs (ms)
-    , m_filename (filename)
-    , m_lineNumber (lineNumber)
-    , m_testName (testName)
+    : m_result(result)
+    , m_maxMs(ms)
+    , m_filename(filename)
+    , m_lineNumber(lineNumber)
+    , m_testName(testName)
 {
   m_timeStart = ni::TimerInSeconds();
 }
 
 TimeConstraint::~TimeConstraint()
 {
-  int const totalTimeInMs = (int)((ni::TimerInSeconds() - m_timeStart)*1000.0);
+  int const totalTimeInMs =
+    (int)((ni::TimerInSeconds() - m_timeStart) * 1000.0);
   if (totalTimeInMs > m_maxMs) {
     ni::cString stream;
-    stream << "Time constraint failed. Expected to run test under " << m_maxMs <<
-        "ms but took " << totalTimeInMs << "ms.";
-    m_result.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
+    stream << "Time constraint failed. Expected to run test under " << m_maxMs
+           << "ms but took " << totalTimeInMs << "ms.";
+    m_result.OnTestFailure(m_filename, m_lineNumber, m_testName,
+                           stream.c_str());
   }
 }
 
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -612,11 +644,10 @@ TimeConstraint::~TimeConstraint()
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-void CheckStringsEqual(
-  TestResults& results,
-  char const* const msg,
-  char const* const expected, char const* const actual,
-  char const* const testName, char const* const filename, int const line)
+void CheckStringsEqual(TestResults& results, char const* const msg,
+                       char const* const expected, char const* const actual,
+                       char const* const testName, char const* const filename,
+                       int const line)
 {
   if (ni::StrCmp(expected, actual) != 0) {
     ni::cString stream;
@@ -625,11 +656,10 @@ void CheckStringsEqual(
   }
 }
 
-void CheckStringsNotEqual(
-  TestResults& results,
-  char const* const msg,
-  char const* const expected, char const* const actual,
-  char const* const testName, char const* const filename, int const line)
+void CheckStringsNotEqual(TestResults& results, char const* const msg,
+                          char const* const expected, char const* const actual,
+                          char const* const testName,
+                          char const* const filename, int const line)
 {
   if (ni::StrCmp(expected, actual) == 0) {
     ni::cString stream;
@@ -638,25 +668,24 @@ void CheckStringsNotEqual(
   }
 }
 
-void CheckEqual(
-  TestResults& results,
-  char const* const msg,
-  char const* const expected, char const* const actual,
-  char const* const testName, char const* const filename, int const line)
+void CheckEqual(TestResults& results, char const* const msg,
+                char const* const expected, char const* const actual,
+                char const* const testName, char const* const filename,
+                int const line)
 {
   CheckStringsEqual(results, msg, expected, actual, testName, filename, line);
 }
 
-void CheckNotEqual(
-  TestResults& results,
-  char const* const msg,
-  char const* const expected, char const* const actual,
-  char const* const testName, char const* const filename, int const line)
+void CheckNotEqual(TestResults& results, char const* const msg,
+                   char const* const expected, char const* const actual,
+                   char const* const testName, char const* const filename,
+                   int const line)
 {
-  CheckStringsNotEqual(results, msg, expected, actual, testName, filename, line);
+  CheckStringsNotEqual(results, msg, expected, actual, testName, filename,
+                       line);
 }
 
-}
+} // namespace UnitTest
 
 //----------------------------------------------------------------------------
 //
@@ -665,12 +694,14 @@ void CheckNotEqual(
 //----------------------------------------------------------------------------
 namespace UnitTest {
 
-static inline bool _ShouldSkipFixture(char const* filter, char const* fixtureName, char const* testName) {
+static inline bool _ShouldSkipFixture(char const* filter,
+                                      char const* fixtureName,
+                                      char const* testName)
+{
   if (filter && *filter) {
-    if (ni::StrICmp(filter,"*") == 0 ||
-        ni::StrICmp(filter,"all") == 0 ||
-        ni::StrICmp(fixtureName,filter) == 0 ||
-        ni::StrICmp(testName,filter) == 0)
+    if (ni::StrICmp(filter, "*") == 0 || ni::StrICmp(filter, "all") == 0 ||
+        ni::StrICmp(fixtureName, filter) == 0 ||
+        ni::StrICmp(testName, filter) == 0)
       return false;
 
     if (ni::afilepattern_match(filter, testName)) {
@@ -682,14 +713,16 @@ static inline bool _ShouldSkipFixture(char const* filter, char const* fixtureNam
   return false;
 }
 
-static inline void _NormalizeFixtureName(ni::cString& fixtureName) {
+static inline void _NormalizeFixtureName(ni::cString& fixtureName)
+{
   ni::tI32 commaPos = fixtureName.find(',');
   if (commaPos >= 0) {
     fixtureName.data()[commaPos] = '-';
   }
 }
 
-ni::tBool IsRunningInCI() {
+ni::tBool IsRunningInCI()
+{
   {
     ni::cString envGITHUB_ACTIONS = ni::GetLang()->GetEnv("GITHUB_ACTIONS");
     if (envGITHUB_ACTIONS.Bool(ni::eFalse) == ni::eTrue) {
@@ -719,10 +752,8 @@ struct TestRunner : public ni::Impl_HeapAlloc {
   ni::tF64 testTimeStart;
   const Test* nextTest;
 
-  TestRunner(TestReporter& aReporter,
-             const TestList& aList,
-             const int aMaxTestTimeInMs,
-             const char* aFixtureName)
+  TestRunner(TestReporter& aReporter, const TestList& aList,
+             const int aMaxTestTimeInMs, const char* aFixtureName)
       : startTime(ni::TimerInSeconds())
       , reporter(aReporter)
       , list(aList)
@@ -740,7 +771,9 @@ struct TestRunner : public ni::Impl_HeapAlloc {
     curTest = list.GetHead();
     while (curTest != 0) {
       Test const* nextTest = curTest->next;
-      if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
+      if (_ShouldSkipFixture(fixtureName.c_str(), curTest->m_fixtureName,
+                             curTest->m_testName))
+      {
         curTest = nextTest;
         continue;
       }
@@ -748,27 +781,32 @@ struct TestRunner : public ni::Impl_HeapAlloc {
       curTest = nextTest;
     }
 
-    result = new TestResults(&reporter,shouldRun);
+    result = new TestResults(&reporter, shouldRun);
     Reset();
   }
 
-  ~TestRunner() {
+  ~TestRunner()
+  {
     if (result)
       delete result;
   }
 
-  void Reset() {
+  void Reset()
+  {
     numTestRun = 0;
     curTest = list.GetHead();
     curTestSteps = 0;
   }
 
-  bool ShouldRun() {
+  bool ShouldRun()
+  {
     if (!curTest)
       return false;
 
     nextTest = curTest->next;
-    if (_ShouldSkipFixture(fixtureName.c_str(),curTest->m_fixtureName,curTest->m_testName)) {
+    if (_ShouldSkipFixture(fixtureName.c_str(), curTest->m_fixtureName,
+                           curTest->m_testName))
+    {
       curTest = nextTest;
       curTestSteps = 0;
       return false;
@@ -777,28 +815,32 @@ struct TestRunner : public ni::Impl_HeapAlloc {
     return true;
   }
 
-  bool BeforeRun() {
+  bool BeforeRun()
+  {
     testTimeStart = ni::TimerInSeconds();
     result->OnTestStart(curTest->m_testName);
     return curTest->BeforeRun(*result);
   }
 
-  bool RunStep() {
+  bool RunStep()
+  {
     return curTest->Run(*result);
   }
 
-  bool AfterRun() {
+  bool AfterRun()
+  {
     curTest->AfterRun(*result);
 
     const ni::tF64 testTimeIsSecs = ni::TimerInSeconds() - testTimeStart;
     const ni::tI64 testTimeInMs = (ni::tI64)(testTimeIsSecs * 1000.0);
-    if (maxTestTimeInMs > 0 && testTimeInMs > maxTestTimeInMs && !curTest->m_timeConstraintExempt)
+    if (maxTestTimeInMs > 0 && testTimeInMs > maxTestTimeInMs &&
+        !curTest->m_timeConstraintExempt)
     {
       ni::cString stream;
-      stream << "Global time constraint failed. Expected under " << maxTestTimeInMs
-             << "ms but took " << testTimeInMs << "ms.";
+      stream << "Global time constraint failed. Expected under "
+             << maxTestTimeInMs << "ms but took " << testTimeInMs << "ms.";
       result->OnTestFailure(curTest->m_filename, curTest->m_lineNumber,
-                           curTest->m_testName, stream.c_str());
+                            curTest->m_testName, stream.c_str());
     }
     result->OnTestFinish(curTest->m_testName, testTimeIsSecs);
 
@@ -809,7 +851,8 @@ struct TestRunner : public ni::Impl_HeapAlloc {
     return curTest != NULL;
   }
 
-  bool RunNext() {
+  bool RunNext()
+  {
     if (curTest) {
       // First time the current test is ran
       if (curTestSteps == 0) {
@@ -829,23 +872,25 @@ struct TestRunner : public ni::Impl_HeapAlloc {
         AfterRun();
       }
       else if (result->m_totalFailureCountPush != result->m_totalFailureCount) {
-        niLog(Error,niFmt("Test steps interrupted by failure in fixture '%s'.", runFixtureName));
+        niLog(Error, niFmt("Test steps interrupted by failure in fixture '%s'.",
+                           runFixtureName));
         AfterRun();
       }
     }
     return curTest != NULL;
   }
 
-  int ReportSummary() {
-    reporter.ReportSummary(result->GetTestCount(),
-                           result->GetTestFailedCount(),
+  int ReportSummary()
+  {
+    reporter.ReportSummary(result->GetTestCount(), result->GetTestFailedCount(),
                            result->GetTotalFailureCount(),
                            result->GetTestWarnedCount(),
                            result->GetTotalWarningCount(),
-                           (float)(ni::TimerInSeconds()-startTime));
+                           (float)(ni::TimerInSeconds() - startTime));
 
     if (!(numTestRun == shouldRun)) {
-      niPrintln("Not all tests have been ran, it is very likely that the program's memory has been corrupted.");
+      niPrintln(
+        "Not all tests have been ran, it is very likely that the program's memory has been corrupted.");
     }
 
     return result->GetTestFailedCount();
@@ -860,22 +905,27 @@ using namespace ni;
 #define TRACE_FILEHANDLER(X)
 
 struct URLFileHandler_Tests : public URLFileHandler_Manifest {
-  URLFileHandler_Tests() {
-    dataDirs.push_back(ni::GetToolkitDir("niLang","data"));
-    dataDirs.push_back(ni::GetToolkitDir("niLang","scripts"));
+  URLFileHandler_Tests()
+  {
+    dataDirs.push_back(ni::GetToolkitDir("niLang", "data"));
+    dataDirs.push_back(ni::GetToolkitDir("niLang", "scripts"));
   }
 
-  tBool _GetExistingPath(const achar* aURL, cString& aPath) {
+  tBool _GetExistingPath(const achar* aURL, cString& aPath)
+  {
     aPath = this->GetPathFromURL(aURL);
 
-    niLoop(i,dataDirs.size()) {
+    niLoop (i, dataDirs.size()) {
       // Test with the data dir first, this should be the most common since the
       // default URL handler indicates relative paths.
       const cString dataDir = dataDirs[i];
       if (!dataDir.empty()) {
         const cString testPath = dataDir + aPath;
-        TRACE_FILEHANDLER(("URLFileHandler.Tests.default.GetExisting: %s", testPath));
-        if (ni::GetRootFS()->FileExists(testPath.Chars(), eFileAttrFlags_AllFiles)) {
+        TRACE_FILEHANDLER(
+          ("URLFileHandler.Tests.default.GetExisting: %s", testPath));
+        if (ni::GetRootFS()->FileExists(testPath.Chars(),
+                                        eFileAttrFlags_AllFiles))
+        {
           aPath = testPath;
           return eTrue;
         }
@@ -883,7 +933,8 @@ struct URLFileHandler_Tests : public URLFileHandler_Manifest {
     }
 
     // Check the path as-is.
-    TRACE_FILEHANDLER(("URLFileHandler.Tests.default.GetExisting.asis: %s", aPath));
+    TRACE_FILEHANDLER(
+      ("URLFileHandler.Tests.default.GetExisting.asis: %s", aPath));
     if (ni::GetRootFS()->FileExists(aPath.Chars(), eFileAttrFlags_AllFiles)) {
       return eTrue;
     }
@@ -891,70 +942,84 @@ struct URLFileHandler_Tests : public URLFileHandler_Manifest {
     return eFalse;
   }
 
-  virtual iFile* __stdcall URLOpen(const achar* aURL) {
+  virtual iFile* __stdcall URLOpen(const achar* aURL)
+  {
     cString path;
-    if (!_GetExistingPath(aURL,path)) {
-      TRACE_FILEHANDLER(("URLFileHandler.Tests.default.URLOpen.noexisting: %s", aURL));
+    if (!_GetExistingPath(aURL, path)) {
+      TRACE_FILEHANDLER(
+        ("URLFileHandler.Tests.default.URLOpen.noexisting: %s", aURL));
       return NULL;
     }
     TRACE_FILEHANDLER(("URLFileHandler.Tests.default.URLOpen: %s", path));
 
-    return ni::GetRootFS()->FileOpen(path.Chars(),eFileOpenMode_Read);
+    return ni::GetRootFS()->FileOpen(path.Chars(), eFileOpenMode_Read);
   }
 
-  virtual tBool __stdcall URLExists(const achar* aURL) {
+  virtual tBool __stdcall URLExists(const achar* aURL)
+  {
     cString path;
-    _GetExistingPath(aURL,path);
-    return ni::GetRootFS()->FileExists(path.Chars(),eFileAttrFlags_AllFiles) != 0;
+    _GetExistingPath(aURL, path);
+    return ni::GetRootFS()->FileExists(path.Chars(), eFileAttrFlags_AllFiles) !=
+           0;
   }
 };
 
 static TestReporterStdout _defaultReporterStdout;
 static TestRunner* _defaultTestRunner = NULL;
 
-bool TestRunner_Startup(TestReporter& reporter,
-                        const TestList& list,
-                        const int maxTestTimeInMs,
-                        const char* fixtureName)
+bool TestRunner_Startup(TestReporter& reporter, const TestList& list,
+                        const int maxTestTimeInMs, const char* fixtureName)
 {
   TestRunner_Shutdown();
 #ifdef niJSCC
   // Set the $WORK envvar
-  setenv("WORK",ni::niJSCC_Get_NIAPP_CONFIG("workDir").c_str(),1);
+  setenv("WORK", ni::niJSCC_Get_NIAPP_CONFIG("workDir").c_str(), 1);
 #endif
-  ni::GetLang()->SetGlobalInstance("URLFileHandler.default",niNew URLFileHandler_Tests());
-  ni::GetLang()->SetGlobalInstance("URLFileHandler.script",niNew URLFileHandler_Tests());
+  ni::GetLang()->SetGlobalInstance("URLFileHandler.default",
+                                   niNew URLFileHandler_Tests());
+  ni::GetLang()->SetGlobalInstance("URLFileHandler.script",
+                                   niNew URLFileHandler_Tests());
   runFixtureName = fixtureName;
   _NormalizeFixtureName(runFixtureName);
-  niLog(Info,niFmt("Running all tests matching fixture '%s'.", runFixtureName));
-  _defaultTestRunner = new TestRunner(reporter,list,maxTestTimeInMs,fixtureName);
+  niLog(Info,
+        niFmt("Running all tests matching fixture '%s'.", runFixtureName));
+  _defaultTestRunner =
+    new TestRunner(reporter, list, maxTestTimeInMs, fixtureName);
   return true;
 };
 
 bool TestRunner_Startup(const char* fixtureName)
 {
-  return TestRunner_Startup(_defaultReporterStdout, Test::GetTestList(), 0, fixtureName);
+  return TestRunner_Startup(_defaultReporterStdout, Test::GetTestList(), 0,
+                            fixtureName);
 }
 
-void TestRunner_Shutdown() {
+void TestRunner_Shutdown()
+{
   if (_defaultTestRunner) {
     delete _defaultTestRunner;
     _defaultTestRunner = NULL;
   }
 }
 
-bool TestRunner_RunNext() {
-  if (!_defaultTestRunner) return false;
+bool TestRunner_RunNext()
+{
+  if (!_defaultTestRunner)
+    return false;
   return _defaultTestRunner->RunNext();
 }
 
-int TestRunner_ReportSummary() {
-  if (!_defaultTestRunner) return ni::eInvalidHandle;
+int TestRunner_ReportSummary()
+{
+  if (!_defaultTestRunner)
+    return ni::eInvalidHandle;
   return _defaultTestRunner->ReportSummary();
 }
 
-const char* TestRunner_GetCurrentTestName() {
-  if (!_defaultTestRunner) return "";
+const char* TestRunner_GetCurrentTestName()
+{
+  if (!_defaultTestRunner)
+    return "";
   return _defaultTestRunner->curTest->m_testName;
 }
 
@@ -970,7 +1035,8 @@ int RunAllTests(const char* fixtureName)
 
 #ifdef niJSCC
 
-static void Loop_RegularTests() {
+static void Loop_RegularTests()
+{
   if (TestRunner_RunNext())
     return;
 
@@ -980,25 +1046,21 @@ static void Loop_RegularTests() {
   emscripten_cancel_main_loop();
 }
 
-int RunAllTests(TestReporter& reporter,
-                const TestList& list,
-                const int maxTestTimeInMs,
-                const char* fixtureName)
+int RunAllTests(TestReporter& reporter, const TestList& list,
+                const int maxTestTimeInMs, const char* fixtureName)
 {
-  TestRunner_Startup(reporter,list,maxTestTimeInMs,fixtureName);
+  TestRunner_Startup(reporter, list, maxTestTimeInMs, fixtureName);
   emscripten_cancel_main_loop();
-  emscripten_set_main_loop(Loop_RegularTests,30,1);
+  emscripten_set_main_loop(Loop_RegularTests, 30, 1);
   return 0;
 }
 
 #else
 
-int RunAllTests(TestReporter& reporter,
-                const TestList& list,
-                const int maxTestTimeInMs,
-                const char* fixtureName)
+int RunAllTests(TestReporter& reporter, const TestList& list,
+                const int maxTestTimeInMs, const char* fixtureName)
 {
-  TestRunner_Startup(reporter,list,maxTestTimeInMs,fixtureName);
+  TestRunner_Startup(reporter, list, maxTestTimeInMs, fixtureName);
   while (TestRunner_RunNext()) {
   }
   int r = TestRunner_ReportSummary();
@@ -1008,5 +1070,4 @@ int RunAllTests(TestReporter& reporter,
 
 #endif
 
-
-}
+} // namespace UnitTest

@@ -7,7 +7,9 @@
 // cSoundBufferStream implementation.
 
 ///////////////////////////////////////////////
-cSoundBufferStream::cSoundBufferStream(iDeviceResourceManager* apRM, iSoundData* apData, iHString* ahspName, tBool abInstance)
+cSoundBufferStream::cSoundBufferStream(iDeviceResourceManager* apRM,
+                                       iSoundData* apData, iHString* ahspName,
+                                       tBool abInstance)
 {
 
   ZeroMembers();
@@ -25,7 +27,7 @@ cSoundBufferStream::cSoundBufferStream(iDeviceResourceManager* apRM, iSoundData*
 
   mbInstance = abInstance;
   if (abInstance) {
-    mhspName = _H(niFmt(_A("%s_I%p"),niHStr(ahspName),this));
+    mhspName = _H(niFmt(_A("%s_I%p"), niHStr(ahspName), this));
   }
   else {
     mhspName = ahspName;
@@ -58,7 +60,7 @@ void cSoundBufferStream::Invalidate()
 //! Get the resource's name.
 iHString* __stdcall cSoundBufferStream::GetDeviceResourceName() const
 {
-  return mhspName.IsOK()?mhspName.ptr():(iHString*)NULL;
+  return mhspName.IsOK() ? mhspName.ptr() : (iHString*)NULL;
 }
 
 ///////////////////////////////////////////////
@@ -80,7 +82,7 @@ tBool __stdcall cSoundBufferStream::IsOK() const
 ///////////////////////////////////////////////
 iSoundBuffer* __stdcall cSoundBufferStream::CreateInstance()
 {
-  return niNew cSoundBufferStream(mpRM,mptrData,NULL,eTrue);
+  return niNew cSoundBufferStream(mpRM, mptrData, NULL, eTrue);
 }
 
 ///////////////////////////////////////////////
@@ -99,14 +101,16 @@ tBool __stdcall cSoundBufferStream::GetIsStreamed() const
 ///////////////////////////////////////////////
 eSoundFormat __stdcall cSoundBufferStream::GetFormat() const
 {
-  if (!mptrData.IsOK()) return eSoundFormat_Unknown;
+  if (!mptrData.IsOK())
+    return eSoundFormat_Unknown;
   return mptrData->GetFormat();
 }
 
 ///////////////////////////////////////////////
 tU32 __stdcall cSoundBufferStream::GetFrequency() const
 {
-  if (!mptrData.IsOK()) return 0;
+  if (!mptrData.IsOK())
+    return 0;
   return mptrData->GetFrequency();
 }
 
@@ -118,20 +122,22 @@ void __stdcall cSoundBufferStream::ResetPosition()
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cSoundBufferStream::ReadRaw(tPtr apOut, tU32 anBytes, tBool abLoop)
+tBool __stdcall cSoundBufferStream::ReadRaw(tPtr apOut, tU32 anBytes,
+                                            tBool abLoop)
 {
-  if (!mptrData.IsOK()) return eFalse;
+  if (!mptrData.IsOK())
+    return eFalse;
   tSize read = 0;
   while (read < anBytes) {
-    tU32 nNumRead = mptrData->ReadRaw(apOut+read,anBytes-read);
+    tU32 nNumRead = mptrData->ReadRaw(apOut + read, anBytes - read);
     read += nNumRead;
     if (nNumRead == 0) {
       if (abLoop) {
         mptrData->Reset();
       }
       else {
-        if (anBytes-read)
-          memset(apOut+read,0,anBytes-read);
+        if (anBytes - read)
+          memset(apOut + read, 0, anBytes - read);
         return eFalse;
       }
     }

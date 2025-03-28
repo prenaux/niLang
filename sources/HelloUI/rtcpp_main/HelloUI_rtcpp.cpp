@@ -6,36 +6,41 @@
 
 using namespace ni;
 
-static Nonnull<app::AppContext> gAppContext = ni::MakeNonnull<app::AppContext>();
+static Nonnull<app::AppContext> gAppContext =
+  ni::MakeNonnull<app::AppContext>();
 static Ptr<iWidget> _appCanvas;
 static QPtr<iWidgetSink> _appSink;
 
 _HDecl(UIWidget);
 _HDecl(ID_AppCanvas);
 
-Ptr<iUnknown> EvalImpl(iHString* ahspContext, iHString* ahspCodeFile, const tUUID& aIID) {
-  ni::Ptr<ni::iScriptingHost> host = ni::GetLang()->FindScriptingHost(
-    ahspContext,ahspCodeFile);
+Ptr<iUnknown> EvalImpl(iHString* ahspContext, iHString* ahspCodeFile,
+                       const tUUID& aIID)
+{
+  ni::Ptr<ni::iScriptingHost> host =
+    ni::GetLang()->FindScriptingHost(ahspContext, ahspCodeFile);
   if (!host.IsOK()) {
-    niError(niFmt("Can't find scripting host for code file '%s'.",ahspCodeFile));
+    niError(
+      niFmt("Can't find scripting host for code file '%s'.", ahspCodeFile));
     return NULL;
   }
 
-  ni::Ptr<ni::iUnknown> ptrInst = host->EvalImpl(ahspContext,ahspCodeFile,aIID);
+  ni::Ptr<ni::iUnknown> ptrInst =
+    host->EvalImpl(ahspContext, ahspCodeFile, aIID);
   if (!niIsOK(ptrInst)) {
-    niError(niFmt("Can't create instance of '%s' from code file '%s'.",ahspContext,ahspCodeFile));
+    niError(niFmt("Can't create instance of '%s' from code file '%s'.",
+                  ahspContext, ahspCodeFile));
     return NULL;
   }
 
   return ptrInst;
 };
 
-void _ReloadApp() {
+void _ReloadApp()
+{
   if (!_appCanvas.IsOK()) {
     _appCanvas = gAppContext->_uiContext->CreateWidget(
-      "Canvas",
-      gAppContext->_uiContext->GetRootWidget(),
-      Rectf(0,0,50,50),
+      "Canvas", gAppContext->_uiContext->GetRootWidget(), Rectf(0, 0, 50, 50),
       0, _HC(ID_AppCanvas));
     _appCanvas->SetDockStyle(eWidgetDockStyle_DockFillOverlay);
   }
@@ -43,53 +48,57 @@ void _ReloadApp() {
   _appCanvas->RemoveSink(_appSink);
   _appSink = EvalImpl(
     _H("UIWidget"),
-    _H("HelloUI_rtcpp_module#HelloUI#HelloUI/rtcpp_module/HelloUI_Widget_module.cpp"),
+    _H(
+      "HelloUI_rtcpp_module#HelloUI#HelloUI/rtcpp_module/HelloUI_Widget_module.cpp"),
     niGetInterfaceUUID(iWidgetSink));
   _appCanvas->AddSink(_appSink);
 }
 
-ni::Var OnAppStarted() {
+ni::Var OnAppStarted()
+{
   niInitScriptVMForDebugUI();
   ScriptCpp_CleanupDLLs();
   _ReloadApp();
   gAppContext->_window->GetMessageHandlers()->AddSink(ni::MessageHandler(
     [](const tU32 anMsg, const Var& avarA, const Var& avarB) {
-      if (anMsg == eOSWindowMessage_KeyDown)
-      {
+      if (anMsg == eOSWindowMessage_KeyDown) {
         switch (avarA.mU32) {
-          case eKey_F1: {
-            niDebugFmt(("... F1"));
-            gAppContext->_uiContext->SetDebugDraw(
-              !gAppContext->_uiContext->GetDebugDraw());
-            break;
-          }
-          case eKey_F9: {
-            niDebugFmt(("... F9"));
-            _ReloadApp();
-            break;
-          }
+        case eKey_F1: {
+          niDebugFmt(("... F1"));
+          gAppContext->_uiContext->SetDebugDraw(
+            !gAppContext->_uiContext->GetDebugDraw());
+          break;
+        }
+        case eKey_F9: {
+          niDebugFmt(("... F9"));
+          _ReloadApp();
+          break;
+        }
         }
       }
     }));
   return ni::eTrue;
 }
 
-ni::Var OnAppShutdown() {
+ni::Var OnAppShutdown()
+{
   ScriptCpp_CleanupDLLs();
   return ni::eTrue;
 }
 
-niConsoleMain() {
-  gAppContext->_config.drawFPS = ni::GetProperty("drawFPS","1").Long();
+niConsoleMain()
+{
+  gAppContext->_config.drawFPS = ni::GetProperty("drawFPS", "1").Long();
   // bg update, makes profiling/debugging a lot simpler
   gAppContext->_config.backgroundUpdate = eTrue;
 
   ni::ParseCommandLine(ni::GetCurrentOSProcessCmdLine());
 
-  QPtr<iScriptingHost> ptrScriptingHost = niCreateInstance(niScriptCpp,ScriptingHost,NULL,NULL);
-  ni::GetLang()->AddScriptingHost(_H("cpp"),ptrScriptingHost.ptr());
-  ni::GetLang()->AddScriptingHost(_H("cni"),ptrScriptingHost.ptr());
-  ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY,"1");
+  QPtr<iScriptingHost> ptrScriptingHost =
+    niCreateInstance(niScriptCpp, ScriptingHost, NULL, NULL);
+  ni::GetLang()->AddScriptingHost(_H("cpp"), ptrScriptingHost.ptr());
+  ni::GetLang()->AddScriptingHost(_H("cni"), ptrScriptingHost.ptr());
+  ni::SetProperty(SCRIPTCPP_COMPILE_PROPERTY, "1");
 
   if (!app::AppNativeStartup(gAppContext, "HelloUI_rtcpp", 0, 0,
                              ni::Runnable<ni::tpfnRunnable>(OnAppStarted),

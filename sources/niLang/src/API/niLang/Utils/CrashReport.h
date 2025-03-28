@@ -5,6 +5,7 @@
 #include "../Types.h"
 #include "../StringDef.h"
 #include "../STL/type_traits.h"
+#include "../STL/exception.h"
 
 #if defined __cplusplus
   #include <exception> // for std::set_terminate
@@ -185,13 +186,23 @@ struct sNiCrashReport {
     #define niCrashReport_ModuleInstall()
   #endif
 
-// Use ni::TryCatchPanic in <niLang/Utils/CrashReport.h> to handle it if you
-// must. You generally should not.
-struct iPanicDescription {
-  niDeclareInterfaceUUID(iPanicDescription,0x57142E2C,0xF9CF,0x4971,0x96,0x92,0xC5,0x22,0xFF,0xC2,0xF5,0xFD);
+struct __ni_module_export sPanicException : public astl::exception {
+  sPanicException(const iHString* aKind, cString&& aDesc) noexcept;
+  virtual ~sPanicException();
 
-  virtual const iHString* __stdcall GetKind() const noexcept = 0;
-  virtual const cString& __stdcall GetDesc() const noexcept = 0;
+  const iHString* GetKind() const noexcept;
+  const cString& GetDesc() const noexcept;
+
+  // Implement std::exception::what()
+  const char* what() const noexcept override;
+
+ private:
+  const iHString* _kind;
+  const cString _desc;
+
+  sPanicException(const sPanicException& aRight) noexcept = delete;
+  sPanicException(sPanicException&& aRight) noexcept = delete;
+  sPanicException() noexcept = delete;
 };
 
   #ifdef niUseWindowsSEHExceptions
@@ -202,7 +213,7 @@ extern "C" unsigned long __cdecl _exception_code(void);
     #pragma intrinsic(_exception_code)
 
 niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo);
-niExportFunc(iPanicDescription*) ni_windows_seh_get_last_panic();
+niExportFunc(sPanicException*) ni_windows_seh_get_last_panic();
 
 template <typename RunFunc, typename CatchFunc>
 auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
@@ -239,7 +250,7 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
 {
   using RunReturnType = decltype(aRun());
   using CatchReturnType =
-    decltype(aCatch(astl::declval<ni::iPanicDescription>()));
+    decltype(aCatch(astl::declval<ni::sPanicException>()));
   static_assert(std::is_same_v<RunReturnType, CatchReturnType>,
                 "Run and catch functions must return the same type");
 
@@ -247,7 +258,7 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
     niTry {
       aRun();
     }
-    niCatch (ni::iPanicDescription, e) {
+    niCatch (ni::sPanicException, e) {
       aCatch(e);
     }
   }
@@ -255,7 +266,7 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
     niTry {
       return aRun();
     }
-    niCatch (ni::iPanicDescription, e) {
+    niCatch (ni::sPanicException, e) {
       return aCatch(e);
     }
   }

@@ -24,11 +24,11 @@ void TestThrowPanicMsg(const char* msg)
 
 #if 0
 TEST_FIXTURE(FException,CheckThrow1) {
-  CHECK_THROW(TestThrowPanic(), iPanicDescription);
+  CHECK_THROW(TestThrowPanic(), sPanicException);
 }
 
 TEST_FIXTURE(FException,CheckThrow2) {
-  CHECK_THROW(TestThrowPanicMsg("weee"), iPanicDescription);
+  CHECK_THROW(TestThrowPanicMsg("weee"), sPanicException);
 }
 #endif
 
@@ -37,7 +37,7 @@ TEST_FIXTURE(FException, Panic)
   tHStringPtr caughtKind;
   cString caughtDesc;
   TryCatchPanic([&]() { TestThrowPanic(); },
-                [&](const ni::iPanicDescription& e) {
+                [&](const ni::sPanicException& e) {
                   caughtKind = e.GetKind();
                   caughtDesc = e.GetDesc();
                   niDebugFmt(("... caught: %s", e.GetKind()));
@@ -51,7 +51,7 @@ TEST_FIXTURE(FException, PanicWithMsg)
   tHStringPtr caughtKind;
   cString caughtDesc;
   TryCatchPanic([&]() { TestThrowPanicMsg("foo bar qoo"); },
-                [&](const ni::iPanicDescription& e) {
+                [&](const ni::sPanicException& e) {
                   caughtKind = e.GetKind();
                   caughtDesc = e.GetDesc();
                   niDebugFmt(("... caught: %s", e.GetKind()));

@@ -37,18 +37,27 @@ TEST_FIXTURE(FJson, JSONWriter)
   ni::Ptr<iFile> fp =
     ni::CreateFileMemory((tPtr)_dtJson.Chars(), _dtJson.size(), eFalse, NULL);
   ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt, fp);
+  CHECK_EQUAL(_ASTR("bar"), dt->GetString("string"));
+  CHECK_EQUAL(123, dt->GetInt("number"));
+  CHECK_EQUAL(1, dt->GetInt("bool"));
   Ptr<iFile> file = ni::CreateFileDynamicMemory(0, NULL);
   ni::SerializeDataTable("json", eSerializeMode_Write, dt, file);
   CHECK_EQUAL(file->ReadString(),
-              R"""({"string":"bar","number":123,"isnull":null,"bool":1})""");
+              R"""({"string":"bar","number":123,"isnull":null,"bool":true})""");
 
   Ptr<iDataTable> dt2 = ni::CreateDataTable("");
   ni::Ptr<iFile> fp2 = ni::CreateFileMemory((tPtr)_dtJsonArray.Chars(),
                                             _dtJsonArray.size(), eFalse, NULL);
   ni::GetLang()->SerializeDataTable("json", ni::eSerializeMode_Read, dt2, fp2);
+  {
+    NN<iDataTable> childDT = AsNN(dt2->GetChildFromIndex(1));
+    CHECK_EQUAL(_ASTR("bar"), childDT->GetString("string"));
+    CHECK_EQUAL(321, childDT->GetInt("number"));
+    CHECK_EQUAL(0, childDT->GetInt("bool"));
+  }
   Ptr<iFile> file2 = ni::CreateFileDynamicMemory(0, NULL);
   ni::SerializeDataTable("json", eSerializeMode_Write, dt2, file2);
   CHECK_EQUAL(
     file2->ReadString(),
-    R"""([{"string":"bar","number":123,"isnull":null,"bool":1},{"string":"bar","number":321,"isnull":null,"bool":0}])""");
+    R"""([{"string":"bar","number":123,"isnull":null,"bool":true},{"string":"bar","number":321,"isnull":null,"bool":false}])""");
 }

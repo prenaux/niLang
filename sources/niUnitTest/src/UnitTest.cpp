@@ -274,7 +274,7 @@ bool Test::BeforeRun(TestResults& testResults) const
     }
 #endif
     return true;
-  }, [&](const ni::iPanicDescription& e) {
+  }, [&](const ni::sPanicException& e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -307,7 +307,7 @@ bool Test::Run(TestResults& testResults) const
     }
 #endif
     return true;
-  }, [&](const ni::iPanicDescription& e) {
+  }, [&](const ni::sPanicException& e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());
@@ -343,7 +343,7 @@ bool Test::AfterRun(TestResults& testResults) const
     }
 #endif
     return true;
-  }, [&](const ni::iPanicDescription& e) {
+  }, [&](const ni::sPanicException& e) {
     ni::cString stream;
     stream << "Unhandled panic: " << e.GetDesc();
     testResults.OnTestFailure(m_filename, m_lineNumber, m_testName, stream.c_str());

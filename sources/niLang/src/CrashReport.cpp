@@ -70,39 +70,6 @@ niExportFunc(int) ni_get_panic_harakiri()
   return _bHarakiriOnPanic;
 }
 
-struct sPanicDescription : public iPanicDescription {
-  sPanicDescription(const iHString* aKind, const cString&& aDesc) noexcept
-      : _kind(aKind)
-      , _desc(astl::move(aDesc))
-  {
-    const_cast<iHString*>(_kind)->AddRef();
-  }
-  virtual ~sPanicDescription()
-  {
-    if (_kind) {
-      const_cast<iHString*>(_kind)->Release();
-    }
-  }
-
-  const iHString* __stdcall GetKind() const noexcept niImpl
-  {
-    return _kind;
-  }
-
-  virtual const cString& __stdcall GetDesc() const noexcept niImpl
-  {
-    return _desc;
-  }
-
- private:
-  const iHString* _kind;
-  const cString _desc;
-
-  sPanicDescription(const sPanicDescription& aRight) noexcept = delete;
-  sPanicDescription(sPanicDescription&& aRight) noexcept = delete;
-  sPanicDescription() noexcept = delete;
-};
-
 #ifdef niWindows
 static inline const char* ni_windows_seh_get_excode_string(DWORD excode)
 {
@@ -151,7 +118,7 @@ ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo)
 #endif
 
 #ifdef niUseWindowsSEHExceptions
-thread_local sPanicDescription* _lastPanic = nullptr;
+thread_local sPanicException* _lastPanic = nullptr;
 
 niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
 {
@@ -163,7 +130,7 @@ niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
     if (_lastPanic) {
       delete _lastPanic;
     }
-    _lastPanic = reinterpret_cast<sPanicDescription*>(
+    _lastPanic = reinterpret_cast<sPanicException*>(
       pExp->ExceptionRecord->ExceptionInformation[0]);
     return EXCEPTION_EXECUTE_HANDLER;
   }
@@ -177,7 +144,7 @@ niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
   }
 }
 
-niExportFunc(iPanicDescription*) ni_windows_seh_get_last_panic()
+niExportFunc(sPanicException*) ni_windows_seh_get_last_panic()
 {
   return _lastPanic;
 }
@@ -241,11 +208,11 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind,
   #endif
 
   #ifdef niUseWindowsSEHExceptions
-  sPanicDescription* pEx = new sPanicDescription{ aKind, std::move(fmt) };
+  sPanicException* pEx = new sPanicException{ aKind, std::move(fmt) };
   ULONG_PTR exceptionArgs[1] = { reinterpret_cast<ULONG_PTR>(pEx) };
   RaiseException(NI_SEH_EXCEPTION_PANIC, 0, 1, exceptionArgs);
   #else
-  throw sPanicDescription{ aKind, std::move(fmt) };
+  throw sPanicException{ aKind, std::move(fmt) };
   #endif
 
 #endif
@@ -344,6 +311,36 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int)
   // When Ctrl-C is pressed...
   exit(0x12345678);
 #endif
+}
+
+sPanicException::sPanicException(const iHString* aKind,
+                                 cString&& aDesc) noexcept
+    : _kind(aKind)
+    , _desc(std::move(aDesc))
+{
+  const_cast<iHString*>(_kind)->AddRef();
+}
+
+sPanicException::~sPanicException()
+{
+  if (_kind) {
+    const_cast<iHString*>(_kind)->Release();
+  }
+}
+
+const iHString* sPanicException::GetKind() const noexcept
+{
+  return _kind;
+}
+
+const cString& sPanicException::GetDesc() const noexcept
+{
+  return _desc;
+}
+
+const char* sPanicException::what() const noexcept
+{
+  return _desc.c_str();
 }
 
 } // namespace ni

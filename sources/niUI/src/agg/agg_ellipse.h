@@ -23,27 +23,40 @@
 #include "agg_basics.h"
 #include <math.h>
 
-namespace agg
-{
+namespace agg {
 
 //----------------------------------------------------------------ellipse
-class ellipse
-{
+class ellipse {
  public:
-  ellipse() :
-      m_x(0.0), m_y(0.0), m_rx(1.0), m_ry(1.0), m_scale(1.0),
-      m_num(4), m_step(0), m_cw(false) {}
+  ellipse()
+      : m_x(0.0)
+      , m_y(0.0)
+      , m_rx(1.0)
+      , m_ry(1.0)
+      , m_scale(1.0)
+      , m_num(4)
+      , m_step(0)
+      , m_cw(false)
+  {
+  }
 
   ellipse(agg_real x, agg_real y, agg_real rx, agg_real ry,
-          unsigned num_steps=0, bool cw=false) :
-      m_x(x), m_y(y), m_rx(rx), m_ry(ry), m_scale(1.0),
-      m_num(num_steps), m_step(0), m_cw(cw)
+          unsigned num_steps = 0, bool cw = false)
+      : m_x(x)
+      , m_y(y)
+      , m_rx(rx)
+      , m_ry(ry)
+      , m_scale(1.0)
+      , m_num(num_steps)
+      , m_step(0)
+      , m_cw(cw)
   {
-    if(m_num == 0) calc_num_steps();
+    if (m_num == 0)
+      calc_num_steps();
   }
 
   void init(agg_real x, agg_real y, agg_real rx, agg_real ry,
-            unsigned num_steps=0, bool cw=false);
+            unsigned num_steps = 0, bool cw = false);
 
   void approximation_scale(agg_real scale);
   void rewind(unsigned path_id);
@@ -73,7 +86,8 @@ inline void ellipse::init(agg_real x, agg_real y, agg_real rx, agg_real ry,
   m_num = num_steps;
   m_step = 0;
   m_cw = cw;
-  if(m_num == 0) calc_num_steps();
+  if (m_num == 0)
+    calc_num_steps();
 }
 
 //------------------------------------------------------------------------
@@ -88,7 +102,7 @@ inline void ellipse::calc_num_steps()
 {
   agg_real ra = (fabs(m_rx) + fabs(m_ry)) / 2;
   agg_real da = acos(ra / (ra + 0.125 / m_scale)) * 2;
-  m_num = uround(2*pi / da);
+  m_num = uround(2 * pi / da);
 }
 
 //------------------------------------------------------------------------
@@ -100,24 +114,21 @@ inline void ellipse::rewind(unsigned)
 //------------------------------------------------------------------------
 inline unsigned ellipse::vertex(agg_real* x, agg_real* y)
 {
-  if(m_step == m_num)
-  {
+  if (m_step == m_num) {
     ++m_step;
     return path_cmd_end_poly | path_flags_close | path_flags_ccw;
   }
-  if(m_step > m_num) return path_cmd_stop;
+  if (m_step > m_num)
+    return path_cmd_stop;
   agg_real angle = agg_real(m_step) / agg_real(m_num) * 2.0 * pi;
-  if(m_cw) angle = 2.0 * pi - angle;
+  if (m_cw)
+    angle = 2.0 * pi - angle;
   *x = m_x + cos(angle) * m_rx;
   *y = m_y + sin(angle) * m_ry;
   m_step++;
   return ((m_step == 1) ? path_cmd_move_to : path_cmd_line_to);
 }
 
-}
-
-
+} // namespace agg
 
 #endif
-
-

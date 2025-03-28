@@ -21,10 +21,9 @@
 
 //---------------------------------------------------------AGG_CUSTOM_ALLOCATOR
 #ifdef AGG_CUSTOM_ALLOCATOR
-#include "agg_allocator.h"
+  #include "agg_allocator.h"
 #else
-namespace agg
-{
+namespace agg {
 // The policy of all AGG containers and memory allocation strategy
 // in general is that no allocated data requires explicit construction.
 // It means that the allocator can be really simple; you can even
@@ -33,10 +32,16 @@ namespace agg
 // The second argument of deallocate() is the size of the allocated
 // block. You can use this information if you wish.
 //------------------------------------------------------------pod_allocator
-template<class T> struct pod_allocator
-{
-  static T*   allocate(unsigned num)       { return new T [num]; }
-  static void deallocate(T* ptr, unsigned) { delete [] ptr;      }
+template <class T>
+struct pod_allocator {
+  static T* allocate(unsigned num)
+  {
+    return new T[num];
+  }
+  static void deallocate(T* ptr, unsigned)
+  {
+    delete[] ptr;
+  }
 };
 
 // Single object allocator. It's also can be replaced with your custom
@@ -47,14 +52,19 @@ template<class T> struct pod_allocator
 // replace these new/delete to malloc/free make sure that the in-place
 // new is called and take care of calling the destructor too.
 //------------------------------------------------------------obj_allocator
-template<class T> struct obj_allocator
-{
-  static T*   allocate()         { return new T; }
-  static void deallocate(T* ptr) { delete ptr;   }
+template <class T>
+struct obj_allocator {
+  static T* allocate()
+  {
+    return new T;
+  }
+  static void deallocate(T* ptr)
+  {
+    delete ptr;
+  }
 };
-}
+} // namespace agg
 #endif
-
 
 //-------------------------------------------------------- Default basic types
 //
@@ -63,35 +73,35 @@ template<class T> struct obj_allocator
 // empty by default.
 //
 #ifndef AGG_INT8
-#define AGG_INT8 ni::tI8
+  #define AGG_INT8 ni::tI8
 #endif
 
 #ifndef AGG_INT8U
-#define AGG_INT8U ni::tU8
+  #define AGG_INT8U ni::tU8
 #endif
 
 #ifndef AGG_INT16
-#define AGG_INT16 ni::tI16
+  #define AGG_INT16 ni::tI16
 #endif
 
 #ifndef AGG_INT16U
-#define AGG_INT16U ni::tU16
+  #define AGG_INT16U ni::tU16
 #endif
 
 #ifndef AGG_INT32
-#define AGG_INT32 ni::tI32
+  #define AGG_INT32 ni::tI32
 #endif
 
 #ifndef AGG_INT32U
-#define AGG_INT32U ni::tU32
+  #define AGG_INT32U ni::tU32
 #endif
 
 #ifndef AGG_INT64
-#define AGG_INT64 ni::tI64
+  #define AGG_INT64 ni::tI64
 #endif
 
 #ifndef AGG_INT64U
-#define AGG_INT64U ni::tU64
+  #define AGG_INT64U ni::tU64
 #endif
 
 typedef ni::tF32 agg_real;
@@ -99,50 +109,45 @@ typedef ni::tF32 agg_real;
 
 //------------------------------------------------ Some fixes for MS Visual C++
 #if defined(_MSC_VER)
-#pragma warning(disable:4786) // Identifier was truncated...
+  #pragma warning(disable : 4786) // Identifier was truncated...
 #endif
 
 #if defined(_MSC_VER)
-#define AGG_INLINE __forceinline
+  #define AGG_INLINE __forceinline
 #else
-#define AGG_INLINE inline
+  #define AGG_INLINE inline
 #endif
 
-namespace agg
-{
+namespace agg {
 //-------------------------------------------------------------------------
-typedef AGG_INT8   int8;         //----int8
-typedef AGG_INT8U  int8u;        //----int8u
-typedef AGG_INT16  int16;        //----int16
-typedef AGG_INT16U int16u;       //----int16u
-typedef AGG_INT32  int32;        //----int32
-typedef AGG_INT32U int32u;       //----int32u
-typedef AGG_INT64  int64;        //----int64
-typedef AGG_INT64U int64u;       //----int64u
+typedef AGG_INT8 int8;     //----int8
+typedef AGG_INT8U int8u;   //----int8u
+typedef AGG_INT16 int16;   //----int16
+typedef AGG_INT16U int16u; //----int16u
+typedef AGG_INT32 int32;   //----int32
+typedef AGG_INT32U int32u; //----int32u
+typedef AGG_INT64 int64;   //----int64
+typedef AGG_INT64U int64u; //----int64u
 
 #if defined(AGG_FISTP)
-#pragma warning(push)
-#pragma warning(disable : 4035) //Disable warning "no return value"
-AGG_INLINE int iround(agg_real v)              //-------iround
+  #pragma warning(push)
+  #pragma warning(disable : 4035) //Disable warning "no return value"
+AGG_INLINE int iround(agg_real v) //-------iround
 {
   int t;
-  __asm fld   qword ptr [v]
-      __asm fistp dword ptr [t]
-      __asm mov eax, dword ptr [t]
-      }
-AGG_INLINE unsigned uround(agg_real v)         //-------uround
+  __asm fld qword ptr[v] __asm fistp dword ptr[t] __asm mov eax, dword ptr[t]
+}
+AGG_INLINE unsigned uround(agg_real v) //-------uround
 {
   unsigned t;
-  __asm fld   qword ptr [v]
-      __asm fistp dword ptr [t]
-      __asm mov eax, dword ptr [t]
-      }
-#pragma warning(pop)
-AGG_INLINE unsigned ufloor(agg_real v)         //-------ufloor
+  __asm fld qword ptr[v] __asm fistp dword ptr[t] __asm mov eax, dword ptr[t]
+}
+  #pragma warning(pop)
+AGG_INLINE unsigned ufloor(agg_real v) //-------ufloor
 {
   return unsigned(floor(v));
 }
-AGG_INLINE unsigned uceil(agg_real v)          //--------uceil
+AGG_INLINE unsigned uceil(agg_real v) //--------uceil
 {
   return unsigned(ceil(v));
 }
@@ -183,35 +188,36 @@ AGG_INLINE unsigned uceil(agg_real v)
 #endif
 
 //---------------------------------------------------------------saturation
-template<int Limit> struct saturation
-{
+template <int Limit>
+struct saturation {
   AGG_INLINE static int iround(agg_real v)
   {
-    if(v < agg_real(-Limit)) return -Limit;
-    if(v > agg_real( Limit)) return  Limit;
+    if (v < agg_real(-Limit))
+      return -Limit;
+    if (v > agg_real(Limit))
+      return Limit;
     return agg::iround(v);
   }
 };
 
 //------------------------------------------------------------------mul_one
-template<unsigned Shift> struct mul_one
-{
+template <unsigned Shift>
+struct mul_one {
   AGG_INLINE static unsigned mul(unsigned a, unsigned b)
   {
-    unsigned q = a * b + (1 << (Shift-1));
+    unsigned q = a * b + (1 << (Shift - 1));
     return (q + (q >> Shift)) >> Shift;
   }
 };
 
 //-------------------------------------------------------------------------
-typedef unsigned char cover_type;    //----cover_type
-enum cover_scale_e
-{
-  cover_shift = 8,                 //----cover_shift
-  cover_size  = 1 << cover_shift,  //----cover_size
-  cover_mask  = cover_size - 1,    //----cover_mask
-  cover_none  = 0,                 //----cover_none
-  cover_full  = cover_mask         //----cover_full
+typedef unsigned char cover_type; //----cover_type
+enum cover_scale_e {
+  cover_shift = 8,               //----cover_shift
+  cover_size = 1 << cover_shift, //----cover_size
+  cover_mask = cover_size - 1,   //----cover_mask
+  cover_none = 0,                //----cover_none
+  cover_full = cover_mask        //----cover_full
 };
 
 //----------------------------------------------------poly_subpixel_scale_e
@@ -220,16 +226,14 @@ enum cover_scale_e
 // The possible coordinate capacity in bits can be calculated by formula:
 // sizeof(int) * 8 - poly_subpixel_shift, i.e, for 32-bit integers and
 // 8-bits fractional part the capacity is 24 bits.
-enum poly_subpixel_scale_e
-{
-  poly_subpixel_shift = 8,                      //----poly_subpixel_shift
-  poly_subpixel_scale = 1<<poly_subpixel_shift, //----poly_subpixel_scale
-  poly_subpixel_mask  = poly_subpixel_scale-1,  //----poly_subpixel_mask
+enum poly_subpixel_scale_e {
+  poly_subpixel_shift = 8,                        //----poly_subpixel_shift
+  poly_subpixel_scale = 1 << poly_subpixel_shift, //----poly_subpixel_scale
+  poly_subpixel_mask = poly_subpixel_scale - 1,   //----poly_subpixel_mask
 };
 
 //----------------------------------------------------------filling_rule_e
-enum filling_rule_e
-{
+enum filling_rule_e {
   fill_non_zero,
   fill_even_odd
 };
@@ -250,32 +254,51 @@ inline agg_real rad2deg(agg_real rad)
 }
 
 //----------------------------------------------------------------rect_base
-template<class T> struct rect_base
-{
+template <class T>
+struct rect_base {
   typedef rect_base<T> self_type;
   T x1;
   T y1;
   T x2;
   T y2;
 
-  rect_base() {}
-  rect_base(T x1_, T y1_, T x2_, T y2_) :
-      x1(x1_), y1(y1_), x2(x2_), y2(y2_) {}
+  rect_base()
+  {
+  }
+  rect_base(T x1_, T y1_, T x2_, T y2_)
+      : x1(x1_)
+      , y1(y1_)
+      , x2(x2_)
+      , y2(y2_)
+  {
+  }
 
   const self_type& normalize()
   {
     T t;
-    if(x1 > x2) { t = x1; x1 = x2; x2 = t; }
-    if(y1 > y2) { t = y1; y1 = y2; y2 = t; }
+    if (x1 > x2) {
+      t = x1;
+      x1 = x2;
+      x2 = t;
+    }
+    if (y1 > y2) {
+      t = y1;
+      y1 = y2;
+      y2 = t;
+    }
     return *this;
   }
 
   bool clip(const self_type& r)
   {
-    if(x2 > r.x2) x2 = r.x2;
-    if(y2 > r.y2) y2 = r.y2;
-    if(x1 < r.x1) x1 = r.x1;
-    if(y1 < r.y1) y1 = r.y1;
+    if (x2 > r.x2)
+      x2 = r.x2;
+    if (y2 > r.y2)
+      y2 = r.y2;
+    if (x1 < r.x1)
+      x1 = r.x1;
+    if (y1 < r.y1)
+      y1 = r.y1;
     return x1 <= x2 && y1 <= y2;
   }
 
@@ -286,7 +309,7 @@ template<class T> struct rect_base
 };
 
 //-----------------------------------------------------intersect_rectangles
-template<class Rect>
+template <class Rect>
 inline Rect intersect_rectangles(const Rect& r1, const Rect& r2)
 {
   Rect r = r1;
@@ -296,53 +319,58 @@ inline Rect intersect_rectangles(const Rect& r1, const Rect& r2)
   // Microsoft Visual C++ .NET 2003 69462-335-0000007-18038 in
   // case of "Maximize Speed" optimization option.
   //-----------------
-  if(r.x2 > r2.x2) r.x2 = r2.x2;
-  if(r.y2 > r2.y2) r.y2 = r2.y2;
-  if(r.x1 < r2.x1) r.x1 = r2.x1;
-  if(r.y1 < r2.y1) r.y1 = r2.y1;
+  if (r.x2 > r2.x2)
+    r.x2 = r2.x2;
+  if (r.y2 > r2.y2)
+    r.y2 = r2.y2;
+  if (r.x1 < r2.x1)
+    r.x1 = r2.x1;
+  if (r.y1 < r2.y1)
+    r.y1 = r2.y1;
   return r;
 }
 
-
 //---------------------------------------------------------unite_rectangles
-template<class Rect>
+template <class Rect>
 inline Rect unite_rectangles(const Rect& r1, const Rect& r2)
 {
   Rect r = r1;
-  if(r.x2 < r2.x2) r.x2 = r2.x2;
-  if(r.y2 < r2.y2) r.y2 = r2.y2;
-  if(r.x1 > r2.x1) r.x1 = r2.x1;
-  if(r.y1 > r2.y1) r.y1 = r2.y1;
+  if (r.x2 < r2.x2)
+    r.x2 = r2.x2;
+  if (r.y2 < r2.y2)
+    r.y2 = r2.y2;
+  if (r.x1 > r2.x1)
+    r.x1 = r2.x1;
+  if (r.y1 > r2.y1)
+    r.y1 = r2.y1;
   return r;
 }
 
-typedef rect_base<int>    rect_i; //----rect_i
-typedef rect_base<float>  rect_f; //----rect_f
+typedef rect_base<int> rect_i;      //----rect_i
+typedef rect_base<float> rect_f;    //----rect_f
 typedef rect_base<agg_real> rect_d; //----rect_d
 
 //---------------------------------------------------------path_commands_e
-enum path_commands_e
-{
-  path_cmd_stop     = 0,        //----path_cmd_stop
-  path_cmd_move_to  = 1,        //----path_cmd_move_to
-  path_cmd_line_to  = 2,        //----path_cmd_line_to
-  path_cmd_curve3   = 3,        //----path_cmd_curve3
-  path_cmd_curve4   = 4,        //----path_cmd_curve4
-  path_cmd_curveN   = 5,        //----path_cmd_curveN
-  path_cmd_catrom   = 6,        //----path_cmd_catrom
-  path_cmd_ubspline = 7,        //----path_cmd_ubspline
-  path_cmd_end_poly = 0x0F,     //----path_cmd_end_poly
-  path_cmd_mask     = 0x0F      //----path_cmd_mask
+enum path_commands_e {
+  path_cmd_stop = 0,        //----path_cmd_stop
+  path_cmd_move_to = 1,     //----path_cmd_move_to
+  path_cmd_line_to = 2,     //----path_cmd_line_to
+  path_cmd_curve3 = 3,      //----path_cmd_curve3
+  path_cmd_curve4 = 4,      //----path_cmd_curve4
+  path_cmd_curveN = 5,      //----path_cmd_curveN
+  path_cmd_catrom = 6,      //----path_cmd_catrom
+  path_cmd_ubspline = 7,    //----path_cmd_ubspline
+  path_cmd_end_poly = 0x0F, //----path_cmd_end_poly
+  path_cmd_mask = 0x0F      //----path_cmd_mask
 };
 
 //------------------------------------------------------------path_flags_e
-enum path_flags_e
-{
-  path_flags_none  = 0,         //----path_flags_none
-  path_flags_ccw   = 0x10,      //----path_flags_ccw
-  path_flags_cw    = 0x20,      //----path_flags_cw
-  path_flags_close = 0x40,      //----path_flags_close
-  path_flags_mask  = 0xF0       //----path_flags_mask
+enum path_flags_e {
+  path_flags_none = 0,     //----path_flags_none
+  path_flags_ccw = 0x10,   //----path_flags_ccw
+  path_flags_cw = 0x20,    //----path_flags_cw
+  path_flags_close = 0x40, //----path_flags_close
+  path_flags_mask = 0xF0   //----path_flags_mask
 };
 
 //---------------------------------------------------------------is_vertex
@@ -403,7 +431,7 @@ inline bool is_end_poly(unsigned c)
 inline bool is_close(unsigned c)
 {
   return (c & ~(path_flags_cw | path_flags_ccw)) ==
-      (path_cmd_end_poly | path_flags_close);
+         (path_cmd_end_poly | path_flags_close);
 }
 
 //------------------------------------------------------------is_next_poly
@@ -461,31 +489,43 @@ inline unsigned set_orientation(unsigned c, unsigned o)
 }
 
 //--------------------------------------------------------------point_base
-template<class T> struct point_base
-{
+template <class T>
+struct point_base {
   typedef T value_type;
-  T x,y;
-  point_base() {}
-  point_base(T x_, T y_) : x(x_), y(y_) {}
+  T x, y;
+  point_base()
+  {
+  }
+  point_base(T x_, T y_)
+      : x(x_)
+      , y(y_)
+  {
+  }
 };
-typedef point_base<int>    point_i; //-----point_i
-typedef point_base<float>  point_f; //-----point_f
+typedef point_base<int> point_i;      //-----point_i
+typedef point_base<float> point_f;    //-----point_f
 typedef point_base<agg_real> point_d; //-----point_d
 
 //-------------------------------------------------------------vertex_base
-template<class T> struct vertex_base
-{
+template <class T>
+struct vertex_base {
   typedef T value_type;
-  T x,y;
+  T x, y;
   unsigned cmd;
-  vertex_base() {}
-  vertex_base(T x_, T y_, unsigned cmd_) : x(x_), y(y_), cmd(cmd_) {}
+  vertex_base()
+  {
+  }
+  vertex_base(T x_, T y_, unsigned cmd_)
+      : x(x_)
+      , y(y_)
+      , cmd(cmd_)
+  {
+  }
 };
-typedef vertex_base<int>    vertex_i; //-----vertex_i
-typedef vertex_base<float>  vertex_f; //-----vertex_f
+typedef vertex_base<int> vertex_i;      //-----vertex_i
+typedef vertex_base<float> vertex_f;    //-----vertex_f
 typedef vertex_base<agg_real> vertex_d; //-----vertex_d
 
-}
-
+} // namespace agg
 
 #endif

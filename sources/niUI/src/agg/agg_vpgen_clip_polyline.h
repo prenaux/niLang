@@ -18,23 +18,21 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //======================================================vpgen_clip_polyline
 //
 // See Implementation agg_vpgen_clip_polyline.cpp
 //
-class vpgen_clip_polyline
-{
+class vpgen_clip_polyline {
  public:
-  vpgen_clip_polyline() :
-      m_clip_box(0, 0, 1, 1),
-      m_x1(0),
-      m_y1(0),
-      m_num_vertices(0),
-      m_vertex(0),
-      m_move_to(false)
+  vpgen_clip_polyline()
+      : m_clip_box(0, 0, 1, 1)
+      , m_x1(0)
+      , m_y1(0)
+      , m_num_vertices(0)
+      , m_vertex(0)
+      , m_move_to(false)
   {
   }
 
@@ -47,32 +45,49 @@ class vpgen_clip_polyline
     m_clip_box.normalize();
   }
 
-  agg_real x1() const { return m_clip_box.x1; }
-  agg_real y1() const { return m_clip_box.y1; }
-  agg_real x2() const { return m_clip_box.x2; }
-  agg_real y2() const { return m_clip_box.y2; }
+  agg_real x1() const
+  {
+    return m_clip_box.x1;
+  }
+  agg_real y1() const
+  {
+    return m_clip_box.y1;
+  }
+  agg_real x2() const
+  {
+    return m_clip_box.x2;
+  }
+  agg_real y2() const
+  {
+    return m_clip_box.y2;
+  }
 
-  static bool auto_close()   { return false; }
-  static bool auto_unclose() { return true; }
+  static bool auto_close()
+  {
+    return false;
+  }
+  static bool auto_unclose()
+  {
+    return true;
+  }
 
-  void     reset();
-  void     move_to(agg_real x, agg_real y);
-  void     line_to(agg_real x, agg_real y);
+  void reset();
+  void move_to(agg_real x, agg_real y);
+  void line_to(agg_real x, agg_real y);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
-  rect_d        m_clip_box;
-  agg_real        m_x1;
-  agg_real        m_y1;
-  agg_real        m_x[2];
-  agg_real        m_y[2];
-  unsigned      m_cmd[2];
-  unsigned      m_num_vertices;
-  unsigned      m_vertex;
-  bool          m_move_to;
+  rect_d m_clip_box;
+  agg_real m_x1;
+  agg_real m_y1;
+  agg_real m_x[2];
+  agg_real m_y[2];
+  unsigned m_cmd[2];
+  unsigned m_num_vertices;
+  unsigned m_vertex;
+  bool m_move_to;
 };
 
-}
-
+} // namespace agg
 
 #endif

@@ -15,8 +15,7 @@ struct iBitmap2D;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Bitmap cube faces.
 //! \remark The coordinate system is Left-Handed as in DX7/8.
-enum eBitmapCubeFace
-{
+enum eBitmapCubeFace {
   eBitmapCubeFace_PositiveX = 0,
   eBitmapCubeFace_NegativeX = 1,
   eBitmapCubeFace_PositiveY = 2,
@@ -29,8 +28,7 @@ enum eBitmapCubeFace
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Cube bitmap interface.
-struct iBitmapCube : public iBitmapBase
-{
+struct iBitmapCube : public iBitmapBase {
   niDeclareInterfaceUUID(iBitmapCube,0x8da50ffa,0x7fd2,0x404c,0x85,0xe0,0xbc,0x52,0x51,0x1e,0xf4,0xc4);
 
   //! Get the content of the indicated face.
@@ -42,5 +40,5 @@ struct iBitmapCube : public iBitmapBase
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __IBITMAPCUBE_57046848_H__

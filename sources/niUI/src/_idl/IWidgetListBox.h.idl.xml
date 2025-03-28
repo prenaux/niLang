@@ -2,25 +2,25 @@
 	<namespace name="ni">
 		<enum name="eWidgetListBoxCmd">
 			<comments desc="Listbox notification messages "/>
-			<value name="eWidgetListBoxCmd_SelectionChanged" value="0 ">
+			<value name="eWidgetListBoxCmd_SelectionChanged" value="0">
 				<comments desc="Sent when the selection has changed "/>
 			</value>
 		</enum>
 		<enum name="eWidgetListBoxStyle">
 			<comments desc="Listbox style "/>
-			<value name="eWidgetListBoxStyle_HasHeader" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetListBoxStyle_HasHeader" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Has header. "/>
 			</value>
-			<value name="eWidgetListBoxStyle_HeaderSort" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetListBoxStyle_HeaderSort" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Clicking the Header will sort the items Ascendant/Descendant. "/>
 			</value>
-			<value name="eWidgetListBoxStyle_Multiselect" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetListBoxStyle_Multiselect" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="Allow multiple selection. "/>
 			</value>
-			<value name="eWidgetListBoxStyle_SelectOnMove" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetListBoxStyle_SelectOnMove" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="Select when mouse moves. "/>
 			</value>
-			<value name="eWidgetListBoxStyle_ClickAddSelection" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+			<value name="eWidgetListBoxStyle_ClickAddSelection" value="niBit(eWidgetStyle_MaxBit+4)">
 				<comments desc="Click down add selection, Ctrl+Click set selection. (This is the opposite of the default) "/>
 			</value>
 		</enum>

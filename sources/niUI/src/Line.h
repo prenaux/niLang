@@ -3,8 +3,7 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-enum eNewLine
-{
+enum eNewLine {
   eNewLine_CR,
   eNewLine_LF,
   eNewLine_CRLF,
@@ -12,37 +11,34 @@ enum eNewLine
   eNewLine_Auto
 };
 
-inline const achar *_GetEOL(eNewLine aNewLine)
+inline const achar* _GetEOL(eNewLine aNewLine)
 {
-  switch(aNewLine) {
-    case eNewLine_CR: return _A("\r");
-    case eNewLine_LF: return _A("\n");
-    case eNewLine_CRLF: return _A("\r\n");
-    case eNewLine_Platform:
+  switch (aNewLine) {
+  case eNewLine_CR: return _A("\r");
+  case eNewLine_LF: return _A("\n");
+  case eNewLine_CRLF: return _A("\r\n");
+  case eNewLine_Platform:
 #ifdef niWindows
-      return _A("\r\n");
+    return _A("\r\n");
 #else
-      return _A("\n");
+    return _A("\n");
 #endif
-    default:
-      niPanicUnreachable("Invalid EOL.");
-      return nullptr;
+  default: niPanicUnreachable("Invalid EOL."); return nullptr;
   }
 }
 
-class Line
-{
+class Line {
  public:
   Line();
   Line(eNewLine nl);
-  Line(const Line &o);
-  Line(const achar *data,eNewLine nl);
+  Line(const Line& o);
+  Line(const achar* data, eNewLine nl);
   virtual ~Line(void);
 
   bool AppendChar(tU32 c);
-  bool InsertChar(unsigned int col,tU32 c);
-  bool AddNewLine(unsigned int col,Line &newline);
-  const achar *GetEOL(eNewLine aNL = eNewLine_Auto) const;
+  bool InsertChar(unsigned int col, tU32 c);
+  bool AddNewLine(unsigned int col, Line& newline);
+  const achar* GetEOL(eNewLine aNL = eNewLine_Auto) const;
   tU32 GetAt(tU32 c) const;
   void EraseChar(tU32 anCol);
   void EraseRange(tU32 anStartCol, tU32 anEndCol);
@@ -53,11 +49,26 @@ class Line
   void SetData(const achar* aaszData);
   void AppendData(const cString& str);
   void AppendData(const achar* aaszData);
-  tBool IsEmpty() const { return _data.empty(); }
-  const achar* GetChars() const { return _data.Chars(); }
-  const cString& GetStr() const { return _data; }
-  void SetNewLine(eNewLine aNL) { _newline = aNL; }
-  eNewLine GetNewLine() const { return _newline; }
+  tBool IsEmpty() const
+  {
+    return _data.empty();
+  }
+  const achar* GetChars() const
+  {
+    return _data.Chars();
+  }
+  const cString& GetStr() const
+  {
+    return _data;
+  }
+  void SetNewLine(eNewLine aNL)
+  {
+    _newline = aNL;
+  }
+  eNewLine GetNewLine() const
+  {
+    return _newline;
+  }
 
  private:
   cString _data;

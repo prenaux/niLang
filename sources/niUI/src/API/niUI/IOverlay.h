@@ -14,8 +14,7 @@ struct iCanvas;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! iOverlay interface
 //!
-struct iOverlay : public iUnknown
-{
+struct iOverlay : public iUnknown {
   niDeclareInterfaceUUID(iOverlay,0xfc8d5e7e,0x931f,0x4388,0xb6,0x70,0x1e,0x30,0xb9,0xb1,0xa2,0x1f);
 
   //! Clone the overlay.
@@ -78,7 +77,8 @@ struct iOverlay : public iUnknown
   //! \param  aCorner specify the corner(s) on which the color apply.
   //! \param  aColor is the new color of the corner.
   //! {Property}
-  virtual void __stdcall SetCornerColor(eRectCorners aCorner, const sColor4f& aColor) = 0;
+  virtual void __stdcall SetCornerColor(eRectCorners aCorner,
+                                        const sColor4f& aColor) = 0;
   //! Get the color of the overlay.
   //! \param  aCorner is the corner to get the color of.
   //! \return the color of the specified corner of the overlay.
@@ -105,11 +105,14 @@ struct iOverlay : public iUnknown
   //! Compute the center of the frame from the provided destination rectangle.
   virtual sRectf __stdcall ComputeFrameCenter(const sRectf& aDest) const = 0;
 
-  virtual tBool __stdcall Draw(iCanvas* apCanvas, const sVec2f& aPos, const sVec2f& aSize) = 0;
-  virtual tBool __stdcall DrawFrame(iCanvas* apCanvas, tRectFrameFlags aFrame, const sVec2f& aPos, const sVec2f& aSize) = 0;
+  virtual tBool __stdcall Draw(iCanvas* apCanvas, const sVec2f& aPos,
+                               const sVec2f& aSize) = 0;
+  virtual tBool __stdcall DrawFrame(iCanvas* apCanvas, tRectFrameFlags aFrame,
+                                    const sVec2f& aPos,
+                                    const sVec2f& aSize) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IOVERLAY_608540_H__

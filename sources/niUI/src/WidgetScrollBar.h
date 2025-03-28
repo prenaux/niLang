@@ -4,37 +4,45 @@
 // SPDX-License-Identifier: MIT
 
 #define SCROLL_DOWN niBit(0)
-#define SCROLL_UP   niBit(1)
+#define SCROLL_UP niBit(1)
 #define SCROLL_PAGE niBit(2)
 
-class cScrollBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetScrollBar>
-{
+class cScrollBarWidget
+    : public ImplRC<iWidgetSink, eImplFlags_Default, iWidgetScrollBar> {
   niBeginClass(cScrollBarWidget);
+
  public:
-  cScrollBarWidget(iWidget *pWidget);
+  cScrollBarWidget(iWidget* pWidget);
   ~cScrollBarWidget();
 
   //// iWidgetScrollBar /////////////////////////
   void __stdcall SetScrollRange(const sVec2f& avRange) niImpl;
-  sVec2f __stdcall GetScrollRange() const niImpl { return Vec2<tF32>(mfMin,mfMax); }
+  sVec2f __stdcall GetScrollRange() const niImpl
+  {
+    return Vec2<tF32>(mfMin, mfMax);
+  }
   void __stdcall SetScrollPosition(tF32 afScrollPos) niImpl;
   tF32 __stdcall GetScrollPosition() const niImpl;
   void __stdcall SetNormalizedScrollPosition(tF32 afScrollPos) niImpl;
   tF32 __stdcall GetNormalizedScrollPosition() const niImpl;
   void __stdcall SetPageSize(tF32 afPageSize) niImpl;
-  tF32 __stdcall GetPageSize() const niImpl {return mfPageSize; }
+  tF32 __stdcall GetPageSize() const niImpl
+  {
+    return mfPageSize;
+  }
   tF32 __stdcall ComputeRoundedPosition(tF32 afNewPos) const niImpl;
   //// iWidgetScrollBar /////////////////////////
 
   //internals
-  void ThumbMove(const sVec2f &pos);
+  void ThumbMove(const sVec2f& pos);
 
   //iWidgetSink interface
-  tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varParam0, const Var& varParam1);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 nMsg,
+                               const Var& varParam0, const Var& varParam1);
   //internal stuff
   void PaintWidget();
-  void AdjustChildrenLayout(tF32 w,tF32 h);
-  void ComputeClientRect(tF32 w,tF32 h);
+  void AdjustChildrenLayout(tF32 w, tF32 h);
+  void ComputeClientRect(tF32 w, tF32 h);
   void UpdateStyle();
   void ThumbMoveMouse(const sVec2f& avAbsPos, tBool abSlideMove);
 
@@ -45,7 +53,7 @@ class cScrollBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetScr
   void __stdcall _SetScrollPosition(tF32 afScrollPos, tBool abWheel);
 
  public:
-  iWidget *mpWidget;
+  iWidget* mpWidget;
   Ptr<iWidget> mptrThumb;
   tF32 mfMin;
   tF32 mfMax;
@@ -59,8 +67,12 @@ class cScrollBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetScr
   struct sButtons {
     Ptr<iWidget> up;
     Ptr<iWidget> down;
-    ~sButtons() { Clear(); }
-    void Clear() {
+    ~sButtons()
+    {
+      Clear();
+    }
+    void Clear()
+    {
       if (up.IsOK()) {
         up->Destroy();
         up = NULL;
@@ -70,7 +82,8 @@ class cScrollBarWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetScr
         down = NULL;
       }
     }
-    tBool HasButtons() const {
+    tBool HasButtons() const
+    {
       return up.IsOK();
     }
   } mButtons;

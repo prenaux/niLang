@@ -2,18 +2,18 @@
 	<namespace name="ni">
 		<enum name="eImageUsage">
 			<comments desc="Image usage. "/>
-			<value name="eImageUsage_Source" value="0 ">
+			<value name="eImageUsage_Source" value="0">
 				<comments desc="The usage is read-only to be used a source for rendering. ">
 					<remark text="No dirty region is added. "/>
 				</comments>
 			</value>
-			<value name="eImageUsage_Target" value="1 ">
+			<value name="eImageUsage_Target" value="1">
 				<comments desc="The usage is write-only to be used as a render target. Previous content is preserved. "/>
 			</value>
-			<value name="eImageUsage_DepthStencil" value="2 ">
+			<value name="eImageUsage_DepthStencil" value="2">
 				<comments desc="For GetTexture only, grabs the depth stencil for rendering. "/>
 			</value>
-			<value name="eImageUsage_TargetDiscard" value="3 ">
+			<value name="eImageUsage_TargetDiscard" value="3">
 				<comments desc="The usage is write-only to be used as a render target. The whole content of the target is assumed to be overwritten and so no effort to keep the previous content is made. "/>
 			</value>
 		</enum>

@@ -2,16 +2,16 @@
 	<namespace name="ni">
 		<enum name="eBoundingVolumeType">
 			<comments desc="Bounding volume type. "/>
-			<value name="eBoundingVolumeType_AABB" value="0 ">
+			<value name="eBoundingVolumeType_AABB" value="0">
 				<comments desc="AABB volume type. "/>
 			</value>
-			<value name="eBoundingVolumeType_Sphere" value="1 ">
+			<value name="eBoundingVolumeType_Sphere" value="1">
 				<comments desc="Sphere volume type. "/>
 			</value>
-			<value name="eBoundingVolumeType_ConvexHull" value="2 ">
+			<value name="eBoundingVolumeType_ConvexHull" value="2">
 				<comments desc="Convex hull volume type. "/>
 			</value>
-			<value name="eBoundingVolumeType_User" value="2 ">
+			<value name="eBoundingVolumeType_User" value="2">
 				<comments desc="User volume type "/>
 			</value>
 		</enum>

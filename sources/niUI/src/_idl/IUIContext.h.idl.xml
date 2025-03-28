@@ -4,85 +4,85 @@
 			<comments desc="UI input modifiers. ">
 				<remark text="The key values are intentionally the same as ni::eKeyMod "/>
 			</comments>
-			<value name="eUIInputModifier_A" value="niBit ( 16 ) ">
+			<value name="eUIInputModifier_A" value="niBit(16)">
 				<comments desc="Modifier A. "/>
 			</value>
-			<value name="eUIInputModifier_Control" value="eUIInputModifier_A ">
+			<value name="eUIInputModifier_Control" value="eUIInputModifier_A">
 				<comments desc="Modifier A. "/>
 			</value>
-			<value name="eUIInputModifier_Command" value="eUIInputModifier_A ">
+			<value name="eUIInputModifier_Command" value="eUIInputModifier_A">
 				<comments desc="Modifier A. "/>
 			</value>
-			<value name="eUIInputModifier_AddSelection" value="eUIInputModifier_A ">
+			<value name="eUIInputModifier_AddSelection" value="eUIInputModifier_A">
 				<comments desc="Modifier A. "/>
 			</value>
-			<value name="eUIInputModifier_B" value="niBit ( 17 ) ">
+			<value name="eUIInputModifier_B" value="niBit(17)">
 				<comments desc="Modifier B. "/>
 			</value>
-			<value name="eUIInputModifier_Shift" value="eUIInputModifier_B ">
+			<value name="eUIInputModifier_Shift" value="eUIInputModifier_B">
 				<comments desc="Modifier B. "/>
 			</value>
-			<value name="eUIInputModifier_AddSelectionRange" value="eUIInputModifier_B ">
+			<value name="eUIInputModifier_AddSelectionRange" value="eUIInputModifier_B">
 				<comments desc="Modifier B. "/>
 			</value>
-			<value name="eUIInputModifier_C" value="niBit ( 18 ) ">
+			<value name="eUIInputModifier_C" value="niBit(18)">
 				<comments desc="Modifier C. "/>
 			</value>
-			<value name="eUIInputModifier_Alt" value="eUIInputModifier_C ">
+			<value name="eUIInputModifier_Alt" value="eUIInputModifier_C">
 				<comments desc="Modifier C. "/>
 			</value>
-			<value name="eUIInputModifier_Shortcut" value="eUIInputModifier_C ">
+			<value name="eUIInputModifier_Shortcut" value="eUIInputModifier_C">
 				<comments desc="Modifier C. "/>
 			</value>
-			<value name="eUIInputModifier_KeyDownRepeat" value="niBit ( 31 ) ">
+			<value name="eUIInputModifier_KeyDownRepeat" value="niBit(31)">
 				<comments desc="KeyDown is repeating. "/>
 			</value>
 		</enum>
 		<enum name="eUIInputSubmitFlags">
 			<comments desc="UI input submit. "/>
-			<value name="eUIInputSubmitFlags_Disabled" value="0 ">
+			<value name="eUIInputSubmitFlags_Disabled" value="0">
 				<comments desc="Disabled "/>
 			</value>
-			<value name="eUIInputSubmitFlags_SubmitA" value="niBit ( 0 ) ">
+			<value name="eUIInputSubmitFlags_SubmitA" value="niBit(0)">
 				<comments desc="Input action Submit A. ">
 					<remark text="Standard is Enter and NumPadEnter. "/>
 				</comments>
 			</value>
-			<value name="eUIInputSubmitFlags_SubmitB" value="niBit ( 1 ) ">
+			<value name="eUIInputSubmitFlags_SubmitB" value="niBit(1)">
 				<comments desc="Input action Submit B. ">
 					<remark text="Standard is Space bar. "/>
 				</comments>
 			</value>
-			<value name="eUIInputSubmitFlags_SubmitC" value="niBit ( 2 ) ">
+			<value name="eUIInputSubmitFlags_SubmitC" value="niBit(2)">
 				<comments desc="Input action Submit C. ">
 					<remark text="Standard is Ctrl+Enter. "/>
 				</comments>
 			</value>
-			<value name="eUIInputSubmitFlags_LeftClick" value="niBit ( 3 ) ">
+			<value name="eUIInputSubmitFlags_LeftClick" value="niBit(3)">
 				<comments desc="Left click. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_LeftDoubleClick" value="niBit ( 4 ) ">
+			<value name="eUIInputSubmitFlags_LeftDoubleClick" value="niBit(4)">
 				<comments desc="Left double click. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_RightClick" value="niBit ( 5 ) ">
+			<value name="eUIInputSubmitFlags_RightClick" value="niBit(5)">
 				<comments desc="Right click. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_RightDoubleClick" value="niBit ( 6 ) ">
+			<value name="eUIInputSubmitFlags_RightDoubleClick" value="niBit(6)">
 				<comments desc="Right double click. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_StandardButton" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftClick ">
+			<value name="eUIInputSubmitFlags_StandardButton" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftClick">
 				<comments desc="Button standard. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_StandardIcon" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftDoubleClick ">
+			<value name="eUIInputSubmitFlags_StandardIcon" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftDoubleClick">
 				<comments desc="Icon standard. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_StandardSingleLineText" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitC ">
+			<value name="eUIInputSubmitFlags_StandardSingleLineText" value="eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitC">
 				<comments desc="Single Line Text box standard. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_StandardMultiLineText" value="eUIInputSubmitFlags_SubmitC ">
+			<value name="eUIInputSubmitFlags_StandardMultiLineText" value="eUIInputSubmitFlags_SubmitC">
 				<comments desc="Multi Line Text box standard. "/>
 			</value>
-			<value name="eUIInputSubmitFlags_Default" value="eUIInputSubmitFlags_Disabled ">
+			<value name="eUIInputSubmitFlags_Default" value="eUIInputSubmitFlags_Disabled">
 				<comments desc="UI Context default input submit flags default. "/>
 			</value>
 		</enum>

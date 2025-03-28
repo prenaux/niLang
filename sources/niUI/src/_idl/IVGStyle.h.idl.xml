@@ -2,46 +2,46 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eVGLineCap">
 			<comments desc="VG Line Cap type. "/>
-			<value min_features="20" name="eVGLineCap_Butt" value="0 ">
+			<value min_features="20" name="eVGLineCap_Butt" value="0">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineCap_Square" value="1 ">
+			<value min_features="20" name="eVGLineCap_Square" value="1">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineCap_Round" value="2 ">
+			<value min_features="20" name="eVGLineCap_Round" value="2">
 				<comments desc=""/>
 			</value>
 		</enum>
 		<enum min_features="20" name="eVGLineJoin">
 			<comments desc="VG Line join. "/>
-			<value min_features="20" name="eVGLineJoin_Miter" value="0 ">
+			<value min_features="20" name="eVGLineJoin_Miter" value="0">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineJoin_MiterRevert" value="1 ">
+			<value min_features="20" name="eVGLineJoin_MiterRevert" value="1">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineJoin_MiterRound" value="2 ">
+			<value min_features="20" name="eVGLineJoin_MiterRound" value="2">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineJoin_Round" value="3 ">
+			<value min_features="20" name="eVGLineJoin_Round" value="3">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGLineJoin_Bevel" value="4 ">
+			<value min_features="20" name="eVGLineJoin_Bevel" value="4">
 				<comments desc=""/>
 			</value>
 		</enum>
 		<enum min_features="20" name="eVGInnerJoin">
 			<comments desc="VG Inner join. "/>
-			<value min_features="20" name="eVGInnerJoin_Bevel" value="0 ">
+			<value min_features="20" name="eVGInnerJoin_Bevel" value="0">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGInnerJoin_Miter" value="1 ">
+			<value min_features="20" name="eVGInnerJoin_Miter" value="1">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGInnerJoin_Jag" value="2 ">
+			<value min_features="20" name="eVGInnerJoin_Jag" value="2">
 				<comments desc=""/>
 			</value>
-			<value min_features="20" name="eVGInnerJoin_Round" value="3 ">
+			<value min_features="20" name="eVGInnerJoin_Round" value="3">
 				<comments desc=""/>
 			</value>
 		</enum>

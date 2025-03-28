@@ -19,8 +19,8 @@ struct sFontFile {
   cString strDisp;
 };
 typedef astl::list<sFontFile> tFontFileLst;
-typedef tFontFileLst::iterator  tFontFileLstIt;
-typedef tFontFileLst::const_iterator  tFontFileLstCIt;
+typedef tFontFileLst::iterator tFontFileLstIt;
+typedef tFontFileLst::const_iterator tFontFileLstCIt;
 
 ni::tBool GetAllFontFiles(tFontFileLst& aLst);
 ni::cString GetFontsDirectory();

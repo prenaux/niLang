@@ -22,8 +22,7 @@
 #include <math.h>
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 const agg_real affine_epsilon = 1e-14; // About of precision of doubles
 
 //============================================================trans_affine
@@ -84,19 +83,31 @@ const agg_real affine_epsilon = 1e-14; // About of precision of doubles
 // m *= agg::trans_affine_rotation(30.0 * 3.1415926 / 180.0);  // rotate
 // m *= agg::trans_affine_translation(100.0, 100.0);           // move back to (100,100)
 //----------------------------------------------------------------------
-class trans_affine
-{
+class trans_affine {
  public:
   //------------------------------------------ Construction
   // Construct an identity matrix - it does not transform anything
-  trans_affine() :
-      m0(1.0), m1(0.0), m2(0.0), m3(1.0), m4(0.0), m5(0.0)
-  {}
+  trans_affine()
+      : m0(1.0)
+      , m1(0.0)
+      , m2(0.0)
+      , m3(1.0)
+      , m4(0.0)
+      , m5(0.0)
+  {
+  }
 
   // Construct a custom matrix. Usually used in derived classes
-  trans_affine(agg_real v0, agg_real v1, agg_real v2, agg_real v3, agg_real v4, agg_real v5) :
-      m0(v0), m1(v1), m2(v2), m3(v3), m4(v4), m5(v5)
-  {}
+  trans_affine(agg_real v0, agg_real v1, agg_real v2, agg_real v3, agg_real v4,
+               agg_real v5)
+      : m0(v0)
+      , m1(v1)
+      , m2(v2)
+      , m3(v3)
+      , m4(v4)
+      , m5(v5)
+  {
+  }
 
   // Construct a matrix to transform a parallelogram to another one.
   trans_affine(const agg_real* rect, const agg_real* parl)
@@ -112,12 +123,11 @@ class trans_affine
   }
 
   // Construct a matrix to transform a parallelogram to a rectangle.
-  trans_affine(const agg_real* parl,
-               agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  trans_affine(const agg_real* parl, agg_real x1, agg_real y1, agg_real x2,
+               agg_real y2)
   {
     parl_to_rect(parl, x1, y1, x2, y2);
   }
-
 
   //---------------------------------- Parellelogram transformations
   // Calculate a matrix to transform a parallelogram to another one.
@@ -126,17 +136,13 @@ class trans_affine
   // parallelograms assuming implicit fourth points.
   // There are also transformations rectangtle to parallelogram and
   // parellelogram to rectangle
-  const trans_affine& parl_to_parl(const agg_real* src,
-                                   const agg_real* dst);
+  const trans_affine& parl_to_parl(const agg_real* src, const agg_real* dst);
 
-  const trans_affine& rect_to_parl(agg_real x1, agg_real y1,
-                                   agg_real x2, agg_real y2,
-                                   const agg_real* parl);
+  const trans_affine& rect_to_parl(agg_real x1, agg_real y1, agg_real x2,
+                                   agg_real y2, const agg_real* parl);
 
-  const trans_affine& parl_to_rect(const agg_real* parl,
-                                   agg_real x1, agg_real y1,
-                                   agg_real x2, agg_real y2);
-
+  const trans_affine& parl_to_rect(const agg_real* parl, agg_real x1,
+                                   agg_real y1, agg_real x2, agg_real y2);
 
   //------------------------------------------ Operations
   // Reset - actually load an identity matrix
@@ -169,59 +175,69 @@ class trans_affine
   // Store matrix to an array [6] of agg_real
   void store_to(agg_real* m) const
   {
-    *m++ = m0; *m++ = m1; *m++ = m2; *m++ = m3; *m++ = m4; *m++ = m5;
+    *m++ = m0;
+    *m++ = m1;
+    *m++ = m2;
+    *m++ = m3;
+    *m++ = m4;
+    *m++ = m5;
   }
 
   // Load matrix from an array [6] of agg_real
   const trans_affine& load_from(const agg_real* m)
   {
-    m0 = *m++; m1 = *m++; m2 = *m++; m3 = *m++; m4 = *m++;  m5 = *m++;
+    m0 = *m++;
+    m1 = *m++;
+    m2 = *m++;
+    m3 = *m++;
+    m4 = *m++;
+    m5 = *m++;
     return *this;
   }
 
   //------------------------------------------- Operators
 
   // Multiply current matrix to another one
-  const trans_affine& operator *= (const trans_affine& m)
+  const trans_affine& operator*=(const trans_affine& m)
   {
     return multiply(m);
   }
 
   // Multiply current matrix to inverse of another one
-  const trans_affine& operator /= (const trans_affine& m)
+  const trans_affine& operator/=(const trans_affine& m)
   {
     return multiply_inv(m);
   }
 
   // Multiply current matrix to another one and return
   // the result in a separete matrix.
-  trans_affine operator * (const trans_affine& m)
+  trans_affine operator*(const trans_affine& m)
   {
     return trans_affine(*this).multiply(m);
   }
 
   // Multiply current matrix to inverse of another one
   // and return the result in a separete matrix.
-  trans_affine operator / (const trans_affine& m)
+  trans_affine operator/(const trans_affine& m)
   {
     return trans_affine(*this).multiply_inv(m);
   }
 
   // Calculate and return the inverse matrix
-  trans_affine operator ~ () const
+  trans_affine operator~() const
   {
     trans_affine ret = *this;
     return ret.invert();
   }
 
   // Equal operator with default epsilon
-  bool operator == (const trans_affine& m) const
+  bool operator==(const trans_affine& m) const
   {
     return is_equal(m, affine_epsilon);
   }
 
   // Not Equal operator with default epsilon
-  bool operator != (const trans_affine& m) const
+  bool operator!=(const trans_affine& m) const
   {
     return !is_equal(m, affine_epsilon);
   }
@@ -258,17 +274,22 @@ class trans_affine
 
   // Determine the major parameters. Use carefully considering degenerate matrices
   agg_real rotation() const;
-  void   translation(agg_real* dx, agg_real* dy) const;
-  void   scaling(agg_real* sx, agg_real* sy) const;
-  void   scaling_abs(agg_real* sx, agg_real* sy) const
+  void translation(agg_real* dx, agg_real* dy) const;
+  void scaling(agg_real* sx, agg_real* sy) const;
+  void scaling_abs(agg_real* sx, agg_real* sy) const
   {
-    *sx = sqrt(m0*m0 + m2*m2);
-    *sy = sqrt(m1*m1 + m3*m3);
+    *sx = sqrt(m0 * m0 + m2 * m2);
+    *sy = sqrt(m1 * m1 + m3 * m3);
   }
 
-  agg_real& value(unsigned idx)       { return ((agg_real*)(&m0))[idx]; }
-  const agg_real& value(unsigned idx) const { return ((agg_real*)(&m0))[idx]; }
-
+  agg_real& value(unsigned idx)
+  {
+    return ((agg_real*)(&m0))[idx];
+  }
+  const agg_real& value(unsigned idx) const
+  {
+    return ((agg_real*)(&m0))[idx];
+  }
 
  private:
   agg_real m0;
@@ -310,7 +331,7 @@ inline agg_real trans_affine::scale() const
 {
   agg_real x = 0.707106781 * m0 + 0.707106781 * m2;
   agg_real y = 0.707106781 * m1 + 0.707106781 * m3;
-  return sqrt(x*x + y*y);
+  return sqrt(x * x + y * y);
 }
 
 //------------------------------------------------------------------------
@@ -342,54 +363,53 @@ inline const trans_affine& trans_affine::premultiply_inv(const trans_affine& m)
 // There's no harm because the performance of sin()/cos() is very good on all
 // modern processors. Besides, this operation is not going to be invoked too
 // often.
-class trans_affine_rotation : public trans_affine
-{
+class trans_affine_rotation : public trans_affine {
  public:
-  trans_affine_rotation(agg_real a) :
-      trans_affine(cos(a), sin(a), -sin(a), cos(a), 0.0, 0.0)
-  {}
+  trans_affine_rotation(agg_real a)
+      : trans_affine(cos(a), sin(a), -sin(a), cos(a), 0.0, 0.0)
+  {
+  }
 };
 
 //====================================================trans_affine_scaling
 // Scaling matrix. sx, sy - scale coefficients by X and Y respectively
-class trans_affine_scaling : public trans_affine
-{
+class trans_affine_scaling : public trans_affine {
  public:
-  trans_affine_scaling(agg_real sx, agg_real sy) :
-      trans_affine(sx, 0.0, 0.0, sy, 0.0, 0.0)
-  {}
+  trans_affine_scaling(agg_real sx, agg_real sy)
+      : trans_affine(sx, 0.0, 0.0, sy, 0.0, 0.0)
+  {
+  }
 
-  trans_affine_scaling(agg_real s) :
-      trans_affine(s, 0.0, 0.0, s, 0.0, 0.0)
-  {}
+  trans_affine_scaling(agg_real s)
+      : trans_affine(s, 0.0, 0.0, s, 0.0, 0.0)
+  {
+  }
 };
 
 //================================================trans_affine_translation
 // Translation matrix
-class trans_affine_translation : public trans_affine
-{
+class trans_affine_translation : public trans_affine {
  public:
-  trans_affine_translation(agg_real tx, agg_real ty) :
-      trans_affine(1.0, 0.0, 0.0, 1.0, tx, ty)
-  {}
+  trans_affine_translation(agg_real tx, agg_real ty)
+      : trans_affine(1.0, 0.0, 0.0, 1.0, tx, ty)
+  {
+  }
 };
 
 //====================================================trans_affine_skewing
 // Sckewing (shear) matrix
-class trans_affine_skewing : public trans_affine
-{
+class trans_affine_skewing : public trans_affine {
  public:
-  trans_affine_skewing(agg_real sx, agg_real sy) :
-      trans_affine(1.0, tan(sy), tan(sx), 1.0, 0.0, 0.0)
-  {}
+  trans_affine_skewing(agg_real sx, agg_real sy)
+      : trans_affine(1.0, tan(sy), tan(sx), 1.0, 0.0, 0.0)
+  {
+  }
 };
-
 
 //===============================================trans_affine_line_segment
 // Rotate, Scale and Translate, associating 0...dist with line segment
 // x1,y1,x2,y2
-class trans_affine_line_segment : public trans_affine
-{
+class trans_affine_line_segment : public trans_affine {
  public:
   trans_affine_line_segment(agg_real x1, agg_real y1, agg_real x2, agg_real y2,
                             agg_real dist)
@@ -404,8 +424,6 @@ class trans_affine_line_segment : public trans_affine
   }
 };
 
-
-}
-
+} // namespace agg
 
 #endif

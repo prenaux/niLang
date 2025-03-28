@@ -22,8 +22,7 @@
 #include <math.h>
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //------------------------------------------------------vertex_dist_epsilon
 // Coinciding points maximal distance (Epsilon)
@@ -34,18 +33,16 @@ const agg_real vertex_dist_epsilon = 1e-14;
 const agg_real intersection_epsilon = 1.0e-30;
 
 //------------------------------------------------------------cross_product
-AGG_INLINE agg_real cross_product(agg_real x1, agg_real y1,
-                                  agg_real x2, agg_real y2,
-                                  agg_real x,  agg_real y)
+AGG_INLINE agg_real cross_product(agg_real x1, agg_real y1, agg_real x2,
+                                  agg_real y2, agg_real x, agg_real y)
 {
   return (x - x2) * (y2 - y1) - (y - y2) * (x2 - x1);
 }
 
 //--------------------------------------------------------point_in_triangle
-AGG_INLINE bool point_in_triangle(agg_real x1, agg_real y1,
-                                  agg_real x2, agg_real y2,
-                                  agg_real x3, agg_real y3,
-                                  agg_real x,  agg_real y)
+AGG_INLINE bool point_in_triangle(agg_real x1, agg_real y1, agg_real x2,
+                                  agg_real y2, agg_real x3, agg_real y3,
+                                  agg_real x, agg_real y)
 {
   bool cp1 = cross_product(x1, y1, x2, y2, x, y) < 0.0;
   bool cp2 = cross_product(x2, y2, x3, y3, x, y) < 0.0;
@@ -54,46 +51,45 @@ AGG_INLINE bool point_in_triangle(agg_real x1, agg_real y1,
 }
 
 //-----------------------------------------------------------calc_distance
-AGG_INLINE agg_real calc_distance(agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+AGG_INLINE agg_real calc_distance(agg_real x1, agg_real y1, agg_real x2,
+                                  agg_real y2)
 {
-  agg_real dx = x2-x1;
-  agg_real dy = y2-y1;
+  agg_real dx = x2 - x1;
+  agg_real dy = y2 - y1;
   return sqrt(dx * dx + dy * dy);
 }
 
 //--------------------------------------------------------calc_sq_distance
-AGG_INLINE agg_real calc_sq_distance(agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+AGG_INLINE agg_real calc_sq_distance(agg_real x1, agg_real y1, agg_real x2,
+                                     agg_real y2)
 {
-  agg_real dx = x2-x1;
-  agg_real dy = y2-y1;
+  agg_real dx = x2 - x1;
+  agg_real dy = y2 - y1;
   return dx * dx + dy * dy;
 }
 
 //------------------------------------------------calc_line_point_distance
 AGG_INLINE agg_real calc_line_point_distance(agg_real x1, agg_real y1,
                                              agg_real x2, agg_real y2,
-                                             agg_real x,  agg_real y)
+                                             agg_real x, agg_real y)
 {
-  agg_real dx = x2-x1;
-  agg_real dy = y2-y1;
+  agg_real dx = x2 - x1;
+  agg_real dy = y2 - y1;
   agg_real d = sqrt(dx * dx + dy * dy);
-  if(d < vertex_dist_epsilon)
-  {
+  if (d < vertex_dist_epsilon) {
     return calc_distance(x1, y1, x, y);
   }
   return ((x - x2) * dy - (y - y2) * dx) / d;
 }
 
 //-------------------------------------------------------calc_line_point_u
-AGG_INLINE agg_real calc_segment_point_u(agg_real x1, agg_real y1,
-                                         agg_real x2, agg_real y2,
-                                         agg_real x,  agg_real y)
+AGG_INLINE agg_real calc_segment_point_u(agg_real x1, agg_real y1, agg_real x2,
+                                         agg_real y2, agg_real x, agg_real y)
 {
   agg_real dx = x2 - x1;
   agg_real dy = y2 - y1;
 
-  if(dx == 0 && dy == 0)
-  {
+  if (dx == 0 && dy == 0) {
     return 0;
   }
 
@@ -106,49 +102,47 @@ AGG_INLINE agg_real calc_segment_point_u(agg_real x1, agg_real y1,
 //---------------------------------------------calc_line_point_sq_distance
 AGG_INLINE agg_real calc_segment_point_sq_distance(agg_real x1, agg_real y1,
                                                    agg_real x2, agg_real y2,
-                                                   agg_real x,  agg_real y,
+                                                   agg_real x, agg_real y,
                                                    agg_real u)
 {
-  if(u <= 0)
-  {
+  if (u <= 0) {
     return calc_sq_distance(x, y, x1, y1);
   }
-  else
-    if(u >= 1)
-    {
-      return calc_sq_distance(x, y, x2, y2);
-    }
+  else if (u >= 1) {
+    return calc_sq_distance(x, y, x2, y2);
+  }
   return calc_sq_distance(x, y, x1 + u * (x2 - x1), y1 + u * (y2 - y1));
 }
 
 //---------------------------------------------calc_line_point_sq_distance
 AGG_INLINE agg_real calc_segment_point_sq_distance(agg_real x1, agg_real y1,
                                                    agg_real x2, agg_real y2,
-                                                   agg_real x,  agg_real y)
+                                                   agg_real x, agg_real y)
 {
-  return
-      calc_segment_point_sq_distance(
-          x1, y1, x2, y2, x, y,
-          calc_segment_point_u(x1, y1, x2, y2, x, y));
+  return calc_segment_point_sq_distance(
+    x1, y1, x2, y2, x, y, calc_segment_point_u(x1, y1, x2, y2, x, y));
 }
 
 //-------------------------------------------------------calc_intersection
-AGG_INLINE bool calc_intersection(agg_real ax, agg_real ay, agg_real bx, agg_real by,
-                                  agg_real cx, agg_real cy, agg_real dx, agg_real dy,
-                                  agg_real* x, agg_real* y)
+AGG_INLINE bool calc_intersection(agg_real ax, agg_real ay, agg_real bx,
+                                  agg_real by, agg_real cx, agg_real cy,
+                                  agg_real dx, agg_real dy, agg_real* x,
+                                  agg_real* y)
 {
-  agg_real num = (ay-cy) * (dx-cx) - (ax-cx) * (dy-cy);
-  agg_real den = (bx-ax) * (dy-cy) - (by-ay) * (dx-cx);
-  if(fabs(den) < intersection_epsilon) return false;
+  agg_real num = (ay - cy) * (dx - cx) - (ax - cx) * (dy - cy);
+  agg_real den = (bx - ax) * (dy - cy) - (by - ay) * (dx - cx);
+  if (fabs(den) < intersection_epsilon)
+    return false;
   agg_real r = num / den;
-  *x = ax + r * (bx-ax);
-  *y = ay + r * (by-ay);
+  *x = ax + r * (bx - ax);
+  *y = ay + r * (by - ay);
   return true;
 }
 
 //-----------------------------------------------------intersection_exists
-AGG_INLINE bool intersection_exists(agg_real x1, agg_real y1, agg_real x2, agg_real y2,
-                                    agg_real x3, agg_real y3, agg_real x4, agg_real y4)
+AGG_INLINE bool intersection_exists(agg_real x1, agg_real y1, agg_real x2,
+                                    agg_real y2, agg_real x3, agg_real y3,
+                                    agg_real x4, agg_real y4)
 {
   // It's less expensive but you can't control the
   // boundary conditions: Less or LessEqual
@@ -157,9 +151,9 @@ AGG_INLINE bool intersection_exists(agg_real x1, agg_real y1, agg_real x2, agg_r
   agg_real dx2 = x4 - x3;
   agg_real dy2 = y4 - y3;
   return ((x3 - x2) * dy1 - (y3 - y2) * dx1 < 0.0) !=
-      ((x4 - x2) * dy1 - (y4 - y2) * dx1 < 0.0) &&
-      ((x1 - x4) * dy2 - (y1 - y4) * dx2 < 0.0) !=
-      ((x2 - x4) * dy2 - (y2 - y4) * dx2 < 0.0);
+           ((x4 - x2) * dy1 - (y4 - y2) * dx1 < 0.0) &&
+         ((x1 - x4) * dy2 - (y1 - y4) * dx2 < 0.0) !=
+           ((x2 - x4) * dy2 - (y2 - y4) * dx2 < 0.0);
 
   // It's is more expensive but more flexible
   // in terms of boundary conditions.
@@ -174,70 +168,70 @@ AGG_INLINE bool intersection_exists(agg_real x1, agg_real y1, agg_real x2, agg_r
 }
 
 //--------------------------------------------------------calc_orthogonal
-AGG_INLINE void calc_orthogonal(agg_real thickness,
-                                agg_real x1, agg_real y1,
-                                agg_real x2, agg_real y2,
-                                agg_real* x, agg_real* y)
+AGG_INLINE void calc_orthogonal(agg_real thickness, agg_real x1, agg_real y1,
+                                agg_real x2, agg_real y2, agg_real* x,
+                                agg_real* y)
 {
   agg_real dx = x2 - x1;
   agg_real dy = y2 - y1;
-  agg_real d = sqrt(dx*dx + dy*dy);
-  *x =  thickness * dy / d;
+  agg_real d = sqrt(dx * dx + dy * dy);
+  *x = thickness * dy / d;
   *y = -thickness * dx / d;
 }
 
 //--------------------------------------------------------dilate_triangle
-AGG_INLINE void dilate_triangle(agg_real x1, agg_real y1,
-                                agg_real x2, agg_real y2,
-                                agg_real x3, agg_real y3,
-                                agg_real *x, agg_real* y,
-                                agg_real d)
+AGG_INLINE void dilate_triangle(agg_real x1, agg_real y1, agg_real x2,
+                                agg_real y2, agg_real x3, agg_real y3,
+                                agg_real* x, agg_real* y, agg_real d)
 {
-  agg_real dx1=0.0;
-  agg_real dy1=0.0;
-  agg_real dx2=0.0;
-  agg_real dy2=0.0;
-  agg_real dx3=0.0;
-  agg_real dy3=0.0;
+  agg_real dx1 = 0.0;
+  agg_real dy1 = 0.0;
+  agg_real dx2 = 0.0;
+  agg_real dy2 = 0.0;
+  agg_real dx3 = 0.0;
+  agg_real dy3 = 0.0;
   agg_real loc = cross_product(x1, y1, x2, y2, x3, y3);
-  if(fabs(loc) > intersection_epsilon)
-  {
-    if(cross_product(x1, y1, x2, y2, x3, y3) > 0.0)
-    {
+  if (fabs(loc) > intersection_epsilon) {
+    if (cross_product(x1, y1, x2, y2, x3, y3) > 0.0) {
       d = -d;
     }
     calc_orthogonal(d, x1, y1, x2, y2, &dx1, &dy1);
     calc_orthogonal(d, x2, y2, x3, y3, &dx2, &dy2);
     calc_orthogonal(d, x3, y3, x1, y1, &dx3, &dy3);
   }
-  *x++ = x1 + dx1;  *y++ = y1 + dy1;
-  *x++ = x2 + dx1;  *y++ = y2 + dy1;
-  *x++ = x2 + dx2;  *y++ = y2 + dy2;
-  *x++ = x3 + dx2;  *y++ = y3 + dy2;
-  *x++ = x3 + dx3;  *y++ = y3 + dy3;
-  *x++ = x1 + dx3;  *y++ = y1 + dy3;
+  *x++ = x1 + dx1;
+  *y++ = y1 + dy1;
+  *x++ = x2 + dx1;
+  *y++ = y2 + dy1;
+  *x++ = x2 + dx2;
+  *y++ = y2 + dy2;
+  *x++ = x3 + dx2;
+  *y++ = y3 + dy2;
+  *x++ = x3 + dx3;
+  *y++ = y3 + dy3;
+  *x++ = x1 + dx3;
+  *y++ = y1 + dy3;
 }
 
 //------------------------------------------------------calc_triangle_area
-AGG_INLINE agg_real calc_triangle_area(agg_real x1, agg_real y1,
-                                       agg_real x2, agg_real y2,
-                                       agg_real x3, agg_real y3)
+AGG_INLINE agg_real calc_triangle_area(agg_real x1, agg_real y1, agg_real x2,
+                                       agg_real y2, agg_real x3, agg_real y3)
 {
-  return (x1*y2 - x2*y1 + x2*y3 - x3*y2 + x3*y1 - x1*y3) * 0.5;
+  return (x1 * y2 - x2 * y1 + x2 * y3 - x3 * y2 + x3 * y1 - x1 * y3) * 0.5;
 }
 
 //-------------------------------------------------------calc_polygon_area
-template<class Storage> agg_real calc_polygon_area(const Storage& st)
+template <class Storage>
+agg_real calc_polygon_area(const Storage& st)
 {
   unsigned i;
   agg_real sum = 0.0;
-  agg_real x  = st[0].x;
-  agg_real y  = st[0].y;
+  agg_real x = st[0].x;
+  agg_real y = st[0].y;
   agg_real xs = x;
   agg_real ys = y;
 
-  for(i = 1; i < st.size(); i++)
-  {
+  for (i = 1; i < st.size(); i++) {
     const typename Storage::value_type& v = st[i];
     sum += x * v.y - y * v.x;
     x = v.x;
@@ -249,14 +243,13 @@ template<class Storage> agg_real calc_polygon_area(const Storage& st)
 //------------------------------------------------------------------------
 // Tables for fast sqrt
 extern int16u g_sqrt_table[1024];
-extern int8   g_elder_bit_table[256];
-
+extern int8 g_elder_bit_table[256];
 
 //---------------------------------------------------------------fast_sqrt
 //Fast integer Sqrt - really fast: no cycles, divisions or multiplications
 #if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4035) //Disable warning "no return value"
+  #pragma warning(push)
+  #pragma warning(disable : 4035) //Disable warning "no return value"
 #endif
 AGG_INLINE unsigned fast_sqrt(unsigned val)
 {
@@ -282,13 +275,13 @@ AGG_INLINE unsigned fast_sqrt(unsigned val)
         mov  ax, g_sqrt_table[ebx*2]
         mov ecx, edx
         shr eax, cl
-        }
+  }
 #else
 
   //This code is actually pure C and portable to most
   //arcitectures including 64bit ones.
   unsigned t = val;
-  int bit=0;
+  int bit = 0;
   unsigned shift = 11;
 
   //The following piece of code is just an emulation of the
@@ -297,26 +290,20 @@ AGG_INLINE unsigned fast_sqrt(unsigned val)
   //faster (sic!) then just one "bsr". On PIII and PIV the
   //bsr is optimized quite well.
   bit = t >> 24;
-  if(bit)
-  {
+  if (bit) {
     bit = g_elder_bit_table[bit] + 24;
   }
-  else
-  {
+  else {
     bit = (t >> 16) & 0xFF;
-    if(bit)
-    {
+    if (bit) {
       bit = g_elder_bit_table[bit] + 16;
     }
-    else
-    {
+    else {
       bit = (t >> 8) & 0xFF;
-      if(bit)
-      {
+      if (bit) {
         bit = g_elder_bit_table[bit] + 8;
       }
-      else
-      {
+      else {
         bit = g_elder_bit_table[t];
       }
     }
@@ -324,8 +311,7 @@ AGG_INLINE unsigned fast_sqrt(unsigned val)
 
   //This is calculation sqrt itself.
   bit -= 9;
-  if(bit > 0)
-  {
+  if (bit > 0) {
     bit = (bit >> 1) + (bit & 1);
     shift -= bit;
     val >>= (bit << 1);
@@ -334,11 +320,8 @@ AGG_INLINE unsigned fast_sqrt(unsigned val)
 #endif
 }
 #if defined(_MSC_VER)
-#pragma warning(pop)
+  #pragma warning(pop)
 #endif
-
-
-
 
 //--------------------------------------------------------------------besj
 // Function BESJ calculates Bessel function of first kind of order n
@@ -364,66 +347,56 @@ AGG_INLINE unsigned fast_sqrt(unsigned val)
 //------------------------------------------------------------------------
 inline agg_real besj(agg_real x, int n)
 {
-  if(n < 0)
-  {
+  if (n < 0) {
     return 0;
   }
   agg_real d = 1E-6;
   agg_real b = 0;
-  if(fabs(x) <= d)
-  {
-    if(n != 0) return 0;
+  if (fabs(x) <= d) {
+    if (n != 0)
+      return 0;
     return 1;
   }
   agg_real b1 = 0; // b1 is the value from the previous iteration
   // Set up a starting order for recurrence
   int m1 = (int)fabs(x) + 6;
-  if(fabs(x) > 5)
-  {
+  if (fabs(x) > 5) {
     m1 = (int)(fabs(1.4 * x + 60 / x));
   }
   int m2 = (int)(n + 2 + fabs(x) / 4);
-  if (m1 > m2)
-  {
+  if (m1 > m2) {
     m2 = m1;
   }
 
   // Apply recurrence down from curent max order
-  for(;;)
-  {
+  for (;;) {
     agg_real c3 = 0;
     agg_real c2 = 1E-30;
     agg_real c4 = 0;
     int m8 = 1;
-    if (m2 / 2 * 2 == m2)
-    {
+    if (m2 / 2 * 2 == m2) {
       m8 = -1;
     }
     int imax = m2 - 2;
-    for (int i = 1; i <= imax; i++)
-    {
+    for (int i = 1; i <= imax; i++) {
       agg_real c6 = 2 * (m2 - i) * c2 / x - c3;
       c3 = c2;
       c2 = c6;
-      if(m2 - i - 1 == n)
-      {
+      if (m2 - i - 1 == n) {
         b = c6;
       }
       m8 = -1 * m8;
-      if (m8 > 0)
-      {
+      if (m8 > 0) {
         c4 = c4 + 2 * c6;
       }
     }
     agg_real c6 = 2 * c2 / x - c3;
-    if(n == 0)
-    {
+    if (n == 0) {
       b = c6;
     }
     c4 += c6;
     b /= c4;
-    if(fabs(b - b1) < d)
-    {
+    if (fabs(b - b1) < d) {
       return b;
     }
     b1 = b;
@@ -431,7 +404,6 @@ inline agg_real besj(agg_real x, int n)
   }
 }
 
-}
-
+} // namespace agg
 
 #endif

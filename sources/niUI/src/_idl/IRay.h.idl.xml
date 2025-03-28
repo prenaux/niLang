@@ -2,28 +2,28 @@
 	<namespace name="ni">
 		<enum name="eRayPrimitiveFlags">
 			<comments desc="Acceleration structure primitive flags "/>
-			<value name="eRayPrimitiveFlags_None" value="0 ">
+			<value name="eRayPrimitiveFlags_None" value="0">
 				<comments desc="No special properties "/>
 			</value>
-			<value name="eRayPrimitiveFlags_Opaque" value="niBit ( 0 ) ">
+			<value name="eRayPrimitiveFlags_Opaque" value="niBit(0)">
 				<comments desc="Primitive is fully opaque, allows skipping any-hit functions "/>
 			</value>
 		</enum>
 		<enum name="eRayInstanceFlags">
 			<comments desc="Acceleration structure instance flags "/>
-			<value name="eRayInstanceFlags_None" value="0 ">
+			<value name="eRayInstanceFlags_None" value="0">
 				<comments desc="No special instance properties "/>
 			</value>
-			<value name="eRayInstanceFlags_DisableCulling" value="niBit ( 0 ) ">
+			<value name="eRayInstanceFlags_DisableCulling" value="niBit(0)">
 				<comments desc="Disable face culling for this instance "/>
 			</value>
-			<value name="eRayInstanceFlags_FlipCulling" value="niBit ( 1 ) ">
+			<value name="eRayInstanceFlags_FlipCulling" value="niBit(1)">
 				<comments desc="Invert face culling for this instance "/>
 			</value>
-			<value name="eRayInstanceFlags_ForceOpaque" value="niBit ( 2 ) ">
+			<value name="eRayInstanceFlags_ForceOpaque" value="niBit(2)">
 				<comments desc="Force instance to be opaque, skipping any-hit functions "/>
 			</value>
-			<value name="eRayInstanceFlags_ForceNonOpaque" value="niBit ( 3 ) ">
+			<value name="eRayInstanceFlags_ForceNonOpaque" value="niBit(3)">
 				<comments desc="Force instance to be non-opaque, always running any-hit functions "/>
 			</value>
 		</enum>
@@ -320,10 +320,10 @@
 		</interface>
 		<enum name="eRayFunctionGroupType">
 			<comments desc="Ray function group type for hit functions "/>
-			<value name="eRayFunctionGroupType_Triangles" value="0 ">
+			<value name="eRayFunctionGroupType_Triangles" value="0">
 				<comments desc="Hit group for built-in triangle intersection "/>
 			</value>
-			<value name="eRayFunctionGroupType_Procedural" value="1 ">
+			<value name="eRayFunctionGroupType_Procedural" value="1">
 				<comments desc="Hit group with custom intersection function "/>
 			</value>
 		</enum>

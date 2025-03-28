@@ -23,37 +23,34 @@
 
 #include "agg_conv_transform.h"
 
-namespace agg
-{
+namespace agg {
 
 //-----------------------------------------------------------------------
 void arc_to_bezier(agg_real cx, agg_real cy, agg_real rx, agg_real ry,
-                   agg_real start_angle, agg_real sweep_angle,
-                   agg_real* curve);
-
+                   agg_real start_angle, agg_real sweep_angle, agg_real* curve);
 
 //==============================================================bezier_arc
 //
 // See implemantaion agg_bezier_arc.cpp
 //
-class bezier_arc
-{
+class bezier_arc {
  public:
   //--------------------------------------------------------------------
-  bezier_arc() : m_vertex(26), m_num_vertices(0), m_cmd(path_cmd_line_to) {}
-  bezier_arc(agg_real x,  agg_real y,
-             agg_real rx, agg_real ry,
-             agg_real start_angle,
-             agg_real sweep_angle)
+  bezier_arc()
+      : m_vertex(26)
+      , m_num_vertices(0)
+      , m_cmd(path_cmd_line_to)
+  {
+  }
+  bezier_arc(agg_real x, agg_real y, agg_real rx, agg_real ry,
+             agg_real start_angle, agg_real sweep_angle)
   {
     init(x, y, rx, ry, start_angle, sweep_angle);
   }
 
   //--------------------------------------------------------------------
-  void init(agg_real x,  agg_real y,
-            agg_real rx, agg_real ry,
-            agg_real start_angle,
-            agg_real sweep_angle);
+  void init(agg_real x, agg_real y, agg_real rx, agg_real ry,
+            agg_real start_angle, agg_real sweep_angle);
 
   //--------------------------------------------------------------------
   void rewind(unsigned)
@@ -64,7 +61,8 @@ class bezier_arc
   //--------------------------------------------------------------------
   unsigned vertex(agg_real* x, agg_real* y)
   {
-    if(m_vertex >= m_num_vertices) return path_cmd_stop;
+    if (m_vertex >= m_num_vertices)
+      return path_cmd_stop;
     *x = m_vertices[m_vertex];
     *y = m_vertices[m_vertex + 1];
     m_vertex += 2;
@@ -74,18 +72,25 @@ class bezier_arc
   // Supplemantary functions. num_vertices() actually returns doubled
   // number of vertices. That is, for 1 vertex it returns 2.
   //--------------------------------------------------------------------
-  unsigned  num_vertices() const { return m_num_vertices; }
-  const agg_real* vertices() const { return m_vertices;     }
-  agg_real*       vertices()       { return m_vertices;     }
+  unsigned num_vertices() const
+  {
+    return m_num_vertices;
+  }
+  const agg_real* vertices() const
+  {
+    return m_vertices;
+  }
+  agg_real* vertices()
+  {
+    return m_vertices;
+  }
 
  private:
   unsigned m_vertex;
   unsigned m_num_vertices;
-  agg_real   m_vertices[26];
+  agg_real m_vertices[26];
   unsigned m_cmd;
 };
-
-
 
 //==========================================================bezier_arc_svg
 // Compute an SVG-style bezier arc.
@@ -98,33 +103,33 @@ class bezier_arc
 // constraints imposed by the other parameters.
 // large-arc-flag and sweep-flag contribute to the automatic calculations
 // and help determine how the arc is drawn.
-class bezier_arc_svg
-{
+class bezier_arc_svg {
  public:
   //--------------------------------------------------------------------
-  bezier_arc_svg() : m_arc(), m_radii_ok(false) {}
+  bezier_arc_svg()
+      : m_arc()
+      , m_radii_ok(false)
+  {
+  }
 
-  bezier_arc_svg(agg_real x1, agg_real y1,
-                 agg_real rx, agg_real ry,
-                 agg_real angle,
-                 bool large_arc_flag,
-                 bool sweep_flag,
-                 agg_real x2, agg_real y2) :
-      m_arc(), m_radii_ok(false)
+  bezier_arc_svg(agg_real x1, agg_real y1, agg_real rx, agg_real ry,
+                 agg_real angle, bool large_arc_flag, bool sweep_flag,
+                 agg_real x2, agg_real y2)
+      : m_arc()
+      , m_radii_ok(false)
   {
     init(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2);
   }
 
   //--------------------------------------------------------------------
-  void init(agg_real x1, agg_real y1,
-            agg_real rx, agg_real ry,
-            agg_real angle,
-            bool large_arc_flag,
-            bool sweep_flag,
-            agg_real x2, agg_real y2);
+  void init(agg_real x1, agg_real y1, agg_real rx, agg_real ry, agg_real angle,
+            bool large_arc_flag, bool sweep_flag, agg_real x2, agg_real y2);
 
   //--------------------------------------------------------------------
-  bool radii_ok() const { return m_radii_ok; }
+  bool radii_ok() const
+  {
+    return m_radii_ok;
+  }
 
   //--------------------------------------------------------------------
   void rewind(unsigned)
@@ -141,19 +146,24 @@ class bezier_arc_svg
   // Supplemantary functions. num_vertices() actually returns doubled
   // number of vertices. That is, for 1 vertex it returns 2.
   //--------------------------------------------------------------------
-  unsigned  num_vertices() const { return m_arc.num_vertices(); }
-  const agg_real* vertices() const { return m_arc.vertices();     }
-  agg_real*       vertices()       { return m_arc.vertices();     }
+  unsigned num_vertices() const
+  {
+    return m_arc.num_vertices();
+  }
+  const agg_real* vertices() const
+  {
+    return m_arc.vertices();
+  }
+  agg_real* vertices()
+  {
+    return m_arc.vertices();
+  }
 
  private:
   bezier_arc m_arc;
-  bool       m_radii_ok;
+  bool m_radii_ok;
 };
 
-
-
-
-}
-
+} // namespace agg
 
 #endif

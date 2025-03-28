@@ -9,14 +9,13 @@ namespace ni {
 
 //! Label widget style.
 enum eWidgetLabelStyle {
-  eWidgetLabelStyle_TransparentBackground = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetLabelStyle_TransparentBackground = niBit(eWidgetStyle_MaxBit + 1),
   eWidgetLabelStyle_DWORD = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Label widget interface.
-struct iWidgetLabel : public iUnknown
-{
+struct iWidgetLabel : public iUnknown {
   niDeclareInterfaceUUID(iWidgetLabel,0xa407259f,0x7fa3,0x4eac,0x9b,0xf0,0x58,0x2c,0x5c,0xb3,0x4e,0x76);
 
   //! Set the label's font format flags.
@@ -29,5 +28,5 @@ struct iWidgetLabel : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ILABELWIDGET_1093531_H__

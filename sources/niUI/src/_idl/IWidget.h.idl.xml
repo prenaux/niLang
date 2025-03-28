@@ -2,64 +2,64 @@
 	<namespace name="ni">
 		<enum name="eWidgetStyle">
 			<comments desc="Widget style. "/>
-			<value name="eWidgetStyle_NCRelative" value="niBit ( 0 ) ">
+			<value name="eWidgetStyle_NCRelative" value="niBit(0)">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetStyle_Free" value="niBit ( 1 ) ">
+			<value name="eWidgetStyle_Free" value="niBit(1)">
 				<comments desc="Free widget. ">
 					<remark text="Free widgets are not affected by the ZOrder nor the clipping of their parent. "/>
 					<remark text="Free widgets are organized by the desktop widget. "/>
 				</comments>
 			</value>
-			<value name="eWidgetStyle_HoldFocus" value="niBit ( 2 ) ">
+			<value name="eWidgetStyle_HoldFocus" value="niBit(2)">
 				<comments desc="The widget will receive input focus. "/>
 			</value>
-			<value name="eWidgetStyle_OverFocus" value="niBit ( 3 ) ">
+			<value name="eWidgetStyle_OverFocus" value="niBit(3)">
 				<comments desc="The widget will receive input focus when the cursor is above it. "/>
 			</value>
-			<value name="eWidgetStyle_NoClip" value="niBit ( 4 ) ">
+			<value name="eWidgetStyle_NoClip" value="niBit(4)">
 				<comments desc="The widget wont be clipped by it&apos;s parent. "/>
 			</value>
-			<value name="eWidgetStyle_NoClick" value="niBit ( 5 ) ">
+			<value name="eWidgetStyle_NoClick" value="niBit(5)">
 				<comments desc="No click and double click messages will be generated. ">
 					<remark text="If the click messages are not used it&apos;s a bit cheaper to not generate them at all. "/>
 				</comments>
 			</value>
-			<value name="eWidgetStyle_NotifyParent" value="niBit ( 6 ) ">
+			<value name="eWidgetStyle_NotifyParent" value="niBit(6)">
 				<comments desc="The parent widget is notified through the ParentNotify message when a message is sent to this widget. ">
 					<remark text="The ParentNotify message is never notified to the parent widget. "/>
 				</comments>
 			</value>
-			<value name="eWidgetStyle_FocusActivate" value="niBit ( 7 ) ">
+			<value name="eWidgetStyle_FocusActivate" value="niBit(7)">
 				<comments desc="Activate the widget just before receiving focus. "/>
 			</value>
-			<value name="eWidgetStyle_DontSerialize" value="niBit ( 8 ) ">
+			<value name="eWidgetStyle_DontSerialize" value="niBit(8)">
 				<comments desc="Don&apos;t serialize. "/>
 			</value>
-			<value name="eWidgetStyle_ItemOwned" value="niBit ( 9 ) ">
+			<value name="eWidgetStyle_ItemOwned" value="niBit(9)">
 				<comments desc="The item the widget is attached to owns it. This is to instruct items (such as tree nodes or list entry) to destroy/invalidate the widget when it isnt used anymore. "/>
 			</value>
-			<value name="eWidgetStyle_DragSource" value="niBit ( 10 ) ">
+			<value name="eWidgetStyle_DragSource" value="niBit(10)">
 				<comments desc="The the widget is a dragging source. "/>
 			</value>
-			<value name="eWidgetStyle_DragDestination" value="niBit ( 11 ) ">
+			<value name="eWidgetStyle_DragDestination" value="niBit(11)">
 				<comments desc="The widget is a dragging destination. "/>
 			</value>
-			<value name="eWidgetStyle_Temp" value="niBit ( 12 ) ">
+			<value name="eWidgetStyle_Temp" value="niBit(12)">
 				<comments desc="The widget is temporary, as for example the hover labels. "/>
 			</value>
-			<value name="eWidgetStyle_NoMoveFocus" value="niBit ( 13 ) ">
+			<value name="eWidgetStyle_NoMoveFocus" value="niBit(13)">
 				<comments desc="Focus won&apos;t be set on the widget as a response to the MoveFocus message. "/>
 			</value>
-			<value name="eWidgetStyle_NoAutoRedraw" value="niBit ( 14 ) ">
+			<value name="eWidgetStyle_NoAutoRedraw" value="niBit(14)">
 				<comments desc="Dont redraw the widget automatically on input events. "/>
 			</value>
-			<value name="eWidgetStyle_MoveFocusGroup" value="niBit ( 15 ) ">
+			<value name="eWidgetStyle_MoveFocusGroup" value="niBit(15)">
 				<comments desc="Widget is a &quot;move focus group&quot;. ">
 					<remark text="A move focus group indicates a logical organization of widgets which should be all cycled through before going to the next group. "/>
 				</comments>
 			</value>
-			<value name="eWidgetStyle_MaxBit" value="16 ">
+			<value name="eWidgetStyle_MaxBit" value="16">
 				<comments desc="Max bit, user styles should use the bits above this. "/>
 			</value>
 		</enum>
@@ -70,103 +70,103 @@
 				<remark text="Dock stretch the widget to reach the specified edge and update the docking area, so that a fill dock will fill only the empty space left. "/>
 				<remark text="The widgets are docked in the ZOrder. "/>
 			</comments>
-			<value name="eWidgetDockStyle_None" value="0 ">
+			<value name="eWidgetDockStyle_None" value="0">
 				<comments desc="No docking. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapLeft" value="1 ">
+			<value name="eWidgetDockStyle_SnapLeft" value="1">
 				<comments desc="Snap the widget on the left. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapRight" value="2 ">
+			<value name="eWidgetDockStyle_SnapRight" value="2">
 				<comments desc="Snap the widget on the right. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapTop" value="3 ">
+			<value name="eWidgetDockStyle_SnapTop" value="3">
 				<comments desc="Snap the widget on the top. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapBottom" value="4 ">
+			<value name="eWidgetDockStyle_SnapBottom" value="4">
 				<comments desc="Snap the widget on the bottom. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterLeft" value="5 ">
+			<value name="eWidgetDockStyle_SnapCenterLeft" value="5">
 				<comments desc="Snap the widget on the center left. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapLeftCenter" value="5 ">
+			<value name="eWidgetDockStyle_SnapLeftCenter" value="5">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterRight" value="6 ">
+			<value name="eWidgetDockStyle_SnapCenterRight" value="6">
 				<comments desc="Snap the widget on the center right. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapRightCenter" value="6 ">
+			<value name="eWidgetDockStyle_SnapRightCenter" value="6">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterTop" value="7 ">
+			<value name="eWidgetDockStyle_SnapCenterTop" value="7">
 				<comments desc="Snap the widget on the center top. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapTopCenter" value="7 ">
+			<value name="eWidgetDockStyle_SnapTopCenter" value="7">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterBottom" value="8 ">
+			<value name="eWidgetDockStyle_SnapCenterBottom" value="8">
 				<comments desc="Snap the widget on the center bottom. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapBottomCenter" value="8 ">
+			<value name="eWidgetDockStyle_SnapBottomCenter" value="8">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapTopLeft" value="9 ">
+			<value name="eWidgetDockStyle_SnapTopLeft" value="9">
 				<comments desc="Snap the widget on the top left. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapLeftTop" value="9 ">
+			<value name="eWidgetDockStyle_SnapLeftTop" value="9">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapTopRight" value="10 ">
+			<value name="eWidgetDockStyle_SnapTopRight" value="10">
 				<comments desc="Snap the widget on the top right. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapRightTop" value="10 ">
+			<value name="eWidgetDockStyle_SnapRightTop" value="10">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapBottomLeft" value="11 ">
+			<value name="eWidgetDockStyle_SnapBottomLeft" value="11">
 				<comments desc="Snap the widget on the bottom left. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapLeftBottom" value="11 ">
+			<value name="eWidgetDockStyle_SnapLeftBottom" value="11">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapBottomRight" value="12 ">
+			<value name="eWidgetDockStyle_SnapBottomRight" value="12">
 				<comments desc="Snap the widget on the bottom right. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapRightBottom" value="12 ">
+			<value name="eWidgetDockStyle_SnapRightBottom" value="12">
 				<comments desc=""/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenter" value="13 ">
+			<value name="eWidgetDockStyle_SnapCenter" value="13">
 				<comments desc="Snap the widget in the center. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterH" value="14 ">
+			<value name="eWidgetDockStyle_SnapCenterH" value="14">
 				<comments desc="Snap the widget in the center horizontally. "/>
 			</value>
-			<value name="eWidgetDockStyle_SnapCenterV" value="15 ">
+			<value name="eWidgetDockStyle_SnapCenterV" value="15">
 				<comments desc="Snap the widget in the center vertically. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockLeft" value="16 ">
+			<value name="eWidgetDockStyle_DockLeft" value="16">
 				<comments desc="Dock the widget on the left. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockRight" value="17 ">
+			<value name="eWidgetDockStyle_DockRight" value="17">
 				<comments desc="Dock the widget on the right. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockTop" value="18 ">
+			<value name="eWidgetDockStyle_DockTop" value="18">
 				<comments desc="Dock the widget on the top. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockBottom" value="19 ">
+			<value name="eWidgetDockStyle_DockBottom" value="19">
 				<comments desc="Dock the widget on the bottom. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockFill" value="20 ">
+			<value name="eWidgetDockStyle_DockFill" value="20">
 				<comments desc="Dock the widget to fill the widget. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockFillWidth" value="21 ">
+			<value name="eWidgetDockStyle_DockFillWidth" value="21">
 				<comments desc="Dock the widget to fill the widget width. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockFillHeight" value="22 ">
+			<value name="eWidgetDockStyle_DockFillHeight" value="22">
 				<comments desc="Dock the widget to fill the widget height. "/>
 			</value>
-			<value name="eWidgetDockStyle_DockFillOverlay" value="23 ">
+			<value name="eWidgetDockStyle_DockFillOverlay" value="23">
 				<comments desc="Dock the widget to fill the all widget, this is meant to be used by overlays. "/>
 			</value>
-			<value name="eWidgetDockStyle_Grid" value="24 ">
+			<value name="eWidgetDockStyle_Grid" value="24">
 				<comments desc="Place the widget in a grid. "/>
 			</value>
 		</enum>
@@ -174,54 +174,54 @@
 			<comments desc="Widget ZOrder. ">
 				<remark text="These are the reserved ZOrder, to define a ZOrder explicitly pass a value less that eWidgetZOrder_Max. Zero is the overlay widget, higher values are below it. "/>
 			</comments>
-			<value name="eWidgetZOrder_BackgroundBottom" value="0 ">
+			<value name="eWidgetZOrder_BackgroundBottom" value="0">
 				<comments desc="Places the widget in the background behind all background widgets. "/>
 			</value>
-			<value name="eWidgetZOrder_Background" value="1 ">
+			<value name="eWidgetZOrder_Background" value="1">
 				<comments desc="Places the widget in the background. "/>
 			</value>
-			<value name="eWidgetZOrder_Bottom" value="2 ">
+			<value name="eWidgetZOrder_Bottom" value="2">
 				<comments desc="Places the widget at the bottom of the Z order. "/>
 			</value>
-			<value name="eWidgetZOrder_Top" value="3 ">
+			<value name="eWidgetZOrder_Top" value="3">
 				<comments desc="Places the widget at the top of the Z order. "/>
 			</value>
-			<value name="eWidgetZOrder_TopMostBottom" value="4 ">
+			<value name="eWidgetZOrder_TopMostBottom" value="4">
 				<comments desc="Places the widget above all non-topmost widgets but below all top-most widgets. "/>
 			</value>
-			<value name="eWidgetZOrder_TopMost" value="5 ">
+			<value name="eWidgetZOrder_TopMost" value="5">
 				<comments desc="Places the widget above all non-topmost widgets. "/>
 			</value>
-			<value name="eWidgetZOrder_OverlayBottom" value="6 ">
+			<value name="eWidgetZOrder_OverlayBottom" value="6">
 				<comments desc="Places the widget above all other widgets, but below all overlay widgets. "/>
 			</value>
-			<value name="eWidgetZOrder_Overlay" value="7 ">
+			<value name="eWidgetZOrder_Overlay" value="7">
 				<comments desc="Overlay widget. "/>
 			</value>
 		</enum>
 		<enum name="eWidgetSerializeFlags">
 			<comments desc="Widget serialize flags. "/>
-			<value name="eWidgetSerializeFlags_Write" value="niBit ( 0 ) ">
+			<value name="eWidgetSerializeFlags_Write" value="niBit(0)">
 				<comments desc="Serialize write. ">
 					<remark text="Read or Write must be specified, both can&apos;t be specified simultaneously. "/>
 					<remark text="This is intentionally the same as ni::eSerializeFlags_Write "/>
 				</comments>
 			</value>
-			<value name="eWidgetSerializeFlags_Read" value="niBit ( 1 ) ">
+			<value name="eWidgetSerializeFlags_Read" value="niBit(1)">
 				<comments desc="Serialize read. ">
 					<remark text="Read or Write must be specified, both can&apos;t be specified simultaneously. "/>
 					<remark text="This is intentionally the same as ni::eSerializeFlags_Read "/>
 				</comments>
 			</value>
-			<value name="eWidgetSerializeFlags_Children" value="niBit ( 2 ) ">
+			<value name="eWidgetSerializeFlags_Children" value="niBit(2)">
 				<comments desc="Serialize (read/write) the children of the widget. "/>
 			</value>
-			<value name="eWidgetSerializeFlags_NoRoot" value="niBit ( 3 ) ">
+			<value name="eWidgetSerializeFlags_NoRoot" value="niBit(3)">
 				<comments desc="Don&apos;t serialize the root widget&apos;s information. ">
 					<remark text="What is considered the root widget is the widget passed to SerializeLayout. "/>
 				</comments>
 			</value>
-			<value name="eWidgetSerializeFlags_PropertyBox" value="niBit ( 10 ) ">
+			<value name="eWidgetSerializeFlags_PropertyBox" value="niBit(10)">
 				<comments desc="Edition property box serialization. ">
 					<remark text="Additional or different informations that are more suited for edition should be serialized when writting in a property box. "/>
 					<remark text="This is intentionally the same as ni::eSerializeFlags_TypeInfoMetadata. "/>
@@ -230,13 +230,13 @@
 		</enum>
 		<enum name="eWidgetAutoLayoutFlags">
 			<comments desc="Widget auto layout flags. "/>
-			<value name="eWidgetAutoLayoutFlags_Relative" value="niBit ( 0 ) ">
+			<value name="eWidgetAutoLayoutFlags_Relative" value="niBit(0)">
 				<comments desc="Compute the children&apos;s relative sizes. "/>
 			</value>
-			<value name="eWidgetAutoLayoutFlags_Dock" value="niBit ( 1 ) ">
+			<value name="eWidgetAutoLayoutFlags_Dock" value="niBit(1)">
 				<comments desc="Compute the children&apos;s docking positions. "/>
 			</value>
-			<value name="eWidgetAutoLayoutFlags_Size" value="niBit ( 2 ) ">
+			<value name="eWidgetAutoLayoutFlags_Size" value="niBit(2)">
 				<comments desc="Compute the size to fit the children. "/>
 			</value>
 		</enum>
@@ -409,19 +409,19 @@
 		</interface>
 		<enum name="eWidgetSystemTimer">
 			<comments desc="Widget system timers. "/>
-			<value name="eWidgetSystemTimer_First" value="eInvalidHandle+1 ">
+			<value name="eWidgetSystemTimer_First" value="eInvalidHandle+1">
 				<comments desc="First system timer id. "/>
 			</value>
-			<value name="eWidgetSystemTimer_Hover" value="eWidgetSystemTimer_First+0 ">
+			<value name="eWidgetSystemTimer_Hover" value="eWidgetSystemTimer_First+0">
 				<comments desc="Hover system timer. "/>
 			</value>
-			<value name="eWidgetSystemTimer_NCHover" value="eWidgetSystemTimer_First+1 ">
+			<value name="eWidgetSystemTimer_NCHover" value="eWidgetSystemTimer_First+1">
 				<comments desc="Non-client area hover system timer. "/>
 			</value>
-			<value name="eWidgetSystemTimer_LeftDoubleClick" value="eWidgetSystemTimer_First+2 ">
+			<value name="eWidgetSystemTimer_LeftDoubleClick" value="eWidgetSystemTimer_First+2">
 				<comments desc="Left doubleclick timer. "/>
 			</value>
-			<value name="eWidgetSystemTimer_RightDoubleClick" value="eWidgetSystemTimer_First+3 ">
+			<value name="eWidgetSystemTimer_RightDoubleClick" value="eWidgetSystemTimer_First+3">
 				<comments desc="Right doubleclick timer. "/>
 			</value>
 		</enum>

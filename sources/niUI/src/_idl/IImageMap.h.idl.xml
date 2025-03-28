@@ -2,10 +2,10 @@
 	<namespace name="ni">
 		<enum name="eImageMapSerializeFlags">
 			<comments desc="Image map serialization flags. "/>
-			<value name="eImageMapSerializeFlags_Write" value="niBit ( 0 ) ">
+			<value name="eImageMapSerializeFlags_Write" value="niBit(0)">
 				<comments desc="Serialize write "/>
 			</value>
-			<value name="eImageMapSerializeFlags_Read" value="niBit ( 1 ) ">
+			<value name="eImageMapSerializeFlags_Read" value="niBit(1)">
 				<comments desc="Serialize read "/>
 			</value>
 		</enum>

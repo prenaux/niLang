@@ -16,8 +16,7 @@ struct iDrawOperationSet;
  */
 
 //! Geometry generation.
-enum eGeometryGenerate
-{
+enum eGeometryGenerate {
   //! Generate adjacency informations.
   eGeometryGenerate_Adjacency = niBit(0),
   //! Generate flat normals.
@@ -29,8 +28,7 @@ enum eGeometryGenerate
 };
 
 //! Geometry types.
-enum eGeometryType
-{
+enum eGeometryType {
   //! Polygonal geometry.
   eGeometryType_Polygonal = 0,
   //! Patch geometry.
@@ -42,8 +40,7 @@ enum eGeometryType
 };
 
 //! Geometry creation flags.
-enum eGeometryCreateFlags
-{
+enum eGeometryCreateFlags {
   //! The vertex array usage is dynamic.
   eGeometryCreateFlags_VADynamic = niBit(0),
   //! The vertex array usage is dynamic read write.
@@ -61,23 +58,27 @@ enum eGeometryCreateFlags
   //! The index array usage is system memory.
   eGeometryCreateFlags_IASystemMemory = niBit(7),
   //! The vertex array and index array usage is dynamic.
-  eGeometryCreateFlags_Dynamic = eGeometryCreateFlags_VADynamic|eGeometryCreateFlags_IADynamic,
+  eGeometryCreateFlags_Dynamic =
+    eGeometryCreateFlags_VADynamic | eGeometryCreateFlags_IADynamic,
   //! The vertex array and index array usage is dynamic read write.
-  eGeometryCreateFlags_DynamicReadWrite = eGeometryCreateFlags_VADynamicReadWrite|eGeometryCreateFlags_IADynamicReadWrite,
+  eGeometryCreateFlags_DynamicReadWrite =
+    eGeometryCreateFlags_VADynamicReadWrite |
+    eGeometryCreateFlags_IADynamicReadWrite,
   //! The vertex array and index array usage is static.
-  eGeometryCreateFlags_Static = eGeometryCreateFlags_VAStatic|eGeometryCreateFlags_IAStatic,
+  eGeometryCreateFlags_Static =
+    eGeometryCreateFlags_VAStatic | eGeometryCreateFlags_IAStatic,
   //! The vertex array and index array usage is system memory.
-  eGeometryCreateFlags_SystemMemory = eGeometryCreateFlags_VASystemMemory|eGeometryCreateFlags_IASystemMemory,
+  eGeometryCreateFlags_SystemMemory =
+    eGeometryCreateFlags_VASystemMemory | eGeometryCreateFlags_IASystemMemory,
   //! \internal
   eGeometryCreateFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Geometry creation flags type.
-typedef tU32    tGeometryCreateFlags;
+typedef tU32 tGeometryCreateFlags;
 
 //! Geometry optimization flags.
-enum eGeometryOptimizeFlags
-{
+enum eGeometryOptimizeFlags {
   //! Remove degenerate triangles.
   eGeometryOptimizeFlags_RemoveDegenerates = niBit(0),
   //! Remove unused vertices.
@@ -85,9 +86,12 @@ enum eGeometryOptimizeFlags
   //! Remove duplicate vertices.
   eGeometryOptimizeFlags_RemoveDuplicateVertices = niBit(2),
   //! Default.
-  eGeometryOptimizeFlags_Default = eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices,
+  eGeometryOptimizeFlags_Default = eGeometryOptimizeFlags_RemoveDegenerates |
+                                   eGeometryOptimizeFlags_RemoveUnusedVertices,
   //! Default.
-  eGeometryOptimizeFlags_All = eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices|eGeometryOptimizeFlags_RemoveDuplicateVertices,
+  eGeometryOptimizeFlags_All = eGeometryOptimizeFlags_RemoveDegenerates |
+                               eGeometryOptimizeFlags_RemoveUnusedVertices |
+                               eGeometryOptimizeFlags_RemoveDuplicateVertices,
   //! Force DWORD.
   eGeometryOptimizeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -97,8 +101,7 @@ typedef tU32 tGeometryOptimizeFlags;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //! Geometry subset interface.
-struct iGeometrySubset : public iUnknown
-{
+struct iGeometrySubset : public iUnknown {
   niDeclareInterfaceUUID(iGeometrySubset,0x0f4ea1e3,0x4c09,0x44b8,0xa0,0x4d,0x95,0x4c,0x72,0xa8,0x60,0x75);
   //! Set the ID of the subset.
   //! {Property}
@@ -128,8 +131,7 @@ struct iGeometrySubset : public iUnknown
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Geometry base interface.
-struct iGeometry : public iUnknown
-{
+struct iGeometry : public iUnknown {
   niDeclareInterfaceUUID(iGeometry,0x95cfa251,0x70ed,0x4f5d,0x94,0x22,0x23,0xfa,0xb6,0xc0,0xc7,0xce);
 
   //! Geometry type.
@@ -159,7 +161,8 @@ struct iGeometry : public iUnknown
   //! \param fEpsilon: specifies that vertices that differ in position by less than
   //!     epsilon should be treated as coincident.
   //! \return eFalse if generation failed, else eTrue.
-  virtual tBool __stdcall Generate(eGeometryGenerate aGenerate, tF32 fEpsilon = niEpsilon4) = 0;
+  virtual tBool __stdcall Generate(eGeometryGenerate aGenerate,
+                                   tF32 fEpsilon = niEpsilon4) = 0;
   //! Get the number of face contained in the mesh.
   //! {Property}
   virtual tU32 __stdcall GetNumFaces() const = 0;
@@ -198,7 +201,9 @@ struct iGeometry : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetSubsetIndex(tU32 aulID) const = 0;
   //! Add a subset.
-  virtual iGeometrySubset* __stdcall AddSubset(tU32 anID, tU32 anFirstIndex, tU32 anNumIndices, tU32 anMaterial) = 0;
+  virtual iGeometrySubset* __stdcall AddSubset(tU32 anID, tU32 anFirstIndex,
+                                               tU32 anNumIndices,
+                                               tU32 anMaterial) = 0;
   //! Remove the subset at the given index.
   //! \return eFalse if the subset index is invalid, else remove the subset and return eTrue.
   virtual tBool __stdcall RemoveSubset(tU32 aulIdx) = 0;
@@ -215,7 +220,8 @@ struct iGeometry : public iUnknown
   //!     new geometry.
   //! \return NULL if the new geometry can't be created, else return an instance of a new
   //!     geometry.
-  virtual iGeometry* __stdcall Clone(tGeometryCreateFlags aFlags, tFVF aFVF = 0) = 0;
+  virtual iGeometry* __stdcall Clone(tGeometryCreateFlags aFlags,
+                                     tFVF aFVF = 0) = 0;
   //! @}
 
   //########################################################################################
@@ -224,7 +230,8 @@ struct iGeometry : public iUnknown
   //! @{
 
   //! Set the specified draw operation to draw the specified subset.
-  virtual tBool __stdcall SetDrawOp(iDrawOperation* apDrawOp, tU32 aulSubsetIdx) = 0;
+  virtual tBool __stdcall SetDrawOp(iDrawOperation* apDrawOp,
+                                    tU32 aulSubsetIdx) = 0;
   //! @}
 
   //########################################################################################
@@ -239,8 +246,7 @@ struct iGeometry : public iUnknown
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Geometry modifier interface.
-struct iGeometryModifier : public iUnknown
-{
+struct iGeometryModifier : public iUnknown {
   niDeclareInterfaceUUID(iGeometryModifier,0x26ce1e18,0xd0d7,0x46e6,0xbd,0x9f,0xc2,0x05,0x76,0x29,0xdc,0xa6);
 
   //! Set the geometry to modify.
@@ -271,5 +277,5 @@ struct iGeometryModifier : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IGEOMETRY_1210155_H__

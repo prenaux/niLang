@@ -4,7 +4,8 @@
 #include "stdafx.h"
 #include "Intersection.h"
 
-niExportFunc(iUnknown*) New_niUI_Intersection(const Var&, const Var&) {
+niExportFunc(iUnknown*) New_niUI_Intersection(const Var&, const Var&)
+{
   return niNew cIntersection();
 }
 
@@ -40,7 +41,6 @@ ni::tBool __stdcall cIntersection::IsOK() const
   return ni::eTrue;
 }
 
-
 ///////////////////////////////////////////////
 void __stdcall cIntersection::SetResult(eIntersectionResult aResult)
 {
@@ -54,7 +54,7 @@ eIntersectionResult __stdcall cIntersection::GetResult() const
 }
 
 ///////////////////////////////////////////////
-void cIntersection::SetPosition(const sVec3f &avPos)
+void cIntersection::SetPosition(const sVec3f& avPos)
 {
   mvPosition = avPos;
 }
@@ -66,7 +66,7 @@ sVec3f cIntersection::GetPosition() const
 }
 
 ///////////////////////////////////////////////
-void cIntersection::SetBaryCentric(const sVec2f &avBC)
+void cIntersection::SetBaryCentric(const sVec2f& avBC)
 {
   mvBaryCentric = avBC;
 }

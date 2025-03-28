@@ -9,8 +9,7 @@ namespace ni {
  */
 
 //! Intersection result.
-enum eIntersectionResult
-{
+enum eIntersectionResult {
   //! No intersection result.
   eIntersectionResult_None = 0,
   //! Inside the bounding volume.
@@ -22,8 +21,7 @@ enum eIntersectionResult
 };
 
 //! Intersection result interface.
-struct iIntersection : public iUnknown
-{
+struct iIntersection : public iUnknown {
   niDeclareInterfaceUUID(iIntersection,0x64c8b5c4,0x4d70,0x46e4,0xb5,0x34,0x9d,0xa2,0x85,0x4d,0x19,0x28);
   //! Set the intersection result.
   //! {Property}
@@ -55,5 +53,5 @@ niExportFunc(iUnknown*) New_niUI_Intersection(const Var&, const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IINTERSECTION_60545992_H__

@@ -20,21 +20,19 @@
 #include "agg_vertex_sequence.h"
 #include "agg_shorten_path.h"
 
-namespace agg
-{
+namespace agg {
 
 //===================================================vcgen_vertex_sequence
-class vcgen_vertex_sequence
-{
+class vcgen_vertex_sequence {
  public:
-  typedef vertex_dist_cmd                 vertex_type;
+  typedef vertex_dist_cmd vertex_type;
   typedef vertex_sequence<vertex_type, 6> vertex_storage;
 
-  vcgen_vertex_sequence() :
-      m_flags(0),
-      m_cur_vertex(0),
-      m_shorten(0.0),
-      m_ready(false)
+  vcgen_vertex_sequence()
+      : m_flags(0)
+      , m_cur_vertex(0)
+      , m_shorten(0.0)
+      , m_ready(false)
   {
   }
 
@@ -43,23 +41,28 @@ class vcgen_vertex_sequence
   void add_vertex(agg_real x, agg_real y, unsigned cmd);
 
   // Vertex Source Interface
-  void     rewind(unsigned path_id);
+  void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
-  void shorten(agg_real s) { m_shorten = s; }
-  agg_real shorten() const { return m_shorten; }
+  void shorten(agg_real s)
+  {
+    m_shorten = s;
+  }
+  agg_real shorten() const
+  {
+    return m_shorten;
+  }
 
  private:
   vcgen_vertex_sequence(const vcgen_vertex_sequence&);
-  const vcgen_vertex_sequence& operator = (const vcgen_vertex_sequence&);
+  const vcgen_vertex_sequence& operator=(const vcgen_vertex_sequence&);
 
   vertex_storage m_src_vertices;
-  unsigned       m_flags;
-  unsigned       m_cur_vertex;
-  agg_real         m_shorten;
-  bool           m_ready;
+  unsigned m_flags;
+  unsigned m_cur_vertex;
+  agg_real m_shorten;
+  bool m_ready;
 };
-
 
 //------------------------------------------------------------------------
 inline void vcgen_vertex_sequence::remove_all()
@@ -71,32 +74,27 @@ inline void vcgen_vertex_sequence::remove_all()
 }
 
 //------------------------------------------------------------------------
-inline void vcgen_vertex_sequence::add_vertex(agg_real x, agg_real y, unsigned cmd)
+inline void vcgen_vertex_sequence::add_vertex(agg_real x, agg_real y,
+                                              unsigned cmd)
 {
   m_ready = false;
-  if(is_move_to(cmd))
-  {
+  if (is_move_to(cmd)) {
     m_src_vertices.modify_last(vertex_dist_cmd(x, y, cmd));
   }
-  else
-  {
-    if(is_vertex(cmd))
-    {
+  else {
+    if (is_vertex(cmd)) {
       m_src_vertices.add(vertex_dist_cmd(x, y, cmd));
     }
-    else
-    {
+    else {
       m_flags = cmd & path_flags_mask;
     }
   }
 }
 
-
 //------------------------------------------------------------------------
 inline void vcgen_vertex_sequence::rewind(unsigned)
 {
-  if(!m_ready)
-  {
+  if (!m_ready) {
     m_src_vertices.close(is_closed(m_flags));
     shorten_path(m_src_vertices, m_shorten, get_close_flag(m_flags));
   }
@@ -107,19 +105,16 @@ inline void vcgen_vertex_sequence::rewind(unsigned)
 //------------------------------------------------------------------------
 inline unsigned vcgen_vertex_sequence::vertex(agg_real* x, agg_real* y)
 {
-  if(!m_ready)
-  {
+  if (!m_ready) {
     rewind(0);
   }
 
-  if(m_cur_vertex == m_src_vertices.size())
-  {
+  if (m_cur_vertex == m_src_vertices.size()) {
     ++m_cur_vertex;
     return path_cmd_end_poly | m_flags;
   }
 
-  if(m_cur_vertex > m_src_vertices.size())
-  {
+  if (m_cur_vertex > m_src_vertices.size()) {
     return path_cmd_stop;
   }
 
@@ -129,7 +124,6 @@ inline unsigned vcgen_vertex_sequence::vertex(agg_real* x, agg_real* y)
   return v.cmd;
 }
 
-
-}
+} // namespace agg
 
 #endif

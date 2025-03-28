@@ -23,18 +23,17 @@
 #include "agg_vcgen_dash.h"
 #include "agg_conv_adaptor_vcgen.h"
 
-namespace agg
-{
+namespace agg {
 
 //---------------------------------------------------------------conv_dash
-template<class VertexSource, class Markers=null_markers>
-struct conv_dash : public conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers>
-{
+template <class VertexSource, class Markers = null_markers>
+struct conv_dash
+    : public conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers> {
   typedef Markers marker_type;
   typedef conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers> base_type;
 
-  conv_dash(VertexSource& vs) :
-      conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers>(vs)
+  conv_dash(VertexSource& vs)
+      : conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers>(vs)
   {
   }
 
@@ -53,16 +52,21 @@ struct conv_dash : public conv_adaptor_vcgen<VertexSource, vcgen_dash, Markers>
     base_type::generator().dash_start(ds);
   }
 
-  void shorten(agg_real s) { base_type::generator().shorten(s); }
-  agg_real shorten() const { return base_type::generator().shorten(); }
+  void shorten(agg_real s)
+  {
+    base_type::generator().shorten(s);
+  }
+  agg_real shorten() const
+  {
+    return base_type::generator().shorten();
+  }
 
  private:
   conv_dash(const conv_dash<VertexSource, Markers>&);
-  const conv_dash<VertexSource, Markers>&
-  operator = (const conv_dash<VertexSource, Markers>&);
+  const conv_dash<VertexSource, Markers>& operator=(
+    const conv_dash<VertexSource, Markers>&);
 };
 
-
-}
+} // namespace agg
 
 #endif

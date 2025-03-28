@@ -7,7 +7,7 @@ class cButtonWidget
     : public ImplRC<iWidgetSink, eImplFlags_Default, iWidgetButton> {
   niBeginClass(cButtonWidget);
 
-public:
+ public:
   cButtonWidget(iWidget* pWidget);
   ~cButtonWidget();
 
@@ -50,7 +50,7 @@ public:
   const achar* _GetText() const;
   void _MeasureAndPaint(iCanvas* apCanvas);
 
-private:
+ private:
   iWidget* mpWidget;
   Ptr<iOverlay> mptrIconNormal;
   Ptr<iOverlay> mptrIconHover;

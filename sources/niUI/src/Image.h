@@ -7,9 +7,9 @@
 
 #ifdef _DEBUG
 void __Image_SetDebugName(ni::iImage* apImg, const ni::achar* aaszDebugName);
-#define Image_SetDebugName(I,DBG) __Image_SetDebugName(I,DBG)
+  #define Image_SetDebugName(I, DBG) __Image_SetDebugName(I, DBG)
 #else
-#define Image_SetDebugName(I,DBG)
+  #define Image_SetDebugName(I, DBG)
 #endif
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

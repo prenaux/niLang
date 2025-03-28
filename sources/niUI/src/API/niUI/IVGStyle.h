@@ -12,8 +12,7 @@ struct iVGPaint;
 #if niMinFeatures(20)
 
 //! VG Line Cap type.
-enum eVGLineCap
-{
+enum eVGLineCap {
   eVGLineCap_Butt = 0,
   eVGLineCap_Square = 1,
   eVGLineCap_Round = 2,
@@ -22,8 +21,7 @@ enum eVGLineCap
 };
 
 //! VG Line join.
-enum eVGLineJoin
-{
+enum eVGLineJoin {
   eVGLineJoin_Miter = 0,
   eVGLineJoin_MiterRevert = 1,
   eVGLineJoin_MiterRound = 2,
@@ -34,8 +32,7 @@ enum eVGLineJoin
 };
 
 //! VG Inner join.
-enum eVGInnerJoin
-{
+enum eVGInnerJoin {
   eVGInnerJoin_Bevel = 0,
   eVGInnerJoin_Miter = 1,
   eVGInnerJoin_Jag = 2,
@@ -45,8 +42,7 @@ enum eVGInnerJoin
 };
 
 //! VGStyle inteface.
-struct iVGStyle : public iUnknown
-{
+struct iVGStyle : public iUnknown {
   niDeclareInterfaceUUID(iVGStyle,0xecc6259b,0x41cc,0x4d37,0xb1,0xfc,0x55,0xf6,0x48,0x5d,0x95,0x73);
 
   //########################################################################################
@@ -129,13 +125,15 @@ struct iVGStyle : public iUnknown
   virtual tBool __stdcall GetAntiAliasing() const = 0;
   //! Set the rasterizer's approximation scale.
   //! {Property}
-  virtual void __stdcall SetRasterizerApproximationScale(tF32 afRasterizerApproximationScale) = 0;
+  virtual void __stdcall SetRasterizerApproximationScale(
+    tF32 afRasterizerApproximationScale) = 0;
   //! Get the rasterizer's approximation scale.
   //! {Property}
   virtual tF32 __stdcall GetRasterizerApproximationScale() const = 0;
   //! Set the tesselator's approximation scale.
   //! {Property}
-  virtual void __stdcall SetTesselatorApproximationScale(tF32 afTesselatorApproximationScale) = 0;
+  virtual void __stdcall SetTesselatorApproximationScale(
+    tF32 afTesselatorApproximationScale) = 0;
   //! Get the tesselator's approximation scale.
   //! {Property}
   virtual tF32 __stdcall GetTesselatorApproximationScale() const = 0;
@@ -281,5 +279,5 @@ struct iVGStyle : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGSTYLE_8767038_H__

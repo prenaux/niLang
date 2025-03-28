@@ -14,17 +14,19 @@ struct sGpuVertexAttribute {
   tType _type = 0;
   tFVF _fvf = 0;
 
-  cString ToString() const {
-    return niFmt("sGpuVertexAttribute { name='%s', loc=%d, type=%s, fvf='%s' (0x%x) }",
-                 _name, _location,
-                 ni::GetTypeString(_type),
-                 ni::FVFToShortString(_fvf), _fvf);
+  cString ToString() const
+  {
+    return niFmt(
+      "sGpuVertexAttribute { name='%s', loc=%d, type=%s, fvf='%s' (0x%x) }",
+      _name, _location, ni::GetTypeString(_type), ni::FVFToShortString(_fvf),
+      _fvf);
   }
 };
 
 eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat);
 eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat);
-eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat, tTextureFlags aTexFlags);
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat,
+                                                    tTextureFlags aTexFlags);
 iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat);
 
 const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode);
@@ -88,73 +90,87 @@ enum eFixedGpuDS {
 static_assert(eFixedGpuDS_Last <= niBit(2));
 
 struct sFixedGpuPipelineIdDesc {
-  tU64 rt0 : 4;
-  tU64 ds : 4;
+  tU64 rt0          : 4;
+  tU64 ds           : 4;
   tU64 vertexFormat : 4;
-  tU64 blendMode : 4;
-  tU64 compiledRS : 4;
-  tU64 compiledDS : 2;
-  tU64 funcVertex : 20;
-  tU64 funcPixel : 20;
-  tU64 padding : 2;
+  tU64 blendMode    : 4;
+  tU64 compiledRS   : 4;
+  tU64 compiledDS   : 2;
+  tU64 funcVertex   : 20;
+  tU64 funcPixel    : 20;
+  tU64 padding      : 2;
 
-  niInline void SetRT0PixelFormat(eGpuPixelFormat value) {
+  niInline void SetRT0PixelFormat(eGpuPixelFormat value)
+  {
     rt0 = static_cast<tU64>(value);
   }
-  niInline eGpuPixelFormat GetRT0PixelFormat() const {
+  niInline eGpuPixelFormat GetRT0PixelFormat() const
+  {
     return static_cast<eGpuPixelFormat>(rt0);
   }
 
-  niInline void SetDSPixelFormat(eGpuPixelFormat value) {
+  niInline void SetDSPixelFormat(eGpuPixelFormat value)
+  {
     ds = static_cast<tU64>(value);
   }
-  niInline eGpuPixelFormat GetDSPixelFormat() const {
+  niInline eGpuPixelFormat GetDSPixelFormat() const
+  {
     return static_cast<eGpuPixelFormat>(ds);
   }
 
-  niInline void SetVertexFormat(eFixedGpuVertexFormat value) {
+  niInline void SetVertexFormat(eFixedGpuVertexFormat value)
+  {
     vertexFormat = static_cast<tU64>(value);
   }
-  niInline eFixedGpuVertexFormat GetVertexFormat() const {
+  niInline eFixedGpuVertexFormat GetVertexFormat() const
+  {
     return static_cast<eFixedGpuVertexFormat>(vertexFormat);
   }
 
-  niInline void SetBlendMode(eBlendMode value) {
+  niInline void SetBlendMode(eBlendMode value)
+  {
     blendMode = static_cast<tU64>(value);
   }
-  niInline eBlendMode GetBlendMode() const {
+  niInline eBlendMode GetBlendMode() const
+  {
     return static_cast<eBlendMode>(blendMode);
   }
 
-  niInline void SetCompiledRS(eFixedGpuRS value) {
+  niInline void SetCompiledRS(eFixedGpuRS value)
+  {
     compiledRS = static_cast<tU64>(value);
   }
-  niInline eFixedGpuRS GetCompiledRS() const {
+  niInline eFixedGpuRS GetCompiledRS() const
+  {
     return static_cast<eFixedGpuRS>(compiledRS);
   }
 
-  niInline void SetCompiledDS(eFixedGpuDS value) {
+  niInline void SetCompiledDS(eFixedGpuDS value)
+  {
     compiledDS = static_cast<tU64>(value);
   }
-  niInline eFixedGpuDS GetCompiledDS() const {
+  niInline eFixedGpuDS GetCompiledDS() const
+  {
     return static_cast<eFixedGpuDS>(compiledDS);
   }
 
-  tFixedGpuPipelineId ToId() const {
+  tFixedGpuPipelineId ToId() const
+  {
     return *(tFixedGpuPipelineId*)this;
   }
 
-  static sFixedGpuPipelineIdDesc FromId(tFixedGpuPipelineId aId) {
+  static sFixedGpuPipelineIdDesc FromId(tFixedGpuPipelineId aId)
+  {
     return *(sFixedGpuPipelineIdDesc*)&aId;
   }
 
-  cString ToString() const {
-    return niFmt("sFixedGpuPipelineIdDesc{RT0=%d,DS=%d,VF=%d,BM=%d,RS=%d,DS=%d,VS=%d,PS=%d}",
-                 rt0,ds,vertexFormat,blendMode,
-                 compiledRS,compiledDS,
-                 funcVertex,funcPixel);
+  cString ToString() const
+  {
+    return niFmt(
+      "sFixedGpuPipelineIdDesc{RT0=%d,DS=%d,VF=%d,BM=%d,RS=%d,DS=%d,VS=%d,PS=%d}",
+      rt0, ds, vertexFormat, blendMode, compiledRS, compiledDS, funcVertex,
+      funcPixel);
   }
-
 };
 static_assert(sizeof(sFixedGpuPipelineIdDesc) == sizeof(tU64));
 
@@ -162,14 +178,22 @@ struct iFixedGpuPipelines : public iUnknown {
   niDeclareInterfaceUUID(iFixedGpuPipelines,0x716fc8a9,0x30e6,0x3641,0xb4,0xf2,0x69,0x0f,0xb8,0x83,0x58,0xa7);
 
   //! Get or create a render pipeline for the given id and shaders
-  virtual Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) = 0;
+  virtual Ptr<iGpuPipeline> __stdcall GetRenderPipeline(
+    iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId,
+    iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) = 0;
 
-  virtual iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const = 0;
-  virtual iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const = 0;
+  virtual iGpuFunction* __stdcall GetFixedGpuFuncVertex(
+    ain<tFVF> aFVF) const = 0;
+  virtual iGpuFunction* __stdcall GetFixedGpuFuncPixel(
+    ain<sMaterialDesc> aMatDesc) const = 0;
 
   virtual nn<iTexture> __stdcall GetWhiteTexture() const = 0;
 
-  virtual tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder, ain<sVec2f> aPixelSize, tClearBuffersFlags aFlags, ain<sRectf> aRect, tU32 anColor, tF32 afZ) = 0;
+  virtual tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder,
+                                    ain<sVec2f> aPixelSize,
+                                    tClearBuffersFlags aFlags,
+                                    ain<sRectf> aRect, tU32 anColor,
+                                    tF32 afZ) = 0;
 };
 
 struct sGpuStreamBlock {
@@ -199,52 +223,61 @@ struct iGpuStream : public iUnknown {
   virtual tU32 __stdcall GetNumBlocks() const = 0;
 };
 
-iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage);
+iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver,
+                                        tU32 anNumVertices, tFVF anFVF,
+                                        eArrayUsage aUsage);
 iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA);
 sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA);
 
-iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage);
+iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver,
+                                      eGraphicsPrimitiveType aPrimitiveType,
+                                      tU32 anNumIndices, tU32 anMaxVertexIndex,
+                                      eArrayUsage aUsage);
 iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA);
 
-Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpuFunctionBindType* apOutBindType);
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget,
+                                   eGpuFunctionBindType* apOutBindType);
 cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT);
 Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT);
 
 tFixedGpuPipelineId GetFixedGpuPipelineId(
-  eGpuPixelFormat aRT0Format,
-  eGpuPixelFormat aDSFormat,
-  tFVF aFVF,
-  eBlendMode aBlendMode,
-  eCompiledStates aRS,
-  eCompiledStates aDS,
-  const iGpuFunction* apFuncVertex,
-  const iGpuFunction* apFuncPixel);
+  eGpuPixelFormat aRT0Format, eGpuPixelFormat aDSFormat, tFVF aFVF,
+  eBlendMode aBlendMode, eCompiledStates aRS, eCompiledStates aDS,
+  const iGpuFunction* apFuncVertex, const iGpuFunction* apFuncPixel);
 
-Ptr<iGpuPipeline> CreateFixedGpuPipeline(
-  iGraphicsDriverGpu* apGpuDriver,
-  tFixedGpuPipelineId aPipelineId,
-  iGpuFunction* apFuncVertex,
-  iGpuFunction* apFuncPixel);
+Ptr<iGpuPipeline> CreateFixedGpuPipeline(iGraphicsDriverGpu* apGpuDriver,
+                                         tFixedGpuPipelineId aPipelineId,
+                                         iGpuFunction* apFuncVertex,
+                                         iGpuFunction* apFuncPixel);
 
-tBool DrawOperationSubmitGpuDrawCall(
-  iGpuCommandEncoder* apCmdEncoder,
-  iDrawOperation* apDrawOp);
+tBool DrawOperationSubmitGpuDrawCall(iGpuCommandEncoder* apCmdEncoder,
+                                     iDrawOperation* apDrawOp);
 
 Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver);
 
-Ptr<iGpuStream> CreateGpuStream(
-  ain<nn<iGraphicsDriverGpu>> apDriver,
-  tGpuBufferUsageFlags aUsageFlags,
-  tU32 aBlockAlignment = 0,
-  tU32 aChunkSize = 65536,
-  tU32 aMaxChunks = 1024);
+Ptr<iGpuStream> CreateGpuStream(ain<nn<iGraphicsDriverGpu>> apDriver,
+                                tGpuBufferUsageFlags aUsageFlags,
+                                tU32 aBlockAlignment = 0,
+                                tU32 aChunkSize = 65536,
+                                tU32 aMaxChunks = 1024);
 
-tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding);
-tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, eGpuIndexType aIndexType);
-tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding);
+tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream,
+                                    iGpuCommandEncoder* apEncoder,
+                                    const tPtr apData, tU32 anSize,
+                                    tU32 anBinding);
+tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream,
+                                   iGpuCommandEncoder* apEncoder,
+                                   const tPtr apData, tU32 anSize,
+                                   eGpuIndexType aIndexType);
+tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream,
+                                     iGpuCommandEncoder* apEncoder,
+                                     const tPtr apData, tU32 anSize,
+                                     tU32 anBinding);
 
-nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics, tIntPtr ahRS);
-nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(nn<iGraphics> aGraphics, tIntPtr ahDS);
+nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics,
+                                                     tIntPtr ahRS);
+nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(
+  nn<iGraphics> aGraphics, tIntPtr ahDS);
 
-}
+} // namespace ni
 #endif // __GDRV_GPU_H_40BE24B3_D4BE_3B4B_A652_DE433A111C36__

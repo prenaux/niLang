@@ -8,29 +8,27 @@ namespace ni {
  */
 
 //! Canvas widget styles
-enum eWidgetCanvasStyle
-{
+enum eWidgetCanvasStyle {
   //! A horizontal scroll bar will be shown if the canvas client size is bigger
   //! than the canvas's rectangle.
   //! \remark The width of the client rectangle wont be adjusted to the
   //!     canvas rectangle.
-  eWidgetCanvasStyle_ScrollH = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetCanvasStyle_ScrollH = niBit(eWidgetStyle_MaxBit + 0),
   //! A vertical scroll bar will be shown if the canvas client size is bigger
   //! than the canvas's rectangle.
   //! \remark The height of the client rectangle wont be adjusted to the
   //!     canvas rectangle.
-  eWidgetCanvasStyle_ScrollV = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetCanvasStyle_ScrollV = niBit(eWidgetStyle_MaxBit + 1),
   //! The horizontal scroll bar will never be set visible.
-  eWidgetCanvasStyle_HideScrollH = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetCanvasStyle_HideScrollH = niBit(eWidgetStyle_MaxBit + 2),
   //! The vertical scroll bar will never be set visible.
-  eWidgetCanvasStyle_HideScrollV = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetCanvasStyle_HideScrollV = niBit(eWidgetStyle_MaxBit + 3),
   //! \internal
   eWidgetCanvasStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Canvas widget interface.
-struct iWidgetCanvas : public iUnknown
-{
+struct iWidgetCanvas : public iUnknown {
   niDeclareInterfaceUUID(iWidgetCanvas,0xcd67d2fc,0x71da,0x4054,0xae,0x79,0xbf,0x6d,0xd2,0x27,0x44,0xd6);
 
   //! Get the vertical scroll bar.
@@ -72,5 +70,5 @@ struct iWidgetCanvas : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETCANVAS_16498857_H__

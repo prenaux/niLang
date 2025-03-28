@@ -24,18 +24,14 @@
 #include "agg_conv_stroke.h"
 #include "agg_conv_transform.h"
 
-namespace agg
-{
-
+namespace agg {
 
 //---------------------------------------------------------------gsv_text
 //
 // See Implementation agg_gsv_text.cpp
 //
-class gsv_text
-{
-  enum status
-  {
+class gsv_text {
+  enum status {
     initial,
     next_char,
     start_glyph,
@@ -46,9 +42,12 @@ class gsv_text
   gsv_text();
 
   void font(const void* font);
-  void flip(bool flip_y) { m_flip = flip_y; }
+  void flip(bool flip_y)
+  {
+    m_flip = flip_y;
+  }
   void load_font(const char* file);
-  void size(agg_real height, agg_real width=0.0);
+  void size(agg_real height, agg_real width = 0.0);
   void space(agg_real space);
   void line_space(agg_real line_space);
   void start_point(agg_real x, agg_real y);
@@ -60,59 +59,54 @@ class gsv_text
  private:
   // not supposed to be copied
   gsv_text(const gsv_text&);
-  const gsv_text& operator = (const gsv_text&);
+  const gsv_text& operator=(const gsv_text&);
 
   int16u value(const int8u* p) const
   {
     int16u v;
-    if(m_big_endian)
-    {
-      *(int8u*)&v      = p[1];
+    if (m_big_endian) {
+      *(int8u*)&v = p[1];
       *((int8u*)&v + 1) = p[0];
     }
-    else
-    {
-      *(int8u*)&v      = p[0];
+    else {
+      *(int8u*)&v = p[0];
       *((int8u*)&v + 1) = p[1];
     }
     return v;
   }
 
  private:
-  agg_real          m_x;
-  agg_real          m_y;
-  agg_real          m_start_x;
-  agg_real          m_width;
-  agg_real          m_height;
-  agg_real          m_space;
-  agg_real          m_line_space;
-  char            m_chr[2];
-  char*           m_text;
+  agg_real m_x;
+  agg_real m_y;
+  agg_real m_start_x;
+  agg_real m_width;
+  agg_real m_height;
+  agg_real m_space;
+  agg_real m_line_space;
+  char m_chr[2];
+  char* m_text;
   pod_array<char> m_text_buf;
-  char*           m_cur_chr;
-  const void*     m_font;
+  char* m_cur_chr;
+  const void* m_font;
   pod_array<char> m_loaded_font;
-  status          m_status;
-  bool            m_big_endian;
-  bool            m_flip;
-  int8u*          m_indices;
-  int8*           m_glyphs;
-  int8*           m_bglyph;
-  int8*           m_eglyph;
-  agg_real          m_w;
-  agg_real          m_h;
+  status m_status;
+  bool m_big_endian;
+  bool m_flip;
+  int8u* m_indices;
+  int8* m_glyphs;
+  int8* m_bglyph;
+  int8* m_eglyph;
+  agg_real m_w;
+  agg_real m_h;
 };
 
-
-
-
 //--------------------------------------------------------gsv_text_outline
-template<class Transformer = trans_affine> class gsv_text_outline
-{
+template <class Transformer = trans_affine>
+class gsv_text_outline {
  public:
-  gsv_text_outline(gsv_text& text, const Transformer& trans) :
-      m_polyline(text),
-      m_trans(m_polyline, trans)
+  gsv_text_outline(gsv_text& text, const Transformer& trans)
+      : m_polyline(text)
+      , m_trans(m_polyline, trans)
   {
   }
 
@@ -143,9 +137,6 @@ template<class Transformer = trans_affine> class gsv_text_outline
   conv_transform<conv_stroke<gsv_text>, Transformer> m_trans;
 };
 
-
-
-}
-
+} // namespace agg
 
 #endif

@@ -14,8 +14,7 @@ namespace ni {
  */
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cPolygon : public Impl_HeapAlloc
-{
+class cPolygon : public Impl_HeapAlloc {
  public:
   //! Constructor.
   inline cPolygon(tFVF aFVF = eFVF_Position);
@@ -59,7 +58,8 @@ class cPolygon : public Impl_HeapAlloc
   //! Add vertices to the polygon.
   inline void __stdcall AddVertices(const tPtr apVerts, tU16 aunNumVert = 1);
   //! Add vertices to the polygon.
-  inline void __stdcall AddVertices(const cFVFDescription& aFVF, const tPtr apVerts, tU16 aunNumVert = 1);
+  inline void __stdcall AddVertices(const cFVFDescription& aFVF,
+                                    const tPtr apVerts, tU16 aunNumVert = 1);
   //! Remove a vertex of the polygon.
   //! \param anVert is the index of the vertex to remove, if eInvalidHandle remove the last vertex.
   inline void __stdcall RemoveVertex(tU32 anVert = eInvalidHandle);
@@ -89,7 +89,10 @@ class cPolygon : public Impl_HeapAlloc
   inline tBool __stdcall IsValidPolygon() const;
   //! return eTrue if a vertex with the given position is already in the list
   inline tBool __stdcall Exists(const sVec3f& pos, const tF32 epsilon);
-  inline tBool __stdcall Exists(const sVec3f& pos) { return Exists(pos,niEpsilon5); }
+  inline tBool __stdcall Exists(const sVec3f& pos)
+  {
+    return Exists(pos, niEpsilon5);
+  }
   //! @}
 
   //########################################################################################
@@ -124,17 +127,30 @@ class cPolygon : public Impl_HeapAlloc
   //! @{
 
   //! Classify along a plane.
-  inline eClassify __stdcall Classify(const sPlanef& Plane, const tF32 epsilon) const;
+  inline eClassify __stdcall Classify(const sPlanef& Plane,
+                                      const tF32 epsilon) const;
   //! Classify along a plane.
-  inline eClassify __stdcall Classify(const sPlanef& Plane) const { return Classify(Plane,niEpsilon5); }
+  inline eClassify __stdcall Classify(const sPlanef& Plane) const
+  {
+    return Classify(Plane, niEpsilon5);
+  }
   //! Return eTrue if the specified polygon is the same as this polygon
   inline tBool __stdcall IsEqual(const cPolygon* b) const;
   //! Return eTrue if the specified point is inside the polygon.
-  inline tBool __stdcall Intersect(const sVec3f& pt, const tF32 fEpsilon = niEpsilon5) const;
-  inline tBool __stdcall IntersectPoint(const sVec3f& pt) const { return Intersect(pt,niEpsilon5); }
+  inline tBool __stdcall Intersect(const sVec3f& pt,
+                                   const tF32 fEpsilon = niEpsilon5) const;
+  inline tBool __stdcall IntersectPoint(const sVec3f& pt) const
+  {
+    return Intersect(pt, niEpsilon5);
+  }
   //! Return eTrue if the specified AABB intersect the polygon.
-  inline tBool __stdcall Intersect(const cAABBf& aAABB, const tF32 fEpsilon = niEpsilon5) const;
-  inline tBool __stdcall IntersectAABB(const sVec3f& avMin, const sVec3f& avMax) const { return Intersect(cAABBf(avMin,avMax),niEpsilon5); }
+  inline tBool __stdcall Intersect(const cAABBf& aAABB,
+                                   const tF32 fEpsilon = niEpsilon5) const;
+  inline tBool __stdcall IntersectAABB(const sVec3f& avMin,
+                                       const sVec3f& avMax) const
+  {
+    return Intersect(cAABBf(avMin, avMax), niEpsilon5);
+  }
   //! @}
 
   //########################################################################################
@@ -143,18 +159,28 @@ class cPolygon : public Impl_HeapAlloc
   //! @{
 
   //! Split along a plane.
-  inline void __stdcall Split(const sPlanef& Plane, cPolygon* pFront, cPolygon* pBack, tBool abKeepCoplanar, tF32 epsilon) const;
-  inline void __stdcall Split(const sPlanef& Plane, cPolygon* pFront, cPolygon* pBack, tBool abKeepCoplanar) const {
-    Split(Plane,static_cast<cPolygon*>(pFront),static_cast<cPolygon*>(pBack),abKeepCoplanar,niEpsilon5);
+  inline void __stdcall Split(const sPlanef& Plane, cPolygon* pFront,
+                              cPolygon* pBack, tBool abKeepCoplanar,
+                              tF32 epsilon) const;
+  inline void __stdcall Split(const sPlanef& Plane, cPolygon* pFront,
+                              cPolygon* pBack, tBool abKeepCoplanar) const
+  {
+    Split(Plane, static_cast<cPolygon*>(pFront), static_cast<cPolygon*>(pBack),
+          abKeepCoplanar, niEpsilon5);
   }
   //! Clip the polygon against the given set of planes. The planes are supposted to form a convex hull.
   //! \return eTrue if the resulting fragement is valid, else eFalse.
-  inline tBool __stdcall Clip(const sPlanef* apPlanes, tU32 aulNumPlanes, cPolygon& aResult, tBool abKeepBack, tBool abKeepCoplanar, tF32 epsilon) const;
-  inline tBool __stdcall Clip(const tVec4fCVec* avPlanes, cPolygon* apResult, tBool abKeepBack, tBool abKeepCoplanar) const {
+  inline tBool __stdcall Clip(const sPlanef* apPlanes, tU32 aulNumPlanes,
+                              cPolygon& aResult, tBool abKeepBack,
+                              tBool abKeepCoplanar, tF32 epsilon) const;
+  inline tBool __stdcall Clip(const tVec4fCVec* avPlanes, cPolygon* apResult,
+                              tBool abKeepBack, tBool abKeepCoplanar) const
+  {
     if (!niIsOK(avPlanes))
       return eFalse;
-    return Clip(avPlanes->_Data(),avPlanes->size(),
-                *static_cast<cPolygon*>(apResult),abKeepBack,abKeepCoplanar,niEpsilon5);
+    return Clip(avPlanes->_Data(), avPlanes->size(),
+                *static_cast<cPolygon*>(apResult), abKeepBack, abKeepCoplanar,
+                niEpsilon5);
   }
   //! @}
 
@@ -164,9 +190,14 @@ class cPolygon : public Impl_HeapAlloc
   //! @{
 
   //! Generate vertices for the given plane the size is fWidth.
-  inline tBool __stdcall GenerateBaseForPlane(const sPlanef& Plane, const tF32 fWidth = 1024.0f, tBool bCCW = eFalse);
+  inline tBool __stdcall GenerateBaseForPlane(const sPlanef& Plane,
+                                              const tF32 fWidth = 1024.0f,
+                                              tBool bCCW = eFalse);
   //! Generate vertices for the given plane the size is defined by the specified AABB.
-  inline tBool __stdcall GenerateBaseForPlaneAABB(const sPlanef& Plane, const sVec3f& avMin, const sVec3f& avMax, tBool bCCW = eFalse);
+  inline tBool __stdcall GenerateBaseForPlaneAABB(const sPlanef& Plane,
+                                                  const sVec3f& avMin,
+                                                  const sVec3f& avMax,
+                                                  tBool bCCW = eFalse);
   //! Sort the vertices in clockwise order.
   //! - require a correct normal in the plane, so it must be set with SetPlane() before.
   //! - recompute the polygon's plane.
@@ -174,9 +205,9 @@ class cPolygon : public Impl_HeapAlloc
   //! Reverse the polygon facing.
   inline void __stdcall Reverse();
   //! Return the closest point to the specified point that lay on an edge of this polygon.
-  inline sVec3f& __stdcall ClosestPointOnPerimeter(sVec3f& Out, const sVec3f& pt,
-                                                      sVec3f* pEA = NULL, sVec3f* pEB = NULL,
-                                                      tBool* pbEdgeFlag = NULL) const;
+  inline sVec3f& __stdcall ClosestPointOnPerimeter(
+    sVec3f& Out, const sVec3f& pt, sVec3f* pEA = NULL, sVec3f* pEB = NULL,
+    tBool* pbEdgeFlag = NULL) const;
   //! Check if the polygon is degenerate.
   inline tBool __stdcall IsDegenerate() const;
   //! @}
@@ -212,79 +243,82 @@ class cPolygon : public Impl_HeapAlloc
   inline cPolygon* __stdcall Clone() const;
   //! @}
 
-  inline  tBool __stdcall SetVertexPosition(ni::tU32 anIndex, const sVec3f& pos) {
-    if (anIndex >= GetNumVertices()) return eFalse;
+  inline tBool __stdcall SetVertexPosition(ni::tU32 anIndex, const sVec3f& pos)
+  {
+    if (anIndex >= GetNumVertices())
+      return eFalse;
     *GetPosition(anIndex) = pos;
     return eTrue;
   }
-  inline sVec3f __stdcall GetVertexPosition(ni::tU32 anIndex) const {
-    if (anIndex >= GetNumVertices()) return sVec3f::Zero();
+  inline sVec3f __stdcall GetVertexPosition(ni::tU32 anIndex) const
+  {
+    if (anIndex >= GetNumVertices())
+      return sVec3f::Zero();
     return *GetPosition(anIndex);
   }
 
-  inline tBool operator == (const cPolygon& aRight) const
+  inline tBool operator==(const cPolygon& aRight) const
   {
-    return
-        mvVertices == aRight.mvVertices &&
-        munNumVertices == aRight.munNumVertices &&
-        munMaterial == aRight.munMaterial &&
-        mFVF == aRight.mFVF &&
-        munVertexSize == aRight.munVertexSize &&
-        mPlane == aRight.mPlane;
+    return mvVertices == aRight.mvVertices &&
+           munNumVertices == aRight.munNumVertices &&
+           munMaterial == aRight.munMaterial && mFVF == aRight.mFVF &&
+           munVertexSize == aRight.munVertexSize && mPlane == aRight.mPlane;
   }
 
  private:
   //! Vertices memory.
   astl::vector<tU8> mvVertices;
   //! Num vertices.
-  tU16  munNumVertices;
+  tU16 munNumVertices;
   //! Material ID.
-  tU32  munMaterial;
+  tU32 munMaterial;
   //! Flags.
-  tU32  mnFlags;
+  tU32 mnFlags;
   //! FVF.
-  tFVF  mFVF;
+  tFVF mFVF;
   //! Vertex size.
-  tU16  munVertexSize;
+  tU16 munVertexSize;
   //! Polygon's plane.
   sPlanef mPlane;
 
  public:
   //! Get the object type ID.
-  inline const achar* __stdcall GetSerializeObjectTypeID() const { return NULL; }
+  inline const achar* __stdcall GetSerializeObjectTypeID() const
+  {
+    return NULL;
+  }
 
   //! Serialize the object.
   inline tSize __stdcall Serialize(iFile* apFile, eSerializeMode aMode)
   {
-    switch(aMode)
-    {
-      case eSerializeMode_Read:
-      case eSerializeMode_ReadRaw:
-        {
-          tI64 nPos = apFile->Tell();
-          mFVF = (eFVF)apFile->ReadLE32();
-          munVertexSize = apFile->ReadLE16();
-          munMaterial = apFile->ReadLE32();
-          mnFlags = apFile->ReadLE32();
-          munNumVertices = apFile->ReadLE16();
-          apFile->ReadF32Array(mPlane.ptr(),4);
-          mvVertices.resize(GetNumVertices()*GetVertexSize());
-          apFile->ReadRaw((void*)GetFirstVertex(), GetNumVertices()*GetVertexSize());
-          return (tSize)(apFile->Tell()-nPos);
-        }
-      case eSerializeMode_Write:
-      case eSerializeMode_WriteRaw:
-        {
-          tSize nSize = 0;
-          nSize += apFile->WriteLE32(mFVF);
-          nSize += apFile->WriteLE16(munVertexSize);
-          nSize += apFile->WriteLE32(munMaterial);
-          nSize += apFile->WriteLE32(mnFlags);
-          nSize += apFile->WriteLE16(munNumVertices);
-          nSize += apFile->WriteF32Array(mPlane.ptr(),4);
-          nSize += apFile->WriteRaw((void*)GetFirstVertex(), GetNumVertices()*GetVertexSize());
-          return nSize;
-        }
+    switch (aMode) {
+    case eSerializeMode_Read:
+    case eSerializeMode_ReadRaw: {
+      tI64 nPos = apFile->Tell();
+      mFVF = (eFVF)apFile->ReadLE32();
+      munVertexSize = apFile->ReadLE16();
+      munMaterial = apFile->ReadLE32();
+      mnFlags = apFile->ReadLE32();
+      munNumVertices = apFile->ReadLE16();
+      apFile->ReadF32Array(mPlane.ptr(), 4);
+      mvVertices.resize(GetNumVertices() * GetVertexSize());
+      apFile->ReadRaw((void*)GetFirstVertex(),
+                      GetNumVertices() * GetVertexSize());
+      return (tSize)(apFile->Tell() - nPos);
+    }
+    case eSerializeMode_Write:
+    case eSerializeMode_WriteRaw: {
+      tSize nSize = 0;
+      nSize += apFile->WriteLE32(mFVF);
+      nSize += apFile->WriteLE16(munVertexSize);
+      nSize += apFile->WriteLE32(munMaterial);
+      nSize += apFile->WriteLE32(mnFlags);
+      nSize += apFile->WriteLE16(munNumVertices);
+      nSize += apFile->WriteF32Array(mPlane.ptr(), 4);
+      nSize += apFile->WriteRaw((void*)GetFirstVertex(),
+                                GetNumVertices() * GetVertexSize());
+      return nSize;
+    }
     }
 
     niAssertUnreachable("Unreachable code.");
@@ -331,7 +365,8 @@ inline void cPolygon::ZeroMembers()
 //! \remark check if the FVF has a position and that the vertex size is greater than 12 and smaller than niMaxVertexSize.
 inline tBool __stdcall cPolygon::IsOK() const
 {
-  return niFlagTest(mFVF,eFVF_Position) && munVertexSize && munVertexSize < kMaxVertexSize;
+  return niFlagTest(mFVF, eFVF_Position) && munVertexSize &&
+         munVertexSize < kMaxVertexSize;
 }
 
 ///////////////////////////////////////////////
@@ -376,7 +411,7 @@ inline void __stdcall cPolygon::ClearVertices()
 //! Reserve memory for the specified number of vertices.
 inline void __stdcall cPolygon::ReserveVertices(tU32 aunNumVert)
 {
-  mvVertices.reserve((mvVertices.size()+aunNumVert)*munVertexSize);
+  mvVertices.reserve((mvVertices.size() + aunNumVert) * munVertexSize);
 }
 
 ///////////////////////////////////////////////
@@ -385,11 +420,11 @@ inline void __stdcall cPolygon::AddVertices(const tPtr apVerts, tU16 aunNumVert)
 {
   niAssert(aunNumVert);
 
-  mvVertices.resize((GetNumVertices()+aunNumVert)*munVertexSize);
+  mvVertices.resize((GetNumVertices() + aunNumVert) * munVertexSize);
 
-  if (apVerts)
-  {
-    memcpy((void*)&mvVertices[GetNumVertices()*munVertexSize], apVerts, aunNumVert*munVertexSize);
+  if (apVerts) {
+    memcpy((void*)&mvVertices[GetNumVertices() * munVertexSize], apVerts,
+           aunNumVert * munVertexSize);
   }
 
   munNumVertices += aunNumVert;
@@ -397,20 +432,21 @@ inline void __stdcall cPolygon::AddVertices(const tPtr apVerts, tU16 aunNumVert)
 
 ///////////////////////////////////////////////
 //! Add vertices to the polygon.
-inline void __stdcall cPolygon::AddVertices(const cFVFDescription& aFVF, const tPtr apVerts, tU16 aunNumVert)
+inline void __stdcall cPolygon::AddVertices(const cFVFDescription& aFVF,
+                                            const tPtr apVerts, tU16 aunNumVert)
 {
   niAssert(apVerts != NULL);
   niAssert(aunNumVert);
 
-  mvVertices.resize((GetNumVertices()+aunNumVert)*munVertexSize);
+  mvVertices.resize((GetNumVertices() + aunNumVert) * munVertexSize);
 
-  if (mFVF == aFVF.GetFVF() && GetVertexSize() == aFVF.GetStride())
-  {
-    memcpy((void*)&mvVertices[GetNumVertices()*munVertexSize], apVerts, aunNumVert*munVertexSize);
+  if (mFVF == aFVF.GetFVF() && GetVertexSize() == aFVF.GetStride()) {
+    memcpy((void*)&mvVertices[GetNumVertices() * munVertexSize], apVerts,
+           aunNumVert * munVertexSize);
   }
-  else
-  {
-    FVFCopy(&mvVertices[GetNumVertices()*munVertexSize], cFVFDescription(mFVF), apVerts, aFVF, aunNumVert);
+  else {
+    FVFCopy(&mvVertices[GetNumVertices() * munVertexSize],
+            cFVFDescription(mFVF), apVerts, aFVF, aunNumVert);
   }
 
   munNumVertices += aunNumVert;
@@ -423,10 +459,11 @@ inline void __stdcall cPolygon::RemoveVertex(tU32 anVert)
 {
   niAssert(anVert == eInvalidHandle || anVert < GetNumVertices());
 
-  tU32 unVertexOffset = GetVertexSize()*((anVert == eInvalidHandle)?munNumVertices-1:anVert);
-  mvVertices.erase(
-    mvVertices.begin()+unVertexOffset,
-    mvVertices.begin()+unVertexOffset+munVertexSize);
+  tU32 unVertexOffset =
+    GetVertexSize() *
+    ((anVert == eInvalidHandle) ? munNumVertices - 1 : anVert);
+  mvVertices.erase(mvVertices.begin() + unVertexOffset,
+                   mvVertices.begin() + unVertexOffset + munVertexSize);
   --munNumVertices;
 }
 
@@ -458,23 +495,25 @@ inline tU16 __stdcall cPolygon::GetNumVertices() const
 inline tPtr __stdcall cPolygon::GetVertex(tU32 nVert) const
 {
   niAssert(nVert < GetNumVertices());
-  return GetFirstVertex()+(nVert*GetVertexSize());
+  return GetFirstVertex() + (nVert * GetVertexSize());
 }
 
 ///////////////////////////////////////////////
 //! Set the number of vertices
 inline void __stdcall cPolygon::SetNumVertices(tU16 anNum)
 {
-  if (munNumVertices == anNum) return;
+  if (munNumVertices == anNum)
+    return;
   munNumVertices = anNum;
-  mvVertices.resize(munNumVertices*munVertexSize);
+  mvVertices.resize(munNumVertices * munVertexSize);
 }
 
 ///////////////////////////////////////////////
 //! Create a vertices file.
 inline iFile* __stdcall cPolygon::CreateVerticesFile() const
 {
-  return ni::CreateFileMemory((tPtr)&mvVertices[0],mvVertices.size(),eFalse,NULL);
+  return ni::CreateFileMemory((tPtr)&mvVertices[0], mvVertices.size(), eFalse,
+                              NULL);
 }
 
 ///////////////////////////////////////////////
@@ -488,14 +527,14 @@ inline tPtr __stdcall cPolygon::GetFirstVertex() const
 //! Get the next vertex.
 inline tPtr __stdcall cPolygon::GetNextVertex(tPtr apVert) const
 {
-  return (tPtr)(apVert+munVertexSize);
+  return (tPtr)(apVert + munVertexSize);
 }
 
 ///////////////////////////////////////////////
 //! Check if this is the end vertex.
 inline tBool __stdcall cPolygon::IsEndVertex(tPtr apVert) const
 {
-  return tPtr(apVert) == tPtr(mvVertices.data()+mvVertices.size());
+  return tPtr(apVert) == tPtr(mvVertices.data() + mvVertices.size());
 }
 
 ///////////////////////////////////////////////
@@ -503,7 +542,8 @@ inline tBool __stdcall cPolygon::IsEndVertex(tPtr apVert) const
 inline sVec3f* __stdcall cPolygon::GetPosition(tU32 nVert) const
 {
   niAssert(nVert < GetNumVertices());
-  return reinterpret_cast<sVec3f*>(GetFirstVertex()+(nVert*GetVertexSize()));
+  return reinterpret_cast<sVec3f*>(GetFirstVertex() +
+                                   (nVert * GetVertexSize()));
 }
 
 ///////////////////////////////////////////////
@@ -517,14 +557,14 @@ inline sVec3f* __stdcall cPolygon::GetFirstPosition() const
 //! Get the next vertex.
 inline sVec3f* __stdcall cPolygon::GetNextPosition(sVec3f* apVert) const
 {
-  return reinterpret_cast<sVec3f*>(tPtr(apVert)+munVertexSize);
+  return reinterpret_cast<sVec3f*>(tPtr(apVert) + munVertexSize);
 }
 
 ///////////////////////////////////////////////
 //! Check if this is the end vertex.
 inline tBool __stdcall cPolygon::IsEndPosition(sVec3f* apVert) const
 {
-  return tPtr(apVert) == tPtr(mvVertices.data()+mvVertices.size());
+  return tPtr(apVert) == tPtr(mvVertices.data() + mvVertices.size());
 }
 
 ///////////////////////////////////////////////
@@ -548,9 +588,9 @@ inline tBool __stdcall cPolygon::Exists(const sVec3f& aPos, const tF32 epsilon)
   for (tPtr itV = GetFirstVertex(); !IsEndVertex(itV); itV = GetNextVertex(itV))
   {
     sVec3f* pos = reinterpret_cast<sVec3f*>(itV);
-    if (ni::Abs(pos->x-aPos.x) <= epsilon &&
-        ni::Abs(pos->y-aPos.y) <= epsilon &&
-        ni::Abs(pos->z-aPos.z) <= epsilon)
+    if (ni::Abs(pos->x - aPos.x) <= epsilon &&
+        ni::Abs(pos->y - aPos.y) <= epsilon &&
+        ni::Abs(pos->z - aPos.z) <= epsilon)
       return eTrue;
   }
 
@@ -563,7 +603,8 @@ inline sVec3f cPolygon::GetCOM() const
 {
   niAssert(IsValidPolygon());
   sVec3f vCOM = { 0, 0, 0 };
-  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV); itV = GetNextPosition(itV))
+  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV);
+       itV = GetNextPosition(itV))
   {
     vCOM.x += itV->x;
     vCOM.y += itV->y;
@@ -580,10 +621,11 @@ inline tF32 cPolygon::GetArea() const
   niAssert(IsValidPolygon());
 
   tF32 xyArea = 0.0f, yzArea = 0.0f, zxArea = 0.0f;
-  sVec3f *p0 = reinterpret_cast<sVec3f*>(GetVertex(GetNumVertices()-1));
-  sVec3f *p1;
+  sVec3f* p0 = reinterpret_cast<sVec3f*>(GetVertex(GetNumVertices() - 1));
+  sVec3f* p1;
 
-  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV); itV = GetNextPosition(itV))
+  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV);
+       itV = GetNextPosition(itV))
   {
     p1 = itV;
     xyArea += (p0->y + p1->y) * (p1->x - p0->x) / 2.0f;
@@ -603,9 +645,9 @@ inline tBool __stdcall cPolygon::ComputePlane()
 
   sVec3f *vi, *vj;
 
-  sVec3f normal = {0,0,0};
+  sVec3f normal = { 0, 0, 0 };
   for (tU32 i = 0, j; i < GetNumVertices(); ++i) {
-    j = (i+1)%GetNumVertices();
+    j = (i + 1) % GetNumVertices();
     vi = GetPosition(i);
     vj = GetPosition(j);
     normal.x += tF32(vi->y - vj->y) * tF32(vi->z + vj->z);
@@ -644,20 +686,20 @@ inline sPlanef __stdcall cPolygon::GetPlane() const
 
 ///////////////////////////////////////////////
 //! Classify along a plane.
-inline eClassify __stdcall cPolygon::Classify(const sPlanef& aPlane, const tF32 epsilon) const
+inline eClassify __stdcall cPolygon::Classify(const sPlanef& aPlane,
+                                              const tF32 epsilon) const
 {
   tBool bFront = eFalse, bBack = eFalse;
-  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV); itV = GetNextPosition(itV))
+  for (sVec3f* itV = GetFirstPosition(); !IsEndPosition(itV);
+       itV = GetNextPosition(itV))
   {
     tF32 fDist = PlaneDotCoord(aPlane, *itV);
-    if (fDist > epsilon)
-    {
+    if (fDist > epsilon) {
       if (bBack)
         return eClassify_Spanned;
       bFront = eTrue;
     }
-    else if (fDist < -epsilon)
-    {
+    else if (fDist < -epsilon) {
       if (bFront)
         return eClassify_Spanned;
       bBack = eTrue;
@@ -704,9 +746,8 @@ inline tBool __stdcall cPolygon::IsEqual(const cPolygon* apB) const
   if (GetPlane() != b.GetPlane())
     return eFalse;
 
-  for (sVec3f* pA = GetFirstPosition(), *pB = b.GetFirstPosition();
-       !IsEndPosition(pA);
-       pA = GetNextPosition(pA), pB = GetNextPosition(pB))
+  for (sVec3f *pA = GetFirstPosition(), *pB = b.GetFirstPosition();
+       !IsEndPosition(pA); pA = GetNextPosition(pA), pB = GetNextPosition(pB))
   {
     if (*pA != *pB)
       return eFalse;
@@ -717,7 +758,8 @@ inline tBool __stdcall cPolygon::IsEqual(const cPolygon* apB) const
 
 ///////////////////////////////////////////////
 //! Return eTrue if the specified point is inside the polygon.
-inline tBool __stdcall cPolygon::Intersect(const sVec3f& pt, const tF32 fEpsilon) const
+inline tBool __stdcall cPolygon::Intersect(const sVec3f& pt,
+                                           const tF32 fEpsilon) const
 {
   niAssert(IsValidPolygon());
 
@@ -727,24 +769,29 @@ inline tBool __stdcall cPolygon::Intersect(const sVec3f& pt, const tF32 fEpsilon
   const sVec3f planeNormal = mPlane.GetNormal();
   sVec3f* j = GetPosition(1);
 
-  for (sVec3f* i = GetFirstPosition(); !IsEndPosition(i); i = GetNextPosition(i), j = GetNextPosition(j))
+  for (sVec3f* i = GetFirstPosition(); !IsEndPosition(i);
+       i = GetNextPosition(i), j = GetNextPosition(j))
   {
-    if (IsEndPosition(j)) j = GetFirstPosition();
+    if (IsEndPosition(j))
+      j = GetFirstPosition();
 
     // Generate a normal for this edge
     sVec3f n;
-    VecCross<tF32>(n, (*j-*i), planeNormal);
+    VecCross<tF32>(n, (*j - *i), planeNormal);
 
     // Which side of this edge-plane is the point?
-    tF32 fHalfPlane = VecDot(pt,n) - VecDot(*i,n);
+    tF32 fHalfPlane = VecDot(pt, n) - VecDot(*i, n);
 
     // Keep track of positives & negatives (but not zeros -- which means it's on the edge)
-    if (fHalfPlane > fEpsilon)   pos++;
-    else if (fHalfPlane < -fEpsilon)  neg++;
+    if (fHalfPlane > fEpsilon)
+      pos++;
+    else if (fHalfPlane < -fEpsilon)
+      neg++;
   }
 
   // If they're ALL positive, or ALL negative, then it's inside
-  if (!pos || !neg) return eTrue;
+  if (!pos || !neg)
+    return eTrue;
 
   // Must not be inside, because some were pos and some were neg
   return eFalse;
@@ -752,19 +799,20 @@ inline tBool __stdcall cPolygon::Intersect(const sVec3f& pt, const tF32 fEpsilon
 
 ///////////////////////////////////////////////
 //! Return eTrue if the specified AABB intersect the polygon.
-inline tBool __stdcall cPolygon::Intersect(const cAABBf& aAABB, const tF32 fEpsilon) const
+inline tBool __stdcall cPolygon::Intersect(const cAABBf& aAABB,
+                                           const tF32 fEpsilon) const
 {
   cAABBf polyAABB;
   {
-    niLoop(i,this->GetNumVertices()) {
+    niLoop (i, this->GetNumVertices()) {
       polyAABB.SetPoint(this->GetVertexPosition(i));
     }
   }
-  if (!polyAABB.Intersect(aAABB,fEpsilon))
+  if (!polyAABB.Intersect(aAABB, fEpsilon))
     return eFalse;
 
   sPlanef aabbPlanes[6];
-  aAABB.GetFacesPlanes(aabbPlanes,eTrue);
+  aAABB.GetFacesPlanes(aabbPlanes, eTrue);
 
   for (tU32 i = 0; i < 6; ++i) {
     if (Classify(aabbPlanes[i], fEpsilon) == eClassify_Front)
@@ -776,43 +824,48 @@ inline tBool __stdcall cPolygon::Intersect(const cAABBf& aAABB, const tF32 fEpsi
 
 ///////////////////////////////////////////////
 //! Split along a plane.
-inline void __stdcall cPolygon::Split(const sPlanef& Plane, cPolygon* pFront, cPolygon* pBack, tBool abKeepCoplanar, tF32 epsilon) const
+inline void __stdcall cPolygon::Split(const sPlanef& Plane, cPolygon* pFront,
+                                      cPolygon* pBack, tBool abKeepCoplanar,
+                                      tF32 epsilon) const
 {
-  niAssert(!pFront || (mFVF == pFront->GetFVF() && munVertexSize == pFront->GetVertexSize()));
-  niAssert(!pBack  || (mFVF == pBack->GetFVF()  && munVertexSize == pBack->GetVertexSize()));
+  niAssert(!pFront || (mFVF == pFront->GetFVF() &&
+                       munVertexSize == pFront->GetVertexSize()));
+  niAssert(!pBack || (mFVF == pBack->GetFVF() &&
+                      munVertexSize == pBack->GetVertexSize()));
 
-  if (!pFront && !pBack) return;
+  if (!pFront && !pBack)
+    return;
 
   sVec3f *itA, *itB;
 
-  astl::vector<eClassify>   vCl;
+  astl::vector<eClassify> vCl;
   vCl.reserve(GetNumVertices());
 
   {
     tU16 usInFront = 0, usBack = 0, usCoplanar = 0;
-    for (itA = GetFirstPosition(); !IsEndPosition(itA); itA = GetNextPosition(itA))
+    for (itA = GetFirstPosition(); !IsEndPosition(itA);
+         itA = GetNextPosition(itA))
     {
-      vCl.push_back(ClassifyPoint(Plane,*itA,epsilon));
-      if (vCl.back() == eClassify_Front)    ++usInFront;
-      else if (vCl.back() == eClassify_Back)  ++usBack;
-      else                  ++usCoplanar;
+      vCl.push_back(ClassifyPoint(Plane, *itA, epsilon));
+      if (vCl.back() == eClassify_Front)
+        ++usInFront;
+      else if (vCl.back() == eClassify_Back)
+        ++usBack;
+      else
+        ++usCoplanar;
     }
-    if (usInFront == GetNumVertices())
-    {
+    if (usInFront == GetNumVertices()) {
       if (pFront)
         *pFront = *this;
       return;
     }
-    else if (usBack == GetNumVertices())
-    {
+    else if (usBack == GetNumVertices()) {
       if (pBack)
         *pBack = *this;
       return;
     }
-    else if (usCoplanar == GetNumVertices())
-    {
-      if (abKeepCoplanar)
-      {
+    else if (usCoplanar == GetNumVertices()) {
+      if (abKeepCoplanar) {
         if (pFront)
           *pFront = *this;
         if (pBack)
@@ -828,23 +881,23 @@ inline void __stdcall cPolygon::Split(const sPlanef& Plane, cPolygon* pFront, cP
   eClassify clA, clB;
   itA = GetFirstPosition();
   itB = GetNextPosition(itA);
-  for (tU32 i = 0; i < GetNumVertices(); ++i)
-  {
+  for (tU32 i = 0; i < GetNumVertices(); ++i) {
     clA = vCl[i];
-    clB = vCl[(i+1)%GetNumVertices()];
+    clB = vCl[(i + 1) % GetNumVertices()];
 
-    if (clA == eClassify_Front)
-    {
-      if (pFront) pFront->AddVertices(tPtr(itA));
+    if (clA == eClassify_Front) {
+      if (pFront)
+        pFront->AddVertices(tPtr(itA));
     }
-    else if (clA == eClassify_Back)
-    {
-      if (pBack)  pBack->AddVertices(tPtr(itA));
+    else if (clA == eClassify_Back) {
+      if (pBack)
+        pBack->AddVertices(tPtr(itA));
     }
-    else /*if (clA == eClassify_Coplanar)*/
-    {
-      if (pFront) pFront->AddVertices(tPtr(itA));
-      if (pBack)  pBack->AddVertices(tPtr(itA));
+    else /*if (clA == eClassify_Coplanar)*/ {
+      if (pFront)
+        pFront->AddVertices(tPtr(itA));
+      if (pBack)
+        pBack->AddVertices(tPtr(itA));
     }
 
     if ((clA == eClassify_Front && clB == eClassify_Back) ||
@@ -853,24 +906,25 @@ inline void __stdcall cPolygon::Split(const sPlanef& Plane, cPolygon* pFront, cP
       tF32 fPercent = 0.0f;
       PlaneIntersectLine(Plane, *itA, *itB, (sVec3f*)NULL, &fPercent);
       FVFLerp(GetFVF(), (tPtr)&newVert[0], (tPtr)itA, (tPtr)itB, fPercent);
-      if (pBack)  pBack->AddVertices(tPtr(&newVert[0]));
-      if (pFront) pFront->AddVertices(tPtr(&newVert[0]));
+      if (pBack)
+        pBack->AddVertices(tPtr(&newVert[0]));
+      if (pFront)
+        pFront->AddVertices(tPtr(&newVert[0]));
     }
 
     itA = GetNextPosition(itA);
     itB = GetNextPosition(itA);
-    if (IsEndPosition(itB)) itB = GetFirstPosition();
+    if (IsEndPosition(itB))
+      itB = GetFirstPosition();
   }
 
-  if (pFront && pFront->IsValidPolygon())
-  {
+  if (pFront && pFront->IsValidPolygon()) {
     pFront->SetPlane(mPlane);
     pFront->SetMaterial(GetMaterial());
     pFront->SetFlags(GetFlags());
   }
 
-  if (pBack && pBack->IsValidPolygon())
-  {
+  if (pBack && pBack->IsValidPolygon()) {
     pBack->SetPlane(mPlane);
     pBack->SetMaterial(GetMaterial());
     pBack->SetFlags(GetFlags());
@@ -879,7 +933,10 @@ inline void __stdcall cPolygon::Split(const sPlanef& Plane, cPolygon* pFront, cP
 
 ///////////////////////////////////////////////
 //! Clip the polygon against the given set of planes. The planes are supposted to form a convex hull.
-inline tBool __stdcall cPolygon::Clip(const sPlanef* apPlanes, tU32 aulNumPlanes, cPolygon& aResult, tBool abKeepBack, tBool abKeepCoplanar, tF32 epsilon) const
+inline tBool __stdcall cPolygon::Clip(const sPlanef* apPlanes,
+                                      tU32 aulNumPlanes, cPolygon& aResult,
+                                      tBool abKeepBack, tBool abKeepCoplanar,
+                                      tF32 epsilon) const
 {
   cPolygon *pA, *pB;
   cPolygon polyA = *this;
@@ -889,12 +946,13 @@ inline tBool __stdcall cPolygon::Clip(const sPlanef* apPlanes, tU32 aulNumPlanes
   pA = &polyA;
   pB = &polyB;
 
-  for (tU32 i = 0; i < aulNumPlanes; ++i)
-  {
+  for (tU32 i = 0; i < aulNumPlanes; ++i) {
     pB->ClearVertices();
-    if (abKeepBack) pA->Split(apPlanes[i], NULL, pB, abKeepCoplanar, epsilon);
-    else      pA->Split(apPlanes[i], pB, NULL, abKeepCoplanar, epsilon);
-    Swap(pA,pB);
+    if (abKeepBack)
+      pA->Split(apPlanes[i], NULL, pB, abKeepCoplanar, epsilon);
+    else
+      pA->Split(apPlanes[i], pB, NULL, abKeepCoplanar, epsilon);
+    Swap(pA, pB);
     if (!pA->IsValidPolygon())
       break;
   }
@@ -905,22 +963,22 @@ inline tBool __stdcall cPolygon::Clip(const sPlanef* apPlanes, tU32 aulNumPlanes
 
 ///////////////////////////////////////////////
 //! Generate vertices for the given plane the size is fWidth.
-inline tBool __stdcall cPolygon::GenerateBaseForPlane(const sPlanef& Plane, const tF32 fWidth, tBool bCCW)
+inline tBool __stdcall cPolygon::GenerateBaseForPlane(const sPlanef& Plane,
+                                                      const tF32 fWidth,
+                                                      tBool bCCW)
 {
   sVec3f vOrg = kvec3fZero, vRight = kvec3fZero, vUp = kvec3fZero;
   ClearVertices();
 
   // find the major axis
   sVec3f vA = kvec3fZero;
-  if (ni::Abs(Plane.y) > ni::Abs(Plane.z))
-  {
+  if (ni::Abs(Plane.y) > ni::Abs(Plane.z)) {
     if (ni::Abs(Plane.z) < ni::Abs(Plane.x))
       vA.z = 1.0f;
     else
       vA.x = 1.0f;
   }
-  else
-  {
+  else {
     if (ni::Abs(Plane.y) <= ni::Abs(Plane.x))
       vA.y = 1.0f;
     else
@@ -928,25 +986,23 @@ inline tBool __stdcall cPolygon::GenerateBaseForPlane(const sPlanef& Plane, cons
   }
 
   const sVec3f planeNormal = Plane.GetNormal();
-  VecNormalize(VecCross(vUp,    vA,  planeNormal));
+  VecNormalize(VecCross(vUp, vA, planeNormal));
   VecNormalize(VecCross(vRight, vUp, planeNormal));
 
-  vUp *= fWidth*0.5f;
-  vRight *= fWidth*0.5f;
+  vUp *= fWidth * 0.5f;
+  vRight *= fWidth * 0.5f;
 
   vOrg = -Plane.GetDist() * planeNormal;
 
-  mvVertices.resize(4*munVertexSize);
+  mvVertices.resize(4 * munVertexSize);
   munNumVertices = 4;
-  if (bCCW)
-  {
+  if (bCCW) {
     *GetPosition(3) = vOrg - vRight + vUp;
     *GetPosition(2) = vOrg + vRight + vUp;
     *GetPosition(1) = vOrg + vRight - vUp;
     *GetPosition(0) = vOrg - vRight - vUp;
   }
-  else
-  {
+  else {
     *GetPosition(0) = vOrg - vRight + vUp;
     *GetPosition(1) = vOrg + vRight + vUp;
     *GetPosition(2) = vOrg + vRight - vUp;
@@ -959,22 +1015,23 @@ inline tBool __stdcall cPolygon::GenerateBaseForPlane(const sPlanef& Plane, cons
 
 ///////////////////////////////////////////////
 //! Generate vertices for the given plane the size is defined by the specified AABB.
-inline tBool __stdcall cPolygon::GenerateBaseForPlaneAABB(const sPlanef& Plane, const sVec3f& avMin, const sVec3f& avMax, tBool bCCW)
+inline tBool __stdcall cPolygon::GenerateBaseForPlaneAABB(const sPlanef& Plane,
+                                                          const sVec3f& avMin,
+                                                          const sVec3f& avMax,
+                                                          tBool bCCW)
 {
   sVec3f vOrg = kvec3fZero, vRight = kvec3fZero, vUp = kvec3fZero;
   ClearVertices();
 
   // find the major axis
   sVec3f vA = kvec3fZero;
-  if (ni::Abs(Plane.y) > ni::Abs(Plane.z))
-  {
+  if (ni::Abs(Plane.y) > ni::Abs(Plane.z)) {
     if (ni::Abs(Plane.z) < ni::Abs(Plane.x))
       vA.z = 1.0f;
     else
       vA.x = 1.0f;
   }
-  else
-  {
+  else {
     if (ni::Abs(Plane.y) <= ni::Abs(Plane.x))
       vA.y = 1.0f;
     else
@@ -982,27 +1039,25 @@ inline tBool __stdcall cPolygon::GenerateBaseForPlaneAABB(const sPlanef& Plane, 
   }
 
   const sVec3f planeNormal = Plane.GetNormal();
-  VecNormalize(VecCross(vUp,    vA,   planeNormal));
-  VecNormalize(VecCross(vRight, vUp,  planeNormal));
+  VecNormalize(VecCross(vUp, vA, planeNormal));
+  VecNormalize(VecCross(vRight, vUp, planeNormal));
 
-  sVec3f CB = (avMax+avMin)/2.0f;
-  tF32 fLength = VecLength(avMax-CB);
-  vOrg = CB + (-PlaneDotCoord(Plane,CB) * planeNormal);
+  sVec3f CB = (avMax + avMin) / 2.0f;
+  tF32 fLength = VecLength(avMax - CB);
+  vOrg = CB + (-PlaneDotCoord(Plane, CB) * planeNormal);
 
   vUp *= fLength;
   vRight *= fLength;
 
-  mvVertices.resize(4*munVertexSize);
+  mvVertices.resize(4 * munVertexSize);
   munNumVertices = 4;
-  if (bCCW)
-  {
+  if (bCCW) {
     *GetPosition(3) = vOrg - vRight + vUp;
     *GetPosition(2) = vOrg + vRight + vUp;
     *GetPosition(1) = vOrg + vRight - vUp;
     *GetPosition(0) = vOrg - vRight - vUp;
   }
-  else
-  {
+  else {
     *GetPosition(0) = vOrg - vRight + vUp;
     *GetPosition(1) = vOrg + vRight + vUp;
     *GetPosition(2) = vOrg + vRight - vUp;
@@ -1022,22 +1077,20 @@ inline void __stdcall cPolygon::SortVerts()
   sVec3f vCOM = GetCOM();
 
   // Sort vertices
-  for (tU16 i = 0; i < GetNumVertices()-2; ++i)
-  {
+  for (tU16 i = 0; i < GetNumVertices() - 2; ++i) {
     sVec3f a;
     sPlanef p;
-    tF32  fSmallestAngle  = -1;
-    int   nSmallest   = -1;
+    tF32 fSmallestAngle = -1;
+    int nSmallest = -1;
 
     a = *GetPosition(i) - vCOM;
     VecNormalize(a);
 
-    PlaneFromPoints<tF32>(p, *GetPosition(i), vCOM, vCOM+mPlane.GetNormal());
+    PlaneFromPoints<tF32>(p, *GetPosition(i), vCOM, vCOM + mPlane.GetNormal());
     PlaneNormalize(p);
 
-    for (tU32 j = i+1; j < GetNumVertices(); ++j)
-    {
-      if (ClassifyPoint(p,*GetPosition(j)) == eClassify_Back)
+    for (tU32 j = i + 1; j < GetNumVertices(); ++j) {
+      if (ClassifyPoint(p, *GetPosition(j)) == eClassify_Back)
         continue;
 
       sVec3f b;
@@ -1046,25 +1099,23 @@ inline void __stdcall cPolygon::SortVerts()
       b = *GetPosition(j) - vCOM;
       VecNormalize(b);
 
-      fAngle = VecDot(a,b);
-      if (fAngle > fSmallestAngle)
-      {
-        fSmallestAngle  = fAngle;
-        nSmallest   = j;
+      fAngle = VecDot(a, b);
+      if (fAngle > fSmallestAngle) {
+        fSmallestAngle = fAngle;
+        nSmallest = j;
       }
     }
 
     niAssertMsg(nSmallest != -1, _A("Invalid polygon."));
 
     // swap the vertices
-    SwapVertices(nSmallest, i+1);
+    SwapVertices(nSmallest, i + 1);
   }
 
   // Check if vertex order needs to be reversed for back-facing polygon
   sPlanef oldPlane(mPlane);
   ComputePlane();
-  if (PlaneDotNormal(mPlane,oldPlane.GetNormal()) < 0)
-  {
+  if (PlaneDotNormal(mPlane, oldPlane.GetNormal()) < 0) {
     Reverse();
   }
 }
@@ -1074,39 +1125,39 @@ inline void __stdcall cPolygon::SortVerts()
 inline void __stdcall cPolygon::Reverse()
 {
   int j = GetNumVertices();
-  for (int i = 0; i < j/2; ++i)
-  {
-    SwapVertices(i, j-i-1);
+  for (int i = 0; i < j / 2; ++i) {
+    SwapVertices(i, j - i - 1);
   }
   ComputePlane();
 }
 
 ///////////////////////////////////////////////
 //! Return the closest point to the specified point that lay on an edge of this polygon.
-inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const sVec3f& pt,
-                                                              sVec3f* pEA, sVec3f* pEB,
-                                                              tBool* pbEdgeFlag) const
+inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(
+  sVec3f& vOut, const sVec3f& pt, sVec3f* pEA, sVec3f* pEB,
+  tBool* pbEdgeFlag) const
 {
-  tBool  bFound = eFalse;
-  tF32   fClosestDistance = 0.0f;
+  tBool bFound = eFalse;
+  tF32 fClosestDistance = 0.0f;
   sVec3f vClosestPoint = kvec3fZero;
   sVec3f vClosestP0, vClosestP1;
 
-  const sVec3f *p0 = reinterpret_cast<sVec3f*>(GetVertex(GetNumVertices()-1)), *p1;
+  const sVec3f *p0 = reinterpret_cast<sVec3f*>(GetVertex(GetNumVertices() - 1)),
+               *p1;
   sVec3f cp;
-  tI32  index = 0, lClosestIndex = -1;
+  tI32 index = 0, lClosestIndex = -1;
   tBool bEdgeFlag = eFalse;
 
-  for (tPtr itV = GetFirstVertex(); !IsEndVertex(itV); itV = GetNextVertex(itV), ++index)
+  for (tPtr itV = GetFirstVertex(); !IsEndVertex(itV);
+       itV = GetNextVertex(itV), ++index)
   {
     p1 = reinterpret_cast<sVec3f*>(itV);
     tBool bEdge;
 
     ClosestPointOnLineSegment(cp, *p0, *p1, pt, &bEdge);
-    tF32 d = VecDistance(cp,pt);
+    tF32 d = VecDistance(cp, pt);
 
-    if (!bFound || d < fClosestDistance)
-    {
+    if (!bFound || d < fClosestDistance) {
       fClosestDistance = d;
       vClosestPoint = cp;
       vClosestP0 = *p0;
@@ -1119,17 +1170,18 @@ inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const s
     p0 = p1;
   }
 
-  if (pEA && pEB && lClosestIndex >= 0)
-  {
-    if (!bEdgeFlag)
-    {
-      tI32 a = lClosestIndex - 1; if (a < 0) a = GetNumVertices()-1;
-      tI32 b = lClosestIndex + 1; if (b >= tI32(GetNumVertices())) b = 0;
+  if (pEA && pEB && lClosestIndex >= 0) {
+    if (!bEdgeFlag) {
+      tI32 a = lClosestIndex - 1;
+      if (a < 0)
+        a = GetNumVertices() - 1;
+      tI32 b = lClosestIndex + 1;
+      if (b >= tI32(GetNumVertices()))
+        b = 0;
       *pEA = *reinterpret_cast<sVec3f*>(GetVertex(a));
       *pEB = *reinterpret_cast<sVec3f*>(GetVertex(b));
     }
-    else
-    {
+    else {
       *pEA = vClosestP0;
       *pEB = vClosestP1;
     }
@@ -1146,11 +1198,9 @@ inline sVec3f& __stdcall cPolygon::ClosestPointOnPerimeter(sVec3f& vOut, const s
 inline tBool __stdcall cPolygon::IsDegenerate() const
 {
   tU32 nNumPos = GetNumVertices();
-  for (tU32 i = 0; i < nNumPos; ++i)
-  {
-    for (tU32 j = i+1; j < nNumPos; ++j)
-    {
-      if (VecEqual(*GetPosition(i),*GetPosition(j)))
+  for (tU32 i = 0; i < nNumPos; ++i) {
+    for (tU32 j = i + 1; j < nNumPos; ++j) {
+      if (VecEqual(*GetPosition(i), *GetPosition(j)))
         return eTrue;
     }
   }
@@ -1190,17 +1240,14 @@ inline void __stdcall cPolygon::CopyVertices(const cPolygon* apPoly)
   const cPolygon& p = (const cPolygon&)*apPoly;
 
   munNumVertices = p.GetNumVertices();
-  mvVertices.resize(munVertexSize*munNumVertices);
+  mvVertices.resize(munVertexSize * munNumVertices);
 
-  if (IsSameFVF(apPoly))
-  {
+  if (IsSameFVF(apPoly)) {
     memcpy((void*)&mvVertices[0], p.GetFirstVertex(), mvVertices.size());
   }
-  else
-  {
-    FVFCopy(tPtr(&mvVertices[0]), cFVFDescription(mFVF),
-            p.GetFirstVertex(), cFVFDescription(p.GetFVF()),
-            p.GetNumVertices());
+  else {
+    FVFCopy(tPtr(&mvVertices[0]), cFVFDescription(mFVF), p.GetFirstVertex(),
+            cFVFDescription(p.GetFVF()), p.GetNumVertices());
   }
 
   mPlane = p.GetPlane();
@@ -1239,5 +1286,5 @@ inline cPolygon* __stdcall cPolygon::Clone() const
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __POLYGON_40138691_H__

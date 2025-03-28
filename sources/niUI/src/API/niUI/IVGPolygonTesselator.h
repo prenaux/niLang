@@ -19,8 +19,7 @@ namespace ni {
 //   EndPolygon()
 //   GetTesselatedVertices()
 //
-struct iVGPolygonTesselator : public iUnknown
-{
+struct iVGPolygonTesselator : public iUnknown {
   niDeclareInterfaceUUID(iVGPolygonTesselator,0xbb3a2ec0,0x8f76,0x4888,0x8f,0x1e,0x4a,0x4e,0xd0,0xe8,0x00,0xee);
 
   //! Add a F32 vertex to the current polygon contour.
@@ -45,5 +44,5 @@ struct iVGPolygonTesselator : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGPOLYGONTESSELATOR_11036409_H__

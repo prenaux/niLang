@@ -9,8 +9,7 @@ namespace ni {
  */
 
 //! Docking manager messages
-enum eWidgetDockingManagerMessage
-{
+enum eWidgetDockingManagerMessage {
   //! The widget is beginning to be moved/dragged.
   eWidgetDockingManagerMessage_BeginMove = niMessageID('_','W','D','M','b'),
   //! The widget is finished to be moved/dragged.
@@ -26,8 +25,7 @@ enum eWidgetDockingManagerMessage
 //! \remark This is the interface that widgets needs to implement to be dockable.
 //! \remark Dockable widgets needs to call their parent widget's docking manager
 //!     to handle their docking.
-struct iWidgetDockable : public iUnknown
-{
+struct iWidgetDockable : public iUnknown {
   niDeclareInterfaceUUID(iWidgetDockable,0x74ad7011,0xe5fb,0x47d8,0x8a,0xad,0x4b,0x2c,0x65,0xc5,0x0d,0x35);
 
   //! Get the dock's name.
@@ -40,8 +38,7 @@ struct iWidgetDockable : public iUnknown
 };
 
 //! Docking manager flags.
-enum eWidgetDockingManagerFlags
-{
+enum eWidgetDockingManagerFlags {
   //! Show a navigator if the Navigator action is triggered.
   eWidgetDockingManagerFlags_Navigator = niBit(0),
   //! Hide the tab name if only one page is in the tab widget.
@@ -56,13 +53,18 @@ enum eWidgetDockingManagerFlags
   //! Docking on the bottom is allowed.
   eWidgetDockingManagerFlags_DockBottom = niBit(5),
   //! Horizontal docking.
-  eWidgetDockingManagerFlags_DockHorizontal = eWidgetDockingManagerFlags_DockLeft|eWidgetDockingManagerFlags_DockRight,
+  eWidgetDockingManagerFlags_DockHorizontal =
+    eWidgetDockingManagerFlags_DockLeft | eWidgetDockingManagerFlags_DockRight,
   //! Vertical docking.
-  eWidgetDockingManagerFlags_DockVertical = eWidgetDockingManagerFlags_DockTop|eWidgetDockingManagerFlags_DockBottom,
+  eWidgetDockingManagerFlags_DockVertical =
+    eWidgetDockingManagerFlags_DockTop | eWidgetDockingManagerFlags_DockBottom,
   //! All docking
-  eWidgetDockingManagerFlags_DockAll = eWidgetDockingManagerFlags_DockHorizontal|eWidgetDockingManagerFlags_DockVertical,
+  eWidgetDockingManagerFlags_DockAll =
+    eWidgetDockingManagerFlags_DockHorizontal |
+    eWidgetDockingManagerFlags_DockVertical,
   //! Default manager flags.
-  eWidgetDockingManagerFlags_Default = eWidgetDockingManagerFlags_DockAll|eWidgetDockingManagerFlags_Navigator,
+  eWidgetDockingManagerFlags_Default =
+    eWidgetDockingManagerFlags_DockAll | eWidgetDockingManagerFlags_Navigator,
   //! \internal
   eWidgetDockingManagerFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -72,8 +74,7 @@ typedef tU32 tWidgetDockingManagerFlags;
 
 //! Widget docking manager.
 //! \remark The docking manager is a normal widget that implements iWidgetSink.
-struct iWidgetDockingManager : public iUnknown
-{
+struct iWidgetDockingManager : public iUnknown {
   niDeclareInterfaceUUID(iWidgetDockingManager,0x3ecf2b94,0x14cf,0x4e24,0xb5,0xa9,0xc2,0xf0,0xbf,0xb8,0xf5,0x01);
 
   //########################################################################################
@@ -96,7 +97,8 @@ struct iWidgetDockingManager : public iUnknown
 
   //! Get the first dock area that contains a tab page with the specified name.
   //! {Property}
-  virtual tU32 __stdcall GetDockAreaFromPageName(const achar* aaszName) const = 0;
+  virtual tU32 __stdcall GetDockAreaFromPageName(
+    const achar* aaszName) const = 0;
   //! Get the dock area that is hovered by the specified absolute cursor position.
   //! {Property}
   virtual tU32 __stdcall GetDockAreaHovered(sVec2f avPos) const = 0;
@@ -127,7 +129,8 @@ struct iWidgetDockingManager : public iUnknown
   virtual iWidget* __stdcall GetDockAreaTabContextMenu() const = 0;
   //! Add a new empty dock area.
   //! \return The index of the new dock area.
-  virtual tU32 __stdcall AddDockArea(tU32 anParent, tU32 aPos, sRectf aRect, tBool abLocal) = 0;
+  virtual tU32 __stdcall AddDockArea(tU32 anParent, tU32 aPos, sRectf aRect,
+                                     tBool abLocal) = 0;
   //! Remove all dock areas.
   virtual void __stdcall ClearDockAreas() = 0;
   //! Clean all invalid/empty dock areas.
@@ -137,5 +140,5 @@ struct iWidgetDockingManager : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETDOCK_73335480_H__

@@ -2,7 +2,7 @@
 	<namespace name="ni">
 		<enum name="eWidgetLabelStyle">
 			<comments desc="Label widget style. "/>
-			<value name="eWidgetLabelStyle_TransparentBackground" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetLabelStyle_TransparentBackground" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc=""/>
 			</value>
 			<value name="eWidgetLabelStyle_DWORD" value="0xFFFFFFFF">

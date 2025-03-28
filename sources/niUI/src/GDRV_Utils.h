@@ -5,7 +5,7 @@ namespace ni {
 
 template <int MAXRT, typename BASE>
 struct sGraphicsContext : public BASE {
-  typedef sGraphicsContext<MAXRT,BASE> tGraphicsContextBase;
+  typedef sGraphicsContext<MAXRT, BASE> tGraphicsContextBase;
 
   Ptr<iFixedStates> mptrFS;
   Ptr<iMaterial> mptrMaterial;
@@ -15,22 +15,26 @@ struct sGraphicsContext : public BASE {
   sRecti mrectViewport = sRecti::Null();
   sRecti mrectScissor = sRecti::Null();
 
-  sGraphicsContext(iGraphics* g) {
+  sGraphicsContext(iGraphics* g)
+  {
     mptrFS = g->CreateFixedStates();
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SetFixedStates(iFixedStates* apStates) niImpl {
-    niCheckSilent(niIsOK(apStates),eFalse);
+  virtual tBool __stdcall SetFixedStates(iFixedStates* apStates) niImpl
+  {
+    niCheckSilent(niIsOK(apStates), eFalse);
     mptrFS = apStates;
     return eTrue;
   }
-  virtual iFixedStates* __stdcall GetFixedStates() const niImpl {
+  virtual iFixedStates* __stdcall GetFixedStates() const niImpl
+  {
     return mptrFS;
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall SetMaterial(iMaterial* apMat) niImpl {
+  virtual tBool __stdcall SetMaterial(iMaterial* apMat) niImpl
+  {
     mptrMaterial = apMat;
     if (mptrMaterial.IsOK()) {
       mpMaterialDesc = (sMaterialDesc*)apMat->GetDescStructPtr();
@@ -40,71 +44,86 @@ struct sGraphicsContext : public BASE {
     }
     return eTrue;
   }
-  virtual const iMaterial* __stdcall GetMaterial() const niImpl {
+  virtual const iMaterial* __stdcall GetMaterial() const niImpl
+  {
     return mptrMaterial;
   }
 
   ///////////////////////////////////////////////
-  virtual iTexture* __stdcall GetRenderTarget(tU32 anIndex) const {
+  virtual iTexture* __stdcall GetRenderTarget(tU32 anIndex) const
+  {
     if (anIndex >= MAXRT)
       return NULL;
     return mptrRT[anIndex];
   }
-  virtual iTexture* __stdcall GetDepthStencil() const {
+  virtual iTexture* __stdcall GetDepthStencil() const
+  {
     return mptrDS;
   }
-  virtual tU32 __stdcall GetWidth() const {
+  virtual tU32 __stdcall GetWidth() const
+  {
     return mptrRT[0]->GetWidth();
   }
-  virtual tU32 __stdcall GetHeight() const {
+  virtual tU32 __stdcall GetHeight() const
+  {
     return mptrRT[0]->GetHeight();
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall ChangeRenderTarget(tU32 anIndex, iTexture* apRT) niOverride {
+  virtual tBool __stdcall ChangeRenderTarget(tU32 anIndex,
+                                             iTexture* apRT) niOverride
+  {
     niCheckIsOK(mptrRT[anIndex], eFalse);
     niCheckIsOK(apRT, eFalse);
     niCheck(anIndex < MAXRT, eFalse);
-    if (!mptrRT[anIndex]->GetPixelFormat()->IsSamePixelFormat(apRT->GetPixelFormat())) {
-      niError(niFmt("Incompatible render target pxf, expected '%s', trying to set '%s'",
-                    mptrRT[anIndex]->GetPixelFormat()->GetFormat(),
-                    apRT->GetPixelFormat()->GetFormat()));
+    if (!mptrRT[anIndex]->GetPixelFormat()->IsSamePixelFormat(
+          apRT->GetPixelFormat()))
+    {
+      niError(niFmt(
+        "Incompatible render target pxf, expected '%s', trying to set '%s'",
+        mptrRT[anIndex]->GetPixelFormat()->GetFormat(),
+        apRT->GetPixelFormat()->GetFormat()));
       return eFalse;
     }
     mptrRT[anIndex] = apRT;
-    const sRecti r = Recti(0,0,this->GetWidth(),this->GetHeight());
+    const sRecti r = Recti(0, 0, this->GetWidth(), this->GetHeight());
     this->SetViewport(r);
     this->SetScissorRect(r);
     return eTrue;
   }
-  virtual tBool __stdcall ChangeDepthStencil(iTexture* apDS) niOverride {
+  virtual tBool __stdcall ChangeDepthStencil(iTexture* apDS) niOverride
+  {
     niCheckIsOK(mptrDS, eFalse);
     niCheckIsOK(apDS, eFalse);
     if (!mptrDS->GetPixelFormat()->IsSamePixelFormat(apDS->GetPixelFormat())) {
-      niError(niFmt("Incompatible depth stencil pxf, expected '%s', trying to set '%s'",
-                    mptrDS->GetPixelFormat()->GetFormat(),
-                    apDS->GetPixelFormat()->GetFormat()));
+      niError(niFmt(
+        "Incompatible depth stencil pxf, expected '%s', trying to set '%s'",
+        mptrDS->GetPixelFormat()->GetFormat(),
+        apDS->GetPixelFormat()->GetFormat()));
       return eFalse;
     }
     mptrDS = apDS;
-    const sRecti r = Recti(0,0,this->GetWidth(),this->GetHeight());
+    const sRecti r = Recti(0, 0, this->GetWidth(), this->GetHeight());
     this->SetViewport(r);
     this->SetScissorRect(r);
     return eTrue;
   }
 
   /////////////////////////////////////////////
-  __forceinline tMaterialFlags _GetMaterialFlags(const sMaterialDesc* apDOMat) {
+  __forceinline tMaterialFlags _GetMaterialFlags(const sMaterialDesc* apDOMat)
+  {
     return apDOMat->mFlags;
   }
 
   /////////////////////////////////////////////
-  __forceinline eBlendMode _GetBlendMode(const sMaterialDesc* apDOMat) {
+  __forceinline eBlendMode _GetBlendMode(const sMaterialDesc* apDOMat)
+  {
     return apDOMat->mBlendMode;
   }
 
   /////////////////////////////////////////////
-  __forceinline tIntPtr _GetRS(const sMaterialDesc* apDOMat) {
+  __forceinline tIntPtr _GetRS(const sMaterialDesc* apDOMat)
+  {
     if (apDOMat->mhRS) {
       return apDOMat->mhRS;
     }
@@ -115,7 +134,8 @@ struct sGraphicsContext : public BASE {
   }
 
   /////////////////////////////////////////////
-  __forceinline tIntPtr _GetDS(const sMaterialDesc* apDOMat) {
+  __forceinline tIntPtr _GetDS(const sMaterialDesc* apDOMat)
+  {
     if (apDOMat->mhDS) {
       return apDOMat->mhDS;
     }
@@ -126,7 +146,9 @@ struct sGraphicsContext : public BASE {
   }
 
   /////////////////////////////////////////////
-  __forceinline const sMaterialChannel& _GetChannel(const sMaterialDesc* apDOMat, eMaterialChannel aChannel) {
+  __forceinline const sMaterialChannel& _GetChannel(
+    const sMaterialDesc* apDOMat, eMaterialChannel aChannel)
+  {
     if (mpMaterialDesc && mpMaterialDesc->mChannels[aChannel].mTexture.IsOK()) {
       return mpMaterialDesc->mChannels[aChannel];
     }
@@ -134,28 +156,32 @@ struct sGraphicsContext : public BASE {
   }
 
   /////////////////////////////////////////////
-  virtual void __stdcall SetViewport(const sRecti& aVal) override {
+  virtual void __stdcall SetViewport(const sRecti& aVal) override
+  {
     if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
-      mrectViewport = Recti(0,0,this->GetWidth(),this->GetHeight());
+      mrectViewport = Recti(0, 0, this->GetWidth(), this->GetHeight());
     }
     else {
       mrectViewport = aVal;
     }
   }
-  virtual sRecti __stdcall GetViewport() const niFinal {
+  virtual sRecti __stdcall GetViewport() const niFinal
+  {
     return mrectViewport;
   }
 
   /////////////////////////////////////////////
-  virtual void __stdcall SetScissorRect(const sRecti& aVal) override {
+  virtual void __stdcall SetScissorRect(const sRecti& aVal) override
+  {
     if (aVal.GetWidth() == 0 || aVal.GetHeight() == 0) {
-      mrectScissor = Recti(0,0,this->GetWidth(),this->GetHeight());
+      mrectScissor = Recti(0, 0, this->GetWidth(), this->GetHeight());
     }
     else {
       mrectScissor = aVal;
     }
   }
-  virtual sRecti __stdcall GetScissorRect() const niFinal {
+  virtual sRecti __stdcall GetScissorRect() const niFinal
+  {
     return mrectScissor;
   }
 };

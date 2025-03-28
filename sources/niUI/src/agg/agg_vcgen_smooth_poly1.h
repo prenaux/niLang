@@ -19,9 +19,7 @@
 #include "agg_basics.h"
 #include "agg_vertex_sequence.h"
 
-
-namespace agg
-{
+namespace agg {
 
 //======================================================vcgen_smooth_poly1
 //
@@ -29,10 +27,8 @@ namespace agg
 // Smooth polygon generator
 //
 //------------------------------------------------------------------------
-class vcgen_smooth_poly1
-{
-  enum status_e
-  {
+class vcgen_smooth_poly1 {
+  enum status_e {
     initial,
     ready,
     polygon,
@@ -49,39 +45,41 @@ class vcgen_smooth_poly1
 
   vcgen_smooth_poly1();
 
-  void   smooth_value(agg_real v) { m_smooth_value = v * 0.5; }
-  agg_real smooth_value() const { return m_smooth_value * 2.0; }
+  void smooth_value(agg_real v)
+  {
+    m_smooth_value = v * 0.5;
+  }
+  agg_real smooth_value() const
+  {
+    return m_smooth_value * 2.0;
+  }
 
   // Vertex Generator Interface
   void remove_all();
   void add_vertex(agg_real x, agg_real y, unsigned cmd);
 
   // Vertex Source Interface
-  void     rewind(unsigned path_id);
+  void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
   vcgen_smooth_poly1(const vcgen_smooth_poly1&);
-  const vcgen_smooth_poly1& operator = (const vcgen_smooth_poly1&);
+  const vcgen_smooth_poly1& operator=(const vcgen_smooth_poly1&);
 
-  void calculate(const vertex_dist& v0,
-                 const vertex_dist& v1,
-                 const vertex_dist& v2,
-                 const vertex_dist& v3);
+  void calculate(const vertex_dist& v0, const vertex_dist& v1,
+                 const vertex_dist& v2, const vertex_dist& v3);
 
   vertex_storage m_src_vertices;
-  agg_real         m_smooth_value;
-  unsigned       m_closed;
-  status_e       m_status;
-  unsigned       m_src_vertex;
-  agg_real         m_ctrl1_x;
-  agg_real         m_ctrl1_y;
-  agg_real         m_ctrl2_x;
-  agg_real         m_ctrl2_y;
+  agg_real m_smooth_value;
+  unsigned m_closed;
+  status_e m_status;
+  unsigned m_src_vertex;
+  agg_real m_ctrl1_x;
+  agg_real m_ctrl1_y;
+  agg_real m_ctrl2_x;
+  agg_real m_ctrl2_y;
 };
 
-}
-
+} // namespace agg
 
 #endif
-

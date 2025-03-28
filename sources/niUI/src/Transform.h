@@ -12,8 +12,7 @@ struct iTransform;
 
 //! iTransform is the interface for positionning and orienting.
 //! The user can work with local or world coordinnate system.
-class cTransform : public ImplRC<iTransform>, public sTransformDesc
-{
+class cTransform : public ImplRC<iTransform>, public sTransformDesc {
  public:
   cTransform(iTransform* pParent = NULL);
   ~cTransform();
@@ -27,8 +26,9 @@ class cTransform : public ImplRC<iTransform>, public sTransformDesc
   iTransform* __stdcall Clone() const;
   tBool __stdcall Copy(const iTransform* apSrc);
 
-  tPtr __stdcall GetDescStructPtr() const {
-    return (tPtr)niStaticCast(const sTransformDesc*,this);
+  tPtr __stdcall GetDescStructPtr() const
+  {
+    return (tPtr)niStaticCast(const sTransformDesc*, this);
   }
 
   void __stdcall SetFlags(tU16 anFlags);
@@ -82,8 +82,9 @@ class cTransform : public ImplRC<iTransform>, public sTransformDesc
  private:
   tU16 mnParentSyncCounter;
   void _UpdateWorldMatrix();
-  __forceinline void _SetDirty() {
-    if (!niFlagIs(mnFlags,eTransformInternalFlags_Dirty)) {
+  __forceinline void _SetDirty()
+  {
+    if (!niFlagIs(mnFlags, eTransformInternalFlags_Dirty)) {
       ++mnSyncCounter;
     }
     mnFlags |= eTransformInternalFlags_Dirty;
@@ -92,5 +93,5 @@ class cTransform : public ImplRC<iTransform>, public sTransformDesc
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __TRANSFORM_77651578_H__

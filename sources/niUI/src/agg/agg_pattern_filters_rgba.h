@@ -19,15 +19,16 @@
 #include "agg_line_aa_basics.h"
 #include "agg_color_rgba.h"
 
-
-namespace agg
-{
+namespace agg {
 
 //=======================================================pattern_filter_nn
-template<class ColorT> struct pattern_filter_nn
-{
+template <class ColorT>
+struct pattern_filter_nn {
   typedef ColorT color_type;
-  static unsigned dilation() { return 0; }
+  static unsigned dilation()
+  {
+    return 0;
+  }
 
   static void AGG_INLINE pixel_low_res(color_type const* const* buf,
                                        color_type* p, int x, int y)
@@ -38,24 +39,24 @@ template<class ColorT> struct pattern_filter_nn
   static void AGG_INLINE pixel_high_res(color_type const* const* buf,
                                         color_type* p, int x, int y)
   {
-    *p = buf[y >> line_subpixel_shift]
-        [x >> line_subpixel_shift];
+    *p = buf[y >> line_subpixel_shift][x >> line_subpixel_shift];
   }
 };
 
-typedef pattern_filter_nn<rgba8>  pattern_filter_nn_rgba8;
+typedef pattern_filter_nn<rgba8> pattern_filter_nn_rgba8;
 typedef pattern_filter_nn<rgba16> pattern_filter_nn_rgba16;
 
-
 //===========================================pattern_filter_bilinear_rgba
-template<class ColorT> struct pattern_filter_bilinear_rgba
-{
+template <class ColorT>
+struct pattern_filter_bilinear_rgba {
   typedef ColorT color_type;
   typedef typename color_type::value_type value_type;
   typedef typename color_type::calc_type calc_type;
 
-
-  static unsigned dilation() { return 1; }
+  static unsigned dilation()
+  {
+    return 1;
+  }
 
   static AGG_INLINE void pixel_low_res(color_type const* const* buf,
                                        color_type* p, int x, int y)
@@ -77,8 +78,7 @@ template<class ColorT> struct pattern_filter_bilinear_rgba
     y &= line_subpixel_mask;
     const color_type* ptr = buf[y_lr] + x_lr;
 
-    weight = (line_subpixel_scale - x) *
-        (line_subpixel_scale - y);
+    weight = (line_subpixel_scale - x) * (line_subpixel_scale - y);
     r += weight * ptr->r;
     g += weight * ptr->g;
     b += weight * ptr->b;
@@ -115,8 +115,8 @@ template<class ColorT> struct pattern_filter_bilinear_rgba
   }
 };
 
-typedef pattern_filter_bilinear_rgba<rgba8>  pattern_filter_bilinear_rgba8;
+typedef pattern_filter_bilinear_rgba<rgba8> pattern_filter_bilinear_rgba8;
 typedef pattern_filter_bilinear_rgba<rgba16> pattern_filter_bilinear_rgba16;
-}
+} // namespace agg
 
 #endif

@@ -17,7 +17,8 @@ struct sFBindless_Base : public sFGDRV_Base {
   astl::vector<NN<iTexture>> _textures;
   tU32 _selectedTexture = 0;
 
-  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride {
+  niFn(tBool) OnInit(UnitTest::TestResults& testResults_) niOverride
+  {
     CHECK_RET(sFGDRV_Base::OnInit(testResults_), eFalse);
     QPtr<iGraphicsDriverGpu> driverGpu = _graphics->GetDriver();
     CHECK_RET(niIsOK(driverGpu), eFalse);
@@ -26,24 +27,21 @@ struct sFBindless_Base : public sFGDRV_Base {
     {
       NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/earth_d.jpg"));
       _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),
-        _graphics->LoadBitmap(fp),
+        _H(fp->GetSourcePath()), _graphics->LoadBitmap(fp),
         eTextureFlags_Default)));
     }
 
     {
       NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/glass.tga"));
       _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),
-        _graphics->LoadBitmap(fp),
+        _H(fp->GetSourcePath()), _graphics->LoadBitmap(fp),
         eTextureFlags_Default)));
     }
 
     {
       NN<iFile> fp = AsNN(_graphics->OpenBitmapFile("test/tex/rust_steel.jpg"));
       _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),
-        _graphics->LoadBitmap(fp),
+        _H(fp->GetSourcePath()), _graphics->LoadBitmap(fp),
         eTextureFlags_Default)));
     }
 
@@ -51,8 +49,7 @@ struct sFBindless_Base : public sFGDRV_Base {
       NN<iFile> fp =
         AsNN(_graphics->OpenBitmapFile("test/tex/earth_lights.jpg"));
       _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),
-        _graphics->LoadBitmap(fp),
+        _H(fp->GetSourcePath()), _graphics->LoadBitmap(fp),
         eTextureFlags_Default)));
     }
 
@@ -60,15 +57,15 @@ struct sFBindless_Base : public sFGDRV_Base {
       NN<iFile> fp =
         AsNN(_graphics->OpenBitmapFile("test/tex/earth_clouds_d.jpg"));
       _textures.emplace_back(AsNN(_graphics->CreateTextureFromBitmap(
-        _H(fp->GetSourcePath()),
-        _graphics->LoadBitmap(fp),
+        _H(fp->GetSourcePath()), _graphics->LoadBitmap(fp),
         eTextureFlags_Default)));
     }
 
     return eTrue;
   }
 
-  tU32 _GetTextureIndex(iTexture* apTexture) const {
+  tU32 _GetTextureIndex(iTexture* apTexture) const
+  {
     tU32 r = _graphics->GetTextureDeviceResourceManager()->GetIndexFromResource(
       apTexture);
     if (r == eInvalidHandle)
@@ -76,15 +73,16 @@ struct sFBindless_Base : public sFGDRV_Base {
     return r;
   }
 
-  tBool OnKeyDown(tU32 anKey, tU32 anKeyMod) niOverride {
+  tBool OnKeyDown(tU32 anKey, tU32 anKeyMod) niOverride
+  {
     switch (anKey) {
-      case eKey_T: {
-        _selectedTexture = (_selectedTexture + 1) % (tU32)_textures.size();
-        break;
-      };
-      default: {
-        return eFalse;
-      }
+    case eKey_T: {
+      _selectedTexture = (_selectedTexture + 1) % (tU32)_textures.size();
+      break;
+    };
+    default: {
+      return eFalse;
+    }
     }
     return eTrue;
   }
@@ -95,48 +93,42 @@ struct sFBindless_Base : public sFGDRV_Base {
 // Section: Utils
 //
 //----------------------------------------------------------------------------
-static Ptr<iGpuBuffer> MakeSquareVB(
-  ain<nn<iGraphicsDriverGpu>> aDriver, const sVec2f& aPos, tF32 afSize = 0.5f) {
+static Ptr<iGpuBuffer> MakeSquareVB(ain<nn<iGraphicsDriverGpu>> aDriver,
+                                    const sVec2f& aPos, tF32 afSize = 0.5f)
+{
   Ptr<iGpuBuffer> buffer = aDriver->CreateGpuBuffer(
-    _H("GpuTexture_VA"),
-    sizeof(tVertexCanvas) * 4,
-    eGpuBufferMemoryMode_Shared,
+    _H("GpuTexture_VA"), sizeof(tVertexCanvas) * 4, eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Vertex);
   niCheck(buffer.IsOK(), nullptr);
 
   tVertexCanvas* verts =
     (tVertexCanvas*)buffer->Lock(0, buffer->GetSize(), eLock_Discard);
   niCheck(verts != nullptr, nullptr);
-  verts[0] = {
-    {aPos.x - afSize, aPos.y + afSize, 0.0f},
-    sVec3f::YAxis(),
-    0xFFFFFFFF,
-    {0.0f, 0.0f}};  // TL
-  verts[1] = {
-    {aPos.x + afSize, aPos.y + afSize, 0.0f},
-    sVec3f::YAxis(),
-    0xFFFFFFFF,
-    {1.0f, 0.0f}};  // TR
-  verts[2] = {
-    {aPos.x + afSize, aPos.y - afSize, 0.0f},
-    sVec3f::YAxis(),
-    0xFFFFFFFF,
-    {1.0f, 1.0f}};  // BR
-  verts[3] = {
-    {aPos.x - afSize, aPos.y - afSize, 0.0f},
-    sVec3f::YAxis(),
-    0xFFFFFFFF,
-    {0.0f, 1.0f}};  // BL
+  verts[0] = { { aPos.x - afSize, aPos.y + afSize, 0.0f },
+               sVec3f::YAxis(),
+               0xFFFFFFFF,
+               { 0.0f, 0.0f } }; // TL
+  verts[1] = { { aPos.x + afSize, aPos.y + afSize, 0.0f },
+               sVec3f::YAxis(),
+               0xFFFFFFFF,
+               { 1.0f, 0.0f } }; // TR
+  verts[2] = { { aPos.x + afSize, aPos.y - afSize, 0.0f },
+               sVec3f::YAxis(),
+               0xFFFFFFFF,
+               { 1.0f, 1.0f } }; // BR
+  verts[3] = { { aPos.x - afSize, aPos.y - afSize, 0.0f },
+               sVec3f::YAxis(),
+               0xFFFFFFFF,
+               { 0.0f, 1.0f } }; // BL
   buffer->Unlock();
 
   return buffer;
 }
 
-static Ptr<iGpuBuffer> MakeQuadIB(ain<nn<iGraphicsDriverGpu>> aDriver) {
+static Ptr<iGpuBuffer> MakeQuadIB(ain<nn<iGraphicsDriverGpu>> aDriver)
+{
   Ptr<iGpuBuffer> buffer = aDriver->CreateGpuBuffer(
-    _H("GpuTexture_IA"),
-    sizeof(tU32) * 6,
-    eGpuBufferMemoryMode_Shared,
+    _H("GpuTexture_IA"), sizeof(tU32) * 6, eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Index);
   niCheck(buffer.IsOK(), nullptr);
 
@@ -165,7 +157,8 @@ struct sFBindless_Textures : public sFBindless_Base {
   NN<iGpuFunction> _pixelGpuFun = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuPipeline> _pipeline = niDeferredInit(NN<iGpuPipeline>);
 
-  tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
+  tBool OnInit(UnitTest::TestResults& testResults_) niOverride
+  {
     CHECK_RET(sFBindless_Base::OnInit(testResults_), eFalse);
 
     {
@@ -180,12 +173,12 @@ struct sFBindless_Textures : public sFBindless_Base {
         _driverGpu->CreateGpuFunction(
           eGpuFunctionType_Vertex, _H("test/nish/gpu/texture_vs.gpufunc.xml")),
         eFalse);
-      _pixelGpuFun = niCheckNN(
-        _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Pixel,
-          _H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),
-        eFalse);
+      _pixelGpuFun =
+        niCheckNN(_pixelGpuFun,
+                  _driverGpu->CreateGpuFunction(
+                    eGpuFunctionType_Pixel,
+                    _H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),
+                  eFalse);
       //CHECK_EQUAL(eGpuFunctionBindType_Bindless,_pixelGpuFun->GetFunctionBindType());
     }
 
@@ -206,7 +199,8 @@ struct sFBindless_Textures : public sFBindless_Base {
     return eTrue;
   }
 
-  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
+  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride
+  {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -243,7 +237,8 @@ struct sFBindless_Instances : public sFBindless_Base {
   astl::vector<NN<iGpuBuffer>> _instDataBuffers;
   tU32 _instDataIndex0 = eInvalidHandle;
 
-  tBool OnInit(UnitTest::TestResults& testResults_) niOverride {
+  tBool OnInit(UnitTest::TestResults& testResults_) niOverride
+  {
     CHECK_RET(sFBindless_Base::OnInit(testResults_), eFalse);
 
     {
@@ -251,16 +246,15 @@ struct sFBindless_Instances : public sFBindless_Base {
         _vaBuffer, MakeSquareVB(_driverGpu, sVec2f(0, 0), 0.5f), eFalse);
       _iaBuffer = niCheckNN(_iaBuffer, MakeQuadIB(_driverGpu), eFalse);
 
-      niLoop(i, 5) {
+      niLoop (i, 5) {
         TestGpuFuncs_TestInstanceData instData;
-        niLet instDataBuffer = niCheckNN(
-          instDataBuffer,
-          _driverGpu->CreateGpuBuffer(
-            HFmt("instData_%s", m_testName),
-            sizeof(instData),
-            eGpuBufferMemoryMode_Shared,
-            eGpuBufferUsageFlags_Storage),
-          eFalse);
+        niLet instDataBuffer =
+          niCheckNN(instDataBuffer,
+                    _driverGpu->CreateGpuBuffer(HFmt("instData_%s", m_testName),
+                                                sizeof(instData),
+                                                eGpuBufferMemoryMode_Shared,
+                                                eGpuBufferUsageFlags_Storage),
+                    eFalse);
         instData.mtxWorld =
           MatrixTranslation(Vec3f(0.1f, 0.1f, 0.0f) * (tF32)i);
         TestGpuFuncs_TestInstanceData* locked =
@@ -280,22 +274,22 @@ struct sFBindless_Instances : public sFBindless_Base {
     }
 
     {
-      _vertexGpuFun = niCheckNN(
-        _vertexGpuFun,
-        _driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Vertex,
-          _H("test/nish/bindless/texture_bindless_vs.gpufunc.xml")),
-        eFalse);
-      CHECK_EQUAL(
-        eGpuFunctionBindType_Bindless, _vertexGpuFun->GetFunctionBindType());
-      _pixelGpuFun = niCheckNN(
-        _pixelGpuFun,
-        _driverGpu->CreateGpuFunction(
-          eGpuFunctionType_Pixel,
-          _H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),
-        eFalse);
-      CHECK_EQUAL(
-        eGpuFunctionBindType_Bindless, _pixelGpuFun->GetFunctionBindType());
+      _vertexGpuFun =
+        niCheckNN(_vertexGpuFun,
+                  _driverGpu->CreateGpuFunction(
+                    eGpuFunctionType_Vertex,
+                    _H("test/nish/bindless/texture_bindless_vs.gpufunc.xml")),
+                  eFalse);
+      CHECK_EQUAL(eGpuFunctionBindType_Bindless,
+                  _vertexGpuFun->GetFunctionBindType());
+      _pixelGpuFun =
+        niCheckNN(_pixelGpuFun,
+                  _driverGpu->CreateGpuFunction(
+                    eGpuFunctionType_Pixel,
+                    _H("test/nish/bindless/texture_bindless_ps.gpufunc.xml")),
+                  eFalse);
+      CHECK_EQUAL(eGpuFunctionBindType_Bindless,
+                  _pixelGpuFun->GetFunctionBindType());
     }
 
     {
@@ -315,7 +309,8 @@ struct sFBindless_Instances : public sFBindless_Base {
     return eTrue;
   }
 
-  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride {
+  tBool OnPaint(UnitTest::TestResults& testResults_) niOverride
+  {
     QPtr<iGraphicsContextGpu> gpuContext = _graphicsContext;
     niPanicAssert(gpuContext.IsOK());
     NN<iGpuCommandEncoder> cmdEncoder = AsNN(gpuContext->GetCommandEncoder());
@@ -331,16 +326,11 @@ struct sFBindless_Instances : public sFBindless_Base {
     u.padding2 =
       _GetTextureIndex(_textures[(_selectedTexture + 2) % _textures.size()]);
     cmdEncoder->StreamUniformBuffer((tPtr)&u, sizeof(u), 0);
-    cmdEncoder->DrawIndexed(
-      eGraphicsPrimitiveType_TriangleList,
-      _instDataIndex0,
-      _instDataBuffers.size(),
-      0,
-      0,
-      6);
+    cmdEncoder->DrawIndexed(eGraphicsPrimitiveType_TriangleList,
+                            _instDataIndex0, _instDataBuffers.size(), 0, 0, 6);
     return eTrue;
   }
 };
 TEST_CLASS(FBindless, Instances);
 
-}  // namespace _
+} // namespace _

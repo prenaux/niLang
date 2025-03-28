@@ -19,8 +19,7 @@
 #include "agg_basics.h"
 #include "agg_vertex_sequence.h"
 
-namespace agg
-{
+namespace agg {
 
 //======================================================vcgen_markers_term
 //
@@ -28,10 +27,13 @@ namespace agg
 // Terminal markers generator (arrowhead/arrowtail)
 //
 //------------------------------------------------------------------------
-class vcgen_markers_term
-{
+class vcgen_markers_term {
  public:
-  vcgen_markers_term() : m_curr_id(0), m_curr_idx(0) {}
+  vcgen_markers_term()
+      : m_curr_id(0)
+      , m_curr_idx(0)
+  {
+  }
 
   // Vertex Generator Interface
   void remove_all();
@@ -43,24 +45,28 @@ class vcgen_markers_term
 
  private:
   vcgen_markers_term(const vcgen_markers_term&);
-  const vcgen_markers_term& operator = (const vcgen_markers_term&);
+  const vcgen_markers_term& operator=(const vcgen_markers_term&);
 
-  struct coord_type
-  {
+  struct coord_type {
     agg_real x, y;
 
-    coord_type() {}
-    coord_type(agg_real x_, agg_real y_) : x(x_), y(y_) {}
+    coord_type()
+    {
+    }
+    coord_type(agg_real x_, agg_real y_)
+        : x(x_)
+        , y(y_)
+    {
+    }
   };
 
   typedef pod_bvector<coord_type, 6> coord_storage;
 
   coord_storage m_markers;
-  unsigned      m_curr_id;
-  unsigned      m_curr_idx;
+  unsigned m_curr_id;
+  unsigned m_curr_idx;
 };
 
-
-}
+} // namespace agg
 
 #endif

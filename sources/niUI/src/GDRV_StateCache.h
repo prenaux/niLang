@@ -6,14 +6,16 @@ struct sStateCache {
       : mnNumStates(anNumStates)
       , mnAlwaysOn(anAlwaysOn)
   {
-    mCacheValues = niTMalloc(tIntPtr,mnNumStates);
+    mCacheValues = niTMalloc(tIntPtr, mnNumStates);
     Reset();
   }
-  ~sStateCache() {
+  ~sStateCache()
+  {
     niFree(mCacheValues);
   }
-  void Reset() {
-    ni::MemSet((tPtr)mCacheValues,0,sizeof(tIntPtr)*mnNumStates);
+  void Reset()
+  {
+    ni::MemSet((tPtr)mCacheValues, 0, sizeof(tIntPtr) * mnNumStates);
   }
 
   // Usage:
@@ -32,7 +34,8 @@ struct sStateCache {
   // Bar's value to not be updated correctly in the cache and then cause hard
   // to track bugs.
   //
-  inline void ShouldUpdate(tBool* aShouldUpdate, tU32 aCache, tIntPtr v) {
+  inline void ShouldUpdate(tBool* aShouldUpdate, tU32 aCache, tIntPtr v)
+  {
     niAssert(aShouldUpdate != NULL);
     niAssert(aCache < mnNumStates);
 
@@ -50,7 +53,7 @@ struct sStateCache {
  private:
   const tU32 mnNumStates;
   const tU32 mnAlwaysOn;
-  tIntPtr*   mCacheValues;
+  tIntPtr* mCacheValues;
 
   niClassStrictLocal(sStateCache);
 };

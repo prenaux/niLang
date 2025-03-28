@@ -11,8 +11,7 @@ struct iTextObject;
  */
 
 //! Text truncation
-enum eTextTruncation
-{
+enum eTextTruncation {
   //! The words will be truncated on the left if bigger than the text block.
   eTextTruncation_Left = 0,
   //! The words will be truncated on the right if bigger than the text block.
@@ -24,8 +23,7 @@ enum eTextTruncation
 };
 
 //! Text occluder interface
-struct iTextOccluder : public iUnknown
-{
+struct iTextOccluder : public iUnknown {
   niDeclareInterfaceUUID(iTextOccluder,0x0a985a32,0x1472,0x41e9,0x85,0xc9,0xaf,0xee,0xd9,0x72,0xe1,0x4c);
   //! Get the parent text object.
   //! {Property}
@@ -44,8 +42,7 @@ struct iTextOccluder : public iUnknown
   virtual Var __stdcall GetUserData() const = 0;
 };
 
-struct iTextObject : public iUnknown
-{
+struct iTextObject : public iUnknown {
   niDeclareInterfaceUUID(iTextObject,0x81b98e50,0x26ea,0x4a69,0xb1,0x3d,0xcb,0x0a,0xa5,0xab,0xea,0x11);
 
   //########################################################################################
@@ -121,7 +118,8 @@ struct iTextObject : public iUnknown
 
   //! Set the expression context used for the <expr> tags.
   //! {Property}
-  virtual void __stdcall SetExpressionContext(iExpressionContext* apContext) = 0;
+  virtual void __stdcall SetExpressionContext(
+    iExpressionContext* apContext) = 0;
   //! Get the expression context used for the <expr> tags.
   //! {Property}
   virtual iExpressionContext* __stdcall GetExpressionContext() const = 0;
@@ -129,9 +127,11 @@ struct iTextObject : public iUnknown
   //! Update.
   virtual void __stdcall Update() = 0;
   //! Draw the text object in the specified canvas.
-  virtual tBool __stdcall DrawAt(iCanvas* apCanvas, const sRectf& aClippingRect, const sVec3f& avPos) = 0;
+  virtual tBool __stdcall DrawAt(iCanvas* apCanvas, const sRectf& aClippingRect,
+                                 const sVec3f& avPos) = 0;
   //! Draw the text object in the specified canvas.
-  virtual tBool __stdcall Draw(iCanvas* apCanvas, const sRectf& aClippingRect) = 0;
+  virtual tBool __stdcall Draw(iCanvas* apCanvas,
+                               const sRectf& aClippingRect) = 0;
   //! @}
 
   //########################################################################################
@@ -140,7 +140,8 @@ struct iTextObject : public iUnknown
   //! @{
 
   //! Add a text occluder.
-  virtual iTextOccluder* __stdcall AddOccluder(const sRectf& aRect, const Var& aUserData) = 0;
+  virtual iTextOccluder* __stdcall AddOccluder(const sRectf& aRect,
+                                               const Var& aUserData) = 0;
   //! Remove the text occluder at the specified index.
   virtual tBool __stdcall RemoveOccluder(tU32 anIndex) = 0;
   //! Removes all text occluders.
@@ -193,5 +194,5 @@ struct iTextObject : public iUnknown
 };
 
 /**@}*/
-}
+} // namespace ni
 #endif // __ITEXTOBJECT_H_8780B4C6_BE06_49E6_9257_223899B946F4__

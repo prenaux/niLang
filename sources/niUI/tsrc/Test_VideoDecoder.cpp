@@ -4,9 +4,11 @@
 using namespace ni;
 
 struct FVideoDecoder {
-  FVideoDecoder() {
+  FVideoDecoder()
+  {
   }
-  ~FVideoDecoder() {
+  ~FVideoDecoder()
+  {
   }
 };
 
@@ -18,48 +20,54 @@ struct IPCam : public ni::cWidgetSinkImpl<> {
   tBool useA = false;
   tF32 test = 3;
 
-  TEST_CONSTRUCTOR(IPCam) {
+  TEST_CONSTRUCTOR(IPCam)
+  {
     TEST_STEPS(750);
   }
-  ~IPCam() {
+  ~IPCam()
+  {
   }
 
-  tBool __stdcall OnSinkAttached() niImpl {
-    const cString dataDir = ni::GetToolkitDir("niLang","data");
+  tBool __stdcall OnSinkAttached() niImpl
+  {
+    const cString dataDir = ni::GetToolkitDir("niLang", "data");
     tex1 = dataDir + "test/ipcam/CCTV-01.ipcam";
     tex2 = dataDir + "test/ipcam/CCTV-02.ipcam";
     niLog(Info, "IPCam::OnSinkAttached");
     return eTrue;
   };
 
-  tBool __stdcall OnDestroy() niImpl {
+  tBool __stdcall OnDestroy() niImpl
+  {
     niLog(Info, "IPCam::OnDestroy");
     return eTrue;
   }
 
-  tBool __stdcall OnSinkDetached() niImpl {
+  tBool __stdcall OnSinkDetached() niImpl
+  {
     niLog(Info, "IPCam::OnSinkDetached");
     return eTrue;
   }
 
-  tBool __stdcall OnPaint(const sVec2f &avMousePos, iCanvas *apCanvas) niImpl {
+  tBool __stdcall OnPaint(const sVec2f& avMousePos, iCanvas* apCanvas) niImpl
+  {
     test += (ni::tF32)ni::GetLang()->GetFrameTime();
     float k = 1; // wait timer
     if (test > k) {
       test -= k;
       useA = !useA;
       tHStringPtr path = _H(useA ? tex1.Chars() : tex2.Chars());
-      mTexture = mpWidget->GetGraphics()->CreateTextureFromRes(path, NULL, eTextureFlags_Default);
+      mTexture = mpWidget->GetGraphics()->CreateTextureFromRes(
+        path, NULL, eTextureFlags_Default);
       niDebugFmt(("Switch to %s", path));
     }
 
-    if (mTexture.IsOK())
-    {
-      if (!mOverlay.IsOK())
-      {
+    if (mTexture.IsOK()) {
+      if (!mOverlay.IsOK()) {
         mOverlay = mpWidget->GetGraphics()->CreateOverlayTexture(mTexture);
       }
-      mOverlay->GetMaterial()->SetChannelTexture(eMaterialChannel_Base, mTexture);
+      mOverlay->GetMaterial()->SetChannelTexture(eMaterialChannel_Base,
+                                                 mTexture);
       apCanvas->BlitOverlay(Rectf(0, 0, 512, 512), mOverlay);
     }
     return eFalse;

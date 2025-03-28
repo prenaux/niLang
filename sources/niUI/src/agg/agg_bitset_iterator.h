@@ -18,22 +18,20 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
-class bitset_iterator
-{
+class bitset_iterator {
  public:
-  bitset_iterator(const int8u* bits, unsigned offset = 0) :
-      m_bits(bits + (offset >> 3)),
-      m_mask(0x80 >> (offset & 7))
-  {}
+  bitset_iterator(const int8u* bits, unsigned offset = 0)
+      : m_bits(bits + (offset >> 3))
+      , m_mask(0x80 >> (offset & 7))
+  {
+  }
 
-  void operator ++ ()
+  void operator++()
   {
     m_mask >>= 1;
-    if(m_mask == 0)
-    {
+    if (m_mask == 0) {
       ++m_bits;
       m_mask = 0x80;
     }
@@ -46,9 +44,9 @@ class bitset_iterator
 
  private:
   const int8u* m_bits;
-  int8u        m_mask;
+  int8u m_mask;
 };
 
-}
+} // namespace agg
 
 #endif

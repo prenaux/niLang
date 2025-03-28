@@ -2,82 +2,82 @@
 	<namespace name="ni">
 		<enum name="eGeometryGenerate">
 			<comments desc="Geometry generation. "/>
-			<value name="eGeometryGenerate_Adjacency" value="niBit ( 0 ) ">
+			<value name="eGeometryGenerate_Adjacency" value="niBit(0)">
 				<comments desc="Generate adjacency informations. "/>
 			</value>
-			<value name="eGeometryGenerate_FlatNormals" value="niBit ( 1 ) ">
+			<value name="eGeometryGenerate_FlatNormals" value="niBit(1)">
 				<comments desc="Generate flat normals. "/>
 			</value>
-			<value name="eGeometryGenerate_Normals" value="niBit ( 2 ) ">
+			<value name="eGeometryGenerate_Normals" value="niBit(2)">
 				<comments desc="Generate the normals (overrirde flat normals computation). "/>
 			</value>
 		</enum>
 		<enum name="eGeometryType">
 			<comments desc="Geometry types. "/>
-			<value name="eGeometryType_Polygonal" value="0 ">
+			<value name="eGeometryType_Polygonal" value="0">
 				<comments desc="Polygonal geometry. "/>
 			</value>
-			<value name="eGeometryType_Patch" value="1 ">
+			<value name="eGeometryType_Patch" value="1">
 				<comments desc="Patch geometry. "/>
 			</value>
-			<value name="eGeometryType_Progressive" value="2 ">
+			<value name="eGeometryType_Progressive" value="2">
 				<comments desc="Progressive geometry. "/>
 			</value>
 		</enum>
 		<enum name="eGeometryCreateFlags">
 			<comments desc="Geometry creation flags. "/>
-			<value name="eGeometryCreateFlags_VADynamic" value="niBit ( 0 ) ">
+			<value name="eGeometryCreateFlags_VADynamic" value="niBit(0)">
 				<comments desc="The vertex array usage is dynamic. "/>
 			</value>
-			<value name="eGeometryCreateFlags_VADynamicReadWrite" value="niBit ( 1 ) ">
+			<value name="eGeometryCreateFlags_VADynamicReadWrite" value="niBit(1)">
 				<comments desc="The vertex array usage is dynamic read write. "/>
 			</value>
-			<value name="eGeometryCreateFlags_VAStatic" value="niBit ( 2 ) ">
+			<value name="eGeometryCreateFlags_VAStatic" value="niBit(2)">
 				<comments desc="The vertex array usage is static. "/>
 			</value>
-			<value name="eGeometryCreateFlags_VASystemMemory" value="niBit ( 3 ) ">
+			<value name="eGeometryCreateFlags_VASystemMemory" value="niBit(3)">
 				<comments desc="The vertex array usage is system memory. "/>
 			</value>
-			<value name="eGeometryCreateFlags_IADynamic" value="niBit ( 4 ) ">
+			<value name="eGeometryCreateFlags_IADynamic" value="niBit(4)">
 				<comments desc="The index array usage is dynamic. "/>
 			</value>
-			<value name="eGeometryCreateFlags_IADynamicReadWrite" value="niBit ( 5 ) ">
+			<value name="eGeometryCreateFlags_IADynamicReadWrite" value="niBit(5)">
 				<comments desc="The index array usage is dynamic read write. "/>
 			</value>
-			<value name="eGeometryCreateFlags_IAStatic" value="niBit ( 6 ) ">
+			<value name="eGeometryCreateFlags_IAStatic" value="niBit(6)">
 				<comments desc="The index array usage is static. "/>
 			</value>
-			<value name="eGeometryCreateFlags_IASystemMemory" value="niBit ( 7 ) ">
+			<value name="eGeometryCreateFlags_IASystemMemory" value="niBit(7)">
 				<comments desc="The index array usage is system memory. "/>
 			</value>
-			<value name="eGeometryCreateFlags_Dynamic" value="eGeometryCreateFlags_VADynamic|eGeometryCreateFlags_IADynamic ">
+			<value name="eGeometryCreateFlags_Dynamic" value="eGeometryCreateFlags_VADynamic|eGeometryCreateFlags_IADynamic">
 				<comments desc="The vertex array and index array usage is dynamic. "/>
 			</value>
-			<value name="eGeometryCreateFlags_DynamicReadWrite" value="eGeometryCreateFlags_VADynamicReadWrite|eGeometryCreateFlags_IADynamicReadWrite ">
+			<value name="eGeometryCreateFlags_DynamicReadWrite" value="eGeometryCreateFlags_VADynamicReadWrite|eGeometryCreateFlags_IADynamicReadWrite">
 				<comments desc="The vertex array and index array usage is dynamic read write. "/>
 			</value>
-			<value name="eGeometryCreateFlags_Static" value="eGeometryCreateFlags_VAStatic|eGeometryCreateFlags_IAStatic ">
+			<value name="eGeometryCreateFlags_Static" value="eGeometryCreateFlags_VAStatic|eGeometryCreateFlags_IAStatic">
 				<comments desc="The vertex array and index array usage is static. "/>
 			</value>
-			<value name="eGeometryCreateFlags_SystemMemory" value="eGeometryCreateFlags_VASystemMemory|eGeometryCreateFlags_IASystemMemory ">
+			<value name="eGeometryCreateFlags_SystemMemory" value="eGeometryCreateFlags_VASystemMemory|eGeometryCreateFlags_IASystemMemory">
 				<comments desc="The vertex array and index array usage is system memory. "/>
 			</value>
 		</enum>
 		<enum name="eGeometryOptimizeFlags">
 			<comments desc="Geometry optimization flags. "/>
-			<value name="eGeometryOptimizeFlags_RemoveDegenerates" value="niBit ( 0 ) ">
+			<value name="eGeometryOptimizeFlags_RemoveDegenerates" value="niBit(0)">
 				<comments desc="Remove degenerate triangles. "/>
 			</value>
-			<value name="eGeometryOptimizeFlags_RemoveUnusedVertices" value="niBit ( 1 ) ">
+			<value name="eGeometryOptimizeFlags_RemoveUnusedVertices" value="niBit(1)">
 				<comments desc="Remove unused vertices. "/>
 			</value>
-			<value name="eGeometryOptimizeFlags_RemoveDuplicateVertices" value="niBit ( 2 ) ">
+			<value name="eGeometryOptimizeFlags_RemoveDuplicateVertices" value="niBit(2)">
 				<comments desc="Remove duplicate vertices. "/>
 			</value>
-			<value name="eGeometryOptimizeFlags_Default" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices ">
+			<value name="eGeometryOptimizeFlags_Default" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices">
 				<comments desc="Default. "/>
 			</value>
-			<value name="eGeometryOptimizeFlags_All" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices|eGeometryOptimizeFlags_RemoveDuplicateVertices ">
+			<value name="eGeometryOptimizeFlags_All" value="eGeometryOptimizeFlags_RemoveDegenerates|eGeometryOptimizeFlags_RemoveUnusedVertices|eGeometryOptimizeFlags_RemoveDuplicateVertices">
 				<comments desc="Default. "/>
 			</value>
 		</enum>

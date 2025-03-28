@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! Listbox notification messages
-enum eWidgetListBoxCmd
-{
+enum eWidgetListBoxCmd {
   //! Sent when the selection has changed
   eWidgetListBoxCmd_SelectionChanged = 0,
   //! \internal
@@ -17,25 +16,23 @@ enum eWidgetListBoxCmd
 };
 
 //! Listbox style
-enum eWidgetListBoxStyle
-{
+enum eWidgetListBoxStyle {
   //! Has header.
-  eWidgetListBoxStyle_HasHeader = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetListBoxStyle_HasHeader = niBit(eWidgetStyle_MaxBit + 0),
   //! Clicking the Header will sort the items Ascendant/Descendant.
-  eWidgetListBoxStyle_HeaderSort = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetListBoxStyle_HeaderSort = niBit(eWidgetStyle_MaxBit + 1),
   //! Allow multiple selection.
-  eWidgetListBoxStyle_Multiselect = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetListBoxStyle_Multiselect = niBit(eWidgetStyle_MaxBit + 2),
   //! Select when mouse moves.
-  eWidgetListBoxStyle_SelectOnMove = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetListBoxStyle_SelectOnMove = niBit(eWidgetStyle_MaxBit + 3),
   //! Click down add selection, Ctrl+Click set selection. (This is the opposite of the default)
-  eWidgetListBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit+4),
+  eWidgetListBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit + 4),
   //! \internal
   eWidgetListBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Listbox widget interface.
-struct iWidgetListBox : public iUnknown
-{
+struct iWidgetListBox : public iUnknown {
   niDeclareInterfaceUUID(iWidgetListBox,0x72906a6e,0xe5d6,0x4a1c,0xb0,0xd9,0xac,0x68,0x79,0x86,0xbf,0xf6);
 
   //! Add a column with the specified name and size.
@@ -48,7 +45,8 @@ struct iWidgetListBox : public iUnknown
   virtual tU32 __stdcall GetNumColumns() const = 0;
   //! Set the name/header of the column.
   //! {Property}
-  virtual tBool __stdcall SetColumnName(tU32 anColumn, const achar* aaszName) = 0;
+  virtual tBool __stdcall SetColumnName(tU32 anColumn,
+                                        const achar* aaszName) = 0;
   //! Get the name/header of the column.
   //! {Property}
   virtual const achar* __stdcall GetColumnName(tU32 anColumn) const = 0;
@@ -59,7 +57,8 @@ struct iWidgetListBox : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetColumnWidth(tU32 anColumn) const = 0;
   //! Set a column name and width.
-  virtual tBool __stdcall SetColumn(tU32 anColumn, const achar* aaszName, tU32 anSize) = 0;
+  virtual tBool __stdcall SetColumn(tU32 anColumn, const achar* aaszName,
+                                    tU32 anSize) = 0;
 
   //! Get the number of items in the listbox.
   //! {Property}
@@ -71,13 +70,17 @@ struct iWidgetListBox : public iUnknown
   //! Remove an item.
   virtual tBool __stdcall RemoveItem(tU32 anItem) = 0;
   //! Set the text of an item element.
-  virtual tBool __stdcall SetItemText(tU32 anColumn, tU32 anItem, const achar* aaszText) = 0;
+  virtual tBool __stdcall SetItemText(tU32 anColumn, tU32 anItem,
+                                      const achar* aaszText) = 0;
   //! Get the text of an item element.
-  virtual const achar* __stdcall GetItemText(tU32 anColumn, tU32 anItem) const = 0;
+  virtual const achar* __stdcall GetItemText(tU32 anColumn,
+                                             tU32 anItem) const = 0;
   //! Set the widget of an item element.
-  virtual tBool __stdcall SetItemWidget(tU32 anColumn, tU32 anItem, iWidget* apWidget) = 0;
+  virtual tBool __stdcall SetItemWidget(tU32 anColumn, tU32 anItem,
+                                        iWidget* apWidget) = 0;
   //! Get the widget of an item element.
-  virtual iWidget* __stdcall GetItemWidget(tU32 anColumn, tU32 anItem) const = 0;
+  virtual iWidget* __stdcall GetItemWidget(tU32 anColumn,
+                                           tU32 anItem) const = 0;
   //! Set the icon of an item.
   //! {Property}
   virtual tBool __stdcall SetItemIcon(tU32 anItem, iOverlay* apIcon) = 0;
@@ -107,7 +110,8 @@ struct iWidgetListBox : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetSortAscendant() const = 0;
   //! Get the index of the first item that has the specified text in the specified column.
-  virtual tU32 __stdcall GetItemFromText(tU32 anColumn, const achar* aaszName) const = 0;
+  virtual tU32 __stdcall GetItemFromText(tU32 anColumn,
+                                         const achar* aaszName) const = 0;
 
   //! Clear the selection.
   virtual void __stdcall ClearSelection() = 0;
@@ -132,14 +136,18 @@ struct iWidgetListBox : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetIsItemSelected(tU32 anItem) const = 0;
   //! Get the first item with the selected text in the specified column and add it to the selection.
-  virtual tBool __stdcall AddSelectedItem(tU32 anCol, const achar* aaszText) = 0;
+  virtual tBool __stdcall AddSelectedItem(tU32 anCol,
+                                          const achar* aaszText) = 0;
   //! Get the text in the column of the selection at the specified index.
-  virtual const achar* __stdcall GetSelectedItemText(tU32 anCol, tU32 anIndex) const = 0;
+  virtual const achar* __stdcall GetSelectedItemText(tU32 anCol,
+                                                     tU32 anIndex) const = 0;
   //! Get the widget in the column of the selection at the specified index.
-  virtual iWidget* __stdcall GetSelectedItemWidget(tU32 anCol, tU32 anIndex) const = 0;
+  virtual iWidget* __stdcall GetSelectedItemWidget(tU32 anCol,
+                                                   tU32 anIndex) const = 0;
   //! Get the first item with the selected text in the specified column and set it as the selection.
   //! {Property}
-  virtual tBool __stdcall SetSelectedItem(tU32 anCol, const achar* aaszText) = 0;
+  virtual tBool __stdcall SetSelectedItem(tU32 anCol,
+                                          const achar* aaszText) = 0;
   //! Get the text in the specified column of the first selection.
   //! {Property}
   virtual const achar* __stdcall GetSelectedItem(tU32 anCol) const = 0;
@@ -156,10 +164,10 @@ struct iWidgetListBox : public iUnknown
   virtual void __stdcall AutoScroll() = 0;
 
   //! Set the color of the text of the specified column/item. Set anColumn to eInvalidHandle to set all the columns at once.
-  virtual tBool __stdcall SetItemTextColor(tU32 anColumn, tU32 anItem, tU32 anTextColor) = 0;
+  virtual tBool __stdcall SetItemTextColor(tU32 anColumn, tU32 anItem,
+                                           tU32 anTextColor) = 0;
   //! Set the color of the text of the specified column/item.
   virtual tU32 __stdcall GetItemTextColor(tU32 anColumn, tU32 anItem) const = 0;
-
 
   //! Set the maximum number of items.
   //! \remark When the maximum number of items the items at the top of the
@@ -174,5 +182,5 @@ struct iWidgetListBox : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETLISTBOX_47171268_H__

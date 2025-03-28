@@ -18,9 +18,7 @@
 
 #include "agg_math_stroke.h"
 
-
-namespace agg
-{
+namespace agg {
 
 //============================================================vcgen_stroke
 //
@@ -28,10 +26,8 @@ namespace agg
 // Stroke generator
 //
 //------------------------------------------------------------------------
-class vcgen_stroke
-{
-  enum status_e
-  {
+class vcgen_stroke {
+  enum status_e {
     initial,
     ready,
     cap1,
@@ -47,56 +43,106 @@ class vcgen_stroke
 
  public:
   typedef vertex_sequence<vertex_dist, 6> vertex_storage;
-  typedef pod_bvector<point_d, 6>         coord_storage;
+  typedef pod_bvector<point_d, 6> coord_storage;
 
   vcgen_stroke();
 
-  void line_cap(line_cap_e lc)     { m_stroker.line_cap(lc); }
-  void line_join(line_join_e lj)   { m_stroker.line_join(lj); }
-  void inner_join(inner_join_e ij) { m_stroker.inner_join(ij); }
+  void line_cap(line_cap_e lc)
+  {
+    m_stroker.line_cap(lc);
+  }
+  void line_join(line_join_e lj)
+  {
+    m_stroker.line_join(lj);
+  }
+  void inner_join(inner_join_e ij)
+  {
+    m_stroker.inner_join(ij);
+  }
 
-  line_cap_e   line_cap()   const { return m_stroker.line_cap(); }
-  line_join_e  line_join()  const { return m_stroker.line_join(); }
-  inner_join_e inner_join() const { return m_stroker.inner_join(); }
+  line_cap_e line_cap() const
+  {
+    return m_stroker.line_cap();
+  }
+  line_join_e line_join() const
+  {
+    return m_stroker.line_join();
+  }
+  inner_join_e inner_join() const
+  {
+    return m_stroker.inner_join();
+  }
 
-  void width(agg_real w) { m_stroker.width(w); }
-  void miter_limit(agg_real ml) { m_stroker.miter_limit(ml); }
-  void miter_limit_theta(agg_real t) { m_stroker.miter_limit_theta(t); }
-  void inner_miter_limit(agg_real ml) { m_stroker.inner_miter_limit(ml); }
-  void approximation_scale(agg_real as) { m_stroker.approximation_scale(as); }
+  void width(agg_real w)
+  {
+    m_stroker.width(w);
+  }
+  void miter_limit(agg_real ml)
+  {
+    m_stroker.miter_limit(ml);
+  }
+  void miter_limit_theta(agg_real t)
+  {
+    m_stroker.miter_limit_theta(t);
+  }
+  void inner_miter_limit(agg_real ml)
+  {
+    m_stroker.inner_miter_limit(ml);
+  }
+  void approximation_scale(agg_real as)
+  {
+    m_stroker.approximation_scale(as);
+  }
 
-  agg_real width() const { return m_stroker.width(); }
-  agg_real miter_limit() const { return m_stroker.miter_limit(); }
-  agg_real inner_miter_limit() const { return m_stroker.inner_miter_limit(); }
-  agg_real approximation_scale() const { return m_stroker.approximation_scale(); }
+  agg_real width() const
+  {
+    return m_stroker.width();
+  }
+  agg_real miter_limit() const
+  {
+    return m_stroker.miter_limit();
+  }
+  agg_real inner_miter_limit() const
+  {
+    return m_stroker.inner_miter_limit();
+  }
+  agg_real approximation_scale() const
+  {
+    return m_stroker.approximation_scale();
+  }
 
-  void shorten(agg_real s) { m_shorten = s; }
-  agg_real shorten() const { return m_shorten; }
+  void shorten(agg_real s)
+  {
+    m_shorten = s;
+  }
+  agg_real shorten() const
+  {
+    return m_shorten;
+  }
 
   // Vertex Generator Interface
   void remove_all();
   void add_vertex(agg_real x, agg_real y, unsigned cmd);
 
   // Vertex Source Interface
-  void     rewind(unsigned path_id);
+  void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
   vcgen_stroke(const vcgen_stroke&);
-  const vcgen_stroke& operator = (const vcgen_stroke&);
+  const vcgen_stroke& operator=(const vcgen_stroke&);
 
   math_stroke<coord_storage> m_stroker;
-  vertex_storage             m_src_vertices;
-  coord_storage              m_out_vertices;
-  agg_real                     m_shorten;
-  unsigned                   m_closed;
-  status_e                   m_status;
-  status_e                   m_prev_status;
-  unsigned                   m_src_vertex;
-  unsigned                   m_out_vertex;
+  vertex_storage m_src_vertices;
+  coord_storage m_out_vertices;
+  agg_real m_shorten;
+  unsigned m_closed;
+  status_e m_status;
+  status_e m_prev_status;
+  unsigned m_src_vertex;
+  unsigned m_out_vertex;
 };
 
-
-}
+} // namespace agg
 
 #endif

@@ -14,8 +14,7 @@
 //----------------------------------------------------------------------------
 
 //! Draw operation implementation.
-class cDrawOperation : public ImplRC<iDrawOperation>
-{
+class cDrawOperation : public ImplRC<iDrawOperation> {
   niBeginClass(cDrawOperation);
 
  public:
@@ -30,7 +29,10 @@ class cDrawOperation : public ImplRC<iDrawOperation>
   //// iDrawOperation ///////////////////////////
   iDrawOperationSet* __stdcall GetDrawOperationSet() const;
   tBool __stdcall Copy(const iDrawOperation* apDO);
-  tBool __stdcall GetIsCompiled() const { return eTrue; }
+  tBool __stdcall GetIsCompiled() const
+  {
+    return eTrue;
+  }
   iDrawOperation* __stdcall Clone() const;
   void __stdcall SetPriority(tU32 anPriority);
   tU32 __stdcall GetPriority() const;
@@ -57,29 +59,32 @@ class cDrawOperation : public ImplRC<iDrawOperation>
   tDrawOperationFlags __stdcall GetFlags() const;
 
   ///////////////////////////////////////////////
-  void __stdcall SetPrimitiveType(eGraphicsPrimitiveType aPrim) {
-    if (mptrIndexArray.IsOK()) return;
+  void __stdcall SetPrimitiveType(eGraphicsPrimitiveType aPrim)
+  {
+    if (mptrIndexArray.IsOK())
+      return;
     mPrimitiveType = aPrim;
   }
-  eGraphicsPrimitiveType __stdcall GetPrimitiveType() const {
+  eGraphicsPrimitiveType __stdcall GetPrimitiveType() const
+  {
     return mPrimitiveType;
   }
   //// iDrawOperation ///////////////////////////
 
  private:
-  tU32      mnPriority;
+  tU32 mnPriority;
   Ptr<iVertexArray> mptrVertexArray;
-  Ptr<iIndexArray>  mptrIndexArray;
-  tU32      mnFirstIndex;
-  tU32      mnNumIndices;
-  tU32      mnBaseVertexIndex;
-  eGraphicsPrimitiveType  mPrimitiveType;
-  Ptr<iBoundingVolume>  mptrLocalBV;
-  Ptr<iBoundingVolume>  mptrWorldBV;
-  sMatrixf        mMatrix;
-  Ptr<iMaterial>  mptrMaterial;
-  sVec3f       mvCenter;
-  tDrawOperationFlags   mFlags;
+  Ptr<iIndexArray> mptrIndexArray;
+  tU32 mnFirstIndex;
+  tU32 mnNumIndices;
+  tU32 mnBaseVertexIndex;
+  eGraphicsPrimitiveType mPrimitiveType;
+  Ptr<iBoundingVolume> mptrLocalBV;
+  Ptr<iBoundingVolume> mptrWorldBV;
+  sMatrixf mMatrix;
+  Ptr<iMaterial> mptrMaterial;
+  sVec3f mvCenter;
+  tDrawOperationFlags mFlags;
 
   niEndClass(cDrawOperation);
 };
@@ -314,9 +319,9 @@ tDrawOperationFlags __stdcall cDrawOperation::GetFlags() const
 //
 //----------------------------------------------------------------------------
 
-typedef astl::vector<Ptr<iDrawOperation> >   tDrawOperationLst;
-typedef tDrawOperationLst::iterator          tDrawOperationLstIt;
-typedef tDrawOperationLst::const_iterator    tDrawOperationLstCIt;
+typedef astl::vector<Ptr<iDrawOperation>> tDrawOperationLst;
+typedef tDrawOperationLst::iterator tDrawOperationLstIt;
+typedef tDrawOperationLst::const_iterator tDrawOperationLstCIt;
 
 // typedef astl::list<Ptr<iDrawOperation> > tDrawOperationLst;
 // typedef tDrawOperationLst::iterator      tDrawOperationLstIt;
@@ -326,47 +331,56 @@ typedef tDrawOperationLst::const_iterator    tDrawOperationLstCIt;
 // cDrawOperationSet declaration.
 
 //! Draw operation set implementation.
-class cDrawOperationSet : public ImplRC<iDrawOperationSet>
-{
+class cDrawOperationSet : public ImplRC<iDrawOperationSet> {
   niBeginClass(cDrawOperationSet);
 
  public:
   //! Constructor.
-  cDrawOperationSet(iGraphics* apGraphics) {
+  cDrawOperationSet(iGraphics* apGraphics)
+  {
     mCurrentDrawOp = eInvalidHandle;
   }
   //! Destructor.
-  ~cDrawOperationSet() {
+  ~cDrawOperationSet()
+  {
     Invalidate();
   }
 
   //! Sanity check.
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cDrawOperationSet);
     return eTrue;
   }
 
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     mvDrawOps.clear();
     mCurrentDrawOp = eInvalidHandle;
   }
 
   //// iDrawOperationSet ////////////////////////
-  tBool __stdcall GetIsEmpty() const {
+  tBool __stdcall GetIsEmpty() const
+  {
     return !!mvDrawOps.empty();
   }
-  void __stdcall Clear() {
+  void __stdcall Clear()
+  {
     mvDrawOps.clear();
     mCurrentDrawOp = eInvalidHandle;
   }
-  iDrawOperation* __stdcall Insert(iDrawOperation* apDO) {
-    if (!niIsOK(apDO)) return NULL;
+  iDrawOperation* __stdcall Insert(iDrawOperation* apDO)
+  {
+    if (!niIsOK(apDO))
+      return NULL;
     mvDrawOps.push_back(apDO);
     mCurrentDrawOp = eInvalidHandle;
     return apDO;
   }
-  tBool __stdcall InsertSet(const iDrawOperationSet* apSet) {
-    if (!niIsOK(apSet)) return eFalse;
+  tBool __stdcall InsertSet(const iDrawOperationSet* apSet)
+  {
+    if (!niIsOK(apSet))
+      return eFalse;
     iDrawOperationSet* s = const_cast<iDrawOperationSet*>(apSet);
     for (iDrawOperation* dop = s->Begin(); !s->IsEnd(); dop = s->Next()) {
       mvDrawOps.push_back(dop);
@@ -375,16 +389,20 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
     return eTrue;
   }
 
-  tU32 __stdcall GetNumDrawOperations() const {
+  tU32 __stdcall GetNumDrawOperations() const
+  {
     return (tU32)mvDrawOps.size();
   }
 
-  iDrawOperation* __stdcall Begin() {
-    if (mvDrawOps.empty()) return NULL;
+  iDrawOperation* __stdcall Begin()
+  {
+    if (mvDrawOps.empty())
+      return NULL;
     mCurrentDrawOp = 0;
     return mvDrawOps[mCurrentDrawOp].ptr();
   }
-  iDrawOperation* __stdcall Next() {
+  iDrawOperation* __stdcall Next()
+  {
     const size_t numDrawOps = mvDrawOps.size();
     if (mCurrentDrawOp < numDrawOps) {
       ++mCurrentDrawOp;
@@ -400,21 +418,27 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
       return NULL;
     }
   }
-  tBool __stdcall IsEnd() const {
+  tBool __stdcall IsEnd() const
+  {
     return (mCurrentDrawOp >= mvDrawOps.size());
   }
-  iDrawOperation* __stdcall GetCurrent() const {
-    return (mCurrentDrawOp >= mvDrawOps.size()) ? NULL : mvDrawOps[mCurrentDrawOp].ptr();
+  iDrawOperation* __stdcall GetCurrent() const
+  {
+    return (mCurrentDrawOp >= mvDrawOps.size())
+             ? NULL
+             : mvDrawOps[mCurrentDrawOp].ptr();
   }
 
-  tU32 __stdcall Draw(iGraphicsContext* apContext, iFrustum* apFrustum) {
-    niCheckSilent(niIsOK(apContext),0);
+  tU32 __stdcall Draw(iGraphicsContext* apContext, iFrustum* apFrustum)
+  {
+    niCheckSilent(niIsOK(apContext), 0);
     tU32 c = 0;
-    niLoopit(tDrawOperationLst::const_iterator,it,mvDrawOps) {
+    niLoopit (tDrawOperationLst::const_iterator, it, mvDrawOps) {
       iDrawOperation* dop = *it;
       if (apFrustum && dop->GetBoundingVolume()) {
-        if (dop->GetBoundingVolume()->IntersectFrustum(NULL,apFrustum) ==
-            eIntersectionResult_None) {
+        if (dop->GetBoundingVolume()->IntersectFrustum(NULL, apFrustum) ==
+            eIntersectionResult_None)
+        {
           continue; // skip this draw op...
         }
       }
@@ -424,15 +448,18 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
     return c;
   }
 
-  tU32 __stdcall XDraw(const sMatrixf& aMatrix, iGraphicsContext* apContext, iFrustum* apFrustum) {
-    niCheckSilent(niIsOK(apContext),0);
+  tU32 __stdcall XDraw(const sMatrixf& aMatrix, iGraphicsContext* apContext,
+                       iFrustum* apFrustum)
+  {
+    niCheckSilent(niIsOK(apContext), 0);
     tU32 c = 0;
-    niLoopit(tDrawOperationLst::const_iterator,it,mvDrawOps) {
+    niLoopit (tDrawOperationLst::const_iterator, it, mvDrawOps) {
       iDrawOperation* dop = *it;
       dop->SetMatrix(aMatrix);
       if (apFrustum && dop->GetBoundingVolume()) {
-        if (dop->GetBoundingVolume()->IntersectFrustum(NULL,apFrustum) ==
-            eIntersectionResult_None) {
+        if (dop->GetBoundingVolume()->IntersectFrustum(NULL, apFrustum) ==
+            eIntersectionResult_None)
+        {
           continue; // skip this draw op...
         }
       }
@@ -444,7 +471,7 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
   //// iDrawOperationSet ////////////////////////
 
  private:
-  tDrawOperationLst   mvDrawOps;
+  tDrawOperationLst mvDrawOps;
   tU32 mCurrentDrawOp;
 
   niEndClass(cDrawOperationSet);
@@ -457,11 +484,13 @@ class cDrawOperationSet : public ImplRC<iDrawOperationSet>
 //----------------------------------------------------------------------------
 
 ///////////////////////////////////////////////
-iDrawOperation* __stdcall cGraphics::CreateDrawOperation() {
+iDrawOperation* __stdcall cGraphics::CreateDrawOperation()
+{
   return niNew cDrawOperation();
 }
 
 ///////////////////////////////////////////////
-iDrawOperationSet* __stdcall cGraphics::CreateDrawOperationSet() {
+iDrawOperationSet* __stdcall cGraphics::CreateDrawOperationSet()
+{
   return niNew cDrawOperationSet(this);
 }

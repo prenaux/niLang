@@ -3,11 +3,13 @@
 
 #include <niLang/Types.h>
 
-EA_DISABLE_VC_WARNING(4305) // warning C4305: 'initializing' : truncation from 'agg_real' to 'const float'
-EA_DISABLE_VC_WARNING(4244) // warning C4244: 'return' : conversion from 'agg_real' to 'float', possible loss of data
+EA_DISABLE_VC_WARNING(
+  4305) // warning C4305: 'initializing' : truncation from 'agg_real' to 'const float'
+EA_DISABLE_VC_WARNING(
+  4244) // warning C4244: 'return' : conversion from 'agg_real' to 'float', possible loss of data
 
-EA_DISABLE_GCC_WARNING(-Wdeprecated-enum-float-conversion);
-EA_DISABLE_CLANG_WARNING(-Wdeprecated-enum-float-conversion);
+EA_DISABLE_GCC_WARNING(-Wdeprecated - enum - float - conversion);
+EA_DISABLE_CLANG_WARNING(-Wdeprecated - enum - float - conversion);
 
 // This file can be used to redefine the default basic types such as:
 //

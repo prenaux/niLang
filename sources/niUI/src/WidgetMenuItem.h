@@ -5,8 +5,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetMenuItem declaration.
-class cWidgetMenuItem : public ni::ImplRC<ni::iWidgetMenuItem,ni::eImplFlags_Default>
-{
+class cWidgetMenuItem
+    : public ni::ImplRC<ni::iWidgetMenuItem, ni::eImplFlags_Default> {
   niBeginClass(cWidgetMenuItem);
 
  public:
@@ -21,15 +21,15 @@ class cWidgetMenuItem : public ni::ImplRC<ni::iWidgetMenuItem,ni::eImplFlags_Def
 
   //// ni::iWidgetMenuItem /////////////////////
   iWidgetMenu* __stdcall GetMenu() const;
-  tBool __stdcall SetName(const achar *aVal);
+  tBool __stdcall SetName(const achar* aVal);
   const achar* __stdcall GetName() const;
   const achar* __stdcall GetLocalizedName() const;
   tBool __stdcall SetID(iHString* aVal);
   iHString* __stdcall GetID() const;
   tBool __stdcall SetFlags(tWidgetMenuItemFlags aVal);
   tWidgetMenuItemFlags __stdcall GetFlags() const;
-  tBool __stdcall SetIcon(iOverlay *aVal);
-  iOverlay * __stdcall GetIcon() const;
+  tBool __stdcall SetIcon(iOverlay* aVal);
+  iOverlay* __stdcall GetIcon() const;
   tBool __stdcall SetSubmenu(iHString* aVal);
   iHString* __stdcall GetSubmenu() const;
   tBool __stdcall SetSelected(tBool aVal);
@@ -43,16 +43,16 @@ class cWidgetMenuItem : public ni::ImplRC<ni::iWidgetMenuItem,ni::eImplFlags_Def
   void _UpdateLocale();
 
  private:
-  iWidget*        mpwMenu;
-  tHStringPtr     mhspName;
-  tHStringPtr     mhspLocalizedName;
-  tHStringPtr     mhspID;
-  tWidgetMenuItemFlags    mnFlags;
+  iWidget* mpwMenu;
+  tHStringPtr mhspName;
+  tHStringPtr mhspLocalizedName;
+  tHStringPtr mhspID;
+  tWidgetMenuItemFlags mnFlags;
   Ptr<iOverlay> mptrIcon;
-  tHStringPtr     mhspSubmenu;
-  tBool       mbSelected;
-  tHStringPtr     mhspGroupID;
-  eKey        mKey;
+  tHStringPtr mhspSubmenu;
+  tBool mbSelected;
+  tHStringPtr mhspGroupID;
+  eKey mKey;
   niEndClass(cWidgetMenuItem);
 };
 

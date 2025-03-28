@@ -8,20 +8,22 @@
 
 class cWidgetTreeNode;
 
-#define TREENOTIFY_LAYOUT   niBit(0)
+#define TREENOTIFY_LAYOUT niBit(0)
 #define TREENOTIFY_SCROLLBARS niBit(1)
-#define TREENOTIFY_CULLING    niBit(2)
-#define TREENOTIFY_ALL      (TREENOTIFY_LAYOUT|TREENOTIFY_SCROLLBARS|TREENOTIFY_CULLING)
-#define TREENOTIFY_NODES    TREENOTIFY_ALL
-#define TREENOTIFY_EXPANDED   TREENOTIFY_ALL
-#define TREENOTIFY_SETWIDGET  TREENOTIFY_CULLING
+#define TREENOTIFY_CULLING niBit(2)
+#define TREENOTIFY_ALL \
+  (TREENOTIFY_LAYOUT | TREENOTIFY_SCROLLBARS | TREENOTIFY_CULLING)
+#define TREENOTIFY_NODES TREENOTIFY_ALL
+#define TREENOTIFY_EXPANDED TREENOTIFY_ALL
+#define TREENOTIFY_SETWIDGET TREENOTIFY_CULLING
 
-#define niFlagEq(n,p,x) (niFlagIs(n,x) == niFlagIs(p,x))
+#define niFlagEq(n, p, x) (niFlagIs(n, x) == niFlagIs(p, x))
 
-inline tU32 ComputePageSize(auto aNumVisibleItems) {
+inline tU32 ComputePageSize(auto aNumVisibleItems)
+{
   if (aNumVisibleItems < 5)
     return 0_u32;
-  return (((tU32)aNumVisibleItems-1)/2)-1;
+  return (((tU32)aNumVisibleItems - 1) / 2) - 1;
 };
 
 //----------------------------------------------------------------------------
@@ -33,22 +35,21 @@ const tF32 _kfTabOffset = 16.0f;
 const tF32 _kfTextHeightMargin = 4.0f;
 const tF32 _kfTextLeftMargin = 2.0f;
 const tF32 _kfTextRightMargin = 2.0f;
-const sRectf _rectInvalid = sRectf(0,ni::TypeMax<tF32>(),0,0);
+const sRectf _rectInvalid = sRectf(0, ni::TypeMax<tF32>(), 0, 0);
 const tF32 _kfAttrSpacing = 2.0f;
-const sVec2f _kvAttrSize = {16.0f,16.0f};
+const sVec2f _kvAttrSize = { 16.0f, 16.0f };
 
-#define eWidgetTreeNodeFlags_Culled   niBit(16)
+#define eWidgetTreeNodeFlags_Culled niBit(16)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetTreeNode declaration.
-class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Default>
-{
+class cWidgetTreeNode
+    : public ni::ImplRC<ni::iWidgetTreeNode, ni::eImplFlags_Default> {
   niBeginClass(cWidgetTreeNode);
 
  public:
   ///////////////////////////////////////////////
-  cWidgetTreeNode(tU32 anIndex,
-                  cWidgetTree* apParentWdg,
+  cWidgetTreeNode(tU32 anIndex, cWidgetTree* apParentWdg,
                   cWidgetTreeNode* apParentTreeNode,
                   tWidgetTreeNodeFlags aFlags = eWidgetTreeNodeFlags_Default)
   {
@@ -78,18 +79,21 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  ~cWidgetTreeNode() {
+  ~cWidgetTreeNode()
+  {
     Invalidate();
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const {
+  ni::tBool __stdcall IsOK() const
+  {
     niClassIsOK(cWidgetTreeNode);
     return mpwParentWidget.IsOK();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Invalidate() {
+  void __stdcall Invalidate()
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     if (ptrParentWidget.IsOK()) {
       niGuardObject(this);
@@ -98,7 +102,9 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
       {
         QPtr<cWidgetTreeNode> ptrParentTreeNode(mpwParentTreeNode);
         if (ptrParentTreeNode.IsOK()) {
-          astl::find_erase(static_cast<cWidgetTreeNode*>(ptrParentTreeNode.ptr())->mvChildren,this);
+          astl::find_erase(
+            static_cast<cWidgetTreeNode*>(ptrParentTreeNode.ptr())->mvChildren,
+            this);
           mpwParentTreeNode.SetNull();
         }
       }
@@ -108,94 +114,115 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidget * __stdcall GetParentWidget() const {
+  iWidget* __stdcall GetParentWidget() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     return ptrParentWidget.IsOK() ? ptrParentWidget->mpWidget : NULL;
   }
 
   ///////////////////////////////////////////////
-  ni::iWidgetTreeNode * __stdcall GetParentNode() const {
+  ni::iWidgetTreeNode* __stdcall GetParentNode() const
+  {
     QPtr<cWidgetTreeNode> ptrParentTreeNode(mpwParentTreeNode);
     return ptrParentTreeNode.GetRawAndSetNull();
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetNodeRect() const {
+  sRectf __stdcall GetNodeRect() const
+  {
     return mNodeRect;
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetScrolledNodeRect() const {
+  sRectf __stdcall GetScrolledNodeRect() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return sRectf::Null();
-    return mNodeRect+ptrParentWidget->mvScrollOffset;
+    if (!ptrParentWidget.IsOK())
+      return sRectf::Null();
+    return mNodeRect + ptrParentWidget->mvScrollOffset;
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetAbsoluteNodeRect() const {
+  sRectf __stdcall GetAbsoluteNodeRect() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return sRectf::Null();
+    if (!ptrParentWidget.IsOK())
+      return sRectf::Null();
     return mNodeRect + ptrParentWidget->mvScrollOffset +
-        ptrParentWidget->mpWidget->GetClientPosition() +
-        ptrParentWidget->mpWidget->GetAbsolutePosition();
+           ptrParentWidget->mpWidget->GetClientPosition() +
+           ptrParentWidget->mpWidget->GetAbsolutePosition();
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetTextRect() const {
+  sRectf __stdcall GetTextRect() const
+  {
     return mTextRect;
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetScrolledTextRect() const {
+  sRectf __stdcall GetScrolledTextRect() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return sRectf::Null();
+    if (!ptrParentWidget.IsOK())
+      return sRectf::Null();
     return mTextRect + ptrParentWidget->mvScrollOffset;
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall GetAbsoluteTextRect() const {
+  sRectf __stdcall GetAbsoluteTextRect() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return sRectf::Null();
-    return mTextRect +
-        ptrParentWidget->mvScrollOffset +
-        ptrParentWidget->mpWidget->GetClientPosition() +
-        ptrParentWidget->mpWidget->GetAbsolutePosition();
+    if (!ptrParentWidget.IsOK())
+      return sRectf::Null();
+    return mTextRect + ptrParentWidget->mvScrollOffset +
+           ptrParentWidget->mpWidget->GetClientPosition() +
+           ptrParentWidget->mpWidget->GetAbsolutePosition();
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetDepth() const {
+  tU32 __stdcall GetDepth() const
+  {
     return mnDepth;
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetIndex() const {
+  tU32 __stdcall GetIndex() const
+  {
     return mnIndex;
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetNumChildNodes() const {
+  tU32 __stdcall GetNumChildNodes() const
+  {
     return mvChildren.size();
   }
 
   ///////////////////////////////////////////////
-  ni::iWidgetTreeNode * __stdcall GetChildNode(tU32 anIndex) const {
-    if (anIndex >= mvChildren.size()) return NULL;
+  ni::iWidgetTreeNode* __stdcall GetChildNode(tU32 anIndex) const
+  {
+    if (anIndex >= mvChildren.size())
+      return NULL;
     return mvChildren[anIndex];
   }
 
   ///////////////////////////////////////////////
-  ni::iWidgetTreeNode * __stdcall GetChildNodeFromName(const achar *aaszName) const {
-    niLoopit(tTreeNodeVec::const_iterator,it,mvChildren) {
-      if (ni::StrEq((*it)->GetName(),aaszName)) return *it;
+  ni::iWidgetTreeNode* __stdcall GetChildNodeFromName(
+    const achar* aaszName) const
+  {
+    niLoopit (tTreeNodeVec::const_iterator, it, mvChildren) {
+      if (ni::StrEq((*it)->GetName(), aaszName))
+        return *it;
       ni::iWidgetTreeNode* pNode = (*it)->GetChildNodeFromName(aaszName);
-      if (pNode) return pNode;
+      if (pNode)
+        return pNode;
     }
     return NULL;
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetChildNodeIndex(const iWidgetTreeNode* apNode) const {
-    niLoop(i,mvChildren.size()) {
+  tU32 __stdcall GetChildNodeIndex(const iWidgetTreeNode* apNode) const
+  {
+    niLoop (i, mvChildren.size()) {
       if (mvChildren[i].ptr() == apNode)
         return i;
     }
@@ -203,10 +230,13 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  ni::iWidgetTreeNode * __stdcall AddChildNode(const achar *aaszName) {
+  ni::iWidgetTreeNode* __stdcall AddChildNode(const achar* aaszName)
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
-    Ptr<cWidgetTreeNode> ptrNew = niNew cWidgetTreeNode(mvChildren.size(),ptrParentWidget,this);
+    if (!ptrParentWidget.IsOK())
+      return NULL;
+    Ptr<cWidgetTreeNode> ptrNew =
+      niNew cWidgetTreeNode(mvChildren.size(), ptrParentWidget, this);
     ptrNew->SetName(aaszName);
     mvChildren.push_back(ptrNew);
     ptrParentWidget->_NotifyUpdateLayout(TREENOTIFY_NODES);
@@ -214,32 +244,38 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  ni::iWidgetTreeNode * __stdcall AddChildNodeBefore(const achar *aaszName, tU32 anIndex) {
+  ni::iWidgetTreeNode* __stdcall AddChildNodeBefore(const achar* aaszName,
+                                                    tU32 anIndex)
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
-    Ptr<cWidgetTreeNode> ptrNew = niNew cWidgetTreeNode(mvChildren.size(),ptrParentWidget,this);
+    if (!ptrParentWidget.IsOK())
+      return NULL;
+    Ptr<cWidgetTreeNode> ptrNew =
+      niNew cWidgetTreeNode(mvChildren.size(), ptrParentWidget, this);
     ptrNew->SetName(aaszName);
     if (anIndex >= mvChildren.size()) {
       mvChildren.push_back(ptrNew);
     }
     else {
-      mvChildren.insert(mvChildren.begin()+anIndex,ptrNew);
+      mvChildren.insert(mvChildren.begin() + anIndex, ptrNew);
     }
     ptrParentWidget->_NotifyUpdateLayout(TREENOTIFY_NODES);
     return ptrNew.ptr();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall RemoveChildNode(ni::iWidgetTreeNode *apNode) {
+  tBool __stdcall RemoveChildNode(ni::iWidgetTreeNode* apNode)
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return eFalse;
+    if (!ptrParentWidget.IsOK())
+      return eFalse;
     tU32 index = GetChildNodeIndex(apNode);
     if (index != eInvalidHandle) {
       apNode->Invalidate();
       return eTrue;
     }
     else {
-      niLoopit(tTreeNodeVec::const_iterator,it,mvChildren) {
+      niLoopit (tTreeNodeVec::const_iterator, it, mvChildren) {
         if ((*it)->RemoveChildNode(apNode)) {
           return eTrue;
         }
@@ -249,9 +285,11 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Clear() {
+  tBool __stdcall Clear()
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return eFalse;
+    if (!ptrParentWidget.IsOK())
+      return eFalse;
     while (!mvChildren.empty()) {
       mvChildren.back()->Invalidate();
     }
@@ -259,11 +297,13 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall FindNodeFromName(const achar* aaszName) const {
+  iWidgetTreeNode* __stdcall FindNodeFromName(const achar* aaszName) const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
+    if (!ptrParentWidget.IsOK())
+      return NULL;
     iWidgetTreeNode* pRet = NULL;
-    if (ni::StrEq(GetName(),aaszName)) {
+    if (ni::StrEq(GetName(), aaszName)) {
       pRet = const_cast<cWidgetTreeNode*>(this);
     }
     else {
@@ -277,9 +317,12 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall FindNodeFromUserdata(const iUnknown* apUserdata) const {
+  iWidgetTreeNode* __stdcall FindNodeFromUserdata(
+    const iUnknown* apUserdata) const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
+    if (!ptrParentWidget.IsOK())
+      return NULL;
     iWidgetTreeNode* pRet = NULL;
     if (GetUserdata() == apUserdata) {
       pRet = const_cast<cWidgetTreeNode*>(this);
@@ -295,9 +338,11 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall FindNodeFromWidget(const iWidget* apWidget) const {
+  iWidgetTreeNode* __stdcall FindNodeFromWidget(const iWidget* apWidget) const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
+    if (!ptrParentWidget.IsOK())
+      return NULL;
     iWidgetTreeNode* pRet = NULL;
     if (GetWidget() == apWidget) {
       pRet = const_cast<cWidgetTreeNode*>(this);
@@ -313,9 +358,11 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall FindNodeFromPosition(const sVec2f& avPos) const {
+  iWidgetTreeNode* __stdcall FindNodeFromPosition(const sVec2f& avPos) const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
-    if (!ptrParentWidget.IsOK()) return NULL;
+    if (!ptrParentWidget.IsOK())
+      return NULL;
     iWidgetTreeNode* pRet = NULL;
     if (mNodeRect.Intersect(avPos)) {
       pRet = niThis(cWidgetTreeNode);
@@ -331,27 +378,34 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall GetPrevSibling() const {
+  iWidgetTreeNode* __stdcall GetPrevSibling() const
+  {
     QPtr<cWidgetTreeNode> ptrParentTreeNode(mpwParentTreeNode);
-    if (!ptrParentTreeNode.IsOK()) return NULL;
+    if (!ptrParentTreeNode.IsOK())
+      return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == 0) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex-1);
+    if (nIndex == 0)
+      return NULL;
+    return ptrParentTreeNode->GetChildNode(nIndex - 1);
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall GetNextSibling() const {
+  iWidgetTreeNode* __stdcall GetNextSibling() const
+  {
     QPtr<cWidgetTreeNode> ptrParentTreeNode(mpwParentTreeNode);
-    if (!ptrParentTreeNode.IsOK()) return NULL;
+    if (!ptrParentTreeNode.IsOK())
+      return NULL;
     tU32 nIndex = ptrParentTreeNode->GetChildNodeIndex(this);
     niAssert(nIndex < ptrParentTreeNode->GetNumChildNodes());
-    if (nIndex == ptrParentTreeNode->GetNumChildNodes()-1) return NULL;
-    return ptrParentTreeNode->GetChildNode(nIndex+1);
+    if (nIndex == ptrParentTreeNode->GetNumChildNodes() - 1)
+      return NULL;
+    return ptrParentTreeNode->GetChildNode(nIndex + 1);
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall GetAbove() const {
+  iWidgetTreeNode* __stdcall GetAbove() const
+  {
     QPtr<cWidgetTreeNode> ptrParentTreeNode(mpwParentTreeNode);
 
     // no parent node, so its the root nothing could be drawn above it
@@ -363,7 +417,7 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     if (pRet) {
       // if the previous sibling is expanded and has children, return its last child
       while (pRet->GetNumChildNodes() && pRet->GetExpanded()) {
-        pRet = pRet->GetChildNode(pRet->GetNumChildNodes()-1);
+        pRet = pRet->GetChildNode(pRet->GetNumChildNodes() - 1);
       }
       return pRet;
     }
@@ -373,7 +427,8 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidgetTreeNode* __stdcall GetBelow() const {
+  iWidgetTreeNode* __stdcall GetBelow() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     if (!ptrParentWidget.IsOK())
       return NULL;
@@ -401,20 +456,23 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetFlags(tWidgetTreeNodeFlags aFlags) {
+  tBool __stdcall SetFlags(tWidgetTreeNodeFlags aFlags)
+  {
     tU32 nPrevFlags = mFlags;
     mFlags = aFlags;
-    _NotifyFlagsChange(mFlags,nPrevFlags);
+    _NotifyFlagsChange(mFlags, nPrevFlags);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  tWidgetTreeNodeFlags __stdcall GetFlags() const {
+  tWidgetTreeNodeFlags __stdcall GetFlags() const
+  {
     return mFlags;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetName(const achar *aVal) {
+  tBool __stdcall SetName(const achar* aVal)
+  {
     Var prevName = mstrName;
     mstrName = aVal;
 
@@ -422,40 +480,45 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     if (ptrParentWidget.IsOK()) {
       ptrParentWidget->_NotifyUpdateLayout(TREENOTIFY_NODES);
     }
-    _Notify(eWidgetTreeCmd_SetName,prevName);
+    _Notify(eWidgetTreeCmd_SetName, prevName);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  const achar * __stdcall GetName() const {
+  const achar* __stdcall GetName() const
+  {
     return mstrName.Chars();
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetIcon(iOverlay *aVal) {
+  tBool __stdcall SetIcon(iOverlay* aVal)
+  {
     mptrIcon = aVal;
     return mptrIcon.IsOK();
   }
 
   ///////////////////////////////////////////////
-  iOverlay * __stdcall GetIcon() const {
+  iOverlay* __stdcall GetIcon() const
+  {
     return mptrIcon;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetSelected(tBool abSelected) {
+  tBool __stdcall SetSelected(tBool abSelected)
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     if (!ptrParentWidget.IsOK())
       return eFalse;
-    if (niFlagIs(mFlags,eWidgetTreeNodeFlags_Selected) == abSelected)
+    if (niFlagIs(mFlags, eWidgetTreeNodeFlags_Selected) == abSelected)
       return eTrue;
     tU32 nPrevFlags = mFlags;
-    niFlagOnIf(mFlags,eWidgetTreeNodeFlags_Selected,abSelected);
+    niFlagOnIf(mFlags, eWidgetTreeNodeFlags_Selected, abSelected);
     if (abSelected) {
       ptrParentWidget->_AddSelectedNode(this);
       // expand all parents, a selected node has to be visible
 #pragma niTodo("Could add a flag to disable this.")
-      iWidgetTreeNode* pParent = (QPtr<cWidgetTreeNode>(mpwParentTreeNode)).ptr();
+      iWidgetTreeNode* pParent =
+        (QPtr<cWidgetTreeNode>(mpwParentTreeNode)).ptr();
       while (pParent) {
         pParent->SetExpanded(eTrue);
         pParent = pParent->GetParentNode();
@@ -464,7 +527,7 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     else {
       ptrParentWidget->_RemoveSelectedNode(this);
     }
-    _NotifyFlagsChange(mFlags,nPrevFlags);
+    _NotifyFlagsChange(mFlags, nPrevFlags);
     if (abSelected) {
       ptrParentWidget->ScrollToNode(this);
     }
@@ -472,46 +535,52 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall GetSelected() const {
-    return niFlagIs(mFlags,eWidgetTreeNodeFlags_Selected);
+  tBool __stdcall GetSelected() const
+  {
+    return niFlagIs(mFlags, eWidgetTreeNodeFlags_Selected);
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetExpanded(tBool abExpanded) {
+  tBool __stdcall SetExpanded(tBool abExpanded)
+  {
     tU32 nPrevFlags = mFlags;
-    niFlagOnIf(mFlags,eWidgetTreeNodeFlags_Expanded,abExpanded);
+    niFlagOnIf(mFlags, eWidgetTreeNodeFlags_Expanded, abExpanded);
     for (tU32 i = 0; i < GetNumChildNodes(); ++i) {
       iWidgetTreeNode* pNode = GetChildNode(i);
-      niStaticCast(cWidgetTreeNode*,pNode)->_SetParentExpanded(abExpanded);
+      niStaticCast(cWidgetTreeNode*, pNode)->_SetParentExpanded(abExpanded);
     }
 
-    _NotifyFlagsChange(mFlags,nPrevFlags);
+    _NotifyFlagsChange(mFlags, nPrevFlags);
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall GetExpanded() const {
-    return niFlagIs(mFlags,eWidgetTreeNodeFlags_Expanded);
+  tBool __stdcall GetExpanded() const
+  {
+    return niFlagIs(mFlags, eWidgetTreeNodeFlags_Expanded);
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetUserdata(iUnknown *apUserData) {
+  tBool __stdcall SetUserdata(iUnknown* apUserData)
+  {
     mptrUserdata = apUserData;
     return mptrUserdata.IsOK();
   }
 
   ///////////////////////////////////////////////
-  iUnknown * __stdcall GetUserdata() const {
+  iUnknown* __stdcall GetUserdata() const
+  {
     return mptrUserdata;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall SetWidget(iWidget* apWidget) {
+  tBool __stdcall SetWidget(iWidget* apWidget)
+  {
     if (apWidget == mptrWidget)
       return eTrue;
 
     if (mptrWidget.IsOK()) {
-      if (niFlagIs(mptrWidget->GetStyle(),eWidgetStyle_ItemOwned)) {
+      if (niFlagIs(mptrWidget->GetStyle(), eWidgetStyle_ItemOwned)) {
         mptrWidget->Destroy();
         mptrWidget = NULL;
       }
@@ -520,7 +589,7 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     if (mptrWidget.IsOK()) {
       mptrWidget->SetVisible(eFalse);
       mptrWidget->SetEnabled(eFalse);
-      mfWidgetAH = ni::FDiv(mptrWidget->GetSize().y,mptrWidget->GetSize().x);
+      mfWidgetAH = ni::FDiv(mptrWidget->GetSize().y, mptrWidget->GetSize().x);
     }
 
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
@@ -531,29 +600,35 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  iWidget* __stdcall GetWidget() const {
+  iWidget* __stdcall GetWidget() const
+  {
     return mptrWidget;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetTextColor(tU32 anColor) {
+  void __stdcall SetTextColor(tU32 anColor)
+  {
     mnTextColor = anColor;
   }
-  tU32 __stdcall GetTextColor() const  {
+  tU32 __stdcall GetTextColor() const
+  {
     return mnTextColor;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetTextBackColor(tU32 anColor) {
+  void __stdcall SetTextBackColor(tU32 anColor)
+  {
     mnTextBackColor = anColor;
   }
-  tU32 __stdcall GetTextBackColor() const {
+  tU32 __stdcall GetTextBackColor() const
+  {
     return mnTextBackColor;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall GetIsVisible() const {
-    if (!niFlagIs(mFlags,eWidgetTreeNodeFlags_Visible))
+  tBool __stdcall GetIsVisible() const
+  {
+    if (!niFlagIs(mFlags, eWidgetTreeNodeFlags_Visible))
       return eFalse;
 
     iWidgetTreeNode* p = (QPtr<cWidgetTreeNode>(mpwParentTreeNode)).ptr();
@@ -567,35 +642,42 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetAttributes(tU32 anAttributes) {
+  void __stdcall SetAttributes(tU32 anAttributes)
+  {
     if (mnAttributes != anAttributes) {
       const tU32 prevAttr = mnAttributes;
       mnAttributes = anAttributes;
-      _Notify(eWidgetTreeCmd_SetAttributes,prevAttr);
+      _Notify(eWidgetTreeCmd_SetAttributes, prevAttr);
     }
   }
-  tU32 __stdcall GetAttributes() const {
+  tU32 __stdcall GetAttributes() const
+  {
     return mnAttributes;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetVisibleAttributesMask(tU32 anVisibleAttributesMask) {
+  void __stdcall SetVisibleAttributesMask(tU32 anVisibleAttributesMask)
+  {
     mnVisibleAttributesMask = anVisibleAttributesMask;
   }
-  tU32 __stdcall GetVisibleAttributesMask() const {
+  tU32 __stdcall GetVisibleAttributesMask() const
+  {
     return mnVisibleAttributesMask;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetRowColor(tU32 anRow) {
+  virtual void __stdcall SetRowColor(tU32 anRow)
+  {
     mnRowColor = anRow;
   }
-  virtual tU32 __stdcall GetRowColor() const {
+  virtual tU32 __stdcall GetRowColor() const
+  {
     return mnRowColor;
   }
 
   ///////////////////////////////////////////////
-  iFont* __stdcall _GetFont() const {
+  iFont* __stdcall _GetFont() const
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     if (ptrParentWidget.IsOK()) {
       return ptrParentWidget->mpWidget->GetFont();
@@ -604,29 +686,34 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  void _NotifyFlagsChange(tU32 anFlags, tU32 anPrevFlags) {
+  void _NotifyFlagsChange(tU32 anFlags, tU32 anPrevFlags)
+  {
     if (anFlags == anPrevFlags)
       return;
 
-    if (niFlagIs(anPrevFlags,eWidgetTreeNodeFlags_Selected) != niFlagIs(anFlags,eWidgetTreeNodeFlags_Selected)) {
+    if (niFlagIs(anPrevFlags, eWidgetTreeNodeFlags_Selected) !=
+        niFlagIs(anFlags, eWidgetTreeNodeFlags_Selected))
+    {
       // Unselected
-      if (niFlagIs(anPrevFlags,eWidgetTreeNodeFlags_Selected) &&
-          niFlagIsNot(anFlags,eWidgetTreeNodeFlags_Selected))
+      if (niFlagIs(anPrevFlags, eWidgetTreeNodeFlags_Selected) &&
+          niFlagIsNot(anFlags, eWidgetTreeNodeFlags_Selected))
       {
         _Notify(eWidgetTreeCmd_Unselected);
       }
       // Selected
-      else if (niFlagIs(anFlags,eWidgetTreeNodeFlags_Selected) &&
-               niFlagIsNot(anPrevFlags,eWidgetTreeNodeFlags_Selected))
+      else if (niFlagIs(anFlags, eWidgetTreeNodeFlags_Selected) &&
+               niFlagIsNot(anPrevFlags, eWidgetTreeNodeFlags_Selected))
       {
         _Notify(eWidgetTreeCmd_Selected);
       }
     }
 
-    if (niFlagIs(anPrevFlags,eWidgetTreeNodeFlags_Expanded) != niFlagIs(anFlags,eWidgetTreeNodeFlags_Expanded)) {
+    if (niFlagIs(anPrevFlags, eWidgetTreeNodeFlags_Expanded) !=
+        niFlagIs(anFlags, eWidgetTreeNodeFlags_Expanded))
+    {
       // Collapsed
-      if (niFlagIs(anPrevFlags,eWidgetTreeNodeFlags_Expanded) &&
-          niFlagIsNot(anFlags,eWidgetTreeNodeFlags_Expanded))
+      if (niFlagIs(anPrevFlags, eWidgetTreeNodeFlags_Expanded) &&
+          niFlagIsNot(anFlags, eWidgetTreeNodeFlags_Expanded))
       {
         _Notify(eWidgetTreeCmd_Collapsed);
         QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
@@ -635,8 +722,8 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
         }
       }
       // Expanded
-      else if (niFlagIs(anFlags,eWidgetTreeNodeFlags_Expanded) &&
-               niFlagIsNot(anPrevFlags,eWidgetTreeNodeFlags_Expanded))
+      else if (niFlagIs(anFlags, eWidgetTreeNodeFlags_Expanded) &&
+               niFlagIsNot(anPrevFlags, eWidgetTreeNodeFlags_Expanded))
       {
         _Notify(eWidgetTreeCmd_Expanded);
         QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
@@ -648,32 +735,36 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  void _Notify(eWidgetTreeCmd aMsg, const Var& avarA = niVarNull) {
+  void _Notify(eWidgetTreeCmd aMsg, const Var& avarA = niVarNull)
+  {
     QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
     if (ptrParentWidget.IsOK() && ptrParentWidget->mpWidget) {
       ptrParentWidget->mpWidget->SendCommand(
-          ptrParentWidget->mpWidget->GetParent(),aMsg,this,avarA);
+        ptrParentWidget->mpWidget->GetParent(), aMsg, this, avarA);
     }
   }
 
   ///////////////////////////////////////////////
-  tBool _SetParentExpanded(tBool abExpanded) {
-#pragma niTodo("Add a flag to determin whether we want non-visible nodes to be automatically deselected")
-    if (niFlagIs(mFlags,eWidgetTreeNodeFlags_Selected) && !abExpanded) {
+  tBool _SetParentExpanded(tBool abExpanded)
+  {
+#pragma niTodo( \
+    "Add a flag to determin whether we want non-visible nodes to be automatically deselected")
+    if (niFlagIs(mFlags, eWidgetTreeNodeFlags_Selected) && !abExpanded) {
       SetSelected(eFalse);
     }
     for (tU32 i = 0; i < GetNumChildNodes(); ++i) {
       iWidgetTreeNode* pNode = GetChildNode(i);
       // if we are displaying we need to make sure that the parent is really expanded,
       // if we are hiding all the widgets need to be hidden no matter what
-      niStaticCast(cWidgetTreeNode*,pNode)->_SetParentExpanded(!abExpanded ? abExpanded : GetExpanded());
+      niStaticCast(cWidgetTreeNode*, pNode)
+        ->_SetParentExpanded(!abExpanded ? abExpanded : GetExpanded());
     }
     return eTrue;
   }
 
-
   ///////////////////////////////////////////////
-  void _UpdateWidgetPosition() {
+  void _UpdateWidgetPosition()
+  {
     tBool bVisible = GetIsVisible() && !_GetCulling();
     if (mptrWidget.IsOK()) {
       mptrWidget->SetVisible(bVisible);
@@ -681,21 +772,22 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
 
       QPtr<cWidgetTree> ptrParentWidget(mpwParentWidget);
       if (bVisible && ptrParentWidget.IsOK()) {
-        sVec2f treePos = ptrParentWidget->mpWidget->GetAbsolutePosition()+
-            ptrParentWidget->mpWidget->GetClientPosition();
+        sVec2f treePos = ptrParentWidget->mpWidget->GetAbsolutePosition() +
+                         ptrParentWidget->mpWidget->GetClientPosition();
         sVec2f newPos = mptrWidget->GetAbsolutePosition();
         sRectf nodeRect = GetScrolledNodeRect();
         const sVec4f& margin = mptrWidget->GetMargin();
-        if (niFlagIs(mFlags,eWidgetTreeNodeFlags_WidgetPlaceV)) {
-          newPos.y = treePos.y+nodeRect.Top()+margin.y;
+        if (niFlagIs(mFlags, eWidgetTreeNodeFlags_WidgetPlaceV)) {
+          newPos.y = treePos.y + nodeRect.Top() + margin.y;
         }
-        if (niFlagIs(mFlags,eWidgetTreeNodeFlags_WidgetPlaceH)) {
-          if (niFlagIs(mFlags,eWidgetTreeNodeFlags_WidgetLeft)) {
-            newPos.x = treePos.x+nodeRect.Left()+margin.x;
-            mTextRect.Move(Vec2<tF32>(mptrWidget->GetSize().x+margin.x+margin.z,0));
+        if (niFlagIs(mFlags, eWidgetTreeNodeFlags_WidgetPlaceH)) {
+          if (niFlagIs(mFlags, eWidgetTreeNodeFlags_WidgetLeft)) {
+            newPos.x = treePos.x + nodeRect.Left() + margin.x;
+            mTextRect.Move(
+              Vec2<tF32>(mptrWidget->GetSize().x + margin.x + margin.z, 0));
           }
           else {
-            newPos.x = treePos.x+nodeRect.Left()+mTextRect.GetWidth();
+            newPos.x = treePos.x + nodeRect.Left() + mTextRect.GetWidth();
           }
         }
         mptrWidget->SetAbsolutePosition(newPos);
@@ -703,9 +795,9 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
     }
   }
 
-
   ///////////////////////////////////////////////
-  void _ComputeNodeRect() {
+  void _ComputeNodeRect()
+  {
     if (!GetIsVisible()) {
       mNodeRect = _rectInvalid;
       mTextRect = _rectInvalid;
@@ -717,9 +809,10 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
 
       const tF32 fh = _GetFont()->GetHeight();
       const sVec4f frame = ptrParentWidget->_GetItemFrameRect();
-      const tBool bDontDrawRoot = niFlagIs(ptrParentWidget->mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot);
+      const tBool bDontDrawRoot = niFlagIs(
+        ptrParentWidget->mpWidget->GetStyle(), eWidgetTreeStyle_DontDrawRoot);
 
-      mNodeRect.Left() = (mnDepth*_kfTabOffset);
+      mNodeRect.Left() = (mnDepth * _kfTabOffset);
       cWidgetTreeNode* n = (cWidgetTreeNode*)GetAbove();
       if (!n) {
         if (bDontDrawRoot) {
@@ -734,65 +827,77 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
       else {
         mNodeRect.Top() = n->GetNodeRect().Bottom();
       }
-      tF32 w = ptrParentWidget->mpWidget->GetSize().x-mNodeRect.Left()-frame.Right();
-      if (ptrParentWidget->mptrVScroll.IsOK() && ptrParentWidget->mptrVScroll->GetVisible()) {
+      tF32 w = ptrParentWidget->mpWidget->GetSize().x - mNodeRect.Left() -
+               frame.Right();
+      if (ptrParentWidget->mptrVScroll.IsOK() &&
+          ptrParentWidget->mptrVScroll->GetVisible())
+      {
         w -= ptrParentWidget->mptrVScroll->GetSize().x;
       }
       mNodeRect.SetWidth(w);
-      mNodeRect.SetHeight(fh+_kfTextHeightMargin);
+      mNodeRect.SetHeight(fh + _kfTextHeightMargin);
 
       // compute the inital text size
-      if (niFlagIs(mFlags,eWidgetTreeNodeFlags_DontDrawName)) {
+      if (niFlagIs(mFlags, eWidgetTreeNodeFlags_DontDrawName)) {
         mTextRect = _rectInvalid;
       }
       else {
-        mTextRect = _GetFont()->ComputeTextSize(sRectf(mNodeRect.GetTopLeft()),mstrName.Chars(),0);
+        mTextRect = _GetFont()->ComputeTextSize(sRectf(mNodeRect.GetTopLeft()),
+                                                mstrName.Chars(), 0);
         mNodeRect.SetWidth(mTextRect.GetWidth());
-        mNodeRect.SetHeight(ni::Max(mTextRect.GetHeight(),mNodeRect.GetHeight(),fh));
-        mTextRect = sRectf(mNodeRect.Left()+_kfTextLeftMargin,mNodeRect.Top()+frame.Top(),mNodeRect.GetWidth()-(_kfTextLeftMargin+_kfTextRightMargin),mNodeRect.GetHeight());
+        mNodeRect.SetHeight(
+          ni::Max(mTextRect.GetHeight(), mNodeRect.GetHeight(), fh));
+        mTextRect = sRectf(
+          mNodeRect.Left() + _kfTextLeftMargin, mNodeRect.Top() + frame.Top(),
+          mNodeRect.GetWidth() - (_kfTextLeftMargin + _kfTextRightMargin),
+          mNodeRect.GetHeight());
       }
 
       if (mptrWidget.IsOK()) {
         const sVec4f& margin = mptrWidget->GetMargin();
-        if (niFlagIs(mFlags,eWidgetTreeNodeFlags_WidgetSize)) {
+        if (niFlagIs(mFlags, eWidgetTreeNodeFlags_WidgetSize)) {
           const tF32 newW = mNodeRect.GetWidth();
           const tF32 newH = newW * mfWidgetAH;
-          mptrWidget->SetSize(Vec2(newW-margin.x-margin.z,newH-margin.y-margin.w));
+          mptrWidget->SetSize(
+            Vec2(newW - margin.x - margin.z, newH - margin.y - margin.w));
         }
-        if (niFlagIs(mFlags,eWidgetTreeNodeFlags_WidgetPlaceV)) {
-          const tF32 wh = mptrWidget->GetSize().y+margin.y+margin.w;
-          mNodeRect.SetHeight(ni::Max(mNodeRect.GetHeight(),wh));
+        if (niFlagIs(mFlags, eWidgetTreeNodeFlags_WidgetPlaceV)) {
+          const tF32 wh = mptrWidget->GetSize().y + margin.y + margin.w;
+          mNodeRect.SetHeight(ni::Max(mNodeRect.GetHeight(), wh));
         }
       }
 
-      mNodeRect.Bottom() += frame.Top()+frame.Bottom();
+      mNodeRect.Bottom() += frame.Top() + frame.Bottom();
     }
   }
 
-
   ///////////////////////////////////////////////
-  void _SetCulling(tBool abCulled) {
-    niFlagOnIf(mFlags,eWidgetTreeNodeFlags_Culled,abCulled);
+  void _SetCulling(tBool abCulled)
+  {
+    niFlagOnIf(mFlags, eWidgetTreeNodeFlags_Culled, abCulled);
   }
 
   ///////////////////////////////////////////////
-  tBool _GetCulling() const {
-    return niFlagIs(mFlags,eWidgetTreeNodeFlags_Culled);
+  tBool _GetCulling() const
+  {
+    return niFlagIs(mFlags, eWidgetTreeNodeFlags_Culled);
   }
 
-
   ///////////////////////////////////////////////
-  void _SetTreeIndex(tU32 anTreeIndex) {
+  void _SetTreeIndex(tU32 anTreeIndex)
+  {
     mnTreeIndex = anTreeIndex;
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetTreeIndex() const {
+  tU32 __stdcall GetTreeIndex() const
+  {
     return mnTreeIndex;
   }
 
   ///////////////////////////////////////////////
-  void _UpdateDrawIndex() {
+  void _UpdateDrawIndex()
+  {
     mnDrawIndex = 0;
     cWidgetTreeNode* n = (cWidgetTreeNode*)GetAbove();
     if (n) {
@@ -804,47 +909,54 @@ class cWidgetTreeNode : public ni::ImplRC<ni::iWidgetTreeNode,ni::eImplFlags_Def
   }
 
   ///////////////////////////////////////////////
-  tU32 _GetDrawIndex() const {
+  tU32 _GetDrawIndex() const
+  {
     return mnDrawIndex;
   }
 
   ///////////////////////////////////////////////
-  sRectf __stdcall _GetAttributeRect(const sVec2f& avSize, tU32 anRightIndex, tF32 afRightMargin) const {
+  sRectf __stdcall _GetAttributeRect(const sVec2f& avSize, tU32 anRightIndex,
+                                     tF32 afRightMargin) const
+  {
     sRectf r = GetScrolledNodeRect();
-    r.SetLeft(afRightMargin - ((tF32)(anRightIndex+1) * (avSize.x+_kfAttrSpacing)));
-    r.SetTop(r.GetTop() + (r.GetHeight()/2 - avSize.y/2));
+    r.SetLeft(afRightMargin -
+              ((tF32)(anRightIndex + 1) * (avSize.x + _kfAttrSpacing)));
+    r.SetTop(r.GetTop() + (r.GetHeight() / 2 - avSize.y / 2));
     r.SetRight(r.GetLeft() + avSize.x);
     r.SetBottom(r.GetTop() + avSize.y);
     return r;
   }
-  sRectf __stdcall _GetAttributeRectBg(const sVec2f& avSize, tU32 anRightIndex, tF32 afRightMargin) const {
+  sRectf __stdcall _GetAttributeRectBg(const sVec2f& avSize, tU32 anRightIndex,
+                                       tF32 afRightMargin) const
+  {
     sRectf r = GetScrolledNodeRect();
-    r.SetLeft(afRightMargin - ((tF32)(anRightIndex+1) * (avSize.x+_kfAttrSpacing)));
-    r.SetRight(r.GetLeft() + avSize.x +_kfAttrSpacing);
+    r.SetLeft(afRightMargin -
+              ((tF32)(anRightIndex + 1) * (avSize.x + _kfAttrSpacing)));
+    r.SetRight(r.GetLeft() + avSize.x + _kfAttrSpacing);
     return r;
   }
 
  public:
-  WeakPtr<cWidgetTree>    mpwParentWidget;
-  WeakPtr<cWidgetTreeNode>  mpwParentTreeNode;
-  tU32        mnDepth;
-  tU32        mnIndex;
-  tU32        mnTreeIndex;
-  tU32        mnDrawIndex;
-  tTreeNodeVec    mvChildren;
-  cString       mstrName;
-  tWidgetTreeNodeFlags  mFlags;
+  WeakPtr<cWidgetTree> mpwParentWidget;
+  WeakPtr<cWidgetTreeNode> mpwParentTreeNode;
+  tU32 mnDepth;
+  tU32 mnIndex;
+  tU32 mnTreeIndex;
+  tU32 mnDrawIndex;
+  tTreeNodeVec mvChildren;
+  cString mstrName;
+  tWidgetTreeNodeFlags mFlags;
   Ptr<iOverlay> mptrIcon;
   Ptr<iUnknown> mptrUserdata;
-  Ptr<iWidget>  mptrWidget;
-  tF32                mfWidgetAH;
-  tU32        mnTextColor;
-  tU32        mnTextBackColor;
-  sRectf     mNodeRect;
-  sRectf     mTextRect;
-  tU32                mnAttributes;
-  tU32                mnVisibleAttributesMask;
-  tU32                mnRowColor;
+  Ptr<iWidget> mptrWidget;
+  tF32 mfWidgetAH;
+  tU32 mnTextColor;
+  tU32 mnTextBackColor;
+  sRectf mNodeRect;
+  sRectf mTextRect;
+  tU32 mnAttributes;
+  tU32 mnVisibleAttributesMask;
+  tU32 mnRowColor;
 
   niEndClass(cWidgetTreeNode);
 };
@@ -862,22 +974,26 @@ const tU32 _knDropBorderDistance = 4;
 #define SCROLL_SCALEX tF32(mpWidget->GetFont()->GetMaxCharWidth())
 #define SCROLL_SCALEY tF32(mpWidget->GetFont()->GetMaxCharHeight())
 
-#pragma niTodo("Don't recompute the scroll bar layouts when changing the scroll position.")
-#pragma niTodo("Recompute the layout only when necessary, for that need to finish the notification.")
-#pragma niTodo("Draw icons, keyboard input, multiple selection, optimization of the rendering, send notification messages.")
+#pragma niTodo( \
+    "Don't recompute the scroll bar layouts when changing the scroll position.")
+#pragma niTodo( \
+    "Recompute the layout only when necessary, for that need to finish the notification.")
+#pragma niTodo( \
+    "Draw icons, keyboard input, multiple selection, optimization of the rendering, send notification messages.")
 #pragma niTodo("Add a flag to allow multiple selection or not")
 
-
 ///////////////////////////////////////////////
-static inline tU32 _GetTextFrontColor(cWidgetTree* apTree, cWidgetTreeNode* apNode)
+static inline tU32 _GetTextFrontColor(cWidgetTree* apTree,
+                                      cWidgetTreeNode* apNode)
 {
-  tU32 frontColor = (apNode->GetTextColor() > 0) ?
-      apNode->GetTextColor() : apTree->skin.colTextFront;
+  tU32 frontColor = (apNode->GetTextColor() > 0) ? apNode->GetTextColor()
+                                                 : apTree->skin.colTextFront;
   return frontColor;
 }
 
 ///////////////////////////////////////////////
-static inline void _UpdateNodeLayout(cWidgetTreeNode* apNode, tF32& afMaxX, tF32& afHeight)
+static inline void _UpdateNodeLayout(cWidgetTreeNode* apNode, tF32& afMaxX,
+                                     tF32& afHeight)
 {
   apNode->_ComputeNodeRect();
   //niPrintln(niFmt(_A("Layout Node '%s' (%s) is visible\n"),apNode->GetName(),cString(apNode->GetNodeRect(),_A("Rect")).Chars()));
@@ -886,12 +1002,14 @@ static inline void _UpdateNodeLayout(cWidgetTreeNode* apNode, tF32& afMaxX, tF32
     afMaxX = nodeRect.Right();
   afHeight += nodeRect.GetHeight();
   for (tU32 i = 0; i < apNode->GetNumChildNodes(); ++i) {
-    _UpdateNodeLayout((cWidgetTreeNode*)apNode->GetChildNode(i),afMaxX,afHeight);
+    _UpdateNodeLayout((cWidgetTreeNode*)apNode->GetChildNode(i), afMaxX,
+                      afHeight);
   }
 }
 
 ///////////////////////////////////////////////
-static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont, cWidgetTreeNode* apNode, tF32 afX)
+static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont,
+                              cWidgetTreeNode* apNode, tF32 afX)
 {
   tU32 nodeFlags = apNode->GetFlags();
   sRectf r = apNode->GetScrolledTextRect();
@@ -899,48 +1017,49 @@ static inline void _PushChars(cWidgetTree* apTree, iCanvas* c, iFont* apFont, cW
   iOverlay* icon = apNode->GetIcon();
   if (icon) {
     const sVec2f iconSize = icon->GetSize();
-    c->BlitOverlay(
-        sRectf(r.Left(),r.Top()+(r.GetHeight()-iconSize.y)/2,iconSize.x,iconSize.x),
-        icon);
+    c->BlitOverlay(sRectf(r.Left(), r.Top() + (r.GetHeight() - iconSize.y) / 2,
+                          iconSize.x, iconSize.x),
+                   icon);
     r.Left() += iconSize.x;
   }
-  if (niFlagIsNot(nodeFlags,eWidgetTreeNodeFlags_DontDrawName)) {
+  if (niFlagIsNot(nodeFlags, eWidgetTreeNodeFlags_DontDrawName)) {
     tU32 colFront = _GetTextFrontColor(apTree, apNode);
     apNode->_GetFont()->SetColor(colFront);
     r.Top() += 1;
-    c->BlitText(
-        apNode->_GetFont(),
-        r,
-        eFontFormatFlags_CenterV,
-        apNode->GetName());
+    c->BlitText(apNode->_GetFont(), r, eFontFormatFlags_CenterV,
+                apNode->GetName());
   }
 }
 
 ///////////////////////////////////////////////
-static inline void _PushRect(iCanvas* c, tU32 anCol, const sRectf& aRect) {
-  c->BlitRect(aRect,anCol);
+static inline void _PushRect(iCanvas* c, tU32 anCol, const sRectf& aRect)
+{
+  c->BlitRect(aRect, anCol);
 }
 
 ///////////////////////////////////////////////
-static inline void _PushLines(iFont* apFont, iCanvas* c, cWidgetTreeNode* apNode, tF32 afX, tF32& afY, tU32 anCol, const sVec2f& avOffset)
+static inline void _PushLines(iFont* apFont, iCanvas* c,
+                              cWidgetTreeNode* apNode, tF32 afX, tF32& afY,
+                              tU32 anCol, const sVec2f& avOffset)
 {
   sRectf nodeRect = apNode->GetScrolledNodeRect();
   tF32 fH = nodeRect.GetHeight();
   afY += fH;
-  if (apNode->GetExpanded() && apNode->GetNumChildNodes())
-  {
-    for (tU32 i = 0; i < apNode->GetNumChildNodes(); ++i)
-    {
+  if (apNode->GetExpanded() && apNode->GetNumChildNodes()) {
+    for (tU32 i = 0; i < apNode->GetNumChildNodes(); ++i) {
       tF32 fPrevY = afY;
-      _PushLines(apFont,c,(cWidgetTreeNode*)apNode->GetChildNode(i),afX+16,afY,anCol,avOffset);
-      if (i+1 == apNode->GetNumChildNodes())
-        c->BlitLine(avOffset+Vec2<tF32>(afX+6,fPrevY),
-                    avOffset+Vec2<tF32>(afX+6,fPrevY+(fH/2)+1),anCol);
+      _PushLines(apFont, c, (cWidgetTreeNode*)apNode->GetChildNode(i), afX + 16,
+                 afY, anCol, avOffset);
+      if (i + 1 == apNode->GetNumChildNodes())
+        c->BlitLine(avOffset + Vec2<tF32>(afX + 6, fPrevY),
+                    avOffset + Vec2<tF32>(afX + 6, fPrevY + (fH / 2) + 1),
+                    anCol);
       else
-        c->BlitLine(avOffset+Vec2<tF32>(afX+6,fPrevY),
-                    avOffset+Vec2<tF32>(afX+6,afY),anCol);
-      c->BlitLine(avOffset+Vec2<tF32>(afX+6,fPrevY+(fH/2)+1),
-                  avOffset+Vec2<tF32>(afX+14,fPrevY+(fH/2)+1),anCol);
+        c->BlitLine(avOffset + Vec2<tF32>(afX + 6, fPrevY),
+                    avOffset + Vec2<tF32>(afX + 6, afY), anCol);
+      c->BlitLine(avOffset + Vec2<tF32>(afX + 6, fPrevY + (fH / 2) + 1),
+                  avOffset + Vec2<tF32>(afX + 14, fPrevY + (fH / 2) + 1),
+                  anCol);
     }
   }
 }
@@ -957,49 +1076,52 @@ static inline tU32 _CheckAttrCollision(cWidgetTreeNode* apNode,
   // tF32 fH = nodeRect.GetHeight();
   // const tU32 attrs = apNode->mnAttributes;
   const tU32 attrsMask = apNode->mnVisibleAttributesMask;
-  niLoop(i,anNumAttrs) {
-    if (!(attrsMask&niBit(i)))
+  niLoop (i, anNumAttrs) {
+    if (!(attrsMask & niBit(i)))
       continue; // attribute not visible, skip
-    const sRectf attrRect = apNode->_GetAttributeRect(avAttrSize,anNumAttrs-i-1,afRight);
+    const sRectf attrRect =
+      apNode->_GetAttributeRect(avAttrSize, anNumAttrs - i - 1, afRight);
     if (attrRect.Intersect(avMousePos))
       return i;
   }
   return eInvalidHandle;
 }
 
-static inline void _PushAttrRect(
-    iCanvas* c, cWidgetTreeNode* apNode,
-    const tU32 anAttrIndex, const tU32 anNumAttrs,
-    const sVec2f& avAttrSize, const tF32 afRight,
-    const sVec2f& avMousePos)
+static inline void _PushAttrRect(iCanvas* c, cWidgetTreeNode* apNode,
+                                 const tU32 anAttrIndex, const tU32 anNumAttrs,
+                                 const sVec2f& avAttrSize, const tF32 afRight,
+                                 const sVec2f& avMousePos)
 {
   const tU32 attrs = apNode->mnAttributes;
   const tU32 attrsMask = apNode->mnVisibleAttributesMask;
   const tU32 attrFlag = niBit(anAttrIndex);
-  if (!(attrsMask&attrFlag))
+  if (!(attrsMask & attrFlag))
     return; // attribute not visible, skip
-  sRectf attrRect = apNode->_GetAttributeRect(avAttrSize,anNumAttrs-anAttrIndex-1,afRight);
+  sRectf attrRect = apNode->_GetAttributeRect(
+    avAttrSize, anNumAttrs - anAttrIndex - 1, afRight);
   const tU32 color = attrRect.Intersect(avMousePos) ? 0xFFFFFF00 : ~0;
-  c->BlitRect(attrRect,color);
-  if (attrs&attrFlag) {
-    attrRect.Move(Vec2<tF32>(3,3));
-    attrRect.Inflate(Vec2<tF32>(-6,-6));
-    c->BlitFill(attrRect,color);
+  c->BlitRect(attrRect, color);
+  if (attrs & attrFlag) {
+    attrRect.Move(Vec2<tF32>(3, 3));
+    attrRect.Inflate(Vec2<tF32>(-6, -6));
+    c->BlitFill(attrRect, color);
   }
 }
 
-static inline void _PushAttrRectBg(
-    iCanvas* c, cWidgetTree* t, cWidgetTreeNode* apNode,
-    const tU32 anAttrIndex, const tU32 anNumAttrs,
-    const sVec2f& avAttrSize, const tF32 afRight,
-    const sVec2f& avMousePos)
+static inline void _PushAttrRectBg(iCanvas* c, cWidgetTree* t,
+                                   cWidgetTreeNode* apNode,
+                                   const tU32 anAttrIndex,
+                                   const tU32 anNumAttrs,
+                                   const sVec2f& avAttrSize, const tF32 afRight,
+                                   const sVec2f& avMousePos)
 {
   // const tU32 attrs = apNode->mnAttributes;
   const tU32 attrsMask = apNode->mnVisibleAttributesMask;
   const tU32 attrFlag = niBit(anAttrIndex);
-  if (!(attrsMask&attrFlag))
+  if (!(attrsMask & attrFlag))
     return; // attribute not visible, skip
-  sRectf attrRect = apNode->_GetAttributeRectBg(avAttrSize,anNumAttrs-anAttrIndex-1,afRight);
+  sRectf attrRect = apNode->_GetAttributeRectBg(
+    avAttrSize, anNumAttrs - anAttrIndex - 1, afRight);
   tU32 color = ~0;
   if (apNode->GetTreeIndex() == (tU32)t->mnHoverTreeNodeIndex) {
     color = t->skin.colRowHover;
@@ -1008,37 +1130,36 @@ static inline void _PushAttrRectBg(
     color = apNode->mnRowColor;
   }
   else {
-    color = (apNode->_GetDrawIndex()&1)?t->skin.colSec:t->skin.colFirst;
+    color = (apNode->_GetDrawIndex() & 1) ? t->skin.colSec : t->skin.colFirst;
   }
-  c->BlitFill(attrRect,color);
+  c->BlitFill(attrRect, color);
 }
 
-static inline void _PushAttrIcon(
-    iCanvas* c, cWidgetTreeNode* apNode,
-    const tU32 anAttrIndex, const tU32 anNumAttrs,
-    iOverlay* apIcon,
-    const sVec2f& avAttrSize, const tF32 afRight,
-    const sVec2f& avMousePos)
+static inline void _PushAttrIcon(iCanvas* c, cWidgetTreeNode* apNode,
+                                 const tU32 anAttrIndex, const tU32 anNumAttrs,
+                                 iOverlay* apIcon, const sVec2f& avAttrSize,
+                                 const tF32 afRight, const sVec2f& avMousePos)
 {
   const tU32 attrs = apNode->mnAttributes;
   const tU32 attrsMask = apNode->mnVisibleAttributesMask;
   const tU32 attrFlag = niBit(anAttrIndex);
-  if (!(attrsMask&attrFlag))
+  if (!(attrsMask & attrFlag))
     return; // attribute not visible, skip
-  sRectf attrRect = apNode->_GetAttributeRect(avAttrSize,anNumAttrs-anAttrIndex-1,afRight);
+  sRectf attrRect = apNode->_GetAttributeRect(
+    avAttrSize, anNumAttrs - anAttrIndex - 1, afRight);
   const tBool mouseOver = attrRect.Intersect(avMousePos);
   if (mouseOver) {
-    attrRect.Move(Vec2<tF32>(1,1));
-    attrRect.Inflate(Vec2<tF32>(-2,-2));
+    attrRect.Move(Vec2<tF32>(1, 1));
+    attrRect.Inflate(Vec2<tF32>(-2, -2));
   }
   // const sColor4f color = (attrs&attrFlag) ?
   //     Vec4<tF32>(1.0f,1.0f,1.0f,1.0f) :
   //     Vec4<tF32>(0.5f,0.5f,0.5f,1.0f);
   sColor4f color = apIcon->GetColor();
-  color.w = (attrs&attrFlag) ? 1.0f : 0.35f;
+  color.w = (attrs & attrFlag) ? 1.0f : 0.35f;
   apIcon->SetColor(color);
   apIcon->SetFiltering(eTrue);
-  c->BlitOverlay(attrRect,apIcon);
+  c->BlitOverlay(attrRect, apIcon);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1051,7 +1172,9 @@ cWidgetTree::cWidgetTree(iWidget* apWidget)
 
   ZeroMembers();
   mpWidget = apWidget;
-  mptrRootNode = niNew cWidgetTreeNode(0,this,NULL,eWidgetTreeNodeFlags_Default|eWidgetTreeNodeFlags_Expanded);
+  mptrRootNode = niNew cWidgetTreeNode(0, this, NULL,
+                                       eWidgetTreeNodeFlags_Default |
+                                         eWidgetTreeNodeFlags_Expanded);
   mptrRootNode->SetName(_A("Root"));
   _CreateWidgetScrollBars();
 }
@@ -1067,13 +1190,15 @@ cWidgetTree::~cWidgetTree()
 }
 
 ///////////////////////////////////////////////
-void cWidgetTree::_CreateWidgetScrollBars() {
-  if (niFlagIsNot(mpWidget->GetStyle(),eWidgetTreeStyle_NoHScroll)) {
+void cWidgetTree::_CreateWidgetScrollBars()
+{
+  if (niFlagIsNot(mpWidget->GetStyle(), eWidgetTreeStyle_NoHScroll)) {
     if (!mptrHScroll.IsOK()) {
-      mptrHScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),
-                                                         eWidgetStyle_NCRelative|eWidgetScrollBarStyle_Horz);
+      mptrHScroll = mpWidget->GetUIContext()->CreateWidget(
+        _A("ScrollBar"), mpWidget, sRectf(),
+        eWidgetStyle_NCRelative | eWidgetScrollBarStyle_Horz);
     }
-    if (niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysHScroll)) {
+    if (niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysHScroll)) {
       mptrHScroll->SetEnabled(eFalse);
       mptrHScroll->SetVisible(eTrue);
     }
@@ -1082,12 +1207,12 @@ void cWidgetTree::_CreateWidgetScrollBars() {
     mptrHScroll->Destroy();
     mptrHScroll = NULL;
   }
-  if (niFlagIsNot(mpWidget->GetStyle(),eWidgetTreeStyle_NoVScroll)) {
+  if (niFlagIsNot(mpWidget->GetStyle(), eWidgetTreeStyle_NoVScroll)) {
     if (!mptrVScroll.IsOK()) {
-      mptrVScroll = mpWidget->GetUIContext()->CreateWidget(_A("ScrollBar"),mpWidget,sRectf(),
-                                                         eWidgetStyle_NCRelative);
+      mptrVScroll = mpWidget->GetUIContext()->CreateWidget(
+        _A("ScrollBar"), mpWidget, sRectf(), eWidgetStyle_NCRelative);
     }
-    if (niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysVScroll)) {
+    if (niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysVScroll)) {
       mptrVScroll->SetEnabled(eFalse);
       mptrVScroll->SetVisible(eTrue);
     }
@@ -1122,7 +1247,7 @@ ni::tBool __stdcall cWidgetTree::IsOK() const
 }
 
 ///////////////////////////////////////////////
-ni::iWidgetTreeNode * cWidgetTree::GetRootNode() const
+ni::iWidgetTreeNode* cWidgetTree::GetRootNode() const
 {
   return mptrRootNode;
 }
@@ -1134,379 +1259,387 @@ tU32 cWidgetTree::GetNumSelectedNodes() const
 }
 
 ///////////////////////////////////////////////
-ni::iWidgetTreeNode * cWidgetTree::GetSelectedNode(tU32 anIndex) const
+ni::iWidgetTreeNode* cWidgetTree::GetSelectedNode(tU32 anIndex) const
 {
-  if (anIndex >= mvSelected.size()) return NULL;
+  if (anIndex >= mvSelected.size())
+    return NULL;
   return mvSelected[anIndex];
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const Var& avarA, const Var& avarB)
+tBool __stdcall cWidgetTree::OnWidgetSink(iWidget* apWidget, tU32 anMsg,
+                                          const Var& avarA, const Var& avarB)
 {
   if (!mpWidget)
     return eFalse;
   niGuardObject((iWidgetSink*)this);
-  switch (anMsg)
-  {
-    case eUIMessage_Destroy:
-      mpWidget = NULL;
-      // Clear won't create a new root since mpWidget is NULL
-      Clear();
-      break;
-    case eUIMessage_NCSize:
+  switch (anMsg) {
+  case eUIMessage_Destroy:
+    mpWidget = NULL;
+    // Clear won't create a new root since mpWidget is NULL
+    Clear();
+    break;
+  case eUIMessage_NCSize:
+    _NotifyUpdateLayout(TREENOTIFY_ALL);
+    _UpdateLayout();
+    break;
+  case eUIMessage_FontChanged:
+  case eUIMessage_SkinChanged: _UpdateSkin(); return eFalse;
+  case eUIMessage_StyleChanged: {
+    const tU32 prevStyle = avarA.mU32;
+    const tU32 newStyle = mpWidget->GetStyle();
+    if (!niFlagEq(prevStyle, newStyle, eWidgetTreeStyle_NoHScroll) ||
+        !niFlagEq(prevStyle, newStyle, eWidgetTreeStyle_NoVScroll) ||
+        !niFlagEq(prevStyle, newStyle, eWidgetTreeStyle_AlwaysHScroll) ||
+        !niFlagEq(prevStyle, newStyle, eWidgetTreeStyle_AlwaysVScroll))
+    {
+      _CreateWidgetScrollBars();
       _NotifyUpdateLayout(TREENOTIFY_ALL);
-      _UpdateLayout();
-      break;
-    case eUIMessage_FontChanged:
-    case eUIMessage_SkinChanged:
-      _UpdateSkin();
+    }
+    if (!niFlagEq(prevStyle, newStyle, eWidgetTreeStyle_DontDrawRoot)) {
+      _UpdateScrollOffset();
+    }
+    break;
+  }
+  case eUIMessage_Paint: {
+    iCanvas* c = VarQueryInterface<iCanvas>(avarB);
+    if (c) {
+      _Paint(avarA.GetVec2f(), c);
+    }
+    break;
+  }
+
+  case eUIMessage_KeyDown: {
+    niLet inputModifiers = apWidget->GetUIContext()->GetInputModifiers();
+    niLet canSelectAboveNode = [&](iWidgetTreeNode* apAbove) {
+      return apAbove && (niFlagIsNot(mpWidget->GetStyle(),
+                                     eWidgetTreeStyle_DontDrawRoot) ||
+                         apAbove != mptrRootNode);
+    };
+
+    niLet doMoveAbove = [&](iWidgetTreeNode* pNode) {
+      if (canSelectAboveNode(pNode->GetAbove())) {
+        return _DoSelect(pNode->GetAbove(), inputModifiers, eTrue);
+      }
       return eFalse;
-    case eUIMessage_StyleChanged: {
-      const tU32 prevStyle = avarA.mU32;
-      const tU32 newStyle = mpWidget->GetStyle();
-      if (!niFlagEq(prevStyle,newStyle,eWidgetTreeStyle_NoHScroll) ||
-          !niFlagEq(prevStyle,newStyle,eWidgetTreeStyle_NoVScroll) ||
-          !niFlagEq(prevStyle,newStyle,eWidgetTreeStyle_AlwaysHScroll) ||
-          !niFlagEq(prevStyle,newStyle,eWidgetTreeStyle_AlwaysVScroll))
-      {
-        _CreateWidgetScrollBars();
-        _NotifyUpdateLayout(TREENOTIFY_ALL);
+    };
+    niLet doMoveBelow = [&](iWidgetTreeNode* pNode) {
+      return _DoSelect(pNode->GetBelow(), inputModifiers, eTrue);
+    };
+
+    niLet doMoveHome = [&]() {
+      return _DoSelect(_GetHomeNode(), inputModifiers, eTrue);
+    };
+    niLet doMoveEnd = [&]() {
+      return _DoSelect(_GetEndNode(), inputModifiers, eTrue);
+    };
+
+    niLet doMovePgup = [&](ain_nn<iWidgetTreeNode> aNode) {
+      niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
+      if (!pageSize) {
+        return doMoveAbove(aNode);
       }
-      if (!niFlagEq(prevStyle,newStyle,eWidgetTreeStyle_DontDrawRoot)) {
-        _UpdateScrollOffset();
-      }
-      break;
-    }
-    case eUIMessage_Paint: {
-      iCanvas* c = VarQueryInterface<iCanvas>(avarB);
-      if (c) {
-        _Paint(avarA.GetVec2f(),c);
-      }
-      break;
-    }
-
-    case eUIMessage_KeyDown: {
-      niLet inputModifiers = apWidget->GetUIContext()->GetInputModifiers();
-      niLet canSelectAboveNode = [&](iWidgetTreeNode* apAbove) {
-        return apAbove &&
-            (niFlagIsNot(mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot) ||
-             apAbove != mptrRootNode);
-      };
-
-      niLet doMoveAbove = [&](iWidgetTreeNode* pNode) {
-        if (canSelectAboveNode(pNode->GetAbove())) {
-          return _DoSelect(pNode->GetAbove(),inputModifiers,eTrue);
-        }
-        return eFalse;
-      };
-      niLet doMoveBelow = [&](iWidgetTreeNode* pNode) {
-        return _DoSelect(pNode->GetBelow(),inputModifiers,eTrue);
-      };
-
-      niLet doMoveHome = [&]() {
-        return _DoSelect(_GetHomeNode(),inputModifiers,eTrue);
-      };
-      niLet doMoveEnd = [&]() {
-        return _DoSelect(_GetEndNode(),inputModifiers,eTrue);
-      };
-
-      niLet doMovePgup = [&](ain_nn<iWidgetTreeNode> aNode) {
-        niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
-        if (!pageSize) {
-          return doMoveAbove(aNode);
-        }
-        niVar aboveNode = aNode;
-        niLoop(i,pageSize) {
-          iWidgetTreeNode* maybe = aboveNode->GetAbove();
-          if (maybe && canSelectAboveNode(maybe)) {
-            aboveNode = as_nn(maybe);
-          }
-          else {
-            break;
-          }
-        }
-        if (aNode == aboveNode)
-          return eFalse;
-        return _DoSelect(aboveNode,inputModifiers,eTrue);
-      };
-      niLet doMovePgdn = [&](ain_nn<iWidgetTreeNode> aNode) {
-        niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
-        if (!pageSize) {
-          return doMoveBelow(aNode);
-        }
-        niVar belowNode = aNode;
-        niLoop(i,pageSize) {
-          iWidgetTreeNode* maybe = belowNode->GetBelow();
-          if (maybe) {
-            belowNode = as_nn(maybe);
-          }
-          else {
-            break;
-          }
-        }
-        if (aNode == belowNode)
-          return eFalse;
-        return _DoSelect(belowNode,inputModifiers,eTrue);
-      };
-
-      niLet doMovePrevSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
-        niLet prevSibling = aNode->GetPrevSibling();
-        if (canSelectAboveNode(prevSibling)) {
-          return _DoSelect(prevSibling,aInputModifiers,eTrue);
-        }
-        return eFalse;
-      };
-      niLet doMoveNextSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
-        return _DoSelect(aNode->GetNextSibling(),aInputModifiers,eTrue);
-      };
-      niLet doMoveFirstSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
-        niLet parentNode = aNode->GetParentNode();
-        if (parentNode) {
-          return _DoSelect(parentNode->GetChildNode(0),aInputModifiers,eTrue);
-        }
-        return eFalse;
-      };
-      niLet doMoveLastSibling = [&](ain_nn<iWidgetTreeNode> aNode, tU32 aInputModifiers) {
-        niLet parentNode = aNode->GetParentNode();
-        if (parentNode) {
-          return _DoSelect(parentNode->GetChildNode(parentNode->GetNumChildNodes()-1),aInputModifiers,eTrue);
-        }
-        return eFalse;
-      };
-
-      const tU32 key = avarA.mU32;
-      switch (key) {
-        case eKey_Left: {
-          if (!mvSelected.empty()) {
-            // gather what to process first since the vector might change
-            // and become invalid while updating the nodes
-            astl::deque<Ptr<iWidgetTreeNode>> toProcess;
-            for_each(mvSelected,niFun1(&) {
-                iWidgetTreeNode* pNode = _0;
-                if (pNode->GetExpanded()) {
-                  toProcess.push_back(pNode);
-                }
-              });
-            if (!toProcess.empty()) {
-              for_each(toProcess,niExpr1(_0->SetExpanded(eFalse)));
-            }
-            else {
-              // If we didnt collapsed any node we go to the parent
-              iWidgetTreeNode* pNode = mvSelected.back();
-              iWidgetTreeNode* pParent = pNode->GetParentNode();
-              if (pParent) {
-                _DoSelect(pParent,inputModifiers,eTrue);
-              }
-              else {
-                doMoveAbove(pNode);
-              }
-            }
-          }
-          else {
-            doMoveEnd();
-          }
-          break;
-        }
-        case eKey_Right: {
-          if (!mvSelected.empty()) {
-            // gather what to process first since the vector might change
-            // and become invalid while updating the nodes
-            astl::deque<Ptr<iWidgetTreeNode>> toProcess;
-            for_each(mvSelected,niFun1(&) {
-                iWidgetTreeNode* pNode = _0;
-                if (!pNode->GetExpanded() && pNode->GetNumChildNodes()) {
-                  toProcess.push_back(pNode);
-                }
-              });
-            if (!toProcess.empty()) {
-              for_each(toProcess,niExpr1(_0->SetExpanded(eTrue)));
-            }
-            else {
-              // If we didnt expand anything we go to the node below
-              iWidgetTreeNode* pNode = mvSelected.back();
-              doMoveBelow(pNode);
-            }
-          }
-          else {
-            _DoSelect(_GetHomeNode(),inputModifiers,eTrue);
-          }
-          break;
-        }
-
-        case eKey_Up: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
-              doMovePrevSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
-            }
-            else {
-              doMoveAbove(pNode);
-            }
-          }
-          else {
-            doMoveEnd();
-          }
-          break;
-        }
-        case eKey_Down: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
-              doMoveNextSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
-            }
-            else {
-              doMoveBelow(pNode);
-            }
-          }
-          else {
-            doMoveHome();
-          }
-          break;
-        }
-
-        case eKey_Home: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
-              doMoveFirstSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
-              break;
-            }
-          }
-          doMoveHome();
-          break;
-        }
-        case eKey_End: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            if (niFlagIs(inputModifiers,eUIInputModifier_Control)) {
-              doMoveLastSibling(pNode,inputModifiers&(~eUIInputModifier_Control));
-              break;
-            }
-          }
-          doMoveEnd();
-          break;
-        }
-
-        case eKey_PgUp: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            doMovePgup(pNode);
-          }
-          else {
-            doMoveEnd();
-          }
-          break;
-        }
-        case eKey_PgDn: {
-          if (!mvSelected.empty()) {
-            niLet pNode = as_nn(mvSelected.back());
-            doMovePgdn(pNode);
-          }
-          else {
-            doMoveHome();
-          }
-          break;
-        }
-
-        case eKey_Enter:
-        case eKey_NumPadEnter:
-        case eKey_Space: {
-          if (!mvSelected.empty()) {
-            iWidgetTreeNode* pNode = mvSelected.back();
-            pNode->SetExpanded(pNode->GetExpanded()?eFalse:eTrue);
-          }
-          break;
-        }
-      }
-      break;
-    }
-
-    case eUIMessage_RightClickDown:
-      SetSecondarySelection(NULL);
-      _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F),
-                    eFalse, apWidget->GetUIContext()->GetInputModifiers());
-      break;
-    case eUIMessage_LeftClickDown:
-      apWidget->SetCapture(eTrue);
-      SetSecondarySelection(NULL);
-      _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F),
-                    eFalse, apWidget->GetUIContext()->GetInputModifiers());
-      break;
-    case eUIMessage_LeftClickUp:
-      if (mpSecondarySel && (mpSecondarySel->GetTreeIndex() == (tU32)mnHoverTreeNodeIndex)) {
-        _DoSelect(mpSecondarySel,apWidget->GetUIContext()->GetInputModifiers(),eTrue);
-      }
-      niFallthrough;
-    case eUIMessage_NCLeftClickUp:
-      SetSecondarySelection(NULL);
-      apWidget->SetCapture(eFalse);
-      break;
-    case eUIMessage_LeftDoubleClick:
-      _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F),eTrue,apWidget->GetUIContext()->GetInputModifiers());
-      break;
-    case eUIMessage_MouseLeave: {
-      mnHoverTreeNodeIndex = eInvalidHandle;
-      break;
-    }
-    case eUIMessage_MouseMove: {
-      iWidgetTreeNode* n = _FindNodeByPos(*((sVec2f*)avarA.mV2F));
-      if (n) {
-        mnHoverTreeNodeIndex = n->GetTreeIndex();
-      }
-      else {
-        mnHoverTreeNodeIndex = eInvalidHandle;
-      }
-      break;
-    }
-    case eUIMessage_Timer: {
-      break;
-    }
-    case eUIMessage_Command:
-      {
-        Ptr<iWidgetCommand> cmd = ni::VarQueryInterface<iWidgetCommand>(avarA);
-        if (cmd->GetSender() == mptrHScroll || cmd->GetSender() == mptrVScroll) {
-          _UpdateScrollOffset();
-          _NotifyUpdateLayout(TREENOTIFY_CULLING);
+      niVar aboveNode = aNode;
+      niLoop (i, pageSize) {
+        iWidgetTreeNode* maybe = aboveNode->GetAbove();
+        if (maybe && canSelectAboveNode(maybe)) {
+          aboveNode = as_nn(maybe);
         }
         else {
-          if (mpWidget->GetParent()) {
-            mpWidget->GetParent()->SendMessage(anMsg,avarA,avarB);
-          }
+          break;
         }
-        break;
       }
-    case eUIMessage_DragMouseEnter:
-      mbDragging = eTrue;
-      break;
-    case eUIMessage_DragMouseLeave:
-      mbDragging = eFalse;
-      mptrHighlightedNode = NULL;
-      break;
-    case eUIMessage_DragMouseMove:
-      if (mbDragging) {
-        sVec2f mousePos = avarA.GetVec2f();
-        mptrHighlightedNode = _FindNodeByPos(mousePos);
+      if (aNode == aboveNode)
+        return eFalse;
+      return _DoSelect(aboveNode, inputModifiers, eTrue);
+    };
+    niLet doMovePgdn = [&](ain_nn<iWidgetTreeNode> aNode) {
+      niLet pageSize = ComputePageSize(mlstVisibleNodes.size());
+      if (!pageSize) {
+        return doMoveBelow(aNode);
       }
-      break;
-    case eUIMessage_Copy:
-      {
-        Ptr<iDataTable> dt = ni::VarQueryInterface<ni::iDataTable>(avarA);
-        if (dt.IsOK()) {
-          cString selName;
-          iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected[0];
-          if (node) {
-            selName = node->GetName();
-          }
-          dt->SetString(_A("text"),selName.Chars());
+      niVar belowNode = aNode;
+      niLoop (i, pageSize) {
+        iWidgetTreeNode* maybe = belowNode->GetBelow();
+        if (maybe) {
+          belowNode = as_nn(maybe);
         }
-        break;
+        else {
+          break;
+        }
       }
-    case eUIMessage_Cut:
-      break;
-    case eUIMessage_Paste:
-      break;
-    default:
+      if (aNode == belowNode)
+        return eFalse;
+      return _DoSelect(belowNode, inputModifiers, eTrue);
+    };
+
+    niLet doMovePrevSibling = [&](ain_nn<iWidgetTreeNode> aNode,
+                                  tU32 aInputModifiers) {
+      niLet prevSibling = aNode->GetPrevSibling();
+      if (canSelectAboveNode(prevSibling)) {
+        return _DoSelect(prevSibling, aInputModifiers, eTrue);
+      }
       return eFalse;
+    };
+    niLet doMoveNextSibling = [&](ain_nn<iWidgetTreeNode> aNode,
+                                  tU32 aInputModifiers) {
+      return _DoSelect(aNode->GetNextSibling(), aInputModifiers, eTrue);
+    };
+    niLet doMoveFirstSibling = [&](ain_nn<iWidgetTreeNode> aNode,
+                                   tU32 aInputModifiers) {
+      niLet parentNode = aNode->GetParentNode();
+      if (parentNode) {
+        return _DoSelect(parentNode->GetChildNode(0), aInputModifiers, eTrue);
+      }
+      return eFalse;
+    };
+    niLet doMoveLastSibling = [&](ain_nn<iWidgetTreeNode> aNode,
+                                  tU32 aInputModifiers) {
+      niLet parentNode = aNode->GetParentNode();
+      if (parentNode) {
+        return _DoSelect(
+          parentNode->GetChildNode(parentNode->GetNumChildNodes() - 1),
+          aInputModifiers, eTrue);
+      }
+      return eFalse;
+    };
+
+    const tU32 key = avarA.mU32;
+    switch (key) {
+    case eKey_Left: {
+      if (!mvSelected.empty()) {
+        // gather what to process first since the vector might change
+        // and become invalid while updating the nodes
+        astl::deque<Ptr<iWidgetTreeNode>> toProcess;
+        for_each(
+          mvSelected, niFun1(&) {
+            iWidgetTreeNode* pNode = _0;
+            if (pNode->GetExpanded()) {
+              toProcess.push_back(pNode);
+            }
+          });
+        if (!toProcess.empty()) {
+          for_each(toProcess, niExpr1(_0->SetExpanded(eFalse)));
+        }
+        else {
+          // If we didnt collapsed any node we go to the parent
+          iWidgetTreeNode* pNode = mvSelected.back();
+          iWidgetTreeNode* pParent = pNode->GetParentNode();
+          if (pParent) {
+            _DoSelect(pParent, inputModifiers, eTrue);
+          }
+          else {
+            doMoveAbove(pNode);
+          }
+        }
+      }
+      else {
+        doMoveEnd();
+      }
+      break;
+    }
+    case eKey_Right: {
+      if (!mvSelected.empty()) {
+        // gather what to process first since the vector might change
+        // and become invalid while updating the nodes
+        astl::deque<Ptr<iWidgetTreeNode>> toProcess;
+        for_each(
+          mvSelected, niFun1(&) {
+            iWidgetTreeNode* pNode = _0;
+            if (!pNode->GetExpanded() && pNode->GetNumChildNodes()) {
+              toProcess.push_back(pNode);
+            }
+          });
+        if (!toProcess.empty()) {
+          for_each(toProcess, niExpr1(_0->SetExpanded(eTrue)));
+        }
+        else {
+          // If we didnt expand anything we go to the node below
+          iWidgetTreeNode* pNode = mvSelected.back();
+          doMoveBelow(pNode);
+        }
+      }
+      else {
+        _DoSelect(_GetHomeNode(), inputModifiers, eTrue);
+      }
+      break;
+    }
+
+    case eKey_Up: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        if (niFlagIs(inputModifiers, eUIInputModifier_Control)) {
+          doMovePrevSibling(pNode,
+                            inputModifiers & (~eUIInputModifier_Control));
+        }
+        else {
+          doMoveAbove(pNode);
+        }
+      }
+      else {
+        doMoveEnd();
+      }
+      break;
+    }
+    case eKey_Down: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        if (niFlagIs(inputModifiers, eUIInputModifier_Control)) {
+          doMoveNextSibling(pNode,
+                            inputModifiers & (~eUIInputModifier_Control));
+        }
+        else {
+          doMoveBelow(pNode);
+        }
+      }
+      else {
+        doMoveHome();
+      }
+      break;
+    }
+
+    case eKey_Home: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        if (niFlagIs(inputModifiers, eUIInputModifier_Control)) {
+          doMoveFirstSibling(pNode,
+                             inputModifiers & (~eUIInputModifier_Control));
+          break;
+        }
+      }
+      doMoveHome();
+      break;
+    }
+    case eKey_End: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        if (niFlagIs(inputModifiers, eUIInputModifier_Control)) {
+          doMoveLastSibling(pNode,
+                            inputModifiers & (~eUIInputModifier_Control));
+          break;
+        }
+      }
+      doMoveEnd();
+      break;
+    }
+
+    case eKey_PgUp: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        doMovePgup(pNode);
+      }
+      else {
+        doMoveEnd();
+      }
+      break;
+    }
+    case eKey_PgDn: {
+      if (!mvSelected.empty()) {
+        niLet pNode = as_nn(mvSelected.back());
+        doMovePgdn(pNode);
+      }
+      else {
+        doMoveHome();
+      }
+      break;
+    }
+
+    case eKey_Enter:
+    case eKey_NumPadEnter:
+    case eKey_Space: {
+      if (!mvSelected.empty()) {
+        iWidgetTreeNode* pNode = mvSelected.back();
+        pNode->SetExpanded(pNode->GetExpanded() ? eFalse : eTrue);
+      }
+      break;
+    }
+    }
+    break;
+  }
+
+  case eUIMessage_RightClickDown:
+    SetSecondarySelection(NULL);
+    _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F), eFalse,
+                  apWidget->GetUIContext()->GetInputModifiers());
+    break;
+  case eUIMessage_LeftClickDown:
+    apWidget->SetCapture(eTrue);
+    SetSecondarySelection(NULL);
+    _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F), eFalse,
+                  apWidget->GetUIContext()->GetInputModifiers());
+    break;
+  case eUIMessage_LeftClickUp:
+    if (mpSecondarySel &&
+        (mpSecondarySel->GetTreeIndex() == (tU32)mnHoverTreeNodeIndex))
+    {
+      _DoSelect(mpSecondarySel, apWidget->GetUIContext()->GetInputModifiers(),
+                eTrue);
+    }
+    niFallthrough;
+  case eUIMessage_NCLeftClickUp:
+    SetSecondarySelection(NULL);
+    apWidget->SetCapture(eFalse);
+    break;
+  case eUIMessage_LeftDoubleClick:
+    _ProcessClick(anMsg, *((sVec2f*)avarA.mV2F), eTrue,
+                  apWidget->GetUIContext()->GetInputModifiers());
+    break;
+  case eUIMessage_MouseLeave: {
+    mnHoverTreeNodeIndex = eInvalidHandle;
+    break;
+  }
+  case eUIMessage_MouseMove: {
+    iWidgetTreeNode* n = _FindNodeByPos(*((sVec2f*)avarA.mV2F));
+    if (n) {
+      mnHoverTreeNodeIndex = n->GetTreeIndex();
+    }
+    else {
+      mnHoverTreeNodeIndex = eInvalidHandle;
+    }
+    break;
+  }
+  case eUIMessage_Timer: {
+    break;
+  }
+  case eUIMessage_Command: {
+    Ptr<iWidgetCommand> cmd = ni::VarQueryInterface<iWidgetCommand>(avarA);
+    if (cmd->GetSender() == mptrHScroll || cmd->GetSender() == mptrVScroll) {
+      _UpdateScrollOffset();
+      _NotifyUpdateLayout(TREENOTIFY_CULLING);
+    }
+    else {
+      if (mpWidget->GetParent()) {
+        mpWidget->GetParent()->SendMessage(anMsg, avarA, avarB);
+      }
+    }
+    break;
+  }
+  case eUIMessage_DragMouseEnter: mbDragging = eTrue; break;
+  case eUIMessage_DragMouseLeave:
+    mbDragging = eFalse;
+    mptrHighlightedNode = NULL;
+    break;
+  case eUIMessage_DragMouseMove:
+    if (mbDragging) {
+      sVec2f mousePos = avarA.GetVec2f();
+      mptrHighlightedNode = _FindNodeByPos(mousePos);
+    }
+    break;
+  case eUIMessage_Copy: {
+    Ptr<iDataTable> dt = ni::VarQueryInterface<ni::iDataTable>(avarA);
+    if (dt.IsOK()) {
+      cString selName;
+      iWidgetTreeNode* node = mpSecondarySel ? mpSecondarySel : mvSelected[0];
+      if (node) {
+        selName = node->GetName();
+      }
+      dt->SetString(_A("text"), selName.Chars());
+    }
+    break;
+  }
+  case eUIMessage_Cut: break;
+  case eUIMessage_Paste: break;
+  default: return eFalse;
   }
   return eTrue;
 }
@@ -1514,7 +1647,7 @@ tBool __stdcall cWidgetTree::OnWidgetSink(iWidget *apWidget, tU32 anMsg, const V
 ///////////////////////////////////////////////
 void cWidgetTree::_AddSelectedNode(cWidgetTreeNode* apNode)
 {
-  astl::push_back_once(mvSelected,apNode);
+  astl::push_back_once(mvSelected, apNode);
   if (mpWidget)
     mpWidget->Redraw();
 }
@@ -1522,7 +1655,7 @@ void cWidgetTree::_AddSelectedNode(cWidgetTreeNode* apNode)
 ///////////////////////////////////////////////
 void cWidgetTree::_RemoveSelectedNode(cWidgetTreeNode* apNode)
 {
-  astl::find_erase(mvSelected,apNode);
+  astl::find_erase(mvSelected, apNode);
   if (mpWidget)
     mpWidget->Redraw();
 }
@@ -1537,27 +1670,26 @@ void cWidgetTree::_Paint(const sVec2f& avMousePos, iCanvas* c)
   sVec2f clSize = mpWidget->GetClientSize();
 
   // Draw backgrounds
-  niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
+  niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
     cWidgetTreeNode* n = (*it);
     sRectf rect = n->GetScrolledNodeRect();
     rect.Left() = 0;
     rect.Right() = clSize.x;
     if (n->GetTreeIndex() == (tU32)mnHoverTreeNodeIndex) {
-      c->BlitFill(rect,skin.colRowHover);
+      c->BlitFill(rect, skin.colRowHover);
     }
     else if (n->mnRowColor) {
-      c->BlitFill(rect,n->mnRowColor);
+      c->BlitFill(rect, n->mnRowColor);
     }
     else {
-      c->BlitFill(rect,
-                  (n->GetSelected() || (n->_GetDrawIndex()&1)) ?
-                  skin.colSec :
-                  skin.colFirst);
+      c->BlitFill(rect, (n->GetSelected() || (n->_GetDrawIndex() & 1))
+                          ? skin.colSec
+                          : skin.colFirst);
     }
   }
 
   // Draw selections
-  niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
+  niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
     cWidgetTreeNode* n = (*it);
     if (n->GetSelected() || (n == mpSecondarySel)) {
       sRectf selRect = n->GetScrolledNodeRect();
@@ -1565,90 +1697,88 @@ void cWidgetTree::_Paint(const sVec2f& avMousePos, iCanvas* c)
       selRect.Right() = clSize.x;
       selRect.Bottom() += 1;
       if (n->GetSelected() || !(n == mpSecondarySel)) {
-        c->BlitFillAlpha(selRect,
-                         (this->mpSelectedLast == n) ?
-                         skin.colLastSelBack :
-                         skin.colSelBack);
+        c->BlitFillAlpha(selRect, (this->mpSelectedLast == n)
+                                    ? skin.colLastSelBack
+                                    : skin.colSelBack);
       }
-      c->BlitRect(selRect,skin.colSelBorder);
+      c->BlitRect(selRect, skin.colSelBorder);
     }
   }
 
+  { niLoopit (tTreeNodePLst::const_iterator, it,
+              mlstVisibleNodes){ sRectf rect = (*it)->GetScrolledNodeRect();
+  sRectf frameRect = rect;
+  frameRect.Left() = 0;
+  frameRect.Right() = clSize.x;
+  c->BlitOverlayFrame(frameRect, skin.nodeFrame, eRectFrameFlags_Edges);
+  if ((*it)->GetNumChildNodes() ||
+      niFlagIs((*it)->GetFlags(), eWidgetTreeNodeFlags_Expandable))
   {
-    niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
-      sRectf rect = (*it)->GetScrolledNodeRect();
-      sRectf frameRect = rect;
-      frameRect.Left() = 0;
-      frameRect.Right() = clSize.x;
-      c->BlitOverlayFrame(
-          frameRect,
-          skin.nodeFrame,
-          eRectFrameFlags_Edges);
-      if ((*it)->GetNumChildNodes() || niFlagIs((*it)->GetFlags(),eWidgetTreeNodeFlags_Expandable)) {
-        if ((*it)->GetExpanded()) {
-          sVec2f size = skin.expanded->GetSize();
-          c->BlitOverlay(
-              sRectf(rect.Left() - size.x, rect.Top() + (rect.GetHeight()/2-size.y/2),
-                          size.x,size.y),
-              skin.expanded);
-        }
-        else {
-          sVec2f size = skin.collapsed->GetSize();
-          c->BlitOverlay(
-              sRectf(rect.Left() - size.x, rect.Top() + (rect.GetHeight()/2-size.y/2),
-                          size.x,size.y),
-              skin.collapsed);
-        }
-      }
+    if ((*it)->GetExpanded()) {
+      sVec2f size = skin.expanded->GetSize();
+      c->BlitOverlay(sRectf(rect.Left() - size.x,
+                            rect.Top() + (rect.GetHeight() / 2 - size.y / 2),
+                            size.x, size.y),
+                     skin.expanded);
+    }
+    else {
+      sVec2f size = skin.collapsed->GetSize();
+      c->BlitOverlay(sRectf(rect.Left() - size.x,
+                            rect.Top() + (rect.GetHeight() / 2 - size.y / 2),
+                            size.x, size.y),
+                     skin.collapsed);
     }
   }
+}
+}
 
-  // Draw the text
-  {
-    niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
-      _PushChars(this,c,pFont,*it,_kfLeftMargin);
-    }
+// Draw the text
+{
+  niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
+    _PushChars(this, c, pFont, *it, _kfLeftMargin);
   }
+}
 
-  // Draw the attributes
-  niLoop(i,mnNumVisibleAttributes) {
-    // draw icons
-    if (mAttributes[i].icon.IsOK()) {
-      niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
-        _PushAttrIcon(c,*it,i,mnNumVisibleAttributes,
-                      mAttributes[i].icon,
-                      _kvAttrSize,clSize.x,avMousePos);
-      }
-    }
-    else
-    {
-      niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
-        _PushAttrRect(c,*it,i,mnNumVisibleAttributes,
-                      _kvAttrSize,clSize.x,avMousePos);
-      }
+// Draw the attributes
+niLoop (i, mnNumVisibleAttributes) {
+  // draw icons
+  if (mAttributes[i].icon.IsOK()) {
+    niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
+      _PushAttrIcon(c, *it, i, mnNumVisibleAttributes, mAttributes[i].icon,
+                    _kvAttrSize, clSize.x, avMousePos);
     }
   }
+  else {
+    niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
+      _PushAttrRect(c, *it, i, mnNumVisibleAttributes, _kvAttrSize, clSize.x,
+                    avMousePos);
+    }
+  }
+}
 
-  // Push the drag'n drop overlays
-  if (mptrHighlightedNode.IsOK()) {
-    sRectf parentRect = (mptrHighlightedNode->GetParentNode() ?
-                              mptrHighlightedNode->GetParentNode()->GetScrolledNodeRect() :
-                              sRectf::Null());
-    parentRect.Right() = mpWidget->GetClientSize().x;
-    sRectf rect = mptrHighlightedNode->GetScrolledNodeRect();
-    // rect.Left() = 0;
-    rect.Right() = mpWidget->GetClientSize().x;
-    // Draw line below
-    rect.Left() = parentRect.Left();
-    c->BlitFill(sRectf(rect.GetBottomLeft()+Vec2f(0,1),rect.GetBottomRight()+Vec2f(0,-1)),skin.colDropBorder);
-  }
+// Push the drag'n drop overlays
+if (mptrHighlightedNode.IsOK()) {
+  sRectf parentRect =
+    (mptrHighlightedNode->GetParentNode()
+       ? mptrHighlightedNode->GetParentNode()->GetScrolledNodeRect()
+       : sRectf::Null());
+  parentRect.Right() = mpWidget->GetClientSize().x;
+  sRectf rect = mptrHighlightedNode->GetScrolledNodeRect();
+  // rect.Left() = 0;
+  rect.Right() = mpWidget->GetClientSize().x;
+  // Draw line below
+  rect.Left() = parentRect.Left();
+  c->BlitFill(sRectf(rect.GetBottomLeft() + Vec2f(0, 1),
+                     rect.GetBottomRight() + Vec2f(0, -1)),
+              skin.colDropBorder);
+}
 }
 
 ///////////////////////////////////////////////
 tBool cWidgetTree::ClearSelection()
 {
   tTreeNodePVec toUnselect = mvSelected;
-  niLoop(i,toUnselect.size()) {
+  niLoop (i, toUnselect.size()) {
     toUnselect[i]->SetSelected(eFalse);
   }
   mvSelected.clear();
@@ -1656,75 +1786,78 @@ tBool cWidgetTree::ClearSelection()
 }
 
 ///////////////////////////////////////////////
-iWidgetTreeNode* __stdcall cWidgetTree::GetNodeFromPosition(const sVec2f& avAbsPos) const
+iWidgetTreeNode* __stdcall cWidgetTree::GetNodeFromPosition(
+  const sVec2f& avAbsPos) const
 {
-  niCheckSilent(niIsOK(mpWidget),NULL);
-  sVec2f clientPos = avAbsPos-mpWidget->GetAbsolutePosition()-mpWidget->GetClientPosition();
+  niCheckSilent(niIsOK(mpWidget), NULL);
+  sVec2f clientPos =
+    avAbsPos - mpWidget->GetAbsolutePosition() - mpWidget->GetClientPosition();
   return _FindNodeByPos(clientPos);
 }
 
 ///////////////////////////////////////////////
-void cWidgetTree::_ProcessClick(tU32 anMsg, const sVec2f& avMousePos, tBool abExecute, tU32 aModifier)
+void cWidgetTree::_ProcessClick(tU32 anMsg, const sVec2f& avMousePos,
+                                tBool abExecute, tU32 aModifier)
 {
   cWidgetTreeNode* pNode = (cWidgetTreeNode*)_FindNodeByPos(avMousePos);
   if (pNode) {
     if (mnNumVisibleAttributes) {
-      const tU32 attrCollided = _CheckAttrCollision(pNode,mnNumVisibleAttributes,
-                                                    _kvAttrSize,mpWidget->GetClientSize().x,
-                                                    avMousePos);
+      const tU32 attrCollided =
+        _CheckAttrCollision(pNode, mnNumVisibleAttributes, _kvAttrSize,
+                            mpWidget->GetClientSize().x, avMousePos);
       if (attrCollided != eInvalidHandle) {
         if (anMsg == eUIMessage_LeftClickDown) {
           const tU32 attrFlag = niBit(attrCollided);
           tU32 attr = pNode->GetAttributes();
-          if (attr&attrFlag) {
-            niFlagOff(attr,attrFlag);
+          if (attr & attrFlag) {
+            niFlagOff(attr, attrFlag);
           }
           else {
-            niFlagOn(attr,attrFlag);
+            niFlagOn(attr, attrFlag);
           }
           pNode->SetAttributes(attr);
         }
         else if (anMsg == eUIMessage_RightClickDown) {
-          _DoSelect(pNode,aModifier,eTrue);
+          _DoSelect(pNode, aModifier, eTrue);
         }
         return;
       }
     }
 
     sRectf nodeRect = pNode->GetScrolledNodeRect();
-    nodeRect.Move(Vec2<tF32>(-16,0));
+    nodeRect.Move(Vec2<tF32>(-16, 0));
     nodeRect.SetWidth(16);
-    if (// has children or can be expanded
-            (pNode->GetNumChildNodes() ||
-             niFlagIs(pNode->GetFlags(),eWidgetTreeNodeFlags_Expandable)) &&
-            // clicked on the expansion arrow or double clicked without modifier
-            (nodeRect.Intersect(avMousePos) ||
-             ((anMsg == eUIMessage_LeftDoubleClick) && !aModifier)) &&
-            // left click or double click
-            ((anMsg == eUIMessage_LeftDoubleClick) ||
-             (anMsg == eUIMessage_LeftClickDown))
-        )
+    if ( // has children or can be expanded
+      (pNode->GetNumChildNodes() ||
+       niFlagIs(pNode->GetFlags(), eWidgetTreeNodeFlags_Expandable)) &&
+      // clicked on the expansion arrow or double clicked without modifier
+      (nodeRect.Intersect(avMousePos) ||
+       ((anMsg == eUIMessage_LeftDoubleClick) && !aModifier)) &&
+      // left click or double click
+      ((anMsg == eUIMessage_LeftDoubleClick) ||
+       (anMsg == eUIMessage_LeftClickDown)))
     {
-      pNode->SetExpanded(pNode->GetExpanded()?eFalse:eTrue);
+      pNode->SetExpanded(pNode->GetExpanded() ? eFalse : eTrue);
     }
     else if (anMsg == eUIMessage_RightClickDown) {
       if (!pNode->GetSelected()) {
-        _DoSelect(pNode,aModifier,eTrue);
+        _DoSelect(pNode, aModifier, eTrue);
       }
     }
-    else if (niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_ClickDownSelect)) {
-      _DoSelect(pNode,aModifier,eTrue);
+    else if (niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_ClickDownSelect)) {
+      _DoSelect(pNode, aModifier, eTrue);
     }
     else {
       if (anMsg == eUIMessage_LeftClickDown) {
         SetSecondarySelection(pNode);
       }
       if ((anMsg == eUIMessage_LeftClickUp) ||
-          niFlagIs(aModifier,eUIInputModifier_AddSelectionRange))
+          niFlagIs(aModifier, eUIInputModifier_AddSelectionRange))
       {
-        tBool bProcessed = _DoSelect(pNode,aModifier,anMsg==eUIMessage_LeftClickUp);
+        tBool bProcessed =
+          _DoSelect(pNode, aModifier, anMsg == eUIMessage_LeftClickUp);
         if (bProcessed && abExecute) {
-          pNode->SetExpanded(pNode->GetExpanded()?eFalse:eTrue);
+          pNode->SetExpanded(pNode->GetExpanded() ? eFalse : eTrue);
         }
       }
     }
@@ -1735,11 +1868,14 @@ void cWidgetTree::_ProcessClick(tU32 anMsg, const sVec2f& avMousePos, tBool abEx
 }
 
 ///////////////////////////////////////////////
-ni::iWidgetTreeNode * cWidgetTree::_FindNodeByPos(const sVec2f& avMousePos) const {
+ni::iWidgetTreeNode* cWidgetTree::_FindNodeByPos(const sVec2f& avMousePos) const
+{
   niThis(cWidgetTree)->_UpdateLayout();
-  niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
+  niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
     sRectf nodeRect = (*it)->GetNodeRect();
-    if (avMousePos.y >= nodeRect.Top()+mvScrollOffset.y && avMousePos.y < nodeRect.Bottom()+mvScrollOffset.y) {
+    if (avMousePos.y >= nodeRect.Top() + mvScrollOffset.y &&
+        avMousePos.y < nodeRect.Bottom() + mvScrollOffset.y)
+    {
       return *it;
     }
   }
@@ -1749,7 +1885,7 @@ ni::iWidgetTreeNode * cWidgetTree::_FindNodeByPos(const sVec2f& avMousePos) cons
 ///////////////////////////////////////////////
 ni::iWidgetTreeNode* __stdcall cWidgetTree::_GetHomeNode() const
 {
-  if (niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot)) {
+  if (niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_DontDrawRoot)) {
     return mptrRootNode.IsOK() ? mptrRootNode->GetBelow() : NULL;
   }
   else {
@@ -1773,12 +1909,14 @@ ni::iWidgetTreeNode* __stdcall cWidgetTree::_GetEndNode() const
 ///////////////////////////////////////////////
 void cWidgetTree::_UpdateScrollOffset()
 {
-  mvScrollOffset = Vec2<tF32>(0,0);
+  mvScrollOffset = Vec2<tF32>(0, 0);
   if (mptrHScroll.IsOK() && mptrHScroll->GetVisible()) {
-    mvScrollOffset.x = -QPtr<iWidgetScrollBar>(mptrHScroll)->GetScrollPosition()*SCROLL_SCALEX;
+    mvScrollOffset.x =
+      -QPtr<iWidgetScrollBar>(mptrHScroll)->GetScrollPosition() * SCROLL_SCALEX;
   }
   if (mptrVScroll.IsOK() && mptrVScroll->GetVisible()) {
-    mvScrollOffset.y = -QPtr<iWidgetScrollBar>(mptrVScroll)->GetScrollPosition()*SCROLL_SCALEY;
+    mvScrollOffset.y =
+      -QPtr<iWidgetScrollBar>(mptrVScroll)->GetScrollPosition() * SCROLL_SCALEY;
   }
 }
 
@@ -1792,21 +1930,26 @@ tBool __stdcall cWidgetTree::Clear()
   }
   if (!mpWidget)
     return eFalse;
-  mptrRootNode = niNew cWidgetTreeNode(0,this,NULL);
+  mptrRootNode = niNew cWidgetTreeNode(0, this, NULL);
   mptrRootNode->SetName(_A("Root"));
   mptrRootNode->SetExpanded(eTrue);
   return eTrue;
 }
 
-tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool abForceSetSelect)
+tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier,
+                             tBool abForceSetSelect)
 {
   if (!apNode)
     return eFalse;
 
-  const tBool bSingleSelection = niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_SingleSelection);
+  const tBool bSingleSelection =
+    niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_SingleSelection);
 
   // Range selection
-  if ((!bSingleSelection) && niFlagIs(aModifier,eUIInputModifier_AddSelectionRange) && mpSelectedLast != NULL) {
+  if ((!bSingleSelection) &&
+      niFlagIs(aModifier, eUIInputModifier_AddSelectionRange) &&
+      mpSelectedLast != NULL)
+  {
     tBool bNewSelect = eTrue;
     cWidgetTreeNode* pPivot = mpSelectedLast;
     cWidgetTreeNode* pSel = (cWidgetTreeNode*)apNode;
@@ -1891,7 +2034,7 @@ tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool 
 
       mpSelectedRangeLast = pSel;
       if (bSelUp) {
-        ni::Swap(pPivot,pSel);
+        ni::Swap(pPivot, pSel);
       }
 
       // select the range
@@ -1907,9 +2050,10 @@ tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool 
 
     // make sure the new selection is at the back of the selection
     if (!mvSelected.empty() && mvSelected.back() != mpSelectedRangeLast) {
-      tTreeNodePVec::iterator it = astl::find(mvSelected,mpSelectedRangeLast);
+      tTreeNodePVec::iterator it = astl::find(mvSelected, mpSelectedRangeLast);
       if (it != mvSelected.end()) {
-        ni::Swap(mvSelected[astl::iterator_index(mvSelected,it)],mvSelected.back());
+        ni::Swap(mvSelected[astl::iterator_index(mvSelected, it)],
+                 mvSelected.back());
       }
     }
     ScrollToNode(mpSelectedRangeLast);
@@ -1917,7 +2061,7 @@ tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool 
   else {
     mpSelectedRangeLast = NULL;
     if ((!bSingleSelection) && aModifier == eUIInputModifier_AddSelection) {
-      apNode->SetSelected(apNode->GetSelected()?eFalse:eTrue);
+      apNode->SetSelected(apNode->GetSelected() ? eFalse : eTrue);
     }
     else {
       if (mvSelected.size() == 1 && mvSelected[0] == apNode) {
@@ -1932,17 +2076,18 @@ tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool 
         else {
           tBool bSelect = eTrue;
           tTreeNodePLst toUnselect;
-          niLoop(i,mvSelected.size()) {
+          niLoop (i, mvSelected.size()) {
             if (mvSelected[i] == apNode) {
               bSelect = eFalse;
-              if (!abForceSetSelect) break;
+              if (!abForceSetSelect)
+                break;
             }
             else {
               toUnselect.push_back(mvSelected[i]);
             }
           }
           if (bSelect || abForceSetSelect) {
-            niLoopit(tTreeNodePLst::iterator,it,toUnselect) {
+            niLoopit (tTreeNodePLst::iterator, it, toUnselect) {
               (*it)->SetSelected(eFalse);
             }
             if (bSelect)
@@ -1952,12 +2097,13 @@ tBool cWidgetTree::_DoSelect(ni::iWidgetTreeNode* apNode, tU32 aModifier, tBool 
       }
     }
 
-    mpSelectedLast = niUnsafeCast(cWidgetTreeNode*,apNode);
+    mpSelectedLast = niUnsafeCast(cWidgetTreeNode*, apNode);
     // make sure the new selection is at the back of the selection
     if (!mvSelected.empty() && mvSelected.back() != mpSelectedLast) {
-      tTreeNodePVec::iterator it = astl::find(mvSelected,mpSelectedLast);
+      tTreeNodePVec::iterator it = astl::find(mvSelected, mpSelectedLast);
       if (it != mvSelected.end()) {
-        ni::Swap(mvSelected[astl::iterator_index(mvSelected,it)],mvSelected.back());
+        ni::Swap(mvSelected[astl::iterator_index(mvSelected, it)],
+                 mvSelected.back());
       }
     }
     ScrollToNode(mpSelectedLast);
@@ -1971,11 +2117,13 @@ void __stdcall cWidgetTree::SetSecondarySelection(iWidgetTreeNode* apNode)
   if (!mpWidget)
     return;
   if (apNode != mpSecondarySel) {
-    mpWidget->SendCommand(mpWidget->GetParent(),eWidgetTreeCmd_SecondaryUnselected);
+    mpWidget->SendCommand(mpWidget->GetParent(),
+                          eWidgetTreeCmd_SecondaryUnselected);
   }
-  mpSecondarySel = niGetIfOK(niUnsafeCast(cWidgetTreeNode*,apNode));
+  mpSecondarySel = niGetIfOK(niUnsafeCast(cWidgetTreeNode*, apNode));
   if (mpSecondarySel) {
-    mpWidget->SendCommand(mpWidget->GetParent(),eWidgetTreeCmd_SecondarySelected);
+    mpWidget->SendCommand(mpWidget->GetParent(),
+                          eWidgetTreeCmd_SecondarySelected);
   }
 }
 
@@ -1986,7 +2134,8 @@ iWidgetTreeNode* __stdcall cWidgetTree::GetSecondarySelection() const
 }
 
 ///////////////////////////////////////////////
-iWidgetTreeNode* __stdcall cWidgetTree::GetPivotSelection() const {
+iWidgetTreeNode* __stdcall cWidgetTree::GetPivotSelection() const
+{
   return mpSelectedLast;
 }
 
@@ -1994,7 +2143,7 @@ iWidgetTreeNode* __stdcall cWidgetTree::GetPivotSelection() const {
 void cWidgetTree::_RegisterNode(cWidgetTreeNode* apNode)
 {
   mvNodes.push_back(apNode);
-  apNode->_SetTreeIndex(mvNodes.size()-1);
+  apNode->_SetTreeIndex(mvNodes.size() - 1);
   _NotifyUpdateLayout(TREENOTIFY_NODES);
   if (mpWidget)
     mpWidget->Redraw();
@@ -2013,13 +2162,15 @@ void cWidgetTree::_UnregisterNode(cWidgetTreeNode* apNode)
   if (apNode == mpSecondarySel) {
     SetSecondarySelection(NULL);
   }
-  tTreeNodePVec::iterator it = astl::find(mvNodes,apNode);
+  tTreeNodePVec::iterator it = astl::find(mvNodes, apNode);
   if (it != mvNodes.end()) {
-    tU32 i = astl::iterator_index(mvNodes,it);
-    mvNodes.erase(mvNodes.begin()+i);
-    astl::find_erase(mlstVisibleNodes,apNode);
-    for (tTreeNodePVec::iterator it = mvNodes.begin()+i; it != mvNodes.end(); ++it) {
-      (*it)->_SetTreeIndex(astl::iterator_index(mvNodes,it));
+    tU32 i = astl::iterator_index(mvNodes, it);
+    mvNodes.erase(mvNodes.begin() + i);
+    astl::find_erase(mlstVisibleNodes, apNode);
+    for (tTreeNodePVec::iterator it = mvNodes.begin() + i; it != mvNodes.end();
+         ++it)
+    {
+      (*it)->_SetTreeIndex(astl::iterator_index(mvNodes, it));
     }
     _NotifyUpdateLayout(TREENOTIFY_NODES);
   }
@@ -2038,7 +2189,7 @@ void cWidgetTree::_UpdateLayout()
 {
   if (mnNotify) {
     _DoUpdateLayout(mnNotify);
-    niFlagOff(mnNotify,TREENOTIFY_ALL);
+    niFlagOff(mnNotify, TREENOTIFY_ALL);
   }
 }
 
@@ -2050,51 +2201,49 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
 
   tU32 nHScroll = 0;
   tU32 nVScroll = 0;
-  niLoop(i,10) {
+  niLoop (i, 10) {
     _UpdateScrollOffset();
 
     tF32 fMaxX = 0.0f;
     tF32 fMaxY = 0.0f;
-    if (niFlagIs(anFlags,TREENOTIFY_LAYOUT) || niFlagIs(anFlags,TREENOTIFY_SCROLLBARS)) {
-      _UpdateNodeLayout((cWidgetTreeNode*)mptrRootNode.ptr(),fMaxX,fMaxY);
+    if (niFlagIs(anFlags, TREENOTIFY_LAYOUT) ||
+        niFlagIs(anFlags, TREENOTIFY_SCROLLBARS))
+    {
+      _UpdateNodeLayout((cWidgetTreeNode*)mptrRootNode.ptr(), fMaxX, fMaxY);
     }
 
     // update scrollbars
-    if (niFlagIs(anFlags,TREENOTIFY_SCROLLBARS) && (mptrVScroll.IsOK() || mptrHScroll.IsOK()))
+    if (niFlagIs(anFlags, TREENOTIFY_SCROLLBARS) &&
+        (mptrVScroll.IsOK() || mptrHScroll.IsOK()))
     {
       tBool bWasHScroll = (mptrHScroll.IsOK() && mptrHScroll->GetVisible());
       tBool bWasVScroll = (mptrVScroll.IsOK() && mptrVScroll->GetVisible());
       tBool bHScroll = !!nHScroll, bVScroll = !!nVScroll;
-      tF32 fSizeX = mpWidget->GetSize().x,
-          fSizeY = mpWidget->GetSize().y;
+      tF32 fSizeX = mpWidget->GetSize().x, fSizeY = mpWidget->GetSize().y;
 
       if (mptrHScroll.IsOK() &&
-          (fMaxX > fSizeX
-           || bHScroll
-           || niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysHScroll)))
+          (fMaxX > fSizeX || bHScroll ||
+           niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysHScroll)))
       { // we have to show the horizontal scroll bar
         bHScroll = eTrue;
         fSizeY -= kfScrollBarSize;
         if (mptrVScroll.IsOK() &&
-            (fMaxY > fSizeY-kfScrollBarSize
-             || bVScroll
-             || niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysVScroll)))
+            (fMaxY > fSizeY - kfScrollBarSize || bVScroll ||
+             niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysVScroll)))
         { // with the hz do we need the vertical one ?
           bVScroll = eTrue;
           fSizeX -= kfScrollBarSize;
         }
       }
       else if (mptrVScroll.IsOK() &&
-               (fMaxY > fSizeY
-                || bVScroll
-                || niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysVScroll)))
+               (fMaxY > fSizeY || bVScroll ||
+                niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysVScroll)))
       { // we have to show the vertical scroll bar
         bVScroll = eTrue;
         fSizeX -= kfScrollBarSize;
         if (mptrHScroll.IsOK() &&
-            (fMaxX > fSizeX-kfScrollBarSize
-             || bHScroll
-             || niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_AlwaysHScroll)))
+            (fMaxX > fSizeX - kfScrollBarSize || bHScroll ||
+             niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_AlwaysHScroll)))
         { // with the vert do we need the horizontal one ?
           bHScroll = eTrue;
           fSizeY -= kfScrollBarSize;
@@ -2103,14 +2252,20 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
 
       sRectf rectV, rectH;
       if (bHScroll && bVScroll) {
-        rectH = sRectf(0,mpWidget->GetSize().y-kfScrollBarSize,mpWidget->GetSize().x-kfScrollBarSize,kfScrollBarSize);
-        rectV = sRectf(mpWidget->GetSize().x-kfScrollBarSize,0,kfScrollBarSize,mpWidget->GetSize().y-kfScrollBarSize);
+        rectH =
+          sRectf(0, mpWidget->GetSize().y - kfScrollBarSize,
+                 mpWidget->GetSize().x - kfScrollBarSize, kfScrollBarSize);
+        rectV =
+          sRectf(mpWidget->GetSize().x - kfScrollBarSize, 0, kfScrollBarSize,
+                 mpWidget->GetSize().y - kfScrollBarSize);
       }
       else if (bHScroll) {
-        rectH = sRectf(0,mpWidget->GetSize().y-kfScrollBarSize,mpWidget->GetSize().x,kfScrollBarSize);
+        rectH = sRectf(0, mpWidget->GetSize().y - kfScrollBarSize,
+                       mpWidget->GetSize().x, kfScrollBarSize);
       }
       else if (bVScroll) {
-        rectV = sRectf(mpWidget->GetSize().x-kfScrollBarSize,0,kfScrollBarSize,mpWidget->GetSize().y);
+        rectV = sRectf(mpWidget->GetSize().x - kfScrollBarSize, 0,
+                       kfScrollBarSize, mpWidget->GetSize().y);
       }
 
       if (bHScroll) {
@@ -2122,8 +2277,9 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
           QPtr<iWidgetScrollBar>(mptrHScroll)->SetScrollRange(sVec2f::Zero());
         }
         else {
-          QPtr<iWidgetScrollBar>(mptrHScroll)->SetScrollRange(
-              Vec2<tF32>(0,((fMaxX-fSizeX)+SCROLL_SCALEX)/SCROLL_SCALEX));
+          QPtr<iWidgetScrollBar>(mptrHScroll)
+            ->SetScrollRange(Vec2<tF32>(0, ((fMaxX - fSizeX) + SCROLL_SCALEX) /
+                                             SCROLL_SCALEX));
         }
       }
       else if (mptrHScroll.IsOK()) {
@@ -2140,8 +2296,8 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
           QPtr<iWidgetScrollBar>(mptrVScroll)->SetScrollRange(sVec2f::Zero());
         }
         else {
-          QPtr<iWidgetScrollBar>(mptrVScroll)->SetScrollRange(
-              Vec2<tF32>(0,(fMaxY-fSizeY)/SCROLL_SCALEY));
+          QPtr<iWidgetScrollBar>(mptrVScroll)
+            ->SetScrollRange(Vec2<tF32>(0, (fMaxY - fSizeY) / SCROLL_SCALEY));
         }
       }
       else if (mptrVScroll.IsOK()) {
@@ -2149,7 +2305,7 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
         mptrVScroll->SetEnabled(eFalse);
       }
 
-      mpWidget->SetClientSize(Vec2<tF32>(fSizeX,fSizeY));
+      mpWidget->SetClientSize(Vec2<tF32>(fSizeX, fSizeY));
       _UpdateScrollOffset();
 
       if (bWasHScroll != bHScroll || bWasVScroll != bVScroll) {
@@ -2165,18 +2321,21 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
   }
 
   // culling
-  if (niFlagIs(anFlags,TREENOTIFY_CULLING) || niFlagIs(anFlags,TREENOTIFY_SCROLLBARS) || niFlagIs(anFlags,TREENOTIFY_LAYOUT)) {
+  if (niFlagIs(anFlags, TREENOTIFY_CULLING) ||
+      niFlagIs(anFlags, TREENOTIFY_SCROLLBARS) ||
+      niFlagIs(anFlags, TREENOTIFY_LAYOUT))
+  {
     //niPrintln(_A("-- Node Culling --\n"));
 
     sVec2f vScrollOffset = mvScrollOffset;
     // get the visibility 'window'
     tF32 fViewMin = -vScrollOffset.y;
-    tF32 fViewMax = fViewMin+mpWidget->GetClientSize().y;
+    tF32 fViewMax = fViewMin + mpWidget->GetClientSize().y;
 
     astl::set<cWidgetTreeNode*> setToUpdateStatus;
 
     // reset the visibility list
-    niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
+    niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
       (*it)->_SetCulling(eTrue);
       setToUpdateStatus.insert(*it);
     }
@@ -2184,41 +2343,52 @@ void cWidgetTree::_DoUpdateLayout(tU32 anFlags)
 
     // detect the overlapping pairs
     struct _Local {
-      static void DetectOverlap(cWidgetTreeNode* n, tF32 fViewMin, tF32 fViewMax, tTreeNodePLst& visList, astl::set<cWidgetTreeNode*>& toUpdate) {
+      static void DetectOverlap(cWidgetTreeNode* n, tF32 fViewMin,
+                                tF32 fViewMax, tTreeNodePLst& visList,
+                                astl::set<cWidgetTreeNode*>& toUpdate)
+      {
         const sRectf& r = n->GetNodeRect();
         if (!(r.Bottom() < fViewMin || r.Top() > fViewMax)) {
           visList.push_back(n);
           toUpdate.insert(n);
         }
-        if (n->GetNumChildNodes() && (n->GetFlags()&eWidgetTreeNodeFlags_Expanded)) {
-          niLoop(i,n->GetNumChildNodes()) {
-            DetectOverlap(niStaticCast(cWidgetTreeNode*,n->GetChildNode(i)),fViewMin,fViewMax,visList,toUpdate);
+        if (n->GetNumChildNodes() &&
+            (n->GetFlags() & eWidgetTreeNodeFlags_Expanded))
+        {
+          niLoop (i, n->GetNumChildNodes()) {
+            DetectOverlap(niStaticCast(cWidgetTreeNode*, n->GetChildNode(i)),
+                          fViewMin, fViewMax, visList, toUpdate);
           }
         }
       }
     };
-    if (niFlagIs(mpWidget->GetStyle(),eWidgetTreeStyle_DontDrawRoot)) {
+    if (niFlagIs(mpWidget->GetStyle(), eWidgetTreeStyle_DontDrawRoot)) {
       iWidgetTreeNode* n = mptrRootNode;
-      if (n->GetNumChildNodes() && (n->GetFlags()&eWidgetTreeNodeFlags_Expanded)) {
-        niLoop(i,n->GetNumChildNodes()) {
-          _Local::DetectOverlap(niStaticCast(cWidgetTreeNode*,n->GetChildNode(i)),
-                                fViewMin,fViewMax,mlstVisibleNodes,setToUpdateStatus);
+      if (n->GetNumChildNodes() &&
+          (n->GetFlags() & eWidgetTreeNodeFlags_Expanded))
+      {
+        niLoop (i, n->GetNumChildNodes()) {
+          _Local::DetectOverlap(
+            niStaticCast(cWidgetTreeNode*, n->GetChildNode(i)), fViewMin,
+            fViewMax, mlstVisibleNodes, setToUpdateStatus);
         }
       }
     }
     else {
-      _Local::DetectOverlap(niStaticCast(cWidgetTreeNode*,mptrRootNode.ptr()),fViewMin,fViewMax,mlstVisibleNodes,setToUpdateStatus);
+      _Local::DetectOverlap(niStaticCast(cWidgetTreeNode*, mptrRootNode.ptr()),
+                            fViewMin, fViewMax, mlstVisibleNodes,
+                            setToUpdateStatus);
     }
 
     // set the culling state
-    niLoopit(tTreeNodePLst::const_iterator,it,mlstVisibleNodes) {
+    niLoopit (tTreeNodePLst::const_iterator, it, mlstVisibleNodes) {
       (*it)->_SetCulling(eFalse);
       (*it)->_UpdateDrawIndex();
       //niPrintln(niFmt(_A("Node '%s' (%s) is visible\n"),(*it)->GetName(),cString((*it)->GetNodeRect(),_A("Rect")).Chars()));
     }
 
     // set the set
-    niLoopit(astl::set<cWidgetTreeNode*>::iterator,it,setToUpdateStatus) {
+    niLoopit (astl::set<cWidgetTreeNode*>::iterator, it, setToUpdateStatus) {
       (*it)->_UpdateWidgetPosition();
     }
   }
@@ -2233,16 +2403,20 @@ tU32 __stdcall cWidgetTree::GetNumNodes() const
 ///////////////////////////////////////////////
 iWidgetTreeNode* __stdcall cWidgetTree::GetNode(tU32 anIndex) const
 {
-  niCheckSilent(anIndex < mvNodes.size(),NULL);
+  niCheckSilent(anIndex < mvNodes.size(), NULL);
   return mvNodes[anIndex];
 }
 
 ///////////////////////////////////////////////
-void __stdcall cWidgetTree::ScrollToNode(iWidgetTreeNode* apNode) {
-  if (!mpWidget) return;
-  if (!niIsOK(apNode)) return;
-  if (!mptrVScroll.IsOK()) return;
-  cWidgetTreeNode* n = niUnsafeCast(cWidgetTreeNode*,apNode);
+void __stdcall cWidgetTree::ScrollToNode(iWidgetTreeNode* apNode)
+{
+  if (!mpWidget)
+    return;
+  if (!niIsOK(apNode))
+    return;
+  if (!mptrVScroll.IsOK())
+    return;
+  cWidgetTreeNode* n = niUnsafeCast(cWidgetTreeNode*, apNode);
 
   sRectf rect = n->GetNodeRect();
   if (rect == _rectInvalid)
@@ -2251,12 +2425,14 @@ void __stdcall cWidgetTree::ScrollToNode(iWidgetTreeNode* apNode) {
   sVec2f vScrollOffset = mvScrollOffset;
   tF32 fViewMin = -vScrollOffset.y;
   tF32 fViewSize = mpWidget->GetClientSize().y;
-  tF32 fViewMax = fViewMin+fViewSize;
+  tF32 fViewMax = fViewMin + fViewSize;
   if (rect.Top() < fViewMin) {
-    QPtr<iWidgetScrollBar>(mptrVScroll)->SetScrollPosition(rect.Top()/SCROLL_SCALEY);
+    QPtr<iWidgetScrollBar>(mptrVScroll)
+      ->SetScrollPosition(rect.Top() / SCROLL_SCALEY);
   }
   else if (rect.Bottom() > fViewMax) {
-    QPtr<iWidgetScrollBar>(mptrVScroll)->SetScrollPosition((rect.Bottom()-fViewSize)/SCROLL_SCALEY);
+    QPtr<iWidgetScrollBar>(mptrVScroll)
+      ->SetScrollPosition((rect.Bottom() - fViewSize) / SCROLL_SCALEY);
   }
   else {
     // nothing, entierly visible
@@ -2266,21 +2442,31 @@ void __stdcall cWidgetTree::ScrollToNode(iWidgetTreeNode* apNode) {
 ///////////////////////////////////////////////
 void cWidgetTree::_UpdateSkin()
 {
-  skin.nodeFrame = mpWidget->FindSkinElement(NULL,NULL,_H("NodeFrame"));
-  skin.collapsed = mpWidget->FindSkinElement(NULL,NULL,_H("Collapsed"));
-  skin.expanded = mpWidget->FindSkinElement(NULL,NULL,_H("Expanded"));
+  skin.nodeFrame = mpWidget->FindSkinElement(NULL, NULL, _H("NodeFrame"));
+  skin.collapsed = mpWidget->FindSkinElement(NULL, NULL, _H("Collapsed"));
+  skin.expanded = mpWidget->FindSkinElement(NULL, NULL, _H("Expanded"));
 
   const sColor4f color = sColor4f::White();
-  skin.colFirst = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("FirstRow")));
-  skin.colSec = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("SecondRow")));
-  skin.colRowHover = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("RowHover")));
-  skin.colTextFront = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("TextFront")));
-  skin.colTextBack = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("TextBack")));
-  skin.colSignBack = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("SignBack")));
-  skin.colDropBorder = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("DropBorder")));
-  skin.colSelBack = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("SelBack")));
-  skin.colSelBorder = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("SelBorder")));
-  skin.colLastSelBack = ULColorBuild(mpWidget->FindSkinColor(color,NULL,NULL,_H("LastSelBack")));
+  skin.colFirst =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("FirstRow")));
+  skin.colSec =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("SecondRow")));
+  skin.colRowHover =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("RowHover")));
+  skin.colTextFront =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("TextFront")));
+  skin.colTextBack =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("TextBack")));
+  skin.colSignBack =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("SignBack")));
+  skin.colDropBorder =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("DropBorder")));
+  skin.colSelBack =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("SelBack")));
+  skin.colSelBorder =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("SelBorder")));
+  skin.colLastSelBack =
+    ULColorBuild(mpWidget->FindSkinColor(color, NULL, NULL, _H("LastSelBack")));
 
   _NotifyUpdateLayout(TREENOTIFY_ALL);
 }
@@ -2294,46 +2480,51 @@ sVec4f cWidgetTree::_GetItemFrameRect() const
 }
 
 ///////////////////////////////////////////////
-inline void _SaveTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates) {
+inline void _SaveTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates)
+{
   if (ni::StrLen(apNode->GetName()) <= 0)
     return;
   Ptr<iDataTable> dt = ni::CreateDataTable(apNode->GetName());
-  if ((apNode->GetFlags() & eWidgetTreeNodeFlags_Expandable) || apNode->GetNumChildNodes()) {
-    dt->SetBool(_A("expanded"),apNode->GetExpanded());
+  if ((apNode->GetFlags() & eWidgetTreeNodeFlags_Expandable) ||
+      apNode->GetNumChildNodes())
+  {
+    dt->SetBool(_A("expanded"), apNode->GetExpanded());
   }
   if (apNode->GetSelected()) {
-    dt->SetBool(_A("selected"),apNode->GetSelected());
+    dt->SetBool(_A("selected"), apNode->GetSelected());
   }
-  niLoop(i,apNode->GetNumChildNodes()) {
-    _SaveTreeNode(apNode->GetChildNode(i),dt);
+  niLoop (i, apNode->GetNumChildNodes()) {
+    _SaveTreeNode(apNode->GetChildNode(i), dt);
   }
   apStates->AddChild(dt);
 }
 
 tBool __stdcall cWidgetTree::SaveTreeStates(iDataTable* apStates)
 {
-  niCheckIsOK(mpWidget,eFalse);
-  niCheckIsOK(apStates,eFalse);
+  niCheckIsOK(mpWidget, eFalse);
+  niCheckIsOK(apStates, eFalse);
   // save scrolling
   {
     QPtr<iWidgetScrollBar> hscroll = mptrVScroll.ptr();
     if (hscroll.IsOK()) {
-      apStates->SetFloat(_A("hscroll_position"),hscroll->GetScrollPosition());
+      apStates->SetFloat(_A("hscroll_position"), hscroll->GetScrollPosition());
     }
   }
   {
     QPtr<iWidgetScrollBar> vscroll = mptrVScroll.ptr();
     if (vscroll.IsOK()) {
-      apStates->SetFloat(_A("vscroll_position"),vscroll->GetScrollPosition());
+      apStates->SetFloat(_A("vscroll_position"), vscroll->GetScrollPosition());
     }
   }
   // save nodes
-  _SaveTreeNode(mptrRootNode,apStates);
+  _SaveTreeNode(mptrRootNode, apStates);
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-inline void _LoadTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates, tBool abLoadMatchingName) {
+inline void _LoadTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates,
+                          tBool abLoadMatchingName)
+{
   iDataTable* dt = NULL;
   if (ni::StrLen(apNode->GetName()) <= 0)
     return;
@@ -2344,7 +2535,9 @@ inline void _LoadTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates, tBool a
     dt = apStates->GetChildFromIndex(apNode->GetIndex());
   }
   if (dt) {
-    if ((apNode->GetFlags() & eWidgetTreeNodeFlags_Expandable) || apNode->GetNumChildNodes()) {
+    if ((apNode->GetFlags() & eWidgetTreeNodeFlags_Expandable) ||
+        apNode->GetNumChildNodes())
+    {
       tU32 nIndex = dt->GetPropertyIndex(_A("expanded"));
       if (nIndex != eInvalidHandle)
         apNode->SetExpanded(dt->GetBoolFromIndex(nIndex));
@@ -2354,18 +2547,19 @@ inline void _LoadTreeNode(iWidgetTreeNode* apNode, iDataTable* apStates, tBool a
       if (nIndex != eInvalidHandle)
         apNode->SetSelected(dt->GetBoolFromIndex(nIndex));
     }
-    niLoop(i,apNode->GetNumChildNodes()) {
-      _LoadTreeNode(apNode->GetChildNode(i),dt,abLoadMatchingName);
+    niLoop (i, apNode->GetNumChildNodes()) {
+      _LoadTreeNode(apNode->GetChildNode(i), dt, abLoadMatchingName);
     }
   }
 }
 
-tBool __stdcall cWidgetTree::LoadTreeStates(iDataTable* apStates, ni::tBool abLoadMatchingNames)
+tBool __stdcall cWidgetTree::LoadTreeStates(iDataTable* apStates,
+                                            ni::tBool abLoadMatchingNames)
 {
-  niCheckIsOK(mpWidget,eFalse);
-  niCheckIsOK(apStates,eFalse);
+  niCheckIsOK(mpWidget, eFalse);
+  niCheckIsOK(apStates, eFalse);
   // load nodes
-  _LoadTreeNode(mptrRootNode,apStates,abLoadMatchingNames);
+  _LoadTreeNode(mptrRootNode, apStates, abLoadMatchingNames);
   // load scrolling
   {
     QPtr<iWidgetScrollBar> hscroll = mptrVScroll.ptr();
@@ -2391,10 +2585,11 @@ tBool __stdcall cWidgetTree::LoadTreeStates(iDataTable* apStates, ni::tBool abLo
 ///////////////////////////////////////////////
 tBool __stdcall cWidgetTree::PushStates()
 {
-  niCheckIsOK(mpWidget,eFalse);
+  niCheckIsOK(mpWidget, eFalse);
   Ptr<iDataTable> dt = ni::CreateDataTable(_A("TreeStates"));
-  niCheckSilent(dt.IsOK(),eFalse);
-  if (!SaveTreeStates(dt)) return eFalse;
+  niCheckSilent(dt.IsOK(), eFalse);
+  if (!SaveTreeStates(dt))
+    return eFalse;
   mstkStates.push(dt);
   return eTrue;
 }
@@ -2402,46 +2597,55 @@ tBool __stdcall cWidgetTree::PushStates()
 ///////////////////////////////////////////////
 tBool __stdcall cWidgetTree::PopStates(ni::tBool abLoadMatchingNames)
 {
-  niCheckIsOK(mpWidget,eFalse);
-  if (mstkStates.empty()) return eFalse;
+  niCheckIsOK(mpWidget, eFalse);
+  if (mstkStates.empty())
+    return eFalse;
   Ptr<iDataTable> dt = mstkStates.top();
   mstkStates.pop();
-  return LoadTreeStates(dt,abLoadMatchingNames);
+  return LoadTreeStates(dt, abLoadMatchingNames);
 }
 
 ///////////////////////////////////////////////
-void __stdcall cWidgetTree::SetNumVisibleAttributes(tU32 anCount) {
+void __stdcall cWidgetTree::SetNumVisibleAttributes(tU32 anCount)
+{
   mnNumVisibleAttributes = anCount;
 }
-tU32 __stdcall cWidgetTree::GetNumVisibleAttributes() const {
+tU32 __stdcall cWidgetTree::GetNumVisibleAttributes() const
+{
   return mnNumVisibleAttributes;
 }
 
 ///////////////////////////////////////////////
-void __stdcall cWidgetTree::SetAttributeIcon(tU32 anIndex, iOverlay* apIcon) {
-  niCheckSilent(anIndex < knNumTreeNodeAttributes,;);
+void __stdcall cWidgetTree::SetAttributeIcon(tU32 anIndex, iOverlay* apIcon)
+{
+  niCheckSilent(anIndex < knNumTreeNodeAttributes, ;);
   mAttributes[anIndex].icon = niGetIfOK(apIcon);
 }
-iOverlay* __stdcall cWidgetTree::GetAttributeIcon(tU32 anIndex) const {
-  niCheckSilent(anIndex < knNumTreeNodeAttributes,NULL);
+iOverlay* __stdcall cWidgetTree::GetAttributeIcon(tU32 anIndex) const
+{
+  niCheckSilent(anIndex < knNumTreeNodeAttributes, NULL);
   return mAttributes[anIndex].icon;
 }
 
 ///////////////////////////////////////////////
-void __stdcall cWidgetTree::SetAttributeName(tU32 anIndex, iHString* ahspName) {
-  niCheckSilent(anIndex < knNumTreeNodeAttributes,;);
+void __stdcall cWidgetTree::SetAttributeName(tU32 anIndex, iHString* ahspName)
+{
+  niCheckSilent(anIndex < knNumTreeNodeAttributes, ;);
   mAttributes[anIndex].name = ahspName;
 }
-iHString* __stdcall cWidgetTree::GetAttributeName(tU32 anIndex) const {
-  niCheckSilent(anIndex < knNumTreeNodeAttributes,NULL);
+iHString* __stdcall cWidgetTree::GetAttributeName(tU32 anIndex) const
+{
+  niCheckSilent(anIndex < knNumTreeNodeAttributes, NULL);
   return mAttributes[anIndex].name;
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cWidgetTree::SetHoverNode(tU32 anNodeTreeIndex) {
+tBool __stdcall cWidgetTree::SetHoverNode(tU32 anNodeTreeIndex)
+{
   mnHoverTreeNodeIndex = anNodeTreeIndex;
   return eTrue;
 }
-tU32 __stdcall cWidgetTree::GetHoverNode() const {
+tU32 __stdcall cWidgetTree::GetHoverNode() const
+{
   return mnHoverTreeNodeIndex;
 }

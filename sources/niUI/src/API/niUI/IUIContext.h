@@ -13,8 +13,7 @@ namespace ni {
 
 //! UI input modifiers.
 //! \remark The key values are intentionally the same as ni::eKeyMod
-enum eUIInputModifier
-{
+enum eUIInputModifier {
   //! Modifier A.
   eUIInputModifier_A = niBit(16),
   //! Modifier A.
@@ -42,8 +41,7 @@ enum eUIInputModifier
 };
 
 //! UI input submit.
-enum eUIInputSubmitFlags
-{
+enum eUIInputSubmitFlags {
   //! Disabled
   eUIInputSubmitFlags_Disabled = 0,
   //! Input action Submit A.
@@ -64,11 +62,16 @@ enum eUIInputSubmitFlags
   //! Right double click.
   eUIInputSubmitFlags_RightDoubleClick = niBit(6),
   //! Button standard.
-  eUIInputSubmitFlags_StandardButton = eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftClick,
+  eUIInputSubmitFlags_StandardButton = eUIInputSubmitFlags_SubmitA |
+                                       eUIInputSubmitFlags_SubmitB |
+                                       eUIInputSubmitFlags_LeftClick,
   //! Icon standard.
-  eUIInputSubmitFlags_StandardIcon = eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitB|eUIInputSubmitFlags_LeftDoubleClick,
+  eUIInputSubmitFlags_StandardIcon = eUIInputSubmitFlags_SubmitA |
+                                     eUIInputSubmitFlags_SubmitB |
+                                     eUIInputSubmitFlags_LeftDoubleClick,
   //! Single Line Text box standard.
-  eUIInputSubmitFlags_StandardSingleLineText = eUIInputSubmitFlags_SubmitA|eUIInputSubmitFlags_SubmitC,
+  eUIInputSubmitFlags_StandardSingleLineText =
+    eUIInputSubmitFlags_SubmitA | eUIInputSubmitFlags_SubmitC,
   //! Multi Line Text box standard.
   eUIInputSubmitFlags_StandardMultiLineText = eUIInputSubmitFlags_SubmitC,
   //! UI Context default input submit flags default.
@@ -81,8 +84,7 @@ enum eUIInputSubmitFlags
 typedef tU32 tUIInputSubmitFlags;
 
 //! UI Context interface.
-struct iUIContext : public iUnknown
-{
+struct iUIContext : public iUnknown {
   niDeclareInterfaceUUID(iUIContext,0x2c6b89cb,0x0e9e,0x41fc,0x92,0xbb,0xae,0x6a,0xa3,0xee,0x44,0x2c);
 
   //########################################################################################
@@ -105,7 +107,9 @@ struct iUIContext : public iUnknown
 
   //! Send a Window message to the UI context.
   //! \remark This method should be called in the application's window message sink to send input to the UI context.
-  virtual void __stdcall SendWindowMessage(eOSWindowMessage aMsg, const Var& avarA, const Var& avarB) = 0;
+  virtual void __stdcall SendWindowMessage(eOSWindowMessage aMsg,
+                                           const Var& avarA,
+                                           const Var& avarB) = 0;
   //! Set the input modifiers. \see ni::eUIInputModifier
   //! {Property}
   virtual void __stdcall SetInputModifiers(tU32 anInputModifier) = 0;
@@ -114,7 +118,8 @@ struct iUIContext : public iUnknown
   virtual tU32 __stdcall GetInputModifiers() const = 0;
   //! Set the default input submit flags.
   //! {Property}
-  virtual void __stdcall SetDefaultInputSubmitFlags(tUIInputSubmitFlags aSubmitFlags) = 0;
+  virtual void __stdcall SetDefaultInputSubmitFlags(
+    tUIInputSubmitFlags aSubmitFlags) = 0;
   //! Get the default input submit flags.
   //! {Property}
   virtual tUIInputSubmitFlags __stdcall GetDefaultInputSubmitFlags() const = 0;
@@ -191,13 +196,25 @@ struct iUIContext : public iUnknown
   //! Apply the specified skin to a widget and all its children.
   virtual tBool __stdcall ApplySkin(iWidget* apWidget, iHString* ahspName) = 0;
   //! Find the font of the specified item in the widget's skin.
-  virtual iFont*   __stdcall FindSkinFont(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iFont* __stdcall FindSkinFont(iHString* ahspSkin, iHString* ahspClass,
+                                        iHString* ahspState,
+                                        iHString* ahspName) const = 0;
   //! Find the cursor of the specified item in the widget's skin.
-  virtual iOverlay* __stdcall FindSkinCursor(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iOverlay* __stdcall FindSkinCursor(iHString* ahspSkin,
+                                             iHString* ahspClass,
+                                             iHString* ahspState,
+                                             iHString* ahspName) const = 0;
   //! Find the element of the specified item in the widget's skin.
-  virtual iOverlay* __stdcall FindSkinElement(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iOverlay* __stdcall FindSkinElement(iHString* ahspSkin,
+                                              iHString* ahspClass,
+                                              iHString* ahspState,
+                                              iHString* ahspName) const = 0;
   //! Find the color of the specified item in the widget's skin.
-  virtual sColor4f __stdcall FindSkinColor(const sColor4f& aDefault, iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual sColor4f __stdcall FindSkinColor(const sColor4f& aDefault,
+                                           iHString* ahspSkin,
+                                           iHString* ahspClass,
+                                           iHString* ahspState,
+                                           iHString* ahspName) const = 0;
   //! @}
 
   //########################################################################################
@@ -206,22 +223,31 @@ struct iUIContext : public iUnknown
   //! @{
 
   //! Check whether the specified widget sink class can be created.
-  virtual tBool __stdcall HasWidgetSinkClass(const achar *aszClassName) const = 0;
+  virtual tBool __stdcall HasWidgetSinkClass(
+    const achar* aszClassName) const = 0;
   //! Create a widget sink of the specified class.
-  virtual iWidgetSink* __stdcall CreateWidgetSink(const achar *aszClassName, iWidget* apWidget) = 0;
+  virtual iWidgetSink* __stdcall CreateWidgetSink(const achar* aszClassName,
+                                                  iWidget* apWidget) = 0;
 #if niMinFeatures(15)
   //! Create a widget sink from the the specified script script.
-  virtual iWidgetSink* __stdcall CreateWidgetSinkFromScript(iHString* ahspRes) = 0;
+  virtual iWidgetSink* __stdcall CreateWidgetSinkFromScript(
+    iHString* ahspRes) = 0;
 #endif
 
   //! Create a widget.
-  virtual iWidget* __stdcall CreateWidget(const achar *aszClassName, iWidget *apwParent, const sRectf &arectPos = sRectf::Null(), tU32 anStyle = 0, iHString* ahspID = NULL) = 0;
+  virtual iWidget* __stdcall CreateWidget(
+    const achar* aszClassName, iWidget* apwParent,
+    const sRectf& arectPos = sRectf::Null(), tU32 anStyle = 0,
+    iHString* ahspID = NULL) = 0;
 
   //! Create a widget without attaching any sink to it.
   //! \remark Use ni::iWidget::AddSink, ni::iWidget::AddPostSink,
   //!         ni::iWidget::AddClassSink or ni::iWidget::AddClassPostSink to
   //!         add custom or registered sink.
-  virtual iWidget* __stdcall CreateWidgetRaw(const achar *aszClassName, iWidget *apwParent, const sRectf &arectPos = sRectf::Null(), tU32 anStyle = 0, iHString* ahspID = NULL) = 0;
+  virtual iWidget* __stdcall CreateWidgetRaw(
+    const achar* aszClassName, iWidget* apwParent,
+    const sRectf& arectPos = sRectf::Null(), tU32 anStyle = 0,
+    iHString* ahspID = NULL) = 0;
 
   //! Create a widget from the specified datatable.
   //! \remark apwParent is the parent widget,
@@ -230,10 +256,16 @@ struct iUIContext : public iUnknown
   //! \remark ahspID if not null is the id of the widget (overwrite the 'id' property in the datatable).
   //! \remark ahspTitle if not null is the title of the form widget (overwrite the 'title' property in the datatable).
   //! \return The newly created widget.
-  virtual iWidget* __stdcall CreateWidgetFromDataTable(iDataTable* apDT, iWidget* apwParent, iHString* ahspID, iHString* ahspTitle) = 0;
+  virtual iWidget* __stdcall CreateWidgetFromDataTable(iDataTable* apDT,
+                                                       iWidget* apwParent,
+                                                       iHString* ahspID,
+                                                       iHString* ahspTitle) = 0;
 
   //! Create a widget from a datatable in the specified resource.
-  virtual iWidget* __stdcall CreateWidgetFromResource(iHString* ahspRes, iWidget* apwParent, iHString* ahspID, iHString* ahspTitle) = 0;
+  virtual iWidget* __stdcall CreateWidgetFromResource(iHString* ahspRes,
+                                                      iWidget* apwParent,
+                                                      iHString* ahspID,
+                                                      iHString* ahspTitle) = 0;
 
   //! Get the root widget.
   //! {Property}
@@ -258,11 +290,14 @@ struct iUIContext : public iUnknown
   //! \param anFlags is the serialization flags.
   //! \param apFilter regular expression that determines which class will be serialized. Is NULL all classes will be serialized.
   //! \return eFalse if failed, else eTrue.
-  virtual tBool __stdcall SerializeWidget(iWidget* apWidget, iDataTable* apDT, tWidgetSerializeFlags anFlags, iRegex* apFilter) = 0;
+  virtual tBool __stdcall SerializeWidget(iWidget* apWidget, iDataTable* apDT,
+                                          tWidgetSerializeFlags anFlags,
+                                          iRegex* apFilter) = 0;
   //! Create a widget command instance.
   virtual iWidgetCommand* __stdcall CreateWidgetCommand() = 0;
   //! Send a command to the specified widget.
-  virtual tBool __stdcall SendCommand(iWidget* apDest, iWidgetCommand* apCmd) = 0;
+  virtual tBool __stdcall SendCommand(iWidget* apDest,
+                                      iWidgetCommand* apCmd) = 0;
   //! Draw the GUI.
   virtual void __stdcall Draw() = 0;
   //! Draw the current mouse cursor or set it as hardware cursor on the
@@ -275,7 +310,8 @@ struct iUIContext : public iUnknown
   virtual tBool __stdcall Update(tF32 fTime) = 0;
   //! Resize the UI context.
   //! \return eTrue if succeeded, eFalse if failed.
-  virtual tBool __stdcall Resize(const sRectf& aRootRect, const tF32 afContentsScale) = 0;
+  virtual tBool __stdcall Resize(const sRectf& aRootRect,
+                                 const tF32 afContentsScale) = 0;
   //! Get the contents' scale factor.
   //! {Property}
   virtual tF32 __stdcall GetContentsScale() const = 0;
@@ -317,7 +353,7 @@ struct iUIContext : public iUnknown
   //! Get the UI default toolbar.
   //! {Property}
   virtual ni::iWidget* __stdcall GetToolbar() const = 0;
-  //! @}
+    //! @}
 #endif
 
   //########################################################################################
@@ -343,9 +379,9 @@ struct iUIContext : public iUnknown
   //! Draw the specified widget in the specified canvas. The widget is
   //! transformed using the specified matrix. Clipping and scissoring is
   //! disabled.
-  virtual tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix) = 0;
+  virtual tBool __stdcall DrawTransformedWidget(
+    iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix) = 0;
   //! @}
-
 
   //########################################################################################
   //! \name UI behaviors
@@ -369,7 +405,8 @@ struct iUIContext : public iUnknown
   //! Set the drag finger start distance.
   //! \remark This define the minimum number of pixels a finger has to move before a drag start message is sent.
   //! {Property}
-  virtual void __stdcall SetDragFingerStartDistance(tU32 anFinger, tU32 anPixelDistance) = 0;
+  virtual void __stdcall SetDragFingerStartDistance(tU32 anFinger,
+                                                    tU32 anPixelDistance) = 0;
   //! Get the drag finger start distance.
   //! {Property}
   virtual tU32 __stdcall GetDragFingerStartDistance(tU32 anFinger) const = 0;
@@ -406,19 +443,25 @@ struct iUIContext : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetKeyDown(tU8 aKey) const = 0;
   //! \param avPosition is in UI units.
-  virtual void __stdcall InputFingerMove(tU32 anFinger, const sVec3f& avPosition) = 0;
+  virtual void __stdcall InputFingerMove(tU32 anFinger,
+                                         const sVec3f& avPosition) = 0;
   //! \param avRelMove is in UI units.
-  virtual void __stdcall InputFingerRelativeMove(tU32 anFinger, const sVec3f& avRelMove) = 0;
+  virtual void __stdcall InputFingerRelativeMove(tU32 anFinger,
+                                                 const sVec3f& avRelMove) = 0;
   //! \param avPosition is in UI units.
-  virtual void __stdcall InputFingerPress(tU32 anFinger, const sVec3f& avPosition, tBool abDown) = 0;
+  virtual void __stdcall InputFingerPress(tU32 anFinger,
+                                          const sVec3f& avPosition,
+                                          tBool abDown) = 0;
   virtual void __stdcall InputKeyPress(eKey aKey, tBool abDown) = 0;
-  virtual void __stdcall InputKeyChar(tU32 aCharCodePoint, eKey aKeyLeadingToKeyChar) = 0;
+  virtual void __stdcall InputKeyChar(tU32 aCharCodePoint,
+                                      eKey aKeyLeadingToKeyChar) = 0;
   virtual void __stdcall InputMouseWheel(const tF32 afDelta) = 0;
   virtual void __stdcall InputDoubleClick(ePointerButton aPointer) = 0;
   //! \param avRelMove is in UI units.
   virtual void __stdcall InputRelativeMouseMove(const sVec2f& avRelMove) = 0;
   virtual void __stdcall InputGameCtrl(iGameCtrl* apGameController) = 0;
-  virtual void __stdcall InputPinch(const tF32 afScale, const eGestureState aState) = 0;
+  virtual void __stdcall InputPinch(const tF32 afScale,
+                                    const eGestureState aState) = 0;
   //! Get the focused widget, that is the widget that is receiving the input messages.
   //! {Property}
   virtual iWidget* __stdcall GetFocusedWidget() const = 0;
@@ -430,7 +473,8 @@ struct iUIContext : public iUnknown
   //! @{
 
   //! Create an iProfDraw instance which uses the specifed canvas and font.
-  virtual iProfDraw* __stdcall CreateProfDraw(iCanvas* apCanvas, iFont* apFont) const = 0;
+  virtual iProfDraw* __stdcall CreateProfDraw(iCanvas* apCanvas,
+                                              iFont* apFont) const = 0;
   //! @}
 
   //########################################################################################
@@ -447,9 +491,10 @@ struct iUIContext : public iUnknown
   //! @}
 };
 
-niExportFunc(iUnknown*) New_niUI_UIContext(const Var& aGraphicsContext, const Var&);
+niExportFunc(iUnknown*) New_niUI_UIContext(const Var& aGraphicsContext,
+                                           const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IUICONTEXT_45078280_H__

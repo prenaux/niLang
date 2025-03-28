@@ -9,26 +9,31 @@
 #pragma niTodo("Implement invalidate")
 
 template <typename T>
-inline tBool ClipDim(T& p, T& s, const T aP, const T aSz, const T aMaxSz) {
-  p = aP; s = aSz==0?aMaxSz:aSz;
-  if (p >= aMaxSz) return eFalse; // outsize of size
+inline tBool ClipDim(T& p, T& s, const T aP, const T aSz, const T aMaxSz)
+{
+  p = aP;
+  s = aSz == 0 ? aMaxSz : aSz;
+  if (p >= aMaxSz)
+    return eFalse; // outsize of size
   if (p < 0) {
-    T d = 0-p;
+    T d = 0 - p;
     p = 0;
     s -= d;
   }
-  if (p+s > aMaxSz) {
-    T d = (p+s)-aMaxSz;
+  if (p + s > aMaxSz) {
+    T d = (p + s) - aMaxSz;
     s -= d;
   }
-  if (s <= 0) return eFalse;
+  if (s <= 0)
+    return eFalse;
   return eTrue;
 }
 
 template <typename T>
-inline tBool ClipBlitBox(sVec3i& aClPos, sVec3i& aClSz,
-                         T* apSrc, const tU32 anLevel,
-                         const sVec3i& aPos, const sVec3i& aSz) {
+inline tBool ClipBlitBox(sVec3i& aClPos, sVec3i& aClSz, T* apSrc,
+                         const tU32 anLevel, const sVec3i& aPos,
+                         const sVec3i& aSz)
+{
   tI32 nWidth = (tI32)apSrc->GetWidth();
   tI32 nHeight = (tI32)apSrc->GetHeight();
   tI32 nDepth = (tI32)apSrc->GetDepth();
@@ -38,23 +43,30 @@ inline tBool ClipBlitBox(sVec3i& aClPos, sVec3i& aClSz,
     nDepth >>= anLevel;
   }
 
-  if (!ClipDim(aClPos.x,aClSz.x,aPos.x,aSz.x,nWidth)) return eFalse;
-  if (!ClipDim(aClPos.y,aClSz.y,aPos.y,aSz.y,nHeight)) return eFalse;
-  if (!ClipDim(aClPos.z,aClSz.z,aPos.z,aSz.z,nDepth)) return eFalse;
+  if (!ClipDim(aClPos.x, aClSz.x, aPos.x, aSz.x, nWidth))
+    return eFalse;
+  if (!ClipDim(aClPos.y, aClSz.y, aPos.y, aSz.y, nHeight))
+    return eFalse;
+  if (!ClipDim(aClPos.z, aClSz.z, aPos.z, aSz.z, nDepth))
+    return eFalse;
 
   return eTrue;
 }
 
 ///////////////////////////////////////////////
 // Return the number of mipmaps to create.
-inline tU32 GetNumMipMaps3D(tU32 w, tU32 h, tU32 d, tU32 minw, tU32 minh, tU32 mind)
+inline tU32 GetNumMipMaps3D(tU32 w, tU32 h, tU32 d, tU32 minw, tU32 minh,
+                            tU32 mind)
 {
-  if(minw == 0) minw = 1;
-  if(minh == 0) minh = 1;
-  if(mind == 0) mind = 1;
+  if (minw == 0)
+    minw = 1;
+  if (minh == 0)
+    minh = 1;
+  if (mind == 0)
+    mind = 1;
   tU32 i = 0;
   while (1) {
-    if(w <= minw && h <= minh && d <= mind)
+    if (w <= minw && h <= minh && d <= mind)
       return 0;
     w >>= 1;
     h >>= 1;
@@ -68,7 +80,8 @@ inline tU32 GetNumMipMaps3D(tU32 w, tU32 h, tU32 d, tU32 minw, tU32 minh, tU32 m
 // cBitmap3D implementation
 
 ///////////////////////////////////////////////
-cBitmap3D::cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool abAllocateData)
+cBitmap3D::cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt,
+                     tBool abAllocateData)
 {
   niPanicAssert(niIsOK(pPixFmt));
   mulWidth = ulW;
@@ -78,7 +91,7 @@ cBitmap3D::cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool 
 
   mnRowPitch = mulWidth * mptrPxf->GetBytesPerPixel();
   mnSlicePitch = mnRowPitch * mulHeight;
-  mnSize = mptrPxf->GetSize(mulWidth,mulHeight,mulDepth);
+  mnSize = mptrPxf->GetSize(mulWidth, mulHeight, mulDepth);
 
   if (abAllocateData) {
     mptrData = (tPtr)niMalloc(mnSize);
@@ -131,30 +144,30 @@ tBool cBitmap3D::CreateMipMaps(tU32 anNumMipMaps, tBool abCompute)
 {
   RemoveMipMaps();
 
-  if (abCompute && (!IsPow2(mulWidth) || !IsPow2(mulHeight) || !IsPow2(mulDepth))) {
+  if (abCompute &&
+      (!IsPow2(mulWidth) || !IsPow2(mulHeight) || !IsPow2(mulDepth)))
+  {
     niWarning(niFmt("Can't compute mip maps of npot 3d bitmaps: %dx%dx%d.",
                     mulWidth, mulHeight, mulDepth));
     return eFalse;
   }
 
-  tU32 ulNumMipMaps = ni::Min(
-      GetNumMipMaps3D(GetWidth()>>1,GetHeight()>>1,GetDepth()>>1,1,1,1),
-      (anNumMipMaps ?
-       anNumMipMaps :
-       GetNumMipMaps3D(GetWidth()>>1,GetHeight()>>1,GetDepth()>>1,4,4,4)));
-  if (!ulNumMipMaps)
-  {
-    niWarning(niFmt(_A("No mip map required for resolution %dx%dx%d."),GetWidth(),GetHeight(),GetDepth()));
+  tU32 ulNumMipMaps =
+    ni::Min(GetNumMipMaps3D(GetWidth() >> 1, GetHeight() >> 1, GetDepth() >> 1,
+                            1, 1, 1),
+            (anNumMipMaps ? anNumMipMaps
+                          : GetNumMipMaps3D(GetWidth() >> 1, GetHeight() >> 1,
+                                            GetDepth() >> 1, 4, 4, 4)));
+  if (!ulNumMipMaps) {
+    niWarning(niFmt(_A("No mip map required for resolution %dx%dx%d."),
+                    GetWidth(), GetHeight(), GetDepth()));
     return eTrue;
   }
 
-
-  if (abCompute)
-  {
+  if (abCompute) {
     // create the first mipmap
-    iBitmap3D* pMip0 = CreateResized(GetWidth()>>1,
-                                     GetHeight()>>1,
-                                     GetDepth()>>1);
+    iBitmap3D* pMip0 =
+      CreateResized(GetWidth() >> 1, GetHeight() >> 1, GetDepth() >> 1);
     if (!niIsOK(pMip0)) {
       RemoveMipMaps();
       niWarning(_A("Can't compute mipmap 0."));
@@ -163,44 +176,36 @@ tBool cBitmap3D::CreateMipMaps(tU32 anNumMipMaps, tBool abCompute)
 
     _ResizeMipMapsVector(ulNumMipMaps);
     mvMipMaps[0] = pMip0;
-    for (tU32 i = 1; i < GetNumMipMaps(); ++i)
-    {
-      iBitmap3D* srcMip = GetMipMap(i-1);
-      mvMipMaps[i] = srcMip->CreateResized(
-          srcMip->GetWidth()>>1,
-          srcMip->GetHeight()>>1,
-          srcMip->GetDepth()>>1);
-      if (!niIsOK(mvMipMaps[i]))  {
+    for (tU32 i = 1; i < GetNumMipMaps(); ++i) {
+      iBitmap3D* srcMip = GetMipMap(i - 1);
+      mvMipMaps[i] =
+        srcMip->CreateResized(srcMip->GetWidth() >> 1, srcMip->GetHeight() >> 1,
+                              srcMip->GetDepth() >> 1);
+      if (!niIsOK(mvMipMaps[i])) {
         RemoveMipMaps();
         niError(niFmt(_A("Can't compute mipmap %d."), i));
         return eFalse;
       }
     }
   }
-  else
-  {
+  else {
     _ResizeMipMapsVector(ulNumMipMaps);
 
     // create the first mipmap
-    mvMipMaps[0] = niNew cBitmap3D(
-        GetWidth()>>1,GetHeight()>>1,GetDepth()>>1,
-        GetPixelFormat()->Clone(), eTrue);
-    if (!niIsOK(mvMipMaps[0]))
-    {
+    mvMipMaps[0] =
+      niNew cBitmap3D(GetWidth() >> 1, GetHeight() >> 1, GetDepth() >> 1,
+                      GetPixelFormat()->Clone(), eTrue);
+    if (!niIsOK(mvMipMaps[0])) {
       RemoveMipMaps();
       niWarning(_A("Can't create mipmap 0."));
       return eFalse;
     }
 
-    for (tU32 i = 1; i < GetNumMipMaps(); ++i)
-    {
+    for (tU32 i = 1; i < GetNumMipMaps(); ++i) {
       mvMipMaps[i] = niNew cBitmap3D(
-          mvMipMaps[i-1]->GetWidth()>>1,
-          mvMipMaps[i-1]->GetHeight()>>1,
-          mvMipMaps[i-1]->GetHeight()>>1,
-          GetPixelFormat()->Clone(), eTrue);
-      if (!niIsOK(mvMipMaps[i]))
-      {
+        mvMipMaps[i - 1]->GetWidth() >> 1, mvMipMaps[i - 1]->GetHeight() >> 1,
+        mvMipMaps[i - 1]->GetHeight() >> 1, GetPixelFormat()->Clone(), eTrue);
+      if (!niIsOK(mvMipMaps[i])) {
         RemoveMipMaps();
         niWarning(niFmt(_A("Can't create mipmap %d."), i));
         return eFalse;
@@ -229,8 +234,8 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit aBlitMode) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mulWidth, mulHeight, mulDepth,
-                                          ptrPxfClone, eTrue);
+  Ptr<cBitmap3D> ptrOut =
+    niNew cBitmap3D(mulWidth, mulHeight, mulDepth, ptrPxfClone, eTrue);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -243,10 +248,10 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit aBlitMode) const
 
   if (GetNumMipMaps()) {
     ptrOut->_ResizeMipMapsVector(GetNumMipMaps());
-    niLoop(i,GetNumMipMaps()) {
+    niLoop (i, GetNumMipMaps()) {
       ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->Clone(aBlitMode);
       if (!ptrOut->mvMipMaps[i].IsOK()) {
-        niError(niFmt(_A("Can't process mipmap '%d'."),i));
+        niError(niFmt(_A("Can't process mipmap '%d'."), i));
         return NULL;
       }
     }
@@ -259,11 +264,11 @@ iBitmapBase* cBitmap3D::Clone(ePixelFormatBlit aBlitMode) const
 //! Create a copy of the bitmap that use the given format.
 iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* apFmt) const
 {
-  niCheckIsOK(apFmt,NULL);
+  niCheckIsOK(apFmt, NULL);
   Ptr<iPixelFormat> ptrPxfClone = apFmt->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(mulWidth, mulHeight, mulDepth,
-                                          ptrPxfClone, eTrue);
+  Ptr<cBitmap3D> ptrOut =
+    niNew cBitmap3D(mulWidth, mulHeight, mulDepth, ptrPxfClone, eTrue);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -276,10 +281,11 @@ iBitmapBase* cBitmap3D::CreateConvertedFormat(const iPixelFormat* apFmt) const
 
   if (GetNumMipMaps()) {
     ptrOut->_ResizeMipMapsVector(GetNumMipMaps());
-    niLoop(i,GetNumMipMaps()) {
-      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->CreateConvertedFormat(apFmt);
+    niLoop (i, GetNumMipMaps()) {
+      ptrOut->mvMipMaps[i] =
+        (iBitmap3D*)this->mvMipMaps[i]->CreateConvertedFormat(apFmt);
       if (!ptrOut->mvMipMaps[i].IsOK()) {
-        niError(niFmt(_A("Can't process mipmap '%d'."),i));
+        niError(niFmt(_A("Can't process mipmap '%d'."), i));
         return NULL;
       }
     }
@@ -294,8 +300,8 @@ iBitmapBase* cBitmap3D::CreateGammaCorrected(tF32 factor) const
 {
   Ptr<iPixelFormat> ptrPxfClone = mptrPxf->Clone();
 
-  Ptr<cBitmap3D> ptrOut = niNew cBitmap3D(
-    mulWidth, mulHeight, mulDepth, ptrPxfClone, eFalse);
+  Ptr<cBitmap3D> ptrOut =
+    niNew cBitmap3D(mulWidth, mulHeight, mulDepth, ptrPxfClone, eFalse);
   if (!niIsOK(ptrOut)) {
     niError(_A("Can't allocate the out cube bitmap."));
     return NULL;
@@ -306,13 +312,13 @@ iBitmapBase* cBitmap3D::CreateGammaCorrected(tF32 factor) const
     return NULL;
   }
 
-
   if (GetNumMipMaps()) {
     ptrOut->_ResizeMipMapsVector(GetNumMipMaps());
-    niLoop(i,GetNumMipMaps()) {
-      ptrOut->mvMipMaps[i] = (iBitmap3D*)this->mvMipMaps[i]->CreateGammaCorrected(factor);
+    niLoop (i, GetNumMipMaps()) {
+      ptrOut->mvMipMaps[i] =
+        (iBitmap3D*)this->mvMipMaps[i]->CreateGammaCorrected(factor);
       if (!ptrOut->mvMipMaps[i].IsOK()) {
-        niError(niFmt(_A("Can't process mipmap '%d'."),i));
+        niError(niFmt(_A("Can't process mipmap '%d'."), i));
         return NULL;
       }
     }
@@ -325,7 +331,7 @@ iBitmapBase* cBitmap3D::CreateGammaCorrected(tF32 factor) const
 //! Correct gamma of the bitmap.
 tBool cBitmap3D::GammaCorrect(float factor)
 {
-  niLoop(i,mulDepth) {
+  niLoop (i, mulDepth) {
     ni::Ptr<iBitmap2D> bmp = _GetSliceBmp(i);
     if (!bmp.IsOK() || !bmp->GammaCorrect(factor))
       return eFalse;
@@ -340,22 +346,23 @@ tBool cBitmap3D::BeginUnpackPixels()
 }
 
 ///////////////////////////////////////////////
-void  cBitmap3D::EndUnpackPixels()
+void cBitmap3D::EndUnpackPixels()
 {
 }
 
 ///////////////////////////////////////////////
 iBitmap3D* cBitmap3D::GetMipMap(tU32 ulIdx) const
 {
-  niCheckSilent(ulIdx < GetNumMipMaps(),NULL);
+  niCheckSilent(ulIdx < GetNumMipMaps(), NULL);
   return mvMipMaps[ulIdx];
 }
 
 ///////////////////////////////////////////////
 iBitmap3D* __stdcall cBitmap3D::GetLevel(tU32 anIndex) const
 {
-  if (anIndex == 0) return niConstCast(cBitmap3D*,this);
-  return GetMipMap(anIndex-1);
+  if (anIndex == 0)
+    return niConstCast(cBitmap3D*, this);
+  return GetMipMap(anIndex - 1);
 }
 
 ///////////////////////////////////////////////
@@ -366,20 +373,21 @@ void cBitmap3D::_ResizeMipMapsVector(tU32 aulNumMipMaps)
 }
 
 ///////////////////////////////////////////////
-tPtr        cBitmap3D::_GetSlicePtr(tU32 anSlice) const
+tPtr cBitmap3D::_GetSlicePtr(tU32 anSlice) const
 {
   return mptrData + anSlice * mnSlicePitch;
 }
 
 ///////////////////////////////////////////////
-iBitmap2D*  cBitmap3D::_GetSliceBmp(tU32 anSlice) const
+iBitmap2D* cBitmap3D::_GetSliceBmp(tU32 anSlice) const
 {
-  return niNew cBitmap2D(mulWidth,mulHeight,mptrPxf,
-                         mnRowPitch, _GetSlicePtr(anSlice), eFalse);
+  return niNew cBitmap2D(mulWidth, mulHeight, mptrPxf, mnRowPitch,
+                         _GetSlicePtr(anSlice), eFalse);
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cBitmap3D::SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 anRowPitch, tU32 anSlicePitch)
+tBool __stdcall cBitmap3D::SetMemoryAddress(tPtr apAddr, tBool abFreeAddr,
+                                            tU32 anRowPitch, tU32 anSlicePitch)
 {
   if (mptrData == apAddr) {
     // do nothing...
@@ -400,59 +408,62 @@ tBool __stdcall cBitmap3D::SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 
 }
 
 ///////////////////////////////////////////////
-tU32  __stdcall cBitmap3D::GetRowPitch() const
+tU32 __stdcall cBitmap3D::GetRowPitch() const
 {
   return mnRowPitch;
 }
 
 ///////////////////////////////////////////////
-tU32  __stdcall cBitmap3D::GetSlicePitch() const
+tU32 __stdcall cBitmap3D::GetSlicePitch() const
 {
   return mnSlicePitch;
 }
 
 ///////////////////////////////////////////////
-tPtr  __stdcall cBitmap3D::GetData() const
+tPtr __stdcall cBitmap3D::GetData() const
 {
   return mptrData;
 }
 
 ///////////////////////////////////////////////
-tU32  __stdcall cBitmap3D::GetSize() const
+tU32 __stdcall cBitmap3D::GetSize() const
 {
   return mnSize;
 }
 
 ///////////////////////////////////////////////
-iBitmap3D* __stdcall cBitmap3D::CreateResized(tU32 anW, tU32 anH, tU32 anD) const
+iBitmap3D* __stdcall cBitmap3D::CreateResized(tU32 anW, tU32 anH,
+                                              tU32 anD) const
 {
 #pragma niTodo("IMPLEMENT")
   return NULL;
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cBitmap3D::Blit(const iBitmap3D* src, const sVec3i& avSrcMin, const sVec3i& avDestMin, const sVec3i& avSize)
+tBool __stdcall cBitmap3D::Blit(const iBitmap3D* src, const sVec3i& avSrcMin,
+                                const sVec3i& avDestMin, const sVec3i& avSize)
 {
-  niCheckSilent(niIsOK(src),eFalse);
-  if (mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed)
+  niCheckSilent(niIsOK(src), eFalse);
+  if (mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed)
     return eFalse; // not supported...
 
   sVec3i srcP, dstP, srcS, dstS;
-  if (!ClipBlitBox(srcP,srcS,src,0,avSrcMin,avSize)) return eFalse;
-  if (!ClipBlitBox(dstP,dstS,src,0,avSrcMin,avSize)) return eFalse;
+  if (!ClipBlitBox(srcP, srcS, src, 0, avSrcMin, avSize))
+    return eFalse;
+  if (!ClipBlitBox(dstP, dstS, src, 0, avSrcMin, avSize))
+    return eFalse;
   sVec3i sz;
-  ni::VecMinimize(sz,dstS,srcS);
+  ni::VecMinimize(sz, dstS, srcS);
 
   iPixelFormat* srcPxf = src->GetPixelFormat();
   tPtr srcData = src->GetData();
   tU32 srcRowPitch = src->GetRowPitch();
   tU32 srcSlPitch = src->GetSlicePitch();
-  niLoop(k,sz.z) {
-    tPtr srcSl = srcData  + (k+srcP.z)*srcSlPitch;
-    tPtr dstSl = mptrData + (k+dstP.z)*mnSlicePitch;
-    mptrPxf->Blit(dstSl,mnRowPitch,dstP.x,dstP.y,
-                  srcSl,srcRowPitch,srcPxf,srcP.x,srcP.y,
-                  sz.x,sz.y,ePixelFormatBlit_Normal);
+  niLoop (k, sz.z) {
+    tPtr srcSl = srcData + (k + srcP.z) * srcSlPitch;
+    tPtr dstSl = mptrData + (k + dstP.z) * mnSlicePitch;
+    mptrPxf->Blit(dstSl, mnRowPitch, dstP.x, dstP.y, srcSl, srcRowPitch, srcPxf,
+                  srcP.x, srcP.y, sz.x, sz.y, ePixelFormatBlit_Normal);
   }
 
   return eTrue;
@@ -461,17 +472,17 @@ tBool __stdcall cBitmap3D::Blit(const iBitmap3D* src, const sVec3i& avSrcMin, co
 ///////////////////////////////////////////////
 void __stdcall cBitmap3D::PutPixel(const sVec3i& avPos, tPtr col)
 {
-  if (mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed)
+  if (mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed)
     return; // not supported...
-  if (avPos.x < 0 || avPos.x >= (tI32)mulWidth ||
-      avPos.y < 0 || avPos.y >= (tI32)mulHeight ||
-      avPos.z < 0 || avPos.z >= (tI32)mulDepth)
+  if (avPos.x < 0 || avPos.x >= (tI32)mulWidth || avPos.y < 0 ||
+      avPos.y >= (tI32)mulHeight || avPos.z < 0 || avPos.z >= (tI32)mulDepth)
     return;
 
   tU32 i;
   tU8* pPtr = (tU8*)col;
   tU32 bypp = mptrPxf->GetBytesPerPixel();
-  tU8* pDest = mptrData + (avPos.z*mnSlicePitch) + (avPos.y*mnRowPitch) + (avPos.x*bypp);
+  tU8* pDest = mptrData + (avPos.z * mnSlicePitch) + (avPos.y * mnRowPitch) +
+               (avPos.x * bypp);
   for (i = 0; i < bypp; ++i)
     *pDest++ = *pPtr++;
 }
@@ -479,16 +490,16 @@ void __stdcall cBitmap3D::PutPixel(const sVec3i& avPos, tPtr col)
 ///////////////////////////////////////////////
 tPtr __stdcall cBitmap3D::GetPixel(const sVec3i& avPos, tPtr pOut) const
 {
-  if (!pOut || mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed)
+  if (!pOut || mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed)
     return pOut; // not supported...
-  if (avPos.x < 0 || avPos.x >= (tI32)mulWidth ||
-      avPos.y < 0 || avPos.y >= (tI32)mulHeight ||
-      avPos.z < 0 || avPos.z >= (tI32)mulDepth)
+  if (avPos.x < 0 || avPos.x >= (tI32)mulWidth || avPos.y < 0 ||
+      avPos.y >= (tI32)mulHeight || avPos.z < 0 || avPos.z >= (tI32)mulDepth)
     return pOut;
 
   tU32 i;
   tU32 bypp = mptrPxf->GetBytesPerPixel();
-  tU8* pSrc = mptrData + (avPos.z*mnSlicePitch) + (avPos.y*mnRowPitch) + (avPos.x*bypp);
+  tU8* pSrc = mptrData + (avPos.z * mnSlicePitch) + (avPos.y * mnRowPitch) +
+              (avPos.x * bypp);
   for (i = 0; i < bypp; ++i)
     *pOut++ = *pSrc++;
 
@@ -499,28 +510,28 @@ tPtr __stdcall cBitmap3D::GetPixel(const sVec3i& avPos, tPtr pOut) const
 void __stdcall cBitmap3D::Clear(tPtr pColor)
 {
   if (!pColor) {
-    if (mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed) {
-      memset(mptrData,0,mnSize);
+    if (mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed) {
+      memset(mptrData, 0, mnSize);
     }
     else {
-      niLoop(k,mulDepth) {
+      niLoop (k, mulDepth) {
         tPtr ptrSl = _GetSlicePtr(k);
-        niLoop(j,mulHeight) {
-          tPtr ptrRow = ptrSl + j*mnRowPitch;
-          memset(ptrRow,0,mnRowPitch);
+        niLoop (j, mulHeight) {
+          tPtr ptrRow = ptrSl + j * mnRowPitch;
+          memset(ptrRow, 0, mnRowPitch);
         }
       }
     }
   }
   else {
-    if (mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed)
+    if (mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed)
       return;
     tU32 bypp = mptrPxf->GetBytesPerPixel();
-    niLoop(k,mulDepth) {
+    niLoop (k, mulDepth) {
       tPtr ptrSl = _GetSlicePtr(k);
-      niLoop(j,mulHeight) {
-        tPtr ptrRow = ptrSl + j*mnRowPitch;
-        niLoop(i,bypp) {
+      niLoop (j, mulHeight) {
+        tPtr ptrRow = ptrSl + j * mnRowPitch;
+        niLoop (i, bypp) {
           *ptrRow++ = ((tU8*)(pColor))[i];
         }
       }
@@ -529,21 +540,22 @@ void __stdcall cBitmap3D::Clear(tPtr pColor)
 }
 
 ///////////////////////////////////////////////
-void __stdcall cBitmap3D::ClearBox(const sVec3i& avMin, const sVec3i& avSize, tPtr pColor)
+void __stdcall cBitmap3D::ClearBox(const sVec3i& avMin, const sVec3i& avSize,
+                                   tPtr pColor)
 {
   sVec3i dstP, dstS;
-  if (!ClipBlitBox(dstP,dstS,this,0,avMin,avSize))
+  if (!ClipBlitBox(dstP, dstS, this, 0, avMin, avSize))
     return;
 
-  if (mptrPxf->GetCaps()&ePixelFormatCaps_BlockCompressed)
+  if (mptrPxf->GetCaps() & ePixelFormatCaps_BlockCompressed)
     return; // not supported...
 
   if (pColor) {
-    for (tI32 k = dstP.z; k < dstP.z+dstS.z; ++k) {
+    for (tI32 k = dstP.z; k < dstP.z + dstS.z; ++k) {
       tPtr ptrSl = _GetSlicePtr(k);
-      for (tI32 j = dstP.y; j < dstP.y+dstS.y; ++j) {
-        tPtr ptrRow = ptrSl + j*mnRowPitch + dstP.x;
-        niLoop(i,dstS.x) {
+      for (tI32 j = dstP.y; j < dstP.y + dstS.y; ++j) {
+        tPtr ptrRow = ptrSl + j * mnRowPitch + dstP.x;
+        niLoop (i, dstS.x) {
           *ptrRow++ = ((tU8*)(pColor))[i];
         }
       }
@@ -551,11 +563,11 @@ void __stdcall cBitmap3D::ClearBox(const sVec3i& avMin, const sVec3i& avSize, tP
   }
   else {
     tU32 bypp = mptrPxf->GetBytesPerPixel();
-    for (tI32 k = dstP.z; k < dstP.z+dstS.z; ++k) {
+    for (tI32 k = dstP.z; k < dstP.z + dstS.z; ++k) {
       tPtr ptrSl = _GetSlicePtr(k);
-      for (tI32 j = dstP.y; j < dstP.y+dstS.y; ++j) {
-        tPtr ptrRow = ptrSl + j*mnRowPitch + dstP.x;
-        memset(ptrRow,0,bypp*dstS.x);
+      for (tI32 j = dstP.y; j < dstP.y + dstS.y; ++j) {
+        tPtr ptrRow = ptrSl + j * mnRowPitch + dstP.x;
+        memset(ptrRow, 0, bypp * dstS.x);
       }
     }
   }
@@ -565,16 +577,17 @@ void __stdcall cBitmap3D::ClearBox(const sVec3i& avMin, const sVec3i& avSize, tP
 void __stdcall cBitmap3D::PutPixelf(const sVec3i& avPos, const sColor4f& col)
 {
   niDeclareTempPixel();
-  mptrPxf->BuildPixelf(niTempPixelPtr(),col.x,col.y,col.z,col.w);
-  PutPixel(avPos,niTempPixelPtr());
+  mptrPxf->BuildPixelf(niTempPixelPtr(), col.x, col.y, col.z, col.w);
+  PutPixel(avPos, niTempPixelPtr());
 }
 
 ///////////////////////////////////////////////
 sColor4f __stdcall cBitmap3D::GetPixelf(const sVec3i& avPos) const
 {
   niDeclareTempPixel();
-  tPtr pix = GetPixel(avPos,niTempPixelPtr());
-  if (!pix) return sColor4f::Zero();
+  tPtr pix = GetPixel(avPos, niTempPixelPtr());
+  if (!pix)
+    return sColor4f::Zero();
   return mptrPxf->UnpackPixelf(pix);
 }
 
@@ -586,15 +599,16 @@ void __stdcall cBitmap3D::Clearf(const sColor4f& col)
   }
   else {
     niDeclareTempPixel();
-    mptrPxf->BuildPixelf(niTempPixelPtr(),col.x,col.y,col.z,col.w);
+    mptrPxf->BuildPixelf(niTempPixelPtr(), col.x, col.y, col.z, col.w);
     Clear(niTempPixelPtr());
   }
 }
 
 ///////////////////////////////////////////////
-void __stdcall cBitmap3D::ClearBoxf(const sVec3i& avMin, const sVec3i& avSize, const sColor4f& col)
+void __stdcall cBitmap3D::ClearBoxf(const sVec3i& avMin, const sVec3i& avSize,
+                                    const sColor4f& col)
 {
   niDeclareTempPixel();
-  mptrPxf->BuildPixelf(niTempPixelPtr(),col.x,col.y,col.z,col.w);
-  ClearBox(avMin,avSize,niTempPixelPtr());
+  mptrPxf->BuildPixelf(niTempPixelPtr(), col.x, col.y, col.z, col.w);
+  ClearBox(avMin, avSize, niTempPixelPtr());
 }

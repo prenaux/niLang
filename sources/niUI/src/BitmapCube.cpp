@@ -27,14 +27,16 @@ cBitmapCube::cBitmapCube(tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces)
 }
 
 ///////////////////////////////////////////////
-cBitmapCube::~cBitmapCube() {
+cBitmapCube::~cBitmapCube()
+{
   for (tU32 i = 0; i < 6; ++i)
     mptrFaces[i] = NULL;
   mptrPxf = NULL;
 }
 
 ///////////////////////////////////////////////
-tBool cBitmapCube::IsOK() const {
+tBool cBitmapCube::IsOK() const
+{
   return eTrue;
 }
 
@@ -127,9 +129,9 @@ iBitmapBase* cBitmapCube::Clone(ePixelFormatBlit aBlitMode) const
     return NULL;
   }
 
-  for (tU32 i = 0; i < 6; ++i)
-  {
-    ptrOut->mptrFaces[i] = niStaticCast(iBitmap2D*,mptrFaces[i]->Clone(aBlitMode));
+  for (tU32 i = 0; i < 6; ++i) {
+    ptrOut->mptrFaces[i] =
+      niStaticCast(iBitmap2D*, mptrFaces[i]->Clone(aBlitMode));
     if (!niIsOK(ptrOut->mptrFaces[i])) {
       niError(niFmt(_A("Can't create copy of face %d."), i));
       return NULL;
@@ -152,9 +154,9 @@ iBitmapBase* cBitmapCube::CreateConvertedFormat(const iPixelFormat* apFmt) const
     return NULL;
   }
 
-  for (tU32 i = 0; i < 6; ++i)
-  {
-    ptrOut->mptrFaces[i] = niStaticCast(iBitmap2D*,mptrFaces[i]->CreateConvertedFormat(ptrOut->mptrPxf));
+  for (tU32 i = 0; i < 6; ++i) {
+    ptrOut->mptrFaces[i] = niStaticCast(
+      iBitmap2D*, mptrFaces[i]->CreateConvertedFormat(ptrOut->mptrPxf));
     if (!niIsOK(ptrOut->mptrFaces[i])) {
       niError(niFmt(_A("Can't create out face %d."), i));
       return NULL;
@@ -177,7 +179,8 @@ iBitmapBase* cBitmapCube::CreateGammaCorrected(float factor) const
   }
 
   for (tU32 i = 0; i < 6; ++i) {
-    ptrOut->mptrFaces[i] = static_cast<iBitmap2D*>(mptrFaces[i]->CreateGammaCorrected(factor));
+    ptrOut->mptrFaces[i] =
+      static_cast<iBitmap2D*>(mptrFaces[i]->CreateGammaCorrected(factor));
     if (!niIsOK(ptrOut->mptrFaces[i])) {
       niError(niFmt(_A("Can't create out face %d."), i));
       return NULL;
@@ -191,8 +194,7 @@ iBitmapBase* cBitmapCube::CreateGammaCorrected(float factor) const
 //! Correct gamma of the bitmap.
 tBool cBitmapCube::GammaCorrect(float factor)
 {
-  for (tU32 i = 0; i < 6; ++i)
-  {
+  for (tU32 i = 0; i < 6; ++i) {
     niAssert(niIsOK(mptrFaces[i]));
     if (!mptrFaces[i]->GammaCorrect(factor))
       return eFalse;

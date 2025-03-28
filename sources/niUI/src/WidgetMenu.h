@@ -3,14 +3,14 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-typedef astl::vector<Ptr<iWidgetMenuItem> > tWidgetMenuItemVec;
-typedef tWidgetMenuItemVec::iterator            tWidgetMenuItemVecIt;
-typedef tWidgetMenuItemVec::const_iterator        tWidgetMenuItemVecCIt;
+typedef astl::vector<Ptr<iWidgetMenuItem>> tWidgetMenuItemVec;
+typedef tWidgetMenuItemVec::iterator tWidgetMenuItemVecIt;
+typedef tWidgetMenuItemVec::const_iterator tWidgetMenuItemVecCIt;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetMenu declaration.
-class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetMenu>
-{
+class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink, ni::eImplFlags_Default,
+                                      ni::iWidgetMenu> {
   niBeginClass(cWidgetMenu);
 
  public:
@@ -25,12 +25,14 @@ class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni:
   ni::tBool __stdcall IsOK() const;
 
   //// iWidgetSink //////////////////////////////
-  tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 anMsg, const Var& avarA, const Var& avarB);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& avarA,
+                               const Var& avarB);
   //// iWidgetSink //////////////////////////////
 
   //// ni::iWidgetMenu /////////////////////////
   tBool __stdcall ClearItems();
-  iWidgetMenuItem* __stdcall AddItem(const achar* aaszName, iHString* ahspID, tWidgetMenuItemFlags aFlags);
+  iWidgetMenuItem* __stdcall AddItem(const achar* aaszName, iHString* ahspID,
+                                     tWidgetMenuItemFlags aFlags);
   tBool __stdcall RemoveItem(iWidgetMenuItem* apItem);
   tU32 __stdcall GetNumItems() const;
   iWidgetMenuItem* __stdcall GetItem(tU32 anIndex) const;
@@ -46,17 +48,20 @@ class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni:
   void __stdcall UpdateSizes();
   //// ni::iWidgetMenu /////////////////////////
 
-  tU32 DrawItemRect(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX, tU32 aY);
-  tU32 DrawItemOvr(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX, tU32 aY);
-  tU32 DrawItemText(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX, tU32 aY);
+  tU32 DrawItemRect(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX,
+                    tU32 aY);
+  tU32 DrawItemOvr(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX,
+                   tU32 aY);
+  tU32 DrawItemText(iCanvas* apIM, iFont* apFont, tU32 anIndex, tU32 aX,
+                    tU32 aY);
   tU32 FindItemFromPos(const sVec2f& avPos);
   void SelectItem(tU32 anNewSel);
-  struct sMouseMessageResult
-  {
-    tBool       bIntersect;
-    eWidgetMenuCmd  Msg;
-    Ptr<iWidgetMenuItem>  ptrItem;
-    sMouseMessageResult() {
+  struct sMouseMessageResult {
+    tBool bIntersect;
+    eWidgetMenuCmd Msg;
+    Ptr<iWidgetMenuItem> ptrItem;
+    sMouseMessageResult()
+    {
       bIntersect = eFalse;
       Msg = eWidgetMenuCmd_ForceDWORD;
     }
@@ -64,7 +69,8 @@ class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni:
   tBool _TestMouseIntersect(const sVec2f& avMousePos);
   sMouseMessageResult ProcessMouseMessage(tU32 anMsg, const sVec2f& avMousePos);
   sMouseMessageResult ProcessKeyInput(tU32 aKey, tU32 anKeyMod, tBool abIsDown);
-  void ProcessMouseClickResult(const sMouseMessageResult& aRes, iWidget* apRoot);
+  void ProcessMouseClickResult(const sMouseMessageResult& aRes,
+                               iWidget* apRoot);
   void ProcessClick(sMouseMessageResult& aRes);
   void ShowSubMenu();
   void CloseSubMenu();
@@ -76,24 +82,24 @@ class cWidgetMenu : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni:
   void SelectPrevSeparator();
 
  private:
-  iWidget*    mpWidget;
-  tWidgetMenuItemVec  mvItems;
-  tU32      mnSelectedItem;
-  tU32      mnRightMargin;
-  tU32      mnLeftMargin;
-  tU32      mnItemHeight;
-  tU32      mnItemWidth;
-  tU32      mnWidth;
-  tU32      mnHeight;
-  iWidget*    mpActiveSubMenu;
-  tBool     mbKeyInput;
-  tBool     mbClickDown;
+  iWidget* mpWidget;
+  tWidgetMenuItemVec mvItems;
+  tU32 mnSelectedItem;
+  tU32 mnRightMargin;
+  tU32 mnLeftMargin;
+  tU32 mnItemHeight;
+  tU32 mnItemWidth;
+  tU32 mnWidth;
+  tU32 mnHeight;
+  iWidget* mpActiveSubMenu;
+  tBool mbKeyInput;
+  tBool mbClickDown;
 
-  tBool       mbShouldUpdateSizes;
-  tBool   mbIsSubMenu;
-  tBool   mbIsSubSubMenu;
+  tBool mbShouldUpdateSizes;
+  tBool mbIsSubMenu;
+  tBool mbIsSubSubMenu;
 
-  tHStringPtr     mhspPrevOpenLocale;
+  tHStringPtr mhspPrevOpenLocale;
 
   void InitSkin();
   struct sSkin {

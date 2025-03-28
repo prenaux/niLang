@@ -18,33 +18,33 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //===============================================span_interpolator_adaptor
-template<class Interpolator, class Distortion>
-class span_interpolator_adaptor : public Interpolator
-{
+template <class Interpolator, class Distortion>
+class span_interpolator_adaptor : public Interpolator {
  public:
   typedef Interpolator base_type;
   typedef typename base_type::trans_type trans_type;
   typedef Distortion distortion_type;
 
   //--------------------------------------------------------------------
-  span_interpolator_adaptor() {}
+  span_interpolator_adaptor()
+  {
+  }
   span_interpolator_adaptor(const trans_type& trans,
-                            const distortion_type& dist) :
-      base_type(trans),
-      m_distortion(&dist)
+                            const distortion_type& dist)
+      : base_type(trans)
+      , m_distortion(&dist)
   {
   }
 
   //--------------------------------------------------------------------
   span_interpolator_adaptor(const trans_type& trans,
-                            const distortion_type& dist,
-                            agg_real x, agg_real y, unsigned len) :
-      base_type(trans, x, y, len),
-      m_distortion(&dist)
+                            const distortion_type& dist, agg_real x, agg_real y,
+                            unsigned len)
+      : base_type(trans, x, y, len)
+      , m_distortion(&dist)
   {
   }
 
@@ -71,7 +71,6 @@ class span_interpolator_adaptor : public Interpolator
   //--------------------------------------------------------------------
   const distortion_type* m_distortion;
 };
-}
-
+} // namespace agg
 
 #endif

@@ -2,7 +2,7 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eWidgetTextStyle">
 			<comments desc="Widget text style "/>
-			<value min_features="20" name="eWidgetTextStyle_MouseSelect" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value min_features="20" name="eWidgetTextStyle_MouseSelect" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Allow text selection with the mouse "/>
 			</value>
 		</enum>

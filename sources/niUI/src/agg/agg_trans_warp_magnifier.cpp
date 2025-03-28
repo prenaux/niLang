@@ -16,8 +16,7 @@
 #include <math.h>
 #include "agg_trans_warp_magnifier.h"
 
-namespace agg
-{
+namespace agg {
 
 //------------------------------------------------------------------------
 void trans_warp_magnifier::transform(agg_real* x, agg_real* y) const
@@ -25,8 +24,7 @@ void trans_warp_magnifier::transform(agg_real* x, agg_real* y) const
   agg_real dx = *x - m_xc;
   agg_real dy = *y - m_yc;
   agg_real r = sqrt(dx * dx + dy * dy);
-  if(r < m_radius)
-  {
+  if (r < m_radius) {
     *x = m_xc + dx * m_magn;
     *y = m_yc + dy * m_magn;
     return;
@@ -46,5 +44,4 @@ void trans_warp_magnifier::inverse_transform(agg_real* x, agg_real* y) const
   t.transform(x, y);
 }
 
-
-}
+} // namespace agg

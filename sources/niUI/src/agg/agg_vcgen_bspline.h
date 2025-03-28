@@ -20,15 +20,11 @@
 #include "agg_array.h"
 #include "agg_bspline.h"
 
-
-namespace agg
-{
+namespace agg {
 
 //==========================================================vcgen_bspline
-class vcgen_bspline
-{
-  enum status_e
-  {
+class vcgen_bspline {
+  enum status_e {
     initial,
     ready,
     polygon,
@@ -41,34 +37,38 @@ class vcgen_bspline
 
   vcgen_bspline();
 
-  void interpolation_step(agg_real v) { m_interpolation_step = v; }
-  agg_real interpolation_step() const { return m_interpolation_step; }
+  void interpolation_step(agg_real v)
+  {
+    m_interpolation_step = v;
+  }
+  agg_real interpolation_step() const
+  {
+    return m_interpolation_step;
+  }
 
   // Vertex Generator Interface
   void remove_all();
   void add_vertex(agg_real x, agg_real y, unsigned cmd);
 
   // Vertex Source Interface
-  void     rewind(unsigned path_id);
+  void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
   vcgen_bspline(const vcgen_bspline&);
-  const vcgen_bspline& operator = (const vcgen_bspline&);
+  const vcgen_bspline& operator=(const vcgen_bspline&);
 
   vertex_storage m_src_vertices;
-  bspline        m_spline_x;
-  bspline        m_spline_y;
-  agg_real         m_interpolation_step;
-  unsigned       m_closed;
-  status_e       m_status;
-  unsigned       m_src_vertex;
-  agg_real         m_cur_abscissa;
-  agg_real         m_max_abscissa;
+  bspline m_spline_x;
+  bspline m_spline_y;
+  agg_real m_interpolation_step;
+  unsigned m_closed;
+  status_e m_status;
+  unsigned m_src_vertex;
+  agg_real m_cur_abscissa;
+  agg_real m_max_abscissa;
 };
 
-}
-
+} // namespace agg
 
 #endif
-

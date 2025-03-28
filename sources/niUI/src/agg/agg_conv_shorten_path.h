@@ -20,31 +20,35 @@
 #include "agg_conv_adaptor_vcgen.h"
 #include "agg_vcgen_vertex_sequence.h"
 
-namespace agg
-{
+namespace agg {
 
 //=======================================================conv_shorten_path
-template<class VertexSource>  class conv_shorten_path :
-      public conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence>
-{
+template <class VertexSource>
+class conv_shorten_path
+    : public conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence> {
  public:
   typedef conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence> base_type;
 
-  conv_shorten_path(VertexSource& vs) :
-      conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence>(vs)
+  conv_shorten_path(VertexSource& vs)
+      : conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence>(vs)
   {
   }
 
-  void shorten(agg_real s) { base_type::generator().shorten(s); }
-  agg_real shorten() const { return base_type::generator().shorten(); }
+  void shorten(agg_real s)
+  {
+    base_type::generator().shorten(s);
+  }
+  agg_real shorten() const
+  {
+    return base_type::generator().shorten();
+  }
 
  private:
   conv_shorten_path(const conv_shorten_path<VertexSource>&);
-  const conv_shorten_path<VertexSource>&
-  operator = (const conv_shorten_path<VertexSource>&);
+  const conv_shorten_path<VertexSource>& operator=(
+    const conv_shorten_path<VertexSource>&);
 };
 
-
-}
+} // namespace agg
 
 #endif

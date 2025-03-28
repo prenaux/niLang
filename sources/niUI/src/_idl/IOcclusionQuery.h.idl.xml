@@ -2,19 +2,19 @@
 	<namespace name="ni">
 		<enum name="eOcclusionQueryStatus">
 			<comments desc="Occlusion query status. "/>
-			<value name="eOcclusionQueryStatus_NotIssued" value="0 ">
+			<value name="eOcclusionQueryStatus_NotIssued" value="0">
 				<comments desc="No query has been issued yet. "/>
 			</value>
-			<value name="eOcclusionQueryStatus_Began" value="1 ">
+			<value name="eOcclusionQueryStatus_Began" value="1">
 				<comments desc="The query has began but is not ended yet. "/>
 			</value>
-			<value name="eOcclusionQueryStatus_Pending" value="2 ">
+			<value name="eOcclusionQueryStatus_Pending" value="2">
 				<comments desc="Waiting for the query to return. "/>
 			</value>
-			<value name="eOcclusionQueryStatus_Successful" value="3 ">
+			<value name="eOcclusionQueryStatus_Successful" value="3">
 				<comments desc="The query status is available. "/>
 			</value>
-			<value name="eOcclusionQueryStatus_Failed" value="4 ">
+			<value name="eOcclusionQueryStatus_Failed" value="4">
 				<comments desc="The query failed. "/>
 			</value>
 		</enum>

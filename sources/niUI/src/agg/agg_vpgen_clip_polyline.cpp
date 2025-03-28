@@ -16,8 +16,7 @@
 #include "agg_vpgen_clip_polyline.h"
 #include "agg_clip_liang_barsky.h"
 
-namespace agg
-{
+namespace agg {
 //----------------------------------------------------------------------------
 void vpgen_clip_polyline::reset()
 {
@@ -45,10 +44,8 @@ void vpgen_clip_polyline::line_to(agg_real x, agg_real y)
 
   m_vertex = 0;
   m_num_vertices = 0;
-  if((flags & 4) == 0)
-  {
-    if((flags & 1) != 0 || m_move_to)
-    {
+  if ((flags & 4) == 0) {
+    if ((flags & 1) != 0 || m_move_to) {
       m_x[0] = m_x1;
       m_y[0] = m_y1;
       m_cmd[0] = path_cmd_move_to;
@@ -66,12 +63,11 @@ void vpgen_clip_polyline::line_to(agg_real x, agg_real y)
 //----------------------------------------------------------------------------
 unsigned vpgen_clip_polyline::vertex(agg_real* x, agg_real* y)
 {
-  if(m_vertex < m_num_vertices)
-  {
+  if (m_vertex < m_num_vertices) {
     *x = m_x[m_vertex];
     *y = m_y[m_vertex];
     return m_cmd[m_vertex++];
   }
   return path_cmd_stop;
 }
-}
+} // namespace agg

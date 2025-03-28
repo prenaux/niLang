@@ -2,7 +2,7 @@
 	<namespace name="ni">
 		<enum name="eWidgetGroupStyle">
 			<comments desc="Group styles. "/>
-			<value name="eWidgetGroupStyle_Fold" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetGroupStyle_Fold" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Toggle the folded state when double clicking on the title. "/>
 			</value>
 		</enum>

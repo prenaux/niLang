@@ -10,8 +10,7 @@ namespace ni {
 #if niMinFeatures(20)
 
 //! VG transform type.
-enum eVGTransform
-{
+enum eVGTransform {
   //! Path to surface transform.
   eVGTransform_Path = 0,
   //! Image to surface transform.
@@ -27,8 +26,7 @@ enum eVGTransform
 };
 
 //! VG transform value.
-enum eVGTransformValue
-{
+enum eVGTransformValue {
   //! ScaleX (m0) component.
   eVGTransformValue_ScaleX = 0,
   //! RotationSkew0 (m1) component.
@@ -46,8 +44,7 @@ enum eVGTransformValue
 };
 
 //! VG transform interface.
-struct iVGTransform : public iUnknown
-{
+struct iVGTransform : public iUnknown {
   niDeclareInterfaceUUID(iVGTransform,0x399c48d6,0xe2ca,0x4560,0x82,0x66,0xc4,0x82,0x48,0x4e,0xbd,0x5d);
 
   //! Copy another transform.
@@ -75,7 +72,8 @@ struct iVGTransform : public iUnknown
   virtual tF32 __stdcall GetValue(eVGTransformValue aType) const = 0;
 
   //! Set all values.
-  virtual void __stdcall SetValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3, tF32 m4, tF32 m5) = 0;
+  virtual void __stdcall SetValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3, tF32 m4,
+                                   tF32 m5) = 0;
 
   //! Set the transform to identity.
   virtual void __stdcall Identity() = 0;
@@ -112,9 +110,11 @@ struct iVGTransform : public iUnknown
   virtual void __stdcall PreMultiplyMatrix(const sMatrixf& aMatrix) = 0;
 
   //! Multiply the transform by values.
-  virtual void __stdcall MultiplyValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3, tF32 m4, tF32 m5) = 0;
+  virtual void __stdcall MultiplyValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3,
+                                        tF32 m4, tF32 m5) = 0;
   //! PreMultiply the transform by values.
-  virtual void __stdcall PreMultiplyValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3, tF32 m4, tF32 m5) = 0;
+  virtual void __stdcall PreMultiplyValues(tF32 m0, tF32 m1, tF32 m2, tF32 m3,
+                                           tF32 m4, tF32 m5) = 0;
 
   //! Rotate the transform.
   virtual void __stdcall Rotate(tF32 afRadians) = 0;
@@ -143,10 +143,12 @@ struct iVGTransform : public iUnknown
 
   //! Generates a transform that point in the direction of a line segment.
   //! \remark If afDist > 0.0f it will be used to scale in function of the line's length.
-  virtual void __stdcall LineSegment(const sVec2f& aStart, const sVec2f& aEnd, tF32 afDist) = 0;
+  virtual void __stdcall LineSegment(const sVec2f& aStart, const sVec2f& aEnd,
+                                     tF32 afDist) = 0;
   //! Generates a transform that point in the direction of a line segment.
   //! \see ni::iVGTransform::LineSegment
-  virtual void __stdcall PreLineSegment(const sVec2f& aStart, const sVec2f& aEnd, tF32 afDist) = 0;
+  virtual void __stdcall PreLineSegment(const sVec2f& aStart,
+                                        const sVec2f& aEnd, tF32 afDist) = 0;
 
   //! Get the transform's rotation.
   //! {Property}
@@ -170,5 +172,5 @@ struct iVGTransform : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGTRANSFORM_39683212_H__

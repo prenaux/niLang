@@ -22,15 +22,16 @@
 #include "agg_basics.h"
 #include "agg_simul_eq.h"
 
-namespace agg
-{
+namespace agg {
 
 //==========================================================trans_bilinear
-class trans_bilinear
-{
+class trans_bilinear {
  public:
   //--------------------------------------------------------------------
-  trans_bilinear() : m_valid(false) {}
+  trans_bilinear()
+      : m_valid(false)
+  {
+  }
 
   //--------------------------------------------------------------------
   // Arbitrary quadrangle transformations
@@ -38,7 +39,6 @@ class trans_bilinear
   {
     quad_to_quad(src, dst);
   }
-
 
   //--------------------------------------------------------------------
   // Direct transformations
@@ -48,15 +48,13 @@ class trans_bilinear
     rect_to_quad(x1, y1, x2, y2, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Reverse transformations
-  trans_bilinear(const agg_real* quad,
-                 agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  trans_bilinear(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                 agg_real y2)
   {
     quad_to_rect(quad, x1, y1, x2, y2);
   }
-
 
   //--------------------------------------------------------------------
   // Set the transformations using two arbitrary quadrangles.
@@ -66,8 +64,7 @@ class trans_bilinear
     agg_real right[4][2];
 
     unsigned i;
-    for(i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
       unsigned ix = i * 2;
       unsigned iy = ix + 1;
       left[i][0] = 1.0;
@@ -80,7 +77,6 @@ class trans_bilinear
     }
     m_valid = simul_eq<4, 2>::solve(left, right, m_mtx);
   }
-
 
   //--------------------------------------------------------------------
   // Set the direct transformations, i.e., rectangle -> quadrangle
@@ -95,11 +91,10 @@ class trans_bilinear
     quad_to_quad(src, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Set the reverse transformations, i.e., quadrangle -> rectangle
-  void quad_to_rect(const agg_real* quad,
-                    agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  void quad_to_rect(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                    agg_real y2)
   {
     agg_real dst[8];
     dst[0] = dst[6] = x1;
@@ -111,7 +106,10 @@ class trans_bilinear
 
   //--------------------------------------------------------------------
   // Check if the equations were solved successfully
-  bool is_valid() const { return m_valid; }
+  bool is_valid() const
+  {
+    return m_valid;
+  }
 
   //--------------------------------------------------------------------
   // Transform a point (x, y)
@@ -124,10 +122,8 @@ class trans_bilinear
     *y = m_mtx[0][1] + m_mtx[1][1] * xy + m_mtx[2][1] * tx + m_mtx[3][1] * ty;
   }
 
-
   //--------------------------------------------------------------------
-  class iterator_x
-  {
+  class iterator_x {
     agg_real inc_x;
     agg_real inc_y;
 
@@ -135,16 +131,18 @@ class trans_bilinear
     agg_real x;
     agg_real y;
 
-    iterator_x() {}
-    iterator_x(agg_real tx, agg_real ty, agg_real step, const agg_real m[4][2]) :
-        inc_x(m[1][0] * step * ty + m[2][0] * step),
-        inc_y(m[1][1] * step * ty + m[2][1] * step),
-        x(m[0][0] + m[1][0] * tx * ty + m[2][0] * tx + m[3][0] * ty),
-        y(m[0][1] + m[1][1] * tx * ty + m[2][1] * tx + m[3][1] * ty)
+    iterator_x()
+    {
+    }
+    iterator_x(agg_real tx, agg_real ty, agg_real step, const agg_real m[4][2])
+        : inc_x(m[1][0] * step * ty + m[2][0] * step)
+        , inc_y(m[1][1] * step * ty + m[2][1] * step)
+        , x(m[0][0] + m[1][0] * tx * ty + m[2][0] * tx + m[3][0] * ty)
+        , y(m[0][1] + m[1][1] * tx * ty + m[2][1] * tx + m[3][1] * ty)
     {
     }
 
-    void operator ++ ()
+    void operator++()
     {
       x += inc_x;
       y += inc_y;
@@ -158,9 +156,9 @@ class trans_bilinear
 
  private:
   agg_real m_mtx[4][2];
-  bool   m_valid;
+  bool m_valid;
 };
 
-}
+} // namespace agg
 
 #endif

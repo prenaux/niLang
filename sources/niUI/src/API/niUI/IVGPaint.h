@@ -13,8 +13,7 @@ namespace ni {
 #if niMinFeatures(20)
 
 //! VG paint type.
-enum eVGPaintType
-{
+enum eVGPaintType {
   //! Solid paint type.
   eVGPaintType_Solid = 0,
   //! Image paint type.
@@ -26,8 +25,7 @@ enum eVGPaintType
 };
 
 //! VG paint units.
-enum eVGPaintUnits
-{
+enum eVGPaintUnits {
   //! Units are absolute (default).
   eVGPaintUnits_Absolute = 0,
   //! Units relative to the element's bounding box.
@@ -39,8 +37,7 @@ enum eVGPaintUnits
 };
 
 //! VG paint interface.
-struct iVGPaint : public iUnknown
-{
+struct iVGPaint : public iUnknown {
   niDeclareInterfaceUUID(iVGPaint,0x70adf57b,0x20e2,0x4734,0x90,0x3c,0xde,0x24,0xe7,0x02,0xef,0xa9);
 
   //! Copy another paint of the same type.
@@ -65,8 +62,7 @@ struct iVGPaint : public iUnknown
 };
 
 //! VG paint image interface.
-struct iVGPaintImage : public iVGPaint
-{
+struct iVGPaintImage : public iVGPaint {
   niDeclareInterfaceUUID(iVGPaintImage,0x83454203,0x03d3,0x43df,0x9f,0xc6,0x06,0xe9,0xe7,0x0a,0x78,0x2f);
 
   //! Get the painted image.
@@ -133,8 +129,7 @@ struct iVGPaintImage : public iVGPaint
 };
 
 //! VG paint gradient interface.
-struct iVGPaintGradient : public iVGPaint
-{
+struct iVGPaintGradient : public iVGPaint {
   niDeclareInterfaceUUID(iVGPaintGradient,0x2da65d45,0x7b4b,0x4885,0x9b,0x68,0x09,0xe5,0x86,0xde,0xf1,0x1b);
 
   //! Set the type of gradient.
@@ -201,5 +196,5 @@ struct iVGPaintGradient : public iVGPaint
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGPAINT_9917824_H__

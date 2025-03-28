@@ -2,8 +2,8 @@
 
 #if defined niOSX
 
-#include "GetFontFile.h"
-#include <niLang/Utils/FileEnum.h>
+  #include "GetFontFile.h"
+  #include <niLang/Utils/FileEnum.h>
 
 /*
   See: http://support.apple.com/kb/HT1642
@@ -15,7 +15,8 @@
  */
 
 ///////////////////////////////////////////////
-tBool GetAllFontFiles(tFontFileLst& aLst) {
+tBool GetAllFontFiles(tFontFileLst& aLst)
+{
   const cString fontDir = GetFontsDirectory() + _ASTR("*.ttf");
   // niDebugFmt((_A("GATHERING FONTS: %s"),fontDir.Chars()));
   ni::FindFile findFiles;
@@ -34,7 +35,8 @@ tBool GetAllFontFiles(tFontFileLst& aLst) {
 }
 
 ///////////////////////////////////////////////
-cString GetFontsDirectory() {
+cString GetFontsDirectory()
+{
   // TODO: This works, but really the bulk of the fonts on the macOS aren't
   //       there, so its a bit garbage... I think we need to use some CF API
   //       to get the list of fonts which means modifying this API a fair bit.

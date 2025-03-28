@@ -10,8 +10,7 @@ namespace ni {
 #if niMinFeatures(20)
 
 //! Toolbar group widget interface.
-struct iWidgetToolbarGroup : public iUnknown
-{
+struct iWidgetToolbarGroup : public iUnknown {
   niDeclareInterfaceUUID(iWidgetToolbarGroup,0xf0ad342b,0x5139,0x4dea,0x98,0x8f,0x1e,0xfa,0x94,0x87,0x16,0x59);
 
   //! Set the width of the group from the total with of the children.
@@ -27,8 +26,7 @@ struct iWidgetToolbarGroup : public iUnknown
 };
 
 //! Toolbar widget interface.
-struct iWidgetToolbar : public iUnknown
-{
+struct iWidgetToolbar : public iUnknown {
   niDeclareInterfaceUUID(iWidgetToolbar,0x8e50495c,0x6577,0x4693,0x80,0x59,0x8e,0x9b,0xab,0x98,0xde,0x8e);
 
   //########################################################################################
@@ -109,14 +107,16 @@ struct iWidgetToolbar : public iUnknown
 
   //! Set the name/title of the specified page.
   //! {Property}
-  virtual ni::tBool __stdcall SetPageName(iHString* ahspID, iHString* ahspName) = 0;
+  virtual ni::tBool __stdcall SetPageName(iHString* ahspID,
+                                          iHString* ahspName) = 0;
   //! Get the name/title of the specified page.
   //! {Property}
   virtual iHString* __stdcall GetPageName(iHString* ahspID) const = 0;
 
   //! Set whether the specifed page is enabled.
   //! {Property}
-  virtual ni::tBool __stdcall SetPageEnabled(iHString* ahspID, tBool abEnabled) = 0;
+  virtual ni::tBool __stdcall SetPageEnabled(iHString* ahspID,
+                                             tBool abEnabled) = 0;
   //! Get whether the specifed page is enabled.
   //! {Property}
   virtual ni::tBool __stdcall GetPageEnabled(iHString* ahspID) const = 0;
@@ -154,13 +154,16 @@ struct iWidgetToolbar : public iUnknown
   virtual iWidget* __stdcall GetTopWidgetFromID(iHString* ahspID) const = 0;
   //! Set the command destination of the specified top widget.
   //! {Property}
-  virtual tBool __stdcall SetTopWidgetCommandDestination(tU32 anIndex, iMessageHandler* apCmdDest) = 0;
+  virtual tBool __stdcall SetTopWidgetCommandDestination(
+    tU32 anIndex, iMessageHandler* apCmdDest) = 0;
   //! Get the command destination of the specified top widget.
   //! {Property}
-  virtual iMessageHandler* __stdcall GetTopWidgetCommandDestination(tU32 anIndex) const  = 0;
+  virtual iMessageHandler* __stdcall GetTopWidgetCommandDestination(
+    tU32 anIndex) const = 0;
   //! Add a top bar widget.
   //! \remark Invalid top bar widgets are removed automatically when UpdateToolbar is called.
-  virtual tBool __stdcall AddTopWidget(iWidget* apWidget, tF32 afWidth, iMessageHandler* apCmdDest) = 0;
+  virtual tBool __stdcall AddTopWidget(iWidget* apWidget, tF32 afWidth,
+                                       iMessageHandler* apCmdDest) = 0;
   //! @}
 
   //########################################################################################
@@ -170,7 +173,11 @@ struct iWidgetToolbar : public iUnknown
 
   //! Add a group in the specified page. If the page doesn't already exist it is added.
   //! \remark Calls UpdateToolbar
-  virtual iWidget* __stdcall AddGroup(iHString* ahspPageID, iHString* ahspPageName, iHString* ahspGroupID, iHString* ahspGroupName, iMessageHandler* apCmdDest) = 0;
+  virtual iWidget* __stdcall AddGroup(iHString* ahspPageID,
+                                      iHString* ahspPageName,
+                                      iHString* ahspGroupID,
+                                      iHString* ahspGroupName,
+                                      iMessageHandler* apCmdDest) = 0;
   //! Get the group with the specified ID.
   //! {Property}
   virtual iWidget* __stdcall GetGroup(ni::iHString* ahspID) const = 0;
@@ -184,5 +191,5 @@ struct iWidgetToolbar : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETTOOLBAR_35226412_H__

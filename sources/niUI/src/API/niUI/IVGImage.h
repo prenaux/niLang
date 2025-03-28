@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! VG wrap type.
-enum eVGWrapType
-{
+enum eVGWrapType {
   //! Clamp, the edge color is used when outside of the source rectangle.
   eVGWrapType_Clamp = 0,
   //! Repeat, the source is repeated at each source rectangle boundary.
@@ -24,8 +23,7 @@ enum eVGWrapType
 };
 
 //! VG Image filter.
-enum eVGImageFilter
-{
+enum eVGImageFilter {
   //! No filter.
   eVGImageFilter_Point = 0,
   //! Bilinear filter.
@@ -67,8 +65,7 @@ enum eVGImageFilter
 };
 
 //! VGImage usage.
-enum eVGImageUsage
-{
+enum eVGImageUsage {
   //! The usage is read-only to be used a source for rendering.
   //! \remark No dirty region is added.
   eVGImageUsage_Source = 0,
@@ -84,8 +81,7 @@ enum eVGImageUsage
 };
 
 //! VGImage interface.
-struct iVGImage : public iUnknown
-{
+struct iVGImage : public iUnknown {
   niDeclareInterfaceUUID(iVGImage,0x848a96e9,0x4b5c,0x43cf,0x9c,0x61,0xa2,0x6d,0xf5,0x4c,0x7f,0x07);
 
   //! Copy the specified image.
@@ -101,7 +97,8 @@ struct iVGImage : public iUnknown
   //! Grab the image as a bitmap to be used for some other operations.
   //! \remark This function only adds a dirty rectangles and manage the bitmap's update from the texture.
   //! \remark Pass a Null rectangle to identity the whole image size.
-  virtual iBitmap2D* __stdcall GrabBitmap(eVGImageUsage aLock, const sRecti& aDirtyRect) = 0;
+  virtual iBitmap2D* __stdcall GrabBitmap(eVGImageUsage aLock,
+                                          const sRecti& aDirtyRect) = 0;
   //! Get whether a texture is already initialized in the image.
   //! {Property}
   virtual tBool __stdcall GetHasTexture() const = 0;
@@ -111,7 +108,8 @@ struct iVGImage : public iUnknown
   //! Grab the image as a texture to be used for some other operations.
   //! \remark This function only adds a dirty rectangles and manage the texture's update from the bitmap.
   //! \remark Pass a Null rectangle to identity the whole image size.
-  virtual iTexture* __stdcall GrabTexture(eVGImageUsage aLock, const sRecti& aDirtyRect) = 0;
+  virtual iTexture* __stdcall GrabTexture(eVGImageUsage aLock,
+                                          const sRecti& aDirtyRect) = 0;
 
   //! Get the image's width.
   //! {Property}
@@ -131,5 +129,5 @@ struct iVGImage : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGIMAGE_4087974_H__

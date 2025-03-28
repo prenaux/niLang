@@ -21,8 +21,9 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
 
   // graphics driver config
   tHStringPtr _gdrvName;
-  tU32 _swapInterval = ni::GetProperty("swapinterval","1").Long();
-  tTextureFlags _backBufferFlags = eTextureFlags_Default|eTextureFlags_Default|eTextureFlags_RTAA4Samples;
+  tU32 _swapInterval = ni::GetProperty("swapinterval", "1").Long();
+  tTextureFlags _backBufferFlags =
+    eTextureFlags_Default | eTextureFlags_Default | eTextureFlags_RTAA4Samples;
   tClearBuffersFlags _clearBuffers = eClearBuffersFlags_ColorDepthStencil;
   tU32 _clearColor = 0;
   tF64 _clearTimer = 0.0f;
@@ -45,10 +46,13 @@ struct sFGDRV_Base : public UnitTest::iTestClass {
   virtual tBool AfterPaint(UnitTest::TestResults& testResults_);
   virtual tBool OnPaint(UnitTest::TestResults& testResults_);
 
-  virtual tBool OnKeyDown(tU32 aKey, tU32 aKeyMod) { return eFalse; }
+  virtual tBool OnKeyDown(tU32 aKey, tU32 aKeyMod)
+  {
+    return eFalse;
+  }
 };
 
 typedef sVertexPA tVertexTri;
 
-}
+} // namespace ni
 #endif // __FGDRV_H_3426D9CE_81BA_3E4A_9716_FC36725205F6__

@@ -13,19 +13,19 @@
 // "right way".
 // #define FONT_TTF_USE_EXACT_RATIO
 
-#define FT_FAILED(x)  ((x) != 0)
+#define FT_FAILED(x) ((x) != 0)
 #define FT_SUCCEEDED(x) ((x) == 0)
 
-#define FT_ERR_OK   0
-#define FT_ERR_ERROR  -1
+#define FT_ERR_OK 0
+#define FT_ERR_ERROR -1
 
 ni::cString MyFT_GetErrorString(int error);
-niExportFunc(struct FT_FaceRec_*) MyFT_Face_Open(struct FT_LibraryRec_* aLib, ni::iFile* apFile);
+niExportFunc(struct FT_FaceRec_*) MyFT_Face_Open(struct FT_LibraryRec_* aLib,
+                                                 ni::iFile* apFile);
 
 namespace ni {
 
-struct sMyFTLibrary : public ni::ImplRC<ni::iUnknown>
-{
+struct sMyFTLibrary : public ni::ImplRC<ni::iUnknown> {
   sMyFTLibrary();
   ~sMyFTLibrary();
   struct FT_LibraryRec_* mLibrary;

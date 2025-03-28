@@ -11,35 +11,34 @@ namespace ni {
  */
 
 //! Declare a temporary pixel that will be used for per-pixel operations.
-#define niDeclareTempPixel()  tU32 __tempPixel[4]
+#define niDeclareTempPixel() tU32 __tempPixel[4]
 //! Pointer to the previously declared temporary pixel.
-#define niTempPixelPtr()    tPtr(__tempPixel)
+#define niTempPixelPtr() tPtr(__tempPixel)
 
 //! Declare a temporary pixel that will be used for per-pixel operations.
-#define niDeclareTempPixel_(x)  tU32 __tempPixel_##x[4]
+#define niDeclareTempPixel_(x) tU32 __tempPixel_##x[4]
 //! Pointer to the previously declared temporary pixel.
-#define niTempPixelPtr_(x)    tPtr(__tempPixel_##x)
+#define niTempPixelPtr_(x) tPtr(__tempPixel_##x)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Pixel Format Blitting flags.
-enum ePixelFormatBlit
-{
+enum ePixelFormatBlit {
   //! Normal blitting.
-  ePixelFormatBlit_Normal     = 0x00000000,
+  ePixelFormatBlit_Normal = 0x00000000,
   //! Mirrored left right blitting.
-  ePixelFormatBlit_MirrorLeftRight= 0x00000001,
+  ePixelFormatBlit_MirrorLeftRight = 0x00000001,
   //! Mirrored up down blitting.
   ePixelFormatBlit_MirrorUpDown = 0x00000002,
   //! Diagonal mirror. Equivalent to a Pi rad rotation.
-  ePixelFormatBlit_MirrorDiagonal = ePixelFormatBlit_MirrorLeftRight|ePixelFormatBlit_MirrorUpDown,
+  ePixelFormatBlit_MirrorDiagonal =
+    ePixelFormatBlit_MirrorLeftRight | ePixelFormatBlit_MirrorUpDown,
   //! \internal
   ePixelFormatBlit_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Pixel format capabilities.
-enum ePixelFormatCaps
-{
+enum ePixelFormatCaps {
   //! Support the build pixel methods.
   ePixelFormatCaps_BuildPixel = niBit(0),
   //! Support pixel unpacking.
@@ -77,8 +76,7 @@ enum ePixelFormatCaps
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Pixel Format interface.
-struct iPixelFormat : public iUnknown
-{
+struct iPixelFormat : public iUnknown {
   niDeclareInterfaceUUID(iPixelFormat,0xdc0b6ce3,0xfd1c,0x4283,0xb6,0xb8,0x76,0x8e,0x85,0xa2,0x72,0xa4);
 
   //########################################################################################
@@ -87,7 +85,8 @@ struct iPixelFormat : public iUnknown
   //! @{
 
   //! Test if the given pixel format is the same as this pixel format.
-  virtual tBool __stdcall IsSamePixelFormat(const iPixelFormat* pPixFmt) const = 0;
+  virtual tBool __stdcall IsSamePixelFormat(
+    const iPixelFormat* pPixFmt) const = 0;
 
   //! Get the number of parameters of the pixel format.
   //! {Property}
@@ -119,7 +118,7 @@ struct iPixelFormat : public iUnknown
   virtual tU32 __stdcall GetSize(tU32 ulW, tU32 ulH, tU32 ulD) const = 0;
   //! Get the number of components of the pixel format.
   //! {Property}
-  virtual tU32 __stdcall GetNumComponents() const  = 0;
+  virtual tU32 __stdcall GetNumComponents() const = 0;
   //! Get the number of red bits.
   //! {Property}
   virtual tU32 __stdcall GetNumRBits() const = 0;
@@ -140,13 +139,17 @@ struct iPixelFormat : public iUnknown
   //! @{
 
   //! Build a pixel using unsigned byte values.
-  virtual tPtr __stdcall BuildPixelub(tPtr pOut, tU8 r, tU8 g, tU8 b, tU8 a = 0) const = 0;
+  virtual tPtr __stdcall BuildPixelub(tPtr pOut, tU8 r, tU8 g, tU8 b,
+                                      tU8 a = 0) const = 0;
   //! Build a pixel using unsigned short values.
-  virtual tPtr __stdcall BuildPixelus(tPtr pOut, tU16 r, tU16 g, tU16 b, tU16 a = 0) const = 0;
+  virtual tPtr __stdcall BuildPixelus(tPtr pOut, tU16 r, tU16 g, tU16 b,
+                                      tU16 a = 0) const = 0;
   //! Build a pixel using unsigned short values.
-  virtual tPtr __stdcall BuildPixelul(tPtr pOut, tU32 r, tU32 g, tU32 b, tU32 a = 0) const = 0;
+  virtual tPtr __stdcall BuildPixelul(tPtr pOut, tU32 r, tU32 g, tU32 b,
+                                      tU32 a = 0) const = 0;
   //! Build a pixel using floating point values.
-  virtual tPtr __stdcall BuildPixelf(tPtr pOut, tF32 r, tF32 g, tF32 b, tF32 a = 0.0f) const = 0;
+  virtual tPtr __stdcall BuildPixelf(tPtr pOut, tF32 r, tF32 g, tF32 b,
+                                     tF32 a = 0.0f) const = 0;
   //! @}
 
   //########################################################################################
@@ -155,7 +158,9 @@ struct iPixelFormat : public iUnknown
   //! @{
 
   //! Begin pixel unpacking.
-  virtual tPtr __stdcall BeginUnpackPixels(tPtr pSurface, tU32 ulPitch, tU32 ulX, tU32 ulY, tU32 ulW, tU32 ulH) = 0;
+  virtual tPtr __stdcall BeginUnpackPixels(tPtr pSurface, tU32 ulPitch,
+                                           tU32 ulX, tU32 ulY, tU32 ulW,
+                                           tU32 ulH) = 0;
   //! End pixel unpacking.
   virtual void __stdcall EndUnpackPixels() = 0;
   //! Unpack a pixel in an unsigned byte color.
@@ -175,35 +180,47 @@ struct iPixelFormat : public iUnknown
   //! @{
 
   //! Clear a surface with a specified color.
-  virtual tBool __stdcall Clear(tPtr pDst, tU32 ulDestPitch, tU32 dx, tU32 dy, tU32 w, tU32 h, tPtr apClearColor) = 0;
+  virtual tBool __stdcall Clear(tPtr pDst, tU32 ulDestPitch, tU32 dx, tU32 dy,
+                                tU32 w, tU32 h, tPtr apClearColor) = 0;
 
   //! Blit a surface of any pixel format to a surface of this pixel format.
   virtual tBool __stdcall Blit(tPtr pDst, tU32 ulDestPitch, tU32 dx, tU32 dy,
-                               tPtr pSrc, tU32 ulSrcPitch, iPixelFormat* pSrcFmt, tU32 sx, tU32 sy,
-                               tU32 w, tU32 h, ePixelFormatBlit blitFlags) const = 0;
+                               tPtr pSrc, tU32 ulSrcPitch,
+                               iPixelFormat* pSrcFmt, tU32 sx, tU32 sy, tU32 w,
+                               tU32 h, ePixelFormatBlit blitFlags) const = 0;
 
   //! Blit stretch a surface of any pixel format to a surface of this pixel format.
-  virtual tBool __stdcall BlitStretch(tPtr pDst, tU32 ulDestPitch, tU32 ulDestWidth, tU32 ulDestHeight, tU32 dx, tU32 dy, tU32 dw, tU32 dh,
-                                      tPtr pSrc, tU32 ulSrcPitch, iPixelFormat* pSrcFmt, tU32 sx, tU32 sy, tU32 sw, tU32 sh) const = 0;
+  virtual tBool __stdcall BlitStretch(tPtr pDst, tU32 ulDestPitch,
+                                      tU32 ulDestWidth, tU32 ulDestHeight,
+                                      tU32 dx, tU32 dy, tU32 dw, tU32 dh,
+                                      tPtr pSrc, tU32 ulSrcPitch,
+                                      iPixelFormat* pSrcFmt, tU32 sx, tU32 sy,
+                                      tU32 sw, tU32 sh) const = 0;
 
   //! Blit a surface of any pixel format to a surface of this pixel format.
   //! \remark The source and destination color are used to replace missing components in the source/destination format.
   //! \remark If the passed blending mode is not supported the method will return false to be handled by the reference implementation.
-  virtual tBool __stdcall BlitAlpha(tPtr pDst, tU32 ulDestPitch, tU32 dx, tU32 dy,
-                                    tPtr pSrc, tU32 ulSrcPitch, iPixelFormat* pSrcFmt, tU32 sx, tU32 sy,
+  virtual tBool __stdcall BlitAlpha(tPtr pDst, tU32 ulDestPitch, tU32 dx,
+                                    tU32 dy, tPtr pSrc, tU32 ulSrcPitch,
+                                    iPixelFormat* pSrcFmt, tU32 sx, tU32 sy,
                                     tU32 w, tU32 h, ePixelFormatBlit blitFlags,
-                                    const sColor4f& aSourceColor, const sColor4f& aDestColor, eBlendMode aBlendMode) const = 0;
+                                    const sColor4f& aSourceColor,
+                                    const sColor4f& aDestColor,
+                                    eBlendMode aBlendMode) const = 0;
 
   //! Blit stretch a surface of any pixel format to a surface of this pixel format.
   //! \remark The source and destination color are used to replace missing components in the source/destination format.
   //! \remark If the passed blending mode is not supported the method will return false to be handled by the reference implementation.
-  virtual tBool __stdcall BlitAlphaStretch(tPtr pDst, tU32 ulDestPitch, tU32 ulDestWidth, tU32 ulDestHeight, tU32 dx, tU32 dy, tU32 dw, tU32 dh,
-                                           tPtr pSrc, tU32 ulSrcPitch, iPixelFormat* pSrcFmt, tU32 sx, tU32 sy, tU32 sw, tU32 sh,
-                                           const sColor4f& aSourceColor, const sColor4f& aDestColor, eBlendMode aBlendMode) const = 0;
+  virtual tBool __stdcall BlitAlphaStretch(
+    tPtr pDst, tU32 ulDestPitch, tU32 ulDestWidth, tU32 ulDestHeight, tU32 dx,
+    tU32 dy, tU32 dw, tU32 dh, tPtr pSrc, tU32 ulSrcPitch,
+    iPixelFormat* pSrcFmt, tU32 sx, tU32 sy, tU32 sw, tU32 sh,
+    const sColor4f& aSourceColor, const sColor4f& aDestColor,
+    eBlendMode aBlendMode) const = 0;
   //! @}
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IPIXELFORMAT_32337024_H__

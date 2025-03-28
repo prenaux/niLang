@@ -156,8 +156,8 @@ void cButtonWidget::Measure_PushButton(const sRectf& aWidgetRect)
   mrectIcon = sRectf::Null();
   if (pIcon) {
     niLet destRectSize =
-      sVec2f{mrectText.GetWidth() - mvIconMargin.x - mvIconMargin.w,
-             mrectText.GetHeight() - mvIconMargin.y - mvIconMargin.z};
+      sVec2f{ mrectText.GetWidth() - mvIconMargin.x - mvIconMargin.w,
+              mrectText.GetHeight() - mvIconMargin.y - mvIconMargin.z };
 
     // Split the 'layout' and 'draw' size, draw size preserves the aspect
     // ratio of the icon by default.
@@ -241,7 +241,7 @@ void cButtonWidget::Paint_PushButton(const sRectf& aWidgetRect,
   }
 
   if (niFlagIs(nStyle, eWidgetButtonStyle_Select)) {
-    const sVec4f selMargin = {2, 2, 2, 2};
+    const sVec4f selMargin = { 2, 2, 2, 2 };
     const tU32 nColor = bIsPressed ? skin._kcolBorderColor : 0;
     if (nColor) {
       apCanvas->BlitFill(
@@ -422,8 +422,7 @@ tBool cButtonWidget::OnWidgetSink(iWidget* apWidget, tU32 nMsg,
 {
   niGuardObject((iWidgetSink*)this);
   switch (nMsg) {
-  case eUIMessage_NCSize:
-    niFallthrough;
+  case eUIMessage_NCSize: niFallthrough;
   case eUIMessage_Paint: {
     iCanvas* c = VarQueryInterface<iCanvas>(varParam1);
     if (c) {
@@ -528,8 +527,7 @@ tBool cButtonWidget::OnWidgetSink(iWidget* apWidget, tU32 nMsg,
     InitSkin();
     return eTrue;
   }
-  default:
-    return eFalse;
+  default: return eFalse;
   }
   return eTrue;
 }

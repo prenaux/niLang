@@ -18,19 +18,27 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 //=============================================================conv_concat
 // Concatenation of two paths. Usually used to combine lines or curves
 // with markers such as arrowheads
-template<class VS1, class VS2> class conv_concat
-{
+template <class VS1, class VS2>
+class conv_concat {
  public:
-  conv_concat(VS1& source1, VS2& source2) :
-      m_source1(&source1), m_source2(&source2), m_status(2) {}
-  void attach1(VS1& source) { m_source1 = &source; }
-  void attach2(VS2& source) { m_source2 = &source; }
-
+  conv_concat(VS1& source1, VS2& source2)
+      : m_source1(&source1)
+      , m_source2(&source2)
+      , m_status(2)
+  {
+  }
+  void attach1(VS1& source)
+  {
+    m_source1 = &source;
+  }
+  void attach2(VS2& source)
+  {
+    m_source2 = &source;
+  }
 
   void rewind(unsigned path_id)
   {
@@ -42,16 +50,16 @@ template<class VS1, class VS2> class conv_concat
   unsigned vertex(agg_real* x, agg_real* y)
   {
     unsigned cmd;
-    if(m_status == 0)
-    {
+    if (m_status == 0) {
       cmd = m_source1->vertex(x, y);
-      if(!is_stop(cmd)) return cmd;
+      if (!is_stop(cmd))
+        return cmd;
       m_status = 1;
     }
-    if(m_status == 1)
-    {
+    if (m_status == 1) {
       cmd = m_source2->vertex(x, y);
-      if(!is_stop(cmd)) return cmd;
+      if (!is_stop(cmd))
+        return cmd;
       m_status = 2;
     }
     return path_cmd_stop;
@@ -59,15 +67,12 @@ template<class VS1, class VS2> class conv_concat
 
  private:
   conv_concat(const conv_concat<VS1, VS2>&);
-  const conv_concat<VS1, VS2>&
-  operator = (const conv_concat<VS1, VS2>&);
+  const conv_concat<VS1, VS2>& operator=(const conv_concat<VS1, VS2>&);
 
   VS1* m_source1;
   VS2* m_source2;
-  int  m_status;
-
+  int m_status;
 };
-}
-
+} // namespace agg
 
 #endif

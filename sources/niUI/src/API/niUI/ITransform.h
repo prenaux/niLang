@@ -11,8 +11,7 @@ struct iTransform;
  */
 
 //! Transform flags. Default is eTransformFlags_InheritAll
-enum eTransformFlags
-{
+enum eTransformFlags {
   //! Inherit the position X axis.
   eTransformFlags_InheritPositionX = niBit(0),
   //! Inherit the position Y axis.
@@ -20,22 +19,23 @@ enum eTransformFlags
   //! Inherit the position Z axis.
   eTransformFlags_InheritPositionZ = niBit(2),
   //! Inherit the position XYZ axis.
-  eTransformFlags_InheritPosition = niBit(0)|niBit(1)|niBit(2),
+  eTransformFlags_InheritPosition = niBit(0) | niBit(1) | niBit(2),
   //! Inherit the rotation.
   eTransformFlags_InheritRotation = niBit(3),
   //! Parent scalings are also apply on children.
-  eTransformFlags_InheritScale  = niBit(4),
+  eTransformFlags_InheritScale = niBit(4),
   //! Inherit the position and rotation.
-  eTransformFlags_InheritPositionRotation = eTransformFlags_InheritPosition|eTransformFlags_InheritRotation,
+  eTransformFlags_InheritPositionRotation =
+    eTransformFlags_InheritPosition | eTransformFlags_InheritRotation,
   //! Inherit all.
-  eTransformFlags_InheritAll = eTransformFlags_InheritPositionRotation|eTransformFlags_InheritScale,
+  eTransformFlags_InheritAll =
+    eTransformFlags_InheritPositionRotation | eTransformFlags_InheritScale,
   //! \internal
   eTransformFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Transform internal flags.
-enum eTransformInternalFlags
-{
+enum eTransformInternalFlags {
   //! The transform will have to be recomputed.
   eTransformInternalFlags_Dirty = niBit(8),
   //! The transform uses a scaling factor.
@@ -45,19 +45,17 @@ enum eTransformInternalFlags
 };
 
 //! Transform description structure.
-struct sTransformDesc
-{
+struct sTransformDesc {
   Ptr<iTransform> mptrParent;
-  sMatrixf  mmtxWorld;
-  sMatrixf  mmtxLocal;
+  sMatrixf mmtxWorld;
+  sMatrixf mmtxLocal;
   sVec3f mvScale;
-  tU16        mnFlags;
-  tU16        mnSyncCounter;
+  tU16 mnFlags;
+  tU16 mnSyncCounter;
 };
 
 //! iTransform is the interface for positionning and orienting.
-struct iTransform : public iUnknown
-{
+struct iTransform : public iUnknown {
   niDeclareInterfaceUUID(iTransform,0x2b890822,0x2bff,0x426d,0xa6,0x46,0x51,0x69,0x1c,0x16,0x49,0xb4);
 
   //########################################################################################
@@ -238,5 +236,5 @@ struct iTransform : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ITRANSFORM_4187289_H__

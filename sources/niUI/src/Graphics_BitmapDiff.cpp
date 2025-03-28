@@ -3,22 +3,27 @@
 #include "Image.h"
 
 // blend semi-transparent color with white
-static __forceinline uint8_t blend(uint8_t c, double a) {
+static __forceinline uint8_t blend(uint8_t c, double a)
+{
   return 255 + (c - 255) * a;
 }
-static __forceinline double rgb2y(uint8_t r, uint8_t g, uint8_t b) {
+static __forceinline double rgb2y(uint8_t r, uint8_t g, uint8_t b)
+{
   return r * 0.29889531 + g * 0.58662247 + b * 0.11448223;
 }
-static __forceinline double rgb2i(uint8_t r, uint8_t g, uint8_t b) {
+static __forceinline double rgb2i(uint8_t r, uint8_t g, uint8_t b)
+{
   return r * 0.59597799 - g * 0.27417610 - b * 0.32180189;
 }
-static __forceinline double rgb2q(uint8_t r, uint8_t g, uint8_t b) {
+static __forceinline double rgb2q(uint8_t r, uint8_t g, uint8_t b)
+{
   return r * 0.21147017 - g * 0.52261711 + b * 0.31114694;
 }
 
 // calculate color difference according to the paper "Measuring perceived color difference
 // using YIQ NTSC transmission color space in mobile applications" by Y. Kotsarenko and F. Ramos
-static double colorDelta(const uint8_t* img1, const uint8_t* img2, size_t k, size_t m, bool yOnly = false)
+static double colorDelta(const uint8_t* img1, const uint8_t* img2, size_t k,
+                         size_t m, bool yOnly = false)
 {
   double a1 = double(img1[k + 3]) / 255;
   double a2 = double(img2[m + 3]) / 255;
@@ -33,7 +38,8 @@ static double colorDelta(const uint8_t* img1, const uint8_t* img2, size_t k, siz
 
   double y = rgb2y(r1, g1, b1) - rgb2y(r2, g2, b2);
 
-  if (yOnly) return y; // brightness difference only
+  if (yOnly)
+    return y; // brightness difference only
 
   double i = rgb2i(r1, g1, b1) - rgb2i(r2, g2, b2);
   double q = rgb2q(r1, g1, b1) - rgb2q(r2, g2, b2);
@@ -41,14 +47,17 @@ static double colorDelta(const uint8_t* img1, const uint8_t* img2, size_t k, siz
   return 0.5053 * y * y + 0.299 * i * i + 0.1957 * q * q;
 }
 
-static __forceinline void drawPixel(uint8_t* output, size_t pos, uint8_t r, uint8_t g, uint8_t b) {
+static __forceinline void drawPixel(uint8_t* output, size_t pos, uint8_t r,
+                                    uint8_t g, uint8_t b)
+{
   output[pos + 0] = r;
   output[pos + 1] = g;
   output[pos + 2] = b;
   output[pos + 3] = 255;
 }
 
-static double grayPixel(const uint8_t* img, size_t i) {
+static double grayPixel(const uint8_t* img, size_t i)
+{
   double a = double(img[i + 3]) / 255;
   uint8_t r = blend(img[i + 0], a);
   uint8_t g = blend(img[i + 1], a);
@@ -58,7 +67,9 @@ static double grayPixel(const uint8_t* img, size_t i) {
 
 // check if a pixel is likely a part of anti-aliasing;
 // based on "Anti-aliased Pixel and Intensity Slope Detector" paper by V. Vysniauskas, 2009
-static bool antialiased(const uint8_t* img, size_t x1, size_t y1, size_t width, size_t height, const uint8_t* img2 = nullptr) {
+static bool antialiased(const uint8_t* img, size_t x1, size_t y1, size_t width,
+                        size_t height, const uint8_t* img2 = nullptr)
+{
   size_t x0 = x1 > 0 ? x1 - 1 : 0;
   size_t y0 = y1 > 0 ? y1 - 1 : 0;
   size_t x2 = astl::min(x1 + 1, width - 1);
@@ -74,20 +85,26 @@ static bool antialiased(const uint8_t* img, size_t x1, size_t y1, size_t width, 
   // go through 8 adjacent pixels
   for (size_t x = x0; x <= x2; x++) {
     for (size_t y = y0; y <= y2; y++) {
-      if (x == x1 && y == y1) continue;
+      if (x == x1 && y == y1)
+        continue;
 
       // brightness delta between the center pixel and adjacent one
       double delta = colorDelta(img, img, pos, (y * width + x) * 4, true);
 
       // count the number of equal, darker and brighter adjacent pixels
-      if (delta == 0) zeroes++;
-      else if (delta < 0) negatives++;
-      else if (delta > 0) positives++;
+      if (delta == 0)
+        zeroes++;
+      else if (delta < 0)
+        negatives++;
+      else if (delta > 0)
+        positives++;
 
       // if found more than 2 equal siblings, it's definitely not anti-aliasing
-      if (zeroes > 2) return false;
+      if (zeroes > 2)
+        return false;
 
-      if (!img2) continue;
+      if (!img2)
+        continue;
 
       // remember the darkest pixel
       if (delta < min) {
@@ -104,26 +121,25 @@ static bool antialiased(const uint8_t* img, size_t x1, size_t y1, size_t width, 
     }
   }
 
-  if (!img2) return true;
+  if (!img2)
+    return true;
 
   // if there are no both darker and brighter pixels among siblings, it's not anti-aliasing
-  if (negatives == 0 || positives == 0) return false;
+  if (negatives == 0 || positives == 0)
+    return false;
 
   // if either the darkest or the brightest pixel has more than 2 equal siblings in both images
   // (definitely not anti-aliased), this pixel is anti-aliased
-  return (!antialiased(img, minX, minY, width, height) && !antialiased(img2, minX, minY, width, height)) ||
-      (!antialiased(img, maxX, maxY, width, height) && !antialiased(img2, maxX, maxY, width, height));
+  return (!antialiased(img, minX, minY, width, height) &&
+          !antialiased(img2, minX, minY, width, height)) ||
+         (!antialiased(img, maxX, maxY, width, height) &&
+          !antialiased(img2, maxX, maxY, width, height));
 }
 
 // Based of pixelmatch: https://github.com/mapbox/pixelmatch
-static int64_t _ComputeImageDiff(
-  const uint8_t* img1,
-  const uint8_t* img2,
-  size_t width,
-  size_t height,
-  uint8_t* output,
-  double threshold,
-  bool ignoreAA)
+static int64_t _ComputeImageDiff(const uint8_t* img1, const uint8_t* img2,
+                                 size_t width, size_t height, uint8_t* output,
+                                 double threshold, bool ignoreAA)
 {
   // maximum acceptable square distance between two colors;
   // 35215 is the maximum possible value for the YIQ difference metric
@@ -143,17 +159,20 @@ static int64_t _ComputeImageDiff(
       if (delta > maxDelta) {
         // check it's a real rendering difference or just anti-aliasing
         if (ignoreAA && (antialiased(img1, x, y, width, height, img2) ||
-                         antialiased(img2, x, y, width, height, img1))) {
+                         antialiased(img2, x, y, width, height, img1)))
+        {
           // one of the pixels is anti-aliasing; draw as yellow and do not count as difference
-          if (output) drawPixel(output, pos, 255, 255, 0);
-
-        } else {
+          if (output)
+            drawPixel(output, pos, 255, 255, 0);
+        }
+        else {
           // found substantial difference not caused by anti-aliasing; draw it as red
-          if (output) drawPixel(output, pos, 255, 0, 0);
+          if (output)
+            drawPixel(output, pos, 255, 0, 0);
           diff++;
         }
-
-      } else if (output) {
+      }
+      else if (output) {
         // pixels are similar; draw background as grayscale image blended with white
         uint8_t val = blend(grayPixel(img1, pos), 0.1);
         drawPixel(output, pos, val, val, val);
@@ -165,14 +184,13 @@ static int64_t _ComputeImageDiff(
   return diff;
 }
 
-tI64  __stdcall cGraphics::ComputeBitmapDiff(const iBitmap2D* apImgA,
-                                             const iBitmap2D* apImgB,
-                                             iBitmap2D* apOutput,
-                                             tF64 afThreshold,
-                                             tBool abIgnoreAA)
+tI64 __stdcall cGraphics::ComputeBitmapDiff(const iBitmap2D* apImgA,
+                                            const iBitmap2D* apImgB,
+                                            iBitmap2D* apOutput,
+                                            tF64 afThreshold, tBool abIgnoreAA)
 {
-  niCheckIsOK(apImgA,-1);
-  niCheckIsOK(apImgB,-1);
+  niCheckIsOK(apImgA, -1);
+  niCheckIsOK(apImgB, -1);
   niCheck(apImgA->GetWidth() == apImgB->GetWidth(), -1);
   niCheck(apImgA->GetHeight() == apImgB->GetHeight(), -1);
 
@@ -189,20 +207,17 @@ tI64  __stdcall cGraphics::ComputeBitmapDiff(const iBitmap2D* apImgA,
   QPtr<iBitmap2D> convertedImgA = apImgA;
   if (!convertedImgA->GetPixelFormat()->IsSamePixelFormat(pxf)) {
     convertedImgA = convertedImgA->CreateConvertedFormat(pxf);
-    niCheckIsOK(convertedImgA,-1);
+    niCheckIsOK(convertedImgA, -1);
   }
 
   QPtr<iBitmap2D> convertedImgB = apImgB;
   if (!convertedImgB->GetPixelFormat()->IsSamePixelFormat(pxf)) {
     convertedImgB = convertedImgB->CreateConvertedFormat(pxf);
-    niCheckIsOK(convertedImgB,-1);
+    niCheckIsOK(convertedImgB, -1);
   }
 
-  return _ComputeImageDiff(convertedImgA->GetData(),
-                           convertedImgB->GetData(),
+  return _ComputeImageDiff(convertedImgA->GetData(), convertedImgB->GetData(),
                            convertedImgA->GetWidth(),
-                           convertedImgA->GetHeight(),
-                           output,
-                           afThreshold,
+                           convertedImgA->GetHeight(), output, afThreshold,
                            !!abIgnoreAA);
 }

@@ -2,19 +2,19 @@
 	<namespace name="ni">
 		<enum name="eNUSplineType">
 			<comments desc="Non-uniform spline type. "/>
-			<value name="eNUSplineType_Linear" value="0 ">
+			<value name="eNUSplineType_Linear" value="0">
 				<comments desc="Linear spline. Not a spline simple linear interpolation. "/>
 			</value>
-			<value name="eNUSplineType_Rounded" value="1 ">
+			<value name="eNUSplineType_Rounded" value="1">
 				<comments desc="Rounded non-uniform spline. "/>
 			</value>
-			<value name="eNUSplineType_Smooth" value="2 ">
+			<value name="eNUSplineType_Smooth" value="2">
 				<comments desc="Smooth non-uniform spline. "/>
 			</value>
-			<value name="eNUSplineType_Timed" value="3 ">
+			<value name="eNUSplineType_Timed" value="3">
 				<comments desc="Timed non-uniform spline. "/>
 			</value>
-			<value name="eNUSplineType_Last" value="4 ">
+			<value name="eNUSplineType_Last" value="4">
 				<comments desc="\internal "/>
 			</value>
 		</enum>

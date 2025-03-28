@@ -15,8 +15,7 @@ struct iIndexArray;
 
 //! Index array interface
 //! \remark Bindable
-struct iIndexArray : public iDeviceResource
-{
+struct iIndexArray : public iDeviceResource {
   niDeclareInterfaceUUID(iIndexArray,0xa1ab22bf,0x95b1,0x43fe,0x92,0x3c,0x9e,0xef,0x84,0xca,0x83,0x41);
 
   //########################################################################################
@@ -51,7 +50,8 @@ struct iIndexArray : public iDeviceResource
   //! \remark pass 0 for ulFirstIndex and ulNumIndex to lock the entire array.
   //! \remark This method should be considered as slow as it may perform some processing to
   //!     adapt the indices data to the renderer's supported format.
-  virtual tPtr __stdcall Lock(tU32 ulFirstIndex, tU32 ulNumIndex, eLock aLock) = 0;
+  virtual tPtr __stdcall Lock(tU32 ulFirstIndex, tU32 ulNumIndex,
+                              eLock aLock) = 0;
   //! Unlock vertex array memory.
   //! \remark This method should be considered as slow as it may perform some processing to
   //!     adapt the indices data to the renderer's supported format.
@@ -64,5 +64,5 @@ struct iIndexArray : public iDeviceResource
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IINDEXARRAY_39242085_H__

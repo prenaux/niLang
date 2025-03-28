@@ -4,8 +4,7 @@
 // SPDX-License-Identifier: MIT
 #if niMinFeatures(20)
 
-enum ePropertyEditBoxType
-{
+enum ePropertyEditBoxType {
   ePropertyEditBoxType_Unknown,
   ePropertyEditBoxType_Hidden,
   ePropertyEditBoxType_Text,
@@ -22,8 +21,9 @@ enum ePropertyEditBoxType
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetPropertyBox declaration.
-class cWidgetPropertyBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetPropertyBox>
-{
+class cWidgetPropertyBox
+    : public ni::ImplRC<ni::iWidgetSink, ni::eImplFlags_Default,
+                        ni::iWidgetPropertyBox> {
   niBeginClass(cWidgetPropertyBox);
 
  public:
@@ -38,17 +38,30 @@ class cWidgetPropertyBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Defa
   ni::tBool __stdcall IsOK() const;
 
   //// ni::iWidgetPropertyBox //////////////////
-  void __stdcall SetDataTable(iDataTable *apDT);
-  iDataTable * __stdcall GetDataTable() const;
+  void __stdcall SetDataTable(iDataTable* apDT);
+  iDataTable* __stdcall GetDataTable() const;
   void __stdcall ClearEditWidgetsCache();
-  void __stdcall SetMaxNumChildren(tU32 anMax) { mnMaxNumChildren = anMax; }
-  tU32 __stdcall GetMaxNumChildren() const { return mnMaxNumChildren; }
-  void __stdcall SetMaxNumProperties(tU32 anMax) { mnMaxNumProperties = anMax; }
-  tU32 __stdcall GetMaxNumProperties() const { return mnMaxNumProperties; }
+  void __stdcall SetMaxNumChildren(tU32 anMax)
+  {
+    mnMaxNumChildren = anMax;
+  }
+  tU32 __stdcall GetMaxNumChildren() const
+  {
+    return mnMaxNumChildren;
+  }
+  void __stdcall SetMaxNumProperties(tU32 anMax)
+  {
+    mnMaxNumProperties = anMax;
+  }
+  tU32 __stdcall GetMaxNumProperties() const
+  {
+    return mnMaxNumProperties;
+  }
   //// ni::iWidgetPropertyBox //////////////////
 
   //// ni::iWidgetSink /////////////////////////
-  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA, const Var& aB);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA,
+                               const Var& aB);
   //// ni::iWidgetSink /////////////////////////
 
   void FillNode(iDataTable* apDT, iWidgetTreeNode* apNode);
@@ -58,51 +71,61 @@ class cWidgetPropertyBox : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Defa
   void RemoveWidgetEditBox(iWidget* apWidget);
   void ClearEditBoxes();
   void DoSetProperty(iWidget* apWidget);
-  ePropertyEditBoxType  GetPropertyEditBoxType(iDataTable* apDT,  tU32 anIndex);
-  ePropertyEditBoxType  GetWidgetEditBoxType(iWidget* apWidget);
-  iWidget* SetEditBox(iWidgetTreeNode* apTreeNode, iDataTable* apDT,  tU32 anIndex, ePropertyEditBoxType type);
+  ePropertyEditBoxType GetPropertyEditBoxType(iDataTable* apDT, tU32 anIndex);
+  ePropertyEditBoxType GetWidgetEditBoxType(iWidget* apWidget);
+  iWidget* SetEditBox(iWidgetTreeNode* apTreeNode, iDataTable* apDT,
+                      tU32 anIndex, ePropertyEditBoxType type);
   void SetEditBoxInDataTable(iWidgetTreeNode* apNode, iDataTable* apDT);
 
  private:
-  iWidget*        mpWidget;
+  iWidget* mpWidget;
   Ptr<iDataTable> mptrDT;
-  Ptr<iWidget>    mpwTree;
-  Ptr<iWidget>    mpwSplitter;
-  Ptr<iWidget>    mpwEditBoxParent;
-
+  Ptr<iWidget> mpwTree;
+  Ptr<iWidget> mpwSplitter;
+  Ptr<iWidget> mpwEditBoxParent;
 
   tBool mbClearEditWidgetsCache;
-  tU32  mnMaxNumChildren;
-  tU32  mnMaxNumProperties;
+  tU32 mnMaxNumChildren;
+  tU32 mnMaxNumProperties;
 
   struct sEditBox {
-    ePropertyEditBoxType  type;
-    Ptr<iWidget>    w;
-    tBool         used;
-    sEditBox() {
+    ePropertyEditBoxType type;
+    Ptr<iWidget> w;
+    tBool used;
+    sEditBox()
+    {
       type = ePropertyEditBoxType_Unknown;
       used = eFalse;
     }
   };
-  typedef astl::list<sEditBox>            tEBLst;
-  typedef astl::hstring_hash_map<tEBLst>  tEBMap;
+  typedef astl::list<sEditBox> tEBLst;
+  typedef astl::hstring_hash_map<tEBLst> tEBMap;
   tEBMap mmapEB;
 
-  struct sSink : public ImplLocal<iDataTableSink,0,iWidgetSink>
-  {
+  struct sSink : public ImplLocal<iDataTableSink, 0, iWidgetSink> {
     friend class cWidgetPropertyBox;
-    sSink(cWidgetPropertyBox* apParent) : mpParent(apParent), mnIgnoreSetProperty(eInvalidHandle) {}
+    sSink(cWidgetPropertyBox* apParent)
+        : mpParent(apParent)
+        , mnIgnoreSetProperty(eInvalidHandle)
+    {
+    }
     void __stdcall OnDataTableSink_SetName(iDataTable* apDT);
     void __stdcall OnDataTableSink_SetMetadata(iDataTable* apDT);
-    void __stdcall OnDataTableSink_AddChild(iDataTable* apDT, iDataTable* apChild);
-    void __stdcall OnDataTableSink_RemoveChild(iDataTable* apDT, iDataTable* apChild);
-    void __stdcall OnDataTableSink_SetProperty(iDataTable* apDT, tU32 anProperty);
-    void __stdcall OnDataTableSink_SetMetadata(iDataTable* apDT, tU32 anProperty);
-    void __stdcall OnDataTableSink_RemoveProperty(iDataTable* apDT, tU32 anProperty);
-    ni::Var __stdcall OnDataTableSink_GetProperty(ni::iDataTable *,ni::tU32);
-    tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA, const Var& aB);
+    void __stdcall OnDataTableSink_AddChild(iDataTable* apDT,
+                                            iDataTable* apChild);
+    void __stdcall OnDataTableSink_RemoveChild(iDataTable* apDT,
+                                               iDataTable* apChild);
+    void __stdcall OnDataTableSink_SetProperty(iDataTable* apDT,
+                                               tU32 anProperty);
+    void __stdcall OnDataTableSink_SetMetadata(iDataTable* apDT,
+                                               tU32 anProperty);
+    void __stdcall OnDataTableSink_RemoveProperty(iDataTable* apDT,
+                                                  tU32 anProperty);
+    ni::Var __stdcall OnDataTableSink_GetProperty(ni::iDataTable*, ni::tU32);
+    tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA,
+                                 const Var& aB);
     cWidgetPropertyBox* mpParent;
-    tU32        mnIgnoreSetProperty;
+    tU32 mnIgnoreSetProperty;
   } mSink;
 
   struct {

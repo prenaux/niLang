@@ -12,26 +12,26 @@ namespace ni {
 //! Simple edit box styles.
 enum eWidgetEditBoxStyle {
   //! Multi-line edit box.
-  eWidgetEditBoxStyle_MultiLine = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetEditBoxStyle_MultiLine = niBit(eWidgetStyle_MaxBit + 1),
   //! Read-only edit box.
-  eWidgetEditBoxStyle_ReadOnly = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetEditBoxStyle_ReadOnly = niBit(eWidgetStyle_MaxBit + 2),
   //! Auto scroll edit box. Scrolling made in function of the cursor's position.
-  eWidgetEditBoxStyle_AutoScroll = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetEditBoxStyle_AutoScroll = niBit(eWidgetStyle_MaxBit + 3),
   //! Validate on paste.
-  eWidgetEditBoxStyle_PasteValidate = niBit(eWidgetStyle_MaxBit+4),
+  eWidgetEditBoxStyle_PasteValidate = niBit(eWidgetStyle_MaxBit + 4),
   //! Dont draw the cursor.
-  eWidgetEditBoxStyle_NoCursor = niBit(eWidgetStyle_MaxBit+5),
+  eWidgetEditBoxStyle_NoCursor = niBit(eWidgetStyle_MaxBit + 5),
   //! Dont allow selection.
   //! \remark The clipboard is also disabled in this case.
-  eWidgetEditBoxStyle_NoSelect = niBit(eWidgetStyle_MaxBit+6),
+  eWidgetEditBoxStyle_NoSelect = niBit(eWidgetStyle_MaxBit + 6),
   //! Dont clear selection when lost focus.
-  eWidgetEditBoxStyle_DontLoseSelection = niBit(eWidgetStyle_MaxBit+7),
+  eWidgetEditBoxStyle_DontLoseSelection = niBit(eWidgetStyle_MaxBit + 7),
   //! Validate when lost focus
-  eWidgetEditBoxStyle_ValidateOnLostFocus = niBit(eWidgetStyle_MaxBit+8),
+  eWidgetEditBoxStyle_ValidateOnLostFocus = niBit(eWidgetStyle_MaxBit + 8),
   //! Select all when gaining focus
-  eWidgetEditBoxStyle_SelectAllOnSetFocus = niBit(eWidgetStyle_MaxBit+9),
+  eWidgetEditBoxStyle_SelectAllOnSetFocus = niBit(eWidgetStyle_MaxBit + 9),
   //! Can insert tabs, but capture the MoveFocus message.
-  eWidgetEditBoxStyle_CanInsertTabs = niBit(eWidgetStyle_MaxBit+10),
+  eWidgetEditBoxStyle_CanInsertTabs = niBit(eWidgetStyle_MaxBit + 10),
   //! \internal
   eWidgetEditBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -49,8 +49,7 @@ enum eWidgetEditBoxCmd {
 };
 
 //! Simple editbox widget interface.
-struct iWidgetEditBox : public iUnknown
-{
+struct iWidgetEditBox : public iUnknown {
   niDeclareInterfaceUUID(iWidgetEditBox,0xe1f70622,0x8a53,0x4f98,0xab,0x3c,0xd8,0xe9,0x90,0x36,0xa5,0xab);
 
   //! Add the specified text at the end of the edit box.
@@ -69,7 +68,8 @@ struct iWidgetEditBox : public iUnknown
   //! Move the cursor at the end of the line or the text.
   virtual void __stdcall MoveCursorEnd(tBool abLine) = 0;
   //! Move the cursor to the specified position (line,column)
-  virtual void __stdcall MoveCursor(const sVec2i& pos, tBool abForceLogicalCol) = 0;
+  virtual void __stdcall MoveCursor(const sVec2i& pos,
+                                    tBool abForceLogicalCol) = 0;
   //! Move the current cursor line.
   virtual void __stdcall MoveCursorLineDelta(tI32 line) = 0;
   //! Move the current cursor column.
@@ -104,5 +104,5 @@ struct iWidgetEditBox : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IEDITBOXWIDGET_88521336_H__

@@ -5,7 +5,8 @@
 namespace ni {
 
 template <typename T>
-void RectBBReset(sRect<T>& aRect, T aLimit) {
+void RectBBReset(sRect<T>& aRect, T aLimit)
+{
   aRect.Left() = aLimit;
   aRect.Right() = -aLimit;
   aRect.Top() = aLimit;
@@ -13,7 +14,8 @@ void RectBBReset(sRect<T>& aRect, T aLimit) {
 }
 
 template <typename T>
-void RectBBAddPoint(sRect<T>& aRect, const sVec2<T>& v) {
+void RectBBAddPoint(sRect<T>& aRect, const sVec2<T>& v)
+{
   if (v.x < aRect.Left()) {
     aRect.Left() = v.x;
   }
@@ -31,11 +33,10 @@ void RectBBAddPoint(sRect<T>& aRect, const sVec2<T>& v) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cFrustum declaration
 template <typename T, typename BASE = cUnknown0>
-class cFrustumImpl : public BASE
-{
-  typedef astl::vector< sVec4<T> > tPlaneVec;
-  typedef niTypename tPlaneVec::iterator      tPlaneVecIt;
-  typedef niTypename tPlaneVec::const_iterator  tPlaneVecCIt;
+class cFrustumImpl : public BASE {
+  typedef astl::vector<sVec4<T>> tPlaneVec;
+  typedef niTypename tPlaneVec::iterator tPlaneVecIt;
+  typedef niTypename tPlaneVec::const_iterator tPlaneVecCIt;
 
  public:
   cFrustumImpl();
@@ -83,62 +84,86 @@ class cFrustumImpl : public BASE
   //! Transform the frustum by the given matrix.
   tBool __stdcall Transform(const sMatrix<T>& M);
 
-  sRectf __stdcall ComputeScreenBoundingBox(const sMatrixf& amtxWVP, const sRectf& aViewport) {
+  sRectf __stdcall ComputeScreenBoundingBox(const sMatrixf& amtxWVP,
+                                            const sRectf& aViewport)
+  {
     sVec3f verts[8];
     sRectf rect = sRectf::Null();
     if (ExtractVertices(verts)) {
-      RectBBReset(rect,1000000.0f);
+      RectBBReset(rect, 1000000.0f);
       sVec4f v;
-      niLoop(i,8) {
-        VecProjectRHW(v,verts[i],amtxWVP,aViewport);
-        RectBBAddPoint(rect,Vec2(v.x,v.y));
+      niLoop (i, 8) {
+        VecProjectRHW(v, verts[i], amtxWVP, aViewport);
+        RectBBAddPoint(rect, Vec2(v.x, v.y));
       }
     }
     return rect;
   }
 
-  tBool __stdcall SetBoundingVolume(iBoundingVolume* apBV) {
+  tBool __stdcall SetBoundingVolume(iBoundingVolume* apBV)
+  {
     mptrBV = niGetIfOK(apBV);
     UpdateBoundingVolume();
     return mptrBV.IsOK();
   }
-  iBoundingVolume* __stdcall GetBoundingVolume() const {
+  iBoundingVolume* __stdcall GetBoundingVolume() const
+  {
     return mptrBV;
   }
 
-  tBool ExtractVertices(sVec3f verts[8]) {
-    if (mvPlanes.size() < 6) return eFalse;
-    PlaneIntersection(verts[0], mvPlanes[eFrustumPlane_Near], mvPlanes[eFrustumPlane_Left], mvPlanes[eFrustumPlane_Top]);
-    PlaneIntersection(verts[1], mvPlanes[eFrustumPlane_Near], mvPlanes[eFrustumPlane_Right], mvPlanes[eFrustumPlane_Top]);
-    PlaneIntersection(verts[2], mvPlanes[eFrustumPlane_Near], mvPlanes[eFrustumPlane_Right], mvPlanes[eFrustumPlane_Bottom]);
-    PlaneIntersection(verts[3], mvPlanes[eFrustumPlane_Near], mvPlanes[eFrustumPlane_Left], mvPlanes[eFrustumPlane_Bottom]);
-    PlaneIntersection(verts[4], mvPlanes[eFrustumPlane_Far], mvPlanes[eFrustumPlane_Left], mvPlanes[eFrustumPlane_Top]);
-    PlaneIntersection(verts[5], mvPlanes[eFrustumPlane_Far], mvPlanes[eFrustumPlane_Right], mvPlanes[eFrustumPlane_Top]);
-    PlaneIntersection(verts[6], mvPlanes[eFrustumPlane_Far], mvPlanes[eFrustumPlane_Right], mvPlanes[eFrustumPlane_Bottom]);
-    PlaneIntersection(verts[7], mvPlanes[eFrustumPlane_Far], mvPlanes[eFrustumPlane_Left], mvPlanes[eFrustumPlane_Bottom]);
+  tBool ExtractVertices(sVec3f verts[8])
+  {
+    if (mvPlanes.size() < 6)
+      return eFalse;
+    PlaneIntersection(verts[0], mvPlanes[eFrustumPlane_Near],
+                      mvPlanes[eFrustumPlane_Left],
+                      mvPlanes[eFrustumPlane_Top]);
+    PlaneIntersection(verts[1], mvPlanes[eFrustumPlane_Near],
+                      mvPlanes[eFrustumPlane_Right],
+                      mvPlanes[eFrustumPlane_Top]);
+    PlaneIntersection(verts[2], mvPlanes[eFrustumPlane_Near],
+                      mvPlanes[eFrustumPlane_Right],
+                      mvPlanes[eFrustumPlane_Bottom]);
+    PlaneIntersection(verts[3], mvPlanes[eFrustumPlane_Near],
+                      mvPlanes[eFrustumPlane_Left],
+                      mvPlanes[eFrustumPlane_Bottom]);
+    PlaneIntersection(verts[4], mvPlanes[eFrustumPlane_Far],
+                      mvPlanes[eFrustumPlane_Left],
+                      mvPlanes[eFrustumPlane_Top]);
+    PlaneIntersection(verts[5], mvPlanes[eFrustumPlane_Far],
+                      mvPlanes[eFrustumPlane_Right],
+                      mvPlanes[eFrustumPlane_Top]);
+    PlaneIntersection(verts[6], mvPlanes[eFrustumPlane_Far],
+                      mvPlanes[eFrustumPlane_Right],
+                      mvPlanes[eFrustumPlane_Bottom]);
+    PlaneIntersection(verts[7], mvPlanes[eFrustumPlane_Far],
+                      mvPlanes[eFrustumPlane_Left],
+                      mvPlanes[eFrustumPlane_Bottom]);
     return eTrue;
   }
 
-  void UpdateBoundingVolume() {
-    if (!mptrBV.IsOK()) return;
+  void UpdateBoundingVolume()
+  {
+    if (!mptrBV.IsOK())
+      return;
     sVec3f verts[8];
     ExtractVertices(verts);
     mptrBV->Begin(eTrue);
-    niLoop(i,8) {
+    niLoop (i, 8) {
       mptrBV->AddPoint(verts[i]);
     }
     mptrBV->End();
   }
 
  private:
-  astl::vector<sVec4<T> >  mvPlanes;
-  Ptr<iBoundingVolume>  mptrBV;
+  astl::vector<sVec4<T>> mvPlanes;
+  Ptr<iBoundingVolume> mptrBV;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 //! Float frustum.
-typedef cFrustumImpl<tF32,ImplRC<iFrustum> > cFrustumf;
+typedef cFrustumImpl<tF32, ImplRC<iFrustum>> cFrustumf;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 } // End of namespace ni

@@ -11,8 +11,7 @@ struct iWidgetMenu;
  */
 
 //! Menu item flags.
-enum eWidgetMenuItemFlags
-{
+enum eWidgetMenuItemFlags {
   //! No flags.
   eWidgetMenuItemFlags_None = 0,
   //! The item will open a submenu.
@@ -40,8 +39,7 @@ enum eWidgetMenuItemFlags
 //!     extra1 contains the iWidgetMenuItem of the item concerned.
 //! \remark Sub menus are considered part of the parent menu, they
 //!     will send messages as if they were the parent menu.
-enum eWidgetMenuCmd
-{
+enum eWidgetMenuCmd {
   //! A check menu item has been checked.
   //! \param A: iWidgetMenuItem
   eWidgetMenuCmd_Checked = 0,
@@ -71,20 +69,24 @@ enum eWidgetMenuCmd
 //! Menu style.
 //! \remark The menu style is used only by the parent menu, sub menus will ignore
 //!     these flags.
-enum eWidgetMenuStyle
-{
+enum eWidgetMenuStyle {
   //! Dont close the menu on group change.
-  eWidgetMenuStyle_NoCloseOnGroupChange = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetMenuStyle_NoCloseOnGroupChange = niBit(eWidgetStyle_MaxBit + 0),
   //! Dont close the menu on check change.
-  eWidgetMenuStyle_NoCloseOnCheckChange = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetMenuStyle_NoCloseOnCheckChange = niBit(eWidgetStyle_MaxBit + 1),
   //! Dont close the menu on item clicked.
-  eWidgetMenuStyle_NoCloseOnItemClicked = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetMenuStyle_NoCloseOnItemClicked = niBit(eWidgetStyle_MaxBit + 2),
   //! Dont close the menu when clicking outside of the client area.
-  eWidgetMenuStyle_NoCloseOnNCClick = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetMenuStyle_NoCloseOnNCClick = niBit(eWidgetStyle_MaxBit + 3),
   //! Dont close the menu automatically
-  eWidgetMenuStyle_NoClose = eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange|eWidgetMenuStyle_NoCloseOnItemClicked|eWidgetMenuStyle_NoCloseOnNCClick,
+  eWidgetMenuStyle_NoClose = eWidgetMenuStyle_NoCloseOnGroupChange |
+                             eWidgetMenuStyle_NoCloseOnCheckChange |
+                             eWidgetMenuStyle_NoCloseOnItemClicked |
+                             eWidgetMenuStyle_NoCloseOnNCClick,
   //! Dont close the menu on group or check change.
-  eWidgetMenuStyle_NoCloseOnGroupOrCheckChange = eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange,
+  eWidgetMenuStyle_NoCloseOnGroupOrCheckChange =
+    eWidgetMenuStyle_NoCloseOnGroupChange |
+    eWidgetMenuStyle_NoCloseOnCheckChange,
   //! \internal
   eWidgetMenuStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -93,8 +95,7 @@ enum eWidgetMenuStyle
 typedef tU32 tWidgetMenuItemFlags;
 
 //! Menu item interface.
-struct iWidgetMenuItem : public iUnknown
-{
+struct iWidgetMenuItem : public iUnknown {
   niDeclareInterfaceUUID(iWidgetMenuItem,0x5c063f02,0x4c0e,0x4828,0x9d,0x0a,0xec,0xca,0xc5,0xf3,0x92,0xb0);
   //! Get the item's menu.
   //! {Property}
@@ -159,8 +160,7 @@ struct iWidgetMenuItem : public iUnknown
 //!     Right : Open the current sub-menu.<br>
 //!     Enter/Space : Select/Click the current menu item.<br>
 //! \remark If the NoCloseOnNCClick style is set the main menu will not close when escape is pressed.
-struct iWidgetMenu : public iUnknown
-{
+struct iWidgetMenu : public iUnknown {
   niDeclareInterfaceUUID(iWidgetMenu,0x1bbb53a4,0xf078,0x4d46,0x87,0xd4,0xdd,0x86,0xde,0xad,0x1b,0x95);
 
   //! Clear/removes all the items in the menu.
@@ -171,7 +171,9 @@ struct iWidgetMenu : public iUnknown
   //! \param  ahspID is the ID of the item.
   //! \param  aFlags are the flags of the item.
   //! \return The index of the item, or eInvalidHandle if the item can't be added.
-  virtual iWidgetMenuItem* __stdcall AddItem(const achar* aaszName, iHString* ahspID, tWidgetMenuItemFlags aFlags) = 0;
+  virtual iWidgetMenuItem* __stdcall AddItem(const achar* aaszName,
+                                             iHString* ahspID,
+                                             tWidgetMenuItemFlags aFlags) = 0;
   //! Remove the item at the specified index.
   //! \param  apItem is the item to remove.
   //! \return eFalse if the index is invalid, eTrue if the item has been removed.
@@ -188,7 +190,8 @@ struct iWidgetMenu : public iUnknown
   //! Get the index of the first item with the specified name.
   //! \remark This function will search the item in the sub menus.
   //! {Property}
-  virtual iWidgetMenuItem* __stdcall GetItemFromName(const achar* aaszName) const = 0;
+  virtual iWidgetMenuItem* __stdcall GetItemFromName(
+    const achar* aaszName) const = 0;
   //! Get the index of the first item with the specified id.
   //! \remark This function will search the item in the sub menus.
   //! {Property}
@@ -222,5 +225,5 @@ struct iWidgetMenu : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETMENU_2975466_H__

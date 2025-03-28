@@ -18,19 +18,17 @@
 
 #include "agg_array.h"
 
-namespace agg
-{
+namespace agg {
 //----------------------------------------------------------span_allocator
-template<class ColorT> class span_allocator
-{
+template <class ColorT>
+class span_allocator {
  public:
   typedef ColorT color_type;
 
   //--------------------------------------------------------------------
   AGG_INLINE color_type* allocate(unsigned span_len)
   {
-    if(span_len > m_span.size())
-    {
+    if (span_len > m_span.size()) {
       // To reduce the number of reallocs we align the
       // span_len to 256 color elements.
       // Well, I just like this number and it looks reasonable.
@@ -40,15 +38,18 @@ template<class ColorT> class span_allocator
     return &m_span[0];
   }
 
-  AGG_INLINE color_type* span()               { return &m_span[0]; }
-  AGG_INLINE unsigned    max_span_len() const { return m_span.size(); }
+  AGG_INLINE color_type* span()
+  {
+    return &m_span[0];
+  }
+  AGG_INLINE unsigned max_span_len() const
+  {
+    return m_span.size();
+  }
 
  private:
   pod_array<color_type> m_span;
 };
-}
-
+} // namespace agg
 
 #endif
-
-

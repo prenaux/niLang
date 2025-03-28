@@ -23,43 +23,74 @@
 #include "agg_image_filters.h"
 #include "agg_span_interpolator_linear.h"
 
-namespace agg
-{
+namespace agg {
 
 //-------------------------------------------------------span_image_filter
-template<class Source, class Interpolator> class span_image_filter
-{
+template <class Source, class Interpolator>
+class span_image_filter {
  public:
   typedef Source source_type;
   typedef Interpolator interpolator_type;
 
   //--------------------------------------------------------------------
-  span_image_filter() {}
-  span_image_filter(source_type& src,
-                    interpolator_type& interpolator,
-                    const image_filter_lut* filter) :
-      m_src(&src),
-      m_interpolator(&interpolator),
-      m_filter(filter),
-      m_dx_dbl(0.5),
-      m_dy_dbl(0.5),
-      m_dx_int(image_subpixel_scale / 2),
-      m_dy_int(image_subpixel_scale / 2)
-  {}
-  void attach(source_type& v) { m_src = &v; }
+  span_image_filter()
+  {
+  }
+  span_image_filter(source_type& src, interpolator_type& interpolator,
+                    const image_filter_lut* filter)
+      : m_src(&src)
+      , m_interpolator(&interpolator)
+      , m_filter(filter)
+      , m_dx_dbl(0.5)
+      , m_dy_dbl(0.5)
+      , m_dx_int(image_subpixel_scale / 2)
+      , m_dy_int(image_subpixel_scale / 2)
+  {
+  }
+  void attach(source_type& v)
+  {
+    m_src = &v;
+  }
 
   //--------------------------------------------------------------------
-  source_type& source()            { return *m_src; }
-  const  source_type& source()      const { return *m_src; }
-  const  image_filter_lut& filter() const { return *m_filter; }
-  int    filter_dx_int()            const { return m_dx_int; }
-  int    filter_dy_int()            const { return m_dy_int; }
-  agg_real filter_dx_dbl()            const { return m_dx_dbl; }
-  agg_real filter_dy_dbl()            const { return m_dy_dbl; }
+  source_type& source()
+  {
+    return *m_src;
+  }
+  const source_type& source() const
+  {
+    return *m_src;
+  }
+  const image_filter_lut& filter() const
+  {
+    return *m_filter;
+  }
+  int filter_dx_int() const
+  {
+    return m_dx_int;
+  }
+  int filter_dy_int() const
+  {
+    return m_dy_int;
+  }
+  agg_real filter_dx_dbl() const
+  {
+    return m_dx_dbl;
+  }
+  agg_real filter_dy_dbl() const
+  {
+    return m_dy_dbl;
+  }
 
   //--------------------------------------------------------------------
-  void interpolator(interpolator_type& v)  { m_interpolator = &v; }
-  void filter(const image_filter_lut& v)   { m_filter = &v; }
+  void interpolator(interpolator_type& v)
+  {
+    m_interpolator = &v;
+  }
+  void filter(const image_filter_lut& v)
+  {
+    m_filter = &v;
+  }
   void filter_offset(agg_real dx, agg_real dy)
   {
     m_dx_dbl = dx;
@@ -67,66 +98,91 @@ template<class Source, class Interpolator> class span_image_filter
     m_dx_int = iround(dx * image_subpixel_scale);
     m_dy_int = iround(dy * image_subpixel_scale);
   }
-  void filter_offset(agg_real d) { filter_offset(d, d); }
+  void filter_offset(agg_real d)
+  {
+    filter_offset(d, d);
+  }
 
   //--------------------------------------------------------------------
-  interpolator_type& interpolator() { return *m_interpolator; }
+  interpolator_type& interpolator()
+  {
+    return *m_interpolator;
+  }
 
   //--------------------------------------------------------------------
-  void prepare() {}
+  void prepare()
+  {
+  }
 
   //--------------------------------------------------------------------
  private:
-  source_type*            m_src;
-  interpolator_type*      m_interpolator;
+  source_type* m_src;
+  interpolator_type* m_interpolator;
   const image_filter_lut* m_filter;
-  agg_real   m_dx_dbl;
-  agg_real   m_dy_dbl;
+  agg_real m_dx_dbl;
+  agg_real m_dy_dbl;
   unsigned m_dx_int;
   unsigned m_dy_int;
 };
 
-
-
-
 //==============================================span_image_resample_affine
-template<class Source>
-class span_image_resample_affine :
-      public span_image_filter<Source, span_interpolator_linear<trans_affine> >
-{
+template <class Source>
+class span_image_resample_affine
+    : public span_image_filter<Source, span_interpolator_linear<trans_affine>> {
  public:
   typedef Source source_type;
   typedef span_interpolator_linear<trans_affine> interpolator_type;
   typedef span_image_filter<source_type, interpolator_type> base_type;
 
   //--------------------------------------------------------------------
-  span_image_resample_affine() :
-      m_scale_limit(200.0),
-      m_blur_x(1.0),
-      m_blur_y(1.0)
-  {}
+  span_image_resample_affine()
+      : m_scale_limit(200.0)
+      , m_blur_x(1.0)
+      , m_blur_y(1.0)
+  {
+  }
 
   //--------------------------------------------------------------------
-  span_image_resample_affine(source_type& src,
-                             interpolator_type& inter,
-                             const image_filter_lut& filter) :
-      base_type(src, inter, &filter),
-      m_scale_limit(200.0),
-      m_blur_x(1.0),
-      m_blur_y(1.0)
-  {}
-
-
-  //--------------------------------------------------------------------
-  int  scale_limit() const { return uround(m_scale_limit); }
-  void scale_limit(int v)  { m_scale_limit = v; }
+  span_image_resample_affine(source_type& src, interpolator_type& inter,
+                             const image_filter_lut& filter)
+      : base_type(src, inter, &filter)
+      , m_scale_limit(200.0)
+      , m_blur_x(1.0)
+      , m_blur_y(1.0)
+  {
+  }
 
   //--------------------------------------------------------------------
-  agg_real blur_x() const { return m_blur_x; }
-  agg_real blur_y() const { return m_blur_y; }
-  void blur_x(agg_real v) { m_blur_x = v; }
-  void blur_y(agg_real v) { m_blur_y = v; }
-  void blur(agg_real v) { m_blur_x = m_blur_y = v; }
+  int scale_limit() const
+  {
+    return uround(m_scale_limit);
+  }
+  void scale_limit(int v)
+  {
+    m_scale_limit = v;
+  }
+
+  //--------------------------------------------------------------------
+  agg_real blur_x() const
+  {
+    return m_blur_x;
+  }
+  agg_real blur_y() const
+  {
+    return m_blur_y;
+  }
+  void blur_x(agg_real v)
+  {
+    m_blur_x = v;
+  }
+  void blur_y(agg_real v)
+  {
+    m_blur_y = v;
+  }
+  void blur(agg_real v)
+  {
+    m_blur_x = m_blur_y = v;
+  }
 
   //--------------------------------------------------------------------
   void prepare()
@@ -136,32 +192,31 @@ class span_image_resample_affine :
 
     base_type::interpolator().transformer().scaling_abs(&scale_x, &scale_y);
 
-    m_rx     = image_subpixel_scale;
-    m_ry     = image_subpixel_scale;
+    m_rx = image_subpixel_scale;
+    m_ry = image_subpixel_scale;
     m_rx_inv = image_subpixel_scale;
     m_ry_inv = image_subpixel_scale;
 
     scale_x *= m_blur_x;
     scale_y *= m_blur_y;
 
-    if(scale_x * scale_y > m_scale_limit)
-    {
+    if (scale_x * scale_y > m_scale_limit) {
       scale_x = scale_x * m_scale_limit / (scale_x * scale_y);
       scale_y = scale_y * m_scale_limit / (scale_x * scale_y);
     }
 
-    if(scale_x > 1.0001)
-    {
-      if(scale_x > m_scale_limit) scale_x = m_scale_limit;
-      m_rx     = uround(    scale_x * agg_real(image_subpixel_scale));
-      m_rx_inv = uround(1.0/scale_x * agg_real(image_subpixel_scale));
+    if (scale_x > 1.0001) {
+      if (scale_x > m_scale_limit)
+        scale_x = m_scale_limit;
+      m_rx = uround(scale_x * agg_real(image_subpixel_scale));
+      m_rx_inv = uround(1.0 / scale_x * agg_real(image_subpixel_scale));
     }
 
-    if(scale_y > 1.0001)
-    {
-      if(scale_y > m_scale_limit) scale_y = m_scale_limit;
-      m_ry     = uround(    scale_y * agg_real(image_subpixel_scale));
-      m_ry_inv = uround(1.0/scale_y * agg_real(image_subpixel_scale));
+    if (scale_y > 1.0001) {
+      if (scale_y > m_scale_limit)
+        scale_y = m_scale_limit;
+      m_ry = uround(scale_y * agg_real(image_subpixel_scale));
+      m_ry_inv = uround(1.0 / scale_y * agg_real(image_subpixel_scale));
     }
   }
 
@@ -177,46 +232,63 @@ class span_image_resample_affine :
   agg_real m_blur_y;
 };
 
-
-
 //=====================================================span_image_resample
-template<class Source, class Interpolator>
-class span_image_resample :
-      public span_image_filter<Source, Interpolator>
-{
+template <class Source, class Interpolator>
+class span_image_resample : public span_image_filter<Source, Interpolator> {
  public:
   typedef Source source_type;
   typedef Interpolator interpolator_type;
   typedef span_image_filter<source_type, interpolator_type> base_type;
 
   //--------------------------------------------------------------------
-  span_image_resample() :
-      m_scale_limit(20),
-      m_blur_x(image_subpixel_scale),
-      m_blur_y(image_subpixel_scale)
-  {}
+  span_image_resample()
+      : m_scale_limit(20)
+      , m_blur_x(image_subpixel_scale)
+      , m_blur_y(image_subpixel_scale)
+  {
+  }
 
   //--------------------------------------------------------------------
-  span_image_resample(source_type& src,
-                      interpolator_type& inter,
-                      const image_filter_lut& filter) :
-      base_type(src, inter, &filter),
-      m_scale_limit(20),
-      m_blur_x(image_subpixel_scale),
-      m_blur_y(image_subpixel_scale)
-  {}
+  span_image_resample(source_type& src, interpolator_type& inter,
+                      const image_filter_lut& filter)
+      : base_type(src, inter, &filter)
+      , m_scale_limit(20)
+      , m_blur_x(image_subpixel_scale)
+      , m_blur_y(image_subpixel_scale)
+  {
+  }
 
   //--------------------------------------------------------------------
-  int  scale_limit() const { return m_scale_limit; }
-  void scale_limit(int v)  { m_scale_limit = v; }
+  int scale_limit() const
+  {
+    return m_scale_limit;
+  }
+  void scale_limit(int v)
+  {
+    m_scale_limit = v;
+  }
 
   //--------------------------------------------------------------------
-  agg_real blur_x() const { return agg_real(m_blur_x) / agg_real(image_subpixel_scale); }
-  agg_real blur_y() const { return agg_real(m_blur_y) / agg_real(image_subpixel_scale); }
-  void blur_x(agg_real v) { m_blur_x = uround(v * agg_real(image_subpixel_scale)); }
-  void blur_y(agg_real v) { m_blur_y = uround(v * agg_real(image_subpixel_scale)); }
-  void blur(agg_real v)   { m_blur_x =
-        m_blur_y = uround(v * agg_real(image_subpixel_scale)); }
+  agg_real blur_x() const
+  {
+    return agg_real(m_blur_x) / agg_real(image_subpixel_scale);
+  }
+  agg_real blur_y() const
+  {
+    return agg_real(m_blur_y) / agg_real(image_subpixel_scale);
+  }
+  void blur_x(agg_real v)
+  {
+    m_blur_x = uround(v * agg_real(image_subpixel_scale));
+  }
+  void blur_y(agg_real v)
+  {
+    m_blur_y = uround(v * agg_real(image_subpixel_scale));
+  }
+  void blur(agg_real v)
+  {
+    m_blur_x = m_blur_y = uround(v * agg_real(image_subpixel_scale));
+  }
 
  protected:
   int m_scale_limit;
@@ -224,9 +296,6 @@ class span_image_resample :
   int m_blur_y;
 };
 
-
-
-
-}
+} // namespace agg
 
 #endif

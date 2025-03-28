@@ -13,40 +13,44 @@ namespace ni {
  */
 
 //! Large vertex array initializer.
-struct sVertexArrayInitializer
-{
+struct sVertexArrayInitializer {
   //! Index hash map.
-  typedef astl::hash_map<tU32,tU32> tIndexHMap;
+  typedef astl::hash_map<tU32, tU32> tIndexHMap;
 
   //! Vertex buffer structure
   struct sVB {
     cFVFDescription fvfDesc;
-    tU8Vec    vVerts;
-    tU32    nCount;
-    tIndexHMap  hmapIndices;
+    tU8Vec vVerts;
+    tU32 nCount;
+    tIndexHMap hmapIndices;
     Ptr<iVertexArray> ptrVA;
-    sVB() : nCount(0) {}
+    sVB()
+        : nCount(0)
+    {
+    }
   };
 
   //! Vertex buffer hash map.
-  typedef astl::hash_map<tU64,sVB>  tVBHMap;
+  typedef astl::hash_map<tU64, sVB> tVBHMap;
   //! Chunk hash map.
-  typedef astl::hash_map<tFVF,tU32> tChunkHMap;
+  typedef astl::hash_map<tFVF, tU32> tChunkHMap;
 
-  tU32    mnMaxVertsPerVA;
-  tVBHMap   mhmapVB;
-  tChunkHMap  mhmapChunks;
-  tU32    mnTotalVerts;
-  tU64    mnTotalMemory;
+  tU32 mnMaxVertsPerVA;
+  tVBHMap mhmapVB;
+  tChunkHMap mhmapChunks;
+  tU32 mnTotalVerts;
+  tU64 mnTotalMemory;
 
   //! Constructor, pass the maximum vertex per vertex array manually
-  sVertexArrayInitializer(tU32 anMaxVert) {
+  sVertexArrayInitializer(tU32 anMaxVert)
+  {
     mnMaxVertsPerVA = anMaxVert;
     mnTotalVerts = 0;
     mnTotalMemory = 0;
   }
   //! Constructor, pass the maximum vertex per vertex array using the graphics caps
-  sVertexArrayInitializer(iGraphics* apGraphics) {
+  sVertexArrayInitializer(iGraphics* apGraphics)
+  {
     mnMaxVertsPerVA = apGraphics->GetDriverCaps(eGraphicsCaps_MaxVertexIndex);
     if (!mnMaxVertsPerVA)
       mnMaxVertsPerVA = 0xFFFF;
@@ -54,24 +58,27 @@ struct sVertexArrayInitializer
     mnTotalMemory = 0;
   }
   //! Destructor
-  ~sVertexArrayInitializer() {
+  ~sVertexArrayInitializer()
+  {
     mhmapVB.clear();
     mhmapChunks.clear();
   }
 
   //! Hash for FVF|Chunk set
-  inline tU64 GetHash(tFVF aFVF, tU32 anChunk) const {
-    return tU64(aFVF)|(tU64(anChunk)<<32);
+  inline tU64 GetHash(tFVF aFVF, tU32 anChunk) const
+  {
+    return tU64(aFVF) | (tU64(anChunk) << 32);
   }
 
   //! Get the vertex buffer of the specified FVF|Chunk pair
-  tVBHMap::iterator GetVB(tFVF anFVF, tU32 anChunk) {
-    tVBHMap::iterator itVB = mhmapVB.find(GetHash(anFVF,anChunk));
+  tVBHMap::iterator GetVB(tFVF anFVF, tU32 anChunk)
+  {
+    tVBHMap::iterator itVB = mhmapVB.find(GetHash(anFVF, anChunk));
     if (itVB == mhmapVB.end()) {
-      itVB = astl::upsert(mhmapVB,GetHash(anFVF,anChunk),sVB());
+      itVB = astl::upsert(mhmapVB, GetHash(anFVF, anChunk), sVB());
       sVB& vb = itVB->second;
       vb.fvfDesc.Setup(anFVF);
-      vb.vVerts.reserve(256*1024);
+      vb.vVerts.reserve(256 * 1024);
     }
     return itVB;
   }
@@ -84,12 +91,12 @@ struct sVertexArrayInitializer
     niAssert(anNumVerts < mnMaxVertsPerVA);
     tChunkHMap::iterator itC = mhmapChunks.find(aFVF);
     if (itC == mhmapChunks.end()) {
-      astl::upsert(mhmapChunks,aFVF,0);
+      astl::upsert(mhmapChunks, aFVF, 0);
       return 0;
     }
-    tVBHMap::iterator itVB = GetVB(aFVF,itC->second);
+    tVBHMap::iterator itVB = GetVB(aFVF, itC->second);
     tU32 nCount = itVB->second.nCount;
-    if (nCount && (nCount+anNumVerts >= mnMaxVertsPerVA)) {
+    if (nCount && (nCount + anNumVerts >= mnMaxVertsPerVA)) {
       return ++itC->second;
     }
     return itC->second;
@@ -98,11 +105,13 @@ struct sVertexArrayInitializer
   //! Add a vertex to the specified FVF|Chunk|Index.
   //! \remark Will convert the FVF from srcFVF to the FVF of the chunk.
   //! \return The index of the pushed vertex.
-  tU32 PushVertex(tFVF anFVF, tU32 anChunk, tU32 anIndex, tFVF aSrcFVF, tPtr apVert) {
+  tU32 PushVertex(tFVF anFVF, tU32 anChunk, tU32 anIndex, tFVF aSrcFVF,
+                  tPtr apVert)
+  {
     cFVFDescription srcFVF(aSrcFVF);
 
     // get the VB
-    tVBHMap::iterator itVB = GetVB(anFVF,anChunk);
+    tVBHMap::iterator itVB = GetVB(anFVF, anChunk);
     // add the vertex
     sVB& vb = itVB->second;
     niAssert(!vb.ptrVA.IsOK()); // cant add a vertex after initialization
@@ -110,13 +119,13 @@ struct sVertexArrayInitializer
     tIndexHMap::const_iterator it = vb.hmapIndices.find(anIndex);
     if (it == vb.hmapIndices.end()) {
       tU32 nCur = vb.vVerts.size();
-      vb.vVerts.resize(vb.vVerts.size()+vb.fvfDesc.GetStride());
-      memset(&vb.vVerts[nCur],0,vb.fvfDesc.GetStride());
-      cFVFVertex destV(&vb.fvfDesc,&vb.vVerts[nCur]);
-      cFVFVertex srcV(&srcFVF,apVert);
+      vb.vVerts.resize(vb.vVerts.size() + vb.fvfDesc.GetStride());
+      memset(&vb.vVerts[nCur], 0, vb.fvfDesc.GetStride());
+      cFVFVertex destV(&vb.fvfDesc, &vb.vVerts[nCur]);
+      cFVFVertex srcV(&srcFVF, apVert);
       destV.Copy(srcV);
       tU32 c = vb.nCount++;
-      astl::upsert(vb.hmapIndices,anIndex,c);
+      astl::upsert(vb.hmapIndices, anIndex, c);
       return c;
     }
     else {
@@ -126,8 +135,9 @@ struct sVertexArrayInitializer
   }
 
   //! Get the index of the specified vertex in the final VA.
-  tU32 GetVertexIndex(tFVF anFVF, tU32 anChunk, tU32 anIndex) const {
-    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF,anChunk));
+  tU32 GetVertexIndex(tFVF anFVF, tU32 anChunk, tU32 anIndex) const
+  {
+    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF, anChunk));
     niAssert(itVB != mhmapVB.end());
     const sVB& vb = itVB->second;
     tIndexHMap::const_iterator it = vb.hmapIndices.find(anIndex);
@@ -136,73 +146,87 @@ struct sVertexArrayInitializer
   }
 
   //! Get all vertices of the specified FVF|Chunk.
-  const tU8* GetVerts(tFVF anFVF, tU32 anChunk) const {
-    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF,anChunk));
+  const tU8* GetVerts(tFVF anFVF, tU32 anChunk) const
+  {
+    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF, anChunk));
     niAssert(itVB != mhmapVB.end());
     const sVB& vb = itVB->second;
     return &vb.vVerts[0];
   }
 
   //! Get the number of vertices of the specified FVF|Chunk.
-  tU32 GetNumVerts(tFVF anFVF, tU32 anChunk) const {
-    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF,anChunk));
+  tU32 GetNumVerts(tFVF anFVF, tU32 anChunk) const
+  {
+    tVBHMap::const_iterator itVB = mhmapVB.find(GetHash(anFVF, anChunk));
     niAssert(itVB != mhmapVB.end());
     const sVB& vb = itVB->second;
     return vb.nCount;
   }
 
   //! Get the vertex array of the specified FVF|Chunk.
-  iVertexArray* GetVA(iGraphics* apGraphics, tFVF anFVF, tU32 anChunk, eArrayUsage aUsage) {
-    tVBHMap::iterator itVB = mhmapVB.find(GetHash(anFVF,anChunk));
-    return GetVA(apGraphics,itVB,aUsage);
+  iVertexArray* GetVA(iGraphics* apGraphics, tFVF anFVF, tU32 anChunk,
+                      eArrayUsage aUsage)
+  {
+    tVBHMap::iterator itVB = mhmapVB.find(GetHash(anFVF, anChunk));
+    return GetVA(apGraphics, itVB, aUsage);
   }
-  iVertexArray* GetVA(iGraphics* apGraphics, tVBHMap::iterator itVB, eArrayUsage aUsage) {
+  iVertexArray* GetVA(iGraphics* apGraphics, tVBHMap::iterator itVB,
+                      eArrayUsage aUsage)
+  {
     niAssert(itVB != mhmapVB.end());
     sVB& vb = itVB->second;
     niAssert(vb.nCount);
     if (vb.nCount && !vb.ptrVA.IsOK()) {
-      vb.ptrVA = apGraphics->CreateVertexArray(vb.nCount,vb.fvfDesc.GetFVF(),aUsage);
+      vb.ptrVA =
+        apGraphics->CreateVertexArray(vb.nCount, vb.fvfDesc.GetFVF(), aUsage);
       if (!niIsOK(vb.ptrVA))
-    	  return NULL;
+        return NULL;
 
       // copy VA content
-      tPtr pVerts = vb.ptrVA->Lock(0,0,eLock_Normal);
-      memcpy(pVerts,&vb.vVerts[0],vb.fvfDesc.GetStride()*vb.nCount);
+      tPtr pVerts = vb.ptrVA->Lock(0, 0, eLock_Normal);
+      memcpy(pVerts, &vb.vVerts[0], vb.fvfDesc.GetStride() * vb.nCount);
       vb.ptrVA->Unlock();
 
       // check IA integrity
 #ifdef _DEBUG
-      niLoopit(tIndexHMap::const_iterator,it,vb.hmapIndices) {
+      niLoopit (tIndexHMap::const_iterator, it, vb.hmapIndices) {
         niAssert(it->second < vb.nCount);
       }
 #endif
 
       tFVF fvf = vb.fvfDesc.GetFVF();
-      niLog(Info,niFmt(_A("# FVF %s (stride %d), %d vertices, %.2f Kb"),FVFToString(fvf).Chars(),vb.fvfDesc.GetStride(),vb.nCount,tF32(vb.nCount*vb.fvfDesc.GetStride())/1024.0f));
+      niLog(Info,
+            niFmt(_A("# FVF %s (stride %d), %d vertices, %.2f Kb"),
+                  FVFToString(fvf).Chars(), vb.fvfDesc.GetStride(), vb.nCount,
+                  tF32(vb.nCount * vb.fvfDesc.GetStride()) / 1024.0f));
 
       mnTotalVerts += vb.nCount;
-      mnTotalMemory += vb.nCount*vb.fvfDesc.GetStride();
+      mnTotalMemory += vb.nCount * vb.fvfDesc.GetStride();
     }
     return vb.ptrVA;
   }
 
   //! Get the first VB iterator.
-  tVBHMap::iterator GetVBBeginIt() {
+  tVBHMap::iterator GetVBBeginIt()
+  {
     return mhmapVB.begin();
   }
   //! Get the end VB iterator.
-  tVBHMap::iterator GetVBEndIt() {
+  tVBHMap::iterator GetVBEndIt()
+  {
     return mhmapVB.end();
   }
 
   //! Get the total number of vertices.
   //! \remark This is initialized by GetVA
-  tU32 GetTotalNumVerts() const {
+  tU32 GetTotalNumVerts() const
+  {
     return mnTotalVerts;
   }
   //! Get the total memory in bytes.
   //! \remark This is initialized by GetVA
-  tU64 GetTotalMemory() const {
+  tU64 GetTotalMemory() const
+  {
     return mnTotalMemory;
   }
 };
@@ -210,5 +234,5 @@ struct sVertexArrayInitializer
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __VERTEXARRAYINITIALIZER_5907632_H__

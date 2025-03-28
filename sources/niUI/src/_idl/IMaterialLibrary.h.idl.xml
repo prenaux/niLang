@@ -2,43 +2,43 @@
 	<namespace name="ni">
 		<enum name="eMaterialSerializeFlags">
 			<comments desc="Material Serialization flags. "/>
-			<value name="eMaterialSerializeFlags_Write" value="niBit ( 0 ) ">
+			<value name="eMaterialSerializeFlags_Write" value="niBit(0)">
 				<comments desc="Serialize write. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_Read" value="niBit ( 1 ) ">
+			<value name="eMaterialSerializeFlags_Read" value="niBit(1)">
 				<comments desc="Serialize read. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_Textures" value="niBit ( 2 ) ">
+			<value name="eMaterialSerializeFlags_Textures" value="niBit(2)">
 				<comments desc="Serialize all the textures data in the file. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_Compress" value="niBit ( 3 ) ">
+			<value name="eMaterialSerializeFlags_Compress" value="niBit(3)">
 				<comments desc="Compress the content for best hardware usage. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_NamesOnly" value="niBit ( 4 ) ">
+			<value name="eMaterialSerializeFlags_NamesOnly" value="niBit(4)">
 				<comments desc="Serialize only the name of the materials. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_ReadExistingOnly" value="niBit ( 5 ) ">
+			<value name="eMaterialSerializeFlags_ReadExistingOnly" value="niBit(5)">
 				<comments desc="Read only if the material was alreadu in the library. "/>
 			</value>
-			<value name="eMaterialSerializeFlags_TextureNoMipMaps" value="niBit ( 19 ) ">
+			<value name="eMaterialSerializeFlags_TextureNoMipMaps" value="niBit(19)">
 				<comments desc="Don&apos;t serialize the texture&apos;s mip maps. ">
 					<remark text="Mip maps will be recomputed when the library/material is loaded. "/>
 				</comments>
 			</value>
-			<value name="eMaterialSerializeFlags_TextureMaxResLo" value="niBit ( 20 ) ">
+			<value name="eMaterialSerializeFlags_TextureMaxResLo" value="niBit(20)">
 				<comments desc="Texture max res value lower bit. (4 bits value) ">
 					<remark text="(FLAGS|(RES&lt;&lt;20)), RES is the maximum resolution between 0 and 15 the maximum resolution is 2^RES. "/>
 				</comments>
 			</value>
-			<value name="eMaterialSerializeFlags_TextureMaxResHi" value="niBit ( 24 ) ">
+			<value name="eMaterialSerializeFlags_TextureMaxResHi" value="niBit(24)">
 				<comments desc="Texture max res value higher bit. (4 bits value) "/>
 			</value>
-			<value name="eMaterialSerializeFlags_TextureCompressionLo" value="niBit ( 25 ) ">
+			<value name="eMaterialSerializeFlags_TextureCompressionLo" value="niBit(25)">
 				<comments desc="Texture compression value lower bit. (7 bits value) ">
 					<remark text="(FLAGS|(COMP&lt;&lt;25)), COMP should be a value between 0 and 100, 0 == no loss compression "/>
 				</comments>
 			</value>
-			<value name="eMaterialSerializeFlags_TextureCompressionHi" value="niBit ( 31 ) ">
+			<value name="eMaterialSerializeFlags_TextureCompressionHi" value="niBit(31)">
 				<comments desc="Texture compression value higher bit. (7 bits value) "/>
 			</value>
 		</enum>

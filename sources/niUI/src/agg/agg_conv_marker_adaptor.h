@@ -20,32 +20,36 @@
 #include "agg_conv_adaptor_vcgen.h"
 #include "agg_vcgen_vertex_sequence.h"
 
-namespace agg
-{
+namespace agg {
 
 //=====================================================conv_marker_adaptor
-template<class VertexSource, class Markers=null_markers>
-struct conv_marker_adaptor :
-      public conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers>
-{
+template <class VertexSource, class Markers = null_markers>
+struct conv_marker_adaptor
+    : public conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers> {
   typedef Markers marker_type;
-  typedef conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers> base_type;
+  typedef conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers>
+    base_type;
 
-  conv_marker_adaptor(VertexSource& vs) :
-      conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers>(vs)
+  conv_marker_adaptor(VertexSource& vs)
+      : conv_adaptor_vcgen<VertexSource, vcgen_vertex_sequence, Markers>(vs)
   {
   }
 
-  void shorten(agg_real s) { base_type::generator().shorten(s); }
-  agg_real shorten() const { return base_type::generator().shorten(); }
+  void shorten(agg_real s)
+  {
+    base_type::generator().shorten(s);
+  }
+  agg_real shorten() const
+  {
+    return base_type::generator().shorten();
+  }
 
  private:
   conv_marker_adaptor(const conv_marker_adaptor<VertexSource, Markers>&);
-  const conv_marker_adaptor<VertexSource, Markers>&
-  operator = (const conv_marker_adaptor<VertexSource, Markers>&);
+  const conv_marker_adaptor<VertexSource, Markers>& operator=(
+    const conv_marker_adaptor<VertexSource, Markers>&);
 };
 
-
-}
+} // namespace agg
 
 #endif

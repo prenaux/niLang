@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! Image usage.
-enum eImageUsage
-{
+enum eImageUsage {
   //! The usage is read-only to be used a source for rendering.
   //! \remark No dirty region is added.
   eImageUsage_Source = 0,
@@ -26,8 +25,7 @@ enum eImageUsage
 };
 
 //! Image interface.
-struct iImage : public iUnknown
-{
+struct iImage : public iUnknown {
   niDeclareInterfaceUUID(iImage,0x848a96e9,0x4b5c,0x43cf,0x9c,0x61,0xa2,0x6d,0xf5,0x4c,0x7f,0x07);
 
   //! Copy the specified image.
@@ -43,7 +41,8 @@ struct iImage : public iUnknown
   //! Grab the image as a bitmap to be used for some other operations.
   //! \remark This function only adds a dirty rectangles and manage the bitmap's update from the texture.
   //! \remark Pass a Null rectangle to identity the whole image size.
-  virtual iBitmap2D* __stdcall GrabBitmap(eImageUsage aLock, const sRecti& aDirtyRect) = 0;
+  virtual iBitmap2D* __stdcall GrabBitmap(eImageUsage aLock,
+                                          const sRecti& aDirtyRect) = 0;
   //! Get whether a texture is already initialized in the image.
   //! {Property}
   virtual tBool __stdcall GetHasTexture() const = 0;
@@ -53,7 +52,8 @@ struct iImage : public iUnknown
   //! Grab the image as a texture to be used for some other operations.
   //! \remark This function only adds a dirty rectangles and manage the texture's update from the bitmap.
   //! \remark Pass a Null rectangle to identity the whole image size.
-  virtual iTexture* __stdcall GrabTexture(eImageUsage aLock, const sRecti& aDirtyRect) = 0;
+  virtual iTexture* __stdcall GrabTexture(eImageUsage aLock,
+                                          const sRecti& aDirtyRect) = 0;
 
   //! Get the image's width.
   //! {Property}
@@ -72,5 +72,5 @@ struct iImage : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IIMAGE_H_61C48F5A_1349_4733_AD7C_BB05BCD9F997__

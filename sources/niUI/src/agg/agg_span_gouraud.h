@@ -19,38 +19,32 @@
 #include "agg_basics.h"
 #include "agg_math.h"
 
-namespace agg
-{
+namespace agg {
 
 //============================================================span_gouraud
-template<class ColorT> class span_gouraud
-{
+template <class ColorT>
+class span_gouraud {
  public:
   typedef ColorT color_type;
 
-  struct coord_type
-  {
+  struct coord_type {
     agg_real x;
     agg_real y;
     color_type color;
   };
 
   //--------------------------------------------------------------------
-  span_gouraud() :
-      m_vertex(0)
+  span_gouraud()
+      : m_vertex(0)
   {
     m_cmd[0] = path_cmd_stop;
   }
 
   //--------------------------------------------------------------------
-  span_gouraud(const color_type& c1,
-               const color_type& c2,
-               const color_type& c3,
-               agg_real x1, agg_real y1,
-               agg_real x2, agg_real y2,
-               agg_real x3, agg_real y3,
-               agg_real d) :
-      m_vertex(0)
+  span_gouraud(const color_type& c1, const color_type& c2, const color_type& c3,
+               agg_real x1, agg_real y1, agg_real x2, agg_real y2, agg_real x3,
+               agg_real y3, agg_real d)
+      : m_vertex(0)
   {
     colors(c1, c2, c3);
     triangle(x1, y1, x2, y2, x3, y3, d);
@@ -71,10 +65,8 @@ template<class ColorT> class span_gouraud
   // It's necessary to achieve numerical stability.
   // However, the coordinates to interpolate colors are calculated
   // as miter joins (calc_intersection).
-  void triangle(agg_real x1, agg_real y1,
-                agg_real x2, agg_real y2,
-                agg_real x3, agg_real y3,
-                agg_real d)
+  void triangle(agg_real x1, agg_real y1, agg_real x2, agg_real y2, agg_real x3,
+                agg_real y3, agg_real d)
   {
     m_coord[0].x = m_x[0] = x1;
     m_coord[0].y = m_y[0] = y1;
@@ -87,24 +79,18 @@ template<class ColorT> class span_gouraud
     m_cmd[2] = path_cmd_line_to;
     m_cmd[3] = path_cmd_stop;
 
-    if(d != 0.0)
-    {
-      dilate_triangle(m_coord[0].x, m_coord[0].y,
-                      m_coord[1].x, m_coord[1].y,
-                      m_coord[2].x, m_coord[2].y,
-                      m_x, m_y, d);
+    if (d != 0.0) {
+      dilate_triangle(m_coord[0].x, m_coord[0].y, m_coord[1].x, m_coord[1].y,
+                      m_coord[2].x, m_coord[2].y, m_x, m_y, d);
 
-      calc_intersection(m_x[4], m_y[4], m_x[5], m_y[5],
-                        m_x[0], m_y[0], m_x[1], m_y[1],
-                        &m_coord[0].x, &m_coord[0].y);
+      calc_intersection(m_x[4], m_y[4], m_x[5], m_y[5], m_x[0], m_y[0], m_x[1],
+                        m_y[1], &m_coord[0].x, &m_coord[0].y);
 
-      calc_intersection(m_x[0], m_y[0], m_x[1], m_y[1],
-                        m_x[2], m_y[2], m_x[3], m_y[3],
-                        &m_coord[1].x, &m_coord[1].y);
+      calc_intersection(m_x[0], m_y[0], m_x[1], m_y[1], m_x[2], m_y[2], m_x[3],
+                        m_y[3], &m_coord[1].x, &m_coord[1].y);
 
-      calc_intersection(m_x[2], m_y[2], m_x[3], m_y[3],
-                        m_x[4], m_y[4], m_x[5], m_y[5],
-                        &m_coord[2].x, &m_coord[2].y);
+      calc_intersection(m_x[2], m_y[2], m_x[3], m_y[3], m_x[4], m_y[4], m_x[5],
+                        m_y[5], &m_coord[2].x, &m_coord[2].y);
       m_cmd[3] = path_cmd_line_to;
       m_cmd[4] = path_cmd_line_to;
       m_cmd[5] = path_cmd_line_to;
@@ -135,23 +121,20 @@ template<class ColorT> class span_gouraud
     coord[1] = m_coord[1];
     coord[2] = m_coord[2];
 
-    if(m_coord[0].y > m_coord[2].y)
-    {
+    if (m_coord[0].y > m_coord[2].y) {
       coord[0] = m_coord[2];
       coord[2] = m_coord[0];
     }
 
     coord_type tmp;
-    if(coord[0].y > coord[1].y)
-    {
-      tmp      = coord[1];
+    if (coord[0].y > coord[1].y) {
+      tmp = coord[1];
       coord[1] = coord[0];
       coord[0] = tmp;
     }
 
-    if(coord[1].y > coord[2].y)
-    {
-      tmp      = coord[2];
+    if (coord[1].y > coord[2].y) {
+      tmp = coord[2];
       coord[2] = coord[1];
       coord[1] = tmp;
     }
@@ -166,7 +149,6 @@ template<class ColorT> class span_gouraud
   unsigned m_vertex;
 };
 
-}
+} // namespace agg
 
 #endif
-

@@ -10,8 +10,7 @@ namespace ni {
  */
 
 //! Camera move type
-enum eCameraMoveType
-{
+enum eCameraMoveType {
   //! The camera view is set through the position, target & target up directly.
   eCameraMoveType_None = 0,
   //! The camera simulates a flying object.
@@ -33,8 +32,7 @@ enum eCameraMoveType
 };
 
 //! Camera projection type.
-enum eCameraProjectionType
-{
+enum eCameraProjectionType {
   //! Perspective camera.
   eCameraProjectionType_Perspective = 0,
   //! Orthogonal with a free view pov.
@@ -46,8 +44,7 @@ enum eCameraProjectionType
 };
 
 //! Camera interface
-struct iCamera : public iUnknown
-{
+struct iCamera : public iUnknown {
   niDeclareInterfaceUUID(iCamera,0x3769afcf,0x3b13,0x4545,0x84,0x74,0xef,0x46,0x3a,0x1e,0x67,0x55);
 
   //########################################################################################
@@ -82,12 +79,14 @@ struct iCamera : public iUnknown
   //!         (such as for orthographic projections).
   //! \remark This method is commonly used to build a ray to be used
   //!         by picking in camera space.
-  virtual ni::sVec3f __stdcall GetRay(ni::tF32 afX, ni::tF32 afY, const ni::sRectf& aRect) = 0;
+  virtual ni::sVec3f __stdcall GetRay(ni::tF32 afX, ni::tF32 afY,
+                                      const ni::sRectf& aRect) = 0;
   //! Get the starting point of the last ray
   //! {Property}
   virtual sVec3f __stdcall GetRayStart() const = 0;
   //! Get a screen position from the given 3d position.
-  virtual ni::sVec3f __stdcall GetScreenPosition(const ni::sVec3f& avPos, const ni::sRectf& aRect) const = 0;
+  virtual ni::sVec3f __stdcall GetScreenPosition(
+    const ni::sVec3f& avPos, const ni::sRectf& aRect) const = 0;
 
   //! Set the view matrix directly.
   //! \remark This should one be used with eCameraMoveType_None.
@@ -100,7 +99,8 @@ struct iCamera : public iUnknown
   //! Set the camera position, target and up vector from a matrix.
   //! \param aMatrix is the matrix from which the new camera position and target will be derived
   //! \param abSetUp if true the target's up vector will also be derived from the specifed matrix.
-  virtual void __stdcall SetFromWorldMatrix(const ni::sMatrixf& aMatrix, tBool abSetUp) = 0;
+  virtual void __stdcall SetFromWorldMatrix(const ni::sMatrixf& aMatrix,
+                                            tBool abSetUp) = 0;
   //! @}
 
   //########################################################################################
@@ -110,7 +110,8 @@ struct iCamera : public iUnknown
 
   //! Set projection type.
   //! {Property}
-  virtual void __stdcall SetProjection(eCameraProjectionType aProjectionType) = 0;
+  virtual void __stdcall SetProjection(
+    eCameraProjectionType aProjectionType) = 0;
   //! Get orthogonal projection.
   //! {Property}
   virtual eCameraProjectionType __stdcall GetProjection() const = 0;
@@ -238,7 +239,8 @@ struct iCamera : public iUnknown
   //! Rotates the target around the specified axis.
   virtual void __stdcall RotateTarget(ni::sVec3f avAxis, ni::tF32 afAngle) = 0;
   //! Rotates the target up around the specified axis.
-  virtual void __stdcall RotateTargetUp(ni::sVec3f avAxis, ni::tF32 afAngle) = 0;
+  virtual void __stdcall RotateTargetUp(ni::sVec3f avAxis,
+                                        ni::tF32 afAngle) = 0;
   //! Rotates the target up around the specified axis.
   //! Add yaw.
   //! \remark Rotates the target around the Y axis.
@@ -275,5 +277,5 @@ niExportFunc(iUnknown*) New_niUI_Camera(const Var&, const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ICAMERA_21384900_H__

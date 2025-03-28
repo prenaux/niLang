@@ -21,8 +21,7 @@ enum eImageMapSerializeFlags {
 typedef tU32 tImageMapSerializeFlags;
 
 //! Image map interface.
-struct iImageMap : public iUnknown
-{
+struct iImageMap : public iUnknown {
   niDeclareInterfaceUUID(iImageMap,0xa5a4c988,0xbc75,0x4a36,0xb0,0x54,0xb9,0x6c,0xb9,0xd2,0x54,0x1b);
 
   //########################################################################################
@@ -59,7 +58,8 @@ struct iImageMap : public iUnknown
   //! itself.
   //! \remark Default is eFalse.
   //! {Property}
-  virtual void __stdcall SetComputeMipMapsPerPage(tBool abComputeMipMapsPerPage) = 0;
+  virtual void __stdcall SetComputeMipMapsPerPage(
+    tBool abComputeMipMapsPerPage) = 0;
   //! Get whether the mipmaps are computed for the whole page after an image
   //! has been added.
   //! {Property}
@@ -118,13 +118,15 @@ struct iImageMap : public iUnknown
   //! Add an image to the image map.
   //! \return An new image packed in the image map, if failed returns NULL.
   //! \remark The returned overlay is owned by the image map, when the image map is released or invalidated the overlay will be invalidated.
-  virtual iOverlay* __stdcall AddImage(iHString* ahspName, iBitmap2D* apBitmap) = 0;
+  virtual iOverlay* __stdcall AddImage(iHString* ahspName,
+                                       iBitmap2D* apBitmap) = 0;
   //! Add an image to the image map loading from a resource.
   //! \param ahspName is the name of the image, if the name isnt not specified the resource path is used as name.
   //! \param ahspRes is the path of the resource.
   //! \return An new image packed in the image map, if failed returns NULL.
   //! \remark The returned overlay is owned by the image map, when the image map is released or invalidated the overlay will be invalidated.
-  virtual iOverlay* __stdcall AddImageFromResource(iHString* ahspName, iHString* ahspRes) = 0;
+  virtual iOverlay* __stdcall AddImageFromResource(iHString* ahspName,
+                                                   iHString* ahspRes) = 0;
   //! Add an image to the image map loading from a icon set folder.
   //! \param ahspName is the name of the image, if the name isnt not specified the resource path is used as name.
   //! \param ahspFolder is the base folder name.
@@ -136,7 +138,11 @@ struct iImageMap : public iUnknown
   //! \remark This method will try to load all mip map levels from several folders, up to maxres down to minres, missing versions will
   //!     be generated automatically.
   //! \remark The path for the images is folder/[res]x[res]/res
-  virtual iOverlay* __stdcall AddImageFromIconSet(iHString* ahspName, iHString* ahspFolder, iHString* ahspRes, tU32 anMaxRes, tU32 anMinRes) = 0;
+  virtual iOverlay* __stdcall AddImageFromIconSet(iHString* ahspName,
+                                                  iHString* ahspFolder,
+                                                  iHString* ahspRes,
+                                                  tU32 anMaxRes,
+                                                  tU32 anMinRes) = 0;
   //! Remove an image from the image map.
   //! \remark Removing an image will invalidate the overlay and repack the cache, this operation
   //!     should be considered slow.
@@ -152,11 +158,12 @@ struct iImageMap : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetShouldSerialize() const = 0;
   //! Serialize the image map to/from the specified file.
-  virtual tBool __stdcall Serialize(ni::iFile* apFile, tImageMapSerializeFlags aFlags) = 0;
+  virtual tBool __stdcall Serialize(ni::iFile* apFile,
+                                    tImageMapSerializeFlags aFlags) = 0;
   //! @}
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IIMAGEMAP_9138729_H__

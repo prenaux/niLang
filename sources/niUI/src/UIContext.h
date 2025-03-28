@@ -25,45 +25,50 @@
 // #define UICONTEXT_USE_CURSOR_CAPTURE
 
 #ifndef _UIInputTrace
-#define _UIInputTrace(X)
+  #define _UIInputTrace(X)
 #endif
 #ifndef _UIInputKeyboardTrace
-#define _UIInputKeyboardTrace(X)
+  #define _UIInputKeyboardTrace(X)
 #endif
 #ifndef _UIInputMMTrace
-#define _UIInputMMTrace(X)
+  #define _UIInputMMTrace(X)
 #endif
 #ifndef _UIDragTrace
-#define _UIDragTrace(X)
+  #define _UIDragTrace(X)
 #endif
 #ifndef _UIFocusTrace
-#define _UIFocusTrace(X)
+  #define _UIFocusTrace(X)
 #endif
 #ifndef _UISkinTrace
-#define _UISkinTrace(X)
+  #define _UISkinTrace(X)
 #endif
 
 #define PRINT_RELAYOUT 0
 
 #define FINGER_POINTER_ID_MIN 0x10000
 #define FINGER_POINTER_ID_MAX 0x10003
-#define FINGER_POINTER_ID_NUM (FINGER_POINTER_ID_MAX-FINGER_POINTER_ID_MIN)
-#define FINGER_ID_POINTER_LEFT   (FINGER_POINTER_ID_MIN+ePointerButton_Left)
-#define FINGER_ID_POINTER_RIGHT  (FINGER_POINTER_ID_MIN+ePointerButton_Right)
-#define FINGER_ID_POINTER_MIDDLE (FINGER_POINTER_ID_MIN+ePointerButton_Middle)
+#define FINGER_POINTER_ID_NUM (FINGER_POINTER_ID_MAX - FINGER_POINTER_ID_MIN)
+#define FINGER_ID_POINTER_LEFT (FINGER_POINTER_ID_MIN + ePointerButton_Left)
+#define FINGER_ID_POINTER_RIGHT (FINGER_POINTER_ID_MIN + ePointerButton_Right)
+#define FINGER_ID_POINTER_MIDDLE (FINGER_POINTER_ID_MIN + ePointerButton_Middle)
 
 static const tU32 knNumFingersBase = 10;
 static const tU32 knNumFingers = knNumFingersBase + FINGER_POINTER_ID_NUM;
 
-#define FINGER_INDEX(ID)                                    \
-  (((ID) < 10) ? (ID) :                                     \
-   (FINGER_IS_POINTER(ID) ? ((ID)-FINGER_POINTER_ID_MIN) :  \
-    ni::eInvalidHandle))
-#define CHECK_FINGER(ID,RET) if (FINGER_INDEX(ID) >= knNumFingers) { return RET; }
+#define FINGER_INDEX(ID)                                               \
+  (((ID) < 10) ? (ID)                                                  \
+               : (FINGER_IS_POINTER(ID) ? ((ID)-FINGER_POINTER_ID_MIN) \
+                                        : ni::eInvalidHandle))
+#define CHECK_FINGER(ID, RET)             \
+  if (FINGER_INDEX(ID) >= knNumFingers) { \
+    return RET;                           \
+  }
 #define GET_FINGER(ID) mFingers[FINGER_INDEX(ID)]
-#define FINGER_IS_POINTER(ID) (((ID) >= FINGER_POINTER_ID_MIN) && ((ID) < FINGER_POINTER_ID_MAX))
-#define FINGER_ID_TO_POINTER_BUTTON(ID) ((ePointerButton)((ID)-FINGER_POINTER_ID_MIN))
-#define FINGER_POINTER_BUTTON_TO_ID(ID) ((ID)+FINGER_POINTER_ID_MIN)
+#define FINGER_IS_POINTER(ID) \
+  (((ID) >= FINGER_POINTER_ID_MIN) && ((ID) < FINGER_POINTER_ID_MAX))
+#define FINGER_ID_TO_POINTER_BUTTON(ID) \
+  ((ePointerButton)((ID)-FINGER_POINTER_ID_MIN))
+#define FINGER_POINTER_BUTTON_TO_ID(ID) ((ID) + FINGER_POINTER_ID_MIN)
 
 enum eUIStandardCursor {
   eUIStandardCursor_Current = 0,
@@ -80,22 +85,23 @@ class cWidget;
 class cUIContext;
 class cWidgetClass;
 
-typedef astl::vector<WeakPtr<cWidget> >  tWeakWidgetList;
-typedef astl::list<Ptr<cWidget> > tWidgetLst;
+typedef astl::vector<WeakPtr<cWidget>> tWeakWidgetList;
+typedef astl::list<Ptr<cWidget>> tWidgetLst;
 
-const sVec2f _kvMinSize = {2,2};
-const sVec2f _kvMaxSize = {100000,100000};
+const sVec2f _kvMinSize = { 2, 2 };
+const sVec2f _kvMaxSize = { 100000, 100000 };
 
-const tU32 knDrawOpCaptureToggleKey = eKeyMod_Alt|eKey_Tilde;
-const tU32 knTerminalToggleKey = eKeyMod_Control|eKey_Tilde;
+const tU32 knDrawOpCaptureToggleKey = eKeyMod_Alt | eKey_Tilde;
+const tU32 knTerminalToggleKey = eKeyMod_Control | eKey_Tilde;
 
-class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerManager
-{
+class cUIContext : public ImplRC<iUIContext, eImplFlags_Default>,
+                   public TimerManager {
   niBeginClass(cUIContext);
 
  public:
   //! Constructor.
-  cUIContext(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath, tF32 afContentsScale);
+  cUIContext(iGraphicsContext* apContext, iHString* ahspDefaultSkinPath,
+             tF32 afContentsScale);
   //! Destructor.
   ~cUIContext();
 
@@ -109,10 +115,14 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
 
   //// iUIContext ///////////////////////////////
 
-  iGraphics* __stdcall GetGraphics() const { return mptrGraphics; }
+  iGraphics* __stdcall GetGraphics() const
+  {
+    return mptrGraphics;
+  }
   iGraphicsContext* __stdcall GetGraphicsContext() const;
 
-  void __stdcall SendWindowMessage(eOSWindowMessage aMsg, const Var& avarA, const Var& avarB);
+  void __stdcall SendWindowMessage(eOSWindowMessage aMsg, const Var& avarA,
+                                   const Var& avarB);
   void __stdcall SetInputModifiers(tU32 anInputModifier);
   tU32 __stdcall GetInputModifiers() const;
   void __stdcall SetDefaultInputSubmitFlags(tUIInputSubmitFlags aSubmitFlags);
@@ -134,23 +144,49 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   iHString* __stdcall GetSkinName(tU32 anIndex) const niImpl;
   tU32 __stdcall GetSkinIndex(iHString* ahspName) const niImpl;
   iDataTable* __stdcall GetSkinDataTable(iHString* ahspSkin) const niImpl;
-  iFont*   __stdcall FindSkinFont(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const niImpl;
-  iOverlay* __stdcall FindSkinCursor(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const niImpl;
-  iOverlay* __stdcall FindSkinElement(iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const niImpl;
-  sColor4f __stdcall FindSkinColor(const sColor4f& aDefault, iHString* ahspSkin, iHString* ahspClass, iHString* ahspState, iHString* ahspName) const niImpl;
+  iFont* __stdcall FindSkinFont(iHString* ahspSkin, iHString* ahspClass,
+                                iHString* ahspState,
+                                iHString* ahspName) const niImpl;
+  iOverlay* __stdcall FindSkinCursor(iHString* ahspSkin, iHString* ahspClass,
+                                     iHString* ahspState,
+                                     iHString* ahspName) const niImpl;
+  iOverlay* __stdcall FindSkinElement(iHString* ahspSkin, iHString* ahspClass,
+                                      iHString* ahspState,
+                                      iHString* ahspName) const niImpl;
+  sColor4f __stdcall FindSkinColor(const sColor4f& aDefault, iHString* ahspSkin,
+                                   iHString* ahspClass, iHString* ahspState,
+                                   iHString* ahspName) const niImpl;
 
-  tBool __stdcall HasWidgetSinkClass(const achar *aszClassName) const niImpl;
-  iWidgetSink* __stdcall CreateWidgetSink(const achar *aszClassName, iWidget* apWidget) niImpl;
+  tBool __stdcall HasWidgetSinkClass(const achar* aszClassName) const niImpl;
+  iWidgetSink* __stdcall CreateWidgetSink(const achar* aszClassName,
+                                          iWidget* apWidget) niImpl;
 #if niMinFeatures(15)
   iWidgetSink* __stdcall CreateWidgetSinkFromScript(iHString* ahspRes) niImpl;
 #endif
 
-  iWidget* __stdcall CreateWidget(const achar *aszClassName, iWidget *apwParent,const sRectf& arectPos, tU32 anStyle = 0, iHString* ahspID = NULL);
-  iWidget* __stdcall CreateWidget2(const achar *aszClassName, iWidget *apwParent,const sRectf& arectPos, tU32 anStyle, iHString* ahspID, iHString* ahspSkinClass, iHString* ahspText);
-  iWidget* __stdcall CreateWidgetRaw(const achar *aszClassName, iWidget *apwParent,const sRectf& arectPos, tU32 anStyle = 0, iHString* ahspID = NULL);
-  iWidget* __stdcall CreateWidgetRaw2(const achar *aszClassName, iWidget *apwParent,const sRectf& arectPos, tU32 anStyle, iHString* ahspID, iHString* ahspSkinClass, iHString* ahspText);
-  iWidget* __stdcall CreateWidgetFromDataTable(iDataTable* apDT, iWidget* apwParent, iHString* ahspID, iHString* ahspTitle);
-  iWidget* __stdcall CreateWidgetFromResource(iHString* ahspRes, iWidget* apwParent, iHString* ahspID, iHString* ahspTitle);
+  iWidget* __stdcall CreateWidget(const achar* aszClassName, iWidget* apwParent,
+                                  const sRectf& arectPos, tU32 anStyle = 0,
+                                  iHString* ahspID = NULL);
+  iWidget* __stdcall CreateWidget2(const achar* aszClassName,
+                                   iWidget* apwParent, const sRectf& arectPos,
+                                   tU32 anStyle, iHString* ahspID,
+                                   iHString* ahspSkinClass, iHString* ahspText);
+  iWidget* __stdcall CreateWidgetRaw(const achar* aszClassName,
+                                     iWidget* apwParent, const sRectf& arectPos,
+                                     tU32 anStyle = 0, iHString* ahspID = NULL);
+  iWidget* __stdcall CreateWidgetRaw2(const achar* aszClassName,
+                                      iWidget* apwParent,
+                                      const sRectf& arectPos, tU32 anStyle,
+                                      iHString* ahspID, iHString* ahspSkinClass,
+                                      iHString* ahspText);
+  iWidget* __stdcall CreateWidgetFromDataTable(iDataTable* apDT,
+                                               iWidget* apwParent,
+                                               iHString* ahspID,
+                                               iHString* ahspTitle);
+  iWidget* __stdcall CreateWidgetFromResource(iHString* ahspRes,
+                                              iWidget* apwParent,
+                                              iHString* ahspID,
+                                              iHString* ahspTitle);
 
   void __stdcall Draw();
   void __stdcall DrawCursor(iOSWindow* apWindow);
@@ -167,7 +203,9 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   iWidget* __stdcall GetActiveWidget() const;
   tU32 __stdcall GetNumWidgets() const;
   iWidget* __stdcall GetWidget(tU32 anIndex) const;
-  tBool __stdcall SerializeWidget(iWidget* apWidget, iDataTable* apDT, tWidgetSerializeFlags anFlags, iRegex* apFilter);
+  tBool __stdcall SerializeWidget(iWidget* apWidget, iDataTable* apDT,
+                                  tWidgetSerializeFlags anFlags,
+                                  iRegex* apFilter);
   iWidgetCommand* __stdcall CreateWidgetCommand();
   tBool __stdcall SendCommand(iWidget* apDest, iWidgetCommand* apCmd);
 
@@ -191,7 +229,8 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
 
   sVec3f __stdcall GetFingerPosition(tU32 anFinger) const;
   tBool __stdcall GetFingerDown(tU32 anFinger) const;
-  void __stdcall SetDragFingerStartDistance(tU32 anFinger, tU32 anPixelDistance);
+  void __stdcall SetDragFingerStartDistance(tU32 anFinger,
+                                            tU32 anPixelDistance);
   tU32 __stdcall GetDragFingerStartDistance(tU32 anFinger) const;
 
   void __stdcall ClearShortcuts();
@@ -201,8 +240,10 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
 
   tBool __stdcall GetKeyDown(tU8 aKey) const;
   void __stdcall InputFingerMove(tU32 anFinger, const sVec3f& avPosition);
-  void __stdcall InputFingerRelativeMove(tU32 anFinger, const sVec3f& avPosition);
-  void __stdcall InputFingerPress(tU32 anFinger, const sVec3f& avPosition, tBool abDown);
+  void __stdcall InputFingerRelativeMove(tU32 anFinger,
+                                         const sVec3f& avPosition);
+  void __stdcall InputFingerPress(tU32 anFinger, const sVec3f& avPosition,
+                                  tBool abDown);
   void __stdcall InputKeyPress(eKey aKey, tBool abDown);
   void __stdcall InputKeyChar(tU32 aCharCodePoint, eKey aKeyLeadingToKeyChar);
   void __stdcall InputMouseWheel(const tF32 afDelta);
@@ -214,59 +255,70 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   iProfDraw* __stdcall CreateProfDraw(iCanvas* apCanvas, iFont* apFont) const;
   //// iUIContext ///////////////////////////////
 
-  tBool __stdcall DoSerializeLayout(iWidget* apWidget, iDataTable* apDT, tWidgetSerializeFlags anFlags, iRegex* apRegex);
+  tBool __stdcall DoSerializeLayout(iWidget* apWidget, iDataTable* apDT,
+                                    tWidgetSerializeFlags anFlags,
+                                    iRegex* apRegex);
   // public for the widget internals;
-  const sVec2f& GetMousePos() const { return GetPrimaryFinger().GetPosition(); }
+  const sVec2f& GetMousePos() const
+  {
+    return GetPrimaryFinger().GetPosition();
+  }
 
   // utils
-  cWidget *GetMessageTargetByPos(const sVec2f &pos);
-  cWidget *GetDragDestinationByPos(const sVec2f &pos); // returns NULL if the target isnt a drag destination
-  cWidget *GetMouseMessageTarget(tBool abUpdate);
-  cWidget *GetFingerMessageTarget(tU32 anFinger, tBool abUpdate);
+  cWidget* GetMessageTargetByPos(const sVec2f& pos);
+  cWidget* GetDragDestinationByPos(
+    const sVec2f& pos); // returns NULL if the target isnt a drag destination
+  cWidget* GetMouseMessageTarget(tBool abUpdate);
+  cWidget* GetFingerMessageTarget(tU32 anFinger, tBool abUpdate);
   const WeakPtr<cWidget>& GetInputMessageTarget() const;
   // returns true if the active widget has changed
-  tBool SetFocusInput(cWidget *pNewTarget, tBool abMouseClick);
+  tBool SetFocusInput(cWidget* pNewTarget, tBool abMouseClick);
   iWidget* __stdcall GetFocusedWidget() const;
-  void InvalidateTarget(cWidget *pWidget);
+  void InvalidateTarget(cWidget* pWidget);
   void MoveOnTop(cWidget* pNewTop);
-  void _AddExclusive(cWidget *widget);
+  void _AddExclusive(cWidget* widget);
   void _RemoveExclusive(cWidget* widget, tBool abLost);
-  tBool _IsExclusive(const cWidget *widget) const;
-  tBool _IsFocusInput(const cWidget *widget) const {
+  tBool _IsExclusive(const cWidget* widget) const;
+  tBool _IsFocusInput(const cWidget* widget) const
+  {
     QPtr<cWidget> focusInput(mpwFocusInput);
     return widget == focusInput;
   }
   void _WindowUpdateCursorStates();
 
-  void _AddCaptureAll(cWidget *widget);
-  void _RemoveCaptureAll(cWidget *widget, tBool abLost);
-  tBool _IsCaptureAll(const cWidget *widget) const;
+  void _AddCaptureAll(cWidget* widget);
+  void _RemoveCaptureAll(cWidget* widget, tBool abLost);
+  tBool _IsCaptureAll(const cWidget* widget) const;
 
-  void _AddFingerCapture(tU32 anFinger, cWidget *widget);
-  void _RemoveFingerCapture(tU32 anFinger, cWidget *widget, tBool abLost);
-  tBool _IsFingerCapture(tU32 anFinger, const cWidget *widget) const;
+  void _AddFingerCapture(tU32 anFinger, cWidget* widget);
+  void _RemoveFingerCapture(tU32 anFinger, cWidget* widget, tBool abLost);
+  tBool _IsFingerCapture(tU32 anFinger, const cWidget* widget) const;
 
   void RegisterWidget(cWidget* apWdg);
   void UnregisterWidget(cWidget* apWdg);
 
   tBool MoveFocus(cWidget* apWidget, tBool abPrev);
 
-  void  _FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChanged);
+  void _FingerMove(tU32 anFinger, sVec3f avNewPos, tBool abOnlyIfChanged);
 
   void SetTopWidget(cWidget* apWidget);
   void UpdateFreeWidgets();
 
-  tBool BeginFingerDrag(tU32 anFinger, cWidget* apWidget, const sVec3f& avStartPos, const sVec3f& avMousePos);
-  void  EndFingerDrag(tU32 anFinger, const sVec3f& avAbsPos, tBool abCancel);
+  tBool BeginFingerDrag(tU32 anFinger, cWidget* apWidget,
+                        const sVec3f& avStartPos, const sVec3f& avMousePos);
+  void EndFingerDrag(tU32 anFinger, const sVec3f& avAbsPos, tBool abCancel);
   tBool IsFingerDragging(tU32 anFinger) const;
   tBool IsFingerDrag(tU32 anFinger, const iWidget* apWidget) const;
 
-  void __stdcall ActivateStandardCursor(eUIStandardCursor aCursor) {
+  void __stdcall ActivateStandardCursor(eUIStandardCursor aCursor)
+  {
     SetCursor(GetStandardCursor(aCursor));
   }
 
-  iOverlay* __stdcall GetStandardCursor(eUIStandardCursor aCursor) {
-    if (aCursor >= eUIStandardCursor_Last) return mptrMouseCursor[eUIStandardCursor_Invalid];
+  iOverlay* __stdcall GetStandardCursor(eUIStandardCursor aCursor)
+  {
+    if (aCursor >= eUIStandardCursor_Last)
+      return mptrMouseCursor[eUIStandardCursor_Invalid];
     return mptrMouseCursor[aCursor];
   }
 
@@ -275,7 +327,8 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   tBool _CanSendFingerDropMessage(tU32 anFinger);
 
   const achar* __stdcall GetTimersName() const;
-  void __stdcall TimerTriggered(iMessageHandler* apHandler, tU32 anId, tF32 afDuration);
+  void __stdcall TimerTriggered(iMessageHandler* apHandler, tU32 anId,
+                                tF32 afDuration);
 
  public:
   Ptr<iGraphics> mptrGraphics;
@@ -291,29 +344,34 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   struct sFreeWidgets : public ImplLocal<iWidgetZMap> {
     cWidgetZMap zmapInput;
     cWidgetZMap zmapDraw;
-    sFreeWidgets() {
+    sFreeWidgets()
+    {
     }
-    void Clear() {
+    void Clear()
+    {
       zmapInput.Clear();
       zmapDraw.Clear();
     }
-    tBool __stdcall RemoveOfZMap(cWidget* apW) {
+    tBool __stdcall RemoveOfZMap(cWidget* apW)
+    {
       tBool bRes;
       bRes = zmapInput.RemoveOfZMap(apW) ? eTrue : eFalse;
       bRes = bRes || (zmapDraw.RemoveOfZMap(apW) ? eTrue : eFalse);
       return bRes;
     }
-    void __stdcall SetZOrder(cWidget* apW, eWidgetZOrder aZOrder) {
+    void __stdcall SetZOrder(cWidget* apW, eWidgetZOrder aZOrder)
+    {
       if (zmapInput.HasWidget(apW))
-        zmapInput.SetZOrder(apW,aZOrder);
+        zmapInput.SetZOrder(apW, aZOrder);
       if (zmapDraw.HasWidget(apW))
-        zmapDraw.SetZOrder(apW,aZOrder);
+        zmapDraw.SetZOrder(apW, aZOrder);
     }
-    void __stdcall SetZOrderAbove(cWidget* apW, cWidget* apAbove) {
+    void __stdcall SetZOrderAbove(cWidget* apW, cWidget* apAbove)
+    {
       if (zmapInput.HasWidget(apW))
-        zmapInput.SetZOrderAbove(apW,apAbove);
+        zmapInput.SetZOrderAbove(apW, apAbove);
       if (zmapDraw.HasWidget(apW))
-        zmapDraw.SetZOrderAbove(apW,apAbove);
+        zmapDraw.SetZOrderAbove(apW, apAbove);
     }
   } mFreeWidgets;
 
@@ -337,10 +395,12 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   tBool mbShowTerminal = eFalse;
 
   // Drawing
-  tBool __stdcall _DrawWidget(cWidget* apWidget, iCanvas* apCanvas, const sRectf& aParentRect,
-                              tBool abRawViewport, const sMatrixf& aBaseMatrix);
+  tBool __stdcall _DrawWidget(cWidget* apWidget, iCanvas* apCanvas,
+                              const sRectf& aParentRect, tBool abRawViewport,
+                              const sMatrixf& aBaseMatrix);
   tBool __stdcall DrawWidget(iWidget* apWidget, iCanvas* apCanvas);
-  tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas, const sMatrixf& aBaseMatrix);
+  tBool __stdcall DrawTransformedWidget(iWidget* apWidget, iCanvas* apCanvas,
+                                        const sMatrixf& aBaseMatrix);
 
   // Localization
   tHStringPtr mhspCurrentLocale;
@@ -356,7 +416,8 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   void __stdcall _RelativeMouseMove(const sVec2f& avRelMove);
 
   tBool __stdcall _FingerUpdatePosition(tU32 anFinger, const sVec3f& avNewPos);
-  void __stdcall _FingerClick(tU32 anFinger, const sVec3f& avNewPos, tBool abTriggered);
+  void __stdcall _FingerClick(tU32 anFinger, const sVec3f& avNewPos,
+                              tBool abTriggered);
 
   tBool mKeyIsDown[0xFF];
   eKey mKeyEatChar;
@@ -364,30 +425,31 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   tU32 mnInputModifiers;
   tU32 mnDefaultInputSubmitFlags;
 
-  typedef astl::hash_map<tU32,tHStringPtr> tShortcutsMap;
+  typedef astl::hash_map<tU32, tHStringPtr> tShortcutsMap;
   tShortcutsMap mmapShortcuts;
 
   tF32 mfContentsScale;
 
   // Finger Positions
   struct sFinger {
-    sVec3f        mvPosition;
+    sVec3f mvPosition;
     WeakPtr<cWidget> mpwHover;
     WeakPtr<cWidget> mpwCapture;
-    tWeakWidgetList  mlstCaptureStack;
+    tWeakWidgetList mlstCaptureStack;
     WeakPtr<cWidget> mpDragWidget;
     WeakPtr<cWidget> mpwDragWidgetMT;
-    Ptr<iDataTable>  mptrDragDT;
-    tBool      mbDragDown;
-    tU32             mnDragTimeMs;
-    tU32             mnDragStartDistance;
-    sVec3f      mvDragStart;
+    Ptr<iDataTable> mptrDragDT;
+    tBool mbDragDown;
+    tU32 mnDragTimeMs;
+    tU32 mnDragStartDistance;
+    sVec3f mvDragStart;
     WeakPtr<cWidget> mpwMoveTarget;
     WeakPtr<cWidget> mpwNCMoveTarget;
     WeakPtr<cWidget> mpwDragMoveTarget;
     WeakPtr<cWidget> mpwNCDragMoveTarget;
-    tBool            mbIsDown;
-    sFinger() {
+    tBool mbIsDown;
+    sFinger()
+    {
       mbIsDown = eFalse;
       mvPosition = sVec3f::Zero();
       mpwHover.SetNull();
@@ -402,26 +464,30 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
       mnDragStartDistance = 10;
 #endif
     }
-    sVec2f& GetPosition() {
+    sVec2f& GetPosition()
+    {
       return (sVec2f&)mvPosition;
     }
-    const sVec2f& GetPosition() const {
+    const sVec2f& GetPosition() const
+    {
       return (sVec2f&)mvPosition;
     }
-    const tF32 GetPressure() const {
+    const tF32 GetPressure() const
+    {
       return mvPosition.z;
     }
-    void _CancelHoverTimers() {
+    void _CancelHoverTimers()
+    {
       {
         QPtr<cWidget> moveTarget(mpwMoveTarget);
         if (niIsOK(moveTarget)) {
-          moveTarget->SetTimer(eWidgetSystemTimer_Hover,-1);
+          moveTarget->SetTimer(eWidgetSystemTimer_Hover, -1);
         }
       }
       {
         QPtr<cWidget> ncMoveTarget(mpwNCMoveTarget);
         if (niIsOK(ncMoveTarget)) {
-          ncMoveTarget->SetTimer(eWidgetSystemTimer_NCHover,-1);
+          ncMoveTarget->SetTimer(eWidgetSystemTimer_NCHover, -1);
         }
       }
     }
@@ -432,13 +498,16 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
 
   tU32 mnLastPrimaryFinger;
   tBool IsPrimaryFinger(tU32 anFinger);
-  __forceinline tU32 GetPrimaryFingerID() const {
+  __forceinline tU32 GetPrimaryFingerID() const
+  {
     return mnLastPrimaryFinger;
   }
-  __forceinline const sFinger& GetPrimaryFinger() const {
+  __forceinline const sFinger& GetPrimaryFinger() const
+  {
     return mFingers[FINGER_INDEX(GetPrimaryFingerID())];
   }
-  __forceinline sFinger& GetPrimaryFinger() {
+  __forceinline sFinger& GetPrimaryFinger()
+  {
     return mFingers[FINGER_INDEX(GetPrimaryFingerID())];
   }
 
@@ -446,32 +515,36 @@ class cUIContext : public ImplRC<iUIContext,eImplFlags_Default>, public TimerMan
   tU32 mnRelayoutCount;
 
   // Game controller
-  astl::map<tU32,tU32> mmapGameCtrlInputMasks;
+  astl::map<tU32, tU32> mmapGameCtrlInputMasks;
 
   /// Skins ///
   Ptr<iOverlay> mptrErrorOverlay;
   Ptr<iDataTable> mptrErrorSkin;
   tBool _InitializeSkinDataTable(iDataTable* apDT);
   tHStringPtr mhspDefaultSkin;
-  typedef astl::hstring_hash_map<Ptr<iDataTable> > tSkinMap;
+  typedef astl::hstring_hash_map<Ptr<iDataTable>> tSkinMap;
   tSkinMap mmapSkins;
 
-  Ptr<iImageMap>  mptrImageMap;
+  Ptr<iImageMap> mptrImageMap;
 
   tBool _CanHover() const;
   tF32 mfHoverDelay;
   tU32 mnHoverInputModifiers;
 
-  virtual void __stdcall SetHoverDelay(tF32 afDelay) {
+  virtual void __stdcall SetHoverDelay(tF32 afDelay)
+  {
     mfHoverDelay = afDelay;
   }
-  virtual tF32 __stdcall GetHoverDelay() const {
+  virtual tF32 __stdcall GetHoverDelay() const
+  {
     return mfHoverDelay;
   }
-  virtual void __stdcall SetHoverInputModifiers(tU32 anInputModifiers) {
+  virtual void __stdcall SetHoverInputModifiers(tU32 anInputModifiers)
+  {
     mnHoverInputModifiers = anInputModifiers;
   }
-  virtual tU32 __stdcall GetHoverInputModifiers() const {
+  virtual tU32 __stdcall GetHoverInputModifiers() const
+  {
     return mnInputModifiers;
   }
 

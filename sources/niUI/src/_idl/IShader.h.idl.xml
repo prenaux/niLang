@@ -2,55 +2,55 @@
 	<namespace name="ni">
 		<enum name="eShaderUnit">
 			<comments desc="Shader Units. "/>
-			<value name="eShaderUnit_Vertex" value="0 ">
+			<value name="eShaderUnit_Vertex" value="0">
 				<comments desc="Vertex shader. "/>
 			</value>
-			<value name="eShaderUnit_Pixel" value="1 ">
+			<value name="eShaderUnit_Pixel" value="1">
 				<comments desc="Pixel shader. "/>
 			</value>
-			<value name="eShaderUnit_Native" value="2 ">
+			<value name="eShaderUnit_Native" value="2">
 				<comments desc="Native driver dependent shader. "/>
 			</value>
-			<value name="eShaderUnit_Last" value="3 ">
+			<value name="eShaderUnit_Last" value="3">
 				<comments desc="\internal. "/>
 			</value>
 		</enum>
 		<enum name="eShaderRegisterType">
 			<comments desc="Shader input register type. "/>
-			<value name="eShaderRegisterType_Input" value="0 ">
+			<value name="eShaderRegisterType_Input" value="0">
 				<comments desc="Input register. "/>
 			</value>
-			<value name="eShaderRegisterType_Output" value="1 ">
+			<value name="eShaderRegisterType_Output" value="1">
 				<comments desc="Output position register. "/>
 			</value>
-			<value name="eShaderRegisterType_Temporary" value="2 ">
+			<value name="eShaderRegisterType_Temporary" value="2">
 				<comments desc="Temporary register. "/>
 			</value>
-			<value name="eShaderRegisterType_ConstFloat" value="3 ">
+			<value name="eShaderRegisterType_ConstFloat" value="3">
 				<comments desc="Constant float register. "/>
 			</value>
-			<value name="eShaderRegisterType_ConstInt" value="4 ">
+			<value name="eShaderRegisterType_ConstInt" value="4">
 				<comments desc="Constant int register. "/>
 			</value>
-			<value name="eShaderRegisterType_ConstBool" value="5 ">
+			<value name="eShaderRegisterType_ConstBool" value="5">
 				<comments desc="Constant bool register. "/>
 			</value>
-			<value name="eShaderRegisterType_Sampler" value="6 ">
+			<value name="eShaderRegisterType_Sampler" value="6">
 				<comments desc="Sampler register. "/>
 			</value>
-			<value name="eShaderRegisterType_Address" value="7 ">
+			<value name="eShaderRegisterType_Address" value="7">
 				<comments desc="Address register. "/>
 			</value>
-			<value name="eShaderRegisterType_Loop" value="8 ">
+			<value name="eShaderRegisterType_Loop" value="8">
 				<comments desc="Loop register. "/>
 			</value>
-			<value name="eShaderRegisterType_Texture" value="9 ">
+			<value name="eShaderRegisterType_Texture" value="9">
 				<comments desc="Texture register. "/>
 			</value>
-			<value name="eShaderRegisterType_Predicate" value="10 ">
+			<value name="eShaderRegisterType_Predicate" value="10">
 				<comments desc="Predicate register. "/>
 			</value>
-			<value name="eShaderRegisterType_Last" value="11 ">
+			<value name="eShaderRegisterType_Last" value="11">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
@@ -567,7 +567,7 @@
 				name="GetVertexAttributeLocationArray"
 				noautomation="yes"
 				num_parameters="0">
-				<comments desc=" The OpenGL shader that is linked and can give use the bindings and pushes the uniforms. That&apos;s the interface the native shader&apos;s Bind() function must return.   The calling order is: - iGLShader::Bind(iDrawOperation) -&gt; iGLShader - iGLShader::GetVertexAttributeLocationArray() before binding the VA. - glBindBuffer(VA), glDrawElements/glDrawArrays - iGLShader::BeforeDraw(), its expected to push shader uniforms. - glBindBuffer(IA), glDrawElements/glDrawArrays - iGLShader::AfterDraw()  "/>
+				<comments desc=""/>
 				<return type="const tI32 *" typec="const tI32*"/>
 			</method>
 			<method java_name="beforeDraw" name="BeforeDraw" num_parameters="0">

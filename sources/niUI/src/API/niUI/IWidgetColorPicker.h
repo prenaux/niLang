@@ -16,18 +16,16 @@ enum eWidgetColorPickerCmd {
 };
 
 //! Color picker style.
-enum eWidgetColorPickerStyle
-{
+enum eWidgetColorPickerStyle {
   //! Show the brightness control.
-  eWidgetColorPickerStyle_Brightness = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetColorPickerStyle_Brightness = niBit(eWidgetStyle_MaxBit + 0),
   //! \internal
   eWidgetColorPickerStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Widget ColorPicker viewer.
-struct iWidgetColorPicker : public iUnknown
-{
+struct iWidgetColorPicker : public iUnknown {
   niDeclareInterfaceUUID(iWidgetColorPicker,0xde06c422,0xdfba,0x4bbb,0xba,0xba,0x35,0x81,0x2a,0x42,0x44,0xd4);
 
   //! Set the color picker's current color in HSV format.
@@ -77,10 +75,10 @@ struct iWidgetColorPicker : public iUnknown
   virtual tBool __stdcall SetExpression(iHString* ahspExpression) = 0;
   //! Get the color picker's current color as a mathematic expression.
   //! {Property}
-  virtual iHString* __stdcall GetExpression() const  = 0;
+  virtual iHString* __stdcall GetExpression() const = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETCOLORPICKER_17135440_H__

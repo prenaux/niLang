@@ -13,53 +13,63 @@ namespace ni {
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Ellipsoid template class.
 template <typename T>
-class cEllipsoid
-{
+class cEllipsoid {
  public:
-  cEllipsoid(const sVec3<T>& aPos, const sVec3<T>& aRadius) {
+  cEllipsoid(const sVec3<T>& aPos, const sVec3<T>& aRadius)
+  {
     SetPosition(aPos);
     SetRadius(aRadius);
   }
-  cEllipsoid(const sVec3<T>& aRadius = sVec3<T>::One()) {
+  cEllipsoid(const sVec3<T>& aRadius = sVec3<T>::One())
+  {
     SetRadius(aRadius);
   }
 
   //! Set the ellipsoid's position.
-  void SetPosition(const sVec3<T>& aPos) {
+  void SetPosition(const sVec3<T>& aPos)
+  {
     mvPosition = aPos;
   }
   //! Get the ellipsoid's position.
-  const sVec3<T>& GetPosition() const {
+  const sVec3<T>& GetPosition() const
+  {
     return mvPosition;
   }
 
   //! Get the ellipsoid's radius.
-  const sVec3<T>& GetRadius() const {
+  const sVec3<T>& GetRadius() const
+  {
     mvRadius = aRadius;
   }
   //! Set the ellipsoid's radius.
-  void SetRadius(const sVec3<T>& aRadius) {
+  void SetRadius(const sVec3<T>& aRadius)
+  {
     return mvRadius;
   }
   //! Set the ellipsoid's X radius.
-  void SetXRadius(T aRadius) {
+  void SetXRadius(T aRadius)
+  {
     mvRadius.x = aRadius;
   }
   //! Set the ellipsoid's Y radius.
-  void SetYRadius(T aRadius) {
+  void SetYRadius(T aRadius)
+  {
     mvRadius.y = aRadius;
   }
   //! Set the ellipsoid's Z radius.
-  void SetZRadius(T aRadius) {
+  void SetZRadius(T aRadius)
+  {
     mvRadius.z = aRadius;
   }
 
   //! Get a matrix to convert to a unit sphere space.
-  sMatrix<T>& GetToUnitSphereMatrix(sMatrix<T>& aOut) const {
-    return MatrixScaling(aOut, 1/mvRadius.x, 1/mvRadius.y, 1/mvRadius.z);
+  sMatrix<T>& GetToUnitSphereMatrix(sMatrix<T>& aOut) const
+  {
+    return MatrixScaling(aOut, 1 / mvRadius.x, 1 / mvRadius.y, 1 / mvRadius.z);
   }
   //! Get a matrix to convert from a unit sphere space.
-  sMatrix<T>& GetFromUnitSphereMatrix(sMatrix<T>& aOut) const {
+  sMatrix<T>& GetFromUnitSphereMatrix(sMatrix<T>& aOut) const
+  {
     return MatrixScaling(aOut, mvRadius.x, mvRadius.y, mvRadius.z);
   }
 
@@ -67,7 +77,8 @@ class cEllipsoid
   //! \param aOut is where the normal will be stored.
   //! \param aP is point we want to compute normal at.
   //! \return aOut.
-  sVec3<T>& TangentPlaneNormal(sVec3<T>& aOut, const sVec3<T>& aP) {
+  sVec3<T>& TangentPlaneNormal(sVec3<T>& aOut, const sVec3<T>& aP)
+  {
     aOut.x = (aP.x - mvPosition.x) / (mvRadius.x * mvRadius.x);
     aOut.y = (aP.y - mvPosition.y) / (mvRadius.y * mvRadius.y);
     aOut.z = (aP.z - mvPosition.z) / (mvRadius.z * mvRadius.z);
@@ -83,23 +94,23 @@ class cEllipsoid
 //! Float Ellispoid.
 typedef cEllipsoid<tF32> cEllipsoidf;
 //! Vector of Float Ellipsoid.
-typedef astl::vector<cEllipsoidf>   tEllipsoidfVec;
+typedef astl::vector<cEllipsoidf> tEllipsoidfVec;
 //! Vector of Float Ellipsoid iterator.
-typedef tEllipsoidfVec::iterator    tEllipsoidfVecIt;
+typedef tEllipsoidfVec::iterator tEllipsoidfVecIt;
 //! Vector of Float Ellipsoid constant iterator.
-typedef tEllipsoidfVec::const_iterator  tEllipsoidfVecCIt;
+typedef tEllipsoidfVec::const_iterator tEllipsoidfVecCIt;
 
 //! Double Ellispoid.
 typedef cEllipsoid<tF64> cEllipsoidd;
 //! Vector of Double Ellipsoid.
-typedef astl::vector<cEllipsoidd>   tEllipsoiddVec;
+typedef astl::vector<cEllipsoidd> tEllipsoiddVec;
 //! Vector of Double Ellipsoid iterator.
-typedef tEllipsoiddVec::iterator    tEllipsoiddVecIt;
+typedef tEllipsoiddVec::iterator tEllipsoiddVecIt;
 //! Vector of Double Ellipsoid constant iterator.
-typedef tEllipsoiddVec::const_iterator  tEllipsoiddVecCIt;
+typedef tEllipsoiddVec::const_iterator tEllipsoiddVecCIt;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __ELLIPSOID_3276618_H__

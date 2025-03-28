@@ -2,48 +2,48 @@
 	<namespace name="ni">
 		<enum name="eWidgetEditBoxStyle">
 			<comments desc="Simple edit box styles. "/>
-			<value name="eWidgetEditBoxStyle_MultiLine" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetEditBoxStyle_MultiLine" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Multi-line edit box. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_ReadOnly" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetEditBoxStyle_ReadOnly" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="Read-only edit box. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_AutoScroll" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetEditBoxStyle_AutoScroll" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="Auto scroll edit box. Scrolling made in function of the cursor&apos;s position. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_PasteValidate" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+			<value name="eWidgetEditBoxStyle_PasteValidate" value="niBit(eWidgetStyle_MaxBit+4)">
 				<comments desc="Validate on paste. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_NoCursor" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+			<value name="eWidgetEditBoxStyle_NoCursor" value="niBit(eWidgetStyle_MaxBit+5)">
 				<comments desc="Dont draw the cursor. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_NoSelect" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+			<value name="eWidgetEditBoxStyle_NoSelect" value="niBit(eWidgetStyle_MaxBit+6)">
 				<comments desc="Dont allow selection. ">
 					<remark text="The clipboard is also disabled in this case. "/>
 				</comments>
 			</value>
-			<value name="eWidgetEditBoxStyle_DontLoseSelection" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+			<value name="eWidgetEditBoxStyle_DontLoseSelection" value="niBit(eWidgetStyle_MaxBit+7)">
 				<comments desc="Dont clear selection when lost focus. "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_ValidateOnLostFocus" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+			<value name="eWidgetEditBoxStyle_ValidateOnLostFocus" value="niBit(eWidgetStyle_MaxBit+8)">
 				<comments desc="Validate when lost focus "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_SelectAllOnSetFocus" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+			<value name="eWidgetEditBoxStyle_SelectAllOnSetFocus" value="niBit(eWidgetStyle_MaxBit+9)">
 				<comments desc="Select all when gaining focus "/>
 			</value>
-			<value name="eWidgetEditBoxStyle_CanInsertTabs" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+			<value name="eWidgetEditBoxStyle_CanInsertTabs" value="niBit(eWidgetStyle_MaxBit+10)">
 				<comments desc="Can insert tabs, but capture the MoveFocus message. "/>
 			</value>
 		</enum>
 		<enum name="eWidgetEditBoxCmd">
 			<comments desc="Simple edit box notification messages. "/>
-			<value name="eWidgetEditBoxCmd_Validated" value="0 ">
+			<value name="eWidgetEditBoxCmd_Validated" value="0">
 				<comments desc="Sent when the edit box has been validated. "/>
 			</value>
-			<value name="eWidgetEditBoxCmd_Modified" value="1 ">
+			<value name="eWidgetEditBoxCmd_Modified" value="1">
 				<comments desc="Sent when the edit box&apos;s text has been modified. "/>
 			</value>
-			<value name="eWidgetEditBoxCmd_LostFocus" value="2 ">
+			<value name="eWidgetEditBoxCmd_LostFocus" value="2">
 				<comments desc="Sent when the edit box has lost focus. "/>
 			</value>
 		</enum>

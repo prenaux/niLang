@@ -31,19 +31,16 @@ using namespace ni;
 cString MyFT_GetErrorString(FT_Error error)
 {
 #undef __FTERRORS_H__
-#define FT_ERRORDEF( e, v, s )  { e, s },
-  static const struct
-  {
-    int          err_code;
-    const char*  err_msg;
+#define FT_ERRORDEF(e, v, s) { e, s },
+  static const struct {
+    int err_code;
+    const char* err_msg;
   } ft_errors[] = {
 #include FT_ERRORS_H
   };
 
-  for (int i = 0; i < ((sizeof ft_errors)/(sizeof ft_errors[0])); ++i)
-  {
-    if (error == ft_errors[i].err_code)
-    {
+  for (int i = 0; i < ((sizeof ft_errors) / (sizeof ft_errors[0])); ++i) {
+    if (error == ft_errors[i].err_code) {
       return ft_errors[i].err_msg;
     }
   }
@@ -53,35 +50,38 @@ cString MyFT_GetErrorString(FT_Error error)
 
 static void* MyFT_Alloc(FT_Memory memory, long size);
 static void MyFT_Free(FT_Memory memory, void* block);
-static void* MyFT_Realloc(FT_Memory memory, long cur_size, long new_size, void* block);
+static void* MyFT_Realloc(FT_Memory memory, long cur_size, long new_size,
+                          void* block);
 
-static FT_MemoryRec_  _MyFT_Memory = {
-  NULL,
-  MyFT_Alloc,
-  MyFT_Free,
-  MyFT_Realloc
-};
+static FT_MemoryRec_ _MyFT_Memory = { NULL, MyFT_Alloc, MyFT_Free,
+                                      MyFT_Realloc };
 
-static void* MyFT_Alloc(FT_Memory memory, long size) {
+static void* MyFT_Alloc(FT_Memory memory, long size)
+{
   return niMalloc(size);
 }
-static void MyFT_Free(FT_Memory memory, void* block) {
-  niAssert (block != &_MyFT_Memory);
+static void MyFT_Free(FT_Memory memory, void* block)
+{
+  niAssert(block != &_MyFT_Memory);
   niFree(block);
 }
-static void* MyFT_Realloc(FT_Memory memory, long cur_size, long new_size, void* block) {
-  return niRealloc(block,new_size);
+static void* MyFT_Realloc(FT_Memory memory, long cur_size, long new_size,
+                          void* block)
+{
+  return niRealloc(block, new_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Freetype stream
 
-static unsigned long MyFT_Stream_IoFunc(FT_Stream stream, unsigned long   offset, unsigned char*  buffer, unsigned long   count)
+static unsigned long MyFT_Stream_IoFunc(FT_Stream stream, unsigned long offset,
+                                        unsigned char* buffer,
+                                        unsigned long count)
 {
   iFile* pFile = reinterpret_cast<iFile*>(stream->descriptor.pointer);
   pFile->SeekSet(offset);
   if (count)
-    return pFile->ReadRaw((void*)buffer,count);
+    return pFile->ReadRaw((void*)buffer, count);
   else
     return 0;
 }
@@ -106,7 +106,7 @@ niExportFunc(FT_Face) MyFT_Face_Open(FT_Library aLib, iFile* apFile)
     niError(_A("Can't allocate stream memory."));
     return NULL;
   }
-  memset(stm,0,sizeof(*stm));
+  memset(stm, 0, sizeof(*stm));
 
   stm->descriptor.pointer = (void*)apFile;
   apFile->AddRef();
@@ -125,7 +125,8 @@ niExportFunc(FT_Face) MyFT_Face_Open(FT_Library aLib, iFile* apFile)
   if (FT_FAILED(err)) {
     // We don't need to free or release the file, FreeType calls the Stream_Close
     // callback in case of error.
-    niError(niFmt(_A("Can't open face '%s' !\nFTERROR: %s."), apFile->GetSourcePath(), MyFT_GetErrorString(err).Chars()));
+    niError(niFmt(_A("Can't open face '%s' !\nFTERROR: %s."),
+                  apFile->GetSourcePath(), MyFT_GetErrorString(err).Chars()));
     return NULL;
   }
 
@@ -136,7 +137,7 @@ niExportFunc(FT_Face) MyFT_Face_Open(FT_Library aLib, iFile* apFile)
 
 static tBool MyFT_Startup(FT_Library* apLibrary)
 {
-  if (FT_FAILED(FT_New_Library(&_MyFT_Memory,apLibrary)))
+  if (FT_FAILED(FT_New_Library(&_MyFT_Memory, apLibrary)))
     return eFalse;
   (*apLibrary)->version_major = FREETYPE_MAJOR;
   (*apLibrary)->version_minor = FREETYPE_MINOR;
@@ -147,8 +148,7 @@ static tBool MyFT_Startup(FT_Library* apLibrary)
 
 static void MyFT_Shutdown(FT_Library* apLibrary)
 {
-  if (*apLibrary)
-  {
+  if (*apLibrary) {
     FT_Done_Library(*apLibrary);
     *apLibrary = NULL;
   }
@@ -156,8 +156,7 @@ static void MyFT_Shutdown(FT_Library* apLibrary)
 
 sMyFTLibrary::sMyFTLibrary()
 {
-  if (!MyFT_Startup(&mLibrary))
-  {
+  if (!MyFT_Startup(&mLibrary)) {
     mLibrary = NULL;
   }
 }

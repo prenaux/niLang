@@ -5,8 +5,7 @@
 namespace ni {
 
 //! Video decoder flags.
-enum eVideoDecoderFlags
-{
+enum eVideoDecoderFlags {
   //! Bitmap target.
   //! \remark Manual update only.
   //! \remark If no target type is specified no actual decoding will occur.
@@ -30,8 +29,7 @@ typedef tU32 tVideoDecoderFlags;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Video decoder interface.
-struct iVideoDecoder : public iUnknown
-{
+struct iVideoDecoder : public iUnknown {
   niDeclareInterfaceUUID(iVideoDecoder,0x0aebf271,0x83de,0x40da,0xab,0xc0,0x4f,0x6a,0x37,0xee,0xd3,0xdb);
 
   //! Get the name of the decoder used.
@@ -122,5 +120,5 @@ struct iVideoDecoder : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IVIDEODECODER_11391338_H__

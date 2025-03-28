@@ -2,37 +2,37 @@
 	<namespace name="ni">
 		<enum name="eTransformFlags">
 			<comments desc="Transform flags. Default is eTransformFlags_InheritAll "/>
-			<value name="eTransformFlags_InheritPositionX" value="niBit ( 0 ) ">
+			<value name="eTransformFlags_InheritPositionX" value="niBit(0)">
 				<comments desc="Inherit the position X axis. "/>
 			</value>
-			<value name="eTransformFlags_InheritPositionY" value="niBit ( 1 ) ">
+			<value name="eTransformFlags_InheritPositionY" value="niBit(1)">
 				<comments desc="Inherit the position Y axis. "/>
 			</value>
-			<value name="eTransformFlags_InheritPositionZ" value="niBit ( 2 ) ">
+			<value name="eTransformFlags_InheritPositionZ" value="niBit(2)">
 				<comments desc="Inherit the position Z axis. "/>
 			</value>
-			<value name="eTransformFlags_InheritPosition" value="niBit ( 0 ) |niBit ( 1 ) |niBit ( 2 ) ">
+			<value name="eTransformFlags_InheritPosition" value="niBit(0)|niBit(1)|niBit(2)">
 				<comments desc="Inherit the position XYZ axis. "/>
 			</value>
-			<value name="eTransformFlags_InheritRotation" value="niBit ( 3 ) ">
+			<value name="eTransformFlags_InheritRotation" value="niBit(3)">
 				<comments desc="Inherit the rotation. "/>
 			</value>
-			<value name="eTransformFlags_InheritScale" value="niBit ( 4 ) ">
+			<value name="eTransformFlags_InheritScale" value="niBit(4)">
 				<comments desc="Parent scalings are also apply on children. "/>
 			</value>
-			<value name="eTransformFlags_InheritPositionRotation" value="eTransformFlags_InheritPosition|eTransformFlags_InheritRotation ">
+			<value name="eTransformFlags_InheritPositionRotation" value="eTransformFlags_InheritPosition|eTransformFlags_InheritRotation">
 				<comments desc="Inherit the position and rotation. "/>
 			</value>
-			<value name="eTransformFlags_InheritAll" value="eTransformFlags_InheritPositionRotation|eTransformFlags_InheritScale ">
+			<value name="eTransformFlags_InheritAll" value="eTransformFlags_InheritPositionRotation|eTransformFlags_InheritScale">
 				<comments desc="Inherit all. "/>
 			</value>
 		</enum>
 		<enum name="eTransformInternalFlags">
 			<comments desc="Transform internal flags. "/>
-			<value name="eTransformInternalFlags_Dirty" value="niBit ( 8 ) ">
+			<value name="eTransformInternalFlags_Dirty" value="niBit(8)">
 				<comments desc="The transform will have to be recomputed. "/>
 			</value>
-			<value name="eTransformInternalFlags_UseScale" value="niBit ( 9 ) ">
+			<value name="eTransformInternalFlags_UseScale" value="niBit(9)">
 				<comments desc="The transform uses a scaling factor. "/>
 			</value>
 		</enum>

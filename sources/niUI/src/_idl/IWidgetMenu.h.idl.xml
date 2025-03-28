@@ -2,31 +2,31 @@
 	<namespace name="ni">
 		<enum name="eWidgetMenuItemFlags">
 			<comments desc="Menu item flags. "/>
-			<value name="eWidgetMenuItemFlags_None" value="0 ">
+			<value name="eWidgetMenuItemFlags_None" value="0">
 				<comments desc="No flags. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_SubMenu" value="niBit ( 1 ) ">
+			<value name="eWidgetMenuItemFlags_SubMenu" value="niBit(1)">
 				<comments desc="The item will open a submenu. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Separator" value="niBit ( 2 ) ">
+			<value name="eWidgetMenuItemFlags_Separator" value="niBit(2)">
 				<comments desc="The item is a separator. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Check" value="niBit ( 3 ) ">
+			<value name="eWidgetMenuItemFlags_Check" value="niBit(3)">
 				<comments desc="The item is a check. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Group" value="niBit ( 4 ) ">
+			<value name="eWidgetMenuItemFlags_Group" value="niBit(4)">
 				<comments desc="The item is in a group. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Dummy" value="niBit ( 5 ) ">
+			<value name="eWidgetMenuItemFlags_Dummy" value="niBit(5)">
 				<comments desc="The item is a dummy, aka it isnt clickable. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Title" value="niBit ( 6 ) ">
+			<value name="eWidgetMenuItemFlags_Title" value="niBit(6)">
 				<comments desc="The item is a title, will be drawn with a different background color. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_Disabled" value="niBit ( 7 ) ">
+			<value name="eWidgetMenuItemFlags_Disabled" value="niBit(7)">
 				<comments desc="The item is disabled, text will be drawn in a different color. "/>
 			</value>
-			<value name="eWidgetMenuItemFlags_SortAdd" value="niBit ( 8 ) ">
+			<value name="eWidgetMenuItemFlags_SortAdd" value="niBit(8)">
 				<comments desc="Sort when adding the item. "/>
 			</value>
 		</enum>
@@ -35,37 +35,37 @@
 				<remark text="Sent through eUIMessage_Command to the parent widget, extra1 contains the iWidgetMenuItem of the item concerned. "/>
 				<remark text="Sub menus are considered part of the parent menu, they will send messages as if they were the parent menu. "/>
 			</comments>
-			<value name="eWidgetMenuCmd_Checked" value="0 ">
+			<value name="eWidgetMenuCmd_Checked" value="0">
 				<comments desc="A check menu item has been checked. ">
 					<params text="A: iWidgetMenuItem "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_UnChecked" value="1 ">
+			<value name="eWidgetMenuCmd_UnChecked" value="1">
 				<comments desc="A check menu item has been unchecked. ">
 					<params text="A: iWidgetMenuItem "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_GroupChanged" value="2 ">
+			<value name="eWidgetMenuCmd_GroupChanged" value="2">
 				<comments desc="A group menu item has been changed. ">
 					<params text="A: iWidgetMenuItem "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_Clicked" value="3 ">
+			<value name="eWidgetMenuCmd_Clicked" value="3">
 				<comments desc="A menu item has been clicked. ">
 					<params text="A: iWidgetMenuItem "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_Opened" value="4 ">
+			<value name="eWidgetMenuCmd_Opened" value="4">
 				<comments desc="Menu has just been opened. ">
 					<params text="A: iWidgetMenu opened "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_Closed" value="5 ">
+			<value name="eWidgetMenuCmd_Closed" value="5">
 				<comments desc="Menu has just been closed. ">
 					<params text="A: iWidgetMenu closed "/>
 				</comments>
 			</value>
-			<value name="eWidgetMenuCmd_FocusedItem" value="6 ">
+			<value name="eWidgetMenuCmd_FocusedItem" value="6">
 				<comments desc="The menu item focused has changed. ">
 					<params text="A: newly selected iWidgetMenuItem "/>
 					<params text="B: previously selected iWidgetMenuItem if any "/>
@@ -76,22 +76,22 @@
 			<comments desc="Menu style. ">
 				<remark text="The menu style is used only by the parent menu, sub menus will ignore these flags. "/>
 			</comments>
-			<value name="eWidgetMenuStyle_NoCloseOnGroupChange" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetMenuStyle_NoCloseOnGroupChange" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Dont close the menu on group change. "/>
 			</value>
-			<value name="eWidgetMenuStyle_NoCloseOnCheckChange" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetMenuStyle_NoCloseOnCheckChange" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Dont close the menu on check change. "/>
 			</value>
-			<value name="eWidgetMenuStyle_NoCloseOnItemClicked" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetMenuStyle_NoCloseOnItemClicked" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="Dont close the menu on item clicked. "/>
 			</value>
-			<value name="eWidgetMenuStyle_NoCloseOnNCClick" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetMenuStyle_NoCloseOnNCClick" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="Dont close the menu when clicking outside of the client area. "/>
 			</value>
-			<value name="eWidgetMenuStyle_NoClose" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange|eWidgetMenuStyle_NoCloseOnItemClicked|eWidgetMenuStyle_NoCloseOnNCClick ">
+			<value name="eWidgetMenuStyle_NoClose" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange|eWidgetMenuStyle_NoCloseOnItemClicked|eWidgetMenuStyle_NoCloseOnNCClick">
 				<comments desc="Dont close the menu automatically "/>
 			</value>
-			<value name="eWidgetMenuStyle_NoCloseOnGroupOrCheckChange" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange ">
+			<value name="eWidgetMenuStyle_NoCloseOnGroupOrCheckChange" value="eWidgetMenuStyle_NoCloseOnGroupChange|eWidgetMenuStyle_NoCloseOnCheckChange">
 				<comments desc="Dont close the menu on group or check change. "/>
 			</value>
 		</enum>

@@ -17,15 +17,14 @@
 #include "agg_vertex_sequence.h"
 #include "agg_trans_single_path.h"
 
-namespace agg
-{
+namespace agg {
 
 //------------------------------------------------------------------------
-trans_single_path::trans_single_path() :
-    m_base_length(0.0),
-    m_kindex(0.0),
-    m_status(initial),
-    m_preserve_x_scale(true)
+trans_single_path::trans_single_path()
+    : m_base_length(0.0)
+    , m_kindex(0.0)
+    , m_status(initial)
+    , m_preserve_x_scale(true)
 {
 }
 
@@ -40,13 +39,11 @@ void trans_single_path::reset()
 //------------------------------------------------------------------------
 void trans_single_path::move_to(agg_real x, agg_real y)
 {
-  if(m_status == initial)
-  {
+  if (m_status == initial) {
     m_src_vertices.modify_last(vertex_dist(x, y));
     m_status = making_path;
   }
-  else
-  {
+  else {
     line_to(x, y);
   }
 }
@@ -54,33 +51,29 @@ void trans_single_path::move_to(agg_real x, agg_real y)
 //------------------------------------------------------------------------
 void trans_single_path::line_to(agg_real x, agg_real y)
 {
-  if(m_status == making_path)
-  {
+  if (m_status == making_path) {
     m_src_vertices.add(vertex_dist(x, y));
   }
 }
 
-
 //------------------------------------------------------------------------
 void trans_single_path::finalize_path()
 {
-  if(m_status == making_path && m_src_vertices.size() > 1)
-  {
+  if (m_status == making_path && m_src_vertices.size() > 1) {
     unsigned i;
     agg_real dist;
     agg_real d;
 
     m_src_vertices.close(false);
-    if(m_src_vertices.size() > 2)
-    {
-      if(m_src_vertices[m_src_vertices.size() - 2].dist * 10.0 <
-         m_src_vertices[m_src_vertices.size() - 3].dist)
+    if (m_src_vertices.size() > 2) {
+      if (m_src_vertices[m_src_vertices.size() - 2].dist * 10.0 <
+          m_src_vertices[m_src_vertices.size() - 3].dist)
       {
         d = m_src_vertices[m_src_vertices.size() - 3].dist +
             m_src_vertices[m_src_vertices.size() - 2].dist;
 
         m_src_vertices[m_src_vertices.size() - 2] =
-            m_src_vertices[m_src_vertices.size() - 1];
+          m_src_vertices[m_src_vertices.size() - 1];
 
         m_src_vertices.remove_last();
         m_src_vertices[m_src_vertices.size() - 2].dist = d;
@@ -88,8 +81,7 @@ void trans_single_path::finalize_path()
     }
 
     dist = 0.0;
-    for(i = 0; i < m_src_vertices.size(); i++)
-    {
+    for (i = 0; i < m_src_vertices.size(); i++) {
       vertex_dist& v = m_src_vertices[i];
       agg_real d = v.dist;
       v.dist = dist;
@@ -100,37 +92,30 @@ void trans_single_path::finalize_path()
   }
 }
 
-
-
 //------------------------------------------------------------------------
 agg_real trans_single_path::total_length() const
 {
-  if(m_base_length >= 1e-10) return m_base_length;
-  return (m_status == ready) ?
-      m_src_vertices[m_src_vertices.size() - 1].dist :
-      0.0;
+  if (m_base_length >= 1e-10)
+    return m_base_length;
+  return (m_status == ready) ? m_src_vertices[m_src_vertices.size() - 1].dist
+                             : 0.0;
 }
 
-
 //------------------------------------------------------------------------
-void trans_single_path::transform(agg_real *x, agg_real *y) const
+void trans_single_path::transform(agg_real* x, agg_real* y) const
 {
-  if(m_status == ready)
-  {
-    if(m_base_length > 1e-10)
-    {
-      *x *= m_src_vertices[m_src_vertices.size() - 1].dist /
-          m_base_length;
+  if (m_status == ready) {
+    if (m_base_length > 1e-10) {
+      *x *= m_src_vertices[m_src_vertices.size() - 1].dist / m_base_length;
     }
 
     agg_real x1 = 0.0;
     agg_real y1 = 0.0;
     agg_real dx = 1.0;
     agg_real dy = 1.0;
-    agg_real d  = 0.0;
+    agg_real d = 0.0;
     agg_real dd = 1.0;
-    if(*x < 0.0)
-    {
+    if (*x < 0.0) {
       // Extrapolation on the left
       //--------------------------
       x1 = m_src_vertices[0].x;
@@ -138,58 +123,50 @@ void trans_single_path::transform(agg_real *x, agg_real *y) const
       dx = m_src_vertices[1].x - x1;
       dy = m_src_vertices[1].y - y1;
       dd = m_src_vertices[1].dist - m_src_vertices[0].dist;
-      d  = *x;
+      d = *x;
     }
-    else
-      if(*x > m_src_vertices[m_src_vertices.size() - 1].dist)
-      {
-        // Extrapolation on the right
-        //--------------------------
-        unsigned i = m_src_vertices.size() - 2;
-        unsigned j = m_src_vertices.size() - 1;
-        x1 = m_src_vertices[j].x;
-        y1 = m_src_vertices[j].y;
-        dx = x1 - m_src_vertices[i].x;
-        dy = y1 - m_src_vertices[i].y;
-        dd = m_src_vertices[j].dist - m_src_vertices[i].dist;
-        d  = *x - m_src_vertices[j].dist;
-      }
-      else
-      {
-        // Interpolation
-        //--------------------------
-        unsigned i = 0;
-        unsigned j = m_src_vertices.size() - 1;
-        if(m_preserve_x_scale)
-        {
-          unsigned k;
-          for(i = 0; (j - i) > 1; )
-          {
-            if(*x < m_src_vertices[k = (i + j) >> 1].dist)
-            {
-              j = k;
-            }
-            else
-            {
-              i = k;
-            }
+    else if (*x > m_src_vertices[m_src_vertices.size() - 1].dist) {
+      // Extrapolation on the right
+      //--------------------------
+      unsigned i = m_src_vertices.size() - 2;
+      unsigned j = m_src_vertices.size() - 1;
+      x1 = m_src_vertices[j].x;
+      y1 = m_src_vertices[j].y;
+      dx = x1 - m_src_vertices[i].x;
+      dy = y1 - m_src_vertices[i].y;
+      dd = m_src_vertices[j].dist - m_src_vertices[i].dist;
+      d = *x - m_src_vertices[j].dist;
+    }
+    else {
+      // Interpolation
+      //--------------------------
+      unsigned i = 0;
+      unsigned j = m_src_vertices.size() - 1;
+      if (m_preserve_x_scale) {
+        unsigned k;
+        for (i = 0; (j - i) > 1;) {
+          if (*x < m_src_vertices[k = (i + j) >> 1].dist) {
+            j = k;
           }
-          d  = m_src_vertices[i].dist;
-          dd = m_src_vertices[j].dist - d;
-          d  = *x - d;
+          else {
+            i = k;
+          }
         }
-        else
-        {
-          i = unsigned(*x * m_kindex);
-          j = i + 1;
-          dd = m_src_vertices[j].dist - m_src_vertices[i].dist;
-          d = ((*x * m_kindex) - i) * dd;
-        }
-        x1 = m_src_vertices[i].x;
-        y1 = m_src_vertices[i].y;
-        dx = m_src_vertices[j].x - x1;
-        dy = m_src_vertices[j].y - y1;
+        d = m_src_vertices[i].dist;
+        dd = m_src_vertices[j].dist - d;
+        d = *x - d;
       }
+      else {
+        i = unsigned(*x * m_kindex);
+        j = i + 1;
+        dd = m_src_vertices[j].dist - m_src_vertices[i].dist;
+        d = ((*x * m_kindex) - i) * dd;
+      }
+      x1 = m_src_vertices[i].x;
+      y1 = m_src_vertices[i].y;
+      dx = m_src_vertices[j].x - x1;
+      dy = m_src_vertices[j].y - y1;
+    }
     agg_real x2 = x1 + dx * d / dd;
     agg_real y2 = y1 + dy * d / dd;
     *x = x2 - *y * dy / dd;
@@ -197,6 +174,4 @@ void trans_single_path::transform(agg_real *x, agg_real *y) const
   }
 }
 
-
-}
-
+} // namespace agg

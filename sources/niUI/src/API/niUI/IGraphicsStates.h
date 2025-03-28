@@ -8,22 +8,20 @@ namespace ni {
  */
 
 //! Sampler states description structure.
-struct sSamplerStatesDesc
-{
-  eSamplerFilter  mFilter;
-  eSamplerWrap  mWrapS;
-  eSamplerWrap  mWrapT;
-  eSamplerWrap  mWrapR;
-  sColor4f    mcolBorder;
-  bool operator == (const sSamplerStatesDesc& aR) const {
-    return
-        mFilter == aR.mFilter &&
-        mWrapS == aR.mWrapS &&
-        mWrapT == aR.mWrapT &&
-        mWrapR == aR.mWrapR &&
-        mcolBorder == aR.mcolBorder;
+struct sSamplerStatesDesc {
+  eSamplerFilter mFilter;
+  eSamplerWrap mWrapS;
+  eSamplerWrap mWrapT;
+  eSamplerWrap mWrapR;
+  sColor4f mcolBorder;
+  bool operator==(const sSamplerStatesDesc& aR) const
+  {
+    return mFilter == aR.mFilter && mWrapS == aR.mWrapS &&
+           mWrapT == aR.mWrapT && mWrapR == aR.mWrapR &&
+           mcolBorder == aR.mcolBorder;
   }
-  bool operator != (const sSamplerStatesDesc& aR) const {
+  bool operator!=(const sSamplerStatesDesc& aR) const
+  {
     return !(*this == aR);
   }
 };
@@ -77,28 +75,29 @@ struct iSamplerStates : public iUnknown {
   virtual tPtr __stdcall GetDescStructPtr() const = 0;
 
   //! Serialize the states.
-  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT,
+                                                 tSerializeFlags aFlags) = 0;
 };
 
 //! Depth stencil states description structure.
-struct sDepthStencilStatesDesc
-{
-  tBool            mbDepthTest;
-  tBool            mbDepthTestWrite;
+struct sDepthStencilStatesDesc {
+  tBool mbDepthTest;
+  tBool mbDepthTestWrite;
   eGraphicsCompare mDepthTestCompare;
-  eStencilMode     mStencilMode;
-  tI32             mnStencilRef;
-  tU32             mnStencilMask;
+  eStencilMode mStencilMode;
+  tI32 mnStencilRef;
+  tU32 mnStencilMask;
   eGraphicsCompare mStencilFrontCompare;
-  eStencilOp       mStencilFrontFail;
-  eStencilOp       mStencilFrontPassDepthFail;
-  eStencilOp       mStencilFrontPassDepthPass;
+  eStencilOp mStencilFrontFail;
+  eStencilOp mStencilFrontPassDepthFail;
+  eStencilOp mStencilFrontPassDepthPass;
   eGraphicsCompare mStencilBackCompare;
-  eStencilOp       mStencilBackFail;
-  eStencilOp       mStencilBackPassDepthFail;
-  eStencilOp       mStencilBackPassDepthPass;
+  eStencilOp mStencilBackFail;
+  eStencilOp mStencilBackPassDepthFail;
+  eStencilOp mStencilBackPassDepthPass;
 
-  bool operator == (const sDepthStencilStatesDesc& aR) const {
+  bool operator==(const sDepthStencilStatesDesc& aR) const
+  {
     if (!(mbDepthTest == aR.mbDepthTest))
       return false;
     if (mbDepthTest) {
@@ -130,7 +129,8 @@ struct sDepthStencilStatesDesc
     }
     return true;
   }
-  bool operator != (const sDepthStencilStatesDesc& aR) const {
+  bool operator!=(const sDepthStencilStatesDesc& aR) const
+  {
     return !(*this == aR);
   }
 };
@@ -146,7 +146,7 @@ struct iDepthStencilStates : public iUnknown {
   //! @{
 
   //! Copy another depth-stencil states.
-  virtual tBool __stdcall Copy(const iDepthStencilStates* apStates)  = 0;
+  virtual tBool __stdcall Copy(const iDepthStencilStates* apStates) = 0;
   //! Clone this depth-stencil states.
   virtual iDepthStencilStates* __stdcall Clone() const = 0;
   //! Return whether the depth-stencil states are compiled (read-only)
@@ -259,22 +259,22 @@ struct iDepthStencilStates : public iUnknown {
   virtual tPtr __stdcall GetDescStructPtr() const = 0;
 
   //! Serialize the states.
-  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT,
+                                                 tSerializeFlags aFlags) = 0;
 };
 
 //! Rasterizer states description structure.
-struct sRasterizerStatesDesc
-{
-  tBool           mbWireframe;
-  eCullingMode    mCullingMode;
+struct sRasterizerStatesDesc {
+  tBool mbWireframe;
+  eCullingMode mCullingMode;
   eColorWriteMask mColorWriteMask;
-  bool operator == (const sRasterizerStatesDesc& aR) const {
-    return
-        mbWireframe == aR.mbWireframe &&
-        mCullingMode == aR.mCullingMode &&
-        mColorWriteMask == aR.mColorWriteMask;
+  bool operator==(const sRasterizerStatesDesc& aR) const
+  {
+    return mbWireframe == aR.mbWireframe && mCullingMode == aR.mCullingMode &&
+           mColorWriteMask == aR.mColorWriteMask;
   }
-  bool operator != (const sRasterizerStatesDesc& aR) const {
+  bool operator!=(const sRasterizerStatesDesc& aR) const
+  {
     return !(*this == aR);
   }
 };
@@ -291,7 +291,7 @@ struct iRasterizerStates : public iUnknown {
   //! @{
 
   //! Copy another rasterizer states.
-  virtual tBool __stdcall Copy(const iRasterizerStates* apStates)  = 0;
+  virtual tBool __stdcall Copy(const iRasterizerStates* apStates) = 0;
   //! Clone this rasterizer states.
   virtual iRasterizerStates* __stdcall Clone() const = 0;
   //! Return whether the rasterizer states are compiled (read-only)
@@ -331,12 +331,12 @@ struct iRasterizerStates : public iUnknown {
   virtual tPtr __stdcall GetDescStructPtr() const = 0;
 
   //! Serialize the states.
-  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT,
+                                                 tSerializeFlags aFlags) = 0;
 };
 
 //! Graphics fixed pipeline states description structure.
-struct sFixedStatesDesc
-{
+struct sFixedStatesDesc {
   sMatrixf mCameraViewMatrix;
   sMatrixf mCameraProjectionMatrix;
   sMatrixf mViewMatrix;
@@ -385,7 +385,8 @@ struct iFixedStates : public iUnknown {
   //! Set only the fixed pipeline camera projection matrix. (default identity)
   //! {Property}
   //! \remark This function wont modify the projection matrix
-  virtual void __stdcall SetOnlyCameraProjectionMatrix(const sMatrixf& aVal) = 0;
+  virtual void __stdcall SetOnlyCameraProjectionMatrix(
+    const sMatrixf& aVal) = 0;
   //! Get the fixed pipeline camera projection matrix.
   //! {Property}{Serialize}
   virtual sMatrixf __stdcall GetCameraProjectionMatrix() const = 0;
@@ -434,8 +435,11 @@ struct iFixedStates : public iUnknown {
   //! \param afNear is the distance of the near clip plane
   //! \param afFar is the distance of the far clip plane
   virtual void __stdcall SetLookAtMatrices(tBool abSetCameraMatrices,
-                                           const sVec3f& avEye, const sVec3f& avAt, const sVec3f& avUp,
-                                           tF32 afFovY, tF32 afAspect, tF32 afNear, tF32 afFar) = 0;
+                                           const sVec3f& avEye,
+                                           const sVec3f& avAt,
+                                           const sVec3f& avUp, tF32 afFovY,
+                                           tF32 afAspect, tF32 afNear,
+                                           tF32 afFar) = 0;
   //! Set an orthographic projection in the view and projection matrices.
   //! \param abSetCameraMatrices if true the camera and render matrices will be set, if false only the render matrices will be set.
   //! \param arectViewport defines the orthographic projection area.
@@ -445,7 +449,9 @@ struct iFixedStates : public iUnknown {
   //! \remark This is meant to be used to do ortho projections at the screen's resolution. To do generic ortho projection
   //!     generate your ortho projection matrix using MatrixOrthoOffCenterLH (for example) and set the view
   //!     matrix to identity.
-  virtual void __stdcall SetOrthoMatrices(tBool abSetCameraMatrices, const sRectf& arectViewport, tF32 afNear, tF32 afFar) = 0;
+  virtual void __stdcall SetOrthoMatrices(tBool abSetCameraMatrices,
+                                          const sRectf& arectViewport,
+                                          tF32 afNear, tF32 afFar) = 0;
   //! @}
 
   //! Get the states description structure pointer.
@@ -453,10 +459,11 @@ struct iFixedStates : public iUnknown {
   virtual tPtr __stdcall GetDescStructPtr() const = 0;
 
   //! Serialize the states.
-  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT,
+                                                 tSerializeFlags aFlags) = 0;
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IGRAPHICSSTATES_33130606_H__

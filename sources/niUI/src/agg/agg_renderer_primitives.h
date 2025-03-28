@@ -25,24 +25,27 @@
 #include "agg_dda_line.h"
 #include "agg_ellipse_bresenham.h"
 
-namespace agg
-{
+namespace agg {
 //-----------------------------------------------------renderer_primitives
-template<class BaseRenderer> class renderer_primitives
-{
+template <class BaseRenderer>
+class renderer_primitives {
  public:
   typedef BaseRenderer base_ren_type;
   typedef typename base_ren_type::color_type color_type;
 
   //--------------------------------------------------------------------
-  renderer_primitives(base_ren_type& ren) :
-      m_ren(&ren),
-      m_fill_color(),
-      m_line_color(),
-      m_curr_x(0),
-      m_curr_y(0)
-  {}
-  void attach(base_ren_type& ren) { m_ren = &ren; }
+  renderer_primitives(base_ren_type& ren)
+      : m_ren(&ren)
+      , m_fill_color()
+      , m_line_color()
+      , m_curr_x(0)
+      , m_curr_y(0)
+  {
+  }
+  void attach(base_ren_type& ren)
+  {
+    m_ren = &ren;
+  }
 
   //--------------------------------------------------------------------
   static int coord(agg_real c)
@@ -51,18 +54,30 @@ template<class BaseRenderer> class renderer_primitives
   }
 
   //--------------------------------------------------------------------
-  void fill_color(const color_type& c) { m_fill_color = c; }
-  void line_color(const color_type& c) { m_line_color = c; }
-  const color_type& fill_color() const { return m_fill_color; }
-  const color_type& line_color() const { return m_line_color; }
+  void fill_color(const color_type& c)
+  {
+    m_fill_color = c;
+  }
+  void line_color(const color_type& c)
+  {
+    m_line_color = c;
+  }
+  const color_type& fill_color() const
+  {
+    return m_fill_color;
+  }
+  const color_type& line_color() const
+  {
+    return m_line_color;
+  }
 
   //--------------------------------------------------------------------
   void rectangle(int x1, int y1, int x2, int y2)
   {
-    m_ren->blend_hline(x1,   y1,   x2-1, m_line_color, cover_full);
-    m_ren->blend_vline(x2,   y1,   y2-1, m_line_color, cover_full);
-    m_ren->blend_hline(x1+1, y2,   x2,   m_line_color, cover_full);
-    m_ren->blend_vline(x1,   y1+1, y2,   m_line_color, cover_full);
+    m_ren->blend_hline(x1, y1, x2 - 1, m_line_color, cover_full);
+    m_ren->blend_vline(x2, y1, y2 - 1, m_line_color, cover_full);
+    m_ren->blend_hline(x1 + 1, y2, x2, m_line_color, cover_full);
+    m_ren->blend_vline(x1, y1 + 1, y2, m_line_color, cover_full);
   }
 
   //--------------------------------------------------------------------
@@ -75,7 +90,7 @@ template<class BaseRenderer> class renderer_primitives
   void outlined_rectangle(int x1, int y1, int x2, int y2)
   {
     rectangle(x1, y1, x2, y2);
-    m_ren->blend_bar(x1+1, y1+1, x2-1, y2-1, m_fill_color, cover_full);
+    m_ren->blend_bar(x1 + 1, y1 + 1, x2 - 1, y2 - 1, m_fill_color, cover_full);
   }
 
   //--------------------------------------------------------------------
@@ -84,8 +99,7 @@ template<class BaseRenderer> class renderer_primitives
     ellipse_bresenham_interpolator ei(rx, ry);
     int dx = 0;
     int dy = -ry;
-    do
-    {
+    do {
       dx += ei.dx();
       dy += ei.dy();
       m_ren->blend_pixel(x + dx, y + dy, m_line_color, cover_full);
@@ -93,8 +107,7 @@ template<class BaseRenderer> class renderer_primitives
       m_ren->blend_pixel(x - dx, y - dy, m_line_color, cover_full);
       m_ren->blend_pixel(x - dx, y + dy, m_line_color, cover_full);
       ++ei;
-    }
-    while(dy < 0);
+    } while (dy < 0);
   }
 
   //--------------------------------------------------------------------
@@ -106,22 +119,19 @@ template<class BaseRenderer> class renderer_primitives
     int dy0 = dy;
     int dx0 = dx;
 
-    do
-    {
+    do {
       dx += ei.dx();
       dy += ei.dy();
 
-      if(dy != dy0)
-      {
-        m_ren->blend_hline(x-dx0, y+dy0, x+dx0, m_fill_color, cover_full);
-        m_ren->blend_hline(x-dx0, y-dy0, x+dx0, m_fill_color, cover_full);
+      if (dy != dy0) {
+        m_ren->blend_hline(x - dx0, y + dy0, x + dx0, m_fill_color, cover_full);
+        m_ren->blend_hline(x - dx0, y - dy0, x + dx0, m_fill_color, cover_full);
       }
       dx0 = dx;
       dy0 = dy;
       ++ei;
-    }
-    while(dy < 0);
-    m_ren->blend_hline(x-dx0, y+dy0, x+dx0, m_fill_color, cover_full);
+    } while (dy < 0);
+    m_ren->blend_hline(x - dx0, y + dy0, x + dx0, m_fill_color, cover_full);
   }
 
   //--------------------------------------------------------------------
@@ -131,8 +141,7 @@ template<class BaseRenderer> class renderer_primitives
     int dx = 0;
     int dy = -ry;
 
-    do
-    {
+    do {
       dx += ei.dx();
       dy += ei.dy();
 
@@ -141,50 +150,44 @@ template<class BaseRenderer> class renderer_primitives
       m_ren->blend_pixel(x - dx, y - dy, m_line_color, cover_full);
       m_ren->blend_pixel(x - dx, y + dy, m_line_color, cover_full);
 
-      if(ei.dy() && dx)
-      {
-        m_ren->blend_hline(x-dx+1, y+dy, x+dx-1, m_fill_color, cover_full);
-        m_ren->blend_hline(x-dx+1, y-dy, x+dx-1, m_fill_color, cover_full);
+      if (ei.dy() && dx) {
+        m_ren->blend_hline(x - dx + 1, y + dy, x + dx - 1, m_fill_color,
+                           cover_full);
+        m_ren->blend_hline(x - dx + 1, y - dy, x + dx - 1, m_fill_color,
+                           cover_full);
       }
       ++ei;
-    }
-    while(dy < 0);
+    } while (dy < 0);
   }
 
   //--------------------------------------------------------------------
-  void line(int x1, int y1, int x2, int y2, bool last=false)
+  void line(int x1, int y1, int x2, int y2, bool last = false)
   {
     line_bresenham_interpolator li(x1, y1, x2, y2);
 
     unsigned len = li.len();
-    if(len == 0)
-    {
-      if(last)
-      {
-        m_ren->blend_pixel(li.line_lr(x1), li.line_lr(y1), m_line_color, cover_full);
+    if (len == 0) {
+      if (last) {
+        m_ren->blend_pixel(li.line_lr(x1), li.line_lr(y1), m_line_color,
+                           cover_full);
       }
       return;
     }
 
-    if(last) ++len;
+    if (last)
+      ++len;
 
-    if(li.is_ver())
-    {
-      do
-      {
+    if (li.is_ver()) {
+      do {
         m_ren->blend_pixel(li.x2(), li.y1(), m_line_color, cover_full);
         li.vstep();
-      }
-      while(--len);
+      } while (--len);
     }
-    else
-    {
-      do
-      {
+    else {
+      do {
         m_ren->blend_pixel(li.x1(), li.y2(), m_line_color, cover_full);
         li.hstep();
-      }
-      while(--len);
+      } while (--len);
     }
   }
 
@@ -196,7 +199,7 @@ template<class BaseRenderer> class renderer_primitives
   }
 
   //--------------------------------------------------------------------
-  void line_to(int x, int y, bool last=false)
+  void line_to(int x, int y, bool last = false)
   {
     line(m_curr_x, m_curr_y, x, y, last);
     m_curr_x = x;
@@ -204,12 +207,24 @@ template<class BaseRenderer> class renderer_primitives
   }
 
   //--------------------------------------------------------------------
-  const base_ren_type& ren() const { return *m_ren; }
-  base_ren_type& ren() { return *m_ren; }
+  const base_ren_type& ren() const
+  {
+    return *m_ren;
+  }
+  base_ren_type& ren()
+  {
+    return *m_ren;
+  }
 
   //--------------------------------------------------------------------
-  const rendering_buffer& rbuf() const { return m_ren->rbuf(); }
-  rendering_buffer& rbuf() { return m_ren->rbuf(); }
+  const rendering_buffer& rbuf() const
+  {
+    return m_ren->rbuf();
+  }
+  rendering_buffer& rbuf()
+  {
+    return m_ren->rbuf();
+  }
 
  private:
   base_ren_type* m_ren;
@@ -219,6 +234,6 @@ template<class BaseRenderer> class renderer_primitives
   int m_curr_y;
 };
 
-}
+} // namespace agg
 
 #endif

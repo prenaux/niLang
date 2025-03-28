@@ -2,36 +2,36 @@
 	<namespace name="ni">
 		<enum name="eCameraMoveType">
 			<comments desc="Camera move type "/>
-			<value name="eCameraMoveType_None" value="0 ">
+			<value name="eCameraMoveType_None" value="0">
 				<comments desc="The camera view is set through the position, target &amp; target up directly. "/>
 			</value>
-			<value name="eCameraMoveType_Fly" value="1 ">
+			<value name="eCameraMoveType_Fly" value="1">
 				<comments desc="The camera simulates a flying object. ">
 					<remark text="Moves the target with the position. "/>
 				</comments>
 			</value>
-			<value name="eCameraMoveType_Orbit" value="2 ">
+			<value name="eCameraMoveType_Orbit" value="2">
 				<comments desc="The camera orbits around it&apos;s target. ">
 					<remark text="Move up will &apos;orbit up/down&apos;, move forward will zoom in/out, move sidewards will &apos;orbit left/right&apos;. The movements should be in radians, zoom in/out in the same unit as the regular move forward. "/>
 					<remark text="The target is never moved directly in orbit mode. "/>
 				</comments>
 			</value>
-			<value name="eCameraMoveType_FlyFixedTarget" value="3 ">
+			<value name="eCameraMoveType_FlyFixedTarget" value="3">
 				<comments desc="The camera simulates a flying object with a fixed target. "/>
 			</value>
-			<value name="eCameraMoveType_SetMatrix" value="4 ">
+			<value name="eCameraMoveType_SetMatrix" value="4">
 				<comments desc="The camera view is set through SetViewMatrix directly. "/>
 			</value>
 		</enum>
 		<enum name="eCameraProjectionType">
 			<comments desc="Camera projection type. "/>
-			<value name="eCameraProjectionType_Perspective" value="0 ">
+			<value name="eCameraProjectionType_Perspective" value="0">
 				<comments desc="Perspective camera. "/>
 			</value>
-			<value name="eCameraProjectionType_Orthogonal" value="1 ">
+			<value name="eCameraProjectionType_Orthogonal" value="1">
 				<comments desc="Orthogonal with a free view pov. "/>
 			</value>
-			<value name="eCameraProjectionType_SetMatrix" value="2 ">
+			<value name="eCameraProjectionType_SetMatrix" value="2">
 				<comments desc="The camera projection is set through SetProjectionMatrix directly. "/>
 			</value>
 		</enum>

@@ -17,9 +17,8 @@
 
 #include "agg_math.h"
 
-namespace agg
-{
-template<class VertexSource>
+namespace agg {
+template <class VertexSource>
 agg_real path_length(VertexSource& vs, unsigned path_id = 0)
 {
   agg_real len = 0.0;
@@ -33,33 +32,27 @@ agg_real path_length(VertexSource& vs, unsigned path_id = 0)
 
   unsigned cmd;
   vs.rewind(path_id);
-  while(!is_stop(cmd = vs.vertex(&x2, &y2)))
-  {
-    if(is_vertex(cmd))
-    {
-      if(first || is_move_to(cmd))
-      {
+  while (!is_stop(cmd = vs.vertex(&x2, &y2))) {
+    if (is_vertex(cmd)) {
+      if (first || is_move_to(cmd)) {
         start_x = x2;
         start_y = y2;
       }
-      else
-      {
+      else {
         len += calc_distance(x1, y1, x2, y2);
       }
       x1 = x2;
       y1 = y2;
       first = false;
     }
-    else
-    {
-      if(is_close(cmd) && !first)
-      {
+    else {
+      if (is_close(cmd) && !first) {
         len += calc_distance(x1, y1, start_x, start_y);
       }
     }
   }
   return len;
 }
-}
+} // namespace agg
 
 #endif

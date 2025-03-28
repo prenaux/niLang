@@ -16,24 +16,23 @@ struct iOverlay;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Font format flags.
-enum eFontFormatFlags
-{
+enum eFontFormatFlags {
   //! Text will be horizontally centered.
-  eFontFormatFlags_CenterH    = niBit(0),
+  eFontFormatFlags_CenterH = niBit(0),
   //! Text will be vertically centered.
-  eFontFormatFlags_CenterV    = niBit(1),
+  eFontFormatFlags_CenterV = niBit(1),
   //! Text will be right aligned.
-  eFontFormatFlags_Right      = niBit(2),
+  eFontFormatFlags_Right = niBit(2),
   //! Text will be bottom aligned.
-  eFontFormatFlags_Bottom     = niBit(3),
+  eFontFormatFlags_Bottom = niBit(3),
   //! Clip text horizontally.
-  eFontFormatFlags_ClipH      = niBit(4),
+  eFontFormatFlags_ClipH = niBit(4),
   //! Clip text vertically.
-  eFontFormatFlags_ClipV      = niBit(5),
+  eFontFormatFlags_ClipV = niBit(5),
   //! Draw a border around the text.
-  eFontFormatFlags_Border     = niBit(6),
+  eFontFormatFlags_Border = niBit(6),
   //! Use kerning if available in the font.
-  eFontFormatFlags_Kerning    = niBit(7),
+  eFontFormatFlags_Kerning = niBit(7),
   //! Dont snap to the unit grid after layout.
   //! \remark Snapping is needed for pixel perfect text rendering, since if
   //!         the text starts on a pixel fraction it will look blurry.
@@ -46,11 +45,10 @@ enum eFontFormatFlags
 };
 
 //! Font format flags type. \see ni::eFontFormatFlags
-typedef tU32  tFontFormatFlags;
+typedef tU32 tFontFormatFlags;
 
 //! Get font flags.
-enum eFontLoadFlags
-{
+enum eFontLoadFlags {
   //! Search in the registered fonts.
   eFontLoadFlags_Registered = niBit(0),
   //! Search in the system fonts before searching in the registered fonts.
@@ -66,7 +64,9 @@ enum eFontLoadFlags
   //! Get italic font.
   eFontLoadFlags_Italic = niBit(5),
   //! Default flags.
-  eFontLoadFlags_Default = eFontLoadFlags_Registered|eFontLoadFlags_SystemLast|eFontLoadFlags_ClosestMatch,
+  eFontLoadFlags_Default = eFontLoadFlags_Registered |
+                           eFontLoadFlags_SystemLast |
+                           eFontLoadFlags_ClosestMatch,
   //! \internal
   eFontLoadFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -75,10 +75,8 @@ enum eFontLoadFlags
 typedef tU32 tFontLoadFlags;
 
 //! Font interface.
-struct iFont : public iUnknown
-{
+struct iFont : public iUnknown {
   niDeclareInterfaceUUID(iFont,0x4605c928,0x77ba,0x45df,0x95,0x05,0x18,0x46,0x77,0xe7,0x86,0x92);
-
 
   //########################################################################################
   //! \name Infos
@@ -159,10 +157,12 @@ struct iFont : public iUnknown
   //! \remark If the avSize is (0,0) the size set is the resolution. Note that
   //!         the effective resolution set will be modified by the contents
   //!         scale, so GetResolution() will not always return anResolution.
-  virtual void __stdcall SetSizeAndResolution(const sVec2f& avSize, const tU32 anResolution, const tF32 afContentsScale) = 0;
+  virtual void __stdcall SetSizeAndResolution(const sVec2f& avSize,
+                                              const tU32 anResolution,
+                                              const tF32 afContentsScale) = 0;
   //! Get the character's resolution.
   //! {Property}
-  virtual tU32 __stdcall GetResolution() const  = 0;
+  virtual tU32 __stdcall GetResolution() const = 0;
   //! Get the character rendering size.
   //! {Property}
   virtual sVec2f __stdcall GetSize() const = 0;
@@ -280,11 +280,15 @@ struct iFont : public iUnknown
   //! @{
 
   //! Blit a character to the specified bitmap using the pixel size.
-  virtual sVec2i __stdcall BlitChar(iBitmap2D* apBmp, tI32 anX, tI32 anY, tU32 anChar) = 0;
+  virtual sVec2i __stdcall BlitChar(iBitmap2D* apBmp, tI32 anX, tI32 anY,
+                                    tU32 anChar) = 0;
   //! Blit a character to the specified bitmap to the current font size.
-  virtual sVec2i __stdcall BlitCharStretch(iBitmap2D* apBmp, tI32 anX, tI32 anY, tU32 anChar) = 0;
+  virtual sVec2i __stdcall BlitCharStretch(iBitmap2D* apBmp, tI32 anX, tI32 anY,
+                                           tU32 anChar) = 0;
   //! Blit a character to the specified bitmap with the specified size and blend mode.
-  virtual sVec2i __stdcall BlitCharEx(iBitmap2D* apBmp, tI32 anX, tI32 anY, tI32 anW, tI32 anH, tU32 anChar, eBlendMode aBlendMode) = 0;
+  virtual sVec2i __stdcall BlitCharEx(iBitmap2D* apBmp, tI32 anX, tI32 anY,
+                                      tI32 anW, tI32 anH, tU32 anChar,
+                                      eBlendMode aBlendMode) = 0;
   //! @}
 
   //########################################################################################
@@ -296,10 +300,14 @@ struct iFont : public iUnknown
   //! \param aRect: If not Null the rectangle will be used as 'target' box where the text should be drawn, the compted text will take into account word wrapping, etc. in that box.
   //! \param aaszText is the text to compute the size of.
   //! \param aFormat: if 0 the format flags set is used, else the specified format is used.
-  virtual sRectf __stdcall ComputeTextSize(const sRectf& aRect, const achar* aaszText, tFontFormatFlags aFormat) = 0;
+  virtual sRectf __stdcall ComputeTextSize(const sRectf& aRect,
+                                           const achar* aaszText,
+                                           tFontFormatFlags aFormat) = 0;
   //! Draw text layed out in the specified rectangle.
-  virtual sRectf __stdcall DrawText(
-      ni::iCanvas* apCanvas, const sRectf& aposRect, tF32 afZ, const achar* aaszText, tFontFormatFlags aFormat) = 0;
+  virtual sRectf __stdcall DrawText(ni::iCanvas* apCanvas,
+                                    const sRectf& aposRect, tF32 afZ,
+                                    const achar* aaszText,
+                                    tFontFormatFlags aFormat) = 0;
   //! @}
 
   //########################################################################################
@@ -312,7 +320,8 @@ struct iFont : public iUnknown
   virtual tU32 __stdcall GetGlyphIndexFromName(const achar* aaszName) const = 0;
   //! Get the glyph index from its codepoint.
   //! {Property}
-  virtual tU32 __stdcall GetGlyphIndexFromCodepoint(const tU32 anCodepoint) const = 0;
+  virtual tU32 __stdcall GetGlyphIndexFromCodepoint(
+    const tU32 anCodepoint) const = 0;
   //! Get the glyph name from its codepoint.
   //! {Property}
   virtual cString __stdcall GetGlyphName(const tU32 anGlyphIndex) const = 0;
@@ -322,11 +331,14 @@ struct iFont : public iUnknown
 
   //! Get the glyph's codepoint from its name.
   //! {Property}
-  virtual tU32 __stdcall GetGlyphCodePointFromName(const achar* aaszName) const = 0;
+  virtual tU32 __stdcall GetGlyphCodePointFromName(
+    const achar* aaszName) const = 0;
 
   //! Get a glyph's outline to the specified path.
   //! \remark This has the side effect of caching the glyph.
-  virtual sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex, const sVec2f& avOffset, const tF32 afScale) const = 0;
+  virtual sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex,
+                                        const sVec2f& avOffset,
+                                        const tF32 afScale) const = 0;
 
   //! Get a glyph's texture coordinates.
   //! {Property}
@@ -346,5 +358,5 @@ struct iFont : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IFONT_47888711_H__

@@ -22,16 +22,21 @@
 #include "agg_basics.h"
 #include "agg_trans_affine.h"
 
-namespace agg
-{
+namespace agg {
 
 //----------------------------------------------------------conv_transform
-template<class VertexSource, class Transformer=trans_affine> class conv_transform
-{
+template <class VertexSource, class Transformer = trans_affine>
+class conv_transform {
  public:
-  conv_transform(VertexSource& source, const Transformer& tr) :
-      m_source(&source), m_trans(&tr) {}
-  void attach(VertexSource& source) { m_source = &source; }
+  conv_transform(VertexSource& source, const Transformer& tr)
+      : m_source(&source)
+      , m_trans(&tr)
+  {
+  }
+  void attach(VertexSource& source)
+  {
+    m_source = &source;
+  }
 
   void rewind(unsigned path_id)
   {
@@ -41,8 +46,7 @@ template<class VertexSource, class Transformer=trans_affine> class conv_transfor
   unsigned vertex(agg_real* x, agg_real* y)
   {
     unsigned cmd = m_source->vertex(x, y);
-    if(is_vertex(cmd))
-    {
+    if (is_vertex(cmd)) {
       m_trans->transform(x, y);
     }
     return cmd;
@@ -55,14 +59,13 @@ template<class VertexSource, class Transformer=trans_affine> class conv_transfor
 
  private:
   conv_transform(const conv_transform<VertexSource>&);
-  const conv_transform<VertexSource>&
-  operator = (const conv_transform<VertexSource>&);
+  const conv_transform<VertexSource>& operator=(
+    const conv_transform<VertexSource>&);
 
-  VertexSource*      m_source;
+  VertexSource* m_source;
   const Transformer* m_trans;
 };
 
-
-}
+} // namespace agg
 
 #endif

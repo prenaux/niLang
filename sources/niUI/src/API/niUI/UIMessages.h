@@ -20,8 +20,7 @@ namespace ni {
 //! \remark S, serialization messages
 //! \remark Z, user messages
 //! \remark X, context messages, sent only to the root widget
-enum eUIMessage
-{
+enum eUIMessage {
   //! \name General
   //! @{
 
@@ -631,5 +630,5 @@ enum eUIMessage
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __UIMESSAGES_73335480_H__

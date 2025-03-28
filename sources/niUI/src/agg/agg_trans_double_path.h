@@ -19,16 +19,13 @@
 #include "agg_basics.h"
 #include "agg_vertex_sequence.h"
 
-namespace agg
-{
+namespace agg {
 
 // See also: agg_trans_double_path.cpp
 //
 //-------------------------------------------------------trans_double_path
-class trans_double_path
-{
-  enum status_e
-  {
+class trans_double_path {
+  enum status_e {
     initial,
     making_path,
     ready
@@ -40,16 +37,34 @@ class trans_double_path
   trans_double_path();
 
   //--------------------------------------------------------------------
-  void   base_length(agg_real v)  { m_base_length = v; }
-  agg_real base_length() const { return m_base_length; }
+  void base_length(agg_real v)
+  {
+    m_base_length = v;
+  }
+  agg_real base_length() const
+  {
+    return m_base_length;
+  }
 
   //--------------------------------------------------------------------
-  void   base_height(agg_real v)  { m_base_height = v; }
-  agg_real base_height() const { return m_base_height; }
+  void base_height(agg_real v)
+  {
+    m_base_height = v;
+  }
+  agg_real base_height() const
+  {
+    return m_base_height;
+  }
 
   //--------------------------------------------------------------------
-  void preserve_x_scale(bool f) { m_preserve_x_scale = f;    }
-  bool preserve_x_scale() const { return m_preserve_x_scale; }
+  void preserve_x_scale(bool f)
+  {
+    m_preserve_x_scale = f;
+  }
+  bool preserve_x_scale() const
+  {
+    return m_preserve_x_scale;
+  }
 
   //--------------------------------------------------------------------
   void reset();
@@ -60,9 +75,9 @@ class trans_double_path
   void finalize_paths();
 
   //--------------------------------------------------------------------
-  template<class VertexSource1, class VertexSource2>
-  void add_paths(VertexSource1& vs1, VertexSource2& vs2,
-                 unsigned path1_id=0, unsigned path2_id=0)
+  template <class VertexSource1, class VertexSource2>
+  void add_paths(VertexSource1& vs1, VertexSource2& vs2, unsigned path1_id = 0,
+                 unsigned path2_id = 0)
   {
     agg_real x;
     agg_real y;
@@ -70,32 +85,24 @@ class trans_double_path
     unsigned cmd;
 
     vs1.rewind(path1_id);
-    while(!is_stop(cmd = vs1.vertex(&x, &y)))
-    {
-      if(is_move_to(cmd))
-      {
+    while (!is_stop(cmd = vs1.vertex(&x, &y))) {
+      if (is_move_to(cmd)) {
         move_to1(x, y);
       }
-      else
-      {
-        if(is_vertex(cmd))
-        {
+      else {
+        if (is_vertex(cmd)) {
           line_to1(x, y);
         }
       }
     }
 
     vs2.rewind(path2_id);
-    while(!is_stop(cmd = vs2.vertex(&x, &y)))
-    {
-      if(is_move_to(cmd))
-      {
+    while (!is_stop(cmd = vs2.vertex(&x, &y))) {
+      if (is_move_to(cmd)) {
         move_to2(x, y);
       }
-      else
-      {
-        if(is_vertex(cmd))
-        {
+      else {
+        if (is_vertex(cmd)) {
           line_to2(x, y);
         }
       }
@@ -106,26 +113,24 @@ class trans_double_path
   //--------------------------------------------------------------------
   agg_real total_length1() const;
   agg_real total_length2() const;
-  void transform(agg_real *x, agg_real *y) const;
+  void transform(agg_real* x, agg_real* y) const;
 
  private:
   agg_real finalize_path(vertex_storage& vertices);
-  void transform1(const vertex_storage& vertices,
-                  agg_real kindex, agg_real kx,
-                  agg_real *x, agg_real* y) const;
+  void transform1(const vertex_storage& vertices, agg_real kindex, agg_real kx,
+                  agg_real* x, agg_real* y) const;
 
   vertex_storage m_src_vertices1;
   vertex_storage m_src_vertices2;
-  agg_real         m_base_length;
-  agg_real         m_base_height;
-  agg_real         m_kindex1;
-  agg_real         m_kindex2;
-  status_e       m_status1;
-  status_e       m_status2;
-  bool           m_preserve_x_scale;
+  agg_real m_base_length;
+  agg_real m_base_height;
+  agg_real m_kindex1;
+  agg_real m_kindex2;
+  status_e m_status1;
+  status_e m_status2;
+  bool m_preserve_x_scale;
 };
 
-}
-
+} // namespace agg
 
 #endif

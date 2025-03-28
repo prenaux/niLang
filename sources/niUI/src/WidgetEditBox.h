@@ -11,32 +11,34 @@
 #include "EditorBuffer.h"
 #include "TextMetric.h"
 
-class cEditBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetEditBox>
-{
+class cEditBoxWidget
+    : public ImplRC<iWidgetSink, eImplFlags_Default, iWidgetEditBox> {
   niBeginClass(cEditBoxWidget);
+
  public:
-  cEditBoxWidget(iWidget *pWidget);
+  cEditBoxWidget(iWidget* pWidget);
   ~cEditBoxWidget();
 
   //iWidgetSink interface
-  tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varParam0, const Var& varParam1);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 nMsg,
+                               const Var& varParam0, const Var& varParam1);
   //iWidgetEditBox
   void __stdcall AddText(const achar* aaszText);
   //internals
   void Paint(iCanvas* apCanvas);
-  void ComputeClientRect(tF32 w,tF32 h);
-  void AdjustChildrenLayout(tF32 w,tF32 h);
-  Position TranslateMousePos(tF32 x,tF32 y);
+  void ComputeClientRect(tF32 w, tF32 h);
+  void AdjustChildrenLayout(tF32 w, tF32 h);
+  Position TranslateMousePos(tF32 x, tF32 y);
   void __stdcall AutoScroll(tBool abForceRefresh);
   void __stdcall AutoScroll();
   void DeleteSelection();
   void ComputeWidestLine();
   void __stdcall MoveCursorLineDelta(tI32 line);
   void __stdcall MoveCursorColumnDelta(tI32 col);
-  bool OnKeyDown(tU32 key,tU32 mod,tU32 c);
-  void OnLeftClickUp(const sVec2f &mpos);
-  void OnLeftClickDown(const sVec2f &mpos);
-  void OnMouseSelect(const sVec2f &mpos);
+  bool OnKeyDown(tU32 key, tU32 mod, tU32 c);
+  void OnLeftClickUp(const sVec2f& mpos);
+  void OnLeftClickDown(const sVec2f& mpos);
+  void OnMouseSelect(const sVec2f& mpos);
   void UpdateStyle();
   tBool __stdcall SetTextBuffer(iHString* ahspText);
   Ptr<iHString> __stdcall GetTextBuffer() const;
@@ -67,11 +69,11 @@ class cEditBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetEditB
  private:
   tBool __stdcall DoSetTextBuffer(const achar* aaszText);
 
-  iWidget *mpWidget;
-  iWidget *mpLeftScrollbar;
-  iWidget *mpBottomScrollbar;
-  iWidgetScrollBar *mpsbScrollBarLeft;
-  iWidgetScrollBar *mpsbScrollBarBottom;
+  iWidget* mpWidget;
+  iWidget* mpLeftScrollbar;
+  iWidget* mpBottomScrollbar;
+  iWidgetScrollBar* mpsbScrollBarLeft;
+  iWidgetScrollBar* mpsbScrollBarBottom;
   EditorBuffer mbufText;
   Selection mSelection;
   Position mSelPivot;
@@ -86,22 +88,22 @@ class cEditBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetEditB
 
   struct sGlyphCache {
     sDisplayGlyph gm;
-    tU32          color;
+    tU32 color;
   };
   astl::vector<sGlyphCache> mGlyphCache;
 
-  void ResetGlyphCache(tU32 anReserve) {
+  void ResetGlyphCache(tU32 anReserve)
+  {
     mGlyphCache.clear();
     mGlyphCache.reserve(anReserve);
   }
-  tF32 PushGlyph(const iFont* apFont, tF32 x, tF32 y, tU32 anChar, tU32 fg, const tF32 afFontSizeDivByRes) {
+  tF32 PushGlyph(const iFont* apFont, tF32 x, tF32 y, tU32 anChar, tU32 fg,
+                 const tF32 afFontSizeDivByRes)
+  {
     sGlyphCache& gc = astl::push_back(mGlyphCache);
     gc.color = fg;
-    return gc.gm.Compute(
-      (const cFont*)apFont,
-      afFontSizeDivByRes,
-      x, y, 0,
-      anChar);
+    return gc.gm.Compute((const cFont*)apFont, afFontSizeDivByRes, x, y, 0,
+                         anChar);
   }
 
   void InitSkin();
@@ -111,9 +113,9 @@ class cEditBoxWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetEditB
     Ptr<iOverlay> focusedFrame;
     Ptr<iOverlay> curText;
     Ptr<iOverlay> curHand;
-    sColor4f    colFrontNormal;
-    sColor4f    colFrontSel;
-    sColor4f    colBackSel;
+    sColor4f colFrontNormal;
+    sColor4f colFrontSel;
+    sColor4f colBackSel;
   } skin;
   niEndClass(cEditBoxWidget);
 };

@@ -2,31 +2,31 @@
 	<namespace name="ni">
 		<enum name="eFontFormatFlags">
 			<comments desc="Font format flags. "/>
-			<value name="eFontFormatFlags_CenterH" value="niBit ( 0 ) ">
+			<value name="eFontFormatFlags_CenterH" value="niBit(0)">
 				<comments desc="Text will be horizontally centered. "/>
 			</value>
-			<value name="eFontFormatFlags_CenterV" value="niBit ( 1 ) ">
+			<value name="eFontFormatFlags_CenterV" value="niBit(1)">
 				<comments desc="Text will be vertically centered. "/>
 			</value>
-			<value name="eFontFormatFlags_Right" value="niBit ( 2 ) ">
+			<value name="eFontFormatFlags_Right" value="niBit(2)">
 				<comments desc="Text will be right aligned. "/>
 			</value>
-			<value name="eFontFormatFlags_Bottom" value="niBit ( 3 ) ">
+			<value name="eFontFormatFlags_Bottom" value="niBit(3)">
 				<comments desc="Text will be bottom aligned. "/>
 			</value>
-			<value name="eFontFormatFlags_ClipH" value="niBit ( 4 ) ">
+			<value name="eFontFormatFlags_ClipH" value="niBit(4)">
 				<comments desc="Clip text horizontally. "/>
 			</value>
-			<value name="eFontFormatFlags_ClipV" value="niBit ( 5 ) ">
+			<value name="eFontFormatFlags_ClipV" value="niBit(5)">
 				<comments desc="Clip text vertically. "/>
 			</value>
-			<value name="eFontFormatFlags_Border" value="niBit ( 6 ) ">
+			<value name="eFontFormatFlags_Border" value="niBit(6)">
 				<comments desc="Draw a border around the text. "/>
 			</value>
-			<value name="eFontFormatFlags_Kerning" value="niBit ( 7 ) ">
+			<value name="eFontFormatFlags_Kerning" value="niBit(7)">
 				<comments desc="Use kerning if available in the font. "/>
 			</value>
-			<value name="eFontFormatFlags_NoUnitSnap" value="niBit ( 8 ) ">
+			<value name="eFontFormatFlags_NoUnitSnap" value="niBit(8)">
 				<comments desc="Dont snap to the unit grid after layout. ">
 					<remark text="Snapping is needed for pixel perfect text rendering, since if the text starts on a pixel fraction it will look blurry. Snapping is the default but you will want to turn it off if you&apos;re drawing animated text, text in a 3D space or you take care of the snapping yourself. "/>
 				</comments>
@@ -34,28 +34,28 @@
 		</enum>
 		<enum name="eFontLoadFlags">
 			<comments desc="Get font flags. "/>
-			<value name="eFontLoadFlags_Registered" value="niBit ( 0 ) ">
+			<value name="eFontLoadFlags_Registered" value="niBit(0)">
 				<comments desc="Search in the registered fonts. "/>
 			</value>
-			<value name="eFontLoadFlags_SystemFirst" value="niBit ( 1 ) ">
+			<value name="eFontLoadFlags_SystemFirst" value="niBit(1)">
 				<comments desc="Search in the system fonts before searching in the registered fonts. "/>
 			</value>
-			<value name="eFontLoadFlags_SystemLast" value="niBit ( 2 ) ">
+			<value name="eFontLoadFlags_SystemLast" value="niBit(2)">
 				<comments desc="Search in the system fonts after searching in the registered fonts. "/>
 			</value>
-			<value name="eFontLoadFlags_ClosestMatch" value="niBit ( 3 ) ">
+			<value name="eFontLoadFlags_ClosestMatch" value="niBit(3)">
 				<comments desc="Look for the closest match in the name. ">
 					<remark text="If not specified will look for exact match only. "/>
 					<remark text="Match is always case insensitive. "/>
 				</comments>
 			</value>
-			<value name="eFontLoadFlags_Bold" value="niBit ( 4 ) ">
+			<value name="eFontLoadFlags_Bold" value="niBit(4)">
 				<comments desc="Get bold font. "/>
 			</value>
-			<value name="eFontLoadFlags_Italic" value="niBit ( 5 ) ">
+			<value name="eFontLoadFlags_Italic" value="niBit(5)">
 				<comments desc="Get italic font. "/>
 			</value>
-			<value name="eFontLoadFlags_Default" value="eFontLoadFlags_Registered|eFontLoadFlags_SystemLast|eFontLoadFlags_ClosestMatch ">
+			<value name="eFontLoadFlags_Default" value="eFontLoadFlags_Registered|eFontLoadFlags_SystemLast|eFontLoadFlags_ClosestMatch">
 				<comments desc="Default flags. "/>
 			</value>
 		</enum>

@@ -34,9 +34,10 @@ ni::tBool __stdcall cWidgetCommand::IsOK() const
 }
 
 ///////////////////////////////////////////////
-tBool cWidgetCommand::Copy(const ni::iWidgetCommand *apSrc)
+tBool cWidgetCommand::Copy(const ni::iWidgetCommand* apSrc)
 {
-  if (!niIsOK(apSrc)) return eFalse;
+  if (!niIsOK(apSrc))
+    return eFalse;
   SetSender(apSrc->GetSender());
   SetID(apSrc->GetID());
   SetExtra1(apSrc->GetExtra1());
@@ -45,7 +46,7 @@ tBool cWidgetCommand::Copy(const ni::iWidgetCommand *apSrc)
 }
 
 ///////////////////////////////////////////////
-ni::iWidgetCommand * cWidgetCommand::Clone() const
+ni::iWidgetCommand* cWidgetCommand::Clone() const
 {
   iWidgetCommand* pNew = niNew cWidgetCommand();
   pNew->Copy(this);
@@ -53,7 +54,7 @@ ni::iWidgetCommand * cWidgetCommand::Clone() const
 }
 
 ///////////////////////////////////////////////
-tBool cWidgetCommand::SetSender(ni::iWidget *apSender)
+tBool cWidgetCommand::SetSender(ni::iWidget* apSender)
 {
   mptrSender = apSender;
   iWidgetCommand* c = ni::QueryInterface<iWidgetCommand>(apSender);
@@ -63,7 +64,7 @@ tBool cWidgetCommand::SetSender(ni::iWidget *apSender)
 }
 
 ///////////////////////////////////////////////
-ni::iWidget * cWidgetCommand::GetSender() const
+ni::iWidget* cWidgetCommand::GetSender() const
 {
   return mptrSender;
 }
@@ -81,7 +82,7 @@ tU32 cWidgetCommand::GetID() const
 }
 
 ///////////////////////////////////////////////
-void cWidgetCommand::SetExtra1(const Var &aVar)
+void cWidgetCommand::SetExtra1(const Var& aVar)
 {
   mvarExtra1 = aVar;
   iWidgetCommand* c = VarQueryInterface<iWidgetCommand>(aVar);
@@ -90,13 +91,13 @@ void cWidgetCommand::SetExtra1(const Var &aVar)
 }
 
 ///////////////////////////////////////////////
-const Var & cWidgetCommand::GetExtra1() const
+const Var& cWidgetCommand::GetExtra1() const
 {
   return mvarExtra1;
 }
 
 ///////////////////////////////////////////////
-void cWidgetCommand::SetExtra2(const Var &aVar)
+void cWidgetCommand::SetExtra2(const Var& aVar)
 {
   mvarExtra2 = aVar;
   iWidgetCommand* c = VarQueryInterface<iWidgetCommand>(aVar);
@@ -105,7 +106,7 @@ void cWidgetCommand::SetExtra2(const Var &aVar)
 }
 
 ///////////////////////////////////////////////
-const Var & cWidgetCommand::GetExtra2() const
+const Var& cWidgetCommand::GetExtra2() const
 {
   return mvarExtra2;
 }

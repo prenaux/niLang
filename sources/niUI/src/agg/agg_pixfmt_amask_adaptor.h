@@ -16,17 +16,14 @@
 #ifndef AGG_PIXFMT_AMASK_ADAPTOR_INCLUDED
 #define AGG_PIXFMT_AMASK_ADAPTOR_INCLUDED
 
-
 #include <string.h>
 #include "agg_array.h"
 #include "agg_rendering_buffer.h"
 
-
-namespace agg
-{
+namespace agg {
 //==================================================pixfmt_amask_adaptor
-template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
-{
+template <class PixFmt, class AlphaMask>
+class pixfmt_amask_adaptor {
  public:
   typedef PixFmt pixfmt_type;
   typedef typename pixfmt_type::color_type color_type;
@@ -35,12 +32,13 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   typedef typename amask_type::cover_type cover_type;
 
  private:
-  enum span_extra_tail_e { span_extra_tail = 256 };
+  enum span_extra_tail_e {
+    span_extra_tail = 256
+  };
 
   void realloc_span(unsigned len)
   {
-    if(len > m_span.size())
-    {
+    if (len > m_span.size()) {
       m_span.resize(len + span_extra_tail);
     }
   }
@@ -57,18 +55,32 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
     memcpy(&m_span[0], covers, len * sizeof(cover_type));
   }
 
-
  public:
-  pixfmt_amask_adaptor(pixfmt_type& pixf, const amask_type& mask) :
-      m_pixf(&pixf), m_mask(&mask), m_span()
-  {}
+  pixfmt_amask_adaptor(pixfmt_type& pixf, const amask_type& mask)
+      : m_pixf(&pixf)
+      , m_mask(&mask)
+      , m_span()
+  {
+  }
 
-  void attach_pixfmt(pixfmt_type& pixf)          { m_pixf = &pixf; }
-  void attach_alpha_mask(const amask_type& mask) { m_mask = &mask; }
+  void attach_pixfmt(pixfmt_type& pixf)
+  {
+    m_pixf = &pixf;
+  }
+  void attach_alpha_mask(const amask_type& mask)
+  {
+    m_mask = &mask;
+  }
 
   //--------------------------------------------------------------------
-  unsigned width()  const { return m_pixf->width();  }
-  unsigned height() const { return m_pixf->height(); }
+  unsigned width() const
+  {
+    return m_pixf->width();
+  }
+  unsigned height() const
+  {
+    return m_pixf->height();
+  }
 
   //--------------------------------------------------------------------
   color_type pixel(int x, int y)
@@ -89,9 +101,7 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
   //--------------------------------------------------------------------
-  void copy_hline(int x, int y,
-                  unsigned len,
-                  const color_type& c)
+  void copy_hline(int x, int y, unsigned len, const color_type& c)
   {
     realloc_span(len);
     m_mask->fill_hspan(x, y, &m_span[0], len);
@@ -99,9 +109,7 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
   //--------------------------------------------------------------------
-  void blend_hline(int x, int y,
-                   unsigned len,
-                   const color_type& c,
+  void blend_hline(int x, int y, unsigned len, const color_type& c,
                    cover_type cover)
   {
     init_span(len);
@@ -110,9 +118,7 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
   //--------------------------------------------------------------------
-  void copy_vline(int x, int y,
-                  unsigned len,
-                  const color_type& c)
+  void copy_vline(int x, int y, unsigned len, const color_type& c)
   {
     realloc_span(len);
     m_mask->fill_vspan(x, y, &m_span[0], len);
@@ -120,9 +126,7 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
   //--------------------------------------------------------------------
-  void blend_vline(int x, int y,
-                   unsigned len,
-                   const color_type& c,
+  void blend_vline(int x, int y, unsigned len, const color_type& c,
                    cover_type cover)
   {
     init_span(len);
@@ -131,19 +135,14 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
   //--------------------------------------------------------------------
-  void copy_from(const rendering_buffer& from,
-                 int xdst, int ydst,
-                 int xsrc, int ysrc,
-                 unsigned len)
+  void copy_from(const rendering_buffer& from, int xdst, int ydst, int xsrc,
+                 int ysrc, unsigned len)
   {
     m_pixf->copy_from(from, xdst, ydst, xsrc, ysrc, len);
   }
 
-
   //--------------------------------------------------------------------
-  void blend_solid_hspan(int x, int y,
-                         unsigned len,
-                         const color_type& c,
+  void blend_solid_hspan(int x, int y, unsigned len, const color_type& c,
                          const cover_type* covers)
   {
     init_span(len, covers);
@@ -151,18 +150,14 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
     m_pixf->blend_solid_hspan(x, y, len, c, &m_span[0]);
   }
 
-
   //--------------------------------------------------------------------
-  void blend_solid_vspan(int x, int y,
-                         unsigned len,
-                         const color_type& c,
+  void blend_solid_vspan(int x, int y, unsigned len, const color_type& c,
                          const cover_type* covers)
   {
     init_span(len, covers);
     m_mask->combine_vspan(x, y, &m_span[0], len);
     m_pixf->blend_solid_vspan(x, y, len, c, &m_span[0]);
   }
-
 
   //--------------------------------------------------------------------
   void copy_color_hspan(int x, int y, unsigned len, const color_type* colors)
@@ -172,42 +167,32 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
     m_pixf->blend_color_hspan(x, y, len, colors, &m_span[0], cover_full);
   }
 
-
   //--------------------------------------------------------------------
-  void blend_color_hspan(int x, int y,
-                         unsigned len,
-                         const color_type* colors,
+  void blend_color_hspan(int x, int y, unsigned len, const color_type* colors,
                          const cover_type* covers,
                          cover_type cover = cover_full)
   {
-    if(covers)
-    {
+    if (covers) {
       init_span(len, covers);
       m_mask->combine_hspan(x, y, &m_span[0], len);
     }
-    else
-    {
+    else {
       realloc_span(len);
       m_mask->fill_hspan(x, y, &m_span[0], len);
     }
     m_pixf->blend_color_hspan(x, y, len, colors, &m_span[0], cover);
   }
 
-
   //--------------------------------------------------------------------
-  void blend_color_vspan(int x, int y,
-                         unsigned len,
-                         const color_type* colors,
+  void blend_color_vspan(int x, int y, unsigned len, const color_type* colors,
                          const cover_type* covers,
                          cover_type cover = cover_full)
   {
-    if(covers)
-    {
+    if (covers) {
       init_span(len, covers);
       m_mask->combine_vspan(x, y, &m_span[0], len);
     }
-    else
-    {
+    else {
       realloc_span(len);
       m_mask->fill_vspan(x, y, &m_span[0], len);
     }
@@ -215,12 +200,11 @@ template<class PixFmt, class AlphaMask> class pixfmt_amask_adaptor
   }
 
  private:
-  pixfmt_type*          m_pixf;
-  const amask_type*     m_mask;
+  pixfmt_type* m_pixf;
+  const amask_type* m_mask;
   pod_array<cover_type> m_span;
 };
 
-}
+} // namespace agg
 
 #endif
-

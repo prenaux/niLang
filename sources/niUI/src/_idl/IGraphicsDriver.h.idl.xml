@@ -2,28 +2,28 @@
 	<namespace name="ni">
 		<enum name="eGraphicsCaptureFlags">
 			<comments desc="Graphics capture flag. "/>
-			<value name="eGraphicsCaptureFlags_All" value="niBit ( 0 ) ">
+			<value name="eGraphicsCaptureFlags_All" value="niBit(0)">
 				<comments desc="Clone all draw ops up until stop at. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_CloneStopAtGeometry" value="niBit ( 1 ) ">
+			<value name="eGraphicsCaptureFlags_CloneStopAtGeometry" value="niBit(1)">
 				<comments desc="Cloning of the geometry of the stop at draw op. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_CloneStopAtTextures" value="niBit ( 2 ) ">
+			<value name="eGraphicsCaptureFlags_CloneStopAtTextures" value="niBit(2)">
 				<comments desc="Clone the textures at the specified index. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_CloneStopAtStates" value="niBit ( 3 ) ">
+			<value name="eGraphicsCaptureFlags_CloneStopAtStates" value="niBit(3)">
 				<comments desc="Clone the states at the specified index. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_KeepStopAt" value="niBit ( 4 ) ">
+			<value name="eGraphicsCaptureFlags_KeepStopAt" value="niBit(4)">
 				<comments desc="Replace the states of the stop at draw op by the states cloned during the first capture of that draw op. This allows the states to be modified dynamically. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_NoTime" value="niBit ( 5 ) ">
+			<value name="eGraphicsCaptureFlags_NoTime" value="niBit(5)">
 				<comments desc="Do not count time perf when capturing the draw ops. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_BreakOnStopAtBegin" value="niBit ( 6 ) ">
+			<value name="eGraphicsCaptureFlags_BreakOnStopAtBegin" value="niBit(6)">
 				<comments desc="Breakpoint on StopAt begin drawop. "/>
 			</value>
-			<value name="eGraphicsCaptureFlags_BreakOnStopAtEnd" value="niBit ( 7 ) ">
+			<value name="eGraphicsCaptureFlags_BreakOnStopAtEnd" value="niBit(7)">
 				<comments desc="Breakpoint on StopAt end drawop. "/>
 			</value>
 		</enum>

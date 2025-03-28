@@ -8,58 +8,57 @@ namespace ni {
  */
 
 //! Graphics capabilites.
-enum eGraphicsCaps
-{
+enum eGraphicsCaps {
   //! Number of texture units.
-  eGraphicsCaps_NumTextureUnits         = 0,
+  eGraphicsCaps_NumTextureUnits = 0,
   //! Return eTrue if the renderer support run-time window resize.
-  eGraphicsCaps_Resize                  = 1,
+  eGraphicsCaps_Resize = 1,
   //! Return eTrue if the renderer support the creation of more than one
   //! rendering context.
-  eGraphicsCaps_MultiContext            = 2,
+  eGraphicsCaps_MultiContext = 2,
   //! Maximum 2d texture size supported. Return 0 if textures are not
   //! supported.
-  eGraphicsCaps_Texture2DMaxSize        = 3,
+  eGraphicsCaps_Texture2DMaxSize = 3,
   //! Maximum cube texture size supported. Return 0 if cube maps are not
   //! supported.
-  eGraphicsCaps_TextureCubeMaxSize      = 4,
+  eGraphicsCaps_TextureCubeMaxSize = 4,
   //! Maximum 3d texture size supported. . Return 0 if 3d textures are not
   //! supported.
-  eGraphicsCaps_Texture3DMaxSize        = 5,
+  eGraphicsCaps_Texture3DMaxSize = 5,
   //! Return the number of simultaneous render target textures supported.
   //! \remark Return 0 if render target textures are not supported.
   eGraphicsCaps_NumRenderTargetTextures = 6,
   //! Return eTrue if the renderer supports depth stencil as texture.
-  eGraphicsCaps_DepthStencilTexture     = 7,
+  eGraphicsCaps_DepthStencilTexture = 7,
   //! Return eTrue if the renderer supports two sided stencil.
-  eGraphicsCaps_StencilTwoSideded       = 8,
+  eGraphicsCaps_StencilTwoSideded = 8,
   //! Return eTrue if the renderer supports Inc/Decr wrap stencil operation.
-  eGraphicsCaps_StencilWrap             = 9,
+  eGraphicsCaps_StencilWrap = 9,
   //! Return eTrue if the renderer supports occlusion queries.
-  eGraphicsCaps_OcclusionQueries        = 10,
+  eGraphicsCaps_OcclusionQueries = 10,
   //! Return the maximum point size. (tF32)
-  eGraphicsCaps_MaxPointSize            = 11,
+  eGraphicsCaps_MaxPointSize = 11,
   //! Return wheter or not the hardware supports instancing.
-  eGraphicsCaps_HardwareInstancing      = 12,
+  eGraphicsCaps_HardwareInstancing = 12,
   //! Return wheter or not the hardware scissor test is supported.
-  eGraphicsCaps_ScissorTest             = 13,
+  eGraphicsCaps_ScissorTest = 13,
   //! The maximum vertex index that can be used in an index array.
-  eGraphicsCaps_MaxVertexIndex          = 14,
+  eGraphicsCaps_MaxVertexIndex = 14,
   //! Overlay textures supported.
-  eGraphicsCaps_OverlayTexture          = 15,
+  eGraphicsCaps_OverlayTexture = 15,
   //! Get the orthogonal screen projection offset in screen pixel
   //! unit. (float)
   //! \remark Used to build a proper otho projection matrix that matches the
   //! screen pixels exactly.
-  eGraphicsCaps_OrthoProjectionOffset   = 16,
+  eGraphicsCaps_OrthoProjectionOffset = 16,
   //! Whether we can blit the backbuffer to a texture with BlitTextureToTexture.
-  eGraphicsCaps_BlitBackBuffer          = 17,
+  eGraphicsCaps_BlitBackBuffer = 17,
   //! Return whether or not the driver can do wireframe rendering.
-  eGraphicsCaps_Wireframe               = 18,
+  eGraphicsCaps_Wireframe = 18,
   //! Return whether or not the driver supports the iGpu interfaces.
-  eGraphicsCaps_IGpu                    = 19,
+  eGraphicsCaps_IGpu = 19,
   //! Return whether or not the driver supports the iRay interfaces.
-  eGraphicsCaps_IRay                    = 20,
+  eGraphicsCaps_IRay = 20,
   //! \internal
   eGraphicsCaps_Last niMaybeUnused = 21,
   //! \internal
@@ -76,13 +75,18 @@ enum eClearBuffersFlags {
   eClearBuffersFlags_Stencil = niBit(2),
 
   //! Clear the color and depth buffers.
-  eClearBuffersFlags_ColorDepth = eClearBuffersFlags_Color|eClearBuffersFlags_Depth,
+  eClearBuffersFlags_ColorDepth =
+    eClearBuffersFlags_Color | eClearBuffersFlags_Depth,
   //! Clear the color and stencil buffers.
-  eClearBuffersFlags_ColorStencil = eClearBuffersFlags_Color|eClearBuffersFlags_Stencil,
+  eClearBuffersFlags_ColorStencil =
+    eClearBuffersFlags_Color | eClearBuffersFlags_Stencil,
   //! Clear the depth and stencil buffers.
-  eClearBuffersFlags_DepthStencil = eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil,
+  eClearBuffersFlags_DepthStencil =
+    eClearBuffersFlags_Depth | eClearBuffersFlags_Stencil,
   //! Clear the color, depth and stencil buffers.
-  eClearBuffersFlags_ColorDepthStencil = eClearBuffersFlags_Color|eClearBuffersFlags_Depth|eClearBuffersFlags_Stencil,
+  eClearBuffersFlags_ColorDepthStencil = eClearBuffersFlags_Color |
+                                         eClearBuffersFlags_Depth |
+                                         eClearBuffersFlags_Stencil,
 
   //! \internal
   eClearBuffersFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
@@ -92,8 +96,7 @@ enum eClearBuffersFlags {
 typedef tU32 tClearBuffersFlags;
 
 //! Array usage.
-enum eArrayUsage
-{
+enum eArrayUsage {
   //! Dynamic array, write only.
   eArrayUsage_Dynamic = 0,
   //! Dynamic array, Read/Write.
@@ -107,8 +110,7 @@ enum eArrayUsage
 };
 
 //! Lock.
-enum eLock
-{
+enum eLock {
   //! Normal behavior.
   eLock_Normal = 0,
   //! The application overwrites (with a write-only operation) every location within the
@@ -138,8 +140,7 @@ typedef tU32 tLockFlags;
 
 #if niMinFeatures(20)
 //! Shader compiler flags.
-enum eShaderCompilerFlags
-{
+enum eShaderCompilerFlags {
   //! Insert debug filename, line numbers, and type and symbol information during shader compile.
   eShaderCompilerFlags_Debug = niBit(0),
   //! Do not validate the generated code against known capabilities and constraints. This
@@ -184,8 +185,7 @@ typedef tU32 tShaderCompilerFlags;
 #endif // niMinFeatures
 
 //! Graphics primitive types
-enum eGraphicsPrimitiveType
-{
+enum eGraphicsPrimitiveType {
   //! List of isolated points.
   eGraphicsPrimitiveType_PointList = 0,
   //! List of isolated straight line segments.
@@ -234,13 +234,12 @@ enum eSamplerFilter {
 };
 
 //! Texture wrapping modes.
-enum eSamplerWrap
-{
+enum eSamplerWrap {
   //! The texture is repeated along the axis. default.
   eSamplerWrap_Repeat = 0,
   //! The texture is clamped at the end and the rest of the polygon
   //! is filled with the content of the texture edge.
-  eSamplerWrap_Clamp  = 1,
+  eSamplerWrap_Clamp = 1,
   //! Similar to eSamplerWrap_Repeat, except that the texture is flipped at every
   //! integer junction. For u values between 0 and 1, for example, the texture is
   //! addressed normally; between 1 and 2, the texture is flipped (mirrored);
@@ -255,8 +254,7 @@ enum eSamplerWrap
 };
 
 //! Graphics compare functions.
-enum eGraphicsCompare
-{
+enum eGraphicsCompare {
   //! Always fail the test.
   eGraphicsCompare_Never = 0,
   //! Accept the new pixel if its value equals the value of the current pixel.
@@ -280,8 +278,7 @@ enum eGraphicsCompare
 };
 
 //! Stencil mode.
-enum eStencilMode
-{
+enum eStencilMode {
   //! Disable the stencil.
   eStencilMode_None = 0,
   //! One sided stencil.
@@ -296,8 +293,7 @@ enum eStencilMode
 };
 
 //! Stencil operations.
-enum eStencilOp
-{
+enum eStencilOp {
   //! Do not update the entry in the stencil buffer. This is the default value.
   eStencilOp_Keep = 0,
   //! Set the stencil-buffer entry to 0.
@@ -324,8 +320,7 @@ enum eStencilOp
 //! A*SrcColor + B*DestColor
 //! \remark For material channel zero : SrcColor/Alpha is the channel 0 color, DestColor/Alpha is the color A
 //! \remark For material channel > zero : SrcColor/Alpha is the channel n color, DestColor/Alpha is the channel n-1 color
-enum eBlendMode
-{
+enum eBlendMode {
   //! Solid, no blending
   eBlendMode_NoBlending = 0,
   //! Means that the current alpha will be replaced by the current stage's alpha.
@@ -365,8 +360,7 @@ enum eBlendMode
 };
 
 //! Culling mode
-enum eCullingMode
-{
+enum eCullingMode {
   //! Do not cull back faces.
   eCullingMode_None = 0,
   //! Cull back faces with clockwise vertices.
@@ -380,8 +374,7 @@ enum eCullingMode
 };
 
 //! Color write mask.
-enum eColorWriteMask
-{
+enum eColorWriteMask {
   //! Disable writting in the color buffer.
   eColorWriteMask_None = 0x0,
   //! Write only in the alpha buffer.
@@ -393,16 +386,16 @@ enum eColorWriteMask
   //! Write only in the blue channel of the color buffer.
   eColorWriteMask_Blue = 0x8,
   //! Write only in the rgb buffer.
-  eColorWriteMask_RGB = eColorWriteMask_Red|eColorWriteMask_Green|eColorWriteMask_Blue,
+  eColorWriteMask_RGB =
+    eColorWriteMask_Red | eColorWriteMask_Green | eColorWriteMask_Blue,
   //! Normal, write in all channels.
-  eColorWriteMask_All = eColorWriteMask_RGB|eColorWriteMask_Alpha,
+  eColorWriteMask_All = eColorWriteMask_RGB | eColorWriteMask_Alpha,
   //! \internal
   eColorWriteMask_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Graphics display flags
-enum eGraphicsDisplayFlags
-{
+enum eGraphicsDisplayFlags {
   //! Flush all rendering but do not show the back buffer.
   eGraphicsDisplayFlags_Skip = niBit(0),
   eGraphicsDisplayFlags_DoNotWait = niBit(1),
@@ -451,16 +444,16 @@ enum eCompiledStates {
   eCompiledStates_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
-const tU32 knCompiledStatesNumRS = eCompiledStates_RS_CWCullingWireframe -
-    eCompiledStates_RS_ColorWriteNone;
+const tU32 knCompiledStatesNumRS =
+  eCompiledStates_RS_CWCullingWireframe - eCompiledStates_RS_ColorWriteNone;
 
-const tU32 knCompiledStatesNumDS = eCompiledStates_DS_DepthWriteOnly -
-    eCompiledStates_DS_NoDepthTest;
+const tU32 knCompiledStatesNumDS =
+  eCompiledStates_DS_DepthWriteOnly - eCompiledStates_DS_NoDepthTest;
 
-const tU32 knCompiledStatesNumSamplers = eCompiledStates_SS_SmoothWhiteBorder -
-    eCompiledStates_SS_PointRepeat;
+const tU32 knCompiledStatesNumSamplers =
+  eCompiledStates_SS_SmoothWhiteBorder - eCompiledStates_SS_PointRepeat;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __GRAPHICSENUM_456789789_H__

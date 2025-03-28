@@ -5,13 +5,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetGroup declaration.
-class cWidgetGroup : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetGroup>
-{
+class cWidgetGroup : public ni::ImplRC<ni::iWidgetSink, ni::eImplFlags_Default,
+                                       ni::iWidgetGroup> {
   niBeginClass(cWidgetGroup);
 
  public:
   //! Constructor.
-  cWidgetGroup(iWidget *apWidget);
+  cWidgetGroup(iWidget* apWidget);
   //! Destructor.
   ~cWidgetGroup();
 
@@ -21,7 +21,8 @@ class cWidgetGroup : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni
   ni::tBool __stdcall IsOK() const;
 
   //// ni::iWidgetSink /////////////////////////
-  tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 anMsg, const Var& avarA, const Var& avarB);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& avarA,
+                               const Var& avarB);
   //// ni::iWidgetSink /////////////////////////
 
   //// ni::iWidgetGroup ////////////////////////

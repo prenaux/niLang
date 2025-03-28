@@ -18,21 +18,35 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //----------------------------------------------------trans_warp_magnifier
 //
 // See Inmplementation agg_trans_warp_magnifier.cpp
 //
-class trans_warp_magnifier
-{
+class trans_warp_magnifier {
  public:
-  trans_warp_magnifier() : m_xc(0.0), m_yc(0.0), m_magn(1.0), m_radius(1.0) {}
+  trans_warp_magnifier()
+      : m_xc(0.0)
+      , m_yc(0.0)
+      , m_magn(1.0)
+      , m_radius(1.0)
+  {
+  }
 
-  void center(agg_real x, agg_real y) { m_xc = x; m_yc = y; }
-  void magnification(agg_real m)    { m_magn = m;         }
-  void radius(agg_real r)           { m_radius = r;       }
+  void center(agg_real x, agg_real y)
+  {
+    m_xc = x;
+    m_yc = y;
+  }
+  void magnification(agg_real m)
+  {
+    m_magn = m;
+  }
+  void radius(agg_real r)
+  {
+    m_radius = r;
+  }
 
   void transform(agg_real* x, agg_real* y) const;
   void inverse_transform(agg_real* x, agg_real* y) const;
@@ -44,8 +58,6 @@ class trans_warp_magnifier
   agg_real m_radius;
 };
 
-
-}
-
+} // namespace agg
 
 #endif

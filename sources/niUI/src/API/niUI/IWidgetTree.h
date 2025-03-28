@@ -12,32 +12,30 @@ struct iWidgetTreeNode;
  */
 
 //! Widget tree style.
-enum eWidgetTreeStyle
-{
+enum eWidgetTreeStyle {
   //! Select the item on left click down. Note that this disables the
   //! secondary selection.
-  eWidgetTreeStyle_ClickDownSelect = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetTreeStyle_ClickDownSelect = niBit(eWidgetStyle_MaxBit + 0),
   //! Don't show the horizontal scrollbar.
-  eWidgetTreeStyle_NoHScroll = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetTreeStyle_NoHScroll = niBit(eWidgetStyle_MaxBit + 1),
   //! Don't show the vertical scrollbar.
-  eWidgetTreeStyle_NoVScroll = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetTreeStyle_NoVScroll = niBit(eWidgetStyle_MaxBit + 2),
   //! Automaticall scroll to the selected nodes.
-  eWidgetTreeStyle_Autoscroll = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetTreeStyle_Autoscroll = niBit(eWidgetStyle_MaxBit + 3),
   //! Don't draw the root node.
-  eWidgetTreeStyle_DontDrawRoot = niBit(eWidgetStyle_MaxBit+4),
+  eWidgetTreeStyle_DontDrawRoot = niBit(eWidgetStyle_MaxBit + 4),
   //! Always show the horizontal scrollbar.
-  eWidgetTreeStyle_AlwaysHScroll = niBit(eWidgetStyle_MaxBit+5),
+  eWidgetTreeStyle_AlwaysHScroll = niBit(eWidgetStyle_MaxBit + 5),
   //! Always show the vertical scrollbar.
-  eWidgetTreeStyle_AlwaysVScroll = niBit(eWidgetStyle_MaxBit+6),
+  eWidgetTreeStyle_AlwaysVScroll = niBit(eWidgetStyle_MaxBit + 6),
   //! Single selection only.
-  eWidgetTreeStyle_SingleSelection = niBit(eWidgetStyle_MaxBit+7),
+  eWidgetTreeStyle_SingleSelection = niBit(eWidgetStyle_MaxBit + 7),
   //! \internal
   eWidgetTreeStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget tree notify message
-enum eWidgetTreeCmd
-{
+enum eWidgetTreeCmd {
   //! A tree node has been selected.
   eWidgetTreeCmd_Selected = 0,
   //! \param A iWidgetTreeNode
@@ -71,8 +69,7 @@ enum eWidgetTreeCmd
 };
 
 //! Widget tree node flags.
-enum eWidgetTreeNodeFlags
-{
+enum eWidgetTreeNodeFlags {
   //! The node is selected.
   eWidgetTreeNodeFlags_Selected = niBit(0),
   //! The node is expanded.
@@ -86,7 +83,8 @@ enum eWidgetTreeNodeFlags
   //! The widget in the tree node will be placed horizontally.
   eWidgetTreeNodeFlags_WidgetPlaceH = niBit(5),
   //! The widget in the tree node will be placed vertically and horizontally.
-  eWidgetTreeNodeFlags_WidgetPlace = eWidgetTreeNodeFlags_WidgetPlaceV|eWidgetTreeNodeFlags_WidgetPlaceH,
+  eWidgetTreeNodeFlags_WidgetPlace =
+    eWidgetTreeNodeFlags_WidgetPlaceV | eWidgetTreeNodeFlags_WidgetPlaceH,
   //! The widget in the tree node will be sized to fit in the tree.
   eWidgetTreeNodeFlags_WidgetSize = niBit(6),
   //! The widget in the tree node will be placed at the left of the text.
@@ -96,7 +94,8 @@ enum eWidgetTreeNodeFlags
   //! The widget tree node is visible.
   eWidgetTreeNodeFlags_Visible = niBit(9),
   //! Default tree node flags.
-  eWidgetTreeNodeFlags_Default = eWidgetTreeNodeFlags_WidgetPlace|eWidgetTreeNodeFlags_Visible,
+  eWidgetTreeNodeFlags_Default =
+    eWidgetTreeNodeFlags_WidgetPlace | eWidgetTreeNodeFlags_Visible,
   //! \internal
   eWidgetTreeNodeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -106,8 +105,7 @@ typedef tU32 tWidgetTreeNodeFlags;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Widget tree node interface.
-struct iWidgetTreeNode : public iUnknown
-{
+struct iWidgetTreeNode : public iUnknown {
   niDeclareInterfaceUUID(iWidgetTreeNode,0x96fa976d,0xc757,0x42d9,0xb8,0xef,0xde,0x82,0x35,0x9d,0x1a,0x6c);
 
   //########################################################################################
@@ -161,16 +159,19 @@ struct iWidgetTreeNode : public iUnknown
   //! Get the index of the specified child node.
   //! {Property}
   //! \remark Return eInvalidHandle if the specified node isnt a child of this node.
-  virtual tU32 __stdcall GetChildNodeIndex(const iWidgetTreeNode* apNode) const = 0;
+  virtual tU32 __stdcall GetChildNodeIndex(
+    const iWidgetTreeNode* apNode) const = 0;
   //! Get the first child node with the specified name.
   //! {Property}
   //! \remark This function will search in the children nodes as well.
-  virtual iWidgetTreeNode* __stdcall GetChildNodeFromName(const achar* aaszName) const = 0;
+  virtual iWidgetTreeNode* __stdcall GetChildNodeFromName(
+    const achar* aaszName) const = 0;
   //! Add a new child node.
   virtual iWidgetTreeNode* __stdcall AddChildNode(const achar* aaszName) = 0;
   //! Add a new child node before the specified index.
   //! \remark If the index is out of range it behaves like AddChildNode (aka add a node at the end)
-  virtual iWidgetTreeNode* __stdcall AddChildNodeBefore(const achar* aaszName, tU32 anIndex) = 0;
+  virtual iWidgetTreeNode* __stdcall AddChildNodeBefore(const achar* aaszName,
+                                                        tU32 anIndex) = 0;
   //! Remove a child node.
   //! \remark This function will search in the children nodes as well.
   virtual tBool __stdcall RemoveChildNode(iWidgetTreeNode* apNode) = 0;
@@ -178,16 +179,20 @@ struct iWidgetTreeNode : public iUnknown
   virtual tBool __stdcall Clear() = 0;
   //! Find the first node with the specified name.
   //! \remark This include this node.
-  virtual iWidgetTreeNode* __stdcall FindNodeFromName(const achar* aaszName) const = 0;
+  virtual iWidgetTreeNode* __stdcall FindNodeFromName(
+    const achar* aaszName) const = 0;
   //! Find the first node with the specified userdata.
   //! \remark This include this node.
-  virtual iWidgetTreeNode* __stdcall FindNodeFromUserdata(const iUnknown* apUserdata) const = 0;
+  virtual iWidgetTreeNode* __stdcall FindNodeFromUserdata(
+    const iUnknown* apUserdata) const = 0;
   //! Find the first node with the specified widget.
   //! \remark This include this node.
-  virtual iWidgetTreeNode* __stdcall FindNodeFromWidget(const iWidget* apWidget) const = 0;
+  virtual iWidgetTreeNode* __stdcall FindNodeFromWidget(
+    const iWidget* apWidget) const = 0;
   //! Find the node that is below the specified position, position in absolute coordinates.
   //! \remark This include this node.
-  virtual iWidgetTreeNode* __stdcall FindNodeFromPosition(const sVec2f& avPos) const = 0;
+  virtual iWidgetTreeNode* __stdcall FindNodeFromPosition(
+    const sVec2f& avPos) const = 0;
   //! Get the previous sibiling of this tree node.
   //! {Property}
   //! \remark Return NULL if it's the first child of its parent.
@@ -205,7 +210,6 @@ struct iWidgetTreeNode : public iUnknown
   //! \remark Return null if its the node the most below.
   virtual iWidgetTreeNode* __stdcall GetBelow() const = 0;
   //! @}
-
 
   //########################################################################################
   //! \name Properties
@@ -261,7 +265,7 @@ struct iWidgetTreeNode : public iUnknown
   virtual void __stdcall SetTextColor(tU32 anColor) = 0;
   //! Get the text foreground color.
   //! {Property}
-  virtual tU32 __stdcall GetTextColor() const  = 0;
+  virtual tU32 __stdcall GetTextColor() const = 0;
   //! Set the text background color.
   //! {Property}
   virtual void __stdcall SetTextBackColor(tU32 anColor) = 0;
@@ -300,8 +304,7 @@ struct iWidgetTreeNode : public iUnknown
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Widget tree interface.
-struct iWidgetTree : public iUnknown
-{
+struct iWidgetTree : public iUnknown {
   niDeclareInterfaceUUID(iWidgetTree,0xb9cd35a1,0x6ad7,0x442d,0x87,0x7b,0xfd,0xc0,0xaa,0x9f,0x6c,0xf9);
   //! Get the root tree node.
   //! {Property}
@@ -324,7 +327,8 @@ struct iWidgetTree : public iUnknown
   //! Clear the selection of all nodes.
   virtual tBool __stdcall ClearSelection() = 0;
   //! Get a node from an absolute position.
-  virtual iWidgetTreeNode* __stdcall GetNodeFromPosition(const sVec2f& avAbsPos) const = 0;
+  virtual iWidgetTreeNode* __stdcall GetNodeFromPosition(
+    const sVec2f& avAbsPos) const = 0;
   //! Set the secondary selection item.
   //! {Property}
   virtual void __stdcall SetSecondarySelection(iWidgetTreeNode* apNode) = 0;
@@ -342,7 +346,8 @@ struct iWidgetTree : public iUnknown
   //! \remark Tree states are the expanded status, selected status and scrolling.
   virtual tBool __stdcall SaveTreeStates(iDataTable* apStates) = 0;
   //! Load tree states.
-  virtual tBool __stdcall LoadTreeStates(iDataTable* apStates, ni::tBool abLoadMatchingNames) = 0;
+  virtual tBool __stdcall LoadTreeStates(iDataTable* apStates,
+                                         ni::tBool abLoadMatchingNames) = 0;
   //! Push the tree's states.
   virtual tBool __stdcall PushStates() = 0;
   //! Pop the tree's states.
@@ -379,5 +384,5 @@ struct iWidgetTree : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETTREE_83152536_H__

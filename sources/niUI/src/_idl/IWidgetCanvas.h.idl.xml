@@ -2,20 +2,20 @@
 	<namespace name="ni">
 		<enum name="eWidgetCanvasStyle">
 			<comments desc="Canvas widget styles "/>
-			<value name="eWidgetCanvasStyle_ScrollH" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetCanvasStyle_ScrollH" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="A horizontal scroll bar will be shown if the canvas client size is bigger than the canvas&apos;s rectangle. ">
 					<remark text="The width of the client rectangle wont be adjusted to the canvas rectangle. "/>
 				</comments>
 			</value>
-			<value name="eWidgetCanvasStyle_ScrollV" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetCanvasStyle_ScrollV" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="A vertical scroll bar will be shown if the canvas client size is bigger than the canvas&apos;s rectangle. ">
 					<remark text="The height of the client rectangle wont be adjusted to the canvas rectangle. "/>
 				</comments>
 			</value>
-			<value name="eWidgetCanvasStyle_HideScrollH" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetCanvasStyle_HideScrollH" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="The horizontal scroll bar will never be set visible. "/>
 			</value>
-			<value name="eWidgetCanvasStyle_HideScrollV" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetCanvasStyle_HideScrollV" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="The vertical scroll bar will never be set visible. "/>
 			</value>
 		</enum>

@@ -28,8 +28,7 @@ struct iFixedStates;
  */
 
 //! Graphics capture flag.
-enum eGraphicsCaptureFlags
-{
+enum eGraphicsCaptureFlags {
   //! Clone all draw ops up until stop at.
   eGraphicsCaptureFlags_All = niBit(0),
   //! Cloning of the geometry of the stop at draw op.
@@ -56,8 +55,7 @@ enum eGraphicsCaptureFlags
 typedef tU32 tGraphicsCaptureFlags;
 
 //! Draw operation capture object.
-struct iGraphicsDrawOpCapture : public iUnknown
-{
+struct iGraphicsDrawOpCapture : public iUnknown {
   niDeclareInterfaceUUID(iGraphicsDrawOpCapture,0xb9df0bbe,0x865d,0x464a,0x9e,0xfe,0xeb,0xe0,0x88,0x77,0x97,0xe3);
 
   //! Begin capturing.
@@ -98,12 +96,17 @@ struct iGraphicsDrawOpCapture : public iUnknown
   virtual tF32 __stdcall GetCapturedDrawOpTime(tU32 anIndex) const = 0;
   //! Get the context that submited the draw operation.
   //! {Property}
-  virtual iGraphicsContext* __stdcall GetCapturedDrawOpContext(tU32 anIndex) const = 0;
+  virtual iGraphicsContext* __stdcall GetCapturedDrawOpContext(
+    tU32 anIndex) const = 0;
   //! Called to capture a draw operation.
   //! \return eFalse if the draw operation should not be submitted.
-  virtual tBool __stdcall BeginCaptureDrawOp(iGraphicsContext* apContext, iDrawOperation* apDrawOp, const sVec4i& aClearParams) = 0;
+  virtual tBool __stdcall BeginCaptureDrawOp(iGraphicsContext* apContext,
+                                             iDrawOperation* apDrawOp,
+                                             const sVec4i& aClearParams) = 0;
   //! Called to finish the draw operation capture.
-  virtual void __stdcall EndCaptureDrawOp(iGraphicsContext* apContext, iDrawOperation* apDrawOp, const sVec4i& aClearParams) = 0;
+  virtual void __stdcall EndCaptureDrawOp(iGraphicsContext* apContext,
+                                          iDrawOperation* apDrawOp,
+                                          const sVec4i& aClearParams) = 0;
 };
 
 //! Graphics driver.
@@ -133,10 +136,12 @@ struct iGraphicsDriver : public iUnknown {
   virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const = 0;
   //! Get the driver implementation details.
   //! {Property}
-  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const = 0;
+  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags()
+    const = 0;
   //! Set the draw op capture object.
   //! {Property}
-  virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture) = 0;
+  virtual void __stdcall SetDrawOpCapture(
+    iGraphicsDrawOpCapture* apCapture) = 0;
   //! Get the draw op capture object.
   //! {Property}
   virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const = 0;
@@ -149,12 +154,12 @@ struct iGraphicsDriver : public iUnknown {
 
   //! Create a new context for the specified OS window.
   virtual iGraphicsContext* __stdcall CreateContextForWindow(
-    iOSWindow* apWindow,
-    const achar* aaszBBFormat, const achar* aaszDSFormat,
+    iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat,
     tU32 anSwapInterval, tTextureFlags aBackBufferFlags) = 0;
   //! Creates a new context for the specified render targets.
   virtual iGraphicsContextRT* __stdcall CreateContextForRenderTargets(
-    iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS) = 0;
+    iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+    iTexture* apDS) = 0;
   //! Reset all graphics driver caches.
   //! \remark This is to be called after using any Native API used by the
   //!         renderer. If not called the cached states, textures, shaders,
@@ -170,20 +175,44 @@ struct iGraphicsDriver : public iUnknown {
 
   //! Check whether the specified texture format is supported and
   //! set the bitmap format object to the nearest matching native bitmap format.
-  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) = 0;
+  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat,
+                                             tTextureFlags aFlags) = 0;
   //! Create a new texture.
   //! \remark Setting anNumMipMaps to zero with eTextureFlags_MipMaps automatically computes the number of mipmaps down to 4x4.
-  virtual iTexture* __stdcall CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) = 0;
+  virtual iTexture* __stdcall CreateTexture(iHString* ahspName,
+                                            eBitmapType aType,
+                                            const achar* aaszFormat,
+                                            tU32 anNumMipMaps, tU32 anWidth,
+                                            tU32 anHeight, tU32 anDepth,
+                                            tTextureFlags aFlags) = 0;
   //! Blit a bitmap to a texture.
-  virtual tBool __stdcall BlitBitmapToTexture(iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags) = 0;
+  virtual tBool __stdcall BlitBitmapToTexture(iBitmap2D* apSrc,
+                                              iTexture* apDest,
+                                              tU32 anDestLevel,
+                                              const sRecti& aSrcRect,
+                                              const sRecti& aDestRect,
+                                              eTextureBlitFlags aFlags) = 0;
   //! Blit a texture to a bitmap.
-  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel, iBitmap2D* apDest, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags) = 0;
+  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel,
+                                              iBitmap2D* apDest,
+                                              const sRecti& aSrcRect,
+                                              const sRecti& aDestRect,
+                                              eTextureBlitFlags aFlags) = 0;
   //! Blit a texture into another texture.
-  virtual tBool __stdcall BlitTextureToTexture(iTexture* apSrc, tU32 anSrcLevel, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags) = 0;
+  virtual tBool __stdcall BlitTextureToTexture(iTexture* apSrc, tU32 anSrcLevel,
+                                               iTexture* apDest,
+                                               tU32 anDestLevel,
+                                               const sRecti& aSrcRect,
+                                               const sRecti& aDestRect,
+                                               eTextureBlitFlags aFlags) = 0;
   //! Blit a 3d bitmap to a 3d texture.
-  virtual tBool __stdcall BlitBitmap3DToTexture(iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags) = 0;
+  virtual tBool __stdcall BlitBitmap3DToTexture(
+    iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags) = 0;
   //! Blit a 3d texture to a 3d bitmap.
-  virtual tBool __stdcall BlitTextureToBitmap3D(iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags) = 0;
+  virtual tBool __stdcall BlitTextureToBitmap3D(
+    iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags) = 0;
 
   //! @}
 
@@ -195,9 +224,11 @@ struct iGraphicsDriver : public iUnknown {
   //! Get the number of Shader profile supported in the specified unit.
   virtual tU32 __stdcall GetNumShaderProfile(eShaderUnit aUnit) const = 0;
   //! Get the profile at the specified index.
-  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit, tU32 anIndex) const = 0;
+  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit,
+                                               tU32 anIndex) const = 0;
   //! Load a compiled shader from the specified bytecode.
-  virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apByteCode) = 0;
+  virtual iShader* __stdcall CreateShader(iHString* ahspName,
+                                          iFile* apByteCode) = 0;
   //! @}
 
   //########################################################################################
@@ -215,13 +246,17 @@ struct iGraphicsDriver : public iUnknown {
   //! @{
 
   //! Create a new driver vertex array instance.
-  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) = 0;
+  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices,
+                                                    tFVF anFVF,
+                                                    eArrayUsage aUsage) = 0;
   //! Create a new driver index array instance.
-  virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) = 0;
+  virtual iIndexArray* __stdcall CreateIndexArray(
+    eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex,
+    tU32 anMaxVertexIndex, eArrayUsage aUsage) = 0;
   //! @}
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IGRAPHICSDRIVER_6010323_H__

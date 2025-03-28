@@ -39,24 +39,24 @@
 #define GL_DYNAMIC_BUFFER_MODE_ORPHANING 3
 
 #ifdef _DEBUG
-#  ifndef DO_GL_DEBUG_LOG
-// #    define DO_GL_DEBUG_LOG
-#  endif
-#  ifndef CHECK_GLERR
-#    define CHECK_GLERR
-#  endif
+  #ifndef DO_GL_DEBUG_LOG
+  // #    define DO_GL_DEBUG_LOG
+  #endif
+  #ifndef CHECK_GLERR
+    #define CHECK_GLERR
+  #endif
 #endif
 
 #if !defined niEmbedded
-#  ifndef CHECK_GLERR
-#    define CHECK_GLERR
-#  endif
+  #ifndef CHECK_GLERR
+    #define CHECK_GLERR
+  #endif
 #endif
 
 #ifdef DO_GL_DEBUG_LOG
-#define GL_DEBUG_LOG(X) niDebugFmt(X)
+  #define GL_DEBUG_LOG(X) niDebugFmt(X)
 #else
-#define GL_DEBUG_LOG(X)
+  #define GL_DEBUG_LOG(X)
 #endif
 
 #define GL2_TRACE_BUFFER(aFmt) GL_DEBUG_LOG(aFmt)
@@ -66,7 +66,7 @@
 // #endif
 
 #ifdef _DEBUG
-#define CHECK_GLERR
+  #define CHECK_GLERR
 #endif
 
 // #define USE_GL_UNBIND_BUFFERS
@@ -122,9 +122,9 @@
 
 #define GL_SYNC_BUFFER_UPLOAD()
 #define GL_SYNC_SWAPBUFFER()
-#define GL_SYNC_LINK_SHADER()    //{ _glFinish(); _glFlush(); }
+#define GL_SYNC_LINK_SHADER() //{ _glFinish(); _glFlush(); }
 #define GL_SYNC_COMPILE_SHADER()
-#define GL_SYNC_TEX_UPLOAD()     //{ _glFinish(); _glFlush(); }
+#define GL_SYNC_TEX_UPLOAD() //{ _glFinish(); _glFlush(); }
 
 // #define NO_GLTEXTURE_SYSCOPY
 
@@ -133,16 +133,16 @@
 // #define LAZY_CLEAR_BUFFERS
 
 #if defined GL_HALF_FLOAT
-#  define MY_GL_HALF_FLOAT GL_HALF_FLOAT
+  #define MY_GL_HALF_FLOAT GL_HALF_FLOAT
 #elif defined GL_HALF_FLOAT_ARB
-#  define MY_GL_HALF_FLOAT GL_HALF_FLOAT_ARB
+  #define MY_GL_HALF_FLOAT GL_HALF_FLOAT_ARB
 #elif defined GL_HALF_FLOAT_OES
-// GL_OES_texture_half_float
-#  define MY_GL_HALF_FLOAT GL_HALF_FLOAT_OES
+  // GL_OES_texture_half_float
+  #define MY_GL_HALF_FLOAT GL_HALF_FLOAT_OES
 #elif defined GL_HALF_FLOAT_EXT
-#  define MY_GL_HALF_FLOAT GL_HALF_FLOAT_EXT
+  #define MY_GL_HALF_FLOAT GL_HALF_FLOAT_EXT
 #else
-#  error "GDRV_GL2: No GL_HALF_FLOAT definition available!"
+  #error "GDRV_GL2: No GL_HALF_FLOAT definition available!"
 #endif
 
 #if 0
@@ -150,87 +150,87 @@
 // cannot assume they are supported as they are not available on most WebGL
 // implementations for example (as of 2022).
 
-#if defined GL_RGBA16F
-#  define MY_GL_RGBA16F    GL_RGBA16F
-#elif defined GL_RGBA16F_ARB
-#  define MY_GL_RGBA16F    GL_RGBA16F_ARB
-#elif defined GL_RGBA16F_OES
-#  define MY_GL_RGBA16F    GL_RGBA16F_OES
-#elif defined GL_RGBA16F_EXT
+  #if defined GL_RGBA16F
+    #define MY_GL_RGBA16F GL_RGBA16F
+  #elif defined GL_RGBA16F_ARB
+    #define MY_GL_RGBA16F GL_RGBA16F_ARB
+  #elif defined GL_RGBA16F_OES
+    #define MY_GL_RGBA16F GL_RGBA16F_OES
+  #elif defined GL_RGBA16F_EXT
 // GL_EXT_color_buffer_half_float
-#  define MY_GL_RGBA16F    GL_RGBA16F_EXT
-#else
-#  error "GDRV_GL2: No GL_RGBA16F definition available!"
-#endif
+    #define MY_GL_RGBA16F GL_RGBA16F_EXT
+  #else
+    #error "GDRV_GL2: No GL_RGBA16F definition available!"
+  #endif
 
-#if defined GL_RGBA32F
-#  define MY_GL_RGBA32F    GL_RGBA32F
-#elif defined GL_RGBA32F_ARB
-#  define MY_GL_RGBA32F    GL_RGBA32F_ARB
-#elif defined GL_RGBA32F_OES
-#  define MY_GL_RGBA32F    GL_RGBA32F_OES
-#elif defined GL_RGBA32F_EXT
+  #if defined GL_RGBA32F
+    #define MY_GL_RGBA32F GL_RGBA32F
+  #elif defined GL_RGBA32F_ARB
+    #define MY_GL_RGBA32F GL_RGBA32F_ARB
+  #elif defined GL_RGBA32F_OES
+    #define MY_GL_RGBA32F GL_RGBA32F_OES
+  #elif defined GL_RGBA32F_EXT
 // GL_EXT_texture_storage
-#  define MY_GL_RGBA32F    GL_RGBA32F_EXT
-#else
-#  error "GDRV_GL2: No GL_RGBA32F definition available!"
-#endif
+    #define MY_GL_RGBA32F GL_RGBA32F_EXT
+  #else
+    #error "GDRV_GL2: No GL_RGBA32F definition available!"
+  #endif
 
 #endif
 
-#define GLES_TEXFMT_RGB16  0
+#define GLES_TEXFMT_RGB16 0
 #define GLES_TEXFMT_RGBA16 1
 #define GLES_TEXFMT_RGBA32 3
 #define GLES_TEXFMT_RGBA15 4
-#define GLES_TEXFMT_RGB24  5
-#define GLES_TEXFMT_LA16   6
-#define GLES_TEXFMT_A8     7
+#define GLES_TEXFMT_RGB24 5
+#define GLES_TEXFMT_LA16 6
+#define GLES_TEXFMT_A8 7
 #define GLES_TEXFMT_RGBA32F 8
 #define GLES_TEXFMT_RGBA16F 9
 
 // depth format 10+
-#define GLES_TEXFMT_D16    10
-#define GLES_TEXFMT_D24    11
-#define GLES_TEXFMT_D32    12
+#define GLES_TEXFMT_D16 10
+#define GLES_TEXFMT_D24 11
+#define GLES_TEXFMT_D32 12
 
-#define GLES_TEXFMT_RGBA_DEFAULT  GLES_TEXFMT_RGBA32
-#define GLES_TEXFMT_RGB_DEFAULT   GLES_TEXFMT_RGB24
+#define GLES_TEXFMT_RGBA_DEFAULT GLES_TEXFMT_RGBA32
+#define GLES_TEXFMT_RGB_DEFAULT GLES_TEXFMT_RGB24
 
 #ifndef NO_STENCIL_BUFFER
-#define GLES_TEXFMT_D24S8  12
+  #define GLES_TEXFMT_D24S8 12
 #endif
 
 #if !defined GL_TEXTURE_CUBE_MAP
-#define GL_TEXTURE_CUBE_MAP               0x8513
-#define GL_TEXTURE_BINDING_CUBE_MAP       0x8514
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_X    0x8515
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_X    0x8516
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_Y    0x8517
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y    0x8518
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_Z    0x8519
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z    0x851A
-#define GL_MAX_CUBE_MAP_TEXTURE_SIZE      0x851C
+  #define GL_TEXTURE_CUBE_MAP 0x8513
+  #define GL_TEXTURE_BINDING_CUBE_MAP 0x8514
+  #define GL_TEXTURE_CUBE_MAP_POSITIVE_X 0x8515
+  #define GL_TEXTURE_CUBE_MAP_NEGATIVE_X 0x8516
+  #define GL_TEXTURE_CUBE_MAP_POSITIVE_Y 0x8517
+  #define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y 0x8518
+  #define GL_TEXTURE_CUBE_MAP_POSITIVE_Z 0x8519
+  #define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z 0x851A
+  #define GL_MAX_CUBE_MAP_TEXTURE_SIZE 0x851C
 #endif
 
 #ifndef GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS
-#define	GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS   0x8CD9
+  #define GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS 0x8CD9
 #endif
 
 #define GLDRV_MAX_TEXTURE_UNIT 8 // OpenGL ES 2 supports 8 texture units only
-#define GLDRV_INVALID_HANDLE   ((GLuint)0)
+#define GLDRV_INVALID_HANDLE ((GLuint)0)
 
 // #define GLDRV_CORRECT_ALPHA_COMPOSITING
 
-static const GLenum GLEXT_TEXTURE_MAX_ANISOTROPY     = 0x84FE;
+static const GLenum GLEXT_TEXTURE_MAX_ANISOTROPY = 0x84FE;
 static const GLenum GLEXT_MAX_TEXTURE_MAX_ANISOTROPY = 0x84FF;
 
 #if 1 && defined _DEBUG
-#define CAN_USE_GL_DEBUG_MARKERS
+  #define CAN_USE_GL_DEBUG_MARKERS
 #endif
 
 #if defined CAN_USE_GL_DEBUG_MARKERS && defined niIOS
-#define USE_GL_DEBUG_MARKER
-#define USE_GL_DEBUG_LABEL
+  #define USE_GL_DEBUG_MARKER
+  #define USE_GL_DEBUG_LABEL
 #endif
 
 #ifdef USE_GL_DEBUG_MARKER
@@ -238,45 +238,52 @@ struct sDebugMarkerCounters {
   tU32 DrawOp;
   tU32 ClearBuffers;
   tU32 ApplyContext;
-  sDebugMarkerCounters() {
+  sDebugMarkerCounters()
+  {
     Clear();
   }
-  void Clear() {
-    memset((void*)this,0,sizeof(*this));
+  void Clear()
+  {
+    memset((void*)this, 0, sizeof(*this));
   }
 } _debugMarkerCounter;
 struct sGLPushGroupMarker {
-  sGLPushGroupMarker(const char* aaszName, tU32 aCount) {
-    glPushGroupMarkerEXT(0,niFmt("%s_%d",aaszName,aCount));
+  sGLPushGroupMarker(const char* aaszName, tU32 aCount)
+  {
+    glPushGroupMarkerEXT(0, niFmt("%s_%d", aaszName, aCount));
   }
-  ~sGLPushGroupMarker() {
+  ~sGLPushGroupMarker()
+  {
     glPopGroupMarkerEXT();
   }
 };
-#define GL_DEBUG_SWAP_BUFFERS() _debugMarkerCounter.Clear()
-#define GL_DEBUG_MARKER_GROUP(NAME) sGLPushGroupMarker __debugMarker_##NAME(#NAME,_debugMarkerCounter.NAME++)
-#define GL_DEBUG_EVENT_MARKER(NAME) glInsertEventMarkerEXT(0,#NAME)
+  #define GL_DEBUG_SWAP_BUFFERS() _debugMarkerCounter.Clear()
+  #define GL_DEBUG_MARKER_GROUP(NAME) \
+    sGLPushGroupMarker __debugMarker_##NAME(#NAME, _debugMarkerCounter.NAME++)
+  #define GL_DEBUG_EVENT_MARKER(NAME) glInsertEventMarkerEXT(0, #NAME)
 #else
-#define GL_DEBUG_SWAP_BUFFERS()
-#define GL_DEBUG_MARKER_GROUP(NAME)
-#define GL_DEBUG_EVENT_MARKER(NAME)
+  #define GL_DEBUG_SWAP_BUFFERS()
+  #define GL_DEBUG_MARKER_GROUP(NAME)
+  #define GL_DEBUG_EVENT_MARKER(NAME)
 #endif
 
 #ifdef USE_GL_DEBUG_LABEL
-#define GL_DEBUG_LABEL(TYPE,OBJECT,STR) glLabelObjectEXT(TYPE, OBJECT, 0, STR)
+  #define GL_DEBUG_LABEL(TYPE, OBJECT, STR) \
+    glLabelObjectEXT(TYPE, OBJECT, 0, STR)
 #else
-#define GL_DEBUG_LABEL(TYPE,OBJECT,STR)
+  #define GL_DEBUG_LABEL(TYPE, OBJECT, STR)
 #endif
 
 #ifdef _DEBUG
-#define GLDRV_HANDLE_TRACE(PARAMS) // niTraceFmt(PARAMS)
+  #define GLDRV_HANDLE_TRACE(PARAMS) // niTraceFmt(PARAMS)
 #else
-#define GLDRV_HANDLE_TRACE(PARAMS)
+  #define GLDRV_HANDLE_TRACE(PARAMS)
 #endif
 
-#define GLDRV_GEN_HANDLE(VAR,FUNC) {                                    \
-    FUNC(1,&VAR);                                                       \
-    GLDRV_HANDLE_TRACE((#FUNC " generated handle: %d", VAR));           \
+#define GLDRV_GEN_HANDLE(VAR, FUNC)                           \
+  {                                                           \
+    FUNC(1, &VAR);                                            \
+    GLDRV_HANDLE_TRACE((#FUNC " generated handle: %d", VAR)); \
   }
 
 /* The niExec(Main) method has the drawback that if you create a lot of
@@ -285,35 +292,41 @@ struct sGLPushGroupMarker {
  * of making sure the resource deletion happens in the main thread which is
  * required by some OpenGL drivers - without this they just crash.
  */
-#define GLDRV_GEN_DELETE_HANDLE(VAR,FUNC) {                             \
-    GLuint handleToDelete = VAR;                                        \
-    niExec(Main,handleToDelete) {                                       \
+#define GLDRV_GEN_DELETE_HANDLE(VAR, FUNC)                                \
+  {                                                                       \
+    GLuint handleToDelete = VAR;                                          \
+    niExec (Main, handleToDelete) {                                       \
       GLDRV_HANDLE_TRACE((#FUNC " deleting handle: %d", handleToDelete)); \
-      FUNC(1,&handleToDelete);                                          \
-      return eTrue;                                                     \
-    };                                                                  \
-    VAR = GLDRV_INVALID_HANDLE;                                         \
+      FUNC(1, &handleToDelete);                                           \
+      return eTrue;                                                       \
+    };                                                                    \
+    VAR = GLDRV_INVALID_HANDLE;                                           \
   }
 
-#define GLDRV_CREATE_HANDLE(VAR,FUNC,PARAMS) {                          \
-    VAR = FUNC PARAMS;                                                  \
-    GLDRV_HANDLE_TRACE((#FUNC " in " __FUNCTION__ " created handle: %d", VAR)); \
+#define GLDRV_CREATE_HANDLE(VAR, FUNC, PARAMS)                 \
+  {                                                            \
+    VAR = FUNC PARAMS;                                         \
+    GLDRV_HANDLE_TRACE(                                        \
+      (#FUNC " in " __FUNCTION__ " created handle: %d", VAR)); \
   }
 
-#define GLDRV_CREATE_DELETE_HANDLE_(VAR,FUNC) {                         \
-    GLDRV_HANDLE_TRACE((#FUNC " in " __FUNCTION__ " deleting handle: %d", VAR)); \
-    FUNC(VAR);                                               \
-    VAR = GLDRV_INVALID_HANDLE;                                         \
+#define GLDRV_CREATE_DELETE_HANDLE_(VAR, FUNC)                  \
+  {                                                             \
+    GLDRV_HANDLE_TRACE(                                         \
+      (#FUNC " in " __FUNCTION__ " deleting handle: %d", VAR)); \
+    FUNC(VAR);                                                  \
+    VAR = GLDRV_INVALID_HANDLE;                                 \
   }
 
-#define GLDRV_CREATE_DELETE_HANDLE(VAR,FUNC) {          \
-    GLuint _handleToDelete = VAR;                       \
-    niExec(Main,_handleToDelete) {                      \
-      GLuint handleToDelete = _handleToDelete;          \
-      GLDRV_CREATE_DELETE_HANDLE_(handleToDelete,FUNC); \
-      return eTrue;                                     \
-    };                                                  \
-    VAR = GLDRV_INVALID_HANDLE;                         \
+#define GLDRV_CREATE_DELETE_HANDLE(VAR, FUNC)            \
+  {                                                      \
+    GLuint _handleToDelete = VAR;                        \
+    niExec (Main, _handleToDelete) {                     \
+      GLuint handleToDelete = _handleToDelete;           \
+      GLDRV_CREATE_DELETE_HANDLE_(handleToDelete, FUNC); \
+      return eTrue;                                      \
+    };                                                   \
+    VAR = GLDRV_INVALID_HANDLE;                          \
   }
 
 //----------------------------------------------------------------------------
@@ -322,66 +335,67 @@ struct sGLPushGroupMarker {
 //
 //----------------------------------------------------------------------------
 #ifdef CHECK_GLERR
-static const char* GL_Error(GLenum err) {
+static const char* GL_Error(GLenum err)
+{
   switch (err) {
-    case GL_NO_ERROR:          return _A("GL_NO_ERROR");
-    case GL_INVALID_ENUM:      return _A("GL_INVALID_ENUM");
-    case GL_INVALID_VALUE:     return _A("GL_INVALID_VALUE");
-    case GL_INVALID_OPERATION: return _A("GL_INVALID_OPERATION");
-#ifdef GL_STACK_OVERFLOW
-    case GL_STACK_OVERFLOW:    return _A("GL_STACK_OVERFLOW");
-#endif
-#ifdef GL_STACK_UNDERFLOW
-    case GL_STACK_UNDERFLOW:   return _A("GL_STACK_UNDERFLOW");
-#endif
-    case GL_OUT_OF_MEMORY:     return _A("GL_OUT_OF_MEMORY");
+  case GL_NO_ERROR: return _A("GL_NO_ERROR");
+  case GL_INVALID_ENUM: return _A("GL_INVALID_ENUM");
+  case GL_INVALID_VALUE: return _A("GL_INVALID_VALUE");
+  case GL_INVALID_OPERATION: return _A("GL_INVALID_OPERATION");
+  #ifdef GL_STACK_OVERFLOW
+  case GL_STACK_OVERFLOW: return _A("GL_STACK_OVERFLOW");
+  #endif
+  #ifdef GL_STACK_UNDERFLOW
+  case GL_STACK_UNDERFLOW: return _A("GL_STACK_UNDERFLOW");
+  #endif
+  case GL_OUT_OF_MEMORY: return _A("GL_OUT_OF_MEMORY");
   }
   return _A("GL_UNKNOWN_ERROR");
 }
 
-niDeclareModuleTrace_(niUI,GDRV_GL2);
-#define _CheckGLError() niModuleShouldTrace_(niUI,GDRV_GL2)
+niDeclareModuleTrace_(niUI, GDRV_GL2);
+  #define _CheckGLError() niModuleShouldTrace_(niUI, GDRV_GL2)
 
-#define GLERR_WARN() if (_CheckGLError()) {     \
-    GLenum err = _glGetError();                 \
-    if (err != GL_NO_ERROR) {                   \
-      ni::GetLang()->Log(                       \
-        eLogFlags_Warning,                      \
-        niFmt(_A("GL Error: %d, %s\n"),         \
-              err,GL_Error(err)),               \
-        niSourceLoc);                           \
-      niAssertUnreachable("GL Error");          \
-    }                                           \
-  }
+  #define GLERR_WARN()                                                       \
+    if (_CheckGLError()) {                                                   \
+      GLenum err = _glGetError();                                            \
+      if (err != GL_NO_ERROR) {                                              \
+        ni::GetLang()->Log(                                                  \
+          eLogFlags_Warning,                                                 \
+          niFmt(_A("GL Error: %d, %s\n"), err, GL_Error(err)), niSourceLoc); \
+        niAssertUnreachable("GL Error");                                     \
+      }                                                                      \
+    }
 
-#define GLERR_RET(RET) if (_CheckGLError()) {   \
-    GLenum err = _glGetError();                 \
-    if (err != GL_NO_ERROR) {                   \
-      ni::GetLang()->Log(                       \
-        eLogFlags_Error,                        \
-        niFmt(_A("GL Error: %d, %s\n"),         \
-              err,GL_Error(err)),               \
-        niSourceLoc);                           \
-      niAssertUnreachable("GL Error");          \
-      return RET;                               \
-    }                                           \
-  }
+  #define GLERR_RET(RET)                                                     \
+    if (_CheckGLError()) {                                                   \
+      GLenum err = _glGetError();                                            \
+      if (err != GL_NO_ERROR) {                                              \
+        ni::GetLang()->Log(                                                  \
+          eLogFlags_Error,                                                   \
+          niFmt(_A("GL Error: %d, %s\n"), err, GL_Error(err)), niSourceLoc); \
+        niAssertUnreachable("GL Error");                                     \
+        return RET;                                                          \
+      }                                                                      \
+    }
 
 #else
 
-#define GLERR_WARN()
-#define GLERR_RET(RET)
+  #define GLERR_WARN()
+  #define GLERR_RET(RET)
 
 #endif
 
-#define GLCALL_WARN(CODE) {                     \
-    CODE;                                       \
-    GLERR_WARN();                               \
+#define GLCALL_WARN(CODE) \
+  {                       \
+    CODE;                 \
+    GLERR_WARN();         \
   }
 
-#define GLCALL_ERR(CODE,RET) {                  \
-    CODE;                                       \
-    GLERR_RET(RET);                             \
+#define GLCALL_ERR(CODE, RET) \
+  {                           \
+    CODE;                     \
+    GLERR_RET(RET);           \
   }
 
 #endif // __GDRV_GLES2_H_27CBBAD8_91E3_F345_AD28_98AC1E631560__

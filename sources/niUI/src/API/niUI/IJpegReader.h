@@ -9,8 +9,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Jpeg reader interface.
-struct iJpegReader : public iUnknown
-{
+struct iJpegReader : public iUnknown {
   niDeclareInterfaceUUID(iJpegReader,0x8e453086,0x379f,0x4848,0xbc,0xb4,0x6f,0x03,0x03,0xa1,0xc6,0xaf);
   //! Read the jpeg header tables only.
   virtual tBool __stdcall ReadHeaderTables() = 0;
@@ -47,5 +46,5 @@ niExportFunc(iUnknown*) New_niUI_JpegReader(const Var&, const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IJPEGREADER_4271446_H__

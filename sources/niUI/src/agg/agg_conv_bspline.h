@@ -19,30 +19,33 @@
 #include "agg_vcgen_bspline.h"
 #include "agg_conv_adaptor_vcgen.h"
 
-
-namespace agg
-{
+namespace agg {
 
 //---------------------------------------------------------conv_bspline
-template<class VertexSource>
-struct conv_bspline : public conv_adaptor_vcgen<VertexSource, vcgen_bspline>
-{
+template <class VertexSource>
+struct conv_bspline : public conv_adaptor_vcgen<VertexSource, vcgen_bspline> {
   typedef conv_adaptor_vcgen<VertexSource, vcgen_bspline> base_type;
 
-  conv_bspline(VertexSource& vs) :
-      conv_adaptor_vcgen<VertexSource, vcgen_bspline>(vs) {}
+  conv_bspline(VertexSource& vs)
+      : conv_adaptor_vcgen<VertexSource, vcgen_bspline>(vs)
+  {
+  }
 
-  void   interpolation_step(agg_real v) { base_type::generator().interpolation_step(v); }
-  agg_real interpolation_step() const { return base_type::generator().interpolation_step(); }
+  void interpolation_step(agg_real v)
+  {
+    base_type::generator().interpolation_step(v);
+  }
+  agg_real interpolation_step() const
+  {
+    return base_type::generator().interpolation_step();
+  }
 
  private:
   conv_bspline(const conv_bspline<VertexSource>&);
-  const conv_bspline<VertexSource>&
-  operator = (const conv_bspline<VertexSource>&);
+  const conv_bspline<VertexSource>& operator=(
+    const conv_bspline<VertexSource>&);
 };
 
-}
-
+} // namespace agg
 
 #endif
-

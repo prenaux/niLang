@@ -4,13 +4,13 @@
 // SPDX-License-Identifier: MIT
 #if niMinFeatures(20)
 
-#include "AGG.h"
-#include "API/niUI/IVGPolygonTesselator.h"
-#include "libtess2/tesselator.h"
+  #include "AGG.h"
+  #include "API/niUI/IVGPolygonTesselator.h"
+  #include "libtess2/tesselator.h"
 
-// Outputs less triangles, probably slower, but since we didnt really profile
-// and also we could aggressively cache its left on by default for now.
-#define USE_LIBTESS_OPTIMIZE_OUTPUT_TRIANGLES
+  // Outputs less triangles, probably slower, but since we didnt really profile
+  // and also we could aggressively cache its left on by default for now.
+  #define USE_LIBTESS_OPTIMIZE_OUTPUT_TRIANGLES
 
 // Left here for reference only. We can't use it in prod since it requires a
 // commercial license that we dont have, and more importantly it generates
@@ -18,8 +18,7 @@
 // far perfect shapes.
 // #define USE_GPC
 
-class cVGPolygonTesselator : public ImplRC<iVGPolygonTesselator>
-{
+class cVGPolygonTesselator : public ImplRC<iVGPolygonTesselator> {
  public:
   //! ctor
   cVGPolygonTesselator();
@@ -46,41 +45,43 @@ class cVGPolygonTesselator : public ImplRC<iVGPolygonTesselator>
   Nonnull<tVec2fCVec> mvFinalVerts;
 
  private:
-#ifdef USE_GPC
+  #ifdef USE_GPC
   gpc_polygon mGPCPoly;
-#else
+  #else
   TESStesselator* mTess;
-#endif
+  #endif
 };
 
-struct sTesselatePath
-{
-  enum status
-  {
+struct sTesselatePath {
+  enum status {
     status_initial,
     status_line_to,
     status_closed
   };
 
-  sTesselatePath(cVGPolygonTesselator* apTesselator) :
-      m_tesselator(apTesselator) {
+  sTesselatePath(cVGPolygonTesselator* apTesselator)
+      : m_tesselator(apTesselator)
+  {
   }
 
-  unsigned  m_status;
-  agg_real    m_prev_x, m_prev_y;
-  agg_real    m_start_x, m_start_y;
+  unsigned m_status;
+  agg_real m_prev_x, m_prev_y;
+  agg_real m_start_x, m_start_y;
   Ptr<cVGPolygonTesselator> m_tesselator;
 
-  void begin(tBool abEvenOdd) {
+  void begin(tBool abEvenOdd)
+  {
     m_tesselator->BeginPolygon(abEvenOdd);
     m_status = status_closed;
-    move_to(100,100);
+    move_to(100, 100);
   }
-  void end() {
+  void end()
+  {
     close_polygon();
     m_tesselator->EndPolygon();
   }
-  void submit_poly() {
+  void submit_poly()
+  {
     m_tesselator->SubmitContour();
   }
 
@@ -97,9 +98,10 @@ struct sTesselatePath
   void line_to(agg_real x, agg_real y)
   {
     if (m_status == status_initial) {
-      m_tesselator->mvPolyVerts.push_back(Vec2f((tF32)m_prev_x,(tF32)m_prev_y));
+      m_tesselator->mvPolyVerts.push_back(
+        Vec2f((tF32)m_prev_x, (tF32)m_prev_y));
     }
-    m_tesselator->mvPolyVerts.push_back(Vec2f((tF32)x,(tF32)y));
+    m_tesselator->mvPolyVerts.push_back(Vec2f((tF32)x, (tF32)y));
     m_prev_x = x;
     m_prev_y = y;
     m_status = status_line_to;
@@ -107,10 +109,10 @@ struct sTesselatePath
 
   void close_polygon()
   {
-    if (m_status == status_line_to)
-    {
+    if (m_status == status_line_to) {
       if (m_prev_x != m_start_x || m_prev_y != m_start_y) {
-        m_tesselator->mvPolyVerts.push_back(Vec2f((tF32)m_start_x,(tF32)m_start_y));
+        m_tesselator->mvPolyVerts.push_back(
+          Vec2f((tF32)m_start_x, (tF32)m_start_y));
       }
       submit_poly();
       m_status = status_closed;
@@ -119,26 +121,25 @@ struct sTesselatePath
 
   void add_vertex(agg_real x, agg_real y, unsigned cmd)
   {
-    if(agg::is_close(cmd)) {
+    if (agg::is_close(cmd)) {
       close_polygon();
     }
-    else if(agg::is_move_to(cmd)) {
+    else if (agg::is_move_to(cmd)) {
       move_to(x, y);
     }
-    else if(agg::is_vertex(cmd)) {
+    else if (agg::is_vertex(cmd)) {
       line_to(x, y);
     }
   }
 
-  template<class VertexSource>
+  template <class VertexSource>
   void tesselate_path(VertexSource& vs, tBool abEvenOdd, tU32 aPathID = 0)
   {
     agg_real x, y;
     unsigned int cmd;
     vs.rewind(aPathID);
     begin(abEvenOdd);
-    while (1)
-    {
+    while (1) {
       cmd = vs.vertex(&x, &y);
       if (agg::is_stop(cmd))
         break;

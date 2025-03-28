@@ -21,13 +21,11 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //-----------------------------------------------------------bounding_rect
-template<class VertexSource, class GetId, class CoordT>
-bool bounding_rect(VertexSource& vs, GetId& gi,
-                   unsigned start, unsigned num,
+template <class VertexSource, class GetId, class CoordT>
+bool bounding_rect(VertexSource& vs, GetId& gi, unsigned start, unsigned num,
                    CoordT* x1, CoordT* y1, CoordT* x2, CoordT* y2)
 {
   unsigned i;
@@ -40,28 +38,27 @@ bool bounding_rect(VertexSource& vs, GetId& gi,
   *x2 = CoordT(0);
   *y2 = CoordT(0);
 
-  for(i = 0; i < num; i++)
-  {
+  for (i = 0; i < num; i++) {
     vs.rewind(gi[start + i]);
     unsigned cmd;
-    while(!is_stop(cmd = vs.vertex(&x, &y)))
-    {
-      if(is_vertex(cmd))
-      {
-        if(first)
-        {
+    while (!is_stop(cmd = vs.vertex(&x, &y))) {
+      if (is_vertex(cmd)) {
+        if (first) {
           *x1 = CoordT(x);
           *y1 = CoordT(y);
           *x2 = CoordT(x);
           *y2 = CoordT(y);
           first = false;
         }
-        else
-        {
-          if(CoordT(x) < *x1) *x1 = CoordT(x);
-          if(CoordT(y) < *y1) *y1 = CoordT(y);
-          if(CoordT(x) > *x2) *x2 = CoordT(x);
-          if(CoordT(y) > *y2) *y2 = CoordT(y);
+        else {
+          if (CoordT(x) < *x1)
+            *x1 = CoordT(x);
+          if (CoordT(y) < *y1)
+            *y1 = CoordT(y);
+          if (CoordT(x) > *x2)
+            *x2 = CoordT(x);
+          if (CoordT(y) > *y2)
+            *y2 = CoordT(y);
         }
       }
     }
@@ -69,11 +66,10 @@ bool bounding_rect(VertexSource& vs, GetId& gi,
   return *x1 <= *x2 && *y1 <= *y2;
 }
 
-
 //-----------------------------------------------------bounding_rect_single
-template<class VertexSource, class CoordT>
-bool bounding_rect_single(VertexSource& vs, unsigned path_id,
-                          CoordT* x1, CoordT* y1, CoordT* x2, CoordT* y2)
+template <class VertexSource, class CoordT>
+bool bounding_rect_single(VertexSource& vs, unsigned path_id, CoordT* x1,
+                          CoordT* y1, CoordT* x2, CoordT* y2)
 {
   agg_real x;
   agg_real y;
@@ -86,31 +82,30 @@ bool bounding_rect_single(VertexSource& vs, unsigned path_id,
 
   vs.rewind(path_id);
   unsigned cmd;
-  while(!is_stop(cmd = vs.vertex(&x, &y)))
-  {
-    if(is_vertex(cmd))
-    {
-      if(first)
-      {
+  while (!is_stop(cmd = vs.vertex(&x, &y))) {
+    if (is_vertex(cmd)) {
+      if (first) {
         *x1 = CoordT(x);
         *y1 = CoordT(y);
         *x2 = CoordT(x);
         *y2 = CoordT(y);
         first = false;
       }
-      else
-      {
-        if(CoordT(x) < *x1) *x1 = CoordT(x);
-        if(CoordT(y) < *y1) *y1 = CoordT(y);
-        if(CoordT(x) > *x2) *x2 = CoordT(x);
-        if(CoordT(y) > *y2) *y2 = CoordT(y);
+      else {
+        if (CoordT(x) < *x1)
+          *x1 = CoordT(x);
+        if (CoordT(y) < *y1)
+          *y1 = CoordT(y);
+        if (CoordT(x) > *x2)
+          *x2 = CoordT(x);
+        if (CoordT(y) > *y2)
+          *y2 = CoordT(y);
       }
     }
   }
   return *x1 <= *x2 && *y1 <= *y2;
 }
 
-
-}
+} // namespace agg
 
 #endif

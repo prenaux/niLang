@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eBillboardModeFlags">
 			<comments desc="Billboard mode flags. "/>
-			<value name="eBillboardModeFlags_Disabled" value="0 ">
+			<value name="eBillboardModeFlags_Disabled" value="0">
 				<comments desc="Disabled billboard mode. "/>
 			</value>
-			<value name="eBillboardModeFlags_CustomCenter" value="niBit ( 0 ) ">
+			<value name="eBillboardModeFlags_CustomCenter" value="niBit(0)">
 				<comments desc="Custom center specified. "/>
 			</value>
-			<value name="eBillboardModeFlags_AnchorCenter" value="niBit ( 1 ) ">
+			<value name="eBillboardModeFlags_AnchorCenter" value="niBit(1)">
 				<comments desc="Anchor at the center (default if anchor not specified). "/>
 			</value>
 		</enum>

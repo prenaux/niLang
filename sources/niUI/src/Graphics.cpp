@@ -25,20 +25,25 @@
 iMaterialLibrary* __stdcall New_MaterialLibrary(iGraphics* apGraphics);
 iBitmapFormat* __stdcall New_BitmapFormat(iGraphics* apGraphics);
 
-niExportFunc(iUnknown*) New_niUI_Graphics(const Var&, const Var&) {
+niExportFunc(iUnknown*) New_niUI_Graphics(const Var&, const Var&)
+{
   return niNew cGraphics();
 }
 
-niExportFunc(iUnknown*) New_BitmapLoader_abm(const Var&,const Var&);
-niExportFunc(iUnknown*) New_BitmapSaver_abm(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_abm(const Var&, const Var&);
+niExportFunc(iUnknown*) New_BitmapSaver_abm(const Var&, const Var&);
 
-static inline void _RegisterBitmapLoader(const achar* aName, iUnknown* apInstance) {
+static inline void _RegisterBitmapLoader(const achar* aName,
+                                         iUnknown* apInstance)
+{
   ni::GetLang()->GetGlobalInstanceMap()->insert(
-      astl::make_pair(niFmt("BitmapLoader.%s",aName),apInstance));
+    astl::make_pair(niFmt("BitmapLoader.%s", aName), apInstance));
 }
-static inline void _RegisterBitmapSaver(const achar* aName, iUnknown* apInstance) {
+static inline void _RegisterBitmapSaver(const achar* aName,
+                                        iUnknown* apInstance)
+{
   ni::GetLang()->GetGlobalInstanceMap()->insert(
-      astl::make_pair(niFmt("BitmapSaver.%s",aName),apInstance));
+    astl::make_pair(niFmt("BitmapSaver.%s", aName), apInstance));
 }
 
 eBlendMode _kFixedPipelineChannelBlendModes[eMaterialChannel_Last];
@@ -50,34 +55,38 @@ eBlendMode _kFixedPipelineChannelBlendModes[eMaterialChannel_Last];
 cGraphics::cGraphics()
 {
   niGuardConstructor(cGraphics);
-  RegisterModuleDataDirDefaultURLFileHandler("niLang","niUI");
+  RegisterModuleDataDirDefaultURLFileHandler("niLang", "niUI");
 
-  _kFixedPipelineChannelBlendModes[eMaterialChannel_Opacity] = eBlendMode_ReplaceAlpha;
-  _kFixedPipelineChannelBlendModes[eMaterialChannel_Ambient] = eBlendMode_Modulate;
-  _kFixedPipelineChannelBlendModes[eMaterialChannel_Emissive] = eBlendMode_Additive;
-  _kFixedPipelineChannelBlendModes[eMaterialChannel_Environment] = eBlendMode_Modulate;
+  _kFixedPipelineChannelBlendModes[eMaterialChannel_Opacity] =
+    eBlendMode_ReplaceAlpha;
+  _kFixedPipelineChannelBlendModes[eMaterialChannel_Ambient] =
+    eBlendMode_Modulate;
+  _kFixedPipelineChannelBlendModes[eMaterialChannel_Emissive] =
+    eBlendMode_Additive;
+  _kFixedPipelineChannelBlendModes[eMaterialChannel_Environment] =
+    eBlendMode_Modulate;
 
   mbRegisteredSystemFonts = eFalse;
 
   mStatesHandleGen = eCompiledStates_Driver;
 
   {
-    _RegisterBitmapLoader("abm",New_BitmapLoader_abm(this,niVarNull));
-    _RegisterBitmapSaver("abm",New_BitmapSaver_abm(this,niVarNull));
-    _RegisterBitmapLoader("bmp",New_BitmapLoader_bmp(this,niVarNull));
-    _RegisterBitmapSaver("bmp",New_BitmapSaver_bmp(this,niVarNull));
+    _RegisterBitmapLoader("abm", New_BitmapLoader_abm(this, niVarNull));
+    _RegisterBitmapSaver("abm", New_BitmapSaver_abm(this, niVarNull));
+    _RegisterBitmapLoader("bmp", New_BitmapLoader_bmp(this, niVarNull));
+    _RegisterBitmapSaver("bmp", New_BitmapSaver_bmp(this, niVarNull));
     {
-      QPtr<iBitmapLoader> jpegLoader = New_BitmapLoader_jpeg(this,niVarNull);
-      _RegisterBitmapLoader("jpe",jpegLoader);
-      _RegisterBitmapLoader("jpg",jpegLoader);
-      _RegisterBitmapLoader("jpeg",jpegLoader);
-      _RegisterBitmapSaver("jpg",New_BitmapSaver_jpeg(this,niVarNull));
+      QPtr<iBitmapLoader> jpegLoader = New_BitmapLoader_jpeg(this, niVarNull);
+      _RegisterBitmapLoader("jpe", jpegLoader);
+      _RegisterBitmapLoader("jpg", jpegLoader);
+      _RegisterBitmapLoader("jpeg", jpegLoader);
+      _RegisterBitmapSaver("jpg", New_BitmapSaver_jpeg(this, niVarNull));
     }
-    _RegisterBitmapLoader("png",New_BitmapLoader_png(this,niVarNull));
-    _RegisterBitmapSaver("png",New_BitmapSaver_png(this,niVarNull));
-    _RegisterBitmapLoader("tga",New_BitmapLoader_tga(this,niVarNull));
-    _RegisterBitmapSaver("tga",New_BitmapSaver_tga(this,niVarNull));
-    _RegisterBitmapLoader("dds",New_BitmapLoader_dds(this,niVarNull));
+    _RegisterBitmapLoader("png", New_BitmapLoader_png(this, niVarNull));
+    _RegisterBitmapSaver("png", New_BitmapSaver_png(this, niVarNull));
+    _RegisterBitmapLoader("tga", New_BitmapLoader_tga(this, niVarNull));
+    _RegisterBitmapSaver("tga", New_BitmapSaver_tga(this, niVarNull));
+    _RegisterBitmapLoader("dds", New_BitmapLoader_dds(this, niVarNull));
   }
 }
 
@@ -106,7 +115,7 @@ iPixelFormat* cGraphics::CreatePixelFormat(const achar* aszFormat)
   }
 
   Ptr<iPixelFormat> pxf;
-  if (StrStartsWithI(aszFormat,"dxt")) {
+  if (StrStartsWithI(aszFormat, "dxt")) {
 #if !defined PIXELFORMAT_NO_DXT
     pxf = niNew cPixelFormatDXTn(aszFormat);
 #endif
@@ -123,10 +132,12 @@ iPixelFormat* cGraphics::CreatePixelFormat(const achar* aszFormat)
 }
 
 ///////////////////////////////////////////////
-iBitmapFormat* __stdcall cGraphics::CreateBitmapFormat(eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth)
+iBitmapFormat* __stdcall cGraphics::CreateBitmapFormat(
+  eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth,
+  tU32 anHeight, tU32 anDepth)
 {
   Ptr<iBitmapFormat> fmt = New_BitmapFormat(this);
-  niCheckSilent(fmt.IsOK(),NULL);
+  niCheckSilent(fmt.IsOK(), NULL);
   fmt->SetType(aType);
   fmt->SetWidth(anWidth);
   fmt->SetHeight(anHeight);
@@ -137,10 +148,12 @@ iBitmapFormat* __stdcall cGraphics::CreateBitmapFormat(eBitmapType aType, const 
 }
 
 ///////////////////////////////////////////////
-iBitmapFormat* __stdcall cGraphics::CreateBitmapFormatEx(eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth)
+iBitmapFormat* __stdcall cGraphics::CreateBitmapFormatEx(
+  eBitmapType aType, iPixelFormat* pFmt, tU32 anNumMipMaps, tU32 anWidth,
+  tU32 anHeight, tU32 anDepth)
 {
   Ptr<iBitmapFormat> fmt = New_BitmapFormat(this);
-  niCheckSilent(fmt.IsOK(),NULL);
+  niCheckSilent(fmt.IsOK(), NULL);
   fmt->SetType(aType);
   fmt->SetWidth(anWidth);
   fmt->SetHeight(anHeight);
@@ -180,13 +193,20 @@ iBitmap2D* cGraphics::CreateBitmap2D(tU32 nW, tU32 nH, const achar* aszPixFmt)
 }
 
 ///////////////////////////////////////////////
-iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemoryEx(tU32 nW, tU32 nH, iPixelFormat* pFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr)
+iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemoryEx(tU32 nW, tU32 nH,
+                                                       iPixelFormat* pFmt,
+                                                       tU32 anPitch,
+                                                       tPtr ptrAddr,
+                                                       tBool bFreeAddr)
 {
   niAssert(nW > 0 && nH > 0);
   niCheckSilent(nW > 0 && nH > 0, NULL);
   return niNew cBitmap2D(nW, nH, pFmt, anPitch, ptrAddr, bFreeAddr);
 }
-iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemory(tU32 nW, tU32 nH, const achar* aszPixFmt, tU32 anPitch, tPtr ptrAddr, tBool bFreeAddr)
+iBitmap2D* __stdcall cGraphics::CreateBitmap2DMemory(tU32 nW, tU32 nH,
+                                                     const achar* aszPixFmt,
+                                                     tU32 anPitch, tPtr ptrAddr,
+                                                     tBool bFreeAddr)
 {
   niAssert(nW > 0 && nH > 0);
   niCheckSilent(nW > 0 && nH > 0, NULL);
@@ -218,13 +238,15 @@ iBitmapCube* cGraphics::CreateBitmapCube(tU32 ulSize, const achar* aszPixFmt)
 }
 
 ///////////////////////////////////////////////
-iBitmap3D* cGraphics::CreateBitmap3DEx(tU32 nW, tU32 nH, tU32 nD, iPixelFormat* pFmt)
+iBitmap3D* cGraphics::CreateBitmap3DEx(tU32 nW, tU32 nH, tU32 nD,
+                                       iPixelFormat* pFmt)
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
   return niNew cBitmap3D(nW, nH, nD, pFmt, eTrue);
 }
-iBitmap3D* cGraphics::CreateBitmap3D(tU32 nW, tU32 nH, tU32 nD, const achar* aszPixFmt)
+iBitmap3D* cGraphics::CreateBitmap3D(tU32 nW, tU32 nH, tU32 nD,
+                                     const achar* aszPixFmt)
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
@@ -237,15 +259,19 @@ iBitmap3D* cGraphics::CreateBitmap3D(tU32 nW, tU32 nH, tU32 nD, const achar* asz
 }
 
 ///////////////////////////////////////////////
-iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemoryEx(tU32 nW, tU32 nH, tU32 nD, iPixelFormat* pFmt, tU32 anRowPitch, tU32 anSlicePitch, tPtr ptrAddr, tBool bFreeAddr)
+iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemoryEx(
+  tU32 nW, tU32 nH, tU32 nD, iPixelFormat* pFmt, tU32 anRowPitch,
+  tU32 anSlicePitch, tPtr ptrAddr, tBool bFreeAddr)
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
-  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW,nH,nD,pFmt,eFalse);
-  bmp->SetMemoryAddress(ptrAddr,bFreeAddr,anRowPitch,anSlicePitch);
+  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW, nH, nD, pFmt, eFalse);
+  bmp->SetMemoryAddress(ptrAddr, bFreeAddr, anRowPitch, anSlicePitch);
   return bmp.GetRawAndSetNull();
 }
-iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemory(tU32 nW, tU32 nH, tU32 nD, const achar* aszPixFmt, tU32 anRowPitch, tU32 anSlicePitch, tPtr ptrAddr, tBool bFreeAddr)
+iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemory(
+  tU32 nW, tU32 nH, tU32 nD, const achar* aszPixFmt, tU32 anRowPitch,
+  tU32 anSlicePitch, tPtr ptrAddr, tBool bFreeAddr)
 {
   niAssert(nW > 0 && nH > 0 && nD > 0);
   niCheckSilent(nW > 0 && nH > 0 && nD > 0, NULL);
@@ -254,15 +280,15 @@ iBitmap3D* __stdcall cGraphics::CreateBitmap3DMemory(tU32 nW, tU32 nH, tU32 nD, 
     niError(niFmt(_A("Can't create pixel format '%s'."), aszPixFmt));
     return NULL;
   }
-  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW,nH,nD,ptrPixFmt,eFalse);
-  bmp->SetMemoryAddress(ptrAddr,bFreeAddr,anRowPitch,anSlicePitch);
+  Ptr<iBitmap3D> bmp = niNew cBitmap3D(nW, nH, nD, ptrPixFmt, eFalse);
+  bmp->SetMemoryAddress(ptrAddr, bFreeAddr, anRowPitch, anSlicePitch);
   return bmp.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
 iBitmapBase* cGraphics::LoadBitmap(iFile* apFile)
 {
-  niCheckIsOK(apFile,NULL);
+  niCheckIsOK(apFile, NULL);
   cString ext = _ASTR(apFile->GetSourcePath()).RAfter(".").ToLower();
   return LoadBitmapEx(ext.Chars(), apFile);
 }
@@ -270,7 +296,7 @@ iBitmapBase* cGraphics::LoadBitmap(iFile* apFile)
 ///////////////////////////////////////////////
 iBitmapBase* cGraphics::LoadBitmapEx(const achar* aaszFormat, iFile* apFile)
 {
-  niCheckIsOK(apFile,NULL);
+  niCheckIsOK(apFile, NULL);
   QPtr<iBitmapLoader> ptrLoader;
 
   const tI64 pos = apFile->Tell();
@@ -279,40 +305,46 @@ iBitmapBase* cGraphics::LoadBitmapEx(const achar* aaszFormat, iFile* apFile)
     ptrLoader = ni::GetLang()->GetGlobalInstance("BitmapLoader.abm");
   }
   else {
-    ptrLoader = ni::GetLang()->GetGlobalInstance(niFmt("BitmapLoader.%s",aaszFormat));
+    ptrLoader =
+      ni::GetLang()->GetGlobalInstance(niFmt("BitmapLoader.%s", aaszFormat));
   }
   apFile->SeekSet(pos);
 
   if (!ptrLoader.IsOK()) {
-    niError(niFmt("Can't find a bitmap loader for file type '%s'.",aaszFormat));
+    niError(
+      niFmt("Can't find a bitmap loader for file type '%s'.", aaszFormat));
     return NULL;
   }
 
-  return ptrLoader->LoadBitmap(this,apFile);
+  return ptrLoader->LoadBitmap(this, apFile);
 }
 
 ///////////////////////////////////////////////
-iBitmapBase* __stdcall cGraphics::LoadBitmapFromRes(iHString* ahspRes, iHString* ahspBasePath) {
-  Ptr<iFile> fp = this->OpenBitmapFile(niHStr(ahspRes),niHStr(ahspBasePath));
+iBitmapBase* __stdcall cGraphics::LoadBitmapFromRes(iHString* ahspRes,
+                                                    iHString* ahspBasePath)
+{
+  Ptr<iFile> fp = this->OpenBitmapFile(niHStr(ahspRes), niHStr(ahspBasePath));
   if (!fp.IsOK()) {
-    niError(niFmt("Can't open bitmap resource '%s'.",ahspRes));
+    niError(niFmt("Can't open bitmap resource '%s'.", ahspRes));
     return NULL;
   }
   QPtr<iBitmapBase> bmp = this->LoadBitmap(fp);
-  niCheck(bmp.IsOK(),NULL);
+  niCheck(bmp.IsOK(), NULL);
   return bmp.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
-tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp, tU32 ulCompression)
+tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp,
+                            tU32 ulCompression)
 {
-  niCheckIsOK(pBmp,eFalse);
+  niCheckIsOK(pBmp, eFalse);
 
   const cString ext = _ASTR(aszFilename).RAfter(".").ToLower();
 
-  QPtr<iBitmapSaver> ptrSaver = ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s",ext));
+  QPtr<iBitmapSaver> ptrSaver =
+    ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s", ext));
   if (!ptrSaver.IsOK()) {
-    niError(niFmt("Can't find a bitmap saver for file type '%s'.",ext));
+    niError(niFmt("Can't find a bitmap saver for file type '%s'.", ext));
     return eFalse;
   }
 
@@ -322,52 +354,58 @@ tBool cGraphics::SaveBitmap(const achar* aszFilename, iBitmapBase* pBmp, tU32 ul
     return eFalse;
   }
 
-  return ptrSaver->SaveBitmap(this,ptrFile,pBmp,ulCompression);
+  return ptrSaver->SaveBitmap(this, ptrFile, pBmp, ulCompression);
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cGraphics::SaveBitmapEx(const achar* aaszFormat, iFile* apFile, iBitmapBase* apBmp, tU32 anCompression)
+tBool __stdcall cGraphics::SaveBitmapEx(const achar* aaszFormat, iFile* apFile,
+                                        iBitmapBase* apBmp, tU32 anCompression)
 {
-  niCheckIsOK(apBmp,eFalse);
-  niCheckIsOK(apFile,eFalse);
+  niCheckIsOK(apBmp, eFalse);
+  niCheckIsOK(apFile, eFalse);
 
-  QPtr<iBitmapSaver> ptrSaver = ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s",aaszFormat));
+  QPtr<iBitmapSaver> ptrSaver =
+    ni::GetLang()->GetGlobalInstance(niFmt("BitmapSaver.%s", aaszFormat));
   if (!ptrSaver.IsOK()) {
-    niError(niFmt("Can't find a bitmap saver for file type '%s'.",aaszFormat));
+    niError(niFmt("Can't find a bitmap saver for file type '%s'.", aaszFormat));
     return eFalse;
   }
 
-  return ptrSaver->SaveBitmap(this,apFile,apBmp,anCompression);
+  return ptrSaver->SaveBitmap(this, apFile, apBmp, anCompression);
 }
 
 ///////////////////////////////////////////////
-cString __stdcall cGraphics::URLFindBitmapFilePath(const achar* aszRes, const achar* aszBasePath)
+cString __stdcall cGraphics::URLFindBitmapFilePath(const achar* aszRes,
+                                                   const achar* aszBasePath)
 {
   return ni::GetLang()->URLFindFilePath(aszRes, aszBasePath, "BitmapLoader.");
 }
 
 ///////////////////////////////////////////////
-iFile* __stdcall cGraphics::OpenBitmapFile(const achar* aszRes, const achar* aszBasePath)
+iFile* __stdcall cGraphics::OpenBitmapFile(const achar* aszRes,
+                                           const achar* aszBasePath)
 {
   Ptr<iFile> ptrFile;
   {
-    cString path = URLFindBitmapFilePath(aszRes,aszBasePath);
+    cString path = URLFindBitmapFilePath(aszRes, aszBasePath);
     if (!path.empty()) {
       ptrFile = ni::GetLang()->URLOpen(path.Chars());
     }
   }
   if (!ptrFile.IsOK()) {
-    niError(niFmt(_A("Can't open bitmap file '%s' (%s)."), aszRes, aszBasePath));
+    niError(
+      niFmt(_A("Can't open bitmap file '%s' (%s)."), aszRes, aszBasePath));
     return NULL;
   }
   return ptrFile.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
-iGeometryModifier* __stdcall cGraphics::CreateGeometryModifier(const achar* aszName, iGeometry* apGeometry, iUnknown* apInitData)
+iGeometryModifier* __stdcall cGraphics::CreateGeometryModifier(
+  const achar* aszName, iGeometry* apGeometry, iUnknown* apInitData)
 {
   QPtr<iGeometryModifier> modifier = ni::GetLang()->CreateInstance(
-      niFmt("GeometryModifier.%s",aszName), apGeometry, apInitData);
+    niFmt("GeometryModifier.%s", aszName), apGeometry, apInitData);
   if (!modifier.IsOK()) {
     niError(niFmt(_A("Can't create '%s' geometry modifier."), aszName));
     return NULL;
@@ -382,56 +420,67 @@ iMaterialLibrary* __stdcall cGraphics::CreateMaterialLibrary()
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cGraphics::FVFGetTexCooDim(tFVF anFVF, tU32 anTexCooIndex) const {
-  return eFVF_TexCooDim(anFVF,anTexCooIndex);
+tU32 __stdcall cGraphics::FVFGetTexCooDim(tFVF anFVF, tU32 anTexCooIndex) const
+{
+  return eFVF_TexCooDim(anFVF, anTexCooIndex);
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cGraphics::FVFGetNumTexCoos(tFVF anFVF) const {
+tU32 __stdcall cGraphics::FVFGetNumTexCoos(tFVF anFVF) const
+{
   return eFVF_TexNumCoo(anFVF);
 }
 
 ///////////////////////////////////////////////
-cString __stdcall cGraphics::FVFToString(tFVF aFVF) const {
+cString __stdcall cGraphics::FVFToString(tFVF aFVF) const
+{
   return ni::FVFToString(aFVF);
 }
 
 ///////////////////////////////////////////////
-tFVF __stdcall cGraphics::FVFFromString(const achar* aaszString) const {
+tFVF __stdcall cGraphics::FVFFromString(const achar* aaszString) const
+{
   return ni::FVFFromString(aaszString);
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cGraphics::FVFGetComponentOffset(tFVF aFVF, eFVF C) const {
-  return ni::FVFGetComponentOffset(aFVF,C);
+tU32 __stdcall cGraphics::FVFGetComponentOffset(tFVF aFVF, eFVF C) const
+{
+  return ni::FVFGetComponentOffset(aFVF, C);
 }
 
 ///////////////////////////////////////////////
-tU32 __stdcall cGraphics::FVFGetStride(tFVF aFVF) const {
+tU32 __stdcall cGraphics::FVFGetStride(tFVF aFVF) const
+{
   return ni::FVFGetStride(aFVF);
 }
 
 ///////////////////////////////////////////////
-iTransform* __stdcall cGraphics::_CreateTransform() {
+iTransform* __stdcall cGraphics::_CreateTransform()
+{
   return niNew cTransform();
 }
 
 ///////////////////////////////////////////////
-iFrustum* __stdcall cGraphics::_CreateFrustum() {
+iFrustum* __stdcall cGraphics::_CreateFrustum()
+{
   return niNew cFrustumf();
 }
 
 ///////////////////////////////////////////////
-iBoundingVolume* __stdcall cGraphics::_CreateAABB() {
+iBoundingVolume* __stdcall cGraphics::_CreateAABB()
+{
   return niNew cBoundingVolumeAABB();
 }
 
 ///////////////////////////////////////////////
-iIntersection* __stdcall cGraphics::_CreateIntersection() {
+iIntersection* __stdcall cGraphics::_CreateIntersection()
+{
   return niNew cIntersection();
 }
 
 ///////////////////////////////////////////////
-iCamera* __stdcall cGraphics::_CreateCamera() {
-  return (iCamera*)New_niUI_Camera(niVarNull,niVarNull);
+iCamera* __stdcall cGraphics::_CreateCamera()
+{
+  return (iCamera*)New_niUI_Camera(niVarNull, niVarNull);
 }

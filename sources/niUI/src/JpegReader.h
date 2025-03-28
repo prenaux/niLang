@@ -12,35 +12,39 @@ extern "C" {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cJpegReader declaration.
-class cJpegReader : public ni::ImplRC<ni::iJpegReader,ni::eImplFlags_Default>
-{
+class cJpegReader : public ni::ImplRC<ni::iJpegReader, ni::eImplFlags_Default> {
   niBeginClass(cJpegReader);
 
  public:
-  struct my_error_mgr
-  {
-    jmp_buf         setjmp_buffer;
-    jpeg_error_mgr  pub;
-    cJpegReader*    pReader;
-    j_common_ptr    cinfo;
-    void Cleanup() {
-      if (pReader) { pReader->EndRead(); }
+  struct my_error_mgr {
+    jmp_buf setjmp_buffer;
+    jpeg_error_mgr pub;
+    cJpegReader* pReader;
+    j_common_ptr cinfo;
+    void Cleanup()
+    {
+      if (pReader) {
+        pReader->EndRead();
+      }
     }
-    int ErrCode() const {
+    int ErrCode() const
+    {
       return pub.msg_code;
     }
-    cString GetError() {
+    cString GetError()
+    {
       char szBuffer[JMSG_LENGTH_MAX];
       (*cinfo->err->format_message)(cinfo, szBuffer);
       return niFmt(_A("JPEG READ: %s"), _ASZ(szBuffer));
     }
-    cString GetWarning() {
+    cString GetWarning()
+    {
       char szBuffer[JMSG_LENGTH_MAX];
       (*cinfo->err->format_message)(cinfo, szBuffer);
       return niFmt(_A("JPEG READ: %s"), _ASZ(szBuffer));
     }
   } niAligned(16); // jmp_buf requires 16 bytes alignment
-  typedef struct my_error_mgr *my_error_ptr;
+  typedef struct my_error_mgr* my_error_ptr;
   static void my_error_exit(j_common_ptr cinfo);
   static void my_output_message(j_common_ptr cinfo);
 
@@ -54,7 +58,10 @@ class cJpegReader : public ni::ImplRC<ni::iJpegReader,ni::eImplFlags_Default>
   ni::tBool __stdcall IsOK() const;
 
   //// ni::iJpegReader /////////////////////////
-  iFile* __stdcall GetFile() const { return mptrFile; }
+  iFile* __stdcall GetFile() const
+  {
+    return mptrFile;
+  }
   tBool __stdcall ReadHeaderTables();
   tBool __stdcall BeginRead();
   tBool __stdcall EndRead();
@@ -63,22 +70,20 @@ class cJpegReader : public ni::ImplRC<ni::iJpegReader,ni::eImplFlags_Default>
   tU32 __stdcall GetHeight() const;
   tU32 __stdcall GetNumComponents() const;
   eColorSpace __stdcall GetColorSpace() const;
-  tBool __stdcall ReadScanline(iFile *apOut);
-  iBitmap2D * __stdcall ReadBitmap(iGraphics *apGraphics);
+  tBool __stdcall ReadScanline(iFile* apOut);
+  iBitmap2D* __stdcall ReadBitmap(iGraphics* apGraphics);
   //// ni::iJpegReader /////////////////////////
 
   void ResetError();
 
  private:
-  Ptr<iFile>             mptrFile;
-  tPtr                   mpOutBuffer;
+  Ptr<iFile> mptrFile;
+  tPtr mpOutBuffer;
   jpeg_decompress_struct mInfo;
-  my_error_ptr           mpErr;
+  my_error_ptr mpErr;
 
   niEndClass(cJpegReader);
 };
-
-
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 #endif // __JPEGREADER_18852172_H__

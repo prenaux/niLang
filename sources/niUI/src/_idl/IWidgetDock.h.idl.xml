@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eWidgetDockingManagerMessage">
 			<comments desc="Docking manager messages "/>
-			<value name="eWidgetDockingManagerMessage_BeginMove" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;M&apos; , &apos;b&apos; ) ">
+			<value name="eWidgetDockingManagerMessage_BeginMove" value="niMessageID(&apos;_&apos;,&apos;W&apos;,&apos;D&apos;,&apos;M&apos;,&apos;b&apos;)">
 				<comments desc="The widget is beginning to be moved/dragged. "/>
 			</value>
-			<value name="eWidgetDockingManagerMessage_EndMove" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;M&apos; , &apos;e&apos; ) ">
+			<value name="eWidgetDockingManagerMessage_EndMove" value="niMessageID(&apos;_&apos;,&apos;W&apos;,&apos;D&apos;,&apos;M&apos;,&apos;e&apos;)">
 				<comments desc="The widget is finished to be moved/dragged. "/>
 			</value>
-			<value name="eWidgetDockingManagerMessage_Move" value="niMessageID ( &apos;_&apos; , &apos;W&apos; , &apos;D&apos; , &apos;N&apos; , &apos;m&apos; ) ">
+			<value name="eWidgetDockingManagerMessage_Move" value="niMessageID(&apos;_&apos;,&apos;W&apos;,&apos;D&apos;,&apos;N&apos;,&apos;m&apos;)">
 				<comments desc="The widget is moved. ">
 					<params text="A is the absolute cursor position. "/>
 				</comments>
@@ -49,36 +49,36 @@
 		</interface>
 		<enum name="eWidgetDockingManagerFlags">
 			<comments desc="Docking manager flags. "/>
-			<value name="eWidgetDockingManagerFlags_Navigator" value="niBit ( 0 ) ">
+			<value name="eWidgetDockingManagerFlags_Navigator" value="niBit(0)">
 				<comments desc="Show a navigator if the Navigator action is triggered. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_HideTabIfOnePage" value="niBit ( 1 ) ">
+			<value name="eWidgetDockingManagerFlags_HideTabIfOnePage" value="niBit(1)">
 				<comments desc="Hide the tab name if only one page is in the tab widget. ">
 					<remark text="This can be set per tab page if necessary, this is the default value. "/>
 				</comments>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockLeft" value="niBit ( 2 ) ">
+			<value name="eWidgetDockingManagerFlags_DockLeft" value="niBit(2)">
 				<comments desc="Docking on the left is allowed. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockRight" value="niBit ( 3 ) ">
+			<value name="eWidgetDockingManagerFlags_DockRight" value="niBit(3)">
 				<comments desc="Docking on the right is allowed. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockTop" value="niBit ( 4 ) ">
+			<value name="eWidgetDockingManagerFlags_DockTop" value="niBit(4)">
 				<comments desc="Docking on the top is allowed. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockBottom" value="niBit ( 5 ) ">
+			<value name="eWidgetDockingManagerFlags_DockBottom" value="niBit(5)">
 				<comments desc="Docking on the bottom is allowed. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockHorizontal" value="eWidgetDockingManagerFlags_DockLeft|eWidgetDockingManagerFlags_DockRight ">
+			<value name="eWidgetDockingManagerFlags_DockHorizontal" value="eWidgetDockingManagerFlags_DockLeft|eWidgetDockingManagerFlags_DockRight">
 				<comments desc="Horizontal docking. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockVertical" value="eWidgetDockingManagerFlags_DockTop|eWidgetDockingManagerFlags_DockBottom ">
+			<value name="eWidgetDockingManagerFlags_DockVertical" value="eWidgetDockingManagerFlags_DockTop|eWidgetDockingManagerFlags_DockBottom">
 				<comments desc="Vertical docking. "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_DockAll" value="eWidgetDockingManagerFlags_DockHorizontal|eWidgetDockingManagerFlags_DockVertical ">
+			<value name="eWidgetDockingManagerFlags_DockAll" value="eWidgetDockingManagerFlags_DockHorizontal|eWidgetDockingManagerFlags_DockVertical">
 				<comments desc="All docking "/>
 			</value>
-			<value name="eWidgetDockingManagerFlags_Default" value="eWidgetDockingManagerFlags_DockAll|eWidgetDockingManagerFlags_Navigator ">
+			<value name="eWidgetDockingManagerFlags_Default" value="eWidgetDockingManagerFlags_DockAll|eWidgetDockingManagerFlags_Navigator">
 				<comments desc="Default manager flags. "/>
 			</value>
 		</enum>

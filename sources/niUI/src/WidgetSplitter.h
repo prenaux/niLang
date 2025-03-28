@@ -8,8 +8,9 @@ static const tF32 kSplitterFoldedSize = 32.0f;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetSplitter declaration.
-class cWidgetSplitter : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default,ni::iWidgetSplitter>
-{
+class cWidgetSplitter
+    : public ni::ImplRC<ni::iWidgetSink, ni::eImplFlags_Default,
+                        ni::iWidgetSplitter> {
   niBeginClass(cWidgetSplitter);
 
  public:
@@ -47,15 +48,18 @@ class cWidgetSplitter : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default
   sVec2f __stdcall GetSplitterParentDockRectMinimumSize() const niImpl;
   void __stdcall SetSplitterFillerIndex(ni::tU32 anIndex) niImpl;
   tU32 __stdcall GetSplitterFillerIndex() const niImpl;
-  void __stdcall SetSplitterFoldMode(eWidgetSplitterFoldMode aFoldMode) niImpl {
+  void __stdcall SetSplitterFoldMode(eWidgetSplitterFoldMode aFoldMode) niImpl
+  {
     mFoldMode = aFoldMode;
   }
-  eWidgetSplitterFoldMode __stdcall GetSplitterFoldMode() const niImpl {
+  eWidgetSplitterFoldMode __stdcall GetSplitterFoldMode() const niImpl
+  {
     return mFoldMode;
   }
   //// ni::iWidgetSplitter /////////////////////
 
-  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA, const Var& aB);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA,
+                               const Var& aB);
   void UpdateSplitterRects(tU32 anPivotSplitter);
   void UpdateClientRect();
   void PushBorder(iCanvas* c, tU32 anZone, tBool abBorder);
@@ -65,33 +69,41 @@ class cWidgetSplitter : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default
   tBool FoldIsFolded(tU32 anID) const;
 
   tBool TestRect(const sVec2f& avMousePos, tU32 anZone, tU32& anFold) const;
-  tBool TestIntersection(const sVec2f& avMousePos, tU32& anIntersect, tU32& anFold) const;
+  tBool TestIntersection(const sVec2f& avMousePos, tU32& anIntersect,
+                         tU32& anFold) const;
   sRectf GetZoneRect(tU32 anZone, tU32 anFold) const;
   tBool GetIsZoneHorizontal(tU32 anZone) const;
 
-  __forceinline tBool _SplittersEnabled() const {
+  __forceinline tBool _SplittersEnabled() const
+  {
     return !(mnFillerIndex < mvSplitters.size());
   }
 
-  __forceinline tBool _CanFold() const {
+  __forceinline tBool _CanFold() const
+  {
     return _CanFoldLeftTop() || _CanFoldRightBottom();
   }
-  __forceinline tBool _CanFoldOnlyOne() const {
+  __forceinline tBool _CanFoldOnlyOne() const
+  {
     return !_CanFoldLeftTop() || !_CanFoldRightBottom();
   }
-  __forceinline tBool _CanFoldLeftTop() const {
+  __forceinline tBool _CanFoldLeftTop() const
+  {
     const eWidgetSplitterFoldMode foldMode = this->GetSplitterFoldMode();
     if (foldMode == eWidgetSplitterFoldMode_Auto) {
-      return niFlagIs(mnResizableBorders,eRectEdges_Right) || niFlagIs(mnResizableBorders,eRectEdges_Bottom);
+      return niFlagIs(mnResizableBorders, eRectEdges_Right) ||
+             niFlagIs(mnResizableBorders, eRectEdges_Bottom);
     }
     else {
       return (foldMode == eWidgetSplitterFoldMode_All);
     }
   }
-  __forceinline tBool _CanFoldRightBottom() const {
+  __forceinline tBool _CanFoldRightBottom() const
+  {
     const eWidgetSplitterFoldMode foldMode = this->GetSplitterFoldMode();
     if (foldMode == eWidgetSplitterFoldMode_Auto) {
-      return niFlagIs(mnResizableBorders,eRectEdges_Left) || niFlagIs(mnResizableBorders,eRectEdges_Top);
+      return niFlagIs(mnResizableBorders, eRectEdges_Left) ||
+             niFlagIs(mnResizableBorders, eRectEdges_Top);
     }
     else {
       return (foldMode == eWidgetSplitterFoldMode_All);
@@ -100,30 +112,31 @@ class cWidgetSplitter : public ni::ImplRC<ni::iWidgetSink,ni::eImplFlags_Default
 
  private:
   iWidget* mpWidget;
-  tF32     mfMinPos;
-  tF32     mfSize;
-  tU32     mnDragging;
-  tF32     mfBorderSize;
-  tU32     mnResizableBorders;
-  sVec2f   mvParentDockRectMinSize;
-  tU32     mnFillerIndex;
+  tF32 mfMinPos;
+  tF32 mfSize;
+  tU32 mnDragging;
+  tF32 mfBorderSize;
+  tU32 mnResizableBorders;
+  sVec2f mvParentDockRectMinSize;
+  tU32 mnFillerIndex;
 
-  typedef astl::hash_map<tU32,astl::pair<tF32,tBool> >  tFoldMap;
+  typedef astl::hash_map<tU32, astl::pair<tF32, tBool>> tFoldMap;
   tFoldMap mmapFoldMap;
 
   struct sSplitter {
-    tF32  mfPosition;
+    tF32 mfPosition;
     sRectf mRect;
-    sSplitter() {
+    sSplitter()
+    {
       mfPosition = 0;
-      mRect = sRectf(0,0,0,0);
+      mRect = sRectf(0, 0, 0, 0);
     }
   };
   typedef astl::vector<sSplitter> tSplitterVec;
-  tSplitterVec  mvSplitters;
+  tSplitterVec mvSplitters;
 
-  typedef astl::vector<Ptr<iWidget> > tWidgetVec;
-  tWidgetVec    mvWidgets;
+  typedef astl::vector<Ptr<iWidget>> tWidgetVec;
+  tWidgetVec mvWidgets;
 
   void InitSkin();
   struct sSkin {

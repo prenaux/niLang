@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eWidgetSearchBarCmd">
 			<comments desc="Search bar widget notify messages. "/>
-			<value min_features="20" name="eWidgetSearchBarCmd_SelectionChanged" value="0 ">
+			<value min_features="20" name="eWidgetSearchBarCmd_SelectionChanged" value="0">
 				<comments desc="Sent when the selection changed "/>
 			</value>
-			<value min_features="20" name="eWidgetSearchBarCmd_Begin" value="1 ">
+			<value min_features="20" name="eWidgetSearchBarCmd_Begin" value="1">
 				<comments desc="Sent when the search bar becomes visible "/>
 			</value>
-			<value min_features="20" name="eWidgetSearchBarCmd_End" value="2 ">
+			<value min_features="20" name="eWidgetSearchBarCmd_End" value="2">
 				<comments desc="This is a good time to destroy or hide the search bar "/>
 			</value>
 		</enum>

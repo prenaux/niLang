@@ -6,28 +6,26 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Internal functions
 
-#define RGB555_RGB565(dst, src) (dst) = tU16((((src)&0x7FE0)<<1)|((src)&0x001F))
+#define RGB555_RGB565(dst, src) \
+  (dst) = tU16((((src)&0x7FE0) << 1) | ((src)&0x001F))
 
 ///////////////////////////////////////////////
-static void rle_tga_read(iFile *pFile, tU8 *b, tI32 w)
+static void rle_tga_read(iFile* pFile, tU8* b, tI32 w)
 {
   tU8 value;
   tI32 count;
   tI32 c = 0;
 
-  do
-  {
+  do {
     count = pFile->Read8();
-    if (count & 0x80)
-    {
-      count =(count & 0x7F) + 1;
+    if (count & 0x80) {
+      count = (count & 0x7F) + 1;
       c += count;
       value = pFile->Read8();
       while (count--)
         *(b++) = value;
     }
-    else
-    {
+    else {
       count++;
       c += count;
       pFile->ReadRaw(b, count);
@@ -37,34 +35,29 @@ static void rle_tga_read(iFile *pFile, tU8 *b, tI32 w)
 }
 
 ///////////////////////////////////////////////
-static void rle_tga_read24(iFile *pFile, tU8 *b, tI32 w)
+static void rle_tga_read24(iFile* pFile, tU8* b, tI32 w)
 {
   tU8 value[4];
   tI32 count;
   tI32 c = 0;
 
-  do
-  {
+  do {
     count = pFile->Read8();
-    if (count & 0x80)
-    {
-      count =(count & 0x7F) + 1;
+    if (count & 0x80) {
+      count = (count & 0x7F) + 1;
       c += count;
       pFile->ReadRaw(value, 3);
-      while (count--)
-      {
+      while (count--) {
         b[2] = value[2];
         b[1] = value[1];
         b[0] = value[0];
         b += 3;
       }
     }
-    else
-    {
+    else {
       count++;
       c += count;
-      while (count--)
-      {
+      while (count--) {
         pFile->ReadRaw(value, 3);
         b[2] = value[2];
         b[1] = value[1];
@@ -76,22 +69,19 @@ static void rle_tga_read24(iFile *pFile, tU8 *b, tI32 w)
 }
 
 ///////////////////////////////////////////////
-static void rle_tga_read32(iFile *pFile, tU8 *b, tI32 w)
+static void rle_tga_read32(iFile* pFile, tU8* b, tI32 w)
 {
   tU8 value[4];
   tI32 count;
   tI32 c = 0;
 
-  do
-  {
+  do {
     count = pFile->Read8();
-    if (count & 0x80)
-    {
-      count =(count & 0x7F) + 1;
+    if (count & 0x80) {
+      count = (count & 0x7F) + 1;
       c += count;
       pFile->ReadRaw(value, 4);
-      while (count--)
-      {
+      while (count--) {
         b[3] = value[3];
         b[2] = value[2];
         b[1] = value[1];
@@ -99,12 +89,10 @@ static void rle_tga_read32(iFile *pFile, tU8 *b, tI32 w)
         b += 4;
       }
     }
-    else
-    {
+    else {
       count++;
       c += count;
-      while (count--)
-      {
+      while (count--) {
         pFile->ReadRaw(value, 4);
         b[3] = value[3];
         b[2] = value[2];
@@ -117,40 +105,35 @@ static void rle_tga_read32(iFile *pFile, tU8 *b, tI32 w)
 }
 
 ///////////////////////////////////////////////
-static void rle_tga_read16(iFile *pFile, tU16 *b, tI32 w)
+static void rle_tga_read16(iFile* pFile, tU16* b, tI32 w)
 {
   tU16 value;
   tU16 color;
   tI32 count;
   tI32 c = 0;
 
-  do
-  {
+  do {
     count = pFile->Read8();
 
-    if (count & 0x80)
-    {
-      count =(count & 0x7F) + 1;
+    if (count & 0x80) {
+      count = (count & 0x7F) + 1;
       c += count;
       value = pFile->ReadLE16();
-      RGB555_RGB565(color,value);
+      RGB555_RGB565(color, value);
       while (count--)
         *(b++) = color;
     }
-    else
-    {
+    else {
       count++;
       c += count;
-      while (count--)
-      {
+      while (count--) {
         value = pFile->ReadLE16();
-        RGB555_RGB565(color,value);
+        RGB555_RGB565(color, value);
         *(b++) = color;
       }
     }
   } while (c < w);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Interface implementation
@@ -165,7 +148,7 @@ struct BitmapLoader_TGA : public ImplRC<iBitmapLoader> {
     tU16 image_width, image_height;
     tU32 c, yc;
     tI32 x, y;
-    tU16 *s;
+    tU16* s;
     tI32 compressed;
     tU16 palette_colors;
     Ptr<iBitmap2D> ptrBmp;
@@ -185,156 +168,143 @@ struct BitmapLoader_TGA : public ImplRC<iBitmapLoader> {
     descriptor_bits = pFile->Read8();
 
     pFile->ReadRaw(&image_id, id_length);
-    pFile->ReadRaw(&image_palette, ni::Min(palette_colors,(tU16)256)*3);
+    pFile->ReadRaw(&image_palette, ni::Min(palette_colors, (tU16)256) * 3);
     if (palette_colors > 256) {
       palette_colors -= 256;
-      pFile->Seek(palette_colors*3);
+      pFile->Seek(palette_colors * 3);
       palette_colors = 256;
     }
 
     compressed = (image_type & 8);
     image_type &= 7;
 
-    if ((image_type < 1) || (image_type > 3))
-    {
+    if ((image_type < 1) || (image_type > 3)) {
       niError(_A("Unknow TGA type."));
       return NULL;
     }
 
-    switch (image_type)
-    {
-      case 1: {
-        if ((palette_type != 1) || (bpp != 8)) {
-          niError(_A("No palette or not 8 bpp in TGA type1."));
-          return NULL;
-        }
-
-        palette.resize(palette_colors);
-        niLoop(i,palette_colors) {
-          palette[i] = ULColorBuild(image_palette[i][2],image_palette[i][1],image_palette[i][0],255);
-        }
-        break;
-      }
-
-      case 2:
-        if ((palette_type != 0) || (bpp != 16 && bpp != 24 && bpp != 32)) {
-          niError(niFmt(_A("Can't load TGA type2 with this bpp [%d]."), bpp));
-          return NULL;
-        }
-        break;
-
-      case 3: {
-        if ((palette_type != 0) || (bpp != 8)) {
-          niError(_A("Palette or not 8bpp in TGA type3."));
-          return NULL;
-        }
-
-        palette_colors = 256;
-        palette.resize(palette_colors);
-        niLoop(i,256) {
-          palette[i] = ULColorBuild(tU8(i),tU8(i),tU8(i),255);
-        }
-        break;
-      }
-
-      default: {
-        niError(niFmt(_A("Unknow TGA type [%d]."), image_type));
+    switch (image_type) {
+    case 1: {
+      if ((palette_type != 1) || (bpp != 8)) {
+        niError(_A("No palette or not 8 bpp in TGA type1."));
         return NULL;
       }
+
+      palette.resize(palette_colors);
+      niLoop (i, palette_colors) {
+        palette[i] = ULColorBuild(image_palette[i][2], image_palette[i][1],
+                                  image_palette[i][0], 255);
+      }
+      break;
+    }
+
+    case 2:
+      if ((palette_type != 0) || (bpp != 16 && bpp != 24 && bpp != 32)) {
+        niError(niFmt(_A("Can't load TGA type2 with this bpp [%d]."), bpp));
+        return NULL;
+      }
+      break;
+
+    case 3: {
+      if ((palette_type != 0) || (bpp != 8)) {
+        niError(_A("Palette or not 8bpp in TGA type3."));
+        return NULL;
+      }
+
+      palette_colors = 256;
+      palette.resize(palette_colors);
+      niLoop (i, 256) {
+        palette[i] = ULColorBuild(tU8(i), tU8(i), tU8(i), 255);
+      }
+      break;
+    }
+
+    default: {
+      niError(niFmt(_A("Unknow TGA type [%d]."), image_type));
+      return NULL;
+    }
     }
 
     cString strFormat;
-    switch (bpp)
-    {
-      case 8: strFormat = _A("A8"); break;
-      case 16: strFormat = _A("B5G6R5"); break;
-      case 24: strFormat = _A("B8G8R8"); break;
-      case 32: strFormat = _A("B8G8R8A8"); break;
-      default: {
-        niError(niFmt(_A("Invalid bpp [%d]."), bpp));
-        return NULL;
-      }
+    switch (bpp) {
+    case 8: strFormat = _A("A8"); break;
+    case 16: strFormat = _A("B5G6R5"); break;
+    case 24: strFormat = _A("B8G8R8"); break;
+    case 32: strFormat = _A("B8G8R8A8"); break;
+    default: {
+      niError(niFmt(_A("Invalid bpp [%d]."), bpp));
+      return NULL;
+    }
     }
 
-    ptrBmp = apGraphics->CreateBitmap2DEx(image_width, image_height, apGraphics->CreatePixelFormat(strFormat.Chars()));
+    ptrBmp = apGraphics->CreateBitmap2DEx(
+      image_width, image_height,
+      apGraphics->CreatePixelFormat(strFormat.Chars()));
     niCheck(ptrBmp.IsOK(), NULL);
 
-    for (y = image_height; y; y--)
-    {
+    for (y = image_height; y; y--) {
       yc = (descriptor_bits & 0x20) ? image_height - y : y - 1;
-      tPtr pLine = ptrBmp->GetData()+(yc*ptrBmp->GetPitch());
+      tPtr pLine = ptrBmp->GetData() + (yc * ptrBmp->GetPitch());
 
-      switch (image_type)
-      {
-        case 1:
-        case 3:
-          if (compressed)
-            rle_tga_read(pFile, pLine, image_width);
-          else
-            pFile->ReadRaw(pLine, image_width);
-          break;
+      switch (image_type) {
+      case 1:
+      case 3:
+        if (compressed)
+          rle_tga_read(pFile, pLine, image_width);
+        else
+          pFile->ReadRaw(pLine, image_width);
+        break;
 
-        case 2:
-          if (bpp == 32)
-          {
-            if (compressed)
-            {
-              rle_tga_read32(pFile, pLine, image_width);
-            }
-            else
-            {
-              for (x = 0; x < image_width; x++)
-              {
-                pFile->ReadRaw(rgb, 4);
-                ((tU8*)pLine)[x*4 + 3] = rgb[3];
-                ((tU8*)pLine)[x*4 + 2] = rgb[2];
-                ((tU8*)pLine)[x*4 + 1] = rgb[1];
-                ((tU8*)pLine)[x*4 + 0] = rgb[0];
-              }
+      case 2:
+        if (bpp == 32) {
+          if (compressed) {
+            rle_tga_read32(pFile, pLine, image_width);
+          }
+          else {
+            for (x = 0; x < image_width; x++) {
+              pFile->ReadRaw(rgb, 4);
+              ((tU8*)pLine)[x * 4 + 3] = rgb[3];
+              ((tU8*)pLine)[x * 4 + 2] = rgb[2];
+              ((tU8*)pLine)[x * 4 + 1] = rgb[1];
+              ((tU8*)pLine)[x * 4 + 0] = rgb[0];
             }
           }
-          else if (bpp == 24)
-          {
-            if (compressed)
-            {
-              rle_tga_read24(pFile, pLine, image_width);
-            }
-            else
-            {
-              for (x = 0; x < image_width; x++)
-              {
-                pFile->ReadRaw(rgb, 3);
-                ((tU8*)pLine)[x*3 + 2] = rgb[2];
-                ((tU8*)pLine)[x*3 + 1] = rgb[1];
-                ((tU8*)pLine)[x*3 + 0] = rgb[0];
-              }
+        }
+        else if (bpp == 24) {
+          if (compressed) {
+            rle_tga_read24(pFile, pLine, image_width);
+          }
+          else {
+            for (x = 0; x < image_width; x++) {
+              pFile->ReadRaw(rgb, 3);
+              ((tU8*)pLine)[x * 3 + 2] = rgb[2];
+              ((tU8*)pLine)[x * 3 + 1] = rgb[1];
+              ((tU8*)pLine)[x * 3 + 0] = rgb[0];
             }
           }
-          else
-          {
-            if (compressed)
-            {
-              rle_tga_read16(pFile, ((tU16*)pLine), image_width);
-            }
-            else
-            {
-              s = ((tU16*)pLine);
-              for (x = 0; x < image_width; ++x)
-              {
-                c = pFile->ReadLE16();
-                RGB555_RGB565(s[x],c);
-              }
+        }
+        else {
+          if (compressed) {
+            rle_tga_read16(pFile, ((tU16*)pLine), image_width);
+          }
+          else {
+            s = ((tU16*)pLine);
+            for (x = 0; x < image_width; ++x) {
+              c = pFile->ReadLE16();
+              RGB555_RGB565(s[x], c);
             }
           }
-          break;
+        }
+        break;
       }
     }
 
     if (!palette.empty()) {
       Ptr<iBitmap2D> convertedBmp = apGraphics->CreateBitmap2D(
-          ptrBmp->GetWidth(), ptrBmp->GetHeight(), "B8G8R8A8");
-      BmpUtils_BlitPaletteTo32Bits(
-          convertedBmp->GetData(), ptrBmp->GetData(), ptrBmp->GetWidth() * ptrBmp->GetHeight(), palette.data());
+        ptrBmp->GetWidth(), ptrBmp->GetHeight(), "B8G8R8A8");
+      BmpUtils_BlitPaletteTo32Bits(convertedBmp->GetData(), ptrBmp->GetData(),
+                                   ptrBmp->GetWidth() * ptrBmp->GetHeight(),
+                                   palette.data());
       ptrBmp = convertedBmp;
     }
     return ptrBmp.GetRawAndSetNull();
@@ -343,7 +313,8 @@ struct BitmapLoader_TGA : public ImplRC<iBitmapLoader> {
 
 struct BitmapSaver_TGA : public ImplRC<iBitmapSaver> {
   ///////////////////////////////////////////////
-  tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pFile, iBitmapBase* pBmpBase, tU32 ulCompression)
+  tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* pFile,
+                             iBitmapBase* pBmpBase, tU32 ulCompression)
   {
     QPtr<iBitmap2D> pBmp = pBmpBase;
     if (!pBmp.IsOK()) {
@@ -351,8 +322,10 @@ struct BitmapSaver_TGA : public ImplRC<iBitmapSaver> {
       return eFalse;
     }
 
-    if (!(pBmpBase->GetPixelFormat()->GetCaps()&ePixelFormatCaps_UnpackPixel)) {
-      niError(niFmt("Can't unpack pixel format '%s'.", pBmpBase->GetPixelFormat()->GetFormat()));
+    if (!(pBmpBase->GetPixelFormat()->GetCaps() & ePixelFormatCaps_UnpackPixel))
+    {
+      niError(niFmt("Can't unpack pixel format '%s'.",
+                    pBmpBase->GetPixelFormat()->GetFormat()));
       return eFalse;
     }
 
@@ -400,97 +373,81 @@ struct BitmapSaver_TGA : public ImplRC<iBitmapSaver> {
       }
     }
 
-    switch (depth)
-    {
-      case 8:
-        {
-          for (y = pBmp->GetHeight(); y; y--)
-          {
-            for (x = 0; x < pBmp->GetWidth(); x++)
-            {
-              tU8 c;
-              pFile->Write8(*((tU8*)pBmp->GetPixel(x,y-1,tPtr(&c))));
-            }
+    switch (depth) {
+    case 8: {
+      for (y = pBmp->GetHeight(); y; y--) {
+        for (x = 0; x < pBmp->GetWidth(); x++) {
+          tU8 c;
+          pFile->Write8(*((tU8*)pBmp->GetPixel(x, y - 1, tPtr(&c))));
+        }
+      }
+    } break;
+
+    case 16: {
+      if (pBmp->BeginUnpackPixels()) {
+        tU16 c;
+        iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
+        for (y = pBmp->GetHeight(); y; y--) {
+          for (x = 0; x < pBmp->GetWidth(); x++) {
+            sColor4ub col =
+              pPixFmt->UnpackPixelub(pBmp->GetPixel(x, y - 1, tPtr(&c)));
+            pFile->WriteLE16(((col.x << 7) & 0x7C00) | ((col.y << 2) & 0x3E0) |
+                             ((col.z >> 3) & 0x1F));
           }
         }
-        break;
 
-      case 16:
-        {
-          if (pBmp->BeginUnpackPixels())
-          {
-            tU16 c;
-            iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
-            for (y = pBmp->GetHeight(); y; y--)
-            {
-              for (x = 0; x < pBmp->GetWidth(); x++)
-              {
-                sColor4ub col = pPixFmt->UnpackPixelub(pBmp->GetPixel(x,y-1,tPtr(&c)));
-                pFile->WriteLE16(((col.x << 7)&0x7C00) | ((col.y << 2)&0x3E0) | ((col.z >> 3)&0x1F));
-              }
-            }
+        pBmp->EndUnpackPixels();
+      }
+    } break;
 
-            pBmp->EndUnpackPixels();
+    case 24: {
+      if (pBmp->BeginUnpackPixels()) {
+        niDeclareTempPixel();
+        iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
+        for (y = pBmp->GetHeight(); y; y--) {
+          for (x = 0; x < pBmp->GetWidth(); x++) {
+            sColor4ub col = pPixFmt->UnpackPixelub(
+              pBmp->GetPixel(x, y - 1, niTempPixelPtr()));
+            pFile->Write8(col.z);
+            pFile->Write8(col.y);
+            pFile->Write8(col.x);
           }
         }
-        break;
 
-      case 24:
-        {
-          if (pBmp->BeginUnpackPixels())
-          {
-            niDeclareTempPixel();
-            iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
-            for (y = pBmp->GetHeight(); y; y--)
-            {
-              for (x = 0; x < pBmp->GetWidth(); x++)
-              {
-                sColor4ub col = pPixFmt->UnpackPixelub(pBmp->GetPixel(x,y-1,niTempPixelPtr()));
-                pFile->Write8(col.z);
-                pFile->Write8(col.y);
-                pFile->Write8(col.x);
-              }
-            }
+        pBmp->EndUnpackPixels();
+      }
+    } break;
 
-            pBmp->EndUnpackPixels();
+    case 32: {
+      if (pBmp->BeginUnpackPixels()) {
+        niDeclareTempPixel();
+        iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
+        for (y = pBmp->GetHeight(); y; y--) {
+          for (x = 0; x < pBmp->GetWidth(); x++) {
+            sColor4ub col = pPixFmt->UnpackPixelub(
+              pBmp->GetPixel(x, y - 1, niTempPixelPtr()));
+            pFile->Write8(col.z);
+            pFile->Write8(col.y);
+            pFile->Write8(col.x);
+            pFile->Write8(col.w);
           }
         }
-        break;
 
-
-      case 32:
-        {
-          if (pBmp->BeginUnpackPixels())
-          {
-            niDeclareTempPixel();
-            iPixelFormat* pPixFmt = pBmp->GetPixelFormat();
-            for (y = pBmp->GetHeight(); y; y--)
-            {
-              for (x = 0; x < pBmp->GetWidth(); x++)
-              {
-                sColor4ub col = pPixFmt->UnpackPixelub(pBmp->GetPixel(x,y-1,niTempPixelPtr()));
-                pFile->Write8(col.z);
-                pFile->Write8(col.y);
-                pFile->Write8(col.x);
-                pFile->Write8(col.w);
-              }
-            }
-
-            pBmp->EndUnpackPixels();
-          }
-        }
-        break;
+        pBmp->EndUnpackPixels();
+      }
+    } break;
     }
 
     return 1;
   }
 };
 
-
-niExportFunc(iUnknown*) New_BitmapLoader_tga(const Var&,const Var&) {
+niExportFunc(iUnknown*) New_BitmapLoader_tga(const Var&, const Var&)
+{
   return niNew BitmapLoader_TGA();
 }
 
-niExportFunc(iUnknown*) New_BitmapSaver_tga(const Var&,const Var&) {
+niExportFunc(iUnknown*) New_BitmapSaver_tga(const Var&, const Var&)
+{
   return niNew BitmapSaver_TGA();
 }

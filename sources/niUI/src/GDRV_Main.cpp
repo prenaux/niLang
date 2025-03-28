@@ -6,11 +6,11 @@
 #include <niLang/Utils/ConcurrentImpl.h>
 
 #ifdef niWindows
-#include <niLang/Platforms/Win32/Win32_Redef.h>
+  #include <niLang/Platforms/Win32/Win32_Redef.h>
 #endif
 
 #if !defined GDRV_AUTO
-#  error "GDRV_AUTO not defined."
+  #error "GDRV_AUTO not defined."
 #endif
 
 #ifdef GDRV_DUMMY
@@ -32,30 +32,32 @@ niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var&);
 //
 //----------------------------------------------------------------------------
 
-static inline void _RegisterGraphicsDriver(const achar* aName, tpfnCreateObjectInstance apfnCreateInstance) {
-  astl::upsert(
-      *ni::GetLang()->GetCreateInstanceMap(),
-      niFmt("GraphicsDriver.%s",aName),
-      ni::Callback2<tpfnCreateObjectInstance>(apfnCreateInstance));
+static inline void _RegisterGraphicsDriver(
+  const achar* aName, tpfnCreateObjectInstance apfnCreateInstance)
+{
+  astl::upsert(*ni::GetLang()->GetCreateInstanceMap(),
+               niFmt("GraphicsDriver.%s", aName),
+               ni::Callback2<tpfnCreateObjectInstance>(apfnCreateInstance));
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
+tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName)
+{
   {
     static tBool _bRegisteredDriver = eFalse;
     if (!_bRegisteredDriver) {
       _bRegisteredDriver = eTrue;
 #ifdef GDRV_DUMMY
-      _RegisterGraphicsDriver("Dummy",New_GraphicsDriver_Dummy);
+      _RegisterGraphicsDriver("Dummy", New_GraphicsDriver_Dummy);
 #endif
 #ifdef GDRV_GL2
-      _RegisterGraphicsDriver("GL2",New_GraphicsDriver_GL2);
+      _RegisterGraphicsDriver("GL2", New_GraphicsDriver_GL2);
 #endif
 #ifdef GDRV_METAL
-      _RegisterGraphicsDriver("Metal",New_GraphicsDriver_Metal);
+      _RegisterGraphicsDriver("Metal", New_GraphicsDriver_Metal);
 #endif
 #ifdef GDRV_VULKAN
-      _RegisterGraphicsDriver("Vulkan",New_GraphicsDriver_Vulkan);
+      _RegisterGraphicsDriver("Vulkan", New_GraphicsDriver_Vulkan);
 #endif
     }
   }
@@ -68,44 +70,50 @@ tBool __stdcall cGraphics::InitializeDriver(iHString* ahspDriverName) {
   tHStringPtr hspDriver = ahspDriverName;
 
 #ifdef GDRV_DUMMY
-  if (HStringIsEmpty(hspDriver) || StrIEq(niHStr(hspDriver),"Dummy")) {
+  if (HStringIsEmpty(hspDriver) || StrIEq(niHStr(hspDriver), "Dummy")) {
     hspDriver = _H("Dummy");
   }
   else
 #endif
-  if (StrIEq(niHStr(hspDriver),"Auto")) {
+    if (StrIEq(niHStr(hspDriver), "Auto"))
+  {
     hspDriver = _H(GDRV_AUTO);
-    niLog(Info, niFmt("Auto detected graphics driver '%s'.",hspDriver));
+    niLog(Info, niFmt("Auto detected graphics driver '%s'.", hspDriver));
   }
 
-  mptrDRMGeneric = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsGeneric"));
+  mptrDRMGeneric =
+    ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsGeneric"));
   niCheck(mptrDRMGeneric.IsOK(), eFalse);
 
-  mptrDRMTextures = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsTextures"));
+  mptrDRMTextures =
+    ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsTextures"));
   niCheck(mptrDRMTextures.IsOK(), eFalse);
 
-  mptrDRMShaders = ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsShaders"));
+  mptrDRMShaders =
+    ni::GetLang()->CreateDeviceResourceManager(_A("GraphicsShaders"));
   niCheck(mptrDRMShaders.IsOK(), eFalse);
 
   {
-    cString driverName = niFmt("GraphicsDriver.%s",hspDriver);
-    QPtr<iGraphicsDriver> ptrDrv = ni::GetLang()->CreateInstance(driverName.c_str(),this);
+    cString driverName = niFmt("GraphicsDriver.%s", hspDriver);
+    QPtr<iGraphicsDriver> ptrDrv =
+      ni::GetLang()->CreateInstance(driverName.c_str(), this);
     if (!ptrDrv.IsOK()) {
-      niError(niFmt(_A("Can't create instance of '%s'."),driverName));
+      niError(niFmt(_A("Can't create instance of '%s'."), driverName));
       return eFalse;
     }
     mptrDrv = ptrDrv;
   }
 
-  niCheck(_CompileDefaultRasterizerStates(),eFalse);
-  niCheck(_CompileDefaultDepthStencilStates(),eFalse);
-  niCheck(_CompileDefaultSamplerStates(),eFalse);
+  niCheck(_CompileDefaultRasterizerStates(), eFalse);
+  niCheck(_CompileDefaultDepthStencilStates(), eFalse);
+  niCheck(_CompileDefaultSamplerStates(), eFalse);
 
   niLog(Info, niFmt("Initialized graphics driver '%s'.", hspDriver));
   return eTrue;
 }
 
-void __stdcall cGraphics::InvalidateDriver() {
+void __stdcall cGraphics::InvalidateDriver()
+{
   if (mptrDRMGeneric.IsOK()) {
     mptrDRMGeneric->Invalidate();
     mptrDRMGeneric = NULL;
@@ -130,9 +138,8 @@ void __stdcall cGraphics::InvalidateDriver() {
 
 ///////////////////////////////////////////////
 iGraphicsContext* __stdcall cGraphics::CreateContextForWindow(
-    iOSWindow* apWindow,
-    const achar* aaszBBFormat, const achar* aaszDSFormat,
-    tU32 anSwapInterval, tTextureFlags aBackBufferFlags)
+  iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat,
+  tU32 anSwapInterval, tTextureFlags aBackBufferFlags)
 {
   if (!mptrDrv.IsOK()) {
     niWarning(_A("Driver not initialized."));
@@ -140,9 +147,7 @@ iGraphicsContext* __stdcall cGraphics::CreateContextForWindow(
   }
 
   Ptr<iGraphicsContext> ctx = mptrDrv->CreateContextForWindow(
-      apWindow,
-      aaszBBFormat,aaszDSFormat,
-      anSwapInterval,aBackBufferFlags);
+    apWindow, aaszBBFormat, aaszDSFormat, anSwapInterval, aBackBufferFlags);
   if (!ctx.IsOK()) {
     niError(_A("Can't initialize the graphics driver context."));
     return NULL;
@@ -161,25 +166,27 @@ iGraphicsContext* __stdcall cGraphics::CreateContextForWindow(
     return NULL;
   }
 
-  niLog(Info,
-      niFmt(_A("Context '%p' created : driver '%s', %dx%d, backbuffer '%s', depth stencil '%s'."),
-            ctx.ptr(),
-            mptrDrv->GetName(),
-            ctx->GetWidth(),ctx->GetHeight(),
-            ctx->GetRenderTarget(0)->GetPixelFormat()->GetFormat(),
-            ctx->GetDepthStencil()->GetPixelFormat()->GetFormat()));
+  niLog(
+    Info,
+    niFmt(
+      _A(
+        "Context '%p' created : driver '%s', %dx%d, backbuffer '%s', depth stencil '%s'."),
+      ctx.ptr(), mptrDrv->GetName(), ctx->GetWidth(), ctx->GetHeight(),
+      ctx->GetRenderTarget(0)->GetPixelFormat()->GetFormat(),
+      ctx->GetDepthStencil()->GetPixelFormat()->GetFormat()));
 
   return ctx.GetRawAndSetNull();
 }
 
 ///////////////////////////////////////////////
 iGraphicsContextRT* __stdcall cGraphics::CreateContextForRenderTargets(
-  iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
+  iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+  iTexture* apDS)
 {
-  niCheckIsOK(mptrDrv,nullptr);
+  niCheckIsOK(mptrDrv, nullptr);
 
-  Ptr<iGraphicsContextRT> ctx = mptrDrv->CreateContextForRenderTargets(
-      apRT0, apRT1, apRT2, apRT3, apDS);
+  Ptr<iGraphicsContextRT> ctx =
+    mptrDrv->CreateContextForRenderTargets(apRT0, apRT1, apRT2, apRT3, apDS);
   if (!ctx.IsOK()) {
     niError("Can't create graphics driver render targets context.");
     return NULL;
@@ -202,11 +209,11 @@ iGraphicsContextRT* __stdcall cGraphics::CreateContextForRenderTargets(
 }
 
 ///////////////////////////////////////////////
-tInt __stdcall cGraphics::GetDriverCaps(eGraphicsCaps aCaps) const {
+tInt __stdcall cGraphics::GetDriverCaps(eGraphicsCaps aCaps) const
+{
   CHECKDRIVER(0);
   return mptrDrv->GetCaps(aCaps);
 }
-
 
 ///////////////////////////////////////////////
 iGraphicsDriver* __stdcall cGraphics::GetDriver() const
@@ -215,40 +222,46 @@ iGraphicsDriver* __stdcall cGraphics::GetDriver() const
 }
 
 ///////////////////////////////////////////////
-tBool __stdcall cGraphics::GetIsDriverInitialized() const {
+tBool __stdcall cGraphics::GetIsDriverInitialized() const
+{
   return mptrDrv.IsOK();
 }
 
 ///////////////////////////////////////////////
-iDeviceResourceManager* __stdcall cGraphics::GetGenericDeviceResourceManager() const {
+iDeviceResourceManager* __stdcall cGraphics::GetGenericDeviceResourceManager()
+  const
+{
   //  CHECKCONTEXT(NULL); // removed because initialize context needs it
   return mptrDRMGeneric;
 }
 
 ///////////////////////////////////////////////
-iBitmap2D* __stdcall cGraphics::CaptureFrontBuffer() const {
+iBitmap2D* __stdcall cGraphics::CaptureFrontBuffer() const
+{
   CHECKMAINCTX(NULL);
   return mptrMainContext->CaptureFrontBuffer();
 }
 
 ///////////////////////////////////////////////
-iOcclusionQuery* __stdcall cGraphics::CreateOcclusionQuery() {
+iOcclusionQuery* __stdcall cGraphics::CreateOcclusionQuery()
+{
   CHECKDRIVER(NULL);
   return mptrDrv->CreateOcclusionQuery();
 }
 
 ///////////////////////////////////////////////
-iTexture* __stdcall cGraphics::GetErrorTexture() {
+iTexture* __stdcall cGraphics::GetErrorTexture()
+{
   if (!mptrErrorTexture.IsOK()) {
     mptrErrorTexture = GetTextureFromName(_H("base/error"));
   }
 
   if (!mptrErrorTexture.IsOK()) {
-    Ptr<iFile> fp = OpenBitmapFile(_A("base/error"),NULL);
+    Ptr<iFile> fp = OpenBitmapFile(_A("base/error"), NULL);
     if (fp.IsOK()) {
       Ptr<iBitmapBase> bmp = LoadBitmap(fp);
       if (bmp.IsOK()) {
-        mptrErrorTexture = CreateTextureFromBitmap(_H("base/error"),bmp,0);
+        mptrErrorTexture = CreateTextureFromBitmap(_H("base/error"), bmp, 0);
       }
     }
   }

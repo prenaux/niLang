@@ -13,11 +13,10 @@
 #define TRACE_TEXT_OBJECT(X) //niDebugFmt(X)
 
 #define DIRTY_LISTWORDS niBit(0)
-#define DIRTY_WRAPTEXT  niBit(1)
+#define DIRTY_WRAPTEXT niBit(1)
 
 //! Text alignment
-enum eTextAlignment
-{
+enum eTextAlignment {
   //! Text will be drawn left aligned.
   eTextAlignment_Left = 0,
   //! Text will be drawn right aligned.
@@ -32,47 +31,53 @@ enum eTextAlignment
   eTextAlignment_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
-#define TA_BUILD(ALIGN,COL) ((ALIGN&0xFF)|((COL)<<8))
+#define TA_BUILD(ALIGN, COL) ((ALIGN & 0xFF) | ((COL) << 8))
 #define TA_ALIGN(TA) ((TA)&0xFF)
-#define TA_COL_ID(TA) ((TA)>>8)
+#define TA_COL_ID(TA) ((TA) >> 8)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class sTextOccluder : public ImplRC<iTextOccluder>
-{
+class sTextOccluder : public ImplRC<iTextOccluder> {
   niBeginClass(sTextOccluder);
 
  public:
   ///////////////////////////////////////////////
-  sTextOccluder(iTextObject* apParent) {
+  sTextOccluder(iTextObject* apParent)
+  {
     mRect = sRectf::Zero();
     mpwParent = apParent;
   }
 
   ///////////////////////////////////////////////
-  virtual Ptr<iTextObject> __stdcall GetTextObject() const {
+  virtual Ptr<iTextObject> __stdcall GetTextObject() const
+  {
     QPtr<iTextObject> textObject = mpwParent;
     return textObject.ptr();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetRect(const sRectf& aRect) {
+  void __stdcall SetRect(const sRectf& aRect)
+  {
     mRect = aRect;
     _UpdateParent();
   }
-  sRectf __stdcall GetRect() const {
+  sRectf __stdcall GetRect() const
+  {
     return mRect;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetUserData(const Var& aUserData) {
+  void __stdcall SetUserData(const Var& aUserData)
+  {
     mUserData = aUserData;
   }
-  Var __stdcall GetUserData() const {
+  Var __stdcall GetUserData() const
+  {
     return mUserData;
   }
 
  private:
-  inline void _UpdateParent() {
+  inline void _UpdateParent()
+  {
     QPtr<iTextObject> textObject = mpwParent;
     if (textObject.IsOK()) {
       textObject->Update();
@@ -80,19 +85,20 @@ class sTextOccluder : public ImplRC<iTextOccluder>
   }
 
   WeakPtr<iTextObject> mpwParent;
-  sRectf               mRect;
-  Var                  mUserData;
+  sRectf mRect;
+  Var mUserData;
 };
 
-class cTextObject : public ImplRC<iTextObject>
-{
+class cTextObject : public ImplRC<iTextObject> {
   niBeginClass(cTextObject);
   struct sLine;
   struct sWord;
 
  public:
   ///////////////////////////////////////////////
-  cTextObject(iGraphics* apGraphics, const sVec2f& avSize, const tF32 afContentsScale) {
+  cTextObject(iGraphics* apGraphics, const sVec2f& avSize,
+              const tF32 afContentsScale)
+  {
     mptrGraphics = apGraphics;
     mfContentsScale = afContentsScale;
     mvSize = avSize;
@@ -104,14 +110,15 @@ class cTextObject : public ImplRC<iTextObject>
     mfCurrentTotalHeight = 0;
     mbAddingText = eFalse;
     mbKerning = eTrue;
-    mvSelectionColor = Vec4f(0.2f,0.4f,0.55f,0.3f);
+    mvSelectionColor = Vec4f(0.2f, 0.4f, 0.55f, 0.3f);
     mptrDefaultFont = mptrGraphics->LoadFont(_H("Default"));
 
     tU32 nColID = 0;
     auto registerColumns = [&](const tU32 aNumCols) {
       const tF32 step = (1.0f / (tF32)aNumCols);
-      niLoop(i,aNumCols) {
-        RegisterColumn(++nColID, niFmt("c%d_%d",i+1,aNumCols), step * (tF32)(i+1));
+      niLoop (i, aNumCols) {
+        RegisterColumn(++nColID, niFmt("c%d_%d", i + 1, aNumCols),
+                       step * (tF32)(i + 1));
       }
     };
 
@@ -123,30 +130,36 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  ~cTextObject() {
+  ~cTextObject()
+  {
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     niClassIsOK(cTextObject);
     return mptrGraphics.IsOK() && mptrDefaultFont.IsOK();
   }
 
   ///////////////////////////////////////////////
-  virtual iGraphics* __stdcall GetGraphics() const {
+  virtual iGraphics* __stdcall GetGraphics() const
+  {
     return mptrGraphics;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetContentsScale(const tF32 afContentsScale) {
+  virtual void __stdcall SetContentsScale(const tF32 afContentsScale)
+  {
     mfContentsScale = afContentsScale;
   }
-  virtual tF32 __stdcall GetContentsScale() const {
+  virtual tF32 __stdcall GetContentsScale() const
+  {
     return mfContentsScale;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetDefaultFont(iFont* apFont) {
+  virtual void __stdcall SetDefaultFont(iFont* apFont)
+  {
     if (mptrDefaultFont == apFont)
       return;
     if (!niIsOK(apFont)) {
@@ -156,35 +169,46 @@ class cTextObject : public ImplRC<iTextObject>
       mptrDefaultFont = apFont;
     }
   }
-  virtual iFont* __stdcall GetDefaultFont() const {
+  virtual iFont* __stdcall GetDefaultFont() const
+  {
     return mptrDefaultFont;
   }
 
-
   ///////////////////////////////////////////////
-  virtual void __stdcall SetLoadFontCallback(iCallback* apLoadFontCallback) {
+  virtual void __stdcall SetLoadFontCallback(iCallback* apLoadFontCallback)
+  {
     mptrLoadFontCallback = niGetIfOK(apLoadFontCallback);
   }
-  virtual iCallback* __stdcall GetLoadFontCallback() const {
+  virtual iCallback* __stdcall GetLoadFontCallback() const
+  {
     return mptrLoadFontCallback;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSize(const sVec2f& avSize) {
+  virtual void __stdcall SetSize(const sVec2f& avSize)
+  {
     if (avSize == mvSize)
       return;
     mvSize = avSize;
     _NotifyWrapText();
   }
-  virtual sVec2f __stdcall GetSize() const {
+  virtual sVec2f __stdcall GetSize() const
+  {
     return mvSize;
   }
 
   ///////////////////////////////////////////////
   //! Widget's update.
-  inline void __stdcall _NotifyListWords() { mnDirty |= DIRTY_LISTWORDS; }
-  inline void __stdcall _NotifyWrapText() { mnDirty |= DIRTY_WRAPTEXT; }
-  inline void __stdcall _DoUpdate() {
+  inline void __stdcall _NotifyListWords()
+  {
+    mnDirty |= DIRTY_LISTWORDS;
+  }
+  inline void __stdcall _NotifyWrapText()
+  {
+    mnDirty |= DIRTY_WRAPTEXT;
+  }
+  inline void __stdcall _DoUpdate()
+  {
     if (!mnDirty || !IsOK())
       return;
 
@@ -210,12 +234,13 @@ class cTextObject : public ImplRC<iTextObject>
 
     // Update the text size
     {
-      mTextSize.Set(0,0);
-      const tF32 defaultHeight = TextLineMetric_ComputeLineHeight(mptrDefaultFont);
-      niLoop(j,mlstLines.size()) {
+      mTextSize.Set(0, 0);
+      const tF32 defaultHeight =
+        TextLineMetric_ComputeLineHeight(mptrDefaultFont);
+      niLoop (j, mlstLines.size()) {
         const sLine& pLine = mlstLines[j];
-        mTextSize.x = ni::Max(mTextSize.x,pLine.width);
-        mTextSize.y += ni::Max(defaultHeight,pLine.height);
+        mTextSize.x = ni::Max(mTextSize.x, pLine.width);
+        mTextSize.y += ni::Max(defaultHeight, pLine.height);
       }
     }
 
@@ -223,7 +248,8 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall Update() {
+  void __stdcall Update()
+  {
     if (!IsOK())
       return;
     if (mlstWords.empty()) {
@@ -233,61 +259,73 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetTrimLeadingSpaces(tBool abTrimLeadingSpaces) {
+  void __stdcall SetTrimLeadingSpaces(tBool abTrimLeadingSpaces)
+  {
     mbTrimLeadingSpaces = abTrimLeadingSpaces;
     _NotifyListWords();
     _NotifyWrapText();
   }
-  tBool __stdcall GetTrimLeadingSpaces() const {
+  tBool __stdcall GetTrimLeadingSpaces() const
+  {
     return mbTrimLeadingSpaces;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetExpressionContext(iExpressionContext* apContext) {
+  void __stdcall SetExpressionContext(iExpressionContext* apContext)
+  {
     mptrExpressionContext = apContext;
     _NotifyListWords();
     _NotifyWrapText();
   }
-  iExpressionContext* __stdcall GetExpressionContext() const {
+  iExpressionContext* __stdcall GetExpressionContext() const
+  {
     return mptrExpressionContext;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetKerning(tBool abKerning) {
+  void __stdcall SetKerning(tBool abKerning)
+  {
     if (mbKerning == abKerning)
       return;
     mbKerning = abKerning;
     _NotifyWrapText();
   }
-  tBool __stdcall GetKerning() const {
+  tBool __stdcall GetKerning() const
+  {
     return mbKerning;
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetTruncation(eTextTruncation aType) {
+  void __stdcall SetTruncation(eTextTruncation aType)
+  {
     mnTruncationStyle = aType;
     _NotifyWrapText();
   }
-  eTextTruncation __stdcall GetTruncation() const {
+  eTextTruncation __stdcall GetTruncation() const
+  {
     return mnTruncationStyle;
   }
-  void __stdcall SetTruncationText(const achar* aaszString) {
+  void __stdcall SetTruncationText(const achar* aaszString)
+  {
     mstrTrunc = aaszString;
     _NotifyWrapText();
   }
-  const achar* __stdcall GetTruncationText() const {
+  const achar* __stdcall GetTruncationText() const
+  {
     return mstrTrunc.Chars();
   }
 
   ///////////////////////////////////////////////
-  virtual sVec2f __stdcall GetTextSize() const {
+  virtual sVec2f __stdcall GetTextSize() const
+  {
     niThis(cTextObject)->_DoUpdate();
     return mTextSize;
   }
 
   ///////////////////////////////////////////////
   //! Word Wrap process
-  void __stdcall _ListWords(const achar* aaszStr) {
+  void __stdcall _ListWords(const achar* aaszStr)
+  {
     niProfileBlock(_ListWords);
     if (!niStringIsOK(aaszStr))
       return;
@@ -309,12 +347,13 @@ class cTextObject : public ImplRC<iTextObject>
     }
 
     {
-      Ptr<sParseTagsXmlParserSink> xmlParser = niNew sParseTagsXmlParserSink(this,mapStrings);
+      Ptr<sParseTagsXmlParserSink> xmlParser =
+        niNew sParseTagsXmlParserSink(this, mapStrings);
       cString str;
       str << "<Text>";
       str << aaszStr;
       str << "</Text>";
-      GetLang()->XmlParseString(str.Chars(),xmlParser);
+      GetLang()->XmlParseString(str.Chars(), xmlParser);
     }
 
     ////////////////////////////////////////////////////////
@@ -337,7 +376,8 @@ class cTextObject : public ImplRC<iTextObject>
       lineNumWords = 0;
     };
 
-    auto addWord = [&](iFont* apFont, sRawString& s, const tBool abIsSeparator) {
+    auto addWord = [&](iFont* apFont, sRawString& s,
+                       const tBool abIsSeparator) {
       if (mbTrimLeadingSpaces) {
         if (mlstWords.empty() && abIsSeparator) {
           firstIndent = s.string;
@@ -359,8 +399,9 @@ class cTextObject : public ImplRC<iTextObject>
       }
 
       s.font = apFont;
-      s.size = Vec2f(TextLineMetric_ComputeRect(apFont, s.string, mbKerning).GetWidth(),
-                     TextLineMetric_ComputeLineHeight(apFont));
+      s.size = Vec2f(
+        TextLineMetric_ComputeRect(apFont, s.string, mbKerning).GetWidth(),
+        TextLineMetric_ComputeLineHeight(apFont));
 
       lastWordIndex = (tU32)mlstWords.size();
       lastWordIsSeparator = abIsSeparator;
@@ -371,7 +412,7 @@ class cTextObject : public ImplRC<iTextObject>
       mlstWords.push_back(s);
     };
 
-    niLoop(k,mapStrings.size()) {
+    niLoop (k, mapStrings.size()) {
       const sRawString& pRawStr = mapStrings[k];
       const Ptr<iFont> ptrFont = pRawStr.font;
 
@@ -391,14 +432,14 @@ class cTextObject : public ImplRC<iTextObject>
               sRawString s(pRawStr.alignment);
               s.string.Set(theWord);
               s.expr = pRawStr.expr;
-              addWord(ptrFont,s,eFalse);
+              addWord(ptrFont, s, eFalse);
             }
             const ni::StrCharIt& theSep = wordIt.breaker().lastSeparator;
             if (theSep.length() > 0) {
               sRawString s(pRawStr.alignment);
               // niDebugFmt(("- SEP: '%s' (%d)",_ASTR(theSep),lineNumWords));
               s.string.Set(theSep);
-              addWord(ptrFont,s,eTrue);
+              addWord(ptrFont, s, eTrue);
             }
             wordIt.next();
           }
@@ -436,7 +477,10 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   typedef astl::vector<sVec4f> tSegments;
-  void __stdcall _ComputeOccluderLineSegments(tF32 afYPosition, tF32 afLineSize, tSegments* aSegments, iTextOccluder* aOccluder) {
+  void __stdcall _ComputeOccluderLineSegments(tF32 afYPosition, tF32 afLineSize,
+                                              tSegments* aSegments,
+                                              iTextOccluder* aOccluder)
+  {
     // this covers the area higher than any occluder
     tF32 fBottomLine = afYPosition + afLineSize;
     niProfileBlock(WidgetText_ComputeSegments);
@@ -457,7 +501,7 @@ class cTextObject : public ImplRC<iTextObject>
       const tF32 bottom = top + rectOccluder.GetHeight();
 
       if (top < fBottomLine && bottom > afYPosition) {
-        const tF32& fOccPos  = rectOccluder.x;
+        const tF32& fOccPos = rectOccluder.x;
         const tF32& fOccSize = rectOccluder.GetWidth();
         sVec4f vRect;
         {
@@ -467,7 +511,9 @@ class cTextObject : public ImplRC<iTextObject>
           // left side
           vRect.x = vFrontSegment.x;
           vRect.y = vFrontSegment.y;
-          vRect.z = (vFrontSegment.x + vFrontSegment.z > fOccPos) ? fOccPos - vFrontSegment.x : vFrontSegment.z;
+          vRect.z = (vFrontSegment.x + vFrontSegment.z > fOccPos)
+                      ? fOccPos - vFrontSegment.x
+                      : vFrontSegment.z;
           vRect.w = vFrontSegment.w;
           if (aSegments->size() == 1) {
             aSegments->clear();
@@ -475,7 +521,7 @@ class cTextObject : public ImplRC<iTextObject>
           }
           else {
             aSegments->erase(aSegments->begin());
-            aSegments->insert(aSegments->begin(),vRect);
+            aSegments->insert(aSegments->begin(), vRect);
           }
 
           // right side
@@ -492,7 +538,8 @@ class cTextObject : public ImplRC<iTextObject>
       }
     }
   }
-  tU32 __stdcall _DoWrapText(tU32 anLine, tF32 aCurH) {
+  tU32 __stdcall _DoWrapText(tU32 anLine, tF32 aCurH)
+  {
     if (mlstWords.empty())
       return eInvalidHandle;
     if (mvSize.x <= 0 || mvSize.y <= 0)
@@ -502,7 +549,7 @@ class cTextObject : public ImplRC<iTextObject>
     tU32 nStartingWordIndex = mnLastWordIndex;
     if (!mlstLines.empty() && anLine == 0) {
       mlstLines.clear();
-      mlstLines.reserve(ni::Max(50,mlstWords.size()/64));
+      mlstLines.reserve(ni::Max(50, mlstWords.size() / 64));
       mlstLineWords.clear();
       mlstLineWords.reserve(mlstWords.size());
     }
@@ -537,7 +584,7 @@ class cTextObject : public ImplRC<iTextObject>
         line.y_pos = aCurH;
         mlstLines.push_back(line);
         if (!line.words_empty()) {
-          sWord& pLastWord = mlstLineWords[line[line.words_size()-1]];
+          sWord& pLastWord = mlstLineWords[line[line.words_size() - 1]];
           const sRawString& rRaw = mlstWords[pLastWord.index];
           if (rRaw.string.EndsWith(" ")) {
             pLastWord.width -= fSpaceWidth;
@@ -545,7 +592,7 @@ class cTextObject : public ImplRC<iTextObject>
           }
         }
         mnLastWordIndex += 1; // i + 1
-        return i+1;
+        return i + 1;
       }
       else if (i == nStartingWordIndex && (w.empty() || w == _A(" "))) {
         nStartingWordIndex++;
@@ -558,12 +605,14 @@ class cTextObject : public ImplRC<iTextObject>
       // on target line to render the text.
       if (line.segments.empty()) {
         niProfileBlock(WidgetText_DoWrapText_CreateSegments);
-        niLoop(i,mvOccluders.size()) {
+        niLoop (i, mvOccluders.size()) {
           Ptr<iTextOccluder> occ = mvOccluders[i];
-          _ComputeOccluderLineSegments(aCurH, fontLineHeight, &line.segments, occ);
+          _ComputeOccluderLineSegments(aCurH, fontLineHeight, &line.segments,
+                                       occ);
         }
         if (line.segments.empty()) {
-          _ComputeOccluderLineSegments(aCurH, fontLineHeight, &line.segments, NULL);
+          _ComputeOccluderLineSegments(aCurH, fontLineHeight, &line.segments,
+                                       NULL);
         }
       }
       const tF32 fSegSize = line.segments[nCurrentSegment].z;
@@ -574,14 +623,17 @@ class cTextObject : public ImplRC<iTextObject>
       const tBool bWordBiggerThanWidget = (fWordWidth > fWdgWidth);
 
       // check if we need to go to the next line
-      const tBool bLineBiggerThanSegment = bWordBiggerThanWidget ||
-          ((line.width - fLastSegmentSize) + fWordWidth > fSegSize);
+      const tBool bLineBiggerThanSegment =
+        bWordBiggerThanWidget ||
+        ((line.width - fLastSegmentSize) + fWordWidth > fSegSize);
 
       ///////////////////
       // Truncate Word //
       ///////////////////
-      if (bWordBiggerThanWidget && (mnTruncationStyle != eTextTruncation_None)) {
-        tF32 fTruncStringSize = TextLineMetric_ComputeRect(pFont,mstrTrunc,mbKerning).GetWidth();
+      if (bWordBiggerThanWidget && (mnTruncationStyle != eTextTruncation_None))
+      {
+        tF32 fTruncStringSize =
+          TextLineMetric_ComputeRect(pFont, mstrTrunc, mbKerning).GetWidth();
         if (fTruncStringSize > fWdgWidth) {
           // if even the (...) is bigger than the widget
           mlstLines.clear();
@@ -591,27 +643,27 @@ class cTextObject : public ImplRC<iTextObject>
           cString strTmpWord = w;
 
           // this is processing quite a lot when dealing with huge walls of text
-          while (fWordWidth+fTruncStringSize > fSegSize) {
+          while (fWordWidth + fTruncStringSize > fSegSize) {
             // remove that char from the original string
             strTmpWord.Remove();
             if (strTmpWord.empty()) {
               break;
             }
             // recompute the size
-            fWordWidth = TextLineMetric_ComputeRect(pFont,strTmpWord,mbKerning).GetWidth();
+            fWordWidth =
+              TextLineMetric_ComputeRect(pFont, strTmpWord, mbKerning)
+                .GetWidth();
           }
           fWordWidth += fTruncStringSize;
 
-          switch(mnTruncationStyle) {
-            case eTextTruncation_Left:
-              strTmpWord = mstrTrunc + strTmpWord;
-              break;
-            case eTextTruncation_Right:
-              strTmpWord.append(mstrTrunc.Chars());
-              break;
-            case eTextTruncation_None:
-              // nothing to do
-              break;
+          switch (mnTruncationStyle) {
+          case eTextTruncation_Left: strTmpWord = mstrTrunc + strTmpWord; break;
+          case eTextTruncation_Right:
+            strTmpWord.append(mstrTrunc.Chars());
+            break;
+          case eTextTruncation_None:
+            // nothing to do
+            break;
           }
 
           rawStr.truncatedString = strTmpWord;
@@ -624,12 +676,12 @@ class cTextObject : public ImplRC<iTextObject>
       if (bLineBiggerThanSegment) {
         niProfileBlock(WidgetText_DoWrapText_TestSize);
         // set default settings in case the line is empty
-        if (line.words_empty() && nCurrentSegment == line.segments.size()-1) {
+        if (line.words_empty() && nCurrentSegment == line.segments.size() - 1) {
           line.height = TextLineMetric_ComputeLineHeight(mptrDefaultFont);
           line.ascent = mptrDefaultFont->GetAscent();
         }
 
-        if (nCurrentSegment < line.segments.size()-1) {
+        if (nCurrentSegment < line.segments.size() - 1) {
           nCurrentSegment++;
           i--;
           fLastSegmentSize = line.width;
@@ -637,7 +689,7 @@ class cTextObject : public ImplRC<iTextObject>
         }
         else {
           if (!line.words_empty()) {
-            sWord& pLastWord = mlstLineWords[line[line.words_size()-1]];
+            sWord& pLastWord = mlstLineWords[line[line.words_size() - 1]];
             const sRawString& rRaw = mlstWords[pLastWord.index];
             if (rRaw.string.EndsWith(_A(" "))) {
               pLastWord.width -= fSpaceWidth;
@@ -670,7 +722,7 @@ class cTextObject : public ImplRC<iTextObject>
         word.font = pFont;
         word.alignment = rawStr.alignment;
         // add the word
-        line.words_push_back(word,mlstLineWords);
+        line.words_push_back(word, mlstLineWords);
       }
       line.width += fWordWidth;
 
@@ -678,7 +730,7 @@ class cTextObject : public ImplRC<iTextObject>
         niProfileBlock(WidgetText_DoWrapText_UpdateSegments);
         line.height = fontLineHeight;
         line.ascent = pFont->GetAscent();
-        niLoop(j,line.segments.size()) {
+        niLoop (j, line.segments.size()) {
           sVec4f& vSegment = line.segments[j];
           vSegment.y = aCurH;
           vSegment.w = line.height; //fFontSize;
@@ -690,7 +742,8 @@ class cTextObject : public ImplRC<iTextObject>
     return eInvalidHandle;
   }
 
-  tF32 __stdcall _GetColPos(const tU32 aColID, const tF32 afFullWidth) {
+  tF32 __stdcall _GetColPos(const tU32 aColID, const tF32 afFullWidth)
+  {
     tColPosMap::const_iterator itColPos = mmapColPos.find(aColID);
     if (itColPos != mmapColPos.end()) {
       tF32 colPos = itColPos->second;
@@ -706,7 +759,8 @@ class cTextObject : public ImplRC<iTextObject>
     return niMaxF32;
   }
 
-  tF32 _GetStartPos(const sLine& aLine, const sWord& aWord, const tF32 aNextX) {
+  tF32 _GetStartPos(const sLine& aLine, const sWord& aWord, const tF32 aNextX)
+  {
     const sVec4f& vSegment = aLine.segments[aWord.segment];
     const tU32 colID = TA_COL_ID(aWord.alignment);
     if (colID > 0) {
@@ -722,13 +776,9 @@ class cTextObject : public ImplRC<iTextObject>
     return (aNextX == niMaxF32) ? vSegment.x : aNextX;
   };
 
-  tU32 _Measure(
-      sVec3f& aOut, // left edge, right edge, len, next start x
-      tF32& aOutNextXPos,
-      const sLine& aLine,
-      const tU32 k,
-      const sWord& firstWord,
-      const tF32 xStart)
+  tU32 _Measure(sVec3f& aOut, // left edge, right edge, len, next start x
+                tF32& aOutNextXPos, const sLine& aLine, const tU32 k,
+                const sWord& firstWord, const tF32 xStart)
   {
     const tU32 segmentID = firstWord.segment;
     const sVec4f& vSegment = aLine.segments[segmentID];
@@ -742,22 +792,23 @@ class cTextObject : public ImplRC<iTextObject>
       // find the length and right edge of the current segment
       tF32 rx = xStart;
       tU32 rk = k;
-      for ( ; rk < numLineWords; ++rk) {
+      for (; rk < numLineWords; ++rk) {
         const sWord& rword = mlstLineWords[aLine[rk]];
         if (firstWord.segment != rword.segment) {
           aOutNextXPos = niMaxF32;
-          lastWordIndex = rk-1;
+          lastWordIndex = rk - 1;
           xRight = _GetStartPos(aLine, rword, niMaxF32);
           break;
         }
         if (firstWord.alignment != rword.alignment) {
           aOutNextXPos = rx;
-          lastWordIndex = rk-1;
+          lastWordIndex = rk - 1;
           xRight = _GetStartPos(aLine, rword, rx);
           if (TA_ALIGN(firstWord.alignment) == eTextAlignment_Center &&
               TA_ALIGN(rword.alignment) == eTextAlignment_Right)
           {
-            sVec3f m; tF32 nx;
+            sVec3f m;
+            tF32 nx;
             _Measure(m, nx, aLine, rk, rword, xRight);
             xRight = m.x;
           }
@@ -768,35 +819,35 @@ class cTextObject : public ImplRC<iTextObject>
       }
       if (rk == numLineWords) {
         xRight = vSegment.x + vSegment.z;
-        lastWordIndex = numLineWords-1;
+        lastWordIndex = numLineWords - 1;
       }
       TRACE_TEXT_OBJECT((
-          "... measure[%d,%d]: %d, xLen: %g, xLeft: %g, xRight: %g, xStart: %g, lastWord: %d, nextX: %g",
-          segmentID, k,
-          (tU32)align, xLen, xLeft, xRight, xStart, lastWordIndex, aOutNextXPos));
+        "... measure[%d,%d]: %d, xLen: %g, xLeft: %g, xRight: %g, xStart: %g, lastWord: %d, nextX: %g",
+        segmentID, k, (tU32)align, xLen, xLeft, xRight, xStart, lastWordIndex,
+        aOutNextXPos));
     }
 
     switch (align) {
-      case eTextAlignment_Right: {
-        if (TA_COL_ID(firstWord.alignment) > 0) {
-          // column position is the 'pivot'
-          xLeft = xStart - xLen;
-        }
-        else {
-          xLeft = xRight - xLen;
-        }
-        break;
+    case eTextAlignment_Right: {
+      if (TA_COL_ID(firstWord.alignment) > 0) {
+        // column position is the 'pivot'
+        xLeft = xStart - xLen;
       }
-      case eTextAlignment_Center: {
-        if (TA_COL_ID(firstWord.alignment) > 0) {
-          // column position is the 'pivot'
-          xLeft = xStart + (((xRight-xStart)/2) - (xLen/2));
-        }
-        else {
-          xLeft = xLeft + (((xRight-xStart)/2) - (xLen/2));
-        }
-        break;
+      else {
+        xLeft = xRight - xLen;
       }
+      break;
+    }
+    case eTextAlignment_Center: {
+      if (TA_COL_ID(firstWord.alignment) > 0) {
+        // column position is the 'pivot'
+        xLeft = xStart + (((xRight - xStart) / 2) - (xLen / 2));
+      }
+      else {
+        xLeft = xLeft + (((xRight - xStart) / 2) - (xLen / 2));
+      }
+      break;
+    }
     }
 
     aOut.x = xLeft;
@@ -805,7 +856,8 @@ class cTextObject : public ImplRC<iTextObject>
     return lastWordIndex;
   };
 
-  void __stdcall _DoAlignText(tU32 anStartingLine) {
+  void __stdcall _DoAlignText(tU32 anStartingLine)
+  {
     niProfileBlock(WidgetText_DoAlignText);
     const tF64 startLayout = ni::TimerInSeconds();
 
@@ -813,7 +865,7 @@ class cTextObject : public ImplRC<iTextObject>
 
     // process the words position now that
     // every word has been processed.
-    niLoop(j,mlstLines.size()) {
+    niLoop (j, mlstLines.size()) {
       sLine& pLine = mlstLines[j];
       if (pLine.segments.empty()) {
         continue;
@@ -821,7 +873,7 @@ class cTextObject : public ImplRC<iTextObject>
 
       tF32 nextXPos = niMaxF32;
       const tU32 numLineWords = pLine.words_size();
-      for (tU32 k = 0; k < numLineWords; ) {
+      for (tU32 k = 0; k < numLineWords;) {
         // const tU32 firstWordIndex = k;
         const sWord& firstWord = mlstLineWords[pLine[k]];
         const tU32 segmentID = firstWord.segment;
@@ -829,9 +881,8 @@ class cTextObject : public ImplRC<iTextObject>
         const tU32 align = TA_ALIGN(firstWord.alignment);
 
         sVec3f m;
-        tU32 lastWordIndex = _Measure(
-            m, nextXPos, pLine, k, firstWord,
-            _GetStartPos(pLine, firstWord, nextXPos));
+        tU32 lastWordIndex = _Measure(m, nextXPos, pLine, k, firstWord,
+                                      _GetStartPos(pLine, firstWord, nextXPos));
 
         // Layout left to right
         for (tF32 x = m.x; k <= lastWordIndex; ++k) {
@@ -844,16 +895,20 @@ class cTextObject : public ImplRC<iTextObject>
     }
 
     const tF64 endLayout = ni::TimerInSeconds();
-    TRACE_TEXT_OBJECT(("... Layout in %gms.", (endLayout-startLayout)*1000.0f));
+    TRACE_TEXT_OBJECT(
+      ("... Layout in %gms.", (endLayout - startLayout) * 1000.0f));
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Draw(iCanvas* apCanvas, const sRectf& aClippingRect) {
+  tBool __stdcall Draw(iCanvas* apCanvas, const sRectf& aClippingRect)
+  {
     return DrawAt(apCanvas, aClippingRect, sVec3f::Zero());
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall DrawAt(iCanvas* apCanvas, const sRectf& aClippingRect, const sVec3f& avPos) {
+  tBool __stdcall DrawAt(iCanvas* apCanvas, const sRectf& aClippingRect,
+                         const sVec3f& avPos)
+  {
     if (!IsOK() || !niIsOK(apCanvas))
       return eFalse;
 
@@ -868,7 +923,7 @@ class cTextObject : public ImplRC<iTextObject>
       tF32 fLastWordPos = 0.0f;
       tF32 fLastWordWidth = 0.0f;
       tF32 fLastLineHeight = 0.0f;
-      niLoop(i,mlstSelections.size()) {
+      niLoop (i, mlstSelections.size()) {
         const sSelection& rSel = mlstSelections[i];
         if (rSel.line >= mlstLines.size())
           continue;
@@ -883,7 +938,7 @@ class cTextObject : public ImplRC<iTextObject>
             sVec2f br;
             br.x = fLastWordPos + fLastWordWidth;
             br.y = tl.y + fLastLineHeight;
-            apCanvas->BlitFill(sRectf(tl,br),selColor);
+            apCanvas->BlitFill(sRectf(tl, br), selColor);
             bDrawn = eTrue;
           }
           tl.x = rWord.x_pos;
@@ -891,16 +946,16 @@ class cTextObject : public ImplRC<iTextObject>
         }
         // when processing the last word we need to draw
         // what's left of the selection!
-        if (i == mlstSelections.size()-1 && !bDrawn) {
+        if (i == mlstSelections.size() - 1 && !bDrawn) {
           sVec2f br;
           br.x = rWord.x_pos + rWord.width;
           br.y = tl.y + rLine.height;
-          apCanvas->BlitFill(sRectf(tl,br),selColor);
+          apCanvas->BlitFill(sRectf(tl, br), selColor);
         }
 
         nLastLine = rSel.line;
         fLastLineHeight = rLine.height;
-        fLastWordPos   = rWord.x_pos;
+        fLastWordPos = rWord.x_pos;
         fLastWordWidth = rWord.width;
       }
     }
@@ -908,21 +963,21 @@ class cTextObject : public ImplRC<iTextObject>
     const tBool hasClipping = aClippingRect != sRectf::Null();
 
     // Render text
-    niLoop(i,(tU32)mlstLines.size()) {
+    niLoop (i, (tU32)mlstLines.size()) {
       const sLine& rLine = mlstLines[i];
-      iFont* pFont = rLine.words_empty() ? mptrDefaultFont : mlstLineWords[rLine[0]].font;
+      iFont* pFont =
+        rLine.words_empty() ? mptrDefaultFont : mlstLineWords[rLine[0]].font;
 
       // occluding text
       tF32 fLinePos = rLine.y_pos + rLine.height;
       tF32 fOffsetPos = rLine.y_pos;
-      if (fLinePos <= mvSize.y && fOffsetPos >= 0.0f)
-      {
+      if (fLinePos <= mvSize.y && fOffsetPos >= 0.0f) {
         const tF32 fLineYPos = rLine.y_pos;
         if (!hasClipping || (fLinePos >= aClippingRect.GetTop() &&
                              fLinePos < aClippingRect.GetBottom()))
         {
           tF32 fWordYPos = fLineYPos + (rLine.ascent - pFont->GetAscent());
-          niLoop(j,rLine.words_size()) {
+          niLoop (j, rLine.words_size()) {
             const sWord& rWord = mlstLineWords[rLine[j]];
             if (rWord.font != pFont) {
               pFont = rWord.font;
@@ -932,21 +987,17 @@ class cTextObject : public ImplRC<iTextObject>
               fWordYPos = fLineYPos + (rLine.ascent - pFont->GetAscent());
             }
             sRawString& rawString = mlstWords[rWord.index];
-            const cString& string = rawString.truncatedString.empty() ?
-                rawString.string : rawString.truncatedString;
+            const cString& string = rawString.truncatedString.empty()
+                                      ? rawString.string
+                                      : rawString.truncatedString;
             if (TextLineMetric_IsEmpty(&rawString.textMetric)) {
-              TextLineMetric_AddText(
-                &rawString.textMetric,
-                pFont,
-                ni::UnitSnapf(rWord.x_pos),
-                ni::UnitSnapf(fWordYPos),
-                string.Chars(), string.size(),
-                mbKerning);
+              TextLineMetric_AddText(&rawString.textMetric, pFont,
+                                     ni::UnitSnapf(rWord.x_pos),
+                                     ni::UnitSnapf(fWordYPos), string.Chars(),
+                                     string.size(), mbKerning);
             }
-            TextLineMetric_PushToCanvas(
-              &rawString.textMetric, apCanvas, pFont,
-              pFont->GetColor(), avPos,
-              NULL);
+            TextLineMetric_PushToCanvas(&rawString.textMetric, apCanvas, pFont,
+                                        pFont->GetColor(), avPos, NULL);
           }
         }
       }
@@ -956,7 +1007,9 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  iTextOccluder* __stdcall AddOccluder(const sRectf& aRect, const Var& aUserData) {
+  iTextOccluder* __stdcall AddOccluder(const sRectf& aRect,
+                                       const Var& aUserData)
+  {
     Ptr<iTextOccluder> to = niNew sTextOccluder(this);
     to->SetUserData(aUserData);
     to->SetRect(aRect);
@@ -964,31 +1017,38 @@ class cTextObject : public ImplRC<iTextObject>
     _NotifyWrapText();
     return to;
   }
-  tBool __stdcall RemoveOccluder(tU32 anIndex) {
-    niCheckSilent(anIndex < mvOccluders.size(),eFalse);
-    mvOccluders.erase(mvOccluders.begin()+anIndex);
+  tBool __stdcall RemoveOccluder(tU32 anIndex)
+  {
+    niCheckSilent(anIndex < mvOccluders.size(), eFalse);
+    mvOccluders.erase(mvOccluders.begin() + anIndex);
     return eTrue;
   }
-  void __stdcall ClearOccluders() {
-    niCheckSilent(!mvOccluders.empty(),;);
+  void __stdcall ClearOccluders()
+  {
+    niCheckSilent(!mvOccluders.empty(), ;);
     mvOccluders.clear();
   }
-  tU32 __stdcall GetNumOccluders() const {
+  tU32 __stdcall GetNumOccluders() const
+  {
     return (tU32)mvOccluders.size();
   }
-  iTextOccluder* __stdcall GetOccluder(tU32 anIndex) const {
-    niCheckSilent(anIndex < mvOccluders.size(),NULL);
+  iTextOccluder* __stdcall GetOccluder(tU32 anIndex) const
+  {
+    niCheckSilent(anIndex < mvOccluders.size(), NULL);
     return mvOccluders[anIndex];
   }
 
   ///////////////////////////////////////////////
-  cString __stdcall GetSelectedString() const {
+  cString __stdcall GetSelectedString() const
+  {
     cString s;
-    niLoop(i,mlstSelections.size()) {
+    niLoop (i, mlstSelections.size()) {
       const sSelection& rSel = mlstSelections[i];
-      if (rSel.line >= mlstLines.size()) continue;
+      if (rSel.line >= mlstLines.size())
+        continue;
       const sLine& rLine = mlstLines[rSel.line];
-      if (rSel.word >= rLine.words_size()) continue;
+      if (rSel.word >= rLine.words_size())
+        continue;
       const sWord& rWord = mlstLineWords[rLine[rSel.word]];
       const sRawString& rRaw = mlstWords[rWord.index];
       s << rRaw.string;
@@ -997,20 +1057,23 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  void __stdcall SetText(const achar* aaszString) {
+  void __stdcall SetText(const achar* aaszString)
+  {
     // niDebugFmt(("... SetText: %s", aaszString));
     mstrText = aaszString;
     mlstWords.clear();
     this->Update();
   }
-  const achar* __stdcall GetText() const {
+  const achar* __stdcall GetText() const
+  {
     return mstrText.Chars();
   }
 
   ///////////////////////////////////////////////
-  void __stdcall AddText(const achar* aaszString) {
+  void __stdcall AddText(const achar* aaszString)
+  {
     if (!mlstLines.empty()) {
-      tI32 nLastIndex = (tI32)mlstLines.size()-1;
+      tI32 nLastIndex = (tI32)mlstLines.size() - 1;
       sLine& rLine = mlstLines.back();
       while (rLine.words_empty()) {
         nLastIndex--;
@@ -1034,7 +1097,7 @@ class cTextObject : public ImplRC<iTextObject>
         }
         nNumLinesAdded++;
       } while (nWordIndex != eInvalidHandle);
-      _DoAlignText((tU32)mlstLines.size()-nNumLinesAdded);
+      _DoAlignText((tU32)mlstLines.size() - nNumLinesAdded);
 
       this->Update();
     }
@@ -1046,27 +1109,30 @@ class cTextObject : public ImplRC<iTextObject>
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall FindWordIndexFromPosition(sVec2f avPosition) const {
+  tU32 __stdcall FindWordIndexFromPosition(sVec2f avPosition) const
+  {
     tF32 h = 0.0f;
     tU32 lastWordIndex = eInvalidHandle;
 
-    niLoop(i,mlstLines.size()) {
+    niLoop (i, mlstLines.size()) {
       const sLine& line = mlstLines[i];
       const tF32 nextLineY = h + line.height;
 
       if (line.words_size() > 0) {
         if (avPosition.y > h && avPosition.y <= nextLineY) {
           // position is in the line
-          niLoop(j,line.words_size()) {
+          niLoop (j, line.words_size()) {
             const sWord& word = mlstLineWords[line[j]];
             const tF32 position = word.x_pos;
-            if ((avPosition.x > position) && (avPosition.x < position + word.width)) {
+            if ((avPosition.x > position) &&
+                (avPosition.x < position + word.width))
+            {
               return word.index;
             }
           }
         }
 
-        lastWordIndex = mlstLineWords[line[line.words_size()-1]].index + 1;
+        lastWordIndex = mlstLineWords[line[line.words_size() - 1]].index + 1;
       }
 
       h = nextLineY;
@@ -1078,7 +1144,9 @@ class cTextObject : public ImplRC<iTextObject>
     return ni::Min(lastWordIndex, mlstWords.size());
   }
 
-  tBool __stdcall RegisterColumn(tU32 anID, const achar* aaszName, tF32 afPosition) {
+  tBool __stdcall RegisterColumn(tU32 anID, const achar* aaszName,
+                                 tF32 afPosition)
+  {
     if (anID < 1) {
       return eFalse;
     }
@@ -1087,19 +1155,22 @@ class cTextObject : public ImplRC<iTextObject>
       mmapColNames[aaszName] = anID;
     }
     // niLog(Info,niFmt("Registered text column: id: %d, name: '%s', pos: %.2f.",
-                     // anID, aaszName, afPosition));
+    // anID, aaszName, afPosition));
     return eTrue;
   }
 
-  void __stdcall SetSelectionColor(sVec4f avColor) {
+  void __stdcall SetSelectionColor(sVec4f avColor)
+  {
     mvSelectionColor = avColor;
   }
-  sVec4f __stdcall GetSelectionColor() const {
+  sVec4f __stdcall GetSelectionColor() const
+  {
     return mvSelectionColor;
   }
 
-  void __stdcall ClearSelection() {
-    niLoop(i,mlstSelections.size()) {
+  void __stdcall ClearSelection()
+  {
+    niLoop (i, mlstSelections.size()) {
       const sSelection& rSel = mlstSelections[i];
       sLine& rLine = mlstLines[rSel.line];
       sWord& rWord = mlstLineWords[rLine[rSel.word]];
@@ -1112,12 +1183,16 @@ class cTextObject : public ImplRC<iTextObject>
     mlstSelections.clear();
   }
 
-  void __stdcall _SelectWord(tU32 anLine, tU32 anWord) {
-    if (anLine >= mlstLines.size()) return;
+  void __stdcall _SelectWord(tU32 anLine, tU32 anWord)
+  {
+    if (anLine >= mlstLines.size())
+      return;
     sLine& rLine = mlstLines[anLine];
-    if (anWord >= rLine.words_size()) return;
+    if (anWord >= rLine.words_size())
+      return;
     sWord& rWord = mlstLineWords[rLine[anWord]];
-    if (rWord.selected) return;
+    if (rWord.selected)
+      return;
     rWord.selected = eTrue;
 
     sSelection s;
@@ -1129,13 +1204,14 @@ class cTextObject : public ImplRC<iTextObject>
       // We do this because that list is permanent compared
       // to the mlstLines that gets constantly refreshed
       sRawString& rRaw = mlstWords[s.index];
-      rRaw.selected     = eTrue;
+      rRaw.selected = eTrue;
       rRaw.selectionID = (tU32)mlstSelections.size();
     }
     mlstSelections.push_back(s);
   }
 
-  void __stdcall SelectRange(tU32 anBegin, tU32 anEnd) {
+  void __stdcall SelectRange(tU32 anBegin, tU32 anEnd)
+  {
     ClearSelection();
     if (anBegin > anEnd) {
       ni::Swap(anBegin, anEnd);
@@ -1154,7 +1230,7 @@ class cTextObject : public ImplRC<iTextObject>
       return;
     }
 
-    niLoop(i,mlstLines.size()) {
+    niLoop (i, mlstLines.size()) {
       const sLine& pLine = mlstLines[i];
       if (pLine.words_empty())
         continue;
@@ -1177,7 +1253,10 @@ class cTextObject : public ImplRC<iTextObject>
 
         // if we need to select more words than there are on this line then we
         // will need to go to the next one
-        const tU32 nEndOfSelection = ((nOffset + nNumSelections) >= pLine.words_size()) ? pLine.words_size() : (nOffset + nNumSelections);
+        const tU32 nEndOfSelection =
+          ((nOffset + nNumSelections) >= pLine.words_size())
+            ? pLine.words_size()
+            : (nOffset + nNumSelections);
         for (tU32 j = nOffset; j < nEndOfSelection; j++) {
           _SelectWord(i, j);
           nNumSelections--;
@@ -1198,17 +1277,21 @@ class cTextObject : public ImplRC<iTextObject>
 
   struct sFontManager {
    public:
-    sFontManager() {
+    sFontManager()
+    {
       Clear();
     }
-    ~sFontManager() {
+    ~sFontManager()
+    {
       Clear();
     }
-    void Clear() {
+    void Clear()
+    {
       mmapFonts.clear();
       mbCanProcess = eFalse;
     }
-    iFont* GetFont(iHString* ahspName) {
+    iFont* GetFont(iHString* ahspName)
+    {
       niProfileBlock(WidgetText_GetFont);
       tFonts::const_iterator pIt = mmapFonts.find(ahspName);
       if (pIt != mmapFonts.end()) {
@@ -1216,7 +1299,8 @@ class cTextObject : public ImplRC<iTextObject>
       }
       return mpParent->mptrDefaultFont;
     }
-    void Init(cTextObject* apTextObject) {
+    void Init(cTextObject* apTextObject)
+    {
       mmapFonts.clear();
       mstackFamily.clear();
       mstackColor.clear();
@@ -1229,7 +1313,8 @@ class cTextObject : public ImplRC<iTextObject>
       mpParent = apTextObject;
       mbCanProcess = eTrue;
     }
-    void Continue() {
+    void Continue()
+    {
       mstackFamily.clear();
       mstackColor.clear();
       mstackSize.clear();
@@ -1243,7 +1328,8 @@ class cTextObject : public ImplRC<iTextObject>
 
     // BEGIN and END will translate the tags into data
     // if you need to add new tags, you should start from here!
-    void BeginTag(const cString& astrToken) {
+    void BeginTag(const cString& astrToken)
+    {
       cString strToken = astrToken;
       cString strValue = _A("");
       if (astrToken.contains(_A("="))) {
@@ -1290,10 +1376,12 @@ class cTextObject : public ImplRC<iTextObject>
         }
 
         if (!strCol.IsEmpty()) {
-          tColNameMap::const_iterator itColName = mpParent->mmapColNames.find(strCol);
+          tColNameMap::const_iterator itColName =
+            mpParent->mmapColNames.find(strCol);
           if (itColName == mpParent->mmapColNames.end()) {
             const tU32 maybeColID = strCol.Long();
-            tColPosMap::const_iterator itColPos = mpParent->mmapColPos.find(maybeColID);
+            tColPosMap::const_iterator itColPos =
+              mpParent->mmapColPos.find(maybeColID);
             if (itColPos == mpParent->mmapColPos.end()) {
               niWarning(niFmt("Can't find column '%s'.", strCol));
             }
@@ -1306,7 +1394,7 @@ class cTextObject : public ImplRC<iTextObject>
           }
         }
 
-        mstackAlignment.push_back(TA_BUILD(align,col));
+        mstackAlignment.push_back(TA_BUILD(align, col));
       }
       else if (strToken == _A("f") || strToken == _A("family")) {
         mstackFamily.push_back(strValue);
@@ -1325,7 +1413,8 @@ class cTextObject : public ImplRC<iTextObject>
         mstackLineSpacing.push_back(strValue.Float());
       }
     }
-    void EndTag(const cString& astrToken) {
+    void EndTag(const cString& astrToken)
+    {
       cString strToken = astrToken;
       cString strValue = _A("");
       if (astrToken.contains(_A("="))) {
@@ -1335,38 +1424,48 @@ class cTextObject : public ImplRC<iTextObject>
         strValue.Normalize(); // remove the strings
       }
       if (strToken == _A("b") || strToken == _A("bold")) {
-        if (!mstackBold.empty()) mstackBold.pop_back();
+        if (!mstackBold.empty())
+          mstackBold.pop_back();
       }
       else if (strToken == _A("i") || strToken == _A("italic")) {
-        if (!mstackItalic.empty()) mstackItalic.pop_back();
+        if (!mstackItalic.empty())
+          mstackItalic.pop_back();
       }
       else if (strToken == _A("a") || strToken == _A("align")) {
-        if (!mstackAlignment.empty()) mstackAlignment.pop_back();
+        if (!mstackAlignment.empty())
+          mstackAlignment.pop_back();
       }
       else if (strToken == _A("f") || strToken == _A("family")) {
-        if (!mstackFamily.empty()) mstackFamily.pop_back();
+        if (!mstackFamily.empty())
+          mstackFamily.pop_back();
       }
       else if (strToken == _A("c") || strToken == _A("color")) {
-        if (!mstackColor.empty()) mstackColor.pop_back();
+        if (!mstackColor.empty())
+          mstackColor.pop_back();
       }
       else if (strToken == _A("s") || strToken == _A("size")) {
-        if (!mstackSize.empty()) mstackSize.pop_back();
+        if (!mstackSize.empty())
+          mstackSize.pop_back();
       }
       else if (strToken == _A("r") || strToken == _A("res")) {
-        if (!mstackRes.empty()) mstackRes.pop_back();
+        if (!mstackRes.empty())
+          mstackRes.pop_back();
       }
       else if (strToken == _A("l") || strToken == _A("line_spacing")) {
-        if (!mstackLineSpacing.empty()) mstackLineSpacing.pop_back();
+        if (!mstackLineSpacing.empty())
+          mstackLineSpacing.pop_back();
       }
     }
 
-    Ptr<iFont> ProcessToken() {
+    Ptr<iFont> ProcessToken()
+    {
       if (!mbCanProcess)
         return NULL;
 
       tHStringPtr hspFontName;
       {
-        cString strFontName = mstackFamily.empty() ? _A("Default") : mstackFamily.back();
+        cString strFontName =
+          mstackFamily.empty() ? _A("Default") : mstackFamily.back();
         if (!mstackBold.empty() && !strFontName.contains(_A("Bold")))
           strFontName += _A(" Bold");
         if (!mstackItalic.empty() && !strFontName.contains(_A("Italic")))
@@ -1374,13 +1473,21 @@ class cTextObject : public ImplRC<iTextObject>
         hspFontName = _H(strFontName);
       }
 
-      const tU32 fontSize = (tU32)((mstackSize.empty() ? (tF32)16 : (tF32)mstackSize.back()));
-      const tU32 fontRes = (tU32)((mstackRes.empty() ? (tF32)fontSize : (tF32)mstackRes.back()) * mpParent->mfContentsScale);
-      const tU32 fontColor = mstackColor.empty() ? 0xFFFFFFFF :  ULColorBuild(
-          mpParent->GetGraphics()->GetColor4FromName(_H(mstackColor.back())));
-      const tF32 fontLineSpacing = mstackLineSpacing.empty() ? 1.0 : mstackLineSpacing.back();
-      const tHStringPtr hspFontCacheKey = _H(niFmt(
-        "%s-%d-%d-%x-%g",hspFontName,fontSize,fontRes,fontColor,fontLineSpacing));
+      const tU32 fontSize =
+        (tU32)((mstackSize.empty() ? (tF32)16 : (tF32)mstackSize.back()));
+      const tU32 fontRes =
+        (tU32)((mstackRes.empty() ? (tF32)fontSize : (tF32)mstackRes.back()) *
+               mpParent->mfContentsScale);
+      const tU32 fontColor =
+        mstackColor.empty()
+          ? 0xFFFFFFFF
+          : ULColorBuild(mpParent->GetGraphics()->GetColor4FromName(
+              _H(mstackColor.back())));
+      const tF32 fontLineSpacing =
+        mstackLineSpacing.empty() ? 1.0 : mstackLineSpacing.back();
+      const tHStringPtr hspFontCacheKey =
+        _H(niFmt("%s-%d-%d-%x-%g", hspFontName, fontSize, fontRes, fontColor,
+                 fontLineSpacing));
 
       // check if the font has already been cached
       tFonts::const_iterator pIt = mmapFonts.find(hspFontCacheKey);
@@ -1391,7 +1498,8 @@ class cTextObject : public ImplRC<iTextObject>
       // font hasnt been cached, load it
       QPtr<iFont> ptrBaseFont;
       if (mpParent->mptrLoadFontCallback.IsOK()) {
-        ptrBaseFont = mpParent->mptrLoadFontCallback->RunCallback(hspFontName,niVarNull);
+        ptrBaseFont =
+          mpParent->mptrLoadFontCallback->RunCallback(hspFontName, niVarNull);
       }
       else {
         ptrBaseFont = mpParent->mptrGraphics->LoadFont(hspFontName);
@@ -1403,29 +1511,31 @@ class cTextObject : public ImplRC<iTextObject>
       // setup the font
       {
         Ptr<iFont> ptrFont = ptrBaseFont->CreateFontInstance(NULL);
-        ptrFont->SetSizeAndResolution(Vec2f((tF32)fontSize, (tF32)fontSize),fontRes,mpParent->mfContentsScale);
+        ptrFont->SetSizeAndResolution(Vec2f((tF32)fontSize, (tF32)fontSize),
+                                      fontRes, mpParent->mfContentsScale);
         ptrFont->SetColor(fontColor);
         ptrFont->SetLineSpacing(fontLineSpacing);
         astl::upsert(mmapFonts, hspFontCacheKey, ptrFont);
-        TRACE_TEXT_OBJECT(("... font loaded '%s', key '%s'", ptrFont->GetName(), hspFontCacheKey));
+        TRACE_TEXT_OBJECT(("... font loaded '%s', key '%s'", ptrFont->GetName(),
+                           hspFontCacheKey));
         return ptrFont;
       }
     }
 
    public:
     cTextObject* mpParent;
-    typedef astl::hstring_hash_map<Ptr<iFont> > tFonts;
+    typedef astl::hstring_hash_map<Ptr<iFont>> tFonts;
     tFonts mmapFonts;
     tBool mbCanProcess;
-    astl::vector<tU32>    mstackSize;
-    astl::vector<tU32>    mstackRes;
-    astl::vector<tU32>    mstackAlignment;
+    astl::vector<tU32> mstackSize;
+    astl::vector<tU32> mstackRes;
+    astl::vector<tU32> mstackAlignment;
     astl::vector<cString> mstackTags;
     astl::vector<cString> mstackColor;
     astl::vector<cString> mstackFamily;
-    astl::vector<tBool>   mstackBold;
-    astl::vector<tBool>   mstackItalic;
-    astl::vector<tF32>    mstackLineSpacing;
+    astl::vector<tBool> mstackBold;
+    astl::vector<tBool> mstackItalic;
+    astl::vector<tF32> mstackLineSpacing;
   } mFontManager;
 
   struct sExpression : public ImplRC<iUnknown> {
@@ -1434,8 +1544,11 @@ class cTextObject : public ImplRC<iTextObject>
     Ptr<iExpressionVariable> mptrResult;
     tU32 mnWordIndex;
 
-    tBool UpdateExpression() {
-      if (mptrResult.IsOK() && niFlagIs(mptrResult->GetFlags(),eExpressionVariableFlags_Constant)) {
+    tBool UpdateExpression()
+    {
+      if (mptrResult.IsOK() &&
+          niFlagIs(mptrResult->GetFlags(), eExpressionVariableFlags_Constant))
+      {
         return eFalse;
       }
       if (mptrExpr.IsOK()) {
@@ -1444,7 +1557,8 @@ class cTextObject : public ImplRC<iTextObject>
       return eTrue;
     }
 
-    cString ResultToString() {
+    cString ResultToString()
+    {
       cString r;
       if (!mstrExpr.empty()) {
         r += mstrExpr;
@@ -1461,14 +1575,18 @@ class cTextObject : public ImplRC<iTextObject>
   };
 
   struct sRawString {
-    sRawString(tU32 aTextAlignment) {
+    sRawString(tU32 aTextAlignment)
+    {
       selected = eFalse;
       selectionID = eInvalidHandle;
       size = sVec2f::Zero();
       alignment = aTextAlignment;
     }
 
-    void InitExpression(iExpressionContext* apExpressionContext, const achar* aaszExpr, tBool abPrintExpr, tBool abKerning) {
+    void InitExpression(iExpressionContext* apExpressionContext,
+                        const achar* aaszExpr, tBool abPrintExpr,
+                        tBool abKerning)
+    {
       expr = niNew sExpression();
       expr->mptrExpr = apExpressionContext->CreateExpression(aaszExpr);
       if (abPrintExpr) {
@@ -1477,7 +1595,8 @@ class cTextObject : public ImplRC<iTextObject>
       UpdateExpression(abKerning);
     }
 
-    tBool UpdateExpression(const tBool abKerning) {
+    tBool UpdateExpression(const tBool abKerning)
+    {
       if (!font.IsOK()) {
         return eFalse;
       }
@@ -1487,28 +1606,29 @@ class cTextObject : public ImplRC<iTextObject>
       const tBool exprUpdated = expr->UpdateExpression();
       if (exprUpdated) {
         this->string = expr->ResultToString();
-        this->size = Vec2f(
-          TextLineMetric_ComputeRect(font, string, abKerning).GetWidth(),
-          TextLineMetric_ComputeLineHeight(font));
+        this->size =
+          Vec2f(TextLineMetric_ComputeRect(font, string, abKerning).GetWidth(),
+                TextLineMetric_ComputeLineHeight(font));
       }
       return eTrue;
     }
 
-    Ptr<iFont>  font;
-    cString     string;
-    cString     truncatedString;
-    sVec2f      size;
+    Ptr<iFont> font;
+    cString string;
+    cString truncatedString;
+    sVec2f size;
     sTextLineMetric textMetric;
-    tU32        selectionID;
-    tBool       selected;
-    tU32        alignment;
+    tU32 selectionID;
+    tBool selected;
+    tU32 alignment;
     Ptr<sExpression> expr;
   };
   typedef astl::vector<sRawString> tRawStrings;
   tRawStrings mlstWords;
 
   struct sWord {
-    sWord() {
+    sWord()
+    {
       index = 0;
       segment = 0;
       width = 0.0f;
@@ -1517,42 +1637,48 @@ class cTextObject : public ImplRC<iTextObject>
       font = NULL;
       alignment = eTextAlignment_Left;
     }
-    ~sWord() {
+    ~sWord()
+    {
     }
-    tU32  index;
-    tU32  segment;
-    tF32  width;
-    tF32  x_pos;
-    tU32  alignment;
+    tU32 index;
+    tU32 segment;
+    tF32 width;
+    tF32 x_pos;
+    tU32 alignment;
     tBool selected;
     Ptr<iFont> font;
   };
   struct sLine {
-    sLine() {
+    sLine()
+    {
       clear();
     }
-    ~sLine() {
+    ~sLine()
+    {
     }
-    tF32      y_pos;
-    tF32      width;
-    tF32      height;
-    tF32      ascent;
-    tU32      firstWord;
-    tU32      numWords;
+    tF32 y_pos;
+    tF32 width;
+    tF32 height;
+    tF32 ascent;
+    tU32 firstWord;
+    tU32 numWords;
     // the segments are the spaces
     // where the rendering should be done
     astl::vector<sVec4f> segments;
-    void clear() {
+    void clear()
+    {
       y_pos = 0.0f;
       width = height = ascent = 0;
       firstWord = eInvalidHandle;
       numWords = 0;
       segments.clear();
     }
-    inline bool words_empty() const {
+    inline bool words_empty() const
+    {
       return numWords == 0;
     }
-    inline void words_push_back(const sWord& w, astl::vector<sWord>& wordList) {
+    inline void words_push_back(const sWord& w, astl::vector<sWord>& wordList)
+    {
       const tU32 i = (tU32)wordList.size();
       if (firstWord == eInvalidHandle) {
         firstWord = i;
@@ -1560,11 +1686,13 @@ class cTextObject : public ImplRC<iTextObject>
       ++numWords;
       wordList.push_back(w);
     }
-    inline tSize words_size() const {
+    inline tSize words_size() const
+    {
       return numWords;
     }
-    inline tU32 operator [] (tU32 anIndex) const {
-      return firstWord+anIndex;
+    inline tU32 operator[](tU32 anIndex) const
+    {
+      return firstWord + anIndex;
     }
   };
   astl::vector<sLine> mlstLines;
@@ -1578,24 +1706,24 @@ class cTextObject : public ImplRC<iTextObject>
     tU32 word;
   };
   astl::vector<sSelection> mlstSelections;
-  sVec4f                   mvSelectionColor;
+  sVec4f mvSelectionColor;
   eTextTruncation mnTruncationStyle;
-  cString         mstrTrunc;
-  tU32            mnDirty;
-  tBool           mbTrimLeadingSpaces;
+  cString mstrTrunc;
+  tU32 mnDirty;
+  tBool mbTrimLeadingSpaces;
 
   tBool mbAddingText;
-  tU32  mnLastWordIndex;
-  tF32  mfCurrentTotalHeight;
+  tU32 mnLastWordIndex;
+  tF32 mfCurrentTotalHeight;
 
   // Occluders
-  typedef astl::vector<Ptr<iTextOccluder> > tOccluders;
+  typedef astl::vector<Ptr<iTextOccluder>> tOccluders;
   tOccluders mvOccluders;
 
   // Columns
-  typedef astl::hash_map<tU32,tF32> tColPosMap;
-  typedef astl::hash_map<cString,tU32> tColNameMap;
-  tColPosMap  mmapColPos;
+  typedef astl::hash_map<tU32, tF32> tColPosMap;
+  typedef astl::hash_map<cString, tU32> tColNameMap;
+  tColPosMap mmapColPos;
   tColNameMap mmapColNames;
 
   enum eTagType {
@@ -1619,228 +1747,232 @@ class cTextObject : public ImplRC<iTextObject>
     cTextObject* _this;
     cTextObject::tRawStrings& mapStrings; // tag-free string list
     astl::stack<eTagType> tagType;
-    astl::stack<tU32>     tagValue;
-    astl::stack<cString>  expr;
-    astl::stack<tU32>     fontAttrs;
-    astl::stack<tU32>     colAttrs;
+    astl::stack<tU32> tagValue;
+    astl::stack<cString> expr;
+    astl::stack<tU32> fontAttrs;
+    astl::stack<tU32> colAttrs;
 
-    sParseTagsXmlParserSink(cTextObject* apThis, cTextObject::tRawStrings& aMapStrings)
+    sParseTagsXmlParserSink(cTextObject* apThis,
+                            cTextObject::tRawStrings& aMapStrings)
         : _this(apThis)
         , mapStrings(aMapStrings)
     {
       tagType.push(eTagType_Unknown);
     }
 
-    virtual tBool __stdcall OnXmlParserSink_Node(
-        eXmlParserNodeType aType, const ni::achar* aName)
+    virtual tBool __stdcall OnXmlParserSink_Node(eXmlParserNodeType aType,
+                                                 const ni::achar* aName)
     {
       TRACE_TEXT_OBJECT((".... OnXmlParserSink_Node: %d: %s", aType, aName));
       switch (aType) {
-        case eXmlParserNodeType_ElementBegin:
-          if (StrIEq(aName,"font") || StrIEq(aName,"f")) {
-            tagType.push(eTagType_Font);
-            fontAttrs.push(0);
-          }
-          else if (StrIEq(aName,"a") || StrIEq(aName,"align")) {
-            tagType.push(eTagType_Alignment);
-            tagValue.push(0);
-          }
-          else if (StrIEq(aName,"e") || StrIEq(aName,"expr")) {
-            tagType.push(eTagType_Expression);
-            expr.push("");
-            tagValue.push(0);
-          }
-          else if (StrIEq(aName,"g") || StrIEq(aName,"glyph")) {
-            tagType.push(eTagType_Glyph);
-            tagValue.push(0);
-          }
-          else {
-            tagType.push(eTagType_Unknown);
-            if (StrIEq(aName,"b") || StrIEq(aName,"bold")) {
-              _this->mFontManager.BeginTag("b");
-            }
-            else if (StrIEq(aName,"i") || StrIEq(aName,"italic")) {
-              _this->mFontManager.BeginTag("i");
-            }
-          }
-          break;
-        case eXmlParserNodeType_ElementEnd:
-          if (StrIEq(aName,"font") || StrIEq(aName,"f")) {
-            if (!fontAttrs.empty()) {
-              const tU32 lastFontAttrs = fontAttrs.top();
-              if (lastFontAttrs & eFontTagAttr_LineSpacing) {
-                _this->mFontManager.EndTag("l");
-              }
-              if (lastFontAttrs & eFontTagAttr_MaxRes) {
-                _this->mFontManager.EndTag("r");
-              }
-              if (lastFontAttrs & eFontTagAttr_Size) {
-                _this->mFontManager.EndTag("s");
-              }
-              if (lastFontAttrs & eFontTagAttr_Color) {
-                _this->mFontManager.EndTag("c");
-              }
-              if (lastFontAttrs & eFontTagAttr_Name) {
-                _this->mFontManager.EndTag("f");
-              }
-              fontAttrs.pop();
-            }
-          }
-          else if (StrIEq(aName,"a") || StrIEq(aName,"align")) {
-            if (tagValue.top() != eInvalidHandle) {
-              _this->mFontManager.EndTag("a");
-            }
-            tagValue.pop();
-          }
-          else if (StrIEq(aName,"g") || StrIEq(aName,"glyph")) {
-            tagValue.pop();
-          }
-          else if (StrIEq(aName,"e") || StrIEq(aName,"expr")) {
-            if (!expr.top().empty()) {
-              if (!_this->mptrExpressionContext.IsOK()) {
-                _this->mptrExpressionContext = ni::GetLang()->GetExpressionContext();
-              }
-
-              sRawString s(
-                  _this->mFontManager.mstackAlignment.empty() ?
-                  eTextAlignment_Left : _this->mFontManager.mstackAlignment.back());
-              s.InitExpression(_this->mptrExpressionContext, expr.top().Chars(), !!tagValue.top(), _this->mbKerning);
-              s.font = _this->mFontManager.ProcessToken();
-              s.string = "#EXPR#";
-              mapStrings.push_back(s);
-            }
-            tagValue.pop();
-            expr.pop();
-          }
-          else {
-            if (StrIEq(aName,"b") || StrIEq(aName,"bold")) {
-              _this->mFontManager.EndTag("b");
-            }
-            else if (StrIEq(aName,"i") || StrIEq(aName,"italic")) {
-              _this->mFontManager.EndTag("i");
-            }
-          }
-          tagType.pop();
-          break;
-        case eXmlParserNodeType_EmptyText:
-          TRACE_TEXT_OBJECT(("... EMPTY TEXT: |%d| %s", ni::StrLen(aName), aName));
-          niFallthrough;
-        case eXmlParserNodeType_Text: {
-          TRACE_TEXT_OBJECT(("... TEXT: |%d| %s", ni::StrLen(aName), aName));
-          sRawString s(_this->mFontManager.mstackAlignment.empty() ?
-                       eTextAlignment_Left : _this->mFontManager.mstackAlignment.back());
-          s.font = _this->mFontManager.ProcessToken();
-          if (aType == eXmlParserNodeType_EmptyText) {
-            s.string = aName;
-          }
-          else {
-            StringDecodeXml(s.string,aName);
-          }
-          if (tagType.top() == eTagType_Expression) {
-            expr.top() += s.string;
-          }
-          else {
-            mapStrings.push_back(s);
-          }
-          break;
+      case eXmlParserNodeType_ElementBegin:
+        if (StrIEq(aName, "font") || StrIEq(aName, "f")) {
+          tagType.push(eTagType_Font);
+          fontAttrs.push(0);
         }
-        case eXmlParserNodeType_Comment:
-          break;
-        case eXmlParserNodeType_CDATA:
-          // niDebugFmt(("... CDATA: %s", aName));
-          sRawString s(_this->mFontManager.mstackAlignment.empty() ?
-                       eTextAlignment_Left : _this->mFontManager.mstackAlignment.back());
-          s.font = _this->mFontManager.ProcessToken();
-          s.string = aName;
-          if (tagType.top() == eTagType_Expression) {
-            expr.top() += s.string;
+        else if (StrIEq(aName, "a") || StrIEq(aName, "align")) {
+          tagType.push(eTagType_Alignment);
+          tagValue.push(0);
+        }
+        else if (StrIEq(aName, "e") || StrIEq(aName, "expr")) {
+          tagType.push(eTagType_Expression);
+          expr.push("");
+          tagValue.push(0);
+        }
+        else if (StrIEq(aName, "g") || StrIEq(aName, "glyph")) {
+          tagType.push(eTagType_Glyph);
+          tagValue.push(0);
+        }
+        else {
+          tagType.push(eTagType_Unknown);
+          if (StrIEq(aName, "b") || StrIEq(aName, "bold")) {
+            _this->mFontManager.BeginTag("b");
           }
-          else {
+          else if (StrIEq(aName, "i") || StrIEq(aName, "italic")) {
+            _this->mFontManager.BeginTag("i");
+          }
+        }
+        break;
+      case eXmlParserNodeType_ElementEnd:
+        if (StrIEq(aName, "font") || StrIEq(aName, "f")) {
+          if (!fontAttrs.empty()) {
+            const tU32 lastFontAttrs = fontAttrs.top();
+            if (lastFontAttrs & eFontTagAttr_LineSpacing) {
+              _this->mFontManager.EndTag("l");
+            }
+            if (lastFontAttrs & eFontTagAttr_MaxRes) {
+              _this->mFontManager.EndTag("r");
+            }
+            if (lastFontAttrs & eFontTagAttr_Size) {
+              _this->mFontManager.EndTag("s");
+            }
+            if (lastFontAttrs & eFontTagAttr_Color) {
+              _this->mFontManager.EndTag("c");
+            }
+            if (lastFontAttrs & eFontTagAttr_Name) {
+              _this->mFontManager.EndTag("f");
+            }
+            fontAttrs.pop();
+          }
+        }
+        else if (StrIEq(aName, "a") || StrIEq(aName, "align")) {
+          if (tagValue.top() != eInvalidHandle) {
+            _this->mFontManager.EndTag("a");
+          }
+          tagValue.pop();
+        }
+        else if (StrIEq(aName, "g") || StrIEq(aName, "glyph")) {
+          tagValue.pop();
+        }
+        else if (StrIEq(aName, "e") || StrIEq(aName, "expr")) {
+          if (!expr.top().empty()) {
+            if (!_this->mptrExpressionContext.IsOK()) {
+              _this->mptrExpressionContext =
+                ni::GetLang()->GetExpressionContext();
+            }
+
+            sRawString s(_this->mFontManager.mstackAlignment.empty()
+                           ? eTextAlignment_Left
+                           : _this->mFontManager.mstackAlignment.back());
+            s.InitExpression(_this->mptrExpressionContext, expr.top().Chars(),
+                             !!tagValue.top(), _this->mbKerning);
+            s.font = _this->mFontManager.ProcessToken();
+            s.string = "#EXPR#";
             mapStrings.push_back(s);
           }
-          break;
+          tagValue.pop();
+          expr.pop();
+        }
+        else {
+          if (StrIEq(aName, "b") || StrIEq(aName, "bold")) {
+            _this->mFontManager.EndTag("b");
+          }
+          else if (StrIEq(aName, "i") || StrIEq(aName, "italic")) {
+            _this->mFontManager.EndTag("i");
+          }
+        }
+        tagType.pop();
+        break;
+      case eXmlParserNodeType_EmptyText:
+        TRACE_TEXT_OBJECT(
+          ("... EMPTY TEXT: |%d| %s", ni::StrLen(aName), aName));
+        niFallthrough;
+      case eXmlParserNodeType_Text: {
+        TRACE_TEXT_OBJECT(("... TEXT: |%d| %s", ni::StrLen(aName), aName));
+        sRawString s(_this->mFontManager.mstackAlignment.empty()
+                       ? eTextAlignment_Left
+                       : _this->mFontManager.mstackAlignment.back());
+        s.font = _this->mFontManager.ProcessToken();
+        if (aType == eXmlParserNodeType_EmptyText) {
+          s.string = aName;
+        }
+        else {
+          StringDecodeXml(s.string, aName);
+        }
+        if (tagType.top() == eTagType_Expression) {
+          expr.top() += s.string;
+        }
+        else {
+          mapStrings.push_back(s);
+        }
+        break;
+      }
+      case eXmlParserNodeType_Comment: break;
+      case eXmlParserNodeType_CDATA:
+        // niDebugFmt(("... CDATA: %s", aName));
+        sRawString s(_this->mFontManager.mstackAlignment.empty()
+                       ? eTextAlignment_Left
+                       : _this->mFontManager.mstackAlignment.back());
+        s.font = _this->mFontManager.ProcessToken();
+        s.string = aName;
+        if (tagType.top() == eTagType_Expression) {
+          expr.top() += s.string;
+        }
+        else {
+          mapStrings.push_back(s);
+        }
+        break;
       }
       return eTrue;
     }
-    virtual tBool __stdcall OnXmlParserSink_Attribute(
-        const ni::achar* aName,
-        const ni::achar* aValue)
+    virtual tBool __stdcall OnXmlParserSink_Attribute(const ni::achar* aName,
+                                                      const ni::achar* aValue)
     {
-      TRACE_TEXT_OBJECT((".... OnXmlParserSink_Attribute: %d: '%s' = '%s'", tagType.top(), aName, aValue));
+      TRACE_TEXT_OBJECT((".... OnXmlParserSink_Attribute: %d: '%s' = '%s'",
+                         tagType.top(), aName, aValue));
       switch (tagType.top()) {
-        case eTagType_Unknown:
-        case eTagType_Col:
-          break;
-        case eTagType_Font: {
-          if (StrIEq(aName,"name")) {
-            _this->mFontManager.BeginTag(niFmt("f=%s",aValue));
-            if (!fontAttrs.empty())
-              fontAttrs.top() |= eFontTagAttr_Name;
-          }
-          else if (StrIEq(aName,"color")) {
-            _this->mFontManager.BeginTag(niFmt("c=%s",aValue));
-            if (!fontAttrs.empty())
-              fontAttrs.top() |= eFontTagAttr_Color;
-          }
-          else if (StrIEq(aName,"size")) {
-            _this->mFontManager.BeginTag(niFmt("s=%s",aValue));
-            if (!fontAttrs.empty())
-              fontAttrs.top() |= eFontTagAttr_Size;
-          }
-          else if (StrIEq(aName,"res")) {
-            _this->mFontManager.BeginTag(niFmt("r=%s",aValue));
-            if (!fontAttrs.empty())
-              fontAttrs.top() |= eFontTagAttr_MaxRes;
-          }
-          else if (StrIEq(aName,"line_spacing")) {
-            _this->mFontManager.BeginTag(niFmt("l=%s",aValue));
-            if (!fontAttrs.empty())
-              fontAttrs.top() |= eFontTagAttr_LineSpacing;
-          }
-          break;
+      case eTagType_Unknown:
+      case eTagType_Col: break;
+      case eTagType_Font: {
+        if (StrIEq(aName, "name")) {
+          _this->mFontManager.BeginTag(niFmt("f=%s", aValue));
+          if (!fontAttrs.empty())
+            fontAttrs.top() |= eFontTagAttr_Name;
         }
-        case eTagType_Alignment: {
-          TRACE_TEXT_OBJECT((".... eTagType_Alignment Attr: '%s' = '%s'", aName, aValue));
-          if (StrEq(aName,aValue)) {
-            tagValue.top() = 1;
-            _this->mFontManager.BeginTag(niFmt("a=%s",aValue));
-          }
-          else if (StrEq(aName,"left") ||
-                   StrEq(aName,"right") ||
-                   StrEq(aName,"center") ||
-                   StrEq(aName,"justify") ||
-                   StrEq(aName,"justify_all"))
-          {
-            tagValue.top() = 1;
-            _this->mFontManager.BeginTag(niFmt("a=%s:%s",aValue,aName));
-          }
-          else {
-            tagValue.top() = 1;
-            _this->mFontManager.BeginTag(niFmt("a=%s:%s",aName,aValue));
-          }
-          break;
+        else if (StrIEq(aName, "color")) {
+          _this->mFontManager.BeginTag(niFmt("c=%s", aValue));
+          if (!fontAttrs.empty())
+            fontAttrs.top() |= eFontTagAttr_Color;
         }
-        case eTagType_Expression: {
-          if (StrIEq(aName,"print")) {
-            tagValue.top() = 1;
-          }
-          break;
+        else if (StrIEq(aName, "size")) {
+          _this->mFontManager.BeginTag(niFmt("s=%s", aValue));
+          if (!fontAttrs.empty())
+            fontAttrs.top() |= eFontTagAttr_Size;
         }
-        case eTagType_Glyph: {
-          if (StrIEq(aName,"name")) {
-            TRACE_TEXT_OBJECT(("... eTagType_Glyph fromName: %s", aValue));
-            Ptr<iFont> font = _this->mFontManager.ProcessToken();
-            const tU32 glyphCodePoint = font->GetGlyphCodePointFromName(aValue);
-            if (glyphCodePoint) {
-              sRawString s(_this->mFontManager.mstackAlignment.empty() ?
-                           eTextAlignment_Left : _this->mFontManager.mstackAlignment.back());
-              s.font = font;
-              s.string.appendChar(glyphCodePoint);
-              mapStrings.push_back(s);
-            }
-          }
-          break;
+        else if (StrIEq(aName, "res")) {
+          _this->mFontManager.BeginTag(niFmt("r=%s", aValue));
+          if (!fontAttrs.empty())
+            fontAttrs.top() |= eFontTagAttr_MaxRes;
         }
+        else if (StrIEq(aName, "line_spacing")) {
+          _this->mFontManager.BeginTag(niFmt("l=%s", aValue));
+          if (!fontAttrs.empty())
+            fontAttrs.top() |= eFontTagAttr_LineSpacing;
+        }
+        break;
+      }
+      case eTagType_Alignment: {
+        TRACE_TEXT_OBJECT(
+          (".... eTagType_Alignment Attr: '%s' = '%s'", aName, aValue));
+        if (StrEq(aName, aValue)) {
+          tagValue.top() = 1;
+          _this->mFontManager.BeginTag(niFmt("a=%s", aValue));
+        }
+        else if (StrEq(aName, "left") || StrEq(aName, "right") ||
+                 StrEq(aName, "center") || StrEq(aName, "justify") ||
+                 StrEq(aName, "justify_all"))
+        {
+          tagValue.top() = 1;
+          _this->mFontManager.BeginTag(niFmt("a=%s:%s", aValue, aName));
+        }
+        else {
+          tagValue.top() = 1;
+          _this->mFontManager.BeginTag(niFmt("a=%s:%s", aName, aValue));
+        }
+        break;
+      }
+      case eTagType_Expression: {
+        if (StrIEq(aName, "print")) {
+          tagValue.top() = 1;
+        }
+        break;
+      }
+      case eTagType_Glyph: {
+        if (StrIEq(aName, "name")) {
+          TRACE_TEXT_OBJECT(("... eTagType_Glyph fromName: %s", aValue));
+          Ptr<iFont> font = _this->mFontManager.ProcessToken();
+          const tU32 glyphCodePoint = font->GetGlyphCodePointFromName(aValue);
+          if (glyphCodePoint) {
+            sRawString s(_this->mFontManager.mstackAlignment.empty()
+                           ? eTextAlignment_Left
+                           : _this->mFontManager.mstackAlignment.back());
+            s.font = font;
+            s.string.appendChar(glyphCodePoint);
+            mapStrings.push_back(s);
+          }
+        }
+        break;
+      }
       }
       return eTrue;
     }
@@ -1849,8 +1981,11 @@ class cTextObject : public ImplRC<iTextObject>
   niEndClass(cTextObject);
 };
 
-Ptr<iTextObject> __stdcall cGraphics::CreateTextObject(const achar* aaszText,const sVec2f& avSize, const tF32 afContentsScale) {
-  Ptr<iTextObject> ptrTextObject = niNew cTextObject(this,avSize,afContentsScale);
+Ptr<iTextObject> __stdcall cGraphics::CreateTextObject(
+  const achar* aaszText, const sVec2f& avSize, const tF32 afContentsScale)
+{
+  Ptr<iTextObject> ptrTextObject =
+    niNew cTextObject(this, avSize, afContentsScale);
   ptrTextObject->SetText(aaszText);
   return ptrTextObject;
 }

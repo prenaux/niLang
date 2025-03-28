@@ -19,17 +19,20 @@ struct sGraphicsAllStates {
   sMatrixf mmtxView;
   sMatrixf mmtxProj;
 
-  sGraphicsAllStates(iGraphicsContext* apContext) {
+  sGraphicsAllStates(iGraphicsContext* apContext)
+  {
     mpContext = apContext;
     if (mpContext)
       _Save(mpContext);
   }
-  ~sGraphicsAllStates() {
+  ~sGraphicsAllStates()
+  {
     if (mpContext)
       _Restore(mpContext);
   }
 
-  void _Save(iGraphicsContext* apContext) {
+  void _Save(iGraphicsContext* apContext)
+  {
     mViewport = apContext->GetViewport();
     mScissor = apContext->GetScissorRect();
     iFixedStates* fs = apContext->GetFixedStates();
@@ -40,7 +43,8 @@ struct sGraphicsAllStates {
       mmtxProj = fs->GetProjectionMatrix();
     }
   }
-  void _Restore(iGraphicsContext* apContext) {
+  void _Restore(iGraphicsContext* apContext)
+  {
     iFixedStates* fs = apContext->GetFixedStates();
     if (fs) {
       fs->SetOnlyCameraViewMatrix(mmtxCamView);
@@ -56,5 +60,5 @@ struct sGraphicsAllStates {
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __STATESUTILS_6134573_H__

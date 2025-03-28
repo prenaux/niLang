@@ -2,31 +2,31 @@
 	<namespace name="ni">
 		<enum name="eFrustumPlane">
 			<comments desc="Frustum planes. "/>
-			<value name="eFrustumPlane_Left" value="0 ">
+			<value name="eFrustumPlane_Left" value="0">
 				<comments desc="Left frustum plane. "/>
 			</value>
-			<value name="eFrustumPlane_Right" value="1 ">
+			<value name="eFrustumPlane_Right" value="1">
 				<comments desc="Right frustum plane. "/>
 			</value>
-			<value name="eFrustumPlane_Top" value="2 ">
+			<value name="eFrustumPlane_Top" value="2">
 				<comments desc="Top frustum plane. "/>
 			</value>
-			<value name="eFrustumPlane_Bottom" value="3 ">
+			<value name="eFrustumPlane_Bottom" value="3">
 				<comments desc="Bottom frustum plane. "/>
 			</value>
-			<value name="eFrustumPlane_Near" value="4 ">
+			<value name="eFrustumPlane_Near" value="4">
 				<comments desc="Near frustum plane. "/>
 			</value>
-			<value name="eFrustumPlane_Far" value="5 ">
+			<value name="eFrustumPlane_Far" value="5">
 				<comments desc="Far frustum plane. "/>
 			</value>
 		</enum>
 		<enum name="eCullCode">
 			<comments desc="Value return by the culling functions. "/>
-			<value name="eCullCode_Out" value="0 ">
+			<value name="eCullCode_Out" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eCullCode_In" value="1 ">
+			<value name="eCullCode_In" value="1">
 				<comments desc=""/>
 			</value>
 			<value name="eCullCode_Intersect" value="2">

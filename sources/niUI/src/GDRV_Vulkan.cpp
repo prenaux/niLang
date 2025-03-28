@@ -4,49 +4,49 @@
 
 #ifdef GDRV_VULKAN
 
-#include "API/niUI_ModuleDef.h"
-#include <niLang/Math/MathMatrix.h>
-#include <niLang_ModuleDef.h>
-#include <niUI/GraphicsEnum.h>
-#include <niUI/FVF.h>
-#include <niLang/STL/set.h>
+  #include "API/niUI_ModuleDef.h"
+  #include <niLang/Math/MathMatrix.h>
+  #include <niLang_ModuleDef.h>
+  #include <niUI/GraphicsEnum.h>
+  #include <niUI/FVF.h>
+  #include <niLang/STL/set.h>
 
-#include <niUI/IVertexArray.h>
-#include <niUI/IIndexArray.h>
-#include <niUI/IGraphics.h>
-#include <niUI/IGpu.h>
-#include <niLang/Utils/IDGenerator.h>
-#include <niLang/Utils/Trace.h>
+  #include <niUI/IVertexArray.h>
+  #include <niUI/IIndexArray.h>
+  #include <niUI/IGraphics.h>
+  #include <niUI/IGpu.h>
+  #include <niLang/Utils/IDGenerator.h>
+  #include <niLang/Utils/Trace.h>
 
 // Note: Better to not rely on this, but can be useful for debugging/ruling things out.
 // #define niVulkan_UseRobustness2
 
-#define niVulkan_Implement
-#include "../../thirdparty/VulkanUtils/niVulkan.h"
-#define niVulkanMemoryAllocator_Implement
-#include "../../thirdparty/VulkanUtils/niVulkanMemoryAllocator.h"
-#include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
+  #define niVulkan_Implement
+  #include "../../thirdparty/VulkanUtils/niVulkan.h"
+  #define niVulkanMemoryAllocator_Implement
+  #include "../../thirdparty/VulkanUtils/niVulkanMemoryAllocator.h"
+  #include "../../thirdparty/VulkanUtils/niVulkanEnumToString.h"
 
-#if defined niOSX
-// NOTE: Vulkan on macOS/iOS fails to link because MoltenVK doesnt have the
-// ray tracing extensions. Its (very?) low priority atm since we use Metal on
-// those platforms anyway and this was more of a debugging/testing thing.
-#include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
-#elif defined niLinux
-#include <niLang/Platforms/Linux/linuxgl.h>
-#endif
+  #if defined niOSX
+    // NOTE: Vulkan on macOS/iOS fails to link because MoltenVK doesnt have the
+    // ray tracing extensions. Its (very?) low priority atm since we use Metal on
+    // those platforms anyway and this was more of a debugging/testing thing.
+    #include "../../thirdparty/VulkanUtils/niVulkanOSXMetal.h"
+  #elif defined niLinux
+    #include <niLang/Platforms/Linux/linuxgl.h>
+  #endif
 
-#include "GDRV_Gpu.h"
-#include "GDRV_Utils.h"
-#include <niUI/nish/niUIGpuFuncs.hpp>
+  #include "GDRV_Gpu.h"
+  #include "GDRV_Utils.h"
+  #include <niUI/nish/niUIGpuFuncs.hpp>
 
-#define VULKAN_LOG_LOCK_OVERLAP
+  #define VULKAN_LOG_LOCK_OVERLAP
 
-#define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
-#define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
+  #define VULKAN_TRACE(aFmt) //niDebugFmt(aFmt)
+  #define VULKAN_RES_NAME(...) HFmt(__VA_ARGS__)
 
-niDeclareModuleTrace_(niUI,TraceVulkanDescr);
-#define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI,TraceVulkanDescr,FMT);
+niDeclareModuleTrace_(niUI, TraceVulkanDescr);
+  #define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI, TraceVulkanDescr, FMT);
 
 namespace ni {
 
@@ -78,20 +78,22 @@ static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
   VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
-#if defined niVulkan_UseRobustness2
+  #if defined niVulkan_UseRobustness2
   VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,
-#endif
-#if defined niVulkan_UseSurfaceKHR
+  #endif
+  #if defined niVulkan_UseSurfaceKHR
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-#endif
+  #endif
 };
-niLetK knVkRequiredDeviceExtensionsCount = (tU32)niCountOf(_vkRequiredDeviceExtensions);
+niLetK knVkRequiredDeviceExtensionsCount =
+  (tU32)niCountOf(_vkRequiredDeviceExtensions);
 
 static const char* const _vkRequiredBindlessExtensions[] = {
   VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
   VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME
 };
-niLetK knVkRequiredBindlessExtensionsCount = (tU32)niCountOf(_vkRequiredBindlessExtensions);
+niLetK knVkRequiredBindlessExtensionsCount =
+  (tU32)niCountOf(_vkRequiredBindlessExtensions);
 
 static const char* _vkRequiredRayTracingExtensions[] = {
   VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
@@ -100,63 +102,60 @@ static const char* _vkRequiredRayTracingExtensions[] = {
   VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
   VK_KHR_RAY_QUERY_EXTENSION_NAME,
 };
-niLetK knVkRequiredRayTracingExtensionsCount = (tU32)niCountOf(_vkRequiredRayTracingExtensions);
+niLetK knVkRequiredRayTracingExtensionsCount =
+  (tU32)niCountOf(_vkRequiredRayTracingExtensions);
 
 _HSymImpl(vulkan_panic);
 
-#define VK_PANIC(x,RET) {                                               \
-    VkResult r = (x);                                                   \
-    if (r != VK_SUCCESS) {                                              \
-      niThrowPanic(ni,vulkan_panic,niFmt("Vulkan call failed '" #x "': %s", ni_vulkan::VkResultToString(r))); \
-      return RET;                                                       \
-    }                                                                   \
-  }
+  #define VK_PANIC(x, RET)                                    \
+    {                                                         \
+      VkResult r = (x);                                       \
+      if (r != VK_SUCCESS) {                                  \
+        niThrowPanic(ni, vulkan_panic,                        \
+                     niFmt("Vulkan call failed '" #x "': %s", \
+                           ni_vulkan::VkResultToString(r)));  \
+        return RET;                                           \
+      }                                                       \
+    }
 
-#define NISH_VULKAN_TARGET spv_vk12
+  #define NISH_VULKAN_TARGET spv_vk12
 
 _HDecl(NISH_VULKAN_TARGET);
-static niInline iHString* _GetVulkanGpuFunctionTarget() {
+static niInline iHString* _GetVulkanGpuFunctionTarget()
+{
   return _HC(NISH_VULKAN_TARGET);
 }
 
-static VkFormat _GetVulkanPixelFormat(eGpuPixelFormat aFormat) {
+static VkFormat _GetVulkanPixelFormat(eGpuPixelFormat aFormat)
+{
   switch (aFormat) {
-    case eGpuPixelFormat_None:
-      return VK_FORMAT_UNDEFINED;
-    case eGpuPixelFormat_BGRA8:
-      return VK_FORMAT_B8G8R8A8_UNORM;
-    case eGpuPixelFormat_RGBA8:
-      return VK_FORMAT_R8G8B8A8_UNORM;
-    case eGpuPixelFormat_RGBA16F:
-      return VK_FORMAT_R16G16B16A16_SFLOAT;
-    case eGpuPixelFormat_R16F:
-      return VK_FORMAT_R16_SFLOAT;
-    case eGpuPixelFormat_R32F:
-      return VK_FORMAT_R32_SFLOAT;
-    case eGpuPixelFormat_D32:
-      return VK_FORMAT_D32_SFLOAT;
-    case eGpuPixelFormat_D16:
-      return VK_FORMAT_D16_UNORM;
-    case eGpuPixelFormat_D24S8:
-      return VK_FORMAT_D24_UNORM_S8_UINT;
+  case eGpuPixelFormat_None: return VK_FORMAT_UNDEFINED;
+  case eGpuPixelFormat_BGRA8: return VK_FORMAT_B8G8R8A8_UNORM;
+  case eGpuPixelFormat_RGBA8: return VK_FORMAT_R8G8B8A8_UNORM;
+  case eGpuPixelFormat_RGBA16F: return VK_FORMAT_R16G16B16A16_SFLOAT;
+  case eGpuPixelFormat_R16F: return VK_FORMAT_R16_SFLOAT;
+  case eGpuPixelFormat_R32F: return VK_FORMAT_R32_SFLOAT;
+  case eGpuPixelFormat_D32: return VK_FORMAT_D32_SFLOAT;
+  case eGpuPixelFormat_D16: return VK_FORMAT_D16_UNORM;
+  case eGpuPixelFormat_D24S8: return VK_FORMAT_D24_UNORM_S8_UINT;
   }
   return VK_FORMAT_UNDEFINED;
 }
 
 static const VkBlendFactor _ToVkBlendFactor[] = {
-  VK_BLEND_FACTOR_ZERO,                      // eGpuBlendFactor_Zero
-  VK_BLEND_FACTOR_ONE,                       // eGpuBlendFactor_One
-  VK_BLEND_FACTOR_SRC_COLOR,                 // eGpuBlendFactor_SrcColor
-  VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR,       // eGpuBlendFactor_InvSrcColor
-  VK_BLEND_FACTOR_SRC_ALPHA,                 // eGpuBlendFactor_SrcAlpha
-  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,       // eGpuBlendFactor_InvSrcAlpha
-  VK_BLEND_FACTOR_DST_ALPHA,                 // eGpuBlendFactor_DstAlpha
-  VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA,       // eGpuBlendFactor_InvDstAlpha
-  VK_BLEND_FACTOR_DST_COLOR,                 // eGpuBlendFactor_DstColor
-  VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR,       // eGpuBlendFactor_InvDstColor
-  VK_BLEND_FACTOR_SRC_ALPHA_SATURATE,        // eGpuBlendFactor_SrcAlphaSat
-  VK_BLEND_FACTOR_CONSTANT_COLOR,            // eGpuBlendFactor_BlendColorConstant
-  VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR,  // eGpuBlendFactor_InvBlendColorConstant
+  VK_BLEND_FACTOR_ZERO,                // eGpuBlendFactor_Zero
+  VK_BLEND_FACTOR_ONE,                 // eGpuBlendFactor_One
+  VK_BLEND_FACTOR_SRC_COLOR,           // eGpuBlendFactor_SrcColor
+  VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR, // eGpuBlendFactor_InvSrcColor
+  VK_BLEND_FACTOR_SRC_ALPHA,           // eGpuBlendFactor_SrcAlpha
+  VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, // eGpuBlendFactor_InvSrcAlpha
+  VK_BLEND_FACTOR_DST_ALPHA,           // eGpuBlendFactor_DstAlpha
+  VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA, // eGpuBlendFactor_InvDstAlpha
+  VK_BLEND_FACTOR_DST_COLOR,           // eGpuBlendFactor_DstColor
+  VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR, // eGpuBlendFactor_InvDstColor
+  VK_BLEND_FACTOR_SRC_ALPHA_SATURATE,  // eGpuBlendFactor_SrcAlphaSat
+  VK_BLEND_FACTOR_CONSTANT_COLOR,      // eGpuBlendFactor_BlendColorConstant
+  VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR, // eGpuBlendFactor_InvBlendColorConstant
 };
 niCAssert(niCountOf(_ToVkBlendFactor) == eGpuBlendFactor_Last);
 
@@ -164,8 +163,8 @@ static const VkBlendOp _ToVkBlendOp[] = {
   VK_BLEND_OP_ADD,              // eGpuBlendOp_Add
   VK_BLEND_OP_SUBTRACT,         // eGpuBlendOp_Subtract
   VK_BLEND_OP_REVERSE_SUBTRACT, // eGpuBlendOp_ReverseSubtract
-  VK_BLEND_OP_MIN,             // eGpuBlendOp_Min
-  VK_BLEND_OP_MAX,             // eGpuBlendOp_Max
+  VK_BLEND_OP_MIN,              // eGpuBlendOp_Min
+  VK_BLEND_OP_MAX,              // eGpuBlendOp_Max
 };
 niCAssert(niCountOf(_ToVkBlendOp) == eGpuBlendOp_Last);
 
@@ -176,38 +175,41 @@ static const VkIndexType _ToVkIndexType[] = {
 niCAssert(niCountOf(_ToVkIndexType) == eGpuIndexType_Last);
 
 static const VkPrimitiveTopology _ToVkPrimitiveTopology[] = {
-  VK_PRIMITIVE_TOPOLOGY_POINT_LIST,       // eGraphicsPrimitiveType_PointList
-  VK_PRIMITIVE_TOPOLOGY_LINE_LIST,        // eGraphicsPrimitiveType_LineList
-  VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,       // eGraphicsPrimitiveType_LineStrip
-  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,    // eGraphicsPrimitiveType_TriangleList
-  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,   // eGraphicsPrimitiveType_TriangleStrip
+  VK_PRIMITIVE_TOPOLOGY_POINT_LIST,     // eGraphicsPrimitiveType_PointList
+  VK_PRIMITIVE_TOPOLOGY_LINE_LIST,      // eGraphicsPrimitiveType_LineList
+  VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,     // eGraphicsPrimitiveType_LineStrip
+  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,  // eGraphicsPrimitiveType_TriangleList
+  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, // eGraphicsPrimitiveType_TriangleStrip
 };
 niCAssert(niCountOf(_ToVkPrimitiveTopology) == eGraphicsPrimitiveType_Last);
 
-static void _toVkSamplerFilter(VkSamplerCreateInfo& desc, eSamplerFilter aFilter, const VkPhysicalDeviceFeatures& aFeatures) {
-  switch(aFilter) {
-    case eSamplerFilter_Smooth: {
-      desc.minFilter = VK_FILTER_LINEAR;
-      desc.magFilter = VK_FILTER_LINEAR;
-      desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-      if (aFeatures.samplerAnisotropy) {
-        desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
-        desc.anisotropyEnable = VK_TRUE;
-      }
-      else {
-        desc.maxAnisotropy = 1.0f;
-        desc.anisotropyEnable = VK_FALSE;
-      }
-      break;
+static void _toVkSamplerFilter(VkSamplerCreateInfo& desc,
+                               eSamplerFilter aFilter,
+                               const VkPhysicalDeviceFeatures& aFeatures)
+{
+  switch (aFilter) {
+  case eSamplerFilter_Smooth: {
+    desc.minFilter = VK_FILTER_LINEAR;
+    desc.magFilter = VK_FILTER_LINEAR;
+    desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    if (aFeatures.samplerAnisotropy) {
+      desc.maxAnisotropy = kfVulkanSamplerFilterAnisotropy;
+      desc.anisotropyEnable = VK_TRUE;
     }
-    case eSamplerFilter_Point: {
-      desc.minFilter = VK_FILTER_NEAREST;
-      desc.magFilter = VK_FILTER_NEAREST;
-      desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    else {
       desc.maxAnisotropy = 1.0f;
       desc.anisotropyEnable = VK_FALSE;
-      break;
     }
+    break;
+  }
+  case eSamplerFilter_Point: {
+    desc.minFilter = VK_FILTER_NEAREST;
+    desc.magFilter = VK_FILTER_NEAREST;
+    desc.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    desc.maxAnisotropy = 1.0f;
+    desc.anisotropyEnable = VK_FALSE;
+    break;
+  }
   }
 }
 
@@ -219,7 +221,8 @@ static const VkSamplerAddressMode _toVkSamplerAddress[] = {
 };
 niCAssert(niCountOf(_toVkSamplerAddress) == eSamplerWrap_Last);
 
-static VkCompareOp _ToVkCompareOp(eGraphicsCompare aCompare) {
+static VkCompareOp _ToVkCompareOp(eGraphicsCompare aCompare)
+{
   niCheck(aCompare < eGraphicsCompare_Last, VK_COMPARE_OP_ALWAYS);
   static const VkCompareOp _toVkCompareOp[] = {
     VK_COMPARE_OP_NEVER,
@@ -235,7 +238,8 @@ static VkCompareOp _ToVkCompareOp(eGraphicsCompare aCompare) {
   return _toVkCompareOp[aCompare];
 }
 
-static VkStencilOp _ToVkStencilOp(eStencilOp aOp) {
+static VkStencilOp _ToVkStencilOp(eStencilOp aOp)
+{
   niCheck(aOp < eStencilOp_Last, VK_STENCIL_OP_KEEP);
   static const VkStencilOp _toVkStencilOp[] = {
     VK_STENCIL_OP_KEEP,
@@ -253,139 +257,111 @@ static VkStencilOp _ToVkStencilOp(eStencilOp aOp) {
 
 niLetK _vkFrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 
-static VkCullModeFlags _ToVkCullMode(eCullingMode aCullMode) {
+static VkCullModeFlags _ToVkCullMode(eCullingMode aCullMode)
+{
   niCheck(aCullMode < eCullingMode_Last, VK_CULL_MODE_NONE);
   static const VkCullModeFlags _toVkCullMode[] = {
-    VK_CULL_MODE_NONE,              // eCullingMode_None
-    VK_CULL_MODE_BACK_BIT,          // eCullingMode_CW
-    VK_CULL_MODE_FRONT_BIT,         // eCullingMode_CCW
+    VK_CULL_MODE_NONE,      // eCullingMode_None
+    VK_CULL_MODE_BACK_BIT,  // eCullingMode_CW
+    VK_CULL_MODE_FRONT_BIT, // eCullingMode_CCW
   };
   niCAssert(niCountOf(_toVkCullMode) == eCullingMode_Last);
   return _toVkCullMode[aCullMode];
 }
 
-static VkColorComponentFlags _ToVkColorWriteMask(eColorWriteMask aMask) {
+static VkColorComponentFlags _ToVkColorWriteMask(eColorWriteMask aMask)
+{
   switch (aMask) {
-    case eColorWriteMask_None:
-      return 0;
-    case eColorWriteMask_Alpha:
-      return VK_COLOR_COMPONENT_A_BIT;
-    case eColorWriteMask_Red:
-      return VK_COLOR_COMPONENT_R_BIT;
-    case eColorWriteMask_Green:
-      return VK_COLOR_COMPONENT_G_BIT;
-    case eColorWriteMask_Blue:
-      return VK_COLOR_COMPONENT_B_BIT;
-    case eColorWriteMask_RGB:
-      return VK_COLOR_COMPONENT_R_BIT |
-          VK_COLOR_COMPONENT_G_BIT |
-          VK_COLOR_COMPONENT_B_BIT;
-    case eColorWriteMask_All:
-      return VK_COLOR_COMPONENT_R_BIT |
-          VK_COLOR_COMPONENT_G_BIT |
-          VK_COLOR_COMPONENT_B_BIT |
-          VK_COLOR_COMPONENT_A_BIT;
+  case eColorWriteMask_None: return 0;
+  case eColorWriteMask_Alpha: return VK_COLOR_COMPONENT_A_BIT;
+  case eColorWriteMask_Red: return VK_COLOR_COMPONENT_R_BIT;
+  case eColorWriteMask_Green: return VK_COLOR_COMPONENT_G_BIT;
+  case eColorWriteMask_Blue: return VK_COLOR_COMPONENT_B_BIT;
+  case eColorWriteMask_RGB:
+    return VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+           VK_COLOR_COMPONENT_B_BIT;
+  case eColorWriteMask_All:
+    return VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
   }
   return 0;
 }
 
-static const achar* const _ToVkPresentModeStr(VkPresentModeKHR mode) {
+static const achar* const _ToVkPresentModeStr(VkPresentModeKHR mode)
+{
   switch (mode) {
-    case VK_PRESENT_MODE_MAILBOX_KHR:
-      return "MAILBOX";
-    case VK_PRESENT_MODE_IMMEDIATE_KHR:
-      return "IMMEDIATE";
-    case VK_PRESENT_MODE_FIFO_KHR:
-      return "FIFO";
-    case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
-      return "FIFO_RELAXED";
+  case VK_PRESENT_MODE_MAILBOX_KHR: return "MAILBOX";
+  case VK_PRESENT_MODE_IMMEDIATE_KHR: return "IMMEDIATE";
+  case VK_PRESENT_MODE_FIFO_KHR: return "FIFO";
+  case VK_PRESENT_MODE_FIFO_RELAXED_KHR: return "FIFO_RELAXED";
   }
   return "UNKNOWN";
 };
 
-static astl::vector<VkVertexInputAttributeDescription> _VkCreateVertexInputDesc(tFVF aFVF) {
+static astl::vector<VkVertexInputAttributeDescription> _VkCreateVertexInputDesc(
+  tFVF aFVF)
+{
   astl::vector<VkVertexInputAttributeDescription> attrs;
   cFVFDescription fvfDesc(aFVF);
 
   if (fvfDesc.HasPosition()) {
-    attrs.push_back({
-        .location = eGLSLVulkanVertexInputLayout_Position,
-        .binding = 0,
-        .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = (uint32_t)fvfDesc.GetPositionOffset()
-      });
+    attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_Position,
+                      .binding = 0,
+                      .format = VK_FORMAT_R32G32B32_SFLOAT,
+                      .offset = (uint32_t)fvfDesc.GetPositionOffset() });
 
     if (fvfDesc.HasWeights4()) {
-      attrs.push_back({
-          .location = eGLSLVulkanVertexInputLayout_Weights,
-          .binding = 0,
-          .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-          .offset = (uint32_t)fvfDesc.GetWeightsOffset()
-        });
+      attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_Weights,
+                        .binding = 0,
+                        .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                        .offset = (uint32_t)fvfDesc.GetWeightsOffset() });
     }
   }
 
   if (fvfDesc.HasIndices()) {
-    attrs.push_back({
-        .location = eGLSLVulkanVertexInputLayout_Indices,
-        .binding = 0,
-        .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .offset = (uint32_t)fvfDesc.GetIndicesOffset()
-      });
+    attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_Indices,
+                      .binding = 0,
+                      .format = VK_FORMAT_B8G8R8A8_UNORM,
+                      .offset = (uint32_t)fvfDesc.GetIndicesOffset() });
   }
 
   if (fvfDesc.HasNormal()) {
-    attrs.push_back({
-        .location = eGLSLVulkanVertexInputLayout_Normal,
-        .binding = 0,
-        .format = VK_FORMAT_R32G32B32_SFLOAT,
-        .offset = (uint32_t)fvfDesc.GetNormalOffset()
-      });
+    attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_Normal,
+                      .binding = 0,
+                      .format = VK_FORMAT_R32G32B32_SFLOAT,
+                      .offset = (uint32_t)fvfDesc.GetNormalOffset() });
   }
 
   if (fvfDesc.HasColorA()) {
-    attrs.push_back({
-        .location = eGLSLVulkanVertexInputLayout_ColorA,
-        .binding = 0,
-        .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .offset = (uint32_t)fvfDesc.GetColorAOffset()
-      });
+    attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_ColorA,
+                      .binding = 0,
+                      .format = VK_FORMAT_B8G8R8A8_UNORM,
+                      .offset = (uint32_t)fvfDesc.GetColorAOffset() });
   }
 
   for (tU32 i = 0; i < fvfDesc.GetNumTexCoos(); ++i) {
     const tU32 dim = fvfDesc.GetTexCooDim(i);
     VkFormat format;
     switch (dim) {
-      case 1:
-        format = VK_FORMAT_R32_SFLOAT;
-        break;
-      case 2:
-        format = VK_FORMAT_R32G32_SFLOAT;
-        break;
-      case 3:
-        format = VK_FORMAT_R32G32B32_SFLOAT;
-        break;
-      case 4:
-        format = VK_FORMAT_R32G32B32A32_SFLOAT;
-        break;
-      default:
-        continue;
+    case 1: format = VK_FORMAT_R32_SFLOAT; break;
+    case 2: format = VK_FORMAT_R32G32_SFLOAT; break;
+    case 3: format = VK_FORMAT_R32G32B32_SFLOAT; break;
+    case 4: format = VK_FORMAT_R32G32B32A32_SFLOAT; break;
+    default: continue;
     }
-    attrs.push_back({
-        .location = eGLSLVulkanVertexInputLayout_Tex0 + i,
-        .binding = 0,
-        .format = format,
-        .offset = fvfDesc.GetTexCooOffset(i)
-      });
+    attrs.push_back({ .location = eGLSLVulkanVertexInputLayout_Tex0 + i,
+                      .binding = 0,
+                      .format = format,
+                      .offset = fvfDesc.GetTexCooOffset(i) });
   }
   return attrs;
 }
 
-static tBool _VkTransitionImageLayout(
-  VkCommandBuffer aCmdBuffer, VkImage aImage,
-  VkImageLayout aOldLayout, VkImageLayout aNewLayout,
-  tU32 aBaseMipLevel = 0,
-  tU32 aBaseArrayLayer = 0)
+static tBool _VkTransitionImageLayout(VkCommandBuffer aCmdBuffer,
+                                      VkImage aImage, VkImageLayout aOldLayout,
+                                      VkImageLayout aNewLayout,
+                                      tU32 aBaseMipLevel = 0,
+                                      tU32 aBaseArrayLayer = 0)
 {
   VkImageMemoryBarrier barrier{};
   barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -394,12 +370,10 @@ static tBool _VkTransitionImageLayout(
   barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
   barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
   barrier.image = aImage;
-  barrier.subresourceRange = {
-    .baseMipLevel = aBaseMipLevel,
-    .levelCount = 1,
-    .baseArrayLayer = aBaseArrayLayer,
-    .layerCount = 1
-  };
+  barrier.subresourceRange = { .baseMipLevel = aBaseMipLevel,
+                               .levelCount = 1,
+                               .baseArrayLayer = aBaseArrayLayer,
+                               .layerCount = 1 };
 
   if (aOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ||
       aNewLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
@@ -415,62 +389,62 @@ static tBool _VkTransitionImageLayout(
 
   // Source layout transitions
   switch (aOldLayout) {
-    case VK_IMAGE_LAYOUT_UNDEFINED:
-      barrier.srcAccessMask = 0;
-      sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-      sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-      barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_GENERAL:
-      barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-      sourceStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
-      break;
-    default:
-      niError(niFmt("Unsupported old layout transition '%s'.",
-                    ni_vulkan::VkImageLayoutToString(aOldLayout)));
-      return eFalse;
+  case VK_IMAGE_LAYOUT_UNDEFINED:
+    barrier.srcAccessMask = 0;
+    sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_GENERAL:
+    barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+    sourceStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
+    break;
+  default:
+    niError(niFmt("Unsupported old layout transition '%s'.",
+                  ni_vulkan::VkImageLayoutToString(aOldLayout)));
+    return eFalse;
   }
 
   // Destination layout transitions
   switch (aNewLayout) {
-    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-      barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-      destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-      barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-      destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
-      barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-      barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-      destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
-      barrier.dstAccessMask = 0;
-      destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-      break;
-    case VK_IMAGE_LAYOUT_GENERAL:
-      barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-      destinationStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
-      break;
-    default:
-      niError(niFmt("Unsupported new layout transition '%s'.",
-                    ni_vulkan::VkImageLayoutToString(aNewLayout)));
-      return eFalse;
+  case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+    barrier.dstAccessMask = 0;
+    destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    break;
+  case VK_IMAGE_LAYOUT_GENERAL:
+    barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+    destinationStage = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR;
+    break;
+  default:
+    niError(niFmt("Unsupported new layout transition '%s'.",
+                  ni_vulkan::VkImageLayoutToString(aNewLayout)));
+    return eFalse;
   }
 
   // Add valid transition combinations
@@ -489,14 +463,8 @@ static tBool _VkTransitionImageLayout(
       (aOldLayout == VK_IMAGE_LAYOUT_GENERAL &&
        aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
   {
-    vkCmdPipelineBarrier(
-      aCmdBuffer,
-      sourceStage, destinationStage,
-      0,
-      0, nullptr,
-      0, nullptr,
-      1, &barrier
-    );
+    vkCmdPipelineBarrier(aCmdBuffer, sourceStage, destinationStage, 0, 0,
+                         nullptr, 0, nullptr, 1, &barrier);
     return eTrue;
   }
   else {
@@ -507,50 +475,48 @@ static tBool _VkTransitionImageLayout(
   }
 }
 
-static VkResult _VkCreateEmptyDescSetLayout(VkDevice aDevice, aout<VkDescriptorSetLayout> aOutDescrSetLayout) {
+static VkResult _VkCreateEmptyDescSetLayout(
+  VkDevice aDevice, aout<VkDescriptorSetLayout> aOutDescrSetLayout)
+{
   VkDescriptorSetLayoutCreateInfo emptyLayoutInfo = {
     .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
     .bindingCount = 0,
     .pBindings = nullptr
   };
-  return vkCreateDescriptorSetLayout(
-    aDevice, &emptyLayoutInfo, nullptr, &aOutDescrSetLayout);
+  return vkCreateDescriptorSetLayout(aDevice, &emptyLayoutInfo, nullptr,
+                                     &aOutDescrSetLayout);
 }
 
 static VkResult _VkCreateDescSetLayout(
-  VkDevice aDevice,
-  aout<VkDescriptorSetLayout> aOutDescrSetLayout,
-  VkDescriptorType aDescrType,
-  VkShaderStageFlags aStageFlags)
+  VkDevice aDevice, aout<VkDescriptorSetLayout> aOutDescrSetLayout,
+  VkDescriptorType aDescrType, VkShaderStageFlags aStageFlags)
 {
-  VkDescriptorSetLayoutBinding bufferBinding = {
-    .binding = 0,
-    .descriptorType = aDescrType,
-    .descriptorCount = 1,
-    .stageFlags = aStageFlags,
-    .pImmutableSamplers = nullptr
-  };
+  VkDescriptorSetLayoutBinding bufferBinding = { .binding = 0,
+                                                 .descriptorType = aDescrType,
+                                                 .descriptorCount = 1,
+                                                 .stageFlags = aStageFlags,
+                                                 .pImmutableSamplers =
+                                                   nullptr };
   VkDescriptorSetLayoutCreateInfo bufferLayoutInfo = {
     .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
     .flags = 0,
     .bindingCount = 1,
     .pBindings = &bufferBinding
   };
-  return vkCreateDescriptorSetLayout(
-    aDevice, &bufferLayoutInfo, nullptr, &aOutDescrSetLayout);
+  return vkCreateDescriptorSetLayout(aDevice, &bufferLayoutInfo, nullptr,
+                                     &aOutDescrSetLayout);
 }
 
 static VkResult _VkCreateBindlessDescSetLayout(
-  VkDevice aDevice,
-  aout<VkDescriptorSetLayout> aOutDescrSetLayout,
+  VkDevice aDevice, aout<VkDescriptorSetLayout> aOutDescrSetLayout,
   VkDescriptorType aDescrType)
 {
-  niLet bindingFlags = (VkDescriptorBindingFlags)(
-    VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
-    VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
-    VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT);
+  niLet bindingFlags =
+    (VkDescriptorBindingFlags)(VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+                               VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
+                               VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT);
 
-  niLet bindingFlagsInfo = VkDescriptorSetLayoutBindingFlagsCreateInfo {
+  niLet bindingFlagsInfo = VkDescriptorSetLayoutBindingFlagsCreateInfo{
     .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
     .bindingCount = 1,
     .pBindingFlags = &bindingFlags
@@ -572,47 +538,41 @@ static VkResult _VkCreateBindlessDescSetLayout(
     .pBindings = &binding
   };
 
-  return vkCreateDescriptorSetLayout(
-    aDevice, &layoutInfo, nullptr, &aOutDescrSetLayout);
+  return vkCreateDescriptorSetLayout(aDevice, &layoutInfo, nullptr,
+                                     &aOutDescrSetLayout);
 }
 
-static tBool _VkDescrUpdateBuffer(
-  ain<VkDevice> aDevice,
-  ain<VkDescriptorSet> aDescrSet,
-  iHString* ahspName,
-  ain<tU32> aIndex,
-  ain<VkBuffer> aBuffer)
+static tBool _VkDescrUpdateBuffer(ain<VkDevice> aDevice,
+                                  ain<VkDescriptorSet> aDescrSet,
+                                  iHString* ahspName, ain<tU32> aIndex,
+                                  ain<VkBuffer> aBuffer)
 {
   niDebugAssert(!!aDevice);
   niDebugAssert(!!aDescrSet);
-  VkDescriptorBufferInfo bufferInfo = {
-    .buffer = aBuffer,
-    .offset = 0,
-    .range = VK_WHOLE_SIZE
-  };
+  VkDescriptorBufferInfo bufferInfo = { .buffer = aBuffer,
+                                        .offset = 0,
+                                        .range = VK_WHOLE_SIZE };
 
-  VkWriteDescriptorSet write = {
-    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-    .dstSet = aDescrSet,
-    .dstBinding = 0,
-    .dstArrayElement = aIndex,
-    .descriptorCount = 1,
-    .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-    .pBufferInfo = &bufferInfo
-  };
+  VkWriteDescriptorSet write = { .sType =
+                                   VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                 .dstSet = aDescrSet,
+                                 .dstBinding = 0,
+                                 .dstArrayElement = aIndex,
+                                 .descriptorCount = 1,
+                                 .descriptorType =
+                                   VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                                 .pBufferInfo = &bufferInfo };
 
   vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-  VULKAN_TRACE_DESCR(("_VkDescrUpdateBuffer(%s,%d,%p)",
-                      ahspName, aIndex, (tIntPtr)aBuffer));
+  VULKAN_TRACE_DESCR(
+    ("_VkDescrUpdateBuffer(%s,%d,%p)", ahspName, aIndex, (tIntPtr)aBuffer));
   return eTrue;
 }
 
-static tBool _VkDescrUpdateTexture(
-  ain<VkDevice> aDevice,
-  ain<VkDescriptorSet> aDescrSet,
-  iHString* ahspName,
-  ain<tU32> aIndex,
-  ain<VkImageView> aImageView)
+static tBool _VkDescrUpdateTexture(ain<VkDevice> aDevice,
+                                   ain<VkDescriptorSet> aDescrSet,
+                                   iHString* ahspName, ain<tU32> aIndex,
+                                   ain<VkImageView> aImageView)
 {
   niDebugAssert(!!aDevice);
   niDebugAssert(!!aDescrSet);
@@ -623,23 +583,24 @@ static tBool _VkDescrUpdateTexture(
     .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
   };
 
-  VkWriteDescriptorSet write = {
-    .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-    .dstSet = aDescrSet,
-    .dstBinding = 0,
-    .dstArrayElement = aIndex,
-    .descriptorCount = 1,
-    .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-    .pImageInfo = &imageInfo
-  };
+  VkWriteDescriptorSet write = { .sType =
+                                   VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                 .dstSet = aDescrSet,
+                                 .dstBinding = 0,
+                                 .dstArrayElement = aIndex,
+                                 .descriptorCount = 1,
+                                 .descriptorType =
+                                   VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                                 .pImageInfo = &imageInfo };
 
   vkUpdateDescriptorSets(aDevice, 1, &write, 0, nullptr);
-  VULKAN_TRACE_DESCR(("_VkDescrUpdateTexture(%s,%d,%p)",
-                      ahspName, aIndex, (tIntPtr)aImageView));
+  VULKAN_TRACE_DESCR(
+    ("_VkDescrUpdateTexture(%s,%d,%p)", ahspName, aIndex, (tIntPtr)aImageView));
   return eTrue;
 }
 
-struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphicsDriverGpu,iGraphicsDriverRay> {
+struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
+                                     iGraphicsDriverGpu, iGraphicsDriverRay> {
   nn<iGraphics> _graphics;
   Ptr<iGraphicsDrawOpCapture> _drawOpCapture;
   Ptr<iFixedGpuPipelines> _fixedPipelines;
@@ -655,7 +616,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   VkPhysicalDeviceLimits _deviceLimits = {};
   // VkPhysicalDevice will be implicitly destroyed when the VkInstance is destroyed.
   VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
-  typedef astl::map<cString,tU32> tVkExtensionsMap;
+  typedef astl::map<cString, tU32> tVkExtensionsMap;
   tVkExtensionsMap _extensions;
   tBool _enableValidationLayers = eTrue;
   typedef astl::set<cString> tVkInstanceLayersSet;
@@ -669,17 +630,17 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   tBool _isBindlessSupported = eFalse;
 
   LocalIDGenerator _idGenerator;
-  VkSampler _ssCompiled[
-    (eCompiledStates_SS_SmoothWhiteBorder-eCompiledStates_SS_PointRepeat)+1];
+  VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder -
+                         eCompiledStates_SS_PointRepeat) +
+                        1];
   Ptr<sVulkanBuffer> _dummyBuffer;
   Ptr<sVulkanTexture> _dummyTexture;
 
   VkDescriptorSetLayout _emptyDescrSet;
-  astl::array<
-    VkDescriptorSetLayout,eGLSLVulkanDescriptorSet_Last> _descrSetLayouts;
+  astl::array<VkDescriptorSetLayout, eGLSLVulkanDescriptorSet_Last>
+    _descrSetLayouts;
 
-  astl::array<
-    VkPipelineLayout,eGpuFunctionBindType_Last> _vkPipelineLayouts;
+  astl::array<VkPipelineLayout, eGpuFunctionBindType_Last> _vkPipelineLayouts;
 
   VkDescriptorPool _bindlessPool = VK_NULL_HANDLE;
   VkDescriptorSet _bindlessStorageBuffersDescSet = VK_NULL_HANDLE;
@@ -687,24 +648,26 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
-      , _drmStorageBuffers(ni::GetLang()->CreateDeviceResourceManager(
-        "GpuStorageBuffers"))
+      , _drmStorageBuffers(
+          ni::GetLang()->CreateDeviceResourceManager("GpuStorageBuffers"))
   {
   }
 
-  tBool __stdcall _CreateVulkanDriver(const achar* aAppName) {
-    niCheck(_CreateInstance(aAppName),eFalse);
-    niCheck(_InitPhysicalDevice(),eFalse);
+  tBool __stdcall _CreateVulkanDriver(const achar* aAppName)
+  {
+    niCheck(_CreateInstance(aAppName), eFalse);
+    niCheck(_InitPhysicalDevice(), eFalse);
     niCheck(_FindQueueFamily(_queueFamilyIndex), eFalse);
-    niLog(Info,niFmt("Vulkan using Queue Family: %d",_queueFamilyIndex));
+    niLog(Info, niFmt("Vulkan using Queue Family: %d", _queueFamilyIndex));
     niCheck(_CreateLogicalDevice(), eFalse);
     niCheck(_CreateCommandPool(), eFalse);
     niCheck(_CreateAllocator(), eFalse);
-    niCheck(_CreateVulkanDriverResources(), eFalse) ;
+    niCheck(_CreateVulkanDriverResources(), eFalse);
     return eTrue;
   }
 
-  virtual ~sVulkanDriver() {
+  virtual ~sVulkanDriver()
+  {
     _fixedPipelines = nullptr;
 
     _DestroyVulkanDriverResources();
@@ -729,45 +692,48 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     }
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _device != VK_NULL_HANDLE;
   }
-  virtual void __stdcall Invalidate() niImpl {
+  virtual void __stdcall Invalidate() niImpl
+  {
   }
 
-  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) {
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID)
+  {
     if (niGetInterfaceUUID(iFixedGpuPipelines) == aIID)
       return _fixedPipelines;
     return BaseImpl::QueryInterface(aIID);
   }
 
-  static VKAPI_ATTR VkBool32 VKAPI_CALL _DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-    VkDebugUtilsMessageTypeFlagsEXT type,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* /*pUserData*/) {
+  static VKAPI_ATTR VkBool32 VKAPI_CALL
+  _DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+                 VkDebugUtilsMessageTypeFlagsEXT type,
+                 const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                 void* /*pUserData*/)
+  {
 
     switch (severity) {
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        niLog(Error,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        niLog(Warning,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        niLog(Info,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
-      default:
-        niLog(Debug,niFmt("Vulkan: %s", pCallbackData->pMessage));
-        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+      niLog(Error, niFmt("Vulkan: %s", pCallbackData->pMessage));
+      break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+      niLog(Warning, niFmt("Vulkan: %s", pCallbackData->pMessage));
+      break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+      niLog(Info, niFmt("Vulkan: %s", pCallbackData->pMessage));
+      break;
+    default: niLog(Debug, niFmt("Vulkan: %s", pCallbackData->pMessage)); break;
     }
     return VK_FALSE;
   }
 
-  tBool _CreateInstance(const achar* aAppName) {
-#ifdef niVulkan_Volk
-    VK_CHECK(volkInitialize(),eFalse);
-#endif
+  tBool _CreateInstance(const achar* aAppName)
+  {
+  #ifdef niVulkan_Volk
+    VK_CHECK(volkInitialize(), eFalse);
+  #endif
 
     {
       tU32 layerCount;
@@ -779,12 +745,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
       {
         cString o;
-        niLoopit(tVkInstanceLayersSet::const_iterator,it,_instanceLayers) {
+        niLoopit (tVkInstanceLayersSet::const_iterator, it, _instanceLayers) {
           if (it != _instanceLayers.begin())
             o << ", ";
           o << *it;
         }
-        niLog(Info,niFmt("Vulkan instance layers[%d]: %s", _instanceLayers.size(), o));
+        niLog(Info, niFmt("Vulkan instance layers[%d]: %s",
+                          _instanceLayers.size(), o));
       }
     }
 
@@ -792,23 +759,23 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
     };
 
-#if defined niVulkan_UseSurfaceKHR
+  #if defined niVulkan_UseSurfaceKHR
     extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-#  if defined niWindows
+    #if defined niWindows
     extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#  elif defined niLinux
+    #elif defined niLinux
     extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
-#  else
-#    error "Unknown Vulkan with SurfaceKHR platform."
-#  endif
-#endif
+    #else
+      #error "Unknown Vulkan with SurfaceKHR platform."
+    #endif
+  #endif
 
     astl::vector<const char*> layers;
     if (_enableValidationLayers) {
       // NOTE: Statically linking directly MoltenVK we cannot use the
       // validation layer.
       const achar* validationLayerName = "VK_LAYER_KHRONOS_validation";
-      if (!astl::contains(_instanceLayers,validationLayerName)) {
+      if (!astl::contains(_instanceLayers, validationLayerName)) {
         _enableValidationLayers = eFalse;
         niWarning(niFmt("Vulkan validation layer '%s' not found, disabling it.",
                         validationLayerName));
@@ -818,23 +785,22 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
     }
 
-    VkApplicationInfo appInfo = {
-      .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-      .pNext = nullptr,
-      .pApplicationName = aAppName,
-      .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pEngineName = "niUI",
-      .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .apiVersion = VK_API_VERSION_1_2
-    };
+    VkApplicationInfo appInfo = { .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+                                  .pNext = nullptr,
+                                  .pApplicationName = aAppName,
+                                  .applicationVersion =
+                                    VK_MAKE_VERSION(1, 0, 0),
+                                  .pEngineName = "niUI",
+                                  .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+                                  .apiVersion = VK_API_VERSION_1_2 };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {
       .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT|
-                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|
+      .messageSeverity = (VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
                           VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT),
-      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT|
-                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT|
+      .messageType = (VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                       VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT),
       .pfnUserCallback = _DebugCallback
     };
@@ -850,24 +816,30 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
     createInfo.pNext = _enableValidationLayers ? &debugCreateInfo : nullptr;
 
-    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance),eFalse);
-#ifdef niVulkan_Volk
+    VK_CHECK(vkCreateInstance(&createInfo, nullptr, &_instance), eFalse);
+  #ifdef niVulkan_Volk
     volkLoadInstance(_instance);
-#endif
+  #endif
     return eTrue;
   }
 
-  void _DetectDeviceFeatures(VkPhysicalDevice physicalDevice) {
+  void _DetectDeviceFeatures(VkPhysicalDevice physicalDevice)
+  {
     // Initialize structures to query ray tracing and mesh shader features
-    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {};
-    rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR
+      rayTracingPipelineFeatures = {};
+    rayTracingPipelineFeatures.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
 
-    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = {};
-    accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR
+      accelerationStructureFeatures = {};
+    accelerationStructureFeatures.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
     rayTracingPipelineFeatures.pNext = &accelerationStructureFeatures;
 
     VkPhysicalDeviceMeshShaderFeaturesEXT meshShaderFeatures = {};
-    meshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+    meshShaderFeatures.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
     accelerationStructureFeatures.pNext = &meshShaderFeatures;
 
     VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
@@ -887,20 +859,21 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures2);
 
     // Log device features
-    niLog(Info, niFmt(
-      "Vulkan Robustness2 Features:\n"
-      "  robustBufferAccess2: %y\n"
-      "  robustImageAccess2: %y\n"
-      "  nullDescriptor: %y",
-      (tBool)!!robustness2Features.robustBufferAccess2,
-      (tBool)!!robustness2Features.robustImageAccess2,
-      (tBool)!!robustness2Features.nullDescriptor));
+    niLog(Info, niFmt("Vulkan Robustness2 Features:\n"
+                      "  robustBufferAccess2: %y\n"
+                      "  robustImageAccess2: %y\n"
+                      "  nullDescriptor: %y",
+                      (tBool) !!robustness2Features.robustBufferAccess2,
+                      (tBool) !!robustness2Features.robustImageAccess2,
+                      (tBool) !!robustness2Features.nullDescriptor));
 
     // Check bindless support
     _isBindlessSupported =
-      descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind &&
+      descriptorIndexingFeatures
+        .descriptorBindingUniformBufferUpdateAfterBind &&
       descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind &&
-      descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind &&
+      descriptorIndexingFeatures
+        .descriptorBindingStorageBufferUpdateAfterBind &&
       descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind &&
       descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending &&
       descriptorIndexingFeatures.descriptorBindingPartiallyBound &&
@@ -910,14 +883,18 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       for (const char* ext : _vkRequiredBindlessExtensions) {
         if (_extensions.find(ext) == _extensions.end()) {
           _isBindlessSupported = false;
-          niLog(Warning, niFmt("Vulkan Bindless disabled because of missing extension '%s'.", ext));
+          niLog(
+            Warning,
+            niFmt("Vulkan Bindless disabled because of missing extension '%s'.",
+                  ext));
         }
       }
     }
 
     if (_isBindlessSupported) {
       VkPhysicalDeviceDescriptorIndexingProperties descriptorIndexingProps = {};
-      descriptorIndexingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+      descriptorIndexingProps.sType =
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
 
       VkPhysicalDeviceProperties2 deviceProps2 = {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
@@ -926,66 +903,91 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
 
       niLog(Info, "Vulkan Bindless rendering supported");
-      niLog(Info, niFmt(
-        "Vulkan Descriptor Indexing Features:\n"
-        "  shaderInputAttachmentArrayDynamicIndexing: %y\n"
-        "  shaderUniformTexelBufferArrayDynamicIndexing: %y\n"
-        "  shaderStorageTexelBufferArrayDynamicIndexing: %y\n"
-        "  shaderUniformBufferArrayNonUniformIndexing: %y\n"
-        "  shaderSampledImageArrayNonUniformIndexing: %y\n"
-        "  shaderStorageBufferArrayNonUniformIndexing: %y\n"
-        "  shaderStorageImageArrayNonUniformIndexing: %y\n"
-        "  shaderInputAttachmentArrayNonUniformIndexing: %y\n"
-        "  shaderUniformTexelBufferArrayNonUniformIndexing: %y\n"
-        "  shaderStorageTexelBufferArrayNonUniformIndexing: %y\n"
-        "  descriptorBindingUniformBufferUpdateAfterBind: %y\n"
-        "  descriptorBindingSampledImageUpdateAfterBind: %y\n"
-        "  descriptorBindingStorageImageUpdateAfterBind: %y\n"
-        "  descriptorBindingStorageBufferUpdateAfterBind: %y\n"
-        "  descriptorBindingUniformTexelBufferUpdateAfterBind: %y\n"
-        "  descriptorBindingStorageTexelBufferUpdateAfterBind: %y\n"
-        "  descriptorBindingUpdateUnusedWhilePending: %y\n"
-        "  descriptorBindingPartiallyBound: %y\n"
-        "  descriptorBindingVariableDescriptorCount: %y\n"
-        "  runtimeDescriptorArray: %y\n",
-        (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformBufferUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingUpdateUnusedWhilePending,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingPartiallyBound,
-        (tBool)!!descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount,
-        (tBool)!!descriptorIndexingFeatures.runtimeDescriptorArray));
+      niLog(
+        Info,
+        niFmt(
+          "Vulkan Descriptor Indexing Features:\n"
+          "  shaderInputAttachmentArrayDynamicIndexing: %y\n"
+          "  shaderUniformTexelBufferArrayDynamicIndexing: %y\n"
+          "  shaderStorageTexelBufferArrayDynamicIndexing: %y\n"
+          "  shaderUniformBufferArrayNonUniformIndexing: %y\n"
+          "  shaderSampledImageArrayNonUniformIndexing: %y\n"
+          "  shaderStorageBufferArrayNonUniformIndexing: %y\n"
+          "  shaderStorageImageArrayNonUniformIndexing: %y\n"
+          "  shaderInputAttachmentArrayNonUniformIndexing: %y\n"
+          "  shaderUniformTexelBufferArrayNonUniformIndexing: %y\n"
+          "  shaderStorageTexelBufferArrayNonUniformIndexing: %y\n"
+          "  descriptorBindingUniformBufferUpdateAfterBind: %y\n"
+          "  descriptorBindingSampledImageUpdateAfterBind: %y\n"
+          "  descriptorBindingStorageImageUpdateAfterBind: %y\n"
+          "  descriptorBindingStorageBufferUpdateAfterBind: %y\n"
+          "  descriptorBindingUniformTexelBufferUpdateAfterBind: %y\n"
+          "  descriptorBindingStorageTexelBufferUpdateAfterBind: %y\n"
+          "  descriptorBindingUpdateUnusedWhilePending: %y\n"
+          "  descriptorBindingPartiallyBound: %y\n"
+          "  descriptorBindingVariableDescriptorCount: %y\n"
+          "  runtimeDescriptorArray: %y\n",
+          (tBool) !!descriptorIndexingFeatures
+            .shaderInputAttachmentArrayDynamicIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderUniformTexelBufferArrayDynamicIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderStorageTexelBufferArrayDynamicIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderUniformBufferArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderSampledImageArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderStorageBufferArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderStorageImageArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderInputAttachmentArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderUniformTexelBufferArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .shaderStorageTexelBufferArrayNonUniformIndexing,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingUniformBufferUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingSampledImageUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingStorageImageUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingStorageBufferUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingUniformTexelBufferUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingStorageTexelBufferUpdateAfterBind,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingUpdateUnusedWhilePending,
+          (tBool) !!descriptorIndexingFeatures.descriptorBindingPartiallyBound,
+          (tBool) !!descriptorIndexingFeatures
+            .descriptorBindingVariableDescriptorCount,
+          (tBool) !!descriptorIndexingFeatures.runtimeDescriptorArray));
 
-      niLog(Info, niFmt(
-        "Vulkan Descriptor Indexing Properties:\n"
-        "  maxUpdateAfterBindDescriptorsInAllPools: %u\n"
-        "  maxPerStageUpdateAfterBindResources: %u\n"
-        "  maxPerStageDescriptorUpdateAfterBindSamplers: %u\n"
-        "  maxPerStageDescriptorUpdateAfterBindUniformBuffers: %u\n"
-        "  maxPerStageDescriptorUpdateAfterBindStorageBuffers: %u\n"
-        "  maxPerStageDescriptorUpdateAfterBindSampledImages: %u\n"
-        "  maxPerStageDescriptorUpdateAfterBindStorageImages: %u",
-        descriptorIndexingProps.maxUpdateAfterBindDescriptorsInAllPools,
-        descriptorIndexingProps.maxPerStageUpdateAfterBindResources,
-        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSamplers,
-        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers,
-        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers,
-        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSampledImages,
-        descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindStorageImages));
-
+      niLog(
+        Info,
+        niFmt(
+          "Vulkan Descriptor Indexing Properties:\n"
+          "  maxUpdateAfterBindDescriptorsInAllPools: %u\n"
+          "  maxPerStageUpdateAfterBindResources: %u\n"
+          "  maxPerStageDescriptorUpdateAfterBindSamplers: %u\n"
+          "  maxPerStageDescriptorUpdateAfterBindUniformBuffers: %u\n"
+          "  maxPerStageDescriptorUpdateAfterBindStorageBuffers: %u\n"
+          "  maxPerStageDescriptorUpdateAfterBindSampledImages: %u\n"
+          "  maxPerStageDescriptorUpdateAfterBindStorageImages: %u",
+          descriptorIndexingProps.maxUpdateAfterBindDescriptorsInAllPools,
+          descriptorIndexingProps.maxPerStageUpdateAfterBindResources,
+          descriptorIndexingProps.maxPerStageDescriptorUpdateAfterBindSamplers,
+          descriptorIndexingProps
+            .maxPerStageDescriptorUpdateAfterBindUniformBuffers,
+          descriptorIndexingProps
+            .maxPerStageDescriptorUpdateAfterBindStorageBuffers,
+          descriptorIndexingProps
+            .maxPerStageDescriptorUpdateAfterBindSampledImages,
+          descriptorIndexingProps
+            .maxPerStageDescriptorUpdateAfterBindStorageImages));
     }
     else {
       niLog(Info, "Vulkan Bindless rendering not supported.");
@@ -993,22 +995,30 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
     // Determine support for ray tracing and mesh shaders
     if (_isBindlessSupported) {
-      _isRayTracingSupported = rayTracingPipelineFeatures.rayTracingPipeline && accelerationStructureFeatures.accelerationStructure;
+      _isRayTracingSupported =
+        rayTracingPipelineFeatures.rayTracingPipeline &&
+        accelerationStructureFeatures.accelerationStructure;
       if (_isRayTracingSupported) {
         for (const char* ext : _vkRequiredRayTracingExtensions) {
           if (_extensions.find(ext) == _extensions.end()) {
             _isRayTracingSupported = false;
-            niLog(Warning, niFmt("Vulkan Ray Tracing disabled because of missing extension '%s'.", ext));
+            niLog(
+              Warning,
+              niFmt(
+                "Vulkan Ray Tracing disabled because of missing extension '%s'.",
+                ext));
           }
         }
       }
 
       if (_isRayTracingSupported) {
         _rayTracingProps = {};
-        _rayTracingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
+        _rayTracingProps.sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 
         _accelStructProps = {};
-        _accelStructProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
+        _accelStructProps.sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR;
         _rayTracingProps.pNext = &_accelStructProps;
 
         VkPhysicalDeviceProperties2 deviceProps2 = {};
@@ -1017,34 +1027,38 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
         vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
 
-        niLog(Info, niFmt(
-          "Vulkan Ray Tracing Properties:\n"
-          // Size in bytes of the shader group handle.
-          "  shaderGroupHandleSize: %u\n"
-          // Maximum number of levels of ray recursion allowed in a trace command.
-          "  maxRayRecursionDepth: %u\n"
-          // Maximum stride in bytes allowed between shader groups in the shader binding table.
-          "  maxShaderGroupStride: %u\n"
-          // Required alignment in bytes for the base of the shader binding table.
-          "  shaderGroupBaseAlignment: %u\n"
-          // Size in bytes of the shader group handle for capture and replay.
-          "  shaderGroupHandleCaptureReplaySize: %u",
-          _rayTracingProps.shaderGroupHandleSize,
-          _rayTracingProps.maxRayRecursionDepth,
-          _rayTracingProps.maxShaderGroupStride,
-          _rayTracingProps.shaderGroupBaseAlignment,
-          _rayTracingProps.shaderGroupHandleCaptureReplaySize));
+        niLog(
+          Info,
+          niFmt(
+            "Vulkan Ray Tracing Properties:\n"
+            // Size in bytes of the shader group handle.
+            "  shaderGroupHandleSize: %u\n"
+            // Maximum number of levels of ray recursion allowed in a trace command.
+            "  maxRayRecursionDepth: %u\n"
+            // Maximum stride in bytes allowed between shader groups in the shader binding table.
+            "  maxShaderGroupStride: %u\n"
+            // Required alignment in bytes for the base of the shader binding table.
+            "  shaderGroupBaseAlignment: %u\n"
+            // Size in bytes of the shader group handle for capture and replay.
+            "  shaderGroupHandleCaptureReplaySize: %u",
+            _rayTracingProps.shaderGroupHandleSize,
+            _rayTracingProps.maxRayRecursionDepth,
+            _rayTracingProps.maxShaderGroupStride,
+            _rayTracingProps.shaderGroupBaseAlignment,
+            _rayTracingProps.shaderGroupHandleCaptureReplaySize));
 
-        niLog(Info, niFmt(
-          "Vulkan Acceleration Structure Properties:\n"
-          "  minAccelerationStructureScratchOffsetAlignment: %u\n"
-          "  maxGeometryCount: %u\n"
-          "  maxInstanceCount: %u\n"
-          "  maxPrimitiveCount: %u",
-          _accelStructProps.minAccelerationStructureScratchOffsetAlignment,
-          _accelStructProps.maxGeometryCount,
-          _accelStructProps.maxInstanceCount,
-          _accelStructProps.maxPrimitiveCount));
+        niLog(
+          Info,
+          niFmt(
+            "Vulkan Acceleration Structure Properties:\n"
+            "  minAccelerationStructureScratchOffsetAlignment: %u\n"
+            "  maxGeometryCount: %u\n"
+            "  maxInstanceCount: %u\n"
+            "  maxPrimitiveCount: %u",
+            _accelStructProps.minAccelerationStructureScratchOffsetAlignment,
+            _accelStructProps.maxGeometryCount,
+            _accelStructProps.maxInstanceCount,
+            _accelStructProps.maxPrimitiveCount));
       }
       else {
         niLog(Info, "Vulkan Ray Tracing not supported.");
@@ -1052,7 +1066,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
       if (meshShaderFeatures.meshShader) {
         VkPhysicalDeviceMeshShaderPropertiesEXT meshShaderProps = {};
-        meshShaderProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
+        meshShaderProps.sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT;
 
         VkPhysicalDeviceProperties2 deviceProps2 = {};
         deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
@@ -1060,59 +1075,69 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
         vkGetPhysicalDeviceProperties2(physicalDevice, &deviceProps2);
 
-        niLog(Info, niFmt(
-          "Vulkan Mesh Shader Properties:\n"
-          // Maximum total count of task work groups.
-          "  maxTaskWorkGroupTotalCount: %d\n"
-          // Maximum count of task work groups in each dimension.
-          "  maxTaskWorkGroupCount: %s\n"
-          // Maximum number of task shader invocations in a single work group.
-          "  maxTaskWorkGroupInvocations: %d\n"
-          // Maximum size of task work group in each dimension.
-          "  maxTaskWorkGroupSize: %s\n"
-          // Maximum size in bytes of the task payload.
-          "  maxTaskPayloadSize: %d\n"
-          // Maximum size in bytes of task shared memory.
-          "  maxTaskSharedMemorySize: %d\n"
-          // Maximum total count of mesh work groups.
-          "  maxMeshWorkGroupTotalCount: %d\n"
-          // Maximum count of mesh work groups in each dimension.
-          "  maxMeshWorkGroupCount: %s\n"
-          // Maximum number of mesh shader invocations in a single work group.
-          "  maxMeshWorkGroupInvocations: %d\n"
-          // Maximum size of mesh work group in each dimension.
-          "  maxMeshWorkGroupSize: %s\n"
-          // Maximum size in bytes of mesh shared memory.
-          "  maxMeshSharedMemorySize: %d\n"
-          // Maximum number of mesh output vertices.
-          "  maxMeshOutputVertices: %d\n"
-          // Maximum number of mesh output primitives.
-          "  maxMeshOutputPrimitives: %d\n"
-          // Maximum number of mesh output layers.
-          "  maxMeshOutputLayers: %d\n"
-          // Maximum number of mesh multiview views.
-          "  maxMeshMultiviewViewCount: %d\n"
-          // Granularity of mesh output per vertex.
-          "  meshOutputPerVertexGranularity: %d\n"
-          // Granularity of mesh output per primitive.
-          "  meshOutputPerPrimitiveGranularity: %d",
-          meshShaderProps.maxTaskWorkGroupTotalCount,
-          Vec3i(meshShaderProps.maxTaskWorkGroupCount[0], meshShaderProps.maxTaskWorkGroupCount[1], meshShaderProps.maxTaskWorkGroupCount[2]),
-          meshShaderProps.maxTaskWorkGroupInvocations,
-          Vec3i(meshShaderProps.maxTaskWorkGroupSize[0], meshShaderProps.maxTaskWorkGroupSize[1], meshShaderProps.maxTaskWorkGroupSize[2]),
-          meshShaderProps.maxTaskPayloadSize,
-          meshShaderProps.maxTaskSharedMemorySize,
-          meshShaderProps.maxMeshWorkGroupTotalCount,
-          Vec3i(meshShaderProps.maxMeshWorkGroupCount[0], meshShaderProps.maxMeshWorkGroupCount[1], meshShaderProps.maxMeshWorkGroupCount[2]),
-          meshShaderProps.maxMeshWorkGroupInvocations,
-          Vec3i(meshShaderProps.maxMeshWorkGroupSize[0], meshShaderProps.maxMeshWorkGroupSize[1], meshShaderProps.maxMeshWorkGroupSize[2]),
-          meshShaderProps.maxMeshSharedMemorySize,
-          meshShaderProps.maxMeshOutputVertices,
-          meshShaderProps.maxMeshOutputPrimitives,
-          meshShaderProps.maxMeshOutputLayers,
-          meshShaderProps.maxMeshMultiviewViewCount,
-          meshShaderProps.meshOutputPerVertexGranularity,
-          meshShaderProps.meshOutputPerPrimitiveGranularity));
+        niLog(
+          Info,
+          niFmt(
+            "Vulkan Mesh Shader Properties:\n"
+            // Maximum total count of task work groups.
+            "  maxTaskWorkGroupTotalCount: %d\n"
+            // Maximum count of task work groups in each dimension.
+            "  maxTaskWorkGroupCount: %s\n"
+            // Maximum number of task shader invocations in a single work group.
+            "  maxTaskWorkGroupInvocations: %d\n"
+            // Maximum size of task work group in each dimension.
+            "  maxTaskWorkGroupSize: %s\n"
+            // Maximum size in bytes of the task payload.
+            "  maxTaskPayloadSize: %d\n"
+            // Maximum size in bytes of task shared memory.
+            "  maxTaskSharedMemorySize: %d\n"
+            // Maximum total count of mesh work groups.
+            "  maxMeshWorkGroupTotalCount: %d\n"
+            // Maximum count of mesh work groups in each dimension.
+            "  maxMeshWorkGroupCount: %s\n"
+            // Maximum number of mesh shader invocations in a single work group.
+            "  maxMeshWorkGroupInvocations: %d\n"
+            // Maximum size of mesh work group in each dimension.
+            "  maxMeshWorkGroupSize: %s\n"
+            // Maximum size in bytes of mesh shared memory.
+            "  maxMeshSharedMemorySize: %d\n"
+            // Maximum number of mesh output vertices.
+            "  maxMeshOutputVertices: %d\n"
+            // Maximum number of mesh output primitives.
+            "  maxMeshOutputPrimitives: %d\n"
+            // Maximum number of mesh output layers.
+            "  maxMeshOutputLayers: %d\n"
+            // Maximum number of mesh multiview views.
+            "  maxMeshMultiviewViewCount: %d\n"
+            // Granularity of mesh output per vertex.
+            "  meshOutputPerVertexGranularity: %d\n"
+            // Granularity of mesh output per primitive.
+            "  meshOutputPerPrimitiveGranularity: %d",
+            meshShaderProps.maxTaskWorkGroupTotalCount,
+            Vec3i(meshShaderProps.maxTaskWorkGroupCount[0],
+                  meshShaderProps.maxTaskWorkGroupCount[1],
+                  meshShaderProps.maxTaskWorkGroupCount[2]),
+            meshShaderProps.maxTaskWorkGroupInvocations,
+            Vec3i(meshShaderProps.maxTaskWorkGroupSize[0],
+                  meshShaderProps.maxTaskWorkGroupSize[1],
+                  meshShaderProps.maxTaskWorkGroupSize[2]),
+            meshShaderProps.maxTaskPayloadSize,
+            meshShaderProps.maxTaskSharedMemorySize,
+            meshShaderProps.maxMeshWorkGroupTotalCount,
+            Vec3i(meshShaderProps.maxMeshWorkGroupCount[0],
+                  meshShaderProps.maxMeshWorkGroupCount[1],
+                  meshShaderProps.maxMeshWorkGroupCount[2]),
+            meshShaderProps.maxMeshWorkGroupInvocations,
+            Vec3i(meshShaderProps.maxMeshWorkGroupSize[0],
+                  meshShaderProps.maxMeshWorkGroupSize[1],
+                  meshShaderProps.maxMeshWorkGroupSize[2]),
+            meshShaderProps.maxMeshSharedMemorySize,
+            meshShaderProps.maxMeshOutputVertices,
+            meshShaderProps.maxMeshOutputPrimitives,
+            meshShaderProps.maxMeshOutputLayers,
+            meshShaderProps.maxMeshMultiviewViewCount,
+            meshShaderProps.meshOutputPerVertexGranularity,
+            meshShaderProps.meshOutputPerPrimitiveGranularity));
       }
       else {
         niLog(Info, "Vulkan Mesh shader not supported.");
@@ -1126,11 +1151,14 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       }
     }
     else {
-      niLog(Info, "Vulkan Raytracing & Mesh shader not supported because bindless isnt supported.");
+      niLog(
+        Info,
+        "Vulkan Raytracing & Mesh shader not supported because bindless isnt supported.");
     }
   }
 
-  tBool _InitPhysicalDevice() {
+  tBool _InitPhysicalDevice()
+  {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
     niCheck(deviceCount > 0, eFalse);
@@ -1139,213 +1167,234 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(_physicalDevice, &props);
-    niLog(Info,niFmt("Vulkan Device: %s", props.deviceName));
-    niLog(Info,niFmt("Vulkan Driver Version: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.driverVersion),
-                     VK_VERSION_MINOR(props.driverVersion),
-                     VK_VERSION_PATCH(props.driverVersion)));
-    niLog(Info,niFmt("Vulkan API: %d.%d.%d",
-                     VK_VERSION_MAJOR(props.apiVersion),
-                     VK_VERSION_MINOR(props.apiVersion),
-                     VK_VERSION_PATCH(props.apiVersion)));
+    niLog(Info, niFmt("Vulkan Device: %s", props.deviceName));
+    niLog(Info, niFmt("Vulkan Driver Version: %d.%d.%d",
+                      VK_VERSION_MAJOR(props.driverVersion),
+                      VK_VERSION_MINOR(props.driverVersion),
+                      VK_VERSION_PATCH(props.driverVersion)));
+    niLog(Info,
+          niFmt("Vulkan API: %d.%d.%d", VK_VERSION_MAJOR(props.apiVersion),
+                VK_VERSION_MINOR(props.apiVersion),
+                VK_VERSION_PATCH(props.apiVersion)));
 
     // Query and log device features
     vkGetPhysicalDeviceFeatures(_physicalDevice, &_physicalDeviceFeatures);
-    niLog(Info,niFmt(
-      "Vulkan Physical Device Features:\n"
-      // Geometry features
-      "  geometryShader: %y\n"
-      "  tessellationShader: %y\n"
-      // Rendering features
-      "  depthBiasClamp: %y\n"
-      "  fillModeNonSolid: %y\n"
-      "  depthClamp: %y\n"
-      "  depthBounds: %y\n"
-      "  wideLines: %y\n"
-      "  largePoints: %y\n"
-      // Texture features
-      "  samplerAnisotropy: %y\n"
-      "  shaderStorageImageReadWithoutFormat: %y\n"
-      "  shaderStorageImageWriteWithoutFormat: %y\n"
-      "  textureCompressionBC: %y\n"
-      "  textureCompressionETC2: %y\n"
-      "  textureCompressionASTC_LDR: %y\n",
-      // Geometry features
-      (tBool)!!_physicalDeviceFeatures.geometryShader,
-      (tBool)!!_physicalDeviceFeatures.tessellationShader,
-      // Rendering features
-      (tBool)!!_physicalDeviceFeatures.depthBiasClamp,
-      (tBool)!!_physicalDeviceFeatures.fillModeNonSolid,
-      (tBool)!!_physicalDeviceFeatures.depthClamp,
-      (tBool)!!_physicalDeviceFeatures.depthBounds,
-      (tBool)!!_physicalDeviceFeatures.wideLines,
-      (tBool)!!_physicalDeviceFeatures.largePoints,
-      // Texture features
-      (tBool)!!_physicalDeviceFeatures.samplerAnisotropy,
-      (tBool)!!_physicalDeviceFeatures.shaderStorageImageReadWithoutFormat,
-      (tBool)!!_physicalDeviceFeatures.shaderStorageImageWriteWithoutFormat,
-      (tBool)!!_physicalDeviceFeatures.textureCompressionBC,
-      (tBool)!!_physicalDeviceFeatures.textureCompressionETC2,
-      (tBool)!!_physicalDeviceFeatures.textureCompressionASTC_LDR));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Physical Device Features:\n"
+        // Geometry features
+        "  geometryShader: %y\n"
+        "  tessellationShader: %y\n"
+        // Rendering features
+        "  depthBiasClamp: %y\n"
+        "  fillModeNonSolid: %y\n"
+        "  depthClamp: %y\n"
+        "  depthBounds: %y\n"
+        "  wideLines: %y\n"
+        "  largePoints: %y\n"
+        // Texture features
+        "  samplerAnisotropy: %y\n"
+        "  shaderStorageImageReadWithoutFormat: %y\n"
+        "  shaderStorageImageWriteWithoutFormat: %y\n"
+        "  textureCompressionBC: %y\n"
+        "  textureCompressionETC2: %y\n"
+        "  textureCompressionASTC_LDR: %y\n",
+        // Geometry features
+        (tBool) !!_physicalDeviceFeatures.geometryShader,
+        (tBool) !!_physicalDeviceFeatures.tessellationShader,
+        // Rendering features
+        (tBool) !!_physicalDeviceFeatures.depthBiasClamp,
+        (tBool) !!_physicalDeviceFeatures.fillModeNonSolid,
+        (tBool) !!_physicalDeviceFeatures.depthClamp,
+        (tBool) !!_physicalDeviceFeatures.depthBounds,
+        (tBool) !!_physicalDeviceFeatures.wideLines,
+        (tBool) !!_physicalDeviceFeatures.largePoints,
+        // Texture features
+        (tBool) !!_physicalDeviceFeatures.samplerAnisotropy,
+        (tBool) !!_physicalDeviceFeatures.shaderStorageImageReadWithoutFormat,
+        (tBool) !!_physicalDeviceFeatures.shaderStorageImageWriteWithoutFormat,
+        (tBool) !!_physicalDeviceFeatures.textureCompressionBC,
+        (tBool) !!_physicalDeviceFeatures.textureCompressionETC2,
+        (tBool) !!_physicalDeviceFeatures.textureCompressionASTC_LDR));
 
     _deviceLimits = props.limits;
-    niLog(Info,niFmt(
-      "Vulkan Buffer Alignment Properties:\n"
-      "  minUniformBufferOffsetAlignment: %llu\n"
-      "  minStorageBufferOffsetAlignment: %llu\n"
-      "  minTexelBufferOffsetAlignment: %llu\n"
-      "  optimalBufferCopyOffsetAlignment: %llu\n"
-      "  optimalBufferCopyRowPitchAlignment: %llu\n"
-      "  nonCoherentAtomSize: %llu",
-      _deviceLimits.minUniformBufferOffsetAlignment,
-      _deviceLimits.minStorageBufferOffsetAlignment,
-      _deviceLimits.minTexelBufferOffsetAlignment,
-      _deviceLimits.optimalBufferCopyOffsetAlignment,
-      _deviceLimits.optimalBufferCopyRowPitchAlignment,
-      _deviceLimits.nonCoherentAtomSize));
+    niLog(Info, niFmt("Vulkan Buffer Alignment Properties:\n"
+                      "  minUniformBufferOffsetAlignment: %llu\n"
+                      "  minStorageBufferOffsetAlignment: %llu\n"
+                      "  minTexelBufferOffsetAlignment: %llu\n"
+                      "  optimalBufferCopyOffsetAlignment: %llu\n"
+                      "  optimalBufferCopyRowPitchAlignment: %llu\n"
+                      "  nonCoherentAtomSize: %llu",
+                      _deviceLimits.minUniformBufferOffsetAlignment,
+                      _deviceLimits.minStorageBufferOffsetAlignment,
+                      _deviceLimits.minTexelBufferOffsetAlignment,
+                      _deviceLimits.optimalBufferCopyOffsetAlignment,
+                      _deviceLimits.optimalBufferCopyRowPitchAlignment,
+                      _deviceLimits.nonCoherentAtomSize));
 
     // Descriptor Set Limits
-    niLog(Info,niFmt(
-      "Vulkan Descriptor Set Limits:\n"
-      // The maximum number of descriptor sets that can be bound at one time.
-      // Useful to know to optimize descriptor set usage and avoid exceeding device limits.
-      "  maxBoundDescriptorSets: %d\n"
-      // The maximum number of samplers in a descriptor set.
-      // Important for determining how many textures can be accessed in a single shader.
-      "  maxDescriptorSetSamplers: %d\n"
-      // The maximum number of uniform buffers in a descriptor set.
-      // Determines how many uniform buffers can be used for sharing data with shaders.
-      "  maxDescriptorSetUniformBuffers: %d\n"
-      // The maximum number of storage buffers in a descriptor set.
-      // Impacts how much storage data you can access in shaders for operations like compute.
-      "  maxDescriptorSetStorageBuffers: %d\n"
-      // The maximum number of sampled images that can be included in a descriptor set.
-      // Important for managing large sets of textures in rendering.
-      "  maxDescriptorSetSampledImages: %d\n"
-      // The maximum number of storage images in a descriptor set.
-      // Affects image writing in compute and fragment shaders.
-      "  maxDescriptorSetStorageImages: %d\n"
-      // The maximum number of samplers per stage (e.g., vertex, fragment).
-      // Helps avoid exceeding the per-stage sampler limit, which can impact shader resource layout.
-      "  maxPerStageDescriptorSamplers: %d",
-      _deviceLimits.maxBoundDescriptorSets,
-      _deviceLimits.maxDescriptorSetSamplers,
-      _deviceLimits.maxDescriptorSetUniformBuffers,
-      _deviceLimits.maxDescriptorSetStorageBuffers,
-      _deviceLimits.maxDescriptorSetSampledImages,
-      _deviceLimits.maxDescriptorSetStorageImages,
-      _deviceLimits.maxPerStageDescriptorSamplers));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Descriptor Set Limits:\n"
+        // The maximum number of descriptor sets that can be bound at one time.
+        // Useful to know to optimize descriptor set usage and avoid exceeding device limits.
+        "  maxBoundDescriptorSets: %d\n"
+        // The maximum number of samplers in a descriptor set.
+        // Important for determining how many textures can be accessed in a single shader.
+        "  maxDescriptorSetSamplers: %d\n"
+        // The maximum number of uniform buffers in a descriptor set.
+        // Determines how many uniform buffers can be used for sharing data with shaders.
+        "  maxDescriptorSetUniformBuffers: %d\n"
+        // The maximum number of storage buffers in a descriptor set.
+        // Impacts how much storage data you can access in shaders for operations like compute.
+        "  maxDescriptorSetStorageBuffers: %d\n"
+        // The maximum number of sampled images that can be included in a descriptor set.
+        // Important for managing large sets of textures in rendering.
+        "  maxDescriptorSetSampledImages: %d\n"
+        // The maximum number of storage images in a descriptor set.
+        // Affects image writing in compute and fragment shaders.
+        "  maxDescriptorSetStorageImages: %d\n"
+        // The maximum number of samplers per stage (e.g., vertex, fragment).
+        // Helps avoid exceeding the per-stage sampler limit, which can impact shader resource layout.
+        "  maxPerStageDescriptorSamplers: %d",
+        _deviceLimits.maxBoundDescriptorSets,
+        _deviceLimits.maxDescriptorSetSamplers,
+        _deviceLimits.maxDescriptorSetUniformBuffers,
+        _deviceLimits.maxDescriptorSetStorageBuffers,
+        _deviceLimits.maxDescriptorSetSampledImages,
+        _deviceLimits.maxDescriptorSetStorageImages,
+        _deviceLimits.maxPerStageDescriptorSamplers));
 
     // Vertex Input Limits
-    niLog(Info,niFmt(
-      "Vulkan Vertex Input Limits:\n"
-      // The maximum number of vertex input attributes.
-      // Important for defining complex vertex formats, such as those involving multiple components.
-      "  maxVertexInputAttributes: %d\n"
-      // The maximum number of vertex input bindings.
-      // Limits the number of vertex buffers that can be used in a single pipeline.
-      "  maxVertexInputBindings: %d",
-      _deviceLimits.maxVertexInputAttributes,
-      _deviceLimits.maxVertexInputBindings));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Vertex Input Limits:\n"
+        // The maximum number of vertex input attributes.
+        // Important for defining complex vertex formats, such as those involving multiple components.
+        "  maxVertexInputAttributes: %d\n"
+        // The maximum number of vertex input bindings.
+        // Limits the number of vertex buffers that can be used in a single pipeline.
+        "  maxVertexInputBindings: %d",
+        _deviceLimits.maxVertexInputAttributes,
+        _deviceLimits.maxVertexInputBindings));
 
     // Push Constants and Buffers
-    niLog(Info,niFmt(
-      "Vulkan Push Constants and Buffers:\n"
-      // The maximum size (in bytes) of push constants.
-      // Push constants are a fast way to provide data to shaders, so this determines how much data can be passed in this way.
-      "  maxPushConstantsSize: %d\n"
-      // The maximum size of a uniform buffer.
-      // Impacts how much uniform data (e.g., transformation matrices, material properties) can be shared with shaders.
-      "  maxUniformBufferRange: %d\n"
-      // The maximum size of a storage buffer.
-      // Useful for determining the size of data that can be read and written in compute shaders.
-      "  maxStorageBufferRange: %d",
-      _deviceLimits.maxPushConstantsSize,
-      _deviceLimits.maxUniformBufferRange,
-      _deviceLimits.maxStorageBufferRange));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Push Constants and Buffers:\n"
+        // The maximum size (in bytes) of push constants.
+        // Push constants are a fast way to provide data to shaders, so this determines how much data can be passed in this way.
+        "  maxPushConstantsSize: %d\n"
+        // The maximum size of a uniform buffer.
+        // Impacts how much uniform data (e.g., transformation matrices, material properties) can be shared with shaders.
+        "  maxUniformBufferRange: %d\n"
+        // The maximum size of a storage buffer.
+        // Useful for determining the size of data that can be read and written in compute shaders.
+        "  maxStorageBufferRange: %d",
+        _deviceLimits.maxPushConstantsSize, _deviceLimits.maxUniformBufferRange,
+        _deviceLimits.maxStorageBufferRange));
 
     // Image and Memory Alignment
-    niLog(Info,niFmt(
-      "Vulkan Image and Memory Alignment:\n"
-      // The alignment required between buffers and images in memory.
-      // Affects how resources are allocated to ensure correct alignment for performance.
-      "  bufferImageGranularity: %llu\n"
-      // The maximum dimensions of a 2D image (width and height).
-      // Important for determining the largest texture resolution supported by the device.
-      "  maxImageDimension2D: %d\n"
-      // The maximum number of layers in an image array.
-      // Important for applications that need array textures, such as cube maps or layered rendering.
-      "  maxImageArrayLayers: %d",
-      _deviceLimits.bufferImageGranularity,
-      _deviceLimits.maxImageDimension2D,
-      _deviceLimits.maxImageArrayLayers));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Image and Memory Alignment:\n"
+        // The alignment required between buffers and images in memory.
+        // Affects how resources are allocated to ensure correct alignment for performance.
+        "  bufferImageGranularity: %llu\n"
+        // The maximum dimensions of a 2D image (width and height).
+        // Important for determining the largest texture resolution supported by the device.
+        "  maxImageDimension2D: %d\n"
+        // The maximum number of layers in an image array.
+        // Important for applications that need array textures, such as cube maps or layered rendering.
+        "  maxImageArrayLayers: %d",
+        _deviceLimits.bufferImageGranularity, _deviceLimits.maxImageDimension2D,
+        _deviceLimits.maxImageArrayLayers));
 
     // Framebuffer Limits
-    niLog(Info,niFmt(
-      "Vulkan Framebuffer Limits:\n"
-      // The maximum width of a framebuffer.
-      // Important for determining the resolution limits for rendering targets.
-      "  maxFramebufferWidth: %d\n"
-      // The maximum height of a framebuffer.
-      // Helps in deciding the render target resolution.
-      "  maxFramebufferHeight: %d\n"
-      // The maximum number of color attachments in a framebuffer.
-      // Limits the number of color outputs possible, affecting advanced rendering techniques like MRT (multiple render targets).
-      "  maxColorAttachments: %d",
-      _deviceLimits.maxFramebufferWidth,
-      _deviceLimits.maxFramebufferHeight,
-      _deviceLimits.maxColorAttachments));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Framebuffer Limits:\n"
+        // The maximum width of a framebuffer.
+        // Important for determining the resolution limits for rendering targets.
+        "  maxFramebufferWidth: %d\n"
+        // The maximum height of a framebuffer.
+        // Helps in deciding the render target resolution.
+        "  maxFramebufferHeight: %d\n"
+        // The maximum number of color attachments in a framebuffer.
+        // Limits the number of color outputs possible, affecting advanced rendering techniques like MRT (multiple render targets).
+        "  maxColorAttachments: %d",
+        _deviceLimits.maxFramebufferWidth, _deviceLimits.maxFramebufferHeight,
+        _deviceLimits.maxColorAttachments));
 
     // Compute Shader Limits
-    niLog(Info,niFmt(
-      "Vulkan Compute Shader Limits:\n"
-      // The maximum number of workgroups in each dimension for compute shaders.
-      // Important for understanding how to best structure large compute workloads.
-      "  maxComputeWorkGroupCount: %s\n"
-      // The maximum number of workgroup invocations in compute shaders.
-      // Limits the number of compute shader threads that can run concurrently within a workgroup.
-      "  maxComputeWorkGroupInvocations: %d",
-      Vec3i(_deviceLimits.maxComputeWorkGroupCount[0],
-            _deviceLimits.maxComputeWorkGroupCount[1],
-            _deviceLimits.maxComputeWorkGroupCount[2]),
-      _deviceLimits.maxComputeWorkGroupInvocations));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Compute Shader Limits:\n"
+        // The maximum number of workgroups in each dimension for compute shaders.
+        // Important for understanding how to best structure large compute workloads.
+        "  maxComputeWorkGroupCount: %s\n"
+        // The maximum number of workgroup invocations in compute shaders.
+        // Limits the number of compute shader threads that can run concurrently within a workgroup.
+        "  maxComputeWorkGroupInvocations: %d",
+        Vec3i(_deviceLimits.maxComputeWorkGroupCount[0],
+              _deviceLimits.maxComputeWorkGroupCount[1],
+              _deviceLimits.maxComputeWorkGroupCount[2]),
+        _deviceLimits.maxComputeWorkGroupInvocations));
 
     // Sampler Limits
-    niLog(Info,niFmt(
-      "Vulkan Sampler Limits:\n"
-      // The maximum anisotropy value for samplers.
-      // Useful for determining the level of texture quality possible when using anisotropic filtering.
-      "  maxSamplerAnisotropy: %g",
-      _deviceLimits.maxSamplerAnisotropy));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Sampler Limits:\n"
+        // The maximum anisotropy value for samplers.
+        // Useful for determining the level of texture quality possible when using anisotropic filtering.
+        "  maxSamplerAnisotropy: %g",
+        _deviceLimits.maxSamplerAnisotropy));
 
     // Get extensions
     {
       tU32 extensionCount = 0;
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr,
+                                           &extensionCount, nullptr);
       astl::vector<VkExtensionProperties> extensions(extensionCount);
-      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, extensions.data());
+      vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr,
+                                           &extensionCount, extensions.data());
       for (const auto& extension : extensions) {
-        astl::upsert(_extensions,extension.extensionName,extension.specVersion);
+        astl::upsert(_extensions, extension.extensionName,
+                     extension.specVersion);
       }
       {
         cString o;
-        niLoopit(tVkExtensionsMap::const_iterator,it,_extensions) {
+        niLoopit (tVkExtensionsMap::const_iterator, it, _extensions) {
           if (it != _extensions.begin())
             o << ", ";
           o << it->first << "=" << it->second;
         }
-        niLog(Info,niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
+        niLog(Info, niFmt("Vulkan extensions[%d]: %s", _extensions.size(), o));
       }
     }
 
     // Check requirements
-    niCheck(_deviceLimits.maxBoundDescriptorSets >= eGLSLVulkanDescriptorSet_Last,eFalse);
-    niCheck(_deviceLimits.maxVertexInputBindings >= eGLSLVulkanVertexInputLayout_Last,eFalse);
+    niCheck(_deviceLimits.maxBoundDescriptorSets >=
+              eGLSLVulkanDescriptorSet_Last,
+            eFalse);
+    niCheck(_deviceLimits.maxVertexInputBindings >=
+              eGLSLVulkanVertexInputLayout_Last,
+            eFalse);
 
     // Check extensions
     for (tU32 i = 0; i < knVkRequiredDeviceExtensionsCount; ++i) {
-      if (_extensions.find(_vkRequiredDeviceExtensions[i]) == _extensions.end()) {
-        niError(niFmt("Required device extension '%s' not found.", _vkRequiredDeviceExtensions[i]));
+      if (_extensions.find(_vkRequiredDeviceExtensions[i]) == _extensions.end())
+      {
+        niError(niFmt("Required device extension '%s' not found.",
+                      _vkRequiredDeviceExtensions[i]));
         return eFalse;
       }
     }
@@ -1355,22 +1404,26 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return eTrue;
   }
 
-  tBool _FindQueueFamily(tU32& aQueueFamilyIndex) {
+  tBool _FindQueueFamily(tU32& aQueueFamilyIndex)
+  {
     tU32 queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount,
+                                             nullptr);
     astl::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilies.data());
+    vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount,
+                                             queueFamilies.data());
 
     niLog(Info, "Vulkan Queue Families:");
     for (tU32 i = 0; i < queueFamilyCount; i++) {
-      niLog(Info, niFmt(
-        "  Family %d: Queue Count: %d, Flags: 0x%X, Graphics: %y, Compute: %y, Transfer: %y, Sparse: %y",
-        i, queueFamilies[i].queueCount,
-        queueFamilies[i].queueFlags,
-        (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT),
-        (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT),
-        (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT),
-        (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)));
+      niLog(
+        Info,
+        niFmt(
+          "  Family %d: Queue Count: %d, Flags: 0x%X, Graphics: %y, Compute: %y, Transfer: %y, Sparse: %y",
+          i, queueFamilies[i].queueCount, queueFamilies[i].queueFlags,
+          (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT),
+          (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT),
+          (queueFamilies[i].queueFlags & VK_QUEUE_TRANSFER_BIT),
+          (queueFamilies[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)));
     }
 
     for (tU32 i = 0; i < queueFamilyCount; i++) {
@@ -1383,7 +1436,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return eFalse;
   }
 
-  tBool _CreateLogicalDevice() {
+  tBool _CreateLogicalDevice()
+  {
     tF32 queuePriority = 1.0f;
     VkDeviceQueueCreateInfo queueCreateInfo = {
       .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -1397,12 +1451,15 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
     };
     vkGetPhysicalDeviceFeatures2(_physicalDevice, &features2);
-    features2.features.samplerAnisotropy = _physicalDeviceFeatures.samplerAnisotropy;
+    features2.features.samplerAnisotropy =
+      _physicalDeviceFeatures.samplerAnisotropy;
     features2.features.shaderStorageImageReadWithoutFormat = VK_TRUE;
     features2.features.shaderStorageImageWriteWithoutFormat = VK_TRUE;
 
     VkPhysicalDeviceFeatures2* pLastFeatures = &features2;
-    #define CHAIN_FEATURES(NAME) pLastFeatures->pNext = &NAME; pLastFeatures = (VkPhysicalDeviceFeatures2*)&NAME;
+  #define CHAIN_FEATURES(NAME)    \
+    pLastFeatures->pNext = &NAME; \
+    pLastFeatures = (VkPhysicalDeviceFeatures2*)&NAME;
 
     // === RASTER FEATURES SETUP ===
     VkPhysicalDeviceVulkan11Features vk11 = {
@@ -1424,18 +1481,19 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
     VkPhysicalDeviceDynamicRenderingFeatures dynamicRenderingFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES,
-     .dynamicRendering = VK_TRUE,
+      .dynamicRendering = VK_TRUE,
     };
     CHAIN_FEATURES(dynamicRenderingFeatures);
 
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extDynamicStateFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
+      .sType =
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
       .pNext = &dynamicRenderingFeatures,
       .extendedDynamicState = VK_TRUE,
     };
     CHAIN_FEATURES(extDynamicStateFeatures);
 
-#if defined niVulkan_UseRobustness2
+  #if defined niVulkan_UseRobustness2
     VkPhysicalDeviceRobustness2FeaturesEXT robustness2Features = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
       .robustBufferAccess2 = VK_TRUE,
@@ -1443,7 +1501,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .nullDescriptor = VK_TRUE
     };
     CHAIN_FEATURES(robustness2Features);
-#endif
+  #endif
 
     // === BINDLESS SETUP ===
     if (_isBindlessSupported) {
@@ -1463,13 +1521,16 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
 
     // === RAY FEATURES SETUP ===
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+      .sType =
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
       .rayTracingPipeline = VK_TRUE
     };
-    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-      .accelerationStructure = VK_TRUE,
-    };
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR
+      accelerationStructureFeatures = {
+        .sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+        .accelerationStructure = VK_TRUE,
+      };
     VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures = {
       .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
       .rayQuery = VK_TRUE
@@ -1484,17 +1545,18 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     // Gather the required extensions
     astl::vector<const char*> requiredExtensions;
     {
-      requiredExtensions.reserve(knVkRequiredDeviceExtensionsCount+knVkRequiredRayTracingExtensionsCount);
-      niLoop(i,knVkRequiredDeviceExtensionsCount) {
+      requiredExtensions.reserve(knVkRequiredDeviceExtensionsCount +
+                                 knVkRequiredRayTracingExtensionsCount);
+      niLoop (i, knVkRequiredDeviceExtensionsCount) {
         requiredExtensions.push_back(_vkRequiredDeviceExtensions[i]);
       }
       if (_isBindlessSupported) {
-        niLoop(i,knVkRequiredBindlessExtensionsCount) {
+        niLoop (i, knVkRequiredBindlessExtensionsCount) {
           requiredExtensions.push_back(_vkRequiredBindlessExtensions[i]);
         }
       }
       if (_isRayTracingSupported) {
-        niLoop(i,knVkRequiredRayTracingExtensionsCount) {
+        niLoop (i, knVkRequiredRayTracingExtensionsCount) {
           requiredExtensions.push_back(_vkRequiredRayTracingExtensions[i]);
         }
       }
@@ -1512,12 +1574,14 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .ppEnabledExtensionNames = requiredExtensions.data(),
       .pEnabledFeatures = nullptr,
     };
-    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device), eFalse);
+    VK_CHECK(vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device),
+             eFalse);
     vkGetDeviceQueue(_device, _queueFamilyIndex, 0, &_graphicsQueue);
     return eTrue;
   }
 
-  tBool _CreateCommandPool() {
+  tBool _CreateCommandPool()
+  {
     VkCommandPoolCreateInfo poolInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
       .pNext = nullptr,
@@ -1525,11 +1589,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
       .queueFamilyIndex = _queueFamilyIndex,
     };
 
-    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool), eFalse);
+    VK_CHECK(vkCreateCommandPool(_device, &poolInfo, nullptr, &_commandPool),
+             eFalse);
     return eTrue;
   }
 
-  tBool _CreateAllocator() {
+  tBool _CreateAllocator()
+  {
     VmaAllocatorCreateInfo allocatorInfo = {};
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
@@ -1537,13 +1603,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     if (_isRayTracingSupported) {
       allocatorInfo.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
     }
-#ifdef niVulkan_Volk
-    VmaVulkanFunctions vmaVulkanFuncs {
-      .vkGetInstanceProcAddr = vkGetInstanceProcAddr,
-      .vkGetDeviceProcAddr = vkGetDeviceProcAddr
-    };
+  #ifdef niVulkan_Volk
+    VmaVulkanFunctions vmaVulkanFuncs{ .vkGetInstanceProcAddr =
+                                         vkGetInstanceProcAddr,
+                                       .vkGetDeviceProcAddr =
+                                         vkGetDeviceProcAddr };
     allocatorInfo.pVulkanFunctions = &vmaVulkanFuncs;
-#endif
+  #endif
     VK_CHECK(vmaCreateAllocator(&allocatorInfo, &_allocator), eFalse);
     return eTrue;
   }
@@ -1551,17 +1617,19 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   tBool _CreateVulkanDriverResources();
   tBool _DestroyVulkanDriverResources();
 
-  inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const {
+  inline VkSampler _GetVkSamplerState(tIntPtr ahSS) const
+  {
     if (ahSS >= eCompiledStates_SS_PointRepeat &&
         ahSS <= eCompiledStates_SS_SmoothWhiteBorder)
     {
-      return _ssCompiled[ahSS-eCompiledStates_SS_PointRepeat];
+      return _ssCompiled[ahSS - eCompiledStates_SS_PointRepeat];
     }
     niPanicAssert(niFmt("Unknown sampler states '%d'.", ahSS));
     return _ssCompiled[0];
   }
 
-  VkCommandBuffer BeginSingleTimeCommands() {
+  VkCommandBuffer BeginSingleTimeCommands()
+  {
     VkCommandBufferAllocateInfo allocInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
@@ -1571,7 +1639,8 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     };
 
     VkCommandBuffer cmdBuf;
-    VK_CHECK(vkAllocateCommandBuffers(_device, &allocInfo, &cmdBuf), VK_NULL_HANDLE);
+    VK_CHECK(vkAllocateCommandBuffers(_device, &allocInfo, &cmdBuf),
+             VK_NULL_HANDLE);
 
     VkCommandBufferBeginInfo beginInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -1582,16 +1651,16 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return cmdBuf;
   }
 
-  tBool EndSingleTimeCommands(VkCommandBuffer cmdBuf, tBool abSubmit) {
+  tBool EndSingleTimeCommands(VkCommandBuffer cmdBuf, tBool abSubmit)
+  {
     VK_CHECK(vkEndCommandBuffer(cmdBuf), eFalse);
 
     if (abSubmit) {
-      VkSubmitInfo submitInfo = {
-        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-        .commandBufferCount = 1,
-        .pCommandBuffers = &cmdBuf
-      };
-      VK_PANIC(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), eFalse);
+      VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                                  .commandBufferCount = 1,
+                                  .pCommandBuffers = &cmdBuf };
+      VK_PANIC(vkQueueSubmit(_graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),
+               eFalse);
       VK_PANIC(vkQueueWaitIdle(_graphicsQueue), eFalse);
     }
 
@@ -1600,63 +1669,75 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
   }
 
   //// iGraphicsDriver ///////////////////////////////
-  virtual iGraphics* __stdcall GetGraphics() const niImpl { return _graphics; }
-  virtual const achar* __stdcall GetName() const niImpl { return _A("Vulkan"); }
-  virtual const achar* __stdcall GetDesc() const niImpl { return _A("Vulkan Graphics Driver"); }
-  virtual const achar* __stdcall GetDeviceName() const niImpl { return _A("Default"); }
+  virtual iGraphics* __stdcall GetGraphics() const niImpl
+  {
+    return _graphics;
+  }
+  virtual const achar* __stdcall GetName() const niImpl
+  {
+    return _A("Vulkan");
+  }
+  virtual const achar* __stdcall GetDesc() const niImpl
+  {
+    return _A("Vulkan Graphics Driver");
+  }
+  virtual const achar* __stdcall GetDeviceName() const niImpl
+  {
+    return _A("Default");
+  }
 
-  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const niImpl {
+  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const niImpl
+  {
     switch (aCaps) {
-      case eGraphicsCaps_Resize:
-      case eGraphicsCaps_MultiContext:
-      case eGraphicsCaps_ScissorTest:
-      case eGraphicsCaps_OverlayTexture:
-      case eGraphicsCaps_NumTextureUnits:
-      case eGraphicsCaps_NumRenderTargetTextures:
-        return 1;
-      case eGraphicsCaps_Texture2DMaxSize:
-        return 0xFFFF;
-      case eGraphicsCaps_TextureCubeMaxSize:
-      case eGraphicsCaps_Texture3DMaxSize:
-        return 0;
-      case eGraphicsCaps_MaxVertexIndex:
-        return 0xFFFFFFFF;
-      case eGraphicsCaps_DepthStencilTexture:
-      case eGraphicsCaps_StencilTwoSideded:
-      case eGraphicsCaps_StencilWrap:
-      case eGraphicsCaps_OcclusionQueries:
-      case eGraphicsCaps_MaxPointSize:
-      case eGraphicsCaps_HardwareInstancing:
-      case eGraphicsCaps_OrthoProjectionOffset:
-      case eGraphicsCaps_BlitBackBuffer:
-        return 0;
-      case eGraphicsCaps_Wireframe:
-        return 1;
-      case eGraphicsCaps_IGpu:
-        return 1;
-      case eGraphicsCaps_IRay:
-        return _isRayTracingSupported ? 1 : 0;
+    case eGraphicsCaps_Resize:
+    case eGraphicsCaps_MultiContext:
+    case eGraphicsCaps_ScissorTest:
+    case eGraphicsCaps_OverlayTexture:
+    case eGraphicsCaps_NumTextureUnits:
+    case eGraphicsCaps_NumRenderTargetTextures: return 1;
+    case eGraphicsCaps_Texture2DMaxSize: return 0xFFFF;
+    case eGraphicsCaps_TextureCubeMaxSize:
+    case eGraphicsCaps_Texture3DMaxSize: return 0;
+    case eGraphicsCaps_MaxVertexIndex: return 0xFFFFFFFF;
+    case eGraphicsCaps_DepthStencilTexture:
+    case eGraphicsCaps_StencilTwoSideded:
+    case eGraphicsCaps_StencilWrap:
+    case eGraphicsCaps_OcclusionQueries:
+    case eGraphicsCaps_MaxPointSize:
+    case eGraphicsCaps_HardwareInstancing:
+    case eGraphicsCaps_OrthoProjectionOffset:
+    case eGraphicsCaps_BlitBackBuffer: return 0;
+    case eGraphicsCaps_Wireframe: return 1;
+    case eGraphicsCaps_IGpu: return 1;
+    case eGraphicsCaps_IRay: return _isRayTracingSupported ? 1 : 0;
     }
     return 0;
   }
 
-  virtual tBool __stdcall ResetAllCaches() niImpl {
+  virtual tBool __stdcall ResetAllCaches() niImpl
+  {
     return eTrue;
   }
 
-  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const niImpl {
-    return eGraphicsDriverImplFlags_IndexArrayObject|
-        eGraphicsDriverImplFlags_VertexArrayObject;
+  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags()
+    const niImpl
+  {
+    return eGraphicsDriverImplFlags_IndexArrayObject |
+           eGraphicsDriverImplFlags_VertexArrayObject;
   }
 
-  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) niImpl {
-    niCheckSilent(niIsOK(apFormat),eFalse);
+  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat,
+                                             tTextureFlags aFlags) niImpl
+  {
+    niCheckSilent(niIsOK(apFormat), eFalse);
 
-    niLet gpufmt = _GetClosestGpuPixelFormatForTexture(apFormat->GetPixelFormat()->GetFormat(),aFlags);
+    niLet gpufmt = _GetClosestGpuPixelFormatForTexture(
+      apFormat->GetPixelFormat()->GetFormat(), aFlags);
 
     // TODO: For now all eGpuPixelFormat are supported by Vulkan but that
     // might not always be the case. Eventually we should validate this.
-    NN<iPixelFormat> bmpFormat = niCheckNN(bmpFormat,_GetIPixelFormat(_graphics,gpufmt),eFalse);
+    NN<iPixelFormat> bmpFormat =
+      niCheckNN(bmpFormat, _GetIPixelFormat(_graphics, gpufmt), eFalse);
     if (!bmpFormat->IsSamePixelFormat(apFormat->GetPixelFormat())) {
       apFormat->SetPixelFormat(bmpFormat);
     }
@@ -1664,100 +1745,165 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver,eImplFlags_Default,iGraphic
     return eTrue;
   }
 
-  virtual iTexture* __stdcall CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) niImpl;
+  virtual iTexture* __stdcall CreateTexture(iHString* ahspName,
+                                            eBitmapType aType,
+                                            const achar* aaszFormat,
+                                            tU32 anNumMipMaps, tU32 anWidth,
+                                            tU32 anHeight, tU32 anDepth,
+                                            tTextureFlags aFlags) niImpl;
 
-  virtual tBool __stdcall BlitBitmapToTexture(iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags);
+  virtual tBool __stdcall BlitBitmapToTexture(
+    iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel,
+    const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags);
 
-  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel, iBitmap2D* apDest, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
+  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel,
+                                              iBitmap2D* apDest,
+                                              const sRecti& aSrcRect,
+                                              const sRecti& aDestRect,
+                                              eTextureBlitFlags aFlags)
+  {
     return eFalse;
   }
-  virtual tBool __stdcall BlitTextureToTexture(iTexture* apSrc, tU32 anSrcLevel, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
+  virtual tBool __stdcall BlitTextureToTexture(
+    iTexture* apSrc, tU32 anSrcLevel, iTexture* apDest, tU32 anDestLevel,
+    const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)
+  {
     return eFalse;
   }
-  virtual tBool __stdcall BlitBitmap3DToTexture(iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)  {
+  virtual tBool __stdcall BlitBitmap3DToTexture(
+    iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)
+  {
     return eFalse;
   }
-  virtual tBool __stdcall BlitTextureToBitmap3D(iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)  {
+  virtual tBool __stdcall BlitTextureToBitmap3D(
+    iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)
+  {
     return eFalse;
   }
 
   /////////////////////////////////////////////
-  virtual tU32 __stdcall GetNumShaderProfile(eShaderUnit aUnit) const niImpl {
+  virtual tU32 __stdcall GetNumShaderProfile(eShaderUnit aUnit) const niImpl
+  {
     return 0;
   }
-  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit, tU32 anIndex) const niImpl {
+  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit,
+                                               tU32 anIndex) const niImpl
+  {
     return nullptr;
   }
-  virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apFile) niImpl {
+  virtual iShader* __stdcall CreateShader(iHString* ahspName,
+                                          iFile* apFile) niImpl
+  {
     return nullptr;
   }
-  virtual iOcclusionQuery* __stdcall CreateOcclusionQuery() niImpl {
+  virtual iOcclusionQuery* __stdcall CreateOcclusionQuery() niImpl
+  {
     return nullptr;
   }
 
   /////////////////////////////////////////////
-  virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture) {
+  virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture)
+  {
     _drawOpCapture = niGetIfOK(apCapture);
   }
-  virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const {
+  virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const
+  {
     return _drawOpCapture;
   }
 
   /////////////////////////////////////////////
-  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF aFVF, eArrayUsage aUsage) {
-    return CreateFixedGpuVertexArray(this,anNumVertices,aFVF,aUsage);
+  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices,
+                                                    tFVF aFVF,
+                                                    eArrayUsage aUsage)
+  {
+    return CreateFixedGpuVertexArray(this, anNumVertices, aFVF, aUsage);
   }
-  virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
-    return CreateFixedGpuIndexArray(this,aPrimitiveType,anNumIndices,anMaxVertexIndex,aUsage);
+  virtual iIndexArray* __stdcall CreateIndexArray(
+    eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices,
+    tU32 anMaxVertexIndex, eArrayUsage aUsage)
+  {
+    return CreateFixedGpuIndexArray(this, aPrimitiveType, anNumIndices,
+                                    anMaxVertexIndex, aUsage);
   }
 
   /////////////////////////////////////////////
-  iGraphicsContext* __stdcall CreateContextForWindow(iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat, tU32 anSwapInterval, tTextureFlags aBackBufferFlags) niImpl;
-  iGraphicsContextRT* __stdcall CreateContextForRenderTargets(iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS) niImpl;
+  iGraphicsContext* __stdcall CreateContextForWindow(
+    iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat,
+    tU32 anSwapInterval, tTextureFlags aBackBufferFlags) niImpl;
+  iGraphicsContextRT* __stdcall CreateContextForRenderTargets(
+    iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+    iTexture* apDS) niImpl;
   //// iGraphicsDriver ///////////////////////////////
 
   //// iGraphicsDriverGpu ///////////////////////////////
-  Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
-  Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
-  Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
+  Ptr<iGpuBuffer> __stdcall CreateGpuBuffer(iHString* ahspName, tU32 anSize,
+                                            eGpuBufferMemoryMode aMemMode,
+                                            tGpuBufferUsageFlags aUsage) niImpl;
+  Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromData(
+    iHString* ahspName, iFile* apFile, tU32 anSize,
+    eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) niImpl;
+  Ptr<iGpuBuffer> __stdcall CreateGpuBufferFromDataRaw(
+    iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode,
+    tGpuBufferUsageFlags aUsage) niImpl;
   iHString* __stdcall GetGpuFunctionTarget() const niImpl;
-  Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) niImpl;
+  Ptr<iGpuFunction> __stdcall CreateGpuFunction(eGpuFunctionType aType,
+                                                iHString* ahspPath) niImpl;
   Ptr<iGpuPipelineDesc> __stdcall CreateGpuPipelineDesc() niImpl;
   Ptr<iGpuBlendMode> __stdcall CreateGpuBlendMode() niImpl;
-  Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
-  iDeviceResourceManager* __stdcall GetStorageBufferDeviceResourceManager() const niImpl {
+  Ptr<iGpuPipeline> __stdcall CreateGpuPipeline(
+    iHString* ahspName, const iGpuPipelineDesc* apDesc) niImpl;
+  iDeviceResourceManager* __stdcall GetStorageBufferDeviceResourceManager()
+    const niImpl
+  {
     return _drmStorageBuffers;
   }
   //// iGraphicsDriverGpu ///////////////////////////////
 
   //// iGraphicsDriverRay ///////////////////////////////
-  Ptr<iRayPipeline> __stdcall CreateRayPipeline(iHString* ahspName, iRayFunctionTable* apFunctionTable) niImpl;
+  Ptr<iRayPipeline> __stdcall CreateRayPipeline(
+    iHString* ahspName, iRayFunctionTable* apFunctionTable) niImpl;
   Ptr<iRayFunctionTable> __stdcall CreateRayFunctionTable() niImpl;
-  Ptr<iRayTrianglePrimitivesDesc> __stdcall CreateRayTrianglePrimitivesDesc(iHString* ahspName) niImpl;
-  Ptr<iRayProceduralPrimitivesDesc> __stdcall CreateRayProceduralPrimitivesDesc(iHString* ahspName) niImpl;
-  Ptr<iRayInstancesDesc> __stdcall CreateRayInstancesDesc(iHString* ahspName) niImpl;
+  Ptr<iRayTrianglePrimitivesDesc> __stdcall CreateRayTrianglePrimitivesDesc(
+    iHString* ahspName) niImpl;
+  Ptr<iRayProceduralPrimitivesDesc> __stdcall CreateRayProceduralPrimitivesDesc(
+    iHString* ahspName) niImpl;
+  Ptr<iRayInstancesDesc> __stdcall CreateRayInstancesDesc(
+    iHString* ahspName) niImpl;
   Ptr<iRayBuildEncoder> __stdcall CreateRayBuildEncoder() niImpl;
   //// iGraphicsDriverRay ///////////////////////////////
 };
 
-static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage) {
+static VkBufferUsageFlags _ToVkBufferUsageFlags(tGpuBufferUsageFlags aUsage)
+{
   VkBufferUsageFlags vkUsage = 0;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Vertex)) vkUsage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Index)) vkUsage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Uniform)) vkUsage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Storage)) vkUsage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_Indirect)) vkUsage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferSrc)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_TransferDst)) vkUsage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_RayStorage)) vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_RayBuildInput)) vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
-  if (niFlagIs(aUsage,eGpuBufferUsageFlags_RayFunctionBindingTable)) vkUsage |= VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_Vertex))
+    vkUsage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_Index))
+    vkUsage |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_Uniform))
+    vkUsage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_Storage))
+    vkUsage |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_Indirect))
+    vkUsage |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_TransferSrc))
+    vkUsage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_TransferDst))
+    vkUsage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_RayStorage))
+    vkUsage |= VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_RayBuildInput))
+    vkUsage |=
+      VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+  if (niFlagIs(aUsage, eGpuBufferUsageFlags_RayFunctionBindingTable))
+    vkUsage |= VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR;
   return vkUsage;
 }
 
-struct sVulkanBuffer : public ImplRC<
-  iGpuBuffer,eImplFlags_DontInherit1,iDeviceResource>
-{
+struct sVulkanBuffer
+    : public ImplRC<iGpuBuffer, eImplFlags_DontInherit1, iDeviceResource> {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   VkBuffer _vkBuffer = VK_NULL_HANDLE;
@@ -1770,27 +1916,26 @@ struct sVulkanBuffer : public ImplRC<
   tBool _boundModifiedBuffer = eFalse;
   tU32 _resourceIndex = eInvalidHandle;
 
-  sVulkanBuffer(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName,
-    eGpuBufferMemoryMode aMemMode,
-    tGpuBufferUsageFlags aUsage)
+  sVulkanBuffer(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
+                eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage)
       : _driver(aDriver)
       , _name(ahspName)
       , _memMode(aMemMode)
       , _usage(aUsage)
-  {}
+  {
+  }
 
-  ~sVulkanBuffer() {
+  ~sVulkanBuffer()
+  {
     _DestroyBuffer();
   }
 
-  tBool _CreateBuffer(tU32 anSize, tU32 anMinAlignment) {
-    VkBufferCreateInfo bufferInfo = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = anSize,
-      .usage = _ToVkBufferUsageFlags(_usage)
-    };
+  tBool _CreateBuffer(tU32 anSize, tU32 anMinAlignment)
+  {
+    VkBufferCreateInfo bufferInfo = { .sType =
+                                        VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                      .size = anSize,
+                                      .usage = _ToVkBufferUsageFlags(_usage) };
 
     if (_driver->_isRayTracingSupported) {
       bufferInfo.usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -1798,45 +1943,46 @@ struct sVulkanBuffer : public ImplRC<
 
     VmaAllocationCreateInfo allocInfo = {};
     switch (_memMode) {
-      case eGpuBufferMemoryMode_Shared:
-        allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
-        break;
-      case eGpuBufferMemoryMode_Private:
-        allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-        break;
-      case eGpuBufferMemoryMode_Managed:
-        allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
-        allocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
-        break;
+    case eGpuBufferMemoryMode_Shared:
+      allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+      break;
+    case eGpuBufferMemoryMode_Private:
+      allocInfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+      break;
+    case eGpuBufferMemoryMode_Managed:
+      allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+      allocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+      break;
     }
 
     if (anMinAlignment) {
       VK_CHECK(vmaCreateBufferWithAlignment(
-        _driver->_allocator, &bufferInfo, &allocInfo,
-        anMinAlignment,
-        &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
+                 _driver->_allocator, &bufferInfo, &allocInfo, anMinAlignment,
+                 &_vkBuffer, &_vmaAllocation, nullptr),
+               eFalse);
     }
     else {
-      VK_CHECK(vmaCreateBuffer(
-        _driver->_allocator, &bufferInfo, &allocInfo,
-        &_vkBuffer, &_vmaAllocation, nullptr), eFalse);
+      VK_CHECK(vmaCreateBuffer(_driver->_allocator, &bufferInfo, &allocInfo,
+                               &_vkBuffer, &_vmaAllocation, nullptr),
+               eFalse);
     }
 
-    if (niFlagIs(_usage,eGpuBufferUsageFlags_Storage)) {
+    if (niFlagIs(_usage, eGpuBufferUsageFlags_Storage)) {
       _resourceIndex = _driver->_drmStorageBuffers->Register(this);
-      _VkDescrUpdateBuffer(
-        _driver->_device,_driver->_bindlessStorageBuffersDescSet,
-        _name,_resourceIndex,_vkBuffer);
+      _VkDescrUpdateBuffer(_driver->_device,
+                           _driver->_bindlessStorageBuffersDescSet, _name,
+                           _resourceIndex, _vkBuffer);
     }
     return eTrue;
   }
 
-  void _DestroyBuffer() {
+  void _DestroyBuffer()
+  {
     if (_resourceIndex != eInvalidHandle) {
-      _VkDescrUpdateBuffer(
-        _driver->_device,_driver->_bindlessStorageBuffersDescSet,
-        _name,_resourceIndex,_driver->_dummyBuffer->_vkBuffer);
-      niAssert(niFlagIs(_usage,eGpuBufferUsageFlags_Storage));
+      _VkDescrUpdateBuffer(_driver->_device,
+                           _driver->_bindlessStorageBuffersDescSet, _name,
+                           _resourceIndex, _driver->_dummyBuffer->_vkBuffer);
+      niAssert(niFlagIs(_usage, eGpuBufferUsageFlags_Storage));
       _driver->_drmStorageBuffers->Unregister(this);
       _resourceIndex = eInvalidHandle;
     }
@@ -1847,67 +1993,73 @@ struct sVulkanBuffer : public ImplRC<
     }
   }
 
-  void _Untrack() {
+  void _Untrack()
+  {
     // niDebugFmt(("... Unbind: %p: [ms:%d,me:%d].", (tIntPtr)this, _modifiedStart,_modifiedEnd));
     _modifiedOffset = _modifiedSize = 0;
     _boundModifiedBuffer = eFalse;
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _vkBuffer != VK_NULL_HANDLE;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  virtual tU32 __stdcall GetSize() const niImpl {
+  virtual tU32 __stdcall GetSize() const niImpl
+  {
     VmaAllocationInfo info;
     vmaGetAllocationInfo(_driver->_allocator, _vmaAllocation, &info);
     return (tU32)info.size;
   }
 
-  virtual eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl {
+  virtual eGpuBufferMemoryMode __stdcall GetMemoryMode() const niImpl
+  {
     return _memMode;
   }
 
-  virtual tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl {
+  virtual tGpuBufferUsageFlags __stdcall GetUsageFlags() const niImpl
+  {
     return _usage;
   }
 
-  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) niImpl {
+  virtual tPtr __stdcall Lock(tU32 anOffset, tU32 anSize, eLock aLock) niImpl
+  {
     niCheck(_memMode != eGpuBufferMemoryMode_Private, nullptr);
-    niCheck(!GetIsLocked(),nullptr);
+    niCheck(!GetIsLocked(), nullptr);
 
     _lockMode = aLock;
     _lockOffset = anOffset;
-    _lockSize = anSize ? anSize : (GetSize()-anOffset);
+    _lockSize = anSize ? anSize : (GetSize() - anOffset);
 
     if (_modifiedSize == 0) {
       _modifiedOffset = _lockOffset;
       _modifiedSize = _lockSize;
     }
-    else if ((_lockOffset < (_modifiedOffset+_modifiedSize)) &&
-             (_lockOffset+_lockSize) > _modifiedOffset)
+    else if ((_lockOffset < (_modifiedOffset + _modifiedSize)) &&
+             (_lockOffset + _lockSize) > _modifiedOffset)
     {
-#ifdef VULKAN_LOG_LOCK_OVERLAP
+  #ifdef VULKAN_LOG_LOCK_OVERLAP
       if (_boundModifiedBuffer) {
         // TODO: The lock should fail in this case and return nullptr? We
         // should not allow submitted buffers to be modified?
         niWarning(niFmt(
           "Lock(%d,%d,%d): %p: [lo:%d,ls:%d] [mo:%d,ms:%d] Locked inflight overlapping area.",
-          anOffset,anSize,aLock,
-          (tIntPtr)this,
-          _lockOffset,_lockSize,
-          _modifiedOffset,_modifiedSize));
+          anOffset, anSize, aLock, (tIntPtr)this, _lockOffset, _lockSize,
+          _modifiedOffset, _modifiedSize));
       }
-#endif
-      const tU32 newStart = ni::Min(_modifiedOffset,_lockOffset);
-      const tU32 newEnd = ni::Max(_modifiedOffset+_modifiedSize,
-                                  _lockOffset+_lockSize);
+  #endif
+      const tU32 newStart = ni::Min(_modifiedOffset, _lockOffset);
+      const tU32 newEnd =
+        ni::Max(_modifiedOffset + _modifiedSize, _lockOffset + _lockSize);
       _modifiedOffset = newStart;
       _modifiedSize = newEnd - newStart;
     }
@@ -1917,7 +2069,8 @@ struct sVulkanBuffer : public ImplRC<
     return ((tPtr)data) + _lockOffset;
   }
 
-  virtual tBool __stdcall Unlock() niImpl {
+  virtual tBool __stdcall Unlock() niImpl
+  {
     if (!GetIsLocked())
       return eFalse;
     vmaUnmapMemory(_driver->_allocator, _vmaAllocation);
@@ -1926,20 +2079,22 @@ struct sVulkanBuffer : public ImplRC<
     return eTrue;
   }
 
-  virtual tBool __stdcall GetIsLocked() const niImpl {
+  virtual tBool __stdcall GetIsLocked() const niImpl
+  {
     return _lockSize != 0;
   }
 
-  VkDeviceAddress _GetDeviceAddress() const {
+  VkDeviceAddress _GetDeviceAddress() const
+  {
     VkBufferDeviceAddressInfo info = {
-      .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-      .buffer = _vkBuffer
+      .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO, .buffer = _vkBuffer
     };
     return vkGetBufferDeviceAddressKHR(_driver->_device, &info);
   }
 };
 
-struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource> {
+struct sVulkanTexture
+    : public ImplRC<iTexture, eImplFlags_DontInherit1, iDeviceResource> {
   nn<sVulkanDriver> _driver;
   VkImage _vkImage = VK_NULL_HANDLE;
   VmaAllocation _vmaAllocation;
@@ -1955,12 +2110,10 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
   tU32 _subTexId = 0;
   tU32 _resourceIndex = eInvalidHandle;
 
-  sVulkanTexture(
-    ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
-    eBitmapType aType,
-    tU32 anWidth, tU32 anHeight, tU32 anNumMipMaps,
-    eGpuPixelFormat aGpuPixelFormat,
-    tTextureFlags aFlags)
+  sVulkanTexture(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
+                 eBitmapType aType, tU32 anWidth, tU32 anHeight,
+                 tU32 anNumMipMaps, eGpuPixelFormat aGpuPixelFormat,
+                 tTextureFlags aFlags)
       : _driver(aDriver)
       , _name(ahspName)
       , _type(aType)
@@ -1970,21 +2123,24 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       , _flags(aFlags)
       , _pixelFormat(aGpuPixelFormat)
   {
-    if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
-      _resourceIndex = _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
+    if (niFlagIsNot(_flags, eTextureFlags_SubTexture)) {
+      _resourceIndex =
+        _driver->_graphics->GetTextureDeviceResourceManager()->Register(this);
     }
   }
 
-  ~sVulkanTexture() {
+  ~sVulkanTexture()
+  {
     this->Invalidate();
   }
 
-  virtual void __stdcall Invalidate() override {
+  virtual void __stdcall Invalidate() override
+  {
     _subTexs.clear();
     if (_resourceIndex != eInvalidHandle) {
-      _VkDescrUpdateTexture(
-        _driver->_device,_driver->_bindlessTexturesDescSet,
-        _name,_resourceIndex,_driver->_dummyTexture->_vkView);
+      _VkDescrUpdateTexture(_driver->_device, _driver->_bindlessTexturesDescSet,
+                            _name, _resourceIndex,
+                            _driver->_dummyTexture->_vkView);
       if (_driver->_graphics->GetTextureDeviceResourceManager()) {
         _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
       }
@@ -1994,7 +2150,7 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       vkDestroyImageView(_driver->_device, _vkView, nullptr);
       _vkView = VK_NULL_HANDLE;
     }
-    if (niFlagIsNot(_flags,eTextureFlags_SubTexture)) {
+    if (niFlagIsNot(_flags, eTextureFlags_SubTexture)) {
       if (_vkImage) {
         vmaDestroyImage(_driver->_allocator, _vkImage, _vmaAllocation);
         _vkImage = VK_NULL_HANDLE;
@@ -2002,56 +2158,67 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     }
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const override {
+  virtual iHString* __stdcall GetDeviceResourceName() const override
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) override
+  {
     return this;
   }
 
-  virtual eBitmapType __stdcall GetType() const override {
+  virtual eBitmapType __stdcall GetType() const override
+  {
     return _type;
   }
 
-  virtual tU32 __stdcall GetWidth() const override {
+  virtual tU32 __stdcall GetWidth() const override
+  {
     return _width;
   }
 
-  virtual tU32 __stdcall GetHeight() const override {
+  virtual tU32 __stdcall GetHeight() const override
+  {
     return _height;
   }
 
-  virtual tU32 __stdcall GetDepth() const override {
+  virtual tU32 __stdcall GetDepth() const override
+  {
     return 1;
   }
 
-  virtual iPixelFormat* __stdcall GetPixelFormat() const override {
-    return _GetIPixelFormat(_driver->_graphics,_pixelFormat);
+  virtual iPixelFormat* __stdcall GetPixelFormat() const override
+  {
+    return _GetIPixelFormat(_driver->_graphics, _pixelFormat);
   }
 
-  virtual tU32 __stdcall GetNumMipMaps() const override {
+  virtual tU32 __stdcall GetNumMipMaps() const override
+  {
     return _numMipMaps;
   }
 
-  virtual tTextureFlags __stdcall GetFlags() const override {
+  virtual tTextureFlags __stdcall GetFlags() const override
+  {
     return _flags;
   }
 
-  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override {
+  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const override
+  {
     if (anIndex >= _subTexs.size())
       return nullptr;
     return _subTexs[anIndex];
   }
 
-  tBool _CreateVulkanTexture() {
+  tBool _CreateVulkanTexture()
+  {
     niPanicAssert(_vkImage == VK_NULL_HANDLE && _vkView == VK_NULL_HANDLE);
 
     VkImageCreateInfo imageInfo = {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .imageType = VK_IMAGE_TYPE_2D,
       .format = _GetVulkanPixelFormat(_pixelFormat),
-      .extent = {_width, _height, 1},
-      .mipLevels = 1+_numMipMaps,
+      .extent = { _width, _height, 1 },
+      .mipLevels = 1 + _numMipMaps,
       .arrayLayers = 1,
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
@@ -2060,48 +2227,42 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
     };
 
-    if (niFlagIs(_flags,eTextureFlags_RenderTarget)) {
+    if (niFlagIs(_flags, eTextureFlags_RenderTarget)) {
       imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
       if (_driver->_isRayTracingSupported) {
         imageInfo.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
       }
     }
-    else if (niFlagIs(_flags,eTextureFlags_DepthStencil)) {
+    else if (niFlagIs(_flags, eTextureFlags_DepthStencil)) {
       imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
     }
 
     switch (_type) {
-      case eBitmapType_2D: {
-        break;
-      }
-      case eBitmapType_Cube: {
-        imageInfo.flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-        imageInfo.arrayLayers = 6;
-        break;
-      }
-      default: {
-        niError(niFmt("Unsupported bitmap type '%d' for image creation.",_type));
-        return eFalse;
-      }
+    case eBitmapType_2D: {
+      break;
+    }
+    case eBitmapType_Cube: {
+      imageInfo.flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+      imageInfo.arrayLayers = 6;
+      break;
+    }
+    default: {
+      niError(niFmt("Unsupported bitmap type '%d' for image creation.", _type));
+      return eFalse;
+    }
     }
 
-    VmaAllocationCreateInfo allocInfo = {
-      .usage = VMA_MEMORY_USAGE_GPU_ONLY
-    };
-    VK_CHECK(vmaCreateImage(
-      _driver->_allocator, &imageInfo, &allocInfo,
-      &_vkImage, &_vmaAllocation, nullptr), eFalse);
+    VmaAllocationCreateInfo allocInfo = { .usage = VMA_MEMORY_USAGE_GPU_ONLY };
+    VK_CHECK(vmaCreateImage(_driver->_allocator, &imageInfo, &allocInfo,
+                            &_vkImage, &_vmaAllocation, nullptr),
+             eFalse);
 
     if (_type == eBitmapType_Cube) {
       _subTexs.resize(6);
-      niLoop(i,6) {
+      niLoop (i, 6) {
         _subTexs[i] = niNew sVulkanTexture(
-          _driver,
-          _name,
-          eBitmapType_2D,
-          _width,_height,GetNumMipMaps(),
-          _pixelFormat,
-          eTextureFlags_SubTexture|eTextureFlags_Surface);
+          _driver, _name, eBitmapType_2D, _width, _height, GetNumMipMaps(),
+          _pixelFormat, eTextureFlags_SubTexture | eTextureFlags_Surface);
         _subTexs[i]->_vkImage = _vkImage;
         _subTexs[i]->_vmaAllocation = _vmaAllocation;
         _subTexs[i]->_subTexId = i;
@@ -2109,59 +2270,56 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     }
 
     // Create image view
-    VkImageViewCreateInfo viewInfo = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-      .image = _vkImage,
-      .format = imageInfo.format,
-      .components = {
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY
-      },
-      .subresourceRange = {
-        .aspectMask = (VkImageAspectFlags)(
-          niFlagIs(_flags,eTextureFlags_DepthStencil) ?
-          VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
-        .baseMipLevel = 0,
-        .levelCount = 1+_numMipMaps,
-        .baseArrayLayer = 0
-      }
-    };
+    VkImageViewCreateInfo
+      viewInfo = { .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                   .image = _vkImage,
+                   .format = imageInfo.format,
+                   .components = { VK_COMPONENT_SWIZZLE_IDENTITY,
+                                   VK_COMPONENT_SWIZZLE_IDENTITY,
+                                   VK_COMPONENT_SWIZZLE_IDENTITY,
+                                   VK_COMPONENT_SWIZZLE_IDENTITY },
+                   .subresourceRange = {
+                     .aspectMask =
+                       (VkImageAspectFlags)(niFlagIs(_flags,
+                                                     eTextureFlags_DepthStencil)
+                                              ? VK_IMAGE_ASPECT_DEPTH_BIT
+                                              : VK_IMAGE_ASPECT_COLOR_BIT),
+                     .baseMipLevel = 0,
+                     .levelCount = 1 + _numMipMaps,
+                     .baseArrayLayer = 0 } };
     switch (_type) {
-      case eBitmapType_2D: {
-        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.subresourceRange.layerCount = 1;
-        break;
-      }
-      case eBitmapType_Cube: {
-        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
-        viewInfo.subresourceRange.layerCount = 6;
-        break;
-      }
-      default: {
-        niError(niFmt("Unsupported bitmap type '%d' for view creation.",_type));
-        return eFalse;
-      }
+    case eBitmapType_2D: {
+      viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      viewInfo.subresourceRange.layerCount = 1;
+      break;
+    }
+    case eBitmapType_Cube: {
+      viewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+      viewInfo.subresourceRange.layerCount = 6;
+      break;
+    }
+    default: {
+      niError(niFmt("Unsupported bitmap type '%d' for view creation.", _type));
+      return eFalse;
+    }
     }
 
-    VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView), eFalse);
+    VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView),
+             eFalse);
     if (_resourceIndex != eInvalidHandle) {
-      _VkDescrUpdateTexture(
-        _driver->_device,_driver->_bindlessTexturesDescSet,
-        _name,_resourceIndex,_vkView);
+      _VkDescrUpdateTexture(_driver->_device, _driver->_bindlessTexturesDescSet,
+                            _name, _resourceIndex, _vkView);
     }
     return eTrue;
   }
 
-  tBool _UploadTexture(const iBitmap2D* apBmpLevel,
-                       const tU32 anLevel,
+  tBool _UploadTexture(const iBitmap2D* apBmpLevel, const tU32 anLevel,
                        const sRecti& aDestRect)
   {
     const tU32 bpp = apBmpLevel->GetPixelFormat()->GetBytesPerPixel();
     const tU32 bpr = apBmpLevel->GetPitch();
     const tU32 startOffset = (aDestRect.y * bpr) + (aDestRect.x * bpp);
-    const tPtr bytes = (tPtr)(apBmpLevel->GetData()+startOffset);
+    const tPtr bytes = (tPtr)(apBmpLevel->GetData() + startOffset);
 
     // Create staging buffer
     VkBuffer stagingBuffer;
@@ -2177,10 +2335,12 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
       .usage = VMA_MEMORY_USAGE_CPU_TO_GPU
     };
 
-    VK_CHECK(vmaCreateBuffer(
-      _driver->_allocator, &bufferInfo, &stagingAllocInfo,
-      &stagingBuffer, &stagingAlloc, nullptr), eFalse);
-    niDefer {
+    VK_CHECK(vmaCreateBuffer(_driver->_allocator, &bufferInfo,
+                             &stagingAllocInfo, &stagingBuffer, &stagingAlloc,
+                             nullptr),
+             eFalse);
+    niDefer
+    {
       vmaDestroyBuffer(_driver->_allocator, stagingBuffer, stagingAlloc);
     };
 
@@ -2188,10 +2348,8 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     void* data;
     VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), eFalse);
     for (tU32 y = 0; y < (tU32)aDestRect.GetHeight(); ++y) {
-      memcpy(
-        (tU8*)data + (y * aDestRect.GetWidth() * bpp),
-        (tU8*)bytes + (y * bpr),
-        aDestRect.GetWidth() * bpp);
+      memcpy((tU8*)data + (y * aDestRect.GetWidth() * bpp),
+             (tU8*)bytes + (y * bpr), aDestRect.GetWidth() * bpp);
     }
     vmaUnmapMemory(_driver->_allocator, stagingAlloc);
 
@@ -2199,73 +2357,59 @@ struct sVulkanTexture : public ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceRe
     VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
     niCheck(cmdBuf != VK_NULL_HANDLE, eFalse);
     niCheck(_VkTransitionImageLayout(
-      cmdBuf,_vkImage,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      anLevel,_subTexId),eFalse);
+              cmdBuf, _vkImage, VK_IMAGE_LAYOUT_UNDEFINED,
+              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, anLevel, _subTexId),
+            eFalse);
 
     // Copy buffer to image
     VkBufferImageCopy region = {
       .bufferOffset = 0,
       .bufferRowLength = 0,
       .bufferImageHeight = 0,
-      .imageSubresource = {
-        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-        .mipLevel = anLevel,
-        .baseArrayLayer = _subTexId,
-        .layerCount = 1
-      },
-      .imageOffset = {
-        aDestRect.x,
-        aDestRect.y,
-        0
-      },
-      .imageExtent = {
-        (tU32)aDestRect.GetWidth(),
-        (tU32)aDestRect.GetHeight(),
-        1
-      }
+      .imageSubresource = { .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                            .mipLevel = anLevel,
+                            .baseArrayLayer = _subTexId,
+                            .layerCount = 1 },
+      .imageOffset = { aDestRect.x, aDestRect.y, 0 },
+      .imageExtent = { (tU32)aDestRect.GetWidth(), (tU32)aDestRect.GetHeight(),
+                       1 }
     };
 
-    vkCmdCopyBufferToImage(
-      cmdBuf,
-      stagingBuffer,
-      _vkImage,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      1,
-      &region);
+    vkCmdCopyBufferToImage(cmdBuf, stagingBuffer, _vkImage,
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
     // Transition to shader read
     niCheck(_VkTransitionImageLayout(
-      cmdBuf,_vkImage,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      anLevel,_subTexId),eFalse);
+              cmdBuf, _vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, anLevel, _subTexId),
+            eFalse);
 
-    _driver->EndSingleTimeCommands(cmdBuf,eTrue);
+    _driver->EndSingleTimeCommands(cmdBuf, eTrue);
     return eTrue;
   }
 };
 
-iTexture* __stdcall sVulkanDriver::CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags) {
-  VULKAN_TRACE((
-    "sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
-    ahspName,aaszFormat,anWidth,anHeight,anDepth,anNumMipMaps,aFlags));
+iTexture* __stdcall sVulkanDriver::CreateTexture(
+  iHString* ahspName, eBitmapType aType, const achar* aaszFormat,
+  tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth,
+  tTextureFlags aFlags)
+{
+  VULKAN_TRACE(
+    ("sVulkanDriver::CreateTexture: %s, %s, %dx%dx%d, mips:%d, flags:%d",
+     ahspName, aaszFormat, anWidth, anHeight, anDepth, anNumMipMaps, aFlags));
   Ptr<iPixelFormat> pxf = _graphics->CreatePixelFormat(aaszFormat);
-  niCheck(pxf.IsOK(),nullptr);
-  niCheck(aType == eBitmapType_2D || aType == eBitmapType_Cube,nullptr);
+  niCheck(pxf.IsOK(), nullptr);
+  niCheck(aType == eBitmapType_2D || aType == eBitmapType_Cube, nullptr);
 
-  Ptr<sVulkanTexture> tex { niNew sVulkanTexture(
-    as_nn(this),
-    ahspName,
-    aType,anWidth,anHeight,anNumMipMaps,
-    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(),aFlags),
-    aFlags) };
-  niCheck(tex->_CreateVulkanTexture(),nullptr);
+  Ptr<sVulkanTexture> tex{ niNew sVulkanTexture(
+    as_nn(this), ahspName, aType, anWidth, anHeight, anNumMipMaps,
+    _GetClosestGpuPixelFormatForTexture(pxf->GetFormat(), aFlags), aFlags) };
+  niCheck(tex->_CreateVulkanTexture(), nullptr);
   return tex.GetRawAndSetNull();
 }
 
-struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDeviceResource> {
+struct sVulkanFunction
+    : public ImplRC<iGpuFunction, eImplFlags_DontInherit1, iDeviceResource> {
   nn<sVulkanDriver> _driver;
   NN<iDataTable> _datatable = niDeferredInit(NN<iDataTable>);
   const eGpuFunctionType _functionType;
@@ -2274,35 +2418,42 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
   VkShaderModule _vkShaderModule = VK_NULL_HANDLE;
   eGpuFunctionBindType _bindType;
 
-  sVulkanFunction(
-    ain<nn<sVulkanDriver>> aDriver,
-    ain<eGpuFunctionType> aFuncType,
-    ain<tU32> anID)
+  sVulkanFunction(ain<nn<sVulkanDriver>> aDriver,
+                  ain<eGpuFunctionType> aFuncType, ain<tU32> anID)
       : _driver(aDriver)
       , _functionType(aFuncType)
       , _id(anID)
-  {}
+  {
+  }
 
-  ~sVulkanFunction() {
+  ~sVulkanFunction()
+  {
     if (_vkShaderModule) {
       vkDestroyShaderModule(_driver->_device, _vkShaderModule, nullptr);
       _vkShaderModule = VK_NULL_HANDLE;
     }
   }
 
-  tBool _Compile(VkDevice aDevice, iHString* ahspPath) {
+  tBool _Compile(VkDevice aDevice, iHString* ahspPath)
+  {
     _hspName = ahspPath;
-    _datatable = niCheckNN(_datatable,GpuFunctionDT_Load(niHStr(ahspPath),_GetVulkanGpuFunctionTarget(),&_bindType),eFalse);
-    NN<iFile> spvData = niCheckNN_(
-      spvData,GpuFunctionDT_GetSourceData(_datatable),
-      niFmt("Can't get gpufunc data for target '%s' in '%s'.",_GetVulkanGpuFunctionTarget(),ahspPath),
-      eFalse);
+    _datatable =
+      niCheckNN(_datatable,
+                GpuFunctionDT_Load(niHStr(ahspPath),
+                                   _GetVulkanGpuFunctionTarget(), &_bindType),
+                eFalse);
+    NN<iFile> spvData =
+      niCheckNN_(spvData, GpuFunctionDT_GetSourceData(_datatable),
+                 niFmt("Can't get gpufunc data for target '%s' in '%s'.",
+                       _GetVulkanGpuFunctionTarget(), ahspPath),
+                 eFalse);
 
     spvData->SeekSet(0);
     astl::vector<tU8> data;
     data.resize(spvData->GetSize());
-    if (spvData->ReadRaw((tPtr)data.data(),data.size()) != data.size()) {
-      niError(niFmt("Can't read gpufunc data for target '%s' in '%s'.",_GetVulkanGpuFunctionTarget(),ahspPath));
+    if (spvData->ReadRaw((tPtr)data.data(), data.size()) != data.size()) {
+      niError(niFmt("Can't read gpufunc data for target '%s' in '%s'.",
+                    _GetVulkanGpuFunctionTarget(), ahspPath));
       return eFalse;
     }
 
@@ -2312,57 +2463,61 @@ struct sVulkanFunction : public ImplRC<iGpuFunction,eImplFlags_DontInherit1,iDev
       .pCode = (tU32*)data.data()
     };
 
-    VK_CHECK(vkCreateShaderModule(aDevice, &createInfo, nullptr, &_vkShaderModule), eFalse);
+    VK_CHECK(
+      vkCreateShaderModule(aDevice, &createInfo, nullptr, &_vkShaderModule),
+      eFalse);
     return eTrue;
   }
 
-  virtual tU32 __stdcall GetFunctionId() const niImpl {
+  virtual tU32 __stdcall GetFunctionId() const niImpl
+  {
     return _id;
   }
 
-  virtual eGpuFunctionType __stdcall GetFunctionType() const niImpl {
+  virtual eGpuFunctionType __stdcall GetFunctionType() const niImpl
+  {
     return _functionType;
   }
 
-  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl {
+  virtual eGpuFunctionBindType __stdcall GetFunctionBindType() const niImpl
+  {
     return _bindType;
   }
 
-  virtual iDataTable* __stdcall GetDataTable() const niImpl {
+  virtual iDataTable* __stdcall GetDataTable() const niImpl
+  {
     return _datatable;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _hspName;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 };
 
 static Ptr<sVulkanFunction> __stdcall CreateVulkanGpuFunction(
-  ain<nn<sVulkanDriver>> aDriver,
-  eGpuFunctionType aType,
-  iHString* ahspPath)
+  ain<nn<sVulkanDriver>> aDriver, eGpuFunctionType aType, iHString* ahspPath)
 {
   niLet newId = aDriver->_idGenerator.AllocID();
-  NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver,aType,newId);
-  if (!func->_Compile(aDriver->_device,ahspPath)) {
+  NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(aDriver, aType, newId);
+  if (!func->_Compile(aDriver->_device, ahspPath)) {
     aDriver->_idGenerator.FreeID(newId);
-    niError(niFmt(
-      "Can't create gpu function '%s': Compilation failed.",
-      ahspPath));
+    niError(
+      niFmt("Can't create gpu function '%s': Compilation failed.", ahspPath));
     return nullptr;
   }
   if (func->GetFunctionType() != aType) {
     aDriver->_idGenerator.FreeID(newId);
     niError(niFmt(
       "Can't create gpu function '%s': Expected function type '%s' but got '%s'.",
-      ahspPath,
-      (tU32)aType, (tU32)func->GetFunctionType()
+      ahspPath, (tU32)aType, (tU32)func->GetFunctionType()
       // niEnumToChars(eGpuFunctionType,aType),
       // niEnumToChars(eGpuFunctionType,func->GetFunctionType())
-    ));
+      ));
     return nullptr;
   }
   return func;
@@ -2374,9 +2529,11 @@ struct sVulkanPipeline {
 
   sVulkanPipeline(VkPipelineBindPoint aPipelineBindPoint)
       : _vkPipelineBindPoint(aPipelineBindPoint)
-  {}
+  {
+  }
 
-  void _DestroyPipeline(ain<nn<sVulkanDriver>> aDriver) {
+  void _DestroyPipeline(ain<nn<sVulkanDriver>> aDriver)
+  {
     if (_vkPipeline) {
       vkDestroyPipeline(aDriver->_device, _vkPipeline, nullptr);
       _vkPipeline = VK_NULL_HANDLE;
@@ -2384,10 +2541,9 @@ struct sVulkanPipeline {
   }
 };
 
-struct sVulkanRasterPipeline :
-      public ImplRC<iGpuPipeline,eImplFlags_DontInherit1,iDeviceResource>,
-      public sVulkanPipeline
-{
+struct sVulkanRasterPipeline
+    : public ImplRC<iGpuPipeline, eImplFlags_DontInherit1, iDeviceResource>,
+      public sVulkanPipeline {
   nn<sVulkanDriver> _driver; // TODO: Should be a weakptr
   tHStringPtr _hspName;
   NN<iGpuPipelineDesc> _desc = niDeferredInit(NN<iGpuPipelineDesc>);
@@ -2396,48 +2552,54 @@ struct sVulkanRasterPipeline :
   sVulkanRasterPipeline(ain<nn<sVulkanDriver>> aDriver)
       : sVulkanPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS)
       , _driver(aDriver)
-  {}
+  {
+  }
 
-  ~sVulkanRasterPipeline() {
+  ~sVulkanRasterPipeline()
+  {
     _DestroyPipeline(_driver);
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _hspName;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  VkPipelineLayout _GetPipelineLayout() const {
+  VkPipelineLayout _GetPipelineLayout() const
+  {
     switch (_gpufuncBindType) {
-      case eGpuFunctionBindType_None:
-      case eGpuFunctionBindType_Fixed:
-      case eGpuFunctionBindType_FixedRayInstances:
-      case eGpuFunctionBindType_Bindless:
-      case eGpuFunctionBindType_BindlessRayInstances: {
-        return _driver->_vkPipelineLayouts[_gpufuncBindType];
-      }
+    case eGpuFunctionBindType_None:
+    case eGpuFunctionBindType_Fixed:
+    case eGpuFunctionBindType_FixedRayInstances:
+    case eGpuFunctionBindType_Bindless:
+    case eGpuFunctionBindType_BindlessRayInstances: {
+      return _driver->_vkPipelineLayouts[_gpufuncBindType];
+    }
     }
     return VK_NULL_HANDLE;
   }
 
-  tBool _CreateVulkanPipeline(
-    iHString* ahspName,
-    const iGpuPipelineDesc* apDesc)
+  tBool _CreateVulkanPipeline(iHString* ahspName,
+                              const iGpuPipelineDesc* apDesc)
   {
-    niCheckIsOK(apDesc,eFalse);
+    niCheckIsOK(apDesc, eFalse);
     _hspName = ahspName;
-    _desc = niCheckNN(_desc,apDesc->Clone(),eFalse);
+    _desc = niCheckNN(_desc, apDesc->Clone(), eFalse);
 
     niLet vkDevice = _driver->_device;
     niLet graphics = as_nn(_driver->GetGraphics());
 
     // Shaders
     VkPipelineShaderStageCreateInfo shaderStages[2] = {};
-    sVulkanFunction* vs = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
+    sVulkanFunction* vs =
+      (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Vertex);
     niCheck(vs, eFalse);
-    sVulkanFunction* ps = (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
+    sVulkanFunction* ps =
+      (sVulkanFunction*)_desc->GetFunction(eGpuFunctionType_Pixel);
     niCheck(ps, eFalse);
 
     // Check that pipeline gpu functions use compatible bind types
@@ -2448,32 +2610,30 @@ struct sVulkanRasterPipeline :
           vsFuncBindType != eGpuFunctionBindType_None &&
           psFuncBindType != eGpuFunctionBindType_None)
       {
-        niError(niFmt(
-          "Incompatible gpu function bind types: vertex='%d', pixel='%d'",
-          vsFuncBindType, psFuncBindType));
+        niError(
+          niFmt("Incompatible gpu function bind types: vertex='%d', pixel='%d'",
+                vsFuncBindType, psFuncBindType));
         return eFalse;
       }
-      _gpufuncBindType = ni::Max(vsFuncBindType,psFuncBindType);
+      _gpufuncBindType = ni::Max(vsFuncBindType, psFuncBindType);
     }
 
-    shaderStages[0] = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_VERTEX_BIT,
-      .module = vs->_vkShaderModule,
-      .pName = "main"
-    };
-    shaderStages[1] = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-      .module = ps->_vkShaderModule,
-      .pName = "main"
-    };
+    shaderStages[0] = { .sType =
+                          VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                        .stage = VK_SHADER_STAGE_VERTEX_BIT,
+                        .module = vs->_vkShaderModule,
+                        .pName = "main" };
+    shaderStages[1] = { .sType =
+                          VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+                        .module = ps->_vkShaderModule,
+                        .pName = "main" };
 
     VkPipelineLayout pipelineLayout = _GetPipelineLayout();
     if (pipelineLayout == VK_NULL_HANDLE) {
-        niError(niFmt(
-          "Cant get pipeline layout for bind type '%d'.", _gpufuncBindType));
-        return eFalse;
+      niError(niFmt("Cant get pipeline layout for bind type '%d'.",
+                    _gpufuncBindType));
+      return eFalse;
     }
 
     // Vertex input
@@ -2501,10 +2661,8 @@ struct sVulkanRasterPipeline :
 
     // Dynamic states
     VkDynamicState dynamicStates[] = {
-      VK_DYNAMIC_STATE_VIEWPORT,
-      VK_DYNAMIC_STATE_SCISSOR,
-      VK_DYNAMIC_STATE_BLEND_CONSTANTS,
-      VK_DYNAMIC_STATE_STENCIL_REFERENCE,
+      VK_DYNAMIC_STATE_VIEWPORT,           VK_DYNAMIC_STATE_SCISSOR,
+      VK_DYNAMIC_STATE_BLEND_CONSTANTS,    VK_DYNAMIC_STATE_STENCIL_REFERENCE,
       VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY,
     };
     VkPipelineDynamicStateCreateInfo dynamicState = {
@@ -2521,13 +2679,13 @@ struct sVulkanRasterPipeline :
     };
 
     // Rasterization
-    niLet rs = GetGpuRasterizerDesc(graphics,_desc->GetRasterizerStates());
+    niLet rs = GetGpuRasterizerDesc(graphics, _desc->GetRasterizerStates());
     VkPipelineRasterizationStateCreateInfo rasterizer = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
       .depthClampEnable = VK_FALSE,
       .rasterizerDiscardEnable = VK_FALSE,
-      .polygonMode = (rs->mbWireframe ?
-                      VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL),
+      .polygonMode =
+        (rs->mbWireframe ? VK_POLYGON_MODE_LINE : VK_POLYGON_MODE_FILL),
       .cullMode = _ToVkCullMode(rs->mCullingMode),
       .frontFace = _vkFrontFace,
       .depthBiasEnable = VK_FALSE,
@@ -2544,7 +2702,8 @@ struct sVulkanRasterPipeline :
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
     };
     {
-      niLet ds = GetGpuDepthStencilDesc(graphics,_desc->GetDepthStencilStates());
+      niLet ds =
+        GetGpuDepthStencilDesc(graphics, _desc->GetDepthStencilStates());
       // Depth
       depthStencil.depthTestEnable = ds->mbDepthTest;
       depthStencil.depthWriteEnable = ds->mbDepthTestWrite;
@@ -2587,13 +2746,16 @@ struct sVulkanRasterPipeline :
 
     // Setup blend mode if specified
     if (_desc->GetBlendMode()) {
-      const sGpuBlendModeDesc* bm = (const sGpuBlendModeDesc*)_desc->GetBlendMode()->GetDescStructPtr();
+      const sGpuBlendModeDesc* bm =
+        (const sGpuBlendModeDesc*)_desc->GetBlendMode()->GetDescStructPtr();
       colorBlendAttachment.blendEnable = VK_TRUE;
       colorBlendAttachment.srcColorBlendFactor = _ToVkBlendFactor[bm->mSrcRGB];
       colorBlendAttachment.dstColorBlendFactor = _ToVkBlendFactor[bm->mDstRGB];
       colorBlendAttachment.colorBlendOp = _ToVkBlendOp[bm->mOp];
-      colorBlendAttachment.srcAlphaBlendFactor = _ToVkBlendFactor[bm->mSrcAlpha];
-      colorBlendAttachment.dstAlphaBlendFactor = _ToVkBlendFactor[bm->mDstAlpha];
+      colorBlendAttachment.srcAlphaBlendFactor =
+        _ToVkBlendFactor[bm->mSrcAlpha];
+      colorBlendAttachment.dstAlphaBlendFactor =
+        _ToVkBlendFactor[bm->mDstAlpha];
       colorBlendAttachment.alphaBlendOp = _ToVkBlendOp[bm->mOp];
     }
 
@@ -2634,28 +2796,26 @@ struct sVulkanRasterPipeline :
       .subpass = 0,
     };
 
-    VK_CHECK(vkCreateGraphicsPipelines(
-      vkDevice, VK_NULL_HANDLE, 1,
-      &pipelineInfo, nullptr, &_vkPipeline), eFalse);
+    VK_CHECK(vkCreateGraphicsPipelines(vkDevice, VK_NULL_HANDLE, 1,
+                                       &pipelineInfo, nullptr, &_vkPipeline),
+             eFalse);
 
     return eTrue;
   }
 
-  virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl {
+  virtual const iGpuPipelineDesc* __stdcall GetDesc() const niImpl
+  {
     return _desc;
   }
 };
 
 static Ptr<sVulkanRasterPipeline> __stdcall CreateVulkanRasterPipeline(
-  ain<nn<sVulkanDriver>> aDriver,
-  iHString* ahspName,
+  ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
   const iGpuPipelineDesc* apDesc)
 {
-  niCheckIsOK(apDesc,nullptr);
+  niCheckIsOK(apDesc, nullptr);
   NN<sVulkanRasterPipeline> pipeline = MakeNN<sVulkanRasterPipeline>(aDriver);
-  niCheck(
-    pipeline->_CreateVulkanPipeline(ahspName,apDesc),
-    nullptr);
+  niCheck(pipeline->_CreateVulkanPipeline(ahspName, apDesc), nullptr);
   return pipeline;
 }
 
@@ -2663,11 +2823,13 @@ struct sVulkanDescriptorPool {
   VkDescriptorPool _descPool = VK_NULL_HANDLE;
   tU32 _numAllocated = 0;
 
-  tBool _CreateDescriptorPool(VkDevice aDevice) {
+  tBool _CreateDescriptorPool(VkDevice aDevice)
+  {
     VkDescriptorPoolSize poolSizes[] = {
-      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, knVulkanMaxDescrFixedUniformBuffers},
-      {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, knVulkanMaxDescrFixedTextures},
-      {VK_DESCRIPTOR_TYPE_SAMPLER, knVulkanMaxDescrFixedSamplers}
+      { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        knVulkanMaxDescrFixedUniformBuffers },
+      { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, knVulkanMaxDescrFixedTextures },
+      { VK_DESCRIPTOR_TYPE_SAMPLER, knVulkanMaxDescrFixedSamplers }
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {
@@ -2678,20 +2840,24 @@ struct sVulkanDescriptorPool {
       .pPoolSizes = poolSizes
     };
 
-    VK_CHECK(vkCreateDescriptorPool(aDevice, &poolInfo, nullptr, &_descPool), eFalse);
+    VK_CHECK(vkCreateDescriptorPool(aDevice, &poolInfo, nullptr, &_descPool),
+             eFalse);
     return eTrue;
   }
 
-  void Destroy(VkDevice aDevice) {
+  void Destroy(VkDevice aDevice)
+  {
     if (_descPool) {
       vkDestroyDescriptorPool(aDevice, _descPool, nullptr);
       _descPool = VK_NULL_HANDLE;
     }
   }
 
-  VkDescriptorSet AllocateDescriptorSet(VkDevice aDevice, VkDescriptorSetLayout aLayout) {
+  VkDescriptorSet AllocateDescriptorSet(VkDevice aDevice,
+                                        VkDescriptorSetLayout aLayout)
+  {
     if (!_descPool) {
-      niCheck(_CreateDescriptorPool(aDevice),VK_NULL_HANDLE);
+      niCheck(_CreateDescriptorPool(aDevice), VK_NULL_HANDLE);
     }
 
     VkDescriptorSetAllocateInfo allocInfo = {
@@ -2702,39 +2868,36 @@ struct sVulkanDescriptorPool {
     };
 
     VkDescriptorSet descSet;
-    VK_CHECK(vkAllocateDescriptorSets(
-      aDevice, &allocInfo, &descSet), VK_NULL_HANDLE);
+    VK_CHECK(vkAllocateDescriptorSets(aDevice, &allocInfo, &descSet),
+             VK_NULL_HANDLE);
     ++_numAllocated;
     return descSet;
   }
 
-  void ResetDescriptorPool(VkDevice aDevice) {
+  void ResetDescriptorPool(VkDevice aDevice)
+  {
     if (_descPool) {
       vkResetDescriptorPool(aDevice, _descPool, 0);
     }
     _numAllocated = 0;
   }
 
-  tBool PushDescriptorUniformBuffer(
-    ain<nn<sVulkanDriver>> aDriver,
-    VkCommandBuffer aCmdBuffer,
-    VkPipelineBindPoint aPipelineBindPoint,
-    VkPipelineLayout aPipelineLayout,
-    tU32 aSetIndex,
-    VkBuffer aBuffer,
-    VkDeviceSize aOffset,
-    VkDeviceSize aRange = VK_WHOLE_SIZE)
+  tBool PushDescriptorUniformBuffer(ain<nn<sVulkanDriver>> aDriver,
+                                    VkCommandBuffer aCmdBuffer,
+                                    VkPipelineBindPoint aPipelineBindPoint,
+                                    VkPipelineLayout aPipelineLayout,
+                                    tU32 aSetIndex, VkBuffer aBuffer,
+                                    VkDeviceSize aOffset,
+                                    VkDeviceSize aRange = VK_WHOLE_SIZE)
   {
     niLet device = aDriver->_device;
-    niLet descSet = AllocateDescriptorSet(
-      device,aDriver->_descrSetLayouts[aSetIndex]);
-    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+    niLet descSet =
+      AllocateDescriptorSet(device, aDriver->_descrSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE, eFalse);
 
-    VkDescriptorBufferInfo bufferInfo = {
-      .buffer = aBuffer,
-      .offset = aOffset,
-      .range = aRange
-    };
+    VkDescriptorBufferInfo bufferInfo = { .buffer = aBuffer,
+                                          .offset = aOffset,
+                                          .range = aRange };
 
     VkWriteDescriptorSet write = {
       .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -2745,63 +2908,52 @@ struct sVulkanDescriptorPool {
       .pBufferInfo = &bufferInfo,
     };
 
-    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
-    vkCmdBindDescriptorSets(
-      aCmdBuffer,aPipelineBindPoint,
-      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    vkCmdBindDescriptorSets(aCmdBuffer, aPipelineBindPoint, aPipelineLayout,
+                            aSetIndex, 1, &descSet, 0, nullptr);
     return eTrue;
   }
 
-  tBool PushDescriptorImage(
-    ain<nn<sVulkanDriver>> aDriver,
-    VkCommandBuffer aCmdBuffer,
-    VkPipelineBindPoint aPipelineBindPoint,
-    VkPipelineLayout aPipelineLayout,
-    tU32 aSetIndex,
-    VkImageView aImageView,
-    VkImageLayout aImageLayout)
+  tBool PushDescriptorImage(ain<nn<sVulkanDriver>> aDriver,
+                            VkCommandBuffer aCmdBuffer,
+                            VkPipelineBindPoint aPipelineBindPoint,
+                            VkPipelineLayout aPipelineLayout, tU32 aSetIndex,
+                            VkImageView aImageView, VkImageLayout aImageLayout)
   {
     niLet device = aDriver->_device;
-    niLet descSet = AllocateDescriptorSet(
-      device,aDriver->_descrSetLayouts[aSetIndex]);
-    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+    niLet descSet =
+      AllocateDescriptorSet(device, aDriver->_descrSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE, eFalse);
 
-    VkDescriptorImageInfo imageInfo = {
-      .imageView = aImageView,
-      .imageLayout = aImageLayout
-    };
+    VkDescriptorImageInfo imageInfo = { .imageView = aImageView,
+                                        .imageLayout = aImageLayout };
 
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = descSet,
-      .dstBinding = 0,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-      .pImageInfo = &imageInfo
-    };
-    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
-    vkCmdBindDescriptorSets(
-      aCmdBuffer,aPipelineBindPoint,
-      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    VkWriteDescriptorSet write = { .sType =
+                                     VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                   .dstSet = descSet,
+                                   .dstBinding = 0,
+                                   .descriptorCount = 1,
+                                   .descriptorType =
+                                     VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+                                   .pImageInfo = &imageInfo };
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    vkCmdBindDescriptorSets(aCmdBuffer, aPipelineBindPoint, aPipelineLayout,
+                            aSetIndex, 1, &descSet, 0, nullptr);
     return eTrue;
   }
 
-  tBool PushDescriptorSampler(
-    ain<nn<sVulkanDriver>> aDriver,
-    VkCommandBuffer aCmdBuffer,
-    VkPipelineBindPoint aPipelineBindPoint,
-    VkPipelineLayout aPipelineLayout,
-    tU32 aSetIndex,
-    VkSampler aSampler)
+  tBool PushDescriptorSampler(ain<nn<sVulkanDriver>> aDriver,
+                              VkCommandBuffer aCmdBuffer,
+                              VkPipelineBindPoint aPipelineBindPoint,
+                              VkPipelineLayout aPipelineLayout, tU32 aSetIndex,
+                              VkSampler aSampler)
   {
     niLet device = aDriver->_device;
-    niLet descSet = AllocateDescriptorSet(
-      device,aDriver->_descrSetLayouts[aSetIndex]);
-    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+    niLet descSet =
+      AllocateDescriptorSet(device, aDriver->_descrSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE, eFalse);
 
-    VkDescriptorImageInfo samplerInfo = {
-      .sampler = aSampler
-    };
+    VkDescriptorImageInfo samplerInfo = { .sampler = aSampler };
 
     VkWriteDescriptorSet write = {
       .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -2811,28 +2963,25 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER,
       .pImageInfo = &samplerInfo,
     };
-    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
-    vkCmdBindDescriptorSets(
-      aCmdBuffer,aPipelineBindPoint,
-      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    vkCmdBindDescriptorSets(aCmdBuffer, aPipelineBindPoint, aPipelineLayout,
+                            aSetIndex, 1, &descSet, 0, nullptr);
     return eTrue;
   }
 
   tBool PushDescriptorAccelerationStructure(
-    ain<nn<sVulkanDriver>> aDriver,
-    VkCommandBuffer aCmdBuffer,
-    VkPipelineBindPoint aPipelineBindPoint,
-    VkPipelineLayout aPipelineLayout,
-    tU32 aSetIndex,
-    VkAccelerationStructureKHR aAS)
+    ain<nn<sVulkanDriver>> aDriver, VkCommandBuffer aCmdBuffer,
+    VkPipelineBindPoint aPipelineBindPoint, VkPipelineLayout aPipelineLayout,
+    tU32 aSetIndex, VkAccelerationStructureKHR aAS)
   {
     niLet device = aDriver->_device;
-    niLet descSet = AllocateDescriptorSet(
-      device,aDriver->_descrSetLayouts[aSetIndex]);
-    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+    niLet descSet =
+      AllocateDescriptorSet(device, aDriver->_descrSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE, eFalse);
 
     VkWriteDescriptorSetAccelerationStructureKHR asInfo = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
+      .sType =
+        VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR,
       .accelerationStructureCount = 1,
       .pAccelerationStructures = &aAS
     };
@@ -2846,44 +2995,38 @@ struct sVulkanDescriptorPool {
       .descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
     };
 
-    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
-    vkCmdBindDescriptorSets(
-      aCmdBuffer,aPipelineBindPoint,
-      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    vkCmdBindDescriptorSets(aCmdBuffer, aPipelineBindPoint, aPipelineLayout,
+                            aSetIndex, 1, &descSet, 0, nullptr);
     return eTrue;
   }
 
-  tBool PushDescriptorStorageImage(
-    ain<nn<sVulkanDriver>> aDriver,
-    VkCommandBuffer aCmdBuffer,
-    VkPipelineBindPoint aPipelineBindPoint,
-    VkPipelineLayout aPipelineLayout,
-    tU32 aSetIndex,
-    VkImageView aImageView,
-    VkImageLayout aImageLayout)
+  tBool PushDescriptorStorageImage(ain<nn<sVulkanDriver>> aDriver,
+                                   VkCommandBuffer aCmdBuffer,
+                                   VkPipelineBindPoint aPipelineBindPoint,
+                                   VkPipelineLayout aPipelineLayout,
+                                   tU32 aSetIndex, VkImageView aImageView,
+                                   VkImageLayout aImageLayout)
   {
     niLet device = aDriver->_device;
-    niLet descSet = AllocateDescriptorSet(
-      device,aDriver->_descrSetLayouts[aSetIndex]);
-    niCheck(descSet != VK_NULL_HANDLE,eFalse);
+    niLet descSet =
+      AllocateDescriptorSet(device, aDriver->_descrSetLayouts[aSetIndex]);
+    niCheck(descSet != VK_NULL_HANDLE, eFalse);
 
-    VkDescriptorImageInfo imageInfo = {
-      .imageView = aImageView,
-      .imageLayout = aImageLayout
-    };
+    VkDescriptorImageInfo imageInfo = { .imageView = aImageView,
+                                        .imageLayout = aImageLayout };
 
-    VkWriteDescriptorSet write = {
-      .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-      .dstSet = descSet,
-      .dstBinding = 0,
-      .descriptorCount = 1,
-      .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-      .pImageInfo = &imageInfo
-    };
-    vkUpdateDescriptorSets(device,1,&write,0,nullptr);
-    vkCmdBindDescriptorSets(
-      aCmdBuffer,aPipelineBindPoint,
-      aPipelineLayout,aSetIndex,1,&descSet,0,nullptr);
+    VkWriteDescriptorSet write = { .sType =
+                                     VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                                   .dstSet = descSet,
+                                   .dstBinding = 0,
+                                   .descriptorCount = 1,
+                                   .descriptorType =
+                                     VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+                                   .pImageInfo = &imageInfo };
+    vkUpdateDescriptorSets(device, 1, &write, 0, nullptr);
+    vkCmdBindDescriptorSets(aCmdBuffer, aPipelineBindPoint, aPipelineLayout,
+                            aSetIndex, 1, &descSet, 0, nullptr);
     return eTrue;
   }
 };
@@ -2898,23 +3041,27 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   astl::vector<Ptr<iTexture>> _trackedOutputImages;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
-  tBool _inFrame = eFalse;;
+  tBool _inFrame = eFalse;
+  ;
 
-  sVulkanEncoderFrameData(ain<nn<sVulkanDriver>> aDriver) {
-    _stream = CreateGpuStream(
-      aDriver,
-      eGpuBufferUsageFlags_Vertex|
-      eGpuBufferUsageFlags_Index|
-      eGpuBufferUsageFlags_Uniform,
-      aDriver->_deviceLimits.minUniformBufferOffsetAlignment);
+  sVulkanEncoderFrameData(ain<nn<sVulkanDriver>> aDriver)
+  {
+    _stream =
+      CreateGpuStream(aDriver,
+                      eGpuBufferUsageFlags_Vertex | eGpuBufferUsageFlags_Index |
+                        eGpuBufferUsageFlags_Uniform,
+                      aDriver->_deviceLimits.minUniformBufferOffsetAlignment);
   }
 
-  void Destroy(VkDevice aDevice) {
+  void Destroy(VkDevice aDevice)
+  {
     _descriptorPool.Destroy(aDevice);
   }
 
-  niInline sVulkanBuffer* BindBuffer(iGpuBuffer* apBuffer) {
-    niLet buffer = (sVulkanBuffer*)apBuffer; // Note: Bind() is a noop so we dont call it
+  niInline sVulkanBuffer* BindBuffer(iGpuBuffer* apBuffer)
+  {
+    niLet buffer =
+      (sVulkanBuffer*)apBuffer; // Note: Bind() is a noop so we dont call it
     if (!buffer->_boundModifiedBuffer && buffer->_modifiedSize) {
       buffer->_boundModifiedBuffer = eTrue;
     }
@@ -2922,40 +3069,49 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     return buffer;
   }
 
-  niInline sVulkanTexture* BindTexture(iTexture* apTexture) {
-    sVulkanTexture* texture = (sVulkanTexture*)apTexture; // Note: Bind() is a noop so we dont call it
+  niInline sVulkanTexture* BindTexture(iTexture* apTexture)
+  {
+    sVulkanTexture* texture =
+      (sVulkanTexture*)apTexture; // Note: Bind() is a noop so we dont call it
     _trackedTextures.push_back(texture);
     return texture;
   }
 
-  niInline sVulkanRasterPipeline* BindRasterPipeline(iGpuPipeline* apPipeline) {
-    sVulkanRasterPipeline* pipeline = static_cast<sVulkanRasterPipeline*>(apPipeline);
+  niInline sVulkanRasterPipeline* BindRasterPipeline(iGpuPipeline* apPipeline)
+  {
+    sVulkanRasterPipeline* pipeline =
+      static_cast<sVulkanRasterPipeline*>(apPipeline);
     _trackedGpuPipelines.push_back(pipeline);
     return pipeline;
   }
 
-  niInline sVulkanRayPipeline* BindRayPipeline(iRayPipeline* apPipeline) {
+  niInline sVulkanRayPipeline* BindRayPipeline(iRayPipeline* apPipeline)
+  {
     _trackedRayPipelines.push_back(apPipeline);
     return (sVulkanRayPipeline*)apPipeline;
   }
 
-  niInline sVulkanRayInstances* BindRayInstances(iRayInstances* apInstances) {
+  niInline sVulkanRayInstances* BindRayInstances(iRayInstances* apInstances)
+  {
     _trackedRayInstances.push_back(apInstances);
     return (sVulkanRayInstances*)apInstances;
   }
 
-  niInline sVulkanTexture* BindOutputImage(iTexture* apInstances) {
+  niInline sVulkanTexture* BindOutputImage(iTexture* apInstances)
+  {
     _trackedOutputImages.push_back(apInstances);
     return (sVulkanTexture*)apInstances;
   }
 
-  void OnBeginFrame(VkDevice aDevice) {
+  void OnBeginFrame(VkDevice aDevice)
+  {
     niUnused(aDevice);
     niPanicAssert(_inFrame == eFalse);
     _inFrame = eTrue;
   }
 
-  void OnEndFrame(VkDevice aDevice) {
+  void OnEndFrame(VkDevice aDevice)
+  {
     // niLet& lastBlock = _stream->GetLastBlock();
     // niDebugFmt((
     //   "... OnFrameCompleted: sVulkanEncoderFrameData{_trackedBuffers=%d,_trackedTextures=%d,_stream._numBlocks=%d,_stream.mOffset=%d,_stream.mSize=%d,_descriptorPool._numAllocated=%d}",
@@ -2963,7 +3119,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     //   lastBlock.mOffset,lastBlock.mSize,
     //   _descriptorPool._numAllocated));
 
-    niLoop(i,_trackedBuffers.size()) {
+    niLoop (i, _trackedBuffers.size()) {
       _trackedBuffers[i]->_Untrack();
     }
     _trackedBuffers.clear();
@@ -2978,7 +3134,8 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     _eventFrameCompleted.Signal();
   }
 
-  void WaitFrameCompleted() {
+  void WaitFrameCompleted()
+  {
     if (_inFrame) {
       _eventFrameCompleted.InfiniteWait();
     }
@@ -2992,26 +3149,19 @@ struct sVulkanRenderingInfo {
   VkRenderingAttachmentInfo _depthAttachment = {};
   VkClearValue _clearDepthValue = {};
 
-  void _BeginRenderingInfo(
-    ain<VkImage> aColorImage,
-    ain<VkImageView> aColorImageView,
-    ain<VkImage> aDepthImage,
-    ain<VkImageView> aDepthImageView,
-    ain<tU32> anWidth,
-    ain<tU32> anHeight,
-    ain<sRecti> aViewport,
-    ain<sRecti> aScissor,
-    ain<sVec4f> aClearColor,
-    ain<tF32> aClearDepth,
-    ain<tU32> aClearStencil)
+  void _BeginRenderingInfo(ain<VkImage> aColorImage,
+                           ain<VkImageView> aColorImageView,
+                           ain<VkImage> aDepthImage,
+                           ain<VkImageView> aDepthImageView, ain<tU32> anWidth,
+                           ain<tU32> anHeight, ain<sRecti> aViewport,
+                           ain<sRecti> aScissor, ain<sVec4f> aClearColor,
+                           ain<tF32> aClearDepth, ain<tU32> aClearStencil)
   {
-    _renderingInfo = {
-      .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
-      .renderArea = {{0, 0}, {anWidth, anHeight}},
-      .layerCount = 1,
-      .colorAttachmentCount = 0,
-      .pDepthAttachment = nullptr
-    };
+    _renderingInfo = { .sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+                       .renderArea = { { 0, 0 }, { anWidth, anHeight } },
+                       .layerCount = 1,
+                       .colorAttachmentCount = 0,
+                       .pDepthAttachment = nullptr };
 
     _colorAttachment = {
       .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -3027,21 +3177,21 @@ struct sVulkanRenderingInfo {
       _renderingInfo.colorAttachmentCount = 1;
     }
 
-    _depthAttachment = {
-      .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
-      .imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-      .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-      .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
-    };
+    _depthAttachment = { .sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+                         .imageLayout =
+                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                         .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                         .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE };
     if (aDepthImageView != VK_NULL_HANDLE) {
       _depthAttachment.clearValue = {};
-      _depthAttachment.clearValue.depthStencil = {aClearDepth, aClearStencil};
+      _depthAttachment.clearValue.depthStencil = { aClearDepth, aClearStencil };
       _depthAttachment.imageView = aDepthImageView;
       _renderingInfo.pDepthAttachment = &_depthAttachment;
     }
   }
 
-  void _ResumeRenderingInfo() {
+  void _ResumeRenderingInfo()
+  {
     if (_colorAttachment.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR) {
       _colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
     }
@@ -3051,9 +3201,9 @@ struct sVulkanRenderingInfo {
   }
 };
 
-struct sVulkanCommandEncoder : public ImplRC<
-  iGpuCommandEncoder,eImplFlags_Default,iRayCommandEncoder>
-{
+struct sVulkanCommandEncoder
+    : public ImplRC<iGpuCommandEncoder, eImplFlags_Default,
+                    iRayCommandEncoder> {
   nn<sVulkanDriver> _driver;
   VkCommandBuffer _cmdBuffer = VK_NULL_HANDLE;
   struct sCache {
@@ -3072,17 +3222,19 @@ struct sVulkanCommandEncoder : public ImplRC<
   tBool _beganCmdBuffer = eFalse;
   sVulkanRenderingInfo _renderingInfo;
 
-  sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver, ain<tU32> aFrameMaxInFlight)
+  sVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver,
+                        ain<tU32> aFrameMaxInFlight)
       : _driver(aDriver)
   {
     _frames.reserve(aFrameMaxInFlight);
-    niLoop(i,aFrameMaxInFlight) {
+    niLoop (i, aFrameMaxInFlight) {
       _frames.emplace_back(niNew sVulkanEncoderFrameData(aDriver));
     }
   }
 
-  ~sVulkanCommandEncoder() {
-    niLoop(i,_frames.size()) {
+  ~sVulkanCommandEncoder()
+  {
+    niLoop (i, _frames.size()) {
       _frames[i]->WaitFrameCompleted();
       _frames[i]->Destroy(_driver->_device);
     }
@@ -3091,16 +3243,19 @@ struct sVulkanCommandEncoder : public ImplRC<
       _encoderInFlightFence = VK_NULL_HANDLE;
     }
     if (_cmdBuffer) {
-      vkFreeCommandBuffers(_driver->_device, _driver->_commandPool, 1, &_cmdBuffer);
+      vkFreeCommandBuffers(_driver->_device, _driver->_commandPool, 1,
+                           &_cmdBuffer);
       _cmdBuffer = VK_NULL_HANDLE;
     }
   }
 
-  sVulkanEncoderFrameData* _GetCurrentFrame() {
+  sVulkanEncoderFrameData* _GetCurrentFrame()
+  {
     return _frames[_currentFrame];
   }
 
-  tBool _CreateCommandBuffer() {
+  tBool _CreateCommandBuffer()
+  {
     niCheck(_driver->_commandPool != VK_NULL_HANDLE, eFalse);
 
     VkCommandBufferAllocateInfo allocInfo = {
@@ -3110,21 +3265,26 @@ struct sVulkanCommandEncoder : public ImplRC<
       .commandBufferCount = 1
     };
 
-    VK_CHECK(vkAllocateCommandBuffers(_driver->_device, &allocInfo, &_cmdBuffer),eFalse);
+    VK_CHECK(
+      vkAllocateCommandBuffers(_driver->_device, &allocInfo, &_cmdBuffer),
+      eFalse);
 
     VkFenceCreateInfo fenceInfo = {
       .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
     };
-    VK_CHECK(vkCreateFence(_driver->_device, &fenceInfo, nullptr, &_encoderInFlightFence), eFalse);
+    VK_CHECK(vkCreateFence(_driver->_device, &fenceInfo, nullptr,
+                           &_encoderInFlightFence),
+             eFalse);
     return eTrue;
   }
 
-  tBool _BeginCmdBuffer() {
+  tBool _BeginCmdBuffer()
+  {
     niCheck(_beganCmdBuffer == eFalse, eFalse);
     niDebugAssert(_cmdBuffer != VK_NULL_HANDLE);
 
     _beganCmdBuffer = eTrue;
-    _cache = sCache {};
+    _cache = sCache{};
 
     vkResetCommandBuffer(_cmdBuffer, 0);
 
@@ -3139,52 +3299,39 @@ struct sVulkanCommandEncoder : public ImplRC<
   }
 
   tBool _BeginRendering(
-    ain<VkImage> aColorImage,
-    ain<VkImageView> aColorImageView,
-    ain<VkImage> aDepthImage,
-    ain<VkImageView> aDepthImageView,
-    ain<tU32> anWidth,
-    ain<tU32> anHeight,
-    ain<sRecti> aViewport,
-    ain<sRecti> aScissor,
-    ain<sVec4f> aClearColor = Vec4f(1,0,1,0),
-    ain<tF32> aClearDepth = 1.0f,
-    ain<tU32> aClearStencil = 0)
+    ain<VkImage> aColorImage, ain<VkImageView> aColorImageView,
+    ain<VkImage> aDepthImage, ain<VkImageView> aDepthImageView,
+    ain<tU32> anWidth, ain<tU32> anHeight, ain<sRecti> aViewport,
+    ain<sRecti> aScissor, ain<sVec4f> aClearColor = Vec4f(1, 0, 1, 0),
+    ain<tF32> aClearDepth = 1.0f, ain<tU32> aClearStencil = 0)
   {
     niDebugAssert(_beganCmdBuffer);
     _renderingInfo._BeginRenderingInfo(
-      aColorImage,
-      aColorImageView,
-      aDepthImage,
-      aDepthImageView,
-      anWidth,
-      anHeight,
-      aViewport,
-      aScissor,
-      aClearColor,
-      aClearDepth,
-      aClearStencil);
+      aColorImage, aColorImageView, aDepthImage, aDepthImageView, anWidth,
+      anHeight, aViewport, aScissor, aClearColor, aClearDepth, aClearStencil);
     vkCmdBeginRenderingKHR(_cmdBuffer, &_renderingInfo._renderingInfo);
     this->SetViewport(aViewport);
     this->SetScissorRect(aScissor);
     return eTrue;
   }
 
-  void _ResumeRendering() {
+  void _ResumeRendering()
+  {
     _renderingInfo._ResumeRenderingInfo();
     vkCmdBeginRenderingKHR(_cmdBuffer, &_renderingInfo._renderingInfo);
   }
 
-  void _EndRendering() {
+  void _EndRendering()
+  {
     vkCmdEndRenderingKHR(_cmdBuffer);
   }
 
-  tBool _EndCmdBufferAndSubmit(
-    VkSemaphore aImageAvailableSemaphore,
-    VkSemaphore aRendererFinishedSemaphore)
+  tBool _EndCmdBufferAndSubmit(VkSemaphore aImageAvailableSemaphore,
+                               VkSemaphore aRendererFinishedSemaphore)
   {
     niCheck(_beganCmdBuffer == eTrue, eFalse);
-    niDefer {
+    niDefer
+    {
       _beganCmdBuffer = eFalse;
     };
 
@@ -3193,12 +3340,10 @@ struct sVulkanCommandEncoder : public ImplRC<
     VkPipelineStageFlags waitStages[] = {
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
     };
-    VkSubmitInfo submitInfo = {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .pWaitDstStageMask = waitStages,
-      .commandBufferCount = 1,
-      .pCommandBuffers = &_cmdBuffer
-    };
+    VkSubmitInfo submitInfo = { .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                                .pWaitDstStageMask = waitStages,
+                                .commandBufferCount = 1,
+                                .pCommandBuffers = &_cmdBuffer };
     if (aImageAvailableSemaphore) {
       submitInfo.waitSemaphoreCount = 1;
       submitInfo.pWaitSemaphores = &aImageAvailableSemaphore;
@@ -3217,104 +3362,138 @@ struct sVulkanCommandEncoder : public ImplRC<
     // TODO: The usage of the fence here is suboptimal since we just wait for
     // the queue to be finished before continuing which waiting tons of CPU
     // cycles. But we want to get all the other bits right first.
-    VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence), eFalse);
-    VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo, _encoderInFlightFence), eFalse);
-    VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence, VK_TRUE, UINT64_MAX), eFalse);
+    VK_CHECK(vkResetFences(_driver->_device, 1, &_encoderInFlightFence),
+             eFalse);
+    VK_CHECK(vkQueueSubmit(_driver->_graphicsQueue, 1, &submitInfo,
+                           _encoderInFlightFence),
+             eFalse);
+    VK_CHECK(vkWaitForFences(_driver->_device, 1, &_encoderInFlightFence,
+                             VK_TRUE, UINT64_MAX),
+             eFalse);
     _GetCurrentFrame()->OnEndFrame(_driver->_device);
     return eTrue;
   }
 
-  void __stdcall _SetGpuPipeline(iGpuPipeline* apPipeline, tFixedGpuPipelineId aFixedPipelineId) {
-    sVulkanRasterPipeline* pipeline = static_cast<sVulkanRasterPipeline*>(apPipeline);
-    vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->_vkPipeline);
-    _cache._lastRasterPipeline = _GetCurrentFrame()->BindRasterPipeline(apPipeline);
+  void __stdcall _SetGpuPipeline(iGpuPipeline* apPipeline,
+                                 tFixedGpuPipelineId aFixedPipelineId)
+  {
+    sVulkanRasterPipeline* pipeline =
+      static_cast<sVulkanRasterPipeline*>(apPipeline);
+    vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                      pipeline->_vkPipeline);
+    _cache._lastRasterPipeline =
+      _GetCurrentFrame()->BindRasterPipeline(apPipeline);
     _cache._lastFixedPipeline = aFixedPipelineId;
     _cache._lastRayPipeline = nullptr;
   }
 
-  virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl {
-    niCheck(apPipeline != nullptr,;);
+  virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl
+  {
+    niCheck(apPipeline != nullptr, ;);
     if ((tIntPtr)_cache._lastRasterPipeline.raw_ptr() == (tIntPtr)apPipeline)
       return;
-    _SetGpuPipeline(apPipeline,0);
+    _SetGpuPipeline(apPipeline, 0);
   }
 
-  virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
+  virtual void __stdcall SetVertexBuffer(iGpuBuffer* apBuffer, tU32 anOffset,
+                                         tU32 anBinding) niImpl
+  {
     niCheck(apBuffer != nullptr, ;);
     sVulkanBuffer* buffer = _GetCurrentFrame()->BindBuffer(apBuffer);
-    VkBuffer vertexBuffers[] = {buffer->_vkBuffer};
-    VkDeviceSize offsets[] = {anOffset};
+    VkBuffer vertexBuffers[] = { buffer->_vkBuffer };
+    VkDeviceSize offsets[] = { anOffset };
     vkCmdBindVertexBuffers(_cmdBuffer, anBinding, 1, vertexBuffers, offsets);
   }
 
-  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset, eGpuIndexType aIndexType) niImpl {
+  virtual void __stdcall SetIndexBuffer(iGpuBuffer* apBuffer, tU32 anOffset,
+                                        eGpuIndexType aIndexType) niImpl
+  {
     niCheck(apBuffer != nullptr, ;);
     sVulkanBuffer* indexBuffer = _GetCurrentFrame()->BindBuffer(apBuffer);
-    vkCmdBindIndexBuffer(_cmdBuffer, indexBuffer->_vkBuffer, anOffset, _ToVkIndexType[aIndexType]);
+    vkCmdBindIndexBuffer(_cmdBuffer, indexBuffer->_vkBuffer, anOffset,
+                         _ToVkIndexType[aIndexType]);
   }
 
-  virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset, tU32 anBinding) niImpl {
+  virtual void __stdcall SetUniformBuffer(iGpuBuffer* apBuffer, tU32 anOffset,
+                                          tU32 anBinding) niImpl
+  {
     niCheck(anBinding == 0, ;);
     _cache._lastBuffer = _GetCurrentFrame()->BindBuffer(apBuffer);
     _cache._lastBufferOffset = anOffset;
   }
 
-  virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl {
+  virtual void __stdcall SetTexture(iTexture* apTexture, tU32 anBinding) niImpl
+  {
     niCheck(anBinding < eMaterialChannel_Last, ;);
-    _cache._lastMaterial.mChannels[anBinding].mTexture = _GetCurrentFrame()->BindTexture(apTexture);
+    _cache._lastMaterial.mChannels[anBinding].mTexture =
+      _GetCurrentFrame()->BindTexture(apTexture);
   }
 
-  virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl {
+  virtual void __stdcall SetSamplerState(tIntPtr ahSS, tU32 anBinding) niImpl
+  {
     niCheck(anBinding < eMaterialChannel_Last, ;);
     _cache._lastMaterial.mChannels[anBinding].mhSS = ahSS;
   }
 
-  virtual tBool __stdcall StreamVertexBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
-    return UpdateGpuStreamToVertexBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,anBinding);
+  virtual tBool __stdcall StreamVertexBuffer(const tPtr apData, tU32 anSize,
+                                             tU32 anBinding) niImpl
+  {
+    return UpdateGpuStreamToVertexBuffer(_GetCurrentFrame()->_stream, this,
+                                         apData, anSize, anBinding);
   }
 
-  virtual tBool __stdcall StreamIndexBuffer(const tPtr apData, tU32 anSize, eGpuIndexType aIndexType) niImpl {
-    return UpdateGpuStreamToIndexBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,aIndexType);
+  virtual tBool __stdcall StreamIndexBuffer(const tPtr apData, tU32 anSize,
+                                            eGpuIndexType aIndexType) niImpl
+  {
+    return UpdateGpuStreamToIndexBuffer(_GetCurrentFrame()->_stream, this,
+                                        apData, anSize, aIndexType);
   }
 
-  virtual tBool __stdcall StreamUniformBuffer(const tPtr apData, tU32 anSize, tU32 anBinding) niImpl {
-    return UpdateGpuStreamToUniformBuffer(_GetCurrentFrame()->_stream,this,apData,anSize,anBinding);
+  virtual tBool __stdcall StreamUniformBuffer(const tPtr apData, tU32 anSize,
+                                              tU32 anBinding) niImpl
+  {
+    return UpdateGpuStreamToUniformBuffer(_GetCurrentFrame()->_stream, this,
+                                          apData, anSize, anBinding);
   }
 
-  virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) niImpl {
+  virtual void __stdcall SetPolygonOffset(const sVec2f& avOffset) niImpl
+  {
     vkCmdSetDepthBias(_cmdBuffer, avOffset.x, 0.0f, avOffset.y);
   }
 
-  virtual void __stdcall SetScissorRect(const sRecti& aRect) niImpl {
-    VkRect2D scissor = {
-      .offset = {aRect.x, aRect.y},
-      .extent = {(tU32)aRect.GetWidth(), (tU32)aRect.GetHeight()}
-    };
+  virtual void __stdcall SetScissorRect(const sRecti& aRect) niImpl
+  {
+    VkRect2D scissor = { .offset = { aRect.x, aRect.y },
+                         .extent = { (tU32)aRect.GetWidth(),
+                                     (tU32)aRect.GetHeight() } };
     vkCmdSetScissor(_cmdBuffer, 0, 1, &scissor);
   }
 
-  virtual void __stdcall SetViewport(const sRecti& aRect) niImpl {
-    VkViewport viewport = {
-      .x = (float)aRect.x,
-      .y = (float)(aRect.y + aRect.GetHeight()),
-      .width = (float)aRect.GetWidth(),
-      .height = (float)-aRect.GetHeight(),
-      .minDepth = 0.0f,
-      .maxDepth = 1.0f
-    };
+  virtual void __stdcall SetViewport(const sRecti& aRect) niImpl
+  {
+    VkViewport viewport = { .x = (float)aRect.x,
+                            .y = (float)(aRect.y + aRect.GetHeight()),
+                            .width = (float)aRect.GetWidth(),
+                            .height = (float)-aRect.GetHeight(),
+                            .minDepth = 0.0f,
+                            .maxDepth = 1.0f };
     vkCmdSetViewport(_cmdBuffer, 0, 1, &viewport);
   }
 
-  virtual void __stdcall SetStencilReference(tI32 aRef) niImpl {
+  virtual void __stdcall SetStencilReference(tI32 aRef) niImpl
+  {
     vkCmdSetStencilReference(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aRef);
   }
 
-  virtual void __stdcall SetStencilMask(tU32 aMask) niImpl {
+  virtual void __stdcall SetStencilMask(tU32 aMask) niImpl
+  {
     vkCmdSetStencilWriteMask(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aMask);
-    vkCmdSetStencilCompareMask(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK, aMask);
+    vkCmdSetStencilCompareMask(_cmdBuffer, VK_STENCIL_FACE_FRONT_AND_BACK,
+                               aMask);
   }
 
-  virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) niImpl {
+  virtual void __stdcall SetBlendColorConstant(const sColor4f& aColor) niImpl
+  {
     vkCmdSetBlendConstants(_cmdBuffer, &aColor.x);
   }
 
@@ -3322,30 +3501,29 @@ struct sVulkanCommandEncoder : public ImplRC<
   tBool _DoBindBindlessDescLayout(tBool abWithRayInstances);
   tBool _BindGpuFunction();
 
-  virtual tBool __stdcall Draw(
-    eGraphicsPrimitiveType aPrimType,
-    tU32 anFirstInstance, tU32 anInstanceCount,
-    tU32 anFirstVertex, tU32 anVertexCount) niImpl
+  virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType,
+                               tU32 anFirstInstance, tU32 anInstanceCount,
+                               tU32 anFirstVertex, tU32 anVertexCount) niImpl
   {
-    niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
-    niCheck(_BindGpuFunction(),eFalse);
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
+    niCheck(_BindGpuFunction(), eFalse);
     vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDraw(_cmdBuffer,
-              anVertexCount,      // vertexCount
-              anInstanceCount,    // instanceCount
-              anFirstVertex,      // firstVertex
-              anFirstInstance);   // firstInstance
+              anVertexCount,    // vertexCount
+              anInstanceCount,  // instanceCount
+              anFirstVertex,    // firstVertex
+              anFirstInstance); // firstInstance
     return eTrue;
   }
 
-  virtual tBool __stdcall DrawIndexed(
-    eGraphicsPrimitiveType aPrimType,
-    tU32 anFirstInstance, tU32 anInstanceCount,
-    tU32 anFirstVertex,
-    tU32 anFirstIndex, tU32 anNumIndices) niImpl
+  virtual tBool __stdcall DrawIndexed(eGraphicsPrimitiveType aPrimType,
+                                      tU32 anFirstInstance,
+                                      tU32 anInstanceCount, tU32 anFirstVertex,
+                                      tU32 anFirstIndex,
+                                      tU32 anNumIndices) niImpl
   {
-    niCheck(aPrimType <= eGraphicsPrimitiveType_Last,eFalse);
-    niCheck(_BindGpuFunction(),eFalse);
+    niCheck(aPrimType <= eGraphicsPrimitiveType_Last, eFalse);
+    niCheck(_BindGpuFunction(), eFalse);
     vkCmdSetPrimitiveTopologyEXT(_cmdBuffer, _ToVkPrimitiveTopology[aPrimType]);
     vkCmdDrawIndexed(_cmdBuffer,
                      anNumIndices,     // indexCount
@@ -3362,8 +3540,11 @@ struct sVulkanCommandEncoder : public ImplRC<
   tBool __stdcall DispatchRays(tU32 anW, tU32 anH, tU32 anD);
 };
 
-static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain<nn<sVulkanDriver>> aDriver) {
-  NN<sVulkanCommandEncoder> cmdEncoder = MakeNN<sVulkanCommandEncoder>(aDriver,knVulkanMaxFramesInFlight);
+static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(
+  ain<nn<sVulkanDriver>> aDriver)
+{
+  NN<sVulkanCommandEncoder> cmdEncoder =
+    MakeNN<sVulkanCommandEncoder>(aDriver, knVulkanMaxFramesInFlight);
   niCheck(cmdEncoder->_CreateCommandBuffer(), nullptr);
   return cmdEncoder;
 }
@@ -3371,22 +3552,26 @@ static Ptr<sVulkanCommandEncoder> _CreateVulkanCommandEncoder(ain<nn<sVulkanDriv
 struct sVulkanScratchBuffer {
   Ptr<sVulkanBuffer> _scratchBuffer;
 
-  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver, iHString* ahspBaseName, VkDeviceSize aRequiredSize, tU32 aMinAlignment) {
+  tBool _EnsureScratchBuffer(ain<nn<sVulkanDriver>> aDriver,
+                             iHString* ahspBaseName, VkDeviceSize aRequiredSize,
+                             tU32 aMinAlignment)
+  {
     if (_scratchBuffer.IsOK() && _scratchBuffer->GetSize() >= aRequiredSize) {
       return eTrue;
     }
 
     _scratchBuffer = niNew sVulkanBuffer(
-      aDriver,
-      VULKAN_RES_NAME("%s_ScratchBuffer",ahspBaseName),
-      eGpuBufferMemoryMode_Private,
-      eGpuBufferUsageFlags_Storage);
-    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize,aMinAlignment),eFalse);
+      aDriver, VULKAN_RES_NAME("%s_ScratchBuffer", ahspBaseName),
+      eGpuBufferMemoryMode_Private, eGpuBufferUsageFlags_Storage);
+    niCheck(_scratchBuffer->_CreateBuffer(aRequiredSize, aMinAlignment),
+            eFalse);
     return eTrue;
   }
 };
 
-static inline VkGeometryInstanceFlagsKHR _ToVkAccelerationStructureInstanceFlags(tRayInstanceFlags aFlags) {
+static inline VkGeometryInstanceFlagsKHR
+_ToVkAccelerationStructureInstanceFlags(tRayInstanceFlags aFlags)
+{
   VkGeometryInstanceFlagsKHR r = 0;
   if (aFlags & eRayInstanceFlags_DisableCulling)
     r |= VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
@@ -3407,15 +3592,16 @@ struct sVulkanRayBase {
   sVulkanBuffer _asStorage;
   tU64 _asDeviceAddress = 0;
 
-  sVulkanRayBase(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
+  sVulkanRayBase(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
       : _driver(aDriver)
       , _name(ahspName)
-      , _asStorage(aDriver,VULKAN_RES_NAME("%s_asStorage",_name),eGpuBufferMemoryMode_Shared,eGpuBufferUsageFlags_RayStorage)
-  {}
+      , _asStorage(aDriver, VULKAN_RES_NAME("%s_asStorage", _name),
+                   eGpuBufferMemoryMode_Shared, eGpuBufferUsageFlags_RayStorage)
+  {
+  }
 
-  virtual ~sVulkanRayBase() {
+  virtual ~sVulkanRayBase()
+  {
     if (_asHandle) {
       vkDestroyAccelerationStructureKHR(_driver->_device, _asHandle, nullptr);
     }
@@ -3433,33 +3619,31 @@ struct sVulkanRayASDesc {
   astl::vector<NN<sVulkanBuffer>> _buffers;
   astl::vector<uint32_t> _geometryPrimitiveCounts;
 
-  sVulkanRayASDesc(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
+  sVulkanRayASDesc(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
       : _driver(aDriver)
       , _name(ahspName)
-  {}
+  {
+  }
 
-  ~sVulkanRayASDesc() {
+  ~sVulkanRayASDesc()
+  {
   }
 
   virtual tBool __stdcall _FinalizeAddGeometries() = 0;
 
-  tBool _CreateAccelerationStructure(
-    sVulkanRayBase& aAS,
-    VkAccelerationStructureTypeKHR aVkType,
-    tBool abCanUpdate
-  )
+  tBool _CreateAccelerationStructure(sVulkanRayBase& aAS,
+                                     VkAccelerationStructureTypeKHR aVkType,
+                                     tBool abCanUpdate)
   {
     niDebugAssert(aAS._asHandle == VK_NULL_HANDLE);
 
-    niCheck(_FinalizeAddGeometries(),eFalse);
+    niCheck(_FinalizeAddGeometries(), eFalse);
 
     niCheck(!_vkGeometries.empty(), eFalse);
     niLet numGeometries = (tU32)_vkGeometries.size();
 
     _geometryPrimitiveCounts.resize(numGeometries);
-    niLoop(i,numGeometries) {
+    niLoop (i, numGeometries) {
       _geometryPrimitiveCounts[i] = _vkBuildInfos[i].primitiveCount;
     }
 
@@ -3469,12 +3653,10 @@ struct sVulkanRayASDesc {
       // TODO: Add a FAST_BUILD flag for dynamic AS? Although its not an
       // obvious win and depends of the use case it seems. Might be better for
       // skinned meshes only?
-      .flags = (
-        (abCanUpdate ?
-         VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR :
-         (VkBuildAccelerationStructureFlagsKHR)0) |
-        VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR
-      ),
+      .flags =
+        ((abCanUpdate ? VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR
+                      : (VkBuildAccelerationStructureFlagsKHR)0) |
+         VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR),
       .mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR,
       .geometryCount = numGeometries,
       .pGeometries = _vkGeometries.data()
@@ -3484,15 +3666,15 @@ struct sVulkanRayASDesc {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
     };
     vkGetAccelerationStructureBuildSizesKHR(
-      _driver->_device,
-      VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+      _driver->_device, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
       &buildInfo,
       // pMaxPrimitiveCounts is a pointer to an array of
       // pBuildInfo->geometryCount uint32_t values defining the number of
       // primitives built into each geometry.
-      _geometryPrimitiveCounts.data(),
-      &aAS._asSizeInfo);
-    niCheck(aAS._asStorage._CreateBuffer(aAS._asSizeInfo.accelerationStructureSize,0),eFalse);
+      _geometryPrimitiveCounts.data(), &aAS._asSizeInfo);
+    niCheck(aAS._asStorage._CreateBuffer(
+              aAS._asSizeInfo.accelerationStructureSize, 0),
+            eFalse);
 
     VkAccelerationStructureCreateInfoKHR createInfo = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR,
@@ -3501,34 +3683,37 @@ struct sVulkanRayASDesc {
       .type = aVkType
     };
 
-    VK_CHECK(vkCreateAccelerationStructureKHR(
-      _driver->_device, &createInfo, nullptr, &aAS._asHandle),eFalse);
+    VK_CHECK(vkCreateAccelerationStructureKHR(_driver->_device, &createInfo,
+                                              nullptr, &aAS._asHandle),
+             eFalse);
 
     {
-      VkAccelerationStructureDeviceAddressInfoKHR accelerationDeviceAddressInfo{};
-      accelerationDeviceAddressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+      VkAccelerationStructureDeviceAddressInfoKHR
+        accelerationDeviceAddressInfo{};
+      accelerationDeviceAddressInfo.sType =
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
       accelerationDeviceAddressInfo.accelerationStructure = aAS._asHandle;
-      aAS._asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(_driver->_device, &accelerationDeviceAddressInfo);
+      aAS._asDeviceAddress = vkGetAccelerationStructureDeviceAddressKHR(
+        _driver->_device, &accelerationDeviceAddressInfo);
       niCheck(aAS._asDeviceAddress != 0, eFalse);
     }
 
     return eTrue;
   }
 
-  tBool _BuildAccelerationStructure(
-    sVulkanRayBase& aAS,
-    VkCommandBuffer aCmdBuffer,
-    VkAccelerationStructureTypeKHR aVkType,
-    tBool abUpdate)
+  tBool _BuildAccelerationStructure(sVulkanRayBase& aAS,
+                                    VkCommandBuffer aCmdBuffer,
+                                    VkAccelerationStructureTypeKHR aVkType,
+                                    tBool abUpdate)
   {
     niCheck(aAS._asHandle != VK_NULL_HANDLE, eFalse);
     niCheck(!_vkGeometries.empty(), eFalse);
     niLet numGeometries = (tU32)_vkGeometries.size();
 
     niCheck(_scratchBuffer._EnsureScratchBuffer(
-      _driver,_name,
-      aAS._asSizeInfo.buildScratchSize,
-      _driver->_accelStructProps.minAccelerationStructureScratchOffsetAlignment),
+              _driver, _name, aAS._asSizeInfo.buildScratchSize,
+              _driver->_accelStructProps
+                .minAccelerationStructureScratchOffsetAlignment),
             eFalse);
 
     // Base build info
@@ -3536,19 +3721,18 @@ struct sVulkanRayASDesc {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR,
       .type = aVkType,
       .flags = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
-      .mode = (abUpdate ?
-               VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR :
-               VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR),
+      .mode = (abUpdate ? VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR
+                        : VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR),
       .dstAccelerationStructure = aAS._asHandle,
       .geometryCount = numGeometries,
       .pGeometries = _vkGeometries.data(),
-      .scratchData = { .deviceAddress = _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
+      .scratchData = { .deviceAddress =
+                         _scratchBuffer._scratchBuffer->_GetDeviceAddress() }
     };
 
     // Issue build command
     niLet madness = _vkBuildInfos.data();
-    vkCmdBuildAccelerationStructuresKHR(
-      aCmdBuffer, 1, &buildInfo, &madness);
+    vkCmdBuildAccelerationStructuresKHR(aCmdBuffer, 1, &buildInfo, &madness);
 
     // Add memory barrier
     VkMemoryBarrier barrier = {
@@ -3557,70 +3741,70 @@ struct sVulkanRayASDesc {
       .dstAccessMask = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR
     };
 
-    vkCmdPipelineBarrier(
-      aCmdBuffer,
-      VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
-      VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
-      0,
-      1, &barrier,
-      0, nullptr,
-      0, nullptr);
+    vkCmdPipelineBarrier(aCmdBuffer,
+                         VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+                         VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR, 0, 1,
+                         &barrier, 0, nullptr, 0, nullptr);
 
     return eTrue;
   }
 };
 
 struct sVulkanRayTrianglePrimitivesDesc
-    : public ImplRC<iRayTrianglePrimitivesDesc,eImplFlags_DontInherit1,iDeviceResource>
-    , public sVulkanRayASDesc
-{
-  sVulkanRayTrianglePrimitivesDesc(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
-      : sVulkanRayASDesc(aDriver,ahspName)
-  {}
-
-  ~sVulkanRayTrianglePrimitivesDesc() {
+    : public ImplRC<iRayTrianglePrimitivesDesc, eImplFlags_DontInherit1,
+                    iDeviceResource>,
+      public sVulkanRayASDesc {
+  sVulkanRayTrianglePrimitivesDesc(ain<nn<sVulkanDriver>> aDriver,
+                                   iHString* ahspName)
+      : sVulkanRayASDesc(aDriver, ahspName)
+  {
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  ~sVulkanRayTrianglePrimitivesDesc()
+  {
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return eTrue;
   }
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  virtual tU32 __stdcall GetNumPrimitives() const {
+  virtual tU32 __stdcall GetNumPrimitives() const
+  {
     return (tU32)_vkGeometries.size();
   }
 
   tU32 _AddTrianglesVkGeometry(
     ain<VkAccelerationStructureGeometryKHR> aGeom,
     ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
-    ain<nn<sVulkanBuffer>> aVertexBuffer,
-    ain<QPtr<sVulkanBuffer>> aIndexBuffer)
+    ain<nn<sVulkanBuffer>> aVertexBuffer, ain<QPtr<sVulkanBuffer>> aIndexBuffer)
   {
-    niDebugAssert(aGeom.geometry.triangles.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR);
+    niDebugAssert(
+      aGeom.geometry.triangles.sType ==
+      VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR);
     _vkGeometries.emplace_back(aGeom);
     _vkBuildInfos.emplace_back(aBuildRangeInfo);
     _buffers.emplace_back(aVertexBuffer);
     if (aIndexBuffer.has_value()) {
       _buffers.emplace_back(aIndexBuffer.value());
     }
-    return (tU32)(_vkGeometries.size()-1);
+    return (tU32)(_vkGeometries.size() - 1);
   }
 
-  virtual tBool __stdcall AddTriangles(
-    iGpuBuffer* apVertexBuffer,
-    tU32 anVertexOffset,
-    tU32 anVertexStride,
-    tU32 anVertexCount,
-    const sMatrixf& amtxTransform,
-    tRayPrimitiveFlags aFlags,
-    tU32 anHitGroupId) niImpl
+  virtual tBool __stdcall AddTriangles(iGpuBuffer* apVertexBuffer,
+                                       tU32 anVertexOffset, tU32 anVertexStride,
+                                       tU32 anVertexCount,
+                                       const sMatrixf& amtxTransform,
+                                       tRayPrimitiveFlags aFlags,
+                                       tU32 anHitGroupId) niImpl
   {
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
@@ -3635,43 +3819,34 @@ struct sVulkanRayTrianglePrimitivesDesc
     };
 
     geometry.geometry.triangles = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
+      .sType =
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
       .vertexFormat = VK_FORMAT_R32G32B32_SFLOAT,
-      .vertexData = {
-        .deviceAddress = vertexBuffer->_GetDeviceAddress() +
-        anVertexOffset
-      },
+      .vertexData = { .deviceAddress =
+                        vertexBuffer->_GetDeviceAddress() + anVertexOffset },
       .vertexStride = anVertexStride,
-      .maxVertex = anVertexCount-1,
+      .maxVertex = anVertexCount - 1,
       .indexType = VK_INDEX_TYPE_NONE_KHR,
     };
 
     VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {
-      .primitiveCount = anVertexCount/3,
+      .primitiveCount = anVertexCount / 3,
       .primitiveOffset = 0,
       .firstVertex = 0,
       .transformOffset = 0
     };
-    niCheck(_AddTrianglesVkGeometry(
-      geometry,buildRangeInfo,
-      vertexBuffer,
-      nullptr) != eInvalidHandle, eFalse);
+    niCheck(_AddTrianglesVkGeometry(geometry, buildRangeInfo, vertexBuffer,
+                                    nullptr) != eInvalidHandle,
+            eFalse);
 
     return eTrue;
   }
 
   virtual tBool __stdcall AddTrianglesIndexed(
-    iGpuBuffer* apVertexBuffer,
-    tU32 anVertexOffset,
-    tU32 anVertexStride,
-    tU32 anVertexCount,
-    iGpuBuffer* apIndexBuffer,
-    tU32 anIndexOffset,
-    eGpuIndexType anIndexType,
-    tU32 anIndexCount,
-    const sMatrixf& aTransform,
-    tRayPrimitiveFlags aFlags,
-    tU32 anHitGroup) niImpl
+    iGpuBuffer* apVertexBuffer, tU32 anVertexOffset, tU32 anVertexStride,
+    tU32 anVertexCount, iGpuBuffer* apIndexBuffer, tU32 anIndexOffset,
+    eGpuIndexType anIndexType, tU32 anIndexCount, const sMatrixf& aTransform,
+    tRayPrimitiveFlags aFlags, tU32 anHitGroup) niImpl
   {
     niCheck(anVertexStride >= sizeof(sVec3f), eFalse);
     niCheck(anVertexCount >= 3, eFalse);
@@ -3689,66 +3864,70 @@ struct sVulkanRayTrianglePrimitivesDesc
     };
 
     geometry.geometry.triangles = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
+      .sType =
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR,
       .vertexFormat = VK_FORMAT_R32G32B32_SFLOAT,
-      .vertexData = {
-        .deviceAddress = ((sVulkanBuffer*)apVertexBuffer)->_GetDeviceAddress() +
-        anVertexOffset
-      },
+      .vertexData = { .deviceAddress =
+                        ((sVulkanBuffer*)apVertexBuffer)->_GetDeviceAddress() +
+                        anVertexOffset },
       .vertexStride = anVertexStride,
-      .maxVertex = anVertexCount-1,
+      .maxVertex = anVertexCount - 1,
       .indexType = _ToVkIndexType[anIndexType],
-      .indexData = {
-        .deviceAddress = ((sVulkanBuffer*)apIndexBuffer)->_GetDeviceAddress() +
-        anIndexOffset
-      },
+      .indexData = { .deviceAddress =
+                       ((sVulkanBuffer*)apIndexBuffer)->_GetDeviceAddress() +
+                       anIndexOffset },
     };
 
     VkAccelerationStructureBuildRangeInfoKHR buildRangeInfo = {
-      .primitiveCount = anIndexCount/3,
+      .primitiveCount = anIndexCount / 3,
       .primitiveOffset = 0,
       .firstVertex = 0,
       .transformOffset = 0
     };
 
-    niCheck(_AddTrianglesVkGeometry(
-      geometry,buildRangeInfo,
-      vertexBuffer,
-      indexBuffer) != eInvalidHandle, eFalse);
+    niCheck(_AddTrianglesVkGeometry(geometry, buildRangeInfo, vertexBuffer,
+                                    indexBuffer) != eInvalidHandle,
+            eFalse);
 
     return eTrue;
   }
 
-  virtual tBool __stdcall _FinalizeAddGeometries() {
+  virtual tBool __stdcall _FinalizeAddGeometries()
+  {
     // noop for primitives acceleration structures
     return eTrue;
   }
 };
 
 struct sVulkanRayProceduralPrimitivesDesc
-    : public ImplRC<iRayProceduralPrimitivesDesc,eImplFlags_DontInherit1,iDeviceResource>
-    , public sVulkanRayASDesc
-{
-  sVulkanRayProceduralPrimitivesDesc(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
-      : sVulkanRayASDesc(aDriver,ahspName)
-  {}
-
-  ~sVulkanRayProceduralPrimitivesDesc() {
+    : public ImplRC<iRayProceduralPrimitivesDesc, eImplFlags_DontInherit1,
+                    iDeviceResource>,
+      public sVulkanRayASDesc {
+  sVulkanRayProceduralPrimitivesDesc(ain<nn<sVulkanDriver>> aDriver,
+                                     iHString* ahspName)
+      : sVulkanRayASDesc(aDriver, ahspName)
+  {
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  ~sVulkanRayProceduralPrimitivesDesc()
+  {
+  }
+
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return eTrue;
   }
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  virtual tU32 __stdcall GetNumPrimitives() const {
+  virtual tU32 __stdcall GetNumPrimitives() const
+  {
     return (tU32)_vkGeometries.size();
   }
 
@@ -3757,24 +3936,23 @@ struct sVulkanRayProceduralPrimitivesDesc
     ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo,
     ain<nn<sVulkanBuffer>> aAABBBuffer)
   {
-    niDebugAssert(aGeom.geometry.aabbs.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR);
+    niDebugAssert(
+      aGeom.geometry.aabbs.sType ==
+      VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR);
     _vkGeometries.emplace_back(aGeom);
     _vkBuildInfos.emplace_back(aBuildRangeInfo);
     _buffers.emplace_back(aAABBBuffer);
-    return (tU32)(_vkGeometries.size()-1);
+    return (tU32)(_vkGeometries.size() - 1);
   }
 
-  virtual tBool __stdcall AddAABBs(
-    iGpuBuffer* apAABBBuffer,
-    tU32 anAABBOffset,
-    tU32 anAABBStride,
-    tU32 anAABBCount,
-    const sMatrixf& aTransform,
-    tRayPrimitiveFlags aFlags,
-    tU32 anHitGroup) niImpl
+  virtual tBool __stdcall AddAABBs(iGpuBuffer* apAABBBuffer, tU32 anAABBOffset,
+                                   tU32 anAABBStride, tU32 anAABBCount,
+                                   const sMatrixf& aTransform,
+                                   tRayPrimitiveFlags aFlags,
+                                   tU32 anHitGroup) niImpl
   {
     niCheckIsOK(apAABBBuffer, eFalse);
-    niCheck(anAABBCount > 0,eFalse);
+    niCheck(anAABBCount > 0, eFalse);
 
     niLet aabbBuffer = as_nn<sVulkanBuffer>(apAABBBuffer);
 
@@ -3786,9 +3964,8 @@ struct sVulkanRayProceduralPrimitivesDesc
 
     geometry.geometry.aabbs = {
       .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR,
-      .data = {
-        .deviceAddress = aabbBuffer->_GetDeviceAddress() + anAABBOffset
-      },
+      .data = { .deviceAddress =
+                  aabbBuffer->_GetDeviceAddress() + anAABBOffset },
       .stride = anAABBStride
     };
 
@@ -3799,72 +3976,79 @@ struct sVulkanRayProceduralPrimitivesDesc
       .transformOffset = 0
     };
 
-    niCheck(_AddAABBVkGeometry(
-      geometry,
-      buildRangeInfo,
-      aabbBuffer) != eInvalidHandle, eFalse);
+    niCheck(_AddAABBVkGeometry(geometry, buildRangeInfo, aabbBuffer) !=
+              eInvalidHandle,
+            eFalse);
 
     return eTrue;
   }
 
-  virtual tBool __stdcall _FinalizeAddGeometries() {
+  virtual tBool __stdcall _FinalizeAddGeometries()
+  {
     // noop for primitives acceleration structures
     return eTrue;
   }
 };
 
-struct sVulkanRayPrimitives :
-    public ImplRC<iRayPrimitives,eImplFlags_DontInherit1,iDeviceResource>,
-    public sVulkanRayBase
-{
-  sVulkanRayPrimitives(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName)
-      : sVulkanRayBase(aDriver,ahspName)
-  {}
+struct sVulkanRayPrimitives
+    : public ImplRC<iRayPrimitives, eImplFlags_DontInherit1, iDeviceResource>,
+      public sVulkanRayBase {
+  sVulkanRayPrimitives(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
+      : sVulkanRayBase(aDriver, ahspName)
+  {
+  }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _asHandle != VK_NULL_HANDLE;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 };
 
-struct sVulkanRayInstancesDesc : public ImplRC<
-  iRayInstancesDesc,eImplFlags_DontInherit1,iDeviceResource>, public sVulkanRayASDesc
-{
+struct sVulkanRayInstancesDesc
+    : public ImplRC<iRayInstancesDesc, eImplFlags_DontInherit1,
+                    iDeviceResource>,
+      public sVulkanRayASDesc {
   Ptr<sVulkanBuffer> _instanceBuffer;
   static constexpr tU32 kInitialInstanceCapacity = 8;
   astl::vector<VkAccelerationStructureInstanceKHR> _vkInstances;
   astl::vector<NN<iRayPrimitives>> _primitives;
 
   sVulkanRayInstancesDesc(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName)
-      : sVulkanRayASDesc(aDriver,ahspName)
+      : sVulkanRayASDesc(aDriver, ahspName)
   {
     _vkInstances.reserve(kInitialInstanceCapacity);
     _primitives.reserve(kInitialInstanceCapacity);
   }
 
-  ~sVulkanRayInstancesDesc() {
+  ~sVulkanRayInstancesDesc()
+  {
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return eTrue;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  virtual tU32 __stdcall GetNumInstances() const {
+  virtual tU32 __stdcall GetNumInstances() const
+  {
     return (tU32)_vkInstances.size();
   }
 
@@ -3872,7 +4056,9 @@ struct sVulkanRayInstancesDesc : public ImplRC<
     ain<VkAccelerationStructureGeometryKHR> aGeom,
     ain<VkAccelerationStructureBuildRangeInfoKHR> aBuildRangeInfo)
   {
-    niDebugAssert(aGeom.geometry.instances.sType == VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR);
+    niDebugAssert(
+      aGeom.geometry.instances.sType ==
+      VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR);
     if (_vkGeometries.empty()) {
       _vkGeometries.emplace_back(aGeom);
       _vkBuildInfos.emplace_back(aBuildRangeInfo);
@@ -3884,15 +4070,13 @@ struct sVulkanRayInstancesDesc : public ImplRC<
     niDebugAssert(_vkGeometries.size() == 1);
   }
 
-  virtual tBool __stdcall AddInstance(
-    iRayPrimitives* apPrimitiveAS,
-    ain<sMatrixf> aTransform,
-    tU32 anCustomInstanceId,
-    tU8 anMask,
-    tU32 anHitGroupOffset,
-    tRayInstanceFlags aFlags) niImpl
+  virtual tBool __stdcall AddInstance(iRayPrimitives* apPrimitiveAS,
+                                      ain<sMatrixf> aTransform,
+                                      tU32 anCustomInstanceId, tU8 anMask,
+                                      tU32 anHitGroupOffset,
+                                      tRayInstanceFlags aFlags) niImpl
   {
-    niCheckIsOK(apPrimitiveAS,eFalse);
+    niCheckIsOK(apPrimitiveAS, eFalse);
     _primitives.push_back(as_nn(apPrimitiveAS));
     niLet primitiveAS = static_cast<sVulkanRayPrimitives*>(apPrimitiveAS);
     niCheck(primitiveAS->_asDeviceAddress != 0, eFalse);
@@ -3900,21 +4084,18 @@ struct sVulkanRayInstancesDesc : public ImplRC<
       .accelerationStructureReference = primitiveAS->_asDeviceAddress
     };
     _vkInstances.emplace_back(instance);
-    niCheck(
-      UpdateInstance(
-        (tU32)_vkInstances.size()-1,aTransform,
-        anCustomInstanceId,anMask,anHitGroupOffset,aFlags),
-      eFalse);
+    niCheck(UpdateInstance((tU32)_vkInstances.size() - 1, aTransform,
+                           anCustomInstanceId, anMask, anHitGroupOffset,
+                           aFlags),
+            eFalse);
     return eTrue;
   }
 
-  virtual tBool __stdcall UpdateInstance(
-    tU32 anInstanceIndex,
-    ain<sMatrixf> aTransform,
-    tU32 anCustomInstanceId,
-    tU8 anMask,
-    tU32 anHitGroupOffset,
-    tRayInstanceFlags aFlags) niImpl
+  virtual tBool __stdcall UpdateInstance(tU32 anInstanceIndex,
+                                         ain<sMatrixf> aTransform,
+                                         tU32 anCustomInstanceId, tU8 anMask,
+                                         tU32 anHitGroupOffset,
+                                         tRayInstanceFlags aFlags) niImpl
   {
     niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
     niVar& instance = _vkInstances[anInstanceIndex];
@@ -3931,8 +4112,7 @@ struct sVulkanRayInstancesDesc : public ImplRC<
   }
 
   virtual tBool __stdcall UpdateInstanceTransform(
-    tU32 anInstanceIndex,
-    ain<sMatrixf> aTransform) niImpl
+    tU32 anInstanceIndex, ain<sMatrixf> aTransform) niImpl
   {
     niCheck(anInstanceIndex < (tU32)_vkInstances.size(), eFalse);
     niVar& instance = _vkInstances[anInstanceIndex];
@@ -3944,21 +4124,25 @@ struct sVulkanRayInstancesDesc : public ImplRC<
     return eTrue;
   }
 
-  virtual tBool __stdcall _FinalizeAddGeometries() niImpl {
-    niCheck(!_vkInstances.empty(),eFalse);
+  virtual tBool __stdcall _FinalizeAddGeometries() niImpl
+  {
+    niCheck(!_vkInstances.empty(), eFalse);
 
     _instanceBuffer = ni::MakeNN<sVulkanBuffer>(
-      _driver,
-      HFmt("%s_instanceBuffer"),
-      eGpuBufferMemoryMode_Shared,
+      _driver, HFmt("%s_instanceBuffer"), eGpuBufferMemoryMode_Shared,
       eGpuBufferUsageFlags_RayBuildInput);
-    niCheck(_instanceBuffer->_CreateBuffer(
-      (tU32)_vkInstances.size() * sizeof(VkAccelerationStructureInstanceKHR), 16),
+    niCheck(
+      _instanceBuffer->_CreateBuffer(
+        (tU32)_vkInstances.size() * sizeof(VkAccelerationStructureInstanceKHR),
+        16),
       eFalse);
     {
-      tPtr data = _instanceBuffer->Lock(0, _instanceBuffer->GetSize(), eLock_Discard);
+      tPtr data =
+        _instanceBuffer->Lock(0, _instanceBuffer->GetSize(), eLock_Discard);
       niDebugAssert(data != nullptr);
-      ni::MemCopy(data, (tPtr)_vkInstances.data(), _vkInstances.size() * sizeof(VkAccelerationStructureInstanceKHR));
+      ni::MemCopy(data, (tPtr)_vkInstances.data(),
+                  _vkInstances.size() *
+                    sizeof(VkAccelerationStructureInstanceKHR));
       _instanceBuffer->Unlock();
     }
 
@@ -3968,7 +4152,8 @@ struct sVulkanRayInstancesDesc : public ImplRC<
       .flags = VK_GEOMETRY_OPAQUE_BIT_KHR,
     };
     geometry.geometry.instances = {
-      .sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR,
+      .sType =
+        VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR,
       .arrayOfPointers = VK_FALSE,
       .data = { .deviceAddress = _instanceBuffer->_GetDeviceAddress() }
     };
@@ -3982,30 +4167,32 @@ struct sVulkanRayInstancesDesc : public ImplRC<
   }
 };
 
-struct sVulkanRayInstances :
-    public ImplRC<iRayInstances,eImplFlags_DontInherit1,iDeviceResource>,
-    public sVulkanRayBase
-{
+struct sVulkanRayInstances
+    : public ImplRC<iRayInstances, eImplFlags_DontInherit1, iDeviceResource>,
+      public sVulkanRayBase {
   // We must keep a copy of the primitives AS around as they are referenced by
   // the instances AS.
   astl::vector<NN<iRayPrimitives>> _primitives;
 
-  sVulkanRayInstances(
-    ain<nn<sVulkanDriver>> aDriver,
-    ain<astl::vector<NN<iRayPrimitives>>> aPrimitives,
-    iHString* ahspName)
-      : sVulkanRayBase(aDriver,ahspName)
+  sVulkanRayInstances(ain<nn<sVulkanDriver>> aDriver,
+                      ain<astl::vector<NN<iRayPrimitives>>> aPrimitives,
+                      iHString* ahspName)
+      : sVulkanRayBase(aDriver, ahspName)
       , _primitives(aPrimitives)
-  {}
+  {
+  }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _asHandle != VK_NULL_HANDLE;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 };
@@ -4022,44 +4209,52 @@ struct sVulkanRayFunctionTable : public ImplRC<iRayFunctionTable> {
   };
   astl::vector<sHitGroup> _hitGroups;
 
-  sVulkanRayFunctionTable(ain<nn<sVulkanDriver>> aDriver) : _driver(aDriver) {}
-
-  virtual tBool __stdcall SetRayGenFunction(iGpuFunction* apFunction) niImpl {
-    niCheckIsOK(apFunction,eFalse);
-    niCheck(apFunction->GetFunctionType() == eGpuFunctionType_RayGeneration,eFalse);
-    _rayGen = niCheckNN(_rayGen,(sVulkanFunction*)apFunction,eFalse);
-    return eTrue;
-  }
-
-  virtual tBool __stdcall SetMissFunction(iGpuFunction* apFunction) niImpl {
-    niCheckIsOK(apFunction,eFalse);
-    niCheck(apFunction->GetFunctionType() == eGpuFunctionType_RayMiss,eFalse);
-    _miss = niCheckNN(_miss,(sVulkanFunction*)apFunction,eFalse);
-    return eTrue;
-  }
-
-  virtual tU32 __stdcall AddHitGroup(
-    iHString* ahspName,
-    eRayFunctionGroupType aType,
-    iGpuFunction* apClosestHit,
-    iGpuFunction* apAnyHit,
-    iGpuFunction* apIntersection) niImpl
+  sVulkanRayFunctionTable(ain<nn<sVulkanDriver>> aDriver)
+      : _driver(aDriver)
   {
-    niCheckIsOK(apClosestHit,eInvalidHandle);
-    niCheck(apClosestHit->GetFunctionType() == eGpuFunctionType_RayClosestHit,eFalse);
+  }
+
+  virtual tBool __stdcall SetRayGenFunction(iGpuFunction* apFunction) niImpl
+  {
+    niCheckIsOK(apFunction, eFalse);
+    niCheck(apFunction->GetFunctionType() == eGpuFunctionType_RayGeneration,
+            eFalse);
+    _rayGen = niCheckNN(_rayGen, (sVulkanFunction*)apFunction, eFalse);
+    return eTrue;
+  }
+
+  virtual tBool __stdcall SetMissFunction(iGpuFunction* apFunction) niImpl
+  {
+    niCheckIsOK(apFunction, eFalse);
+    niCheck(apFunction->GetFunctionType() == eGpuFunctionType_RayMiss, eFalse);
+    _miss = niCheckNN(_miss, (sVulkanFunction*)apFunction, eFalse);
+    return eTrue;
+  }
+
+  virtual tU32 __stdcall AddHitGroup(iHString* ahspName,
+                                     eRayFunctionGroupType aType,
+                                     iGpuFunction* apClosestHit,
+                                     iGpuFunction* apAnyHit,
+                                     iGpuFunction* apIntersection) niImpl
+  {
+    niCheckIsOK(apClosestHit, eInvalidHandle);
+    niCheck(apClosestHit->GetFunctionType() == eGpuFunctionType_RayClosestHit,
+            eFalse);
     if (apAnyHit) {
-      niCheck(apAnyHit->GetFunctionType() == eGpuFunctionType_RayAnyHit,eFalse);
+      niCheck(apAnyHit->GetFunctionType() == eGpuFunctionType_RayAnyHit,
+              eFalse);
     }
     if (apIntersection) {
-      niCheck(apIntersection->GetFunctionType() == eGpuFunctionType_RayIntersection,eFalse);
+      niCheck(apIntersection->GetFunctionType() ==
+                eGpuFunctionType_RayIntersection,
+              eFalse);
     }
-    _hitGroups.push_back({
-        ._name = ahspName,
+    _hitGroups.push_back(
+      { ._name = ahspName,
         ._closestHit = AsNN<sVulkanFunction>(apClosestHit),
         ._anyHit = as_maybe_null<sVulkanFunction>(apAnyHit),
-        ._intersection = as_maybe_null<sVulkanFunction>(apIntersection)
-      });
-    return (tU32)_hitGroups.size()-1;
+        ._intersection = as_maybe_null<sVulkanFunction>(apIntersection) });
+    return (tU32)_hitGroups.size() - 1;
   }
 };
 
@@ -4068,24 +4263,20 @@ struct sVulkanRayFunctionTableBuffer {
   VmaAllocation _sbtAllocation = nullptr;
   VkStridedDeviceAddressRegionKHR _stridedRegion = {};
 
-  tBool _CreateSBT(
-    ain<nn<sVulkanDriver>> aDriver,
-    tU32 anNumHandles,
-    tPtr aHandleStorage
-  )
+  tBool _CreateSBT(ain<nn<sVulkanDriver>> aDriver, tU32 anNumHandles,
+                   tPtr aHandleStorage)
   {
     // Get shader group handles
     niLet handleSize = aDriver->_rayTracingProps.shaderGroupHandleSize;
     niLet handleSizeAligned = (tU32)ni::AlignSize(
-      handleSize,
-      aDriver->_rayTracingProps.shaderGroupHandleAlignment);
+      handleSize, aDriver->_rayTracingProps.shaderGroupHandleAlignment);
 
     // Calculate required size for SBT
     VkBufferCreateInfo bufferInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .size = anNumHandles * handleSizeAligned,
       .usage = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
-      VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
+               VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
     };
 
     VmaAllocationCreateInfo allocInfo = {
@@ -4094,28 +4285,27 @@ struct sVulkanRayFunctionTableBuffer {
     };
 
     niCheck(vmaCreateBufferWithAlignment(
-      aDriver->_allocator, &bufferInfo, &allocInfo,
-      aDriver->_rayTracingProps.shaderGroupBaseAlignment,
-      &_sbtBuffer, &_sbtAllocation, nullptr) == VK_SUCCESS, eFalse);
+              aDriver->_allocator, &bufferInfo, &allocInfo,
+              aDriver->_rayTracingProps.shaderGroupBaseAlignment, &_sbtBuffer,
+              &_sbtAllocation, nullptr) == VK_SUCCESS,
+            eFalse);
 
     // Get buffer address
     VkBufferDeviceAddressInfo addressInfo = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
       .buffer = _sbtBuffer
     };
-    _stridedRegion = {
-      .deviceAddress = vkGetBufferDeviceAddress(aDriver->_device, &addressInfo),
-      .stride = handleSizeAligned,
-      .size = handleSizeAligned * anNumHandles
-    };
-    niCheck(_stridedRegion.deviceAddress != 0,eFalse);
+    _stridedRegion = { .deviceAddress = vkGetBufferDeviceAddress(
+                         aDriver->_device, &addressInfo),
+                       .stride = handleSizeAligned,
+                       .size = handleSizeAligned * anNumHandles };
+    niCheck(_stridedRegion.deviceAddress != 0, eFalse);
 
     void* data;
     vmaMapMemory(aDriver->_allocator, _sbtAllocation, &data);
     niVar dst = static_cast<tPtr>(data);
     for (tU32 i = 0; i < anNumHandles; i++) {
-      memcpy(dst + i * handleSizeAligned,
-             aHandleStorage + i * handleSize,
+      memcpy(dst + i * handleSizeAligned, aHandleStorage + i * handleSize,
              handleSize);
     }
     vmaUnmapMemory(aDriver->_allocator, _sbtAllocation);
@@ -4123,7 +4313,8 @@ struct sVulkanRayFunctionTableBuffer {
     return eTrue;
   }
 
-  void _DestroySBT(ain<nn<sVulkanDriver>> aDriver) {
+  void _DestroySBT(ain<nn<sVulkanDriver>> aDriver)
+  {
     if (_sbtBuffer) {
       vmaDestroyBuffer(aDriver->_allocator, _sbtBuffer, _sbtAllocation);
       _sbtBuffer = VK_NULL_HANDLE;
@@ -4133,10 +4324,9 @@ struct sVulkanRayFunctionTableBuffer {
   }
 };
 
-struct sVulkanRayPipeline :
-      public ImplRC<iRayPipeline,eImplFlags_DontInherit1,iDeviceResource>,
-      public sVulkanPipeline
-{
+struct sVulkanRayPipeline
+    : public ImplRC<iRayPipeline, eImplFlags_DontInherit1, iDeviceResource>,
+      public sVulkanPipeline {
   nn<sVulkanDriver> _driver;
   tHStringPtr _name;
   NN<sVulkanRayFunctionTable> _functionTable;
@@ -4145,17 +4335,17 @@ struct sVulkanRayPipeline :
   sVulkanRayFunctionTableBuffer _hitTable;
   sVulkanRayFunctionTableBuffer _callableTable;
 
-  sVulkanRayPipeline(
-    ain<nn<sVulkanDriver>> aDriver,
-    iHString* ahspName,
-    ain<nn<sVulkanRayFunctionTable>> apFunctionTable)
+  sVulkanRayPipeline(ain<nn<sVulkanDriver>> aDriver, iHString* ahspName,
+                     ain<nn<sVulkanRayFunctionTable>> apFunctionTable)
       : sVulkanPipeline(VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR)
       , _driver(aDriver)
       , _name(ahspName)
       , _functionTable(apFunctionTable)
-  {}
+  {
+  }
 
-  ~sVulkanRayPipeline() {
+  ~sVulkanRayPipeline()
+  {
     _rgenTable._DestroySBT(_driver);
     _missTable._DestroySBT(_driver);
     _hitTable._DestroySBT(_driver);
@@ -4163,11 +4353,14 @@ struct sVulkanRayPipeline :
     _DestroyPipeline(_driver);
   }
 
-  VkPipelineLayout _GetPipelineLayout() const {
-    return _driver->_vkPipelineLayouts[eGpuFunctionBindType_BindlessRayInstances];
+  VkPipelineLayout _GetPipelineLayout() const
+  {
+    return _driver
+      ->_vkPipelineLayouts[eGpuFunctionBindType_BindlessRayInstances];
   }
 
-  tBool _CreateRayPipeline() {
+  tBool _CreateRayPipeline()
+  {
     niLet vk = _driver->_device;
 
     // Collect shader stages & groups
@@ -4182,39 +4375,35 @@ struct sVulkanRayPipeline :
 
     // Ray gen
     {
-      stages.push_back({
-          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-              .stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR,
-              .module = _functionTable->_rayGen->_vkShaderModule,
-              .pName = "main"
-              });
-      groups.push_back({
-          .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
+      stages.push_back(
+        { .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+          .stage = VK_SHADER_STAGE_RAYGEN_BIT_KHR,
+          .module = _functionTable->_rayGen->_vkShaderModule,
+          .pName = "main" });
+      groups.push_back(
+        { .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
           .type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,
-          .generalShader = (tU32)stages.size()-1,
+          .generalShader = (tU32)stages.size() - 1,
           .closestHitShader = VK_SHADER_UNUSED_KHR,
           .anyHitShader = VK_SHADER_UNUSED_KHR,
-          .intersectionShader = VK_SHADER_UNUSED_KHR
-        });
+          .intersectionShader = VK_SHADER_UNUSED_KHR });
       ++sbtNumRgenHandles;
     }
 
     // Miss
     {
-      stages.push_back({
-          .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-              .stage = VK_SHADER_STAGE_MISS_BIT_KHR,
-              .module = _functionTable->_miss->_vkShaderModule,
-              .pName = "main"
-              });
-      groups.push_back({
-          .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
+      stages.push_back(
+        { .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+          .stage = VK_SHADER_STAGE_MISS_BIT_KHR,
+          .module = _functionTable->_miss->_vkShaderModule,
+          .pName = "main" });
+      groups.push_back(
+        { .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
           .type = VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR,
-          .generalShader = (tU32)stages.size()-1,
+          .generalShader = (tU32)stages.size() - 1,
           .closestHitShader = VK_SHADER_UNUSED_KHR,
           .anyHitShader = VK_SHADER_UNUSED_KHR,
-          .intersectionShader = VK_SHADER_UNUSED_KHR
-        });
+          .intersectionShader = VK_SHADER_UNUSED_KHR });
       ++sbtNumMissHandles;
     }
 
@@ -4223,46 +4412,43 @@ struct sVulkanRayPipeline :
       tU32 closestHitIndex = VK_SHADER_UNUSED_KHR;
       {
         closestHitIndex = (tU32)stages.size();
-        stages.push_back({
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
-                .module = hitGroup._closestHit->_vkShaderModule,
-                .pName = "main"
-                });
+        stages.push_back(
+          { .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
+            .module = hitGroup._closestHit->_vkShaderModule,
+            .pName = "main" });
       }
 
       tU32 anyHitIndex = VK_SHADER_UNUSED_KHR;
       if (hitGroup._anyHit.IsOK()) {
         anyHitIndex = (tU32)stages.size();
-        stages.push_back({
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR,
-                .module = hitGroup._anyHit->_vkShaderModule,
-                .pName = "main"
-                });
+        stages.push_back(
+          { .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_ANY_HIT_BIT_KHR,
+            .module = hitGroup._anyHit->_vkShaderModule,
+            .pName = "main" });
       }
 
       tU32 intersectionIndex = VK_SHADER_UNUSED_KHR;
       if (hitGroup._intersection.IsOK()) {
         intersectionIndex = (tU32)stages.size();
-        stages.push_back({
-            .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR,
-                .module = hitGroup._intersection->_vkShaderModule,
-                .pName = "main"
-                });
+        stages.push_back(
+          { .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage = VK_SHADER_STAGE_INTERSECTION_BIT_KHR,
+            .module = hitGroup._intersection->_vkShaderModule,
+            .pName = "main" });
       }
 
-      groups.push_back({
-          .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
-          .type = ((intersectionIndex != VK_SHADER_UNUSED_KHR) ?
-                   VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR :
-                   VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR),
+      groups.push_back(
+        { .sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR,
+          .type =
+            ((intersectionIndex != VK_SHADER_UNUSED_KHR)
+               ? VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR
+               : VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR),
           .generalShader = VK_SHADER_UNUSED_KHR,
           .closestHitShader = closestHitIndex,
           .anyHitShader = anyHitIndex,
-          .intersectionShader = intersectionIndex
-        });
+          .intersectionShader = intersectionIndex });
       ++sbtNumHitHandles;
     }
 
@@ -4277,79 +4463,76 @@ struct sVulkanRayPipeline :
       .layout = _GetPipelineLayout()
     };
 
-    VK_CHECK(vkCreateRayTracingPipelinesKHR(
-      vk, VK_NULL_HANDLE, VK_NULL_HANDLE,
-      1, &pipelineInfo, nullptr, &_vkPipeline), eFalse);
+    VK_CHECK(vkCreateRayTracingPipelinesKHR(vk, VK_NULL_HANDLE, VK_NULL_HANDLE,
+                                            1, &pipelineInfo, nullptr,
+                                            &_vkPipeline),
+             eFalse);
 
     // Create the SBT
     niLet handleSize = _driver->_rayTracingProps.shaderGroupHandleSize;
-    niLet sbtNumHandles = sbtNumRgenHandles + sbtNumMissHandles + sbtNumHitHandles;
+    niLet sbtNumHandles =
+      sbtNumRgenHandles + sbtNumMissHandles + sbtNumHitHandles;
     astl::vector<tU8> handles(sbtNumHandles * handleSize);
     VK_CHECK(vkGetRayTracingShaderGroupHandlesKHR(
-      vk, _vkPipeline, 0, sbtNumHandles,
-      (tU32)handles.size(), handles.data()), eFalse);
+               vk, _vkPipeline, 0, sbtNumHandles, (tU32)handles.size(),
+               handles.data()),
+             eFalse);
 
     tU32 groupHandleOffset = 0; // offset in terms of groups, not bytes
 
     // RayGen SBT
     if (sbtNumRgenHandles > 0) {
-      _rgenTable._CreateSBT(
-        _driver,
-        sbtNumRgenHandles,
-        handles.data() + groupHandleOffset * handleSize
-      );
+      _rgenTable._CreateSBT(_driver, sbtNumRgenHandles,
+                            handles.data() + groupHandleOffset * handleSize);
       groupHandleOffset += sbtNumRgenHandles;
     }
 
     // Miss SBT
     if (sbtNumMissHandles > 0) {
-      _missTable._CreateSBT(
-        _driver,
-        sbtNumMissHandles,
-        handles.data() + groupHandleOffset * handleSize
-      );
+      _missTable._CreateSBT(_driver, sbtNumMissHandles,
+                            handles.data() + groupHandleOffset * handleSize);
       groupHandleOffset += sbtNumMissHandles;
     }
 
     // Hit SBT
     if (sbtNumHitHandles > 0) {
-      _hitTable._CreateSBT(
-        _driver,
-        sbtNumHitHandles,
-        handles.data() + groupHandleOffset * handleSize
-      );
+      _hitTable._CreateSBT(_driver, sbtNumHitHandles,
+                           handles.data() + groupHandleOffset * handleSize);
       groupHandleOffset += sbtNumHitHandles;
     }
 
     // Callable SBT
     if (sbtNumCallableHandles > 0) {
-      _callableTable._CreateSBT(
-        _driver,
-        sbtNumCallableHandles,
-        handles.data() + groupHandleOffset * handleSize
-      );
+      _callableTable._CreateSBT(_driver, sbtNumCallableHandles,
+                                handles.data() +
+                                  groupHandleOffset * handleSize);
       groupHandleOffset += sbtNumCallableHandles;
     }
 
     return eTrue;
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return _name;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return this;
   }
 
-  virtual iGpuFunction* __stdcall GetRayGenFunction() const niImpl {
+  virtual iGpuFunction* __stdcall GetRayGenFunction() const niImpl
+  {
     return _functionTable->_rayGen;
   }
 
-  virtual iGpuFunction* __stdcall GetMissFunction() const niImpl {
+  virtual iGpuFunction* __stdcall GetMissFunction() const niImpl
+  {
     return _functionTable->_miss;
   }
 
-  virtual iRayFunctionTable* __stdcall GetFunctionTable() const niImpl {
+  virtual iRayFunctionTable* __stdcall GetFunctionTable() const niImpl
+  {
     return _functionTable;
   }
 };
@@ -4359,159 +4542,194 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
 
   sVulkanRayBuildEncoder(ain<nn<sVulkanDriver>> aDriver)
       : _driver(aDriver)
-  {}
+  {
+  }
 
-  Ptr<iRayPrimitives> __stdcall BuildRayTrianglePrimitives(iHString* ahspName, iRayTrianglePrimitivesDesc* apPrimitivesDesc) niImpl {
-    niCheck(_driver->_isRayTracingSupported,nullptr);
-    niCheckIsOK(apPrimitivesDesc,nullptr);
+  Ptr<iRayPrimitives> __stdcall BuildRayTrianglePrimitives(
+    iHString* ahspName, iRayTrianglePrimitivesDesc* apPrimitivesDesc) niImpl
+  {
+    niCheck(_driver->_isRayTracingSupported, nullptr);
+    niCheckIsOK(apPrimitivesDesc, nullptr);
 
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
     niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
-    niDefer {
-      _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
+    niDefer
+    {
+      _driver->EndSingleTimeCommands(cmdBuffer, submitCommand);
     };
 
-    niLet primitivesDesc = static_cast<sVulkanRayTrianglePrimitivesDesc*>(apPrimitivesDesc);
+    niLet primitivesDesc =
+      static_cast<sVulkanRayTrianglePrimitivesDesc*>(apPrimitivesDesc);
 
-    NN<sVulkanRayPrimitives> primitivesAS = MakeNN<sVulkanRayPrimitives>(_driver,ahspName);
-    niCheck(primitivesDesc->_CreateAccelerationStructure(
-      *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+    NN<sVulkanRayPrimitives> primitivesAS =
+      MakeNN<sVulkanRayPrimitives>(_driver, ahspName);
+    niCheck(
+      primitivesDesc->_CreateAccelerationStructure(
+        *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),
+      nullptr);
 
     niCheck(primitivesDesc->_BuildAccelerationStructure(
-      *primitivesAS, cmdBuffer, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+              *primitivesAS, cmdBuffer,
+              VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),
+            nullptr);
     submitCommand = eTrue;
 
     return primitivesAS;
   }
 
-  Ptr<iRayPrimitives> __stdcall BuildRayProceduralPrimitives(iHString* ahspName, iRayProceduralPrimitivesDesc* apPrimitivesDesc) niImpl {
-    niCheck(_driver->_isRayTracingSupported,nullptr);
-    niCheckIsOK(apPrimitivesDesc,nullptr);
+  Ptr<iRayPrimitives> __stdcall BuildRayProceduralPrimitives(
+    iHString* ahspName, iRayProceduralPrimitivesDesc* apPrimitivesDesc) niImpl
+  {
+    niCheck(_driver->_isRayTracingSupported, nullptr);
+    niCheckIsOK(apPrimitivesDesc, nullptr);
 
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
     niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
-    niDefer {
-      _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
+    niDefer
+    {
+      _driver->EndSingleTimeCommands(cmdBuffer, submitCommand);
     };
 
-    niLet primitivesDesc = static_cast<sVulkanRayProceduralPrimitivesDesc*>(apPrimitivesDesc);
+    niLet primitivesDesc =
+      static_cast<sVulkanRayProceduralPrimitivesDesc*>(apPrimitivesDesc);
 
-    NN<sVulkanRayPrimitives> primitivesAS = MakeNN<sVulkanRayPrimitives>(_driver,ahspName);
-    niCheck(primitivesDesc->_CreateAccelerationStructure(
-      *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+    NN<sVulkanRayPrimitives> primitivesAS =
+      MakeNN<sVulkanRayPrimitives>(_driver, ahspName);
+    niCheck(
+      primitivesDesc->_CreateAccelerationStructure(
+        *primitivesAS, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),
+      nullptr);
 
     niCheck(primitivesDesc->_BuildAccelerationStructure(
-      *primitivesAS, cmdBuffer, VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),nullptr);
+              *primitivesAS, cmdBuffer,
+              VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR, eFalse),
+            nullptr);
     submitCommand = eTrue;
 
     return primitivesAS;
   }
 
-  Ptr<iRayInstances> __stdcall BuildRayInstances(iHString* ahspName, iRayInstancesDesc* apInstancesDesc) niImpl {
-    niCheck(_driver->_isRayTracingSupported,nullptr);
-    niCheckIsOK(apInstancesDesc,nullptr);
+  Ptr<iRayInstances> __stdcall BuildRayInstances(
+    iHString* ahspName, iRayInstancesDesc* apInstancesDesc) niImpl
+  {
+    niCheck(_driver->_isRayTracingSupported, nullptr);
+    niCheckIsOK(apInstancesDesc, nullptr);
 
-    niLet instancesDesc = static_cast<sVulkanRayInstancesDesc*>(apInstancesDesc);
-    niCheck(!instancesDesc->_primitives.empty(),nullptr);
+    niLet instancesDesc =
+      static_cast<sVulkanRayInstancesDesc*>(apInstancesDesc);
+    niCheck(!instancesDesc->_primitives.empty(), nullptr);
 
     tBool submitCommand = eFalse;
     VkCommandBuffer cmdBuffer = _driver->BeginSingleTimeCommands();
     niCheck(cmdBuffer != VK_NULL_HANDLE, nullptr);
-    niDefer {
-      _driver->EndSingleTimeCommands(cmdBuffer,submitCommand);
+    niDefer
+    {
+      _driver->EndSingleTimeCommands(cmdBuffer, submitCommand);
     };
 
     NN<sVulkanRayInstances> instancesAS = MakeNN<sVulkanRayInstances>(
-      _driver,instancesDesc->_primitives,ahspName);
-    niCheck(instancesDesc->_CreateAccelerationStructure(
-      *instancesAS, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, eFalse),nullptr);
+      _driver, instancesDesc->_primitives, ahspName);
+    niCheck(
+      instancesDesc->_CreateAccelerationStructure(
+        *instancesAS, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, eFalse),
+      nullptr);
 
     niCheck(instancesDesc->_BuildAccelerationStructure(
-      *instancesAS, cmdBuffer, VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, eFalse),nullptr);
+              *instancesAS, cmdBuffer,
+              VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR, eFalse),
+            nullptr);
     submitCommand = eTrue;
 
     return instancesAS;
   }
 };
 
-tBool __stdcall sVulkanCommandEncoder::SetRayInstances(iRayInstances* apRayInstances) {
-  niCheckIsOK(apRayInstances,eFalse);
-  _cache._lastRayInstances = _GetCurrentFrame()->BindRayInstances(apRayInstances);
+tBool __stdcall sVulkanCommandEncoder::SetRayInstances(
+  iRayInstances* apRayInstances)
+{
+  niCheckIsOK(apRayInstances, eFalse);
+  _cache._lastRayInstances =
+    _GetCurrentFrame()->BindRayInstances(apRayInstances);
   return eTrue;
 }
-tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(iRayPipeline* apRayPipeline) {
-  niCheckIsOK(apRayPipeline,eFalse);
+tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(
+  iRayPipeline* apRayPipeline)
+{
+  niCheckIsOK(apRayPipeline, eFalse);
   if ((tIntPtr)_cache._lastRayPipeline.raw_ptr() == (tIntPtr)apRayPipeline)
     return eFalse;
-  sVulkanRayPipeline* rayPipeline = static_cast<sVulkanRayPipeline*>(apRayPipeline);
-  vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rayPipeline->_vkPipeline);
+  sVulkanRayPipeline* rayPipeline =
+    static_cast<sVulkanRayPipeline*>(apRayPipeline);
+  vkCmdBindPipeline(_cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+                    rayPipeline->_vkPipeline);
   _cache._lastRasterPipeline = nullptr;
   _cache._lastFixedPipeline = 0;
   _cache._lastRayPipeline = _GetCurrentFrame()->BindRayPipeline(rayPipeline);
   return eTrue;
 }
-tBool __stdcall sVulkanCommandEncoder::SetRayOutputImage(iTexture* apRayOutputImage) {
-  niCheckIsOK(apRayOutputImage,eFalse);
-  niCheck(apRayOutputImage->GetFlags()&eTextureFlags_RenderTarget,eFalse);
-  _cache._lastRayOutputImage = _GetCurrentFrame()->BindOutputImage(apRayOutputImage);
+tBool __stdcall sVulkanCommandEncoder::SetRayOutputImage(
+  iTexture* apRayOutputImage)
+{
+  niCheckIsOK(apRayOutputImage, eFalse);
+  niCheck(apRayOutputImage->GetFlags() & eTextureFlags_RenderTarget, eFalse);
+  _cache._lastRayOutputImage =
+    _GetCurrentFrame()->BindOutputImage(apRayOutputImage);
   return eTrue;
 }
 
-tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD)
+tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH,
+                                                    tU32 anD)
 {
-  niCheck(_driver->_isRayTracingSupported,eFalse);
-  niCheckIsOK(_cache._lastRayPipeline,eFalse);
-  niCheckIsOK(_cache._lastRayInstances,eFalse);
-  niCheckIsOK(_cache._lastRayOutputImage,eFalse);
+  niCheck(_driver->_isRayTracingSupported, eFalse);
+  niCheckIsOK(_cache._lastRayPipeline, eFalse);
+  niCheckIsOK(_cache._lastRayInstances, eFalse);
+  niCheckIsOK(_cache._lastRayOutputImage, eFalse);
 
-  nn<sVulkanRayPipeline> pipeline = as_nn<sVulkanRayPipeline>(_cache._lastRayPipeline);
-  nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
-  nn<sVulkanTexture> outputTex = as_nn<sVulkanTexture>(_cache._lastRayOutputImage);
+  nn<sVulkanRayPipeline> pipeline =
+    as_nn<sVulkanRayPipeline>(_cache._lastRayPipeline);
+  nn<sVulkanRayInstances> instancesAS =
+    as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
+  nn<sVulkanTexture> outputTex =
+    as_nn<sVulkanTexture>(_cache._lastRayOutputImage);
   const VkPipelineLayout pipelineLayout = pipeline->_GetPipelineLayout();
 
   // End current rendering pass if any
   _EndRendering();
 
   // Transition output image to general layout for storage
-  niCheck(_VkTransitionImageLayout(
-    _cmdBuffer,
-    outputTex->_vkImage,
-    VK_IMAGE_LAYOUT_UNDEFINED,
-    VK_IMAGE_LAYOUT_GENERAL),eFalse);
+  niCheck(_VkTransitionImageLayout(_cmdBuffer, outputTex->_vkImage,
+                                   VK_IMAGE_LAYOUT_UNDEFINED,
+                                   VK_IMAGE_LAYOUT_GENERAL),
+          eFalse);
 
   // Bind acceleration structure
   niVar& descPool = _GetCurrentFrame()->_descriptorPool;
   niCheck(descPool.PushDescriptorAccelerationStructure(
-    _driver,_cmdBuffer,
-    VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,pipelineLayout,
-    eGLSLVulkanDescriptorSet_RayInstances,
-    instancesAS->_asHandle),eFalse);
+            _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+            pipelineLayout, eGLSLVulkanDescriptorSet_RayInstances,
+            instancesAS->_asHandle),
+          eFalse);
 
   // Bind output image
   niCheck(descPool.PushDescriptorStorageImage(
-    _driver,_cmdBuffer,
-    VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,pipelineLayout,
-    eGLSLVulkanDescriptorSet_Image2D,
-    outputTex->_vkView,
-    VK_IMAGE_LAYOUT_GENERAL),eFalse);
+            _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+            pipelineLayout, eGLSLVulkanDescriptorSet_Image2D,
+            outputTex->_vkView, VK_IMAGE_LAYOUT_GENERAL),
+          eFalse);
 
   // Dispatch rays
-  vkCmdTraceRaysKHR(
-    _cmdBuffer,
-    &pipeline->_rgenTable._stridedRegion,
-    &pipeline->_missTable._stridedRegion,
-    &pipeline->_hitTable._stridedRegion,
-    &pipeline->_callableTable._stridedRegion,
-    anW,anH,anD);
+  vkCmdTraceRaysKHR(_cmdBuffer, &pipeline->_rgenTable._stridedRegion,
+                    &pipeline->_missTable._stridedRegion,
+                    &pipeline->_hitTable._stridedRegion,
+                    &pipeline->_callableTable._stridedRegion, anW, anH, anD);
 
   // Transition output image back to shader read
-  niCheck(_VkTransitionImageLayout(
-    _cmdBuffer,
-    outputTex->_vkImage,
-    VK_IMAGE_LAYOUT_GENERAL,
-    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+  niCheck(_VkTransitionImageLayout(_cmdBuffer, outputTex->_vkImage,
+                                   VK_IMAGE_LAYOUT_GENERAL,
+                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+          eFalse);
 
   // Resume rendering pass
   _ResumeRendering();
@@ -4520,15 +4738,11 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH, tU32 anD
 }
 
 tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
-  iBitmap2D* apSrc,
-  iTexture* apDest,
-  tU32 anDestLevel,
-  const sRecti& aSrcRect,
-  const sRecti& aDestRect,
-  eTextureBlitFlags aFlags)
+  iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect,
+  const sRecti& aDestRect, eTextureBlitFlags aFlags)
 {
-  niCheckSilent(niIsOK(apSrc),eFalse);
-  niCheckSilent(niIsOK(apDest),eFalse);
+  niCheckSilent(niIsOK(apSrc), eFalse);
+  niCheckSilent(niIsOK(apDest), eFalse);
   niCheckSilent(apDest->GetType() == eBitmapType_2D, eFalse);
 
   sVulkanTexture* tex = (sVulkanTexture*)apDest;
@@ -4538,29 +4752,27 @@ tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
   if (!srcBmp->GetPixelFormat()->IsSamePixelFormat(tex->GetPixelFormat())) {
     niWarning(niFmt(
       "BlitBitmapToTexture: Texture '%s' (%dx%d), converting from '%s' to '%s' - performance warning.",
-      tex->GetDeviceResourceName(),
-      srcBmp->GetWidth(),srcBmp->GetHeight(),
+      tex->GetDeviceResourceName(), srcBmp->GetWidth(), srcBmp->GetHeight(),
       srcBmp->GetPixelFormat()->GetFormat(),
       tex->GetPixelFormat()->GetFormat()));
     srcBmp = _graphics->CreateBitmap2DEx(
-      srcBmp->GetWidth(),
-      srcBmp->GetHeight(),
-      tex->GetPixelFormat());
-    srcBmp->BlitStretch(apSrc,0,0,0,0,
-                        apSrc->GetWidth(),apSrc->GetHeight(),
-                        srcBmp->GetWidth(),srcBmp->GetHeight());
+      srcBmp->GetWidth(), srcBmp->GetHeight(), tex->GetPixelFormat());
+    srcBmp->BlitStretch(apSrc, 0, 0, 0, 0, apSrc->GetWidth(),
+                        apSrc->GetHeight(), srcBmp->GetWidth(),
+                        srcBmp->GetHeight());
   }
 
   if (tex->_vkImage) {
     tex->_UploadTexture(srcBmp, anDestLevel, aDestRect);
   }
 
-  VULKAN_TRACE(("BlitBitmapToTexture %s %s %s",
-                aSrcRect, aDestRect, apDest->GetDeviceResourceName()));
+  VULKAN_TRACE(("BlitBitmapToTexture %s %s %s", aSrcRect, aDestRect,
+                apDest->GetDeviceResourceName()));
   return eTrue;
 }
 
-tBool sVulkanDriver::_CreateVulkanDriverResources() {
+tBool sVulkanDriver::_CreateVulkanDriverResources()
+{
   // Create the samplers
   {
     VkSamplerCreateInfo desc = {
@@ -4571,76 +4783,85 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
       .unnormalizedCoordinates = VK_FALSE,
     };
 
-#define INIT_COMPILED_SAMPLER_STATES(STATE,FILTER,WRAP) {               \
-      desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;            \
-      _toVkSamplerFilter(desc, eSamplerFilter_##FILTER, _physicalDeviceFeatures); \
-      desc.addressModeU = desc.addressModeV = desc.addressModeW =       \
-          _toVkSamplerAddress[eSamplerWrap_##WRAP];                     \
-      VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                 \
-                               &_ssCompiled[eCompiledStates_##STATE - eCompiledStates_SS_PointRepeat]), eFalse); \
+  #define INIT_COMPILED_SAMPLER_STATES(STATE, FILTER, WRAP)                   \
+    {                                                                         \
+      desc.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;                  \
+      _toVkSamplerFilter(desc, eSamplerFilter_##FILTER,                       \
+                         _physicalDeviceFeatures);                            \
+      desc.addressModeU = desc.addressModeV = desc.addressModeW =             \
+        _toVkSamplerAddress[eSamplerWrap_##WRAP];                             \
+      VK_CHECK(vkCreateSampler(_device, &desc, nullptr,                       \
+                               &_ssCompiled[eCompiledStates_##STATE -         \
+                                            eCompiledStates_SS_PointRepeat]), \
+               eFalse);                                                       \
     }
 
     INIT_COMPILED_SAMPLER_STATES(SS_PointRepeat, Point, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_PointClamp,  Point, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_PointClamp, Point, Clamp);
     INIT_COMPILED_SAMPLER_STATES(SS_PointMirror, Point, Mirror);
     INIT_COMPILED_SAMPLER_STATES(SS_PointWhiteBorder, Point, Border);
 
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothRepeat, Smooth, Repeat);
-    INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp,  Smooth, Clamp);
+    INIT_COMPILED_SAMPLER_STATES(SS_SmoothClamp, Smooth, Clamp);
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothMirror, Smooth, Mirror);
     INIT_COMPILED_SAMPLER_STATES(SS_SmoothWhiteBorder, Smooth, Border);
-#undef INIT_COMPILED_SAMPLER_STATES
+  #undef INIT_COMPILED_SAMPLER_STATES
   }
 
   // Create the descriptor set layouts
   niLet stageFlags =
-      VK_SHADER_STAGE_VERTEX_BIT |
-      VK_SHADER_STAGE_FRAGMENT_BIT |
-      (_isRayTracingSupported ?
-       (VK_SHADER_STAGE_RAYGEN_BIT_KHR
-        | VK_SHADER_STAGE_MISS_BIT_KHR
-        | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR
-        | VK_SHADER_STAGE_ANY_HIT_BIT_KHR
-        | VK_SHADER_STAGE_INTERSECTION_BIT_KHR) : 0);
+    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT |
+    (_isRayTracingSupported
+       ? (VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR |
+          VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+          VK_SHADER_STAGE_ANY_HIT_BIT_KHR |
+          VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+       : 0);
 
-  VK_CHECK(_VkCreateEmptyDescSetLayout(_device,_emptyDescrSet), eFalse);
+  VK_CHECK(_VkCreateEmptyDescSetLayout(_device, _emptyDescrSet), eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
-    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Buffer],
-    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,stageFlags), eFalse);
+             _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_Buffer],
+             VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, stageFlags),
+           eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
-    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Texture2D],
-    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,stageFlags), eFalse);
+             _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_Texture2D],
+             VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, stageFlags),
+           eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
-    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_TextureCube],
-    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,stageFlags), eFalse);
+             _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_TextureCube],
+             VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, stageFlags),
+           eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
-    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Sampler],
-    VK_DESCRIPTOR_TYPE_SAMPLER,stageFlags), eFalse);
+             _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_Sampler],
+             VK_DESCRIPTOR_TYPE_SAMPLER, stageFlags),
+           eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
-    _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_Image2D],
-    VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,stageFlags), eFalse);
+             _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_Image2D],
+             VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, stageFlags),
+           eFalse);
 
-#define LAYOUT_SET_DESCR(INDEX,ENUM)                        \
-  static_assert(INDEX < niCountOf(layouts));                \
-  static_assert(ENUM == INDEX);                             \
-  niCheck(_descrSetLayouts[ENUM] != VK_NULL_HANDLE,eFalse); \
-  layouts[INDEX] = _descrSetLayouts[ENUM];
+  #define LAYOUT_SET_DESCR(INDEX, ENUM)                        \
+    static_assert(INDEX < niCountOf(layouts));                 \
+    static_assert(ENUM == INDEX);                              \
+    niCheck(_descrSetLayouts[ENUM] != VK_NULL_HANDLE, eFalse); \
+    layouts[INDEX] = _descrSetLayouts[ENUM];
 
-#define LAYOUT_SET_EMPTY(INDEX,ENUM)            \
-  static_assert(INDEX < niCountOf(layouts));    \
-  static_assert(ENUM == INDEX);                 \
-  layouts[INDEX] = _emptyDescrSet;
+  #define LAYOUT_SET_EMPTY(INDEX, ENUM)        \
+    static_assert(INDEX < niCountOf(layouts)); \
+    static_assert(ENUM == INDEX);              \
+    layouts[INDEX] = _emptyDescrSet;
 
-#define CREATE_PIPELINE_LAYOUT(VAR)                                     \
-  VkPipelineLayoutCreateInfo layoutInfo = {                             \
-    .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,             \
-    .setLayoutCount = (tU32)niCountOf(layouts),                         \
-    .pSetLayouts = layouts,                                             \
-    .pushConstantRangeCount = 0,                                        \
-    .pPushConstantRanges = nullptr                                      \
-  };                                                                    \
-  niPanicAssert(VAR == VK_NULL_HANDLE);                                 \
-  VK_CHECK(vkCreatePipelineLayout(_device, &layoutInfo, nullptr, &VAR), eFalse);
+  #define CREATE_PIPELINE_LAYOUT(VAR)                                     \
+    VkPipelineLayoutCreateInfo layoutInfo = {                             \
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,             \
+      .setLayoutCount = (tU32)niCountOf(layouts),                         \
+      .pSetLayouts = layouts,                                             \
+      .pushConstantRangeCount = 0,                                        \
+      .pPushConstantRanges = nullptr                                      \
+    };                                                                    \
+    niPanicAssert(VAR == VK_NULL_HANDLE);                                 \
+    VK_CHECK(vkCreatePipelineLayout(_device, &layoutInfo, nullptr, &VAR), \
+             eFalse);
 
   // eGpuFunctionBindType_None
   {
@@ -4650,49 +4871,50 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
       .pushConstantRangeCount = 0,
       .pPushConstantRanges = nullptr
     };
-    VK_CHECK(vkCreatePipelineLayout(
-      _device, &layoutInfo, nullptr,
-      &_vkPipelineLayouts[eGpuFunctionBindType_None]), eFalse);
+    VK_CHECK(
+      vkCreatePipelineLayout(_device, &layoutInfo, nullptr,
+                             &_vkPipelineLayouts[eGpuFunctionBindType_None]),
+      eFalse);
   }
 
   // eGpuFunctionBindType_Fixed
   {
     VkDescriptorSetLayout layouts[6] = {};
-    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
-    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
-    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
-    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
-    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
-    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
-    CREATE_PIPELINE_LAYOUT(
-      _vkPipelineLayouts[eGpuFunctionBindType_Fixed]);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer, 0);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D, 1);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube, 2);
+    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D, 3);
+    LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow, 4);
+    LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler, 5);
+    CREATE_PIPELINE_LAYOUT(_vkPipelineLayouts[eGpuFunctionBindType_Fixed]);
   }
 
   if (_isBindlessSupported) {
     VK_CHECK(_VkCreateBindlessDescSetLayout(
-      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers],
-      VK_DESCRIPTOR_TYPE_STORAGE_BUFFER), eFalse);
+               _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers],
+               VK_DESCRIPTOR_TYPE_STORAGE_BUFFER),
+             eFalse);
 
     VK_CHECK(_VkCreateBindlessDescSetLayout(
-      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures],
-      VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE), eFalse);
+               _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures],
+               VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE),
+             eFalse);
 
     // eGpuFunctionBindType_Bindless
     {
       VkDescriptorSetLayout layouts[11] = {};
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer, 0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D, 1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube, 2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D, 3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow, 4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler, 5);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_RayInstances, 7);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Image2D, 8);
       LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllBuffers, 9);
       LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_AllTextures, 10);
-      CREATE_PIPELINE_LAYOUT(
-        _vkPipelineLayouts[eGpuFunctionBindType_Bindless]);
+      CREATE_PIPELINE_LAYOUT(_vkPipelineLayouts[eGpuFunctionBindType_Bindless]);
     }
 
     // Create the bindless descriptor pool
@@ -4711,13 +4933,15 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
         .poolSizeCount = 2,
         .pPoolSizes = poolSizes
       };
-      VK_CHECK(vkCreateDescriptorPool(
-        _device, &poolInfo, nullptr, &_bindlessPool), eFalse);
+      VK_CHECK(
+        vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_bindlessPool),
+        eFalse);
     }
 
     {
       VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .sType =
+          VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
         .descriptorSetCount = 1,
         .pDescriptorCounts = &knVulkanMaxDescrBindlessTextures
       };
@@ -4730,14 +4954,16 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
         .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllTextures]
       };
 
-      VK_CHECK(vkAllocateDescriptorSets(
-        _device, &allocInfo, &_bindlessTexturesDescSet), eFalse);
+      VK_CHECK(vkAllocateDescriptorSets(_device, &allocInfo,
+                                        &_bindlessTexturesDescSet),
+               eFalse);
     }
 
     // Allocate bindless storage buffers descriptor sets
     {
       VkDescriptorSetVariableDescriptorCountAllocateInfo variableCountInfo = {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+        .sType =
+          VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
         .descriptorSetCount = 1,
         .pDescriptorCounts = &knVulkanMaxDescrBindlessStorageBuffers
       };
@@ -4750,25 +4976,27 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
         .pSetLayouts = &_descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers]
       };
 
-      VK_CHECK(vkAllocateDescriptorSets(
-        _device, &allocInfo, &_bindlessStorageBuffersDescSet), eFalse);
+      VK_CHECK(vkAllocateDescriptorSets(_device, &allocInfo,
+                                        &_bindlessStorageBuffersDescSet),
+               eFalse);
     }
   }
 
   if (_isRayTracingSupported) {
     VK_CHECK(_VkCreateDescSetLayout(
-      _device,_descrSetLayouts[eGLSLVulkanDescriptorSet_RayInstances],
-      VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,stageFlags), eFalse);
+               _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_RayInstances],
+               VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, stageFlags),
+             eFalse);
 
     // eGpuFunctionBindType_FixedRayInstances
     {
       VkDescriptorSetLayout layouts[9] = {};
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer, 0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D, 1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube, 2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D, 3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow, 4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler, 5);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
       LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_RayInstances, 7);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Image2D, 8);
@@ -4779,12 +5007,12 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
     // Full bindless ray tracing pipeline, only one option here
     {
       VkDescriptorSetLayout layouts[11] = {};
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer,0);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D,1);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube,2);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D,3);
-      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow,4);
-      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler,5);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Buffer, 0);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Texture2D, 1);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_TextureCube, 2);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_Texture3D, 3);
+      LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_TextureShadow, 4);
+      LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Sampler, 5);
       LAYOUT_SET_EMPTY(eGLSLVulkanDescriptorSet_SamplerShadow, 6);
       LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_RayInstances, 7);
       LAYOUT_SET_DESCR(eGLSLVulkanDescriptorSet_Image2D, 8);
@@ -4798,49 +5026,44 @@ tBool sVulkanDriver::_CreateVulkanDriverResources() {
   // Create the dummy uniforms
   {
     _dummyBuffer = niNew sVulkanBuffer(
-      as_nn(this),
-      VULKAN_RES_NAME("_VulkanDriver_DummyBuffer"),
+      as_nn(this), VULKAN_RES_NAME("_VulkanDriver_DummyBuffer"),
       eGpuBufferMemoryMode_Shared,
-      eGpuBufferUsageFlags_Uniform|eGpuBufferUsageFlags_Storage);
-    niCheck(_dummyBuffer->_CreateBuffer(1024,0),eFalse);
+      eGpuBufferUsageFlags_Uniform | eGpuBufferUsageFlags_Storage);
+    niCheck(_dummyBuffer->_CreateBuffer(1024, 0), eFalse);
     {
-      tPtr data = _dummyBuffer->Lock(0,1024,eLock_Discard);
-      ni::MemZero(data,1024);
+      tPtr data = _dummyBuffer->Lock(0, 1024, eLock_Discard);
+      ni::MemZero(data, 1024);
       _dummyBuffer->Unlock();
     }
   }
 
   // Create the dummy texture
   {
-    Ptr<iBitmap2D> dummyBitmap = _graphics->CreateBitmap2D(2,2,"B8G8R8A8");
+    Ptr<iBitmap2D> dummyBitmap = _graphics->CreateBitmap2D(2, 2, "B8G8R8A8");
     {
       tU32* pixels = (tU32*)dummyBitmap->GetData();
-      pixels[0] = ULColorBuild(255,0,255,255); // Pink
-      pixels[1] = ULColorBuild(255,0,0,255); // Red
-      pixels[2] = ULColorBuild(0,255,0,255); // Green
-      pixels[3] = ULColorBuild(0,0,255,255); // Blue
+      pixels[0] = ULColorBuild(255, 0, 255, 255); // Pink
+      pixels[1] = ULColorBuild(255, 0, 0, 255);   // Red
+      pixels[2] = ULColorBuild(0, 255, 0, 255);   // Green
+      pixels[3] = ULColorBuild(0, 0, 255, 255);   // Blue
     }
 
     _dummyTexture = niNew sVulkanTexture(
-      as_nn(this),
-      _H("__DummyTexture__"),
-      eBitmapType_2D,
-      2,2,0,
-      eGpuPixelFormat_BGRA8,
-      eTextureFlags_Default);
-    niCheck(_dummyTexture->_CreateVulkanTexture(),eFalse);
-    niCheck(_dummyTexture->_UploadTexture(
-      dummyBitmap,0,
-      sRecti(0,0,2,2)),eFalse);
+      as_nn(this), _H("__DummyTexture__"), eBitmapType_2D, 2, 2, 0,
+      eGpuPixelFormat_BGRA8, eTextureFlags_Default);
+    niCheck(_dummyTexture->_CreateVulkanTexture(), eFalse);
+    niCheck(_dummyTexture->_UploadTexture(dummyBitmap, 0, sRecti(0, 0, 2, 2)),
+            eFalse);
 
     // The dummy/error texture must have the resourceIndex 0
-    niCheck(_dummyTexture->_resourceIndex == 0,eFalse);
+    niCheck(_dummyTexture->_resourceIndex == 0, eFalse);
   }
 
   return eTrue;
 }
 
-tBool sVulkanDriver::_DestroyVulkanDriverResources() {
+tBool sVulkanDriver::_DestroyVulkanDriverResources()
+{
   _dummyTexture = nullptr;
   _dummyBuffer = nullptr;
 
@@ -4851,30 +5074,29 @@ tBool sVulkanDriver::_DestroyVulkanDriverResources() {
     _bindlessTexturesDescSet = VK_NULL_HANDLE;
   }
 
-  niLoop(i,_vkPipelineLayouts.size()) {
+  niLoop (i, _vkPipelineLayouts.size()) {
     if (_vkPipelineLayouts[i] != VK_NULL_HANDLE) {
-      vkDestroyPipelineLayout(_device,_vkPipelineLayouts[i],nullptr);
+      vkDestroyPipelineLayout(_device, _vkPipelineLayouts[i], nullptr);
       _vkPipelineLayouts[i] = VK_NULL_HANDLE;
     }
   }
 
   if (!_descrSetLayouts.empty()) {
-    niLoop(i,eGLSLVulkanDescriptorSet_Last) {
+    niLoop (i, eGLSLVulkanDescriptorSet_Last) {
       if (_descrSetLayouts[i] != VK_NULL_HANDLE) {
-        vkDestroyDescriptorSetLayout(_device, _descrSetLayouts[i],nullptr);
+        vkDestroyDescriptorSetLayout(_device, _descrSetLayouts[i], nullptr);
         _descrSetLayouts[i] = VK_NULL_HANDLE;
       }
     }
   }
   if (_emptyDescrSet) {
-    vkDestroyDescriptorSetLayout(_device,_emptyDescrSet,nullptr);
+    vkDestroyDescriptorSetLayout(_device, _emptyDescrSet, nullptr);
     _emptyDescrSet = VK_NULL_HANDLE;
   }
 
-  niLoop(i,niCountOf(_ssCompiled)) {
+  niLoop (i, niCountOf(_ssCompiled)) {
     if (_ssCompiled[i]) {
-      vkDestroySampler(_device, _ssCompiled[i],
-                       nullptr);
+      vkDestroySampler(_device, _ssCompiled[i], nullptr);
       _ssCompiled[i] = VK_NULL_HANDLE;
     }
   }
@@ -4882,7 +5104,8 @@ tBool sVulkanDriver::_DestroyVulkanDriverResources() {
   return eTrue;
 }
 
-tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
+tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances)
+{
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet pipelineLayout = pipeline->_GetPipelineLayout();
   niVar& descPool = _GetCurrentFrame()->_descriptorPool;
@@ -4897,124 +5120,118 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances) {
       buffer = _driver->_dummyBuffer.raw_ptr();
     }
     niCheck(descPool.PushDescriptorUniformBuffer(
-      _driver,_cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
-      eGLSLVulkanDescriptorSet_Buffer,
-      buffer->_vkBuffer,bufferOffset),eFalse);
+              _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+              pipelineLayout, eGLSLVulkanDescriptorSet_Buffer,
+              buffer->_vkBuffer, bufferOffset),
+            eFalse);
   }
 
   {
-    sVulkanTexture* texture = (sVulkanTexture*)_cache._lastMaterial.mChannels[0].mTexture.raw_ptr();
+    sVulkanTexture* texture =
+      (sVulkanTexture*)_cache._lastMaterial.mChannels[0].mTexture.raw_ptr();
     if (!texture) {
-      texture = (sVulkanTexture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
+      texture =
+        (sVulkanTexture*)_driver->_fixedPipelines->GetWhiteTexture().raw_ptr();
     }
     switch (texture->GetType()) {
-      case eBitmapType_Cube: {
-        niCheck(descPool.PushDescriptorImage(
-          _driver,_cmdBuffer,
-          VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
-          eGLSLVulkanDescriptorSet_TextureCube,
-          texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
-        break;
-      }
-      case eBitmapType_2D: {
-        niCheck(descPool.PushDescriptorImage(
-          _driver,_cmdBuffer,          VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
-          eGLSLVulkanDescriptorSet_Texture2D,
-          texture->_vkView,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
-        break;
-      }
-      default: {
-        niError(niFmt(
-          "Can't bind texture '%s' (type:%d), invalid type.",
-          texture->GetDeviceResourceName(),
-          texture->GetType()));
-        return eFalse;
-      }
+    case eBitmapType_Cube: {
+      niCheck(descPool.PushDescriptorImage(
+                _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                pipelineLayout, eGLSLVulkanDescriptorSet_TextureCube,
+                texture->_vkView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+              eFalse);
+      break;
+    }
+    case eBitmapType_2D: {
+      niCheck(descPool.PushDescriptorImage(
+                _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                pipelineLayout, eGLSLVulkanDescriptorSet_Texture2D,
+                texture->_vkView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+              eFalse);
+      break;
+    }
+    default: {
+      niError(niFmt("Can't bind texture '%s' (type:%d), invalid type.",
+                    texture->GetDeviceResourceName(), texture->GetType()));
+      return eFalse;
+    }
     }
   }
 
   {
     tIntPtr hSS = _cache._lastMaterial.mChannels[0].mhSS;
     niCheck(descPool.PushDescriptorSampler(
-      _driver,_cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
-      eGLSLVulkanDescriptorSet_Sampler,
-      _driver->_GetVkSamplerState(hSS)),eFalse);
+              _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+              pipelineLayout, eGLSLVulkanDescriptorSet_Sampler,
+              _driver->_GetVkSamplerState(hSS)),
+            eFalse);
   }
 
   if (abWithRayInstances) {
-    niCheck(_cache._lastRayInstances.has_value(),eFalse);
-    nn<sVulkanRayInstances> instancesAS = as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
+    niCheck(_cache._lastRayInstances.has_value(), eFalse);
+    nn<sVulkanRayInstances> instancesAS =
+      as_nn<sVulkanRayInstances>(_cache._lastRayInstances);
     niCheck(descPool.PushDescriptorAccelerationStructure(
-      _driver,_cmdBuffer,
-      VK_PIPELINE_BIND_POINT_GRAPHICS,pipelineLayout,
-      eGLSLVulkanDescriptorSet_RayInstances,
-      instancesAS->_asHandle),eFalse);
+              _driver, _cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+              pipelineLayout, eGLSLVulkanDescriptorSet_RayInstances,
+              instancesAS->_asHandle),
+            eFalse);
   }
 
   return eTrue;
 }
 
-tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances) {
+tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances)
+{
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet pipelineLayout = pipeline->_GetPipelineLayout();
 
   // Fixed uniforms & textures
-  niCheck(_DoBindFixedDescLayout(abWithRayInstances),eFalse);
+  niCheck(_DoBindFixedDescLayout(abWithRayInstances), eFalse);
 
   // Bind the bindless descriptor sets
-  vkCmdBindDescriptorSets(
-    _cmdBuffer,
-    VK_PIPELINE_BIND_POINT_GRAPHICS,
-    pipelineLayout,
-    eGLSLVulkanDescriptorSet_AllBuffers,
-    1,
-    &_driver->_bindlessStorageBuffersDescSet,
-    0,
-    nullptr);
+  vkCmdBindDescriptorSets(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          pipelineLayout, eGLSLVulkanDescriptorSet_AllBuffers,
+                          1, &_driver->_bindlessStorageBuffersDescSet, 0,
+                          nullptr);
 
-  vkCmdBindDescriptorSets(
-    _cmdBuffer,
-    VK_PIPELINE_BIND_POINT_GRAPHICS,
-    pipelineLayout,
-    eGLSLVulkanDescriptorSet_AllTextures,
-    1,
-    &_driver->_bindlessTexturesDescSet,
-    0,
-    nullptr);
+  vkCmdBindDescriptorSets(_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          pipelineLayout, eGLSLVulkanDescriptorSet_AllTextures,
+                          1, &_driver->_bindlessTexturesDescSet, 0, nullptr);
 
   return eTrue;
 }
 
-tBool sVulkanCommandEncoder::_BindGpuFunction() {
+tBool sVulkanCommandEncoder::_BindGpuFunction()
+{
   niLet pipeline = _cache._lastRasterPipeline;
   switch (pipeline->_gpufuncBindType) {
-    case eGpuFunctionBindType_None: {
-      break;
-    }
-    case eGpuFunctionBindType_Fixed: {
-      niCheck(_DoBindFixedDescLayout(eFalse),eFalse);
-      break;
-    }
-    case eGpuFunctionBindType_FixedRayInstances: {
-      niCheck(_DoBindFixedDescLayout(eTrue),eFalse);
-      break;
-    }
-    case eGpuFunctionBindType_Bindless: {
-      niCheck(_DoBindBindlessDescLayout(eFalse),eFalse);
-      break;
-    }
-    case eGpuFunctionBindType_BindlessRayInstances: {
-      niCheck(_DoBindBindlessDescLayout(eTrue),eFalse);
-      break;
-    }
-    default: {
-      niError(niFmt("eGpuFunctionBindType '%s' (%d) not supported.",
-                    niEnumToChars(eGpuFunctionBindType,pipeline->_gpufuncBindType),
-                    pipeline->_gpufuncBindType));
-      return eFalse;
-    }
+  case eGpuFunctionBindType_None: {
+    break;
+  }
+  case eGpuFunctionBindType_Fixed: {
+    niCheck(_DoBindFixedDescLayout(eFalse), eFalse);
+    break;
+  }
+  case eGpuFunctionBindType_FixedRayInstances: {
+    niCheck(_DoBindFixedDescLayout(eTrue), eFalse);
+    break;
+  }
+  case eGpuFunctionBindType_Bindless: {
+    niCheck(_DoBindBindlessDescLayout(eFalse), eFalse);
+    break;
+  }
+  case eGpuFunctionBindType_BindlessRayInstances: {
+    niCheck(_DoBindBindlessDescLayout(eTrue), eFalse);
+    break;
+  }
+  default: {
+    niError(
+      niFmt("eGpuFunctionBindType '%s' (%d) not supported.",
+            niEnumToChars(eGpuFunctionBindType, pipeline->_gpufuncBindType),
+            pipeline->_gpufuncBindType));
+    return eFalse;
+  }
   }
   return eTrue;
 }
@@ -5023,26 +5240,26 @@ struct sVulkanSurface {
   VkImage _image = VK_NULL_HANDLE;
   VkImageView _imageView = VK_NULL_HANDLE;
 
-  tBool __stdcall IsOK() const {
+  tBool __stdcall IsOK() const
+  {
     return _imageView != VK_NULL_HANDLE;
   }
 };
 
-struct sVulkanContextBase :
-    public sGraphicsContext<1,ni::ImplRC<
-                             iGraphicsContextRT,
-                             eImplFlags_DontInherit1,
-                             iGraphicsContext,
-                             iGraphicsContextGpu> >
-{
+struct sVulkanContextBase
+    : public sGraphicsContext<
+        1, ni::ImplRC<iGraphicsContextRT, eImplFlags_DontInherit1,
+                      iGraphicsContext, iGraphicsContextGpu>> {
   const tU32 _frameMaxInFlight;
   nn<sVulkanDriver> _driver;
-  NN<sVulkanCommandEncoder> _cmdEncoder = niDeferredInit(NN<sVulkanCommandEncoder>);
+  NN<sVulkanCommandEncoder> _cmdEncoder =
+    niDeferredInit(NN<sVulkanCommandEncoder>);
   eGpuPixelFormat _rt0Format = eGpuPixelFormat_None;
   eGpuPixelFormat _dsFormat = eGpuPixelFormat_None;
   tBool _beganFrame = eFalse;
 
-  sVulkanContextBase(ain<nn<sVulkanDriver>> aDriver, const tU32 aFrameMaxInFlight)
+  sVulkanContextBase(ain<nn<sVulkanDriver>> aDriver,
+                     const tU32 aFrameMaxInFlight)
       : tGraphicsContextBase(aDriver->_graphics)
       , _driver(aDriver)
       , _frameMaxInFlight(aFrameMaxInFlight)
@@ -5050,95 +5267,109 @@ struct sVulkanContextBase :
   {
   }
 
-  virtual ~sVulkanContextBase() {
+  virtual ~sVulkanContextBase()
+  {
     this->Invalidate();
   }
 
-  virtual tBool __stdcall IsOK() const {
+  virtual tBool __stdcall IsOK() const
+  {
     return mptrRT[0].IsOK();
   }
 
-  virtual iGraphics* __stdcall GetGraphics() const {
+  virtual iGraphics* __stdcall GetGraphics() const
+  {
     return _driver->_graphics;
   }
-  virtual iGraphicsDriver* __stdcall GetDriver() const {
+  virtual iGraphicsDriver* __stdcall GetDriver() const
+  {
     return _driver;
   }
 
-  virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() niImpl {
+  virtual iGpuCommandEncoder* __stdcall GetCommandEncoder() niImpl
+  {
     if (!_beganFrame) {
-      niCheck(_BeginFrame(),nullptr);
+      niCheck(_BeginFrame(), nullptr);
     }
     return _cmdEncoder;
   }
 
-  tBool __stdcall _ResizeContextRTDS(const achar* aKind, ain<tU32> w, ain<tU32> h) {
+  tBool __stdcall _ResizeContextRTDS(const achar* aKind, ain<tU32> w,
+                                     ain<tU32> h)
+  {
     ni::SafeInvalidate(mptrRT[0].ptr());
     mptrRT[0] = niNew sVulkanTexture(
-      _driver,HFmt("Vulkan_MainRT_%s_%p",aKind,(tIntPtr)this),
-      eBitmapType_2D,w,h,0,eGpuPixelFormat_RGBA8,
-      eTextureFlags_RenderTarget|eTextureFlags_Surface);
-    _rt0Format = _GetClosestGpuPixelFormatForRT(
-      mptrRT[0]->GetPixelFormat()->GetFormat());
+      _driver, HFmt("Vulkan_MainRT_%s_%p", aKind, (tIntPtr)this),
+      eBitmapType_2D, w, h, 0, eGpuPixelFormat_RGBA8,
+      eTextureFlags_RenderTarget | eTextureFlags_Surface);
+    _rt0Format =
+      _GetClosestGpuPixelFormatForRT(mptrRT[0]->GetPixelFormat()->GetFormat());
 
     ni::SafeInvalidate(mptrDS.ptr());
     mptrDS = niNew sVulkanTexture(
-      _driver,HFmt("Vulkan_MainDS_%s_%p",aKind,(tIntPtr)this),
-      eBitmapType_2D,w,h,0,eGpuPixelFormat_D32,
-      eTextureFlags_DepthStencil|eTextureFlags_Surface);
-    _dsFormat = _GetClosestGpuPixelFormatForDS(
-      mptrDS->GetPixelFormat()->GetFormat());
+      _driver, HFmt("Vulkan_MainDS_%s_%p", aKind, (tIntPtr)this),
+      eBitmapType_2D, w, h, 0, eGpuPixelFormat_D32,
+      eTextureFlags_DepthStencil | eTextureFlags_Surface);
+    _dsFormat =
+      _GetClosestGpuPixelFormatForDS(mptrDS->GetPixelFormat()->GetFormat());
 
-    SetViewport(sRecti(0,0,w,h));
-    SetScissorRect(sRecti(0,0,w,h));
+    SetViewport(sRecti(0, 0, w, h));
+    SetScissorRect(sRecti(0, 0, w, h));
 
-    niLog(Info, niFmt(
-      "Vulkan Context Resized: %s (%p), %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
-      aKind,
-      (tIntPtr)this,w,h,
-      mptrRT[0]->GetPixelFormat()->GetFormat(),
-      mptrDS->GetPixelFormat()->GetFormat(),
-      GetViewport(),
-      GetScissorRect()));
+    niLog(
+      Info,
+      niFmt(
+        "Vulkan Context Resized: %s (%p), %dx%d, BB: %s, DS: %s, VP: %s, SC: %s",
+        aKind, (tIntPtr)this, w, h, mptrRT[0]->GetPixelFormat()->GetFormat(),
+        mptrDS->GetPixelFormat()->GetFormat(), GetViewport(),
+        GetScissorRect()));
     return eTrue;
   }
 
   virtual tBool _BeginFrame() = 0;
 
-  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
+  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer,
+                                      tU32 anColor, tF32 afDepth,
+                                      tI32 anStencil)
+  {
     niUnused(anStencil);
     this->ClearBuffersRect(
-      clearBuffer,
-      Rectf(0,0,(tF32)this->GetWidth(),(tF32)this->GetHeight()),
+      clearBuffer, Rectf(0, 0, (tF32)this->GetWidth(), (tF32)this->GetHeight()),
       anColor, afDepth);
   }
 
-  virtual tBool __stdcall ClearBuffersRect(tClearBuffersFlags aFlags, const sRectf& aRect, tU32 anColor, tF32 afZ) {
+  virtual tBool __stdcall ClearBuffersRect(tClearBuffersFlags aFlags,
+                                           const sRectf& aRect, tU32 anColor,
+                                           tF32 afZ)
+  {
     if (!_beganFrame) {
-      niCheck(_BeginFrame(),eFalse);
+      niCheck(_BeginFrame(), eFalse);
     }
-    niLet pixelSize = Vec2f(
-      2.0f / (tF32)this->GetWidth(),
-      2.0f / (tF32)this->GetHeight()
-    );
-    return _driver->_fixedPipelines->ClearRect(_cmdEncoder,pixelSize,aFlags,aRect,anColor,afZ);
+    niLet pixelSize =
+      Vec2f(2.0f / (tF32)this->GetWidth(), 2.0f / (tF32)this->GetHeight());
+    return _driver->_fixedPipelines->ClearRect(_cmdEncoder, pixelSize, aFlags,
+                                               aRect, anColor, afZ);
   }
 
-  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
+  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp)
+  {
     niCheckSilent(niIsOK(apDrawOp), eFalse);
 
     if (!_beganFrame) {
-      niCheck(_BeginFrame(),eFalse);
+      niCheck(_BeginFrame(), eFalse);
     }
 
     niLet doCapture = _driver->_drawOpCapture.IsOK();
-    niDefer {
+    niDefer
+    {
       if (doCapture) {
-        _driver->_drawOpCapture->EndCaptureDrawOp(this,apDrawOp,sVec4i::Zero());
+        _driver->_drawOpCapture->EndCaptureDrawOp(this, apDrawOp,
+                                                  sVec4i::Zero());
       }
     };
     if (doCapture) {
-      if (!_driver->_drawOpCapture->BeginCaptureDrawOp(this,apDrawOp,sVec4i::Zero()))
+      if (!_driver->_drawOpCapture->BeginCaptureDrawOp(this, apDrawOp,
+                                                       sVec4i::Zero()))
         return eTrue;
     }
 
@@ -5147,31 +5378,33 @@ struct sVulkanContextBase :
       return eFalse;
     }
 
-    VULKAN_TRACE(("DrawOperation BEGIN %s:%s",this->GetWidth(),this->GetHeight()));
+    VULKAN_TRACE(
+      ("DrawOperation BEGIN %s:%s", this->GetWidth(), this->GetHeight()));
     niLet fvf = va->GetFVF();
-    niLet pDOMatDesc = (const sMaterialDesc*)apDrawOp->GetMaterial()->GetDescStructPtr();
+    niLet pDOMatDesc =
+      (const sMaterialDesc*)apDrawOp->GetMaterial()->GetDescStructPtr();
 
-    iGpuFunction* funcVertex = _driver->_fixedPipelines->GetFixedGpuFuncVertex(fvf);
-    iGpuFunction* funcPixel = _driver->_fixedPipelines->GetFixedGpuFuncPixel(*pDOMatDesc);
+    iGpuFunction* funcVertex =
+      _driver->_fixedPipelines->GetFixedGpuFuncVertex(fvf);
+    iGpuFunction* funcPixel =
+      _driver->_fixedPipelines->GetFixedGpuFuncPixel(*pDOMatDesc);
     const tFixedGpuPipelineId rpId = GetFixedGpuPipelineId(
-      _rt0Format, _dsFormat,
-      fvf,
-      _GetBlendMode(pDOMatDesc),
-      (eCompiledStates)_GetRS(pDOMatDesc),
-      (eCompiledStates)_GetDS(pDOMatDesc),
+      _rt0Format, _dsFormat, fvf, _GetBlendMode(pDOMatDesc),
+      (eCompiledStates)_GetRS(pDOMatDesc), (eCompiledStates)_GetDS(pDOMatDesc),
       funcVertex, funcPixel);
     niCheck(rpId != 0, eFalse);
 
     niVar& cmdStateCache = _cmdEncoder->_cache;
     if (rpId != cmdStateCache._lastFixedPipeline) {
-      iGpuPipeline* pipeline = _driver->_fixedPipelines->GetRenderPipeline(
-        _driver, rpId,
-        funcVertex, funcPixel).raw_ptr();
+      iGpuPipeline* pipeline =
+        _driver->_fixedPipelines
+          ->GetRenderPipeline(_driver, rpId, funcVertex, funcPixel)
+          .raw_ptr();
       if (!pipeline) {
         niError("Can't get the pipeline.");
         return eFalse;
       }
-      _cmdEncoder->_SetGpuPipeline(pipeline,rpId);
+      _cmdEncoder->_SetGpuPipeline(pipeline, rpId);
     }
 
     _cmdEncoder->SetViewport(mrectViewport);
@@ -5179,8 +5412,10 @@ struct sVulkanContextBase :
 
     niUIGpuFuncs_FixedUniforms fixedUniforms;
     {
-      const sMaterialChannel& chBase = _GetChannel(pDOMatDesc, eMaterialChannel_Base);
-      const sMaterialChannel& chOpacity = _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);
+      const sMaterialChannel& chBase =
+        _GetChannel(pDOMatDesc, eMaterialChannel_Base);
+      const sMaterialChannel& chOpacity =
+        _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);
       _cmdEncoder->SetTexture(chBase.mTexture, 0);
       _cmdEncoder->SetSamplerState(chBase.mhSS, 0);
 
@@ -5198,19 +5433,21 @@ struct sVulkanContextBase :
     {
       sMatrixf mtxVP = this->GetFixedStates()->GetViewProjectionMatrix();
       fixedUniforms.mtxWVP = apDrawOp->GetMatrix() * mtxVP;
-      _cmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,sizeof(fixedUniforms),0);
+      _cmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,
+                                       sizeof(fixedUniforms), 0);
     }
 
-    return DrawOperationSubmitGpuDrawCall(_cmdEncoder,apDrawOp);
+    return DrawOperationSubmitGpuDrawCall(_cmdEncoder, apDrawOp);
   }
 
   /////////////////////////////////////////////
-  virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
+  virtual iBitmap2D* __stdcall CaptureFrontBuffer() const
+  {
     return nullptr;
   }
 };
 
-#if defined niOSX
+  #if defined niOSX
 struct sVulkanContextWindowMetal : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
   Ptr<iOSXMetalAPI> _metalAPI;
@@ -5220,33 +5457,35 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     VkImageView _colorImageView = VK_NULL_HANDLE;
     VkImage _depthImage = VK_NULL_HANDLE;
     VkImageView _depthImageView = VK_NULL_HANDLE;
-    sVec2i _size = Vec2i(1,1);
+    sVec2i _size = Vec2i(1, 1);
   } _metalSurface;
 
-  sVulkanContextWindowMetal(
-    ain<nn<sVulkanDriver>> aDriver,
-    const tU32 aFrameMaxInFlight,
-    iOSWindow* apWindow)
-      : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+  sVulkanContextWindowMetal(ain<nn<sVulkanDriver>> aDriver,
+                            const tU32 aFrameMaxInFlight, iOSWindow* apWindow)
+      : sVulkanContextBase(aDriver, aFrameMaxInFlight)
   {
     _window = apWindow;
   }
 
-  virtual ~sVulkanContextWindowMetal() {
+  virtual ~sVulkanContextWindowMetal()
+  {
     this->Invalidate();
   }
 
-  tBool _ResizeContextRTDS(ain<sVec2i> aNewSize) {
-    tBool resizedContextRTDS = static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
-      "WindowMetal",aNewSize.x,aNewSize.y);
-    niCheck(resizedContextRTDS,eFalse);
+  tBool _ResizeContextRTDS(ain<sVec2i> aNewSize)
+  {
+    tBool resizedContextRTDS =
+      static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+        "WindowMetal", aNewSize.x, aNewSize.y);
+    niCheck(resizedContextRTDS, eFalse);
     return eTrue;
   }
 
-  tBool _CreateContextWindowMetal() {
-    niCheckIsOK(_window,eFalse);
+  tBool _CreateContextWindowMetal()
+  {
+    niCheckIsOK(_window, eFalse);
     osxMetalSetDefaultDevice();
-    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(),_window);
+    _metalAPI = osxMetalCreateAPIForWindow(osxMetalGetDevice(), _window);
     if (!_metalAPI.IsOK()) {
       niError("Can't get metal api for iOSWindow.");
       return eFalse;
@@ -5255,14 +5494,17 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
-    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
-    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device),eFalse);
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr,
+                               &_renderFinishedSemaphore),
+             eFalse);
+    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device), eFalse);
     return eTrue;
   }
 
-  void __stdcall Invalidate() niImpl {
+  void __stdcall Invalidate() niImpl
+  {
     // Wait for the device to finish all operations before destroying objects.
-    VK_PANIC(vkDeviceWaitIdle(_driver->_device),;);
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device), ;);
     _DestroySurface(_driver->_device);
     if (_renderFinishedSemaphore) {
       vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
@@ -5272,45 +5514,49 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     _window = nullptr;
   }
 
-  tBool _BeginFrame() niImpl {
+  tBool _BeginFrame() niImpl
+  {
     niPanicAssert(_beganFrame == eFalse);
     _beganFrame = eTrue;
 
     // Get the next view
-    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device),eFalse);
+    niCheck(_UpdateSurfaceFromMetalAPI(_driver->_device), eFalse);
 
     // Begin buffer and rendering
-    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+    niCheck(_cmdEncoder->_BeginCmdBuffer(), eFalse);
     niCheck(_cmdEncoder->_BeginRendering(
-      _metalSurface._colorImage,_metalSurface._colorImageView,
-      _metalSurface._depthImage,_metalSurface._depthImageView,
-      this->GetWidth(),this->GetHeight(),
-      mrectViewport,mrectScissor),eFalse);
+              _metalSurface._colorImage, _metalSurface._colorImageView,
+              _metalSurface._depthImage, _metalSurface._depthImageView,
+              this->GetWidth(), this->GetHeight(), mrectViewport, mrectScissor),
+            eFalse);
 
     return eTrue;
   }
 
-  tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
-    niCheckIsOK(_window,eFalse);
-    niCheck(_beganFrame,eFalse);
+  tBool __stdcall Display(tGraphicsDisplayFlags aFlags,
+                          const sRecti& aRect) niImpl
+  {
+    niCheckIsOK(_window, eFalse);
+    niCheck(_beganFrame, eFalse);
     _beganFrame = eFalse;
     _cmdEncoder->_EndRendering();
-    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
-      VK_NULL_HANDLE,
-      _renderFinishedSemaphore),eFalse);
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(VK_NULL_HANDLE,
+                                                _renderFinishedSemaphore),
+            eFalse);
     _metalAPI->DrawablePresent();
     return eTrue;
   }
 
-  tBool _UpdateSurfaceFromMetalAPI(VkDevice aDevice) {
+  tBool _UpdateSurfaceFromMetalAPI(VkDevice aDevice)
+  {
     _DestroySurface(aDevice);
 
-    niCheck(osxVkCreateImageForMetalAPI(
-      _metalAPI,aDevice,nullptr,60,
-      &_metalSurface._colorImage,
-      &_metalSurface._depthImage),eFalse);
+    niCheck(osxVkCreateImageForMetalAPI(_metalAPI, aDevice, nullptr, 60,
+                                        &_metalSurface._colorImage,
+                                        &_metalSurface._depthImage),
+            eFalse);
     niLet viewSize = _metalAPI->GetViewSize();
-    _metalSurface._size = Vec2i(viewSize.x,viewSize.y);
+    _metalSurface._size = Vec2i(viewSize.x, viewSize.y);
 
     // niDebugFmt((
     //   "... _UpdateSurfaceFromMetalAPI: color: %s, depth: %s, size: %s",
@@ -5324,21 +5570,19 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
         .image = _metalSurface._colorImage,
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .components = {
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY
-        },
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
+        .components = { VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY },
+        .subresourceRange = { .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                              .baseMipLevel = 0,
+                              .levelCount = 1,
+                              .baseArrayLayer = 0,
+                              .layerCount = 1 }
       };
-      VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr, &_metalSurface._colorImageView), eFalse);
+      VK_CHECK(vkCreateImageView(aDevice, &viewInfo, nullptr,
+                                 &_metalSurface._colorImageView),
+               eFalse);
     }
 
     if (_metalSurface._depthImage) {
@@ -5347,33 +5591,31 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
         .image = _metalSurface._depthImage,
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = VK_FORMAT_D32_SFLOAT,
-        .components = {
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY
-        },
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
+        .components = { VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY },
+        .subresourceRange = { .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                              .baseMipLevel = 0,
+                              .levelCount = 1,
+                              .baseArrayLayer = 0,
+                              .layerCount = 1 }
       };
-      VK_CHECK(vkCreateImageView(aDevice, &depthViewInfo, nullptr, &_metalSurface._depthImageView), eFalse);
+      VK_CHECK(vkCreateImageView(aDevice, &depthViewInfo, nullptr,
+                                 &_metalSurface._depthImageView),
+               eFalse);
     }
 
-    if ((!mptrRT[0].raw_ptr()) ||
-        (_metalSurface._size.x != this->GetWidth()) ||
+    if ((!mptrRT[0].raw_ptr()) || (_metalSurface._size.x != this->GetWidth()) ||
         (_metalSurface._size.y != this->GetHeight()))
     {
-      niCheck(_ResizeContextRTDS(_metalSurface._size),eFalse);
+      niCheck(_ResizeContextRTDS(_metalSurface._size), eFalse);
     }
     return eTrue;
   }
 
-  void _DestroySurface(VkDevice device) {
+  void _DestroySurface(VkDevice device)
+  {
     if (_metalSurface._depthImageView) {
       vkDestroyImageView(device, _metalSurface._depthImageView, nullptr);
       _metalSurface._depthImageView = VK_NULL_HANDLE;
@@ -5392,9 +5634,9 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
     }
   }
 };
-#endif
+  #endif
 
-#if defined niVulkan_UseSurfaceKHR
+  #if defined niVulkan_UseSurfaceKHR
 struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
   Ptr<iOSWindow> _window;
   VkSurfaceKHR _surface = VK_NULL_HANDLE;
@@ -5409,51 +5651,56 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
   astl::vector<VkImage> _swapchainImages;
   astl::vector<VkImageView> _swapchainImageViews;
   VkFormat _swapchainImageFormat = VK_FORMAT_B8G8R8A8_UNORM;
-  VkExtent2D _swapchainExtent = {0,0};
+  VkExtent2D _swapchainExtent = { 0, 0 };
   sVec2i _swapchainWindowSize = sVec2i::Zero();
   const tU32 _swapInterval = 0;
   VkPresentModeKHR _bestPresentMode0 = (VkPresentModeKHR)eInvalidHandle;
 
-  sVulkanContextWindowSurfaceKHR(
-    ain<nn<sVulkanDriver>> aDriver,
-    const tU32 aFrameMaxInFlight,
-    iOSWindow* apWindow,
-    tU32 anSwapInterval)
-      : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+  sVulkanContextWindowSurfaceKHR(ain<nn<sVulkanDriver>> aDriver,
+                                 const tU32 aFrameMaxInFlight,
+                                 iOSWindow* apWindow, tU32 anSwapInterval)
+      : sVulkanContextBase(aDriver, aFrameMaxInFlight)
       , _swapInterval(anSwapInterval)
   {
     _window = apWindow;
   }
 
-  ~sVulkanContextWindowSurfaceKHR() {
+  ~sVulkanContextWindowSurfaceKHR()
+  {
     this->Invalidate();
   }
 
-  tBool _ResizeContextRTDS() {
-    niLet resizedContextRTDS = static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
-      "WindowSurfaceKHR",_swapchainExtent.width,_swapchainExtent.height);
-    niCheck(resizedContextRTDS,eFalse);
+  tBool _ResizeContextRTDS()
+  {
+    niLet resizedContextRTDS =
+      static_cast<sVulkanContextBase*>(this)->_ResizeContextRTDS(
+        "WindowSurfaceKHR", _swapchainExtent.width, _swapchainExtent.height);
+    niCheck(resizedContextRTDS, eFalse);
     niLet dsTex = (sVulkanTexture*)mptrDS.raw_ptr();
     if (dsTex) {
-      niCheck(dsTex->_CreateVulkanTexture(),eFalse);
+      niCheck(dsTex->_CreateVulkanTexture(), eFalse);
     }
     return eTrue;
   }
 
-  tBool _CreateContextWindowSurfaceKHR() {
+  tBool _CreateContextWindowSurfaceKHR()
+  {
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
-    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphore), eFalse);
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr,
+                               &_renderFinishedSemaphore),
+             eFalse);
     niCheck(_CreateSurface(), eFalse);
     niCheck(_CreateSwapChain(), eFalse);
     niCheck(_ResizeContextRTDS(), eFalse);
     return eTrue;
   }
 
-  void __stdcall Invalidate() niImpl {
+  void __stdcall Invalidate() niImpl
+  {
     // Wait for the device to finish all operations before destroying objects.
-    VK_PANIC(vkDeviceWaitIdle(_driver->_device),;);
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device), ;);
     _DestroySwapChainResources();
     if (_renderFinishedSemaphore) {
       vkDestroySemaphore(_driver->_device, _renderFinishedSemaphore, nullptr);
@@ -5466,10 +5713,11 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     _window = nullptr;
   }
 
-#if defined niLinux
-  tBool _CreateSurface() {
+    #if defined niLinux
+  tBool _CreateSurface()
+  {
     sOSWindowXWinHandles xwinHandles = {};
-    niCheck(linuxGetOSWindowXWinHandles(_window,xwinHandles),eFalse);
+    niCheck(linuxGetOSWindowXWinHandles(_window, xwinHandles), eFalse);
 
     VkXlibSurfaceCreateInfoKHR createInfo = {
       .sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
@@ -5477,17 +5725,15 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       .window = xwinHandles._window
     };
 
-    VK_CHECK(vkCreateXlibSurfaceKHR(
-      _driver->_instance,
-      &createInfo,
-      nullptr,
-      &_surface),
-      eFalse);
+    VK_CHECK(vkCreateXlibSurfaceKHR(_driver->_instance, &createInfo, nullptr,
+                                    &_surface),
+             eFalse);
 
     return eTrue;
   }
-#elif defined niWindows
-  tBool _CreateSurface() {
+    #elif defined niWindows
+  tBool _CreateSurface()
+  {
     HINSTANCE hInstance = GetModuleHandle(NULL);
     HWND hwnd = (HWND)_window->GetHandle();
 
@@ -5497,30 +5743,28 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       .hwnd = hwnd
     };
 
-    VK_CHECK(vkCreateWin32SurfaceKHR(
-      _driver->_instance,
-      &createInfo,
-      nullptr,
-      &_surface),
-      eFalse);
+    VK_CHECK(vkCreateWin32SurfaceKHR(_driver->_instance, &createInfo, nullptr,
+                                     &_surface),
+             eFalse);
 
     return eTrue;
   }
-#else
-  #error "Unknown Vulkan SurfaceKHR platform."
-#endif
+    #else
+      #error "Unknown Vulkan SurfaceKHR platform."
+    #endif
 
-  tBool _CreateSwapChain() {
+  tBool _CreateSwapChain()
+  {
     VkSemaphoreCreateInfo semaphoreInfo = {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
     };
-    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphore), eFalse);
+    VK_CHECK(vkCreateSemaphore(_driver->_device, &semaphoreInfo, nullptr,
+                               &_imageAvailableSemaphore),
+             eFalse);
 
     VkSurfaceCapabilitiesKHR capabilities;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-      _driver->_physicalDevice,
-      _surface,
-      &capabilities);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_driver->_physicalDevice,
+                                              _surface, &capabilities);
 
     // Choose preferred present mode
     VkPresentModeKHR desiredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
@@ -5529,18 +5773,20 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       if (_bestPresentMode0 == eInvalidHandle) {
         _bestPresentMode0 = VK_PRESENT_MODE_FIFO_KHR;
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(_driver->_physicalDevice, _surface, &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(
+          _driver->_physicalDevice, _surface, &presentModeCount, nullptr);
         astl::vector<VkPresentModeKHR> presentModes(presentModeCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(_driver->_physicalDevice, _surface, &presentModeCount, presentModes.data());
-#if _DEBUG
-        niLoop(i,presentModeCount) {
+        vkGetPhysicalDeviceSurfacePresentModesKHR(_driver->_physicalDevice,
+                                                  _surface, &presentModeCount,
+                                                  presentModes.data());
+    #if _DEBUG
+        niLoop (i, presentModeCount) {
           niLet mode = presentModes[i];
-          niLog(Debug,niFmt(
-            "presentModes[%d/%d]: %s (%d)",
-            i+1,presentModeCount,
-            _ToVkPresentModeStr(mode),mode));
+          niLog(Debug,
+                niFmt("presentModes[%d/%d]: %s (%d)", i + 1, presentModeCount,
+                      _ToVkPresentModeStr(mode), mode));
         }
-#endif
+    #endif
         for (const auto& mode : presentModes) {
           if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
             _bestPresentMode0 = mode;
@@ -5550,7 +5796,9 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
             _bestPresentMode0 = mode;
           }
         }
-        niLog(Info,niFmt("Best present mode0 detected: %s (%d)",_ToVkPresentModeStr(_bestPresentMode0),_bestPresentMode0));
+        niLog(Info,
+              niFmt("Best present mode0 detected: %s (%d)",
+                    _ToVkPresentModeStr(_bestPresentMode0), _bestPresentMode0));
       }
       if (_swapInterval == 0) {
         desiredPresentMode = _bestPresentMode0;
@@ -5577,14 +5825,17 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       .clipped = VK_TRUE
     };
 
-    VK_CHECK(vkCreateSwapchainKHR(_driver->_device, &createInfo, nullptr, &_swapchain), eFalse);
+    VK_CHECK(
+      vkCreateSwapchainKHR(_driver->_device, &createInfo, nullptr, &_swapchain),
+      eFalse);
     _swapchainExtent = capabilities.currentExtent;
 
     // Retrieve swapchain images
     uint32_t imageCount = 0;
     vkGetSwapchainImagesKHR(_driver->_device, _swapchain, &imageCount, nullptr);
     _swapchainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(_driver->_device, _swapchain, &imageCount, _swapchainImages.data());
+    vkGetSwapchainImagesKHR(_driver->_device, _swapchain, &imageCount,
+                            _swapchainImages.data());
 
     // Create image views for each swapchain image
     _swapchainImageViews.resize(imageCount);
@@ -5594,28 +5845,27 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
         .image = _swapchainImages[i],
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = _swapchainImageFormat,
-        .components = {
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY,
-          VK_COMPONENT_SWIZZLE_IDENTITY
-        },
-        .subresourceRange = {
-          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel = 0,
-          .levelCount = 1,
-          .baseArrayLayer = 0,
-          .layerCount = 1
-        }
+        .components = { VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY,
+                        VK_COMPONENT_SWIZZLE_IDENTITY },
+        .subresourceRange = { .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                              .baseMipLevel = 0,
+                              .levelCount = 1,
+                              .baseArrayLayer = 0,
+                              .layerCount = 1 }
       };
-      VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_swapchainImageViews[i]), eFalse);
+      VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr,
+                                 &_swapchainImageViews[i]),
+               eFalse);
     }
 
     _swapchainWindowSize = _window->GetSize();
     return eTrue;
   }
 
-  void _DestroySwapChainResources() {
+  void _DestroySwapChainResources()
+  {
     if (_imageAvailableSemaphore) {
       vkDestroySemaphore(_driver->_device, _imageAvailableSemaphore, nullptr);
       _imageAvailableSemaphore = VK_NULL_HANDLE;
@@ -5638,9 +5888,10 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     _swapchainWindowSize = sVec2i::Zero();
   }
 
-  tBool _RecreateSwapchain(const achar* aaszReason) {
+  tBool _RecreateSwapchain(const achar* aaszReason)
+  {
     niInfo(niFmt("Recreating vulkan swapchain: %s.", aaszReason));
-    VK_PANIC(vkDeviceWaitIdle(_driver->_device),eFalse);
+    VK_PANIC(vkDeviceWaitIdle(_driver->_device), eFalse);
 
     _DestroySwapChainResources();
     if (mptrDS.IsOK()) {
@@ -5660,7 +5911,8 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     return eTrue;
   }
 
-  tBool _BeginFrame() niImpl {
+  tBool _BeginFrame() niImpl
+  {
     niPanicAssert(_beganFrame == eFalse);
     _beganFrame = eTrue;
 
@@ -5671,32 +5923,31 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     // compare it against itself and not against the surface size.
     if (_swapchainWindowSize != _window->GetSize()) {
       if (!_RecreateSwapchain("swapchain window size changed")) {
-        niError("Failed to recreate swapchain after swapchain window size changed.");
+        niError(
+          "Failed to recreate swapchain after swapchain window size changed.");
         return eFalse;
       }
     }
 
     VkResult acquireRes = vkAcquireNextImageKHR(
-      _driver->_device,
-      _swapchain,
-      UINT64_MAX,
-      _imageAvailableSemaphore,
-      VK_NULL_HANDLE,
-      &_currentImageIndex);
+      _driver->_device, _swapchain, UINT64_MAX, _imageAvailableSemaphore,
+      VK_NULL_HANDLE, &_currentImageIndex);
     if (acquireRes != VK_SUCCESS) {
-      niLoop(i,5) {
-        if (acquireRes == VK_ERROR_OUT_OF_DATE_KHR || acquireRes == VK_SUBOPTIMAL_KHR) {
-          if (!_RecreateSwapchain(niFmt("vkAcquireNextImageKHR(try:%s) -> %s",i,ni_vulkan::VkResultToString(acquireRes)))) {
-            niError("Failed to recreate swapchain after AcquireNextImage out-of-date.");
+      niLoop (i, 5) {
+        if (acquireRes == VK_ERROR_OUT_OF_DATE_KHR ||
+            acquireRes == VK_SUBOPTIMAL_KHR)
+        {
+          if (!_RecreateSwapchain(
+                niFmt("vkAcquireNextImageKHR(try:%s) -> %s", i,
+                      ni_vulkan::VkResultToString(acquireRes))))
+          {
+            niError(
+              "Failed to recreate swapchain after AcquireNextImage out-of-date.");
             return eFalse;
           }
           acquireRes = vkAcquireNextImageKHR(
-            _driver->_device,
-            _swapchain,
-            UINT64_MAX,
-            _imageAvailableSemaphore,
-            VK_NULL_HANDLE,
-            &_currentImageIndex);
+            _driver->_device, _swapchain, UINT64_MAX, _imageAvailableSemaphore,
+            VK_NULL_HANDLE, &_currentImageIndex);
           if (acquireRes == VK_SUCCESS)
             break;
         }
@@ -5709,55 +5960,60 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     niLet currentImage = _swapchainImages[_currentImageIndex];
     niLet currentImageView = _swapchainImageViews[_currentImageIndex];
 
-    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+    niCheck(_cmdEncoder->_BeginCmdBuffer(), eFalse);
 
     // Transition the image from UNDEFINED to COLOR_ATTACHMENT_OPTIMAL (or
     // another suitable layout) here using vkCmdPipelineBarrier.  This must
     // happen before any rendering commands.
-    niCheck(_VkTransitionImageLayout(
-      _cmdEncoder->_cmdBuffer,currentImage,
-      VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
+    niCheck(_VkTransitionImageLayout(_cmdEncoder->_cmdBuffer, currentImage,
+                                     VK_IMAGE_LAYOUT_UNDEFINED,
+                                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
+            eFalse);
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds && ds->_vkImage) {
       niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,ds->_vkImage,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
+                _cmdEncoder->_cmdBuffer, ds->_vkImage,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+              eFalse);
     }
 
-    niCheck(_cmdEncoder->_BeginRendering(
-      currentImage,currentImageView,
-      ds ? ds->_vkImage : VK_NULL_HANDLE,
-      ds ? ds->_vkView : VK_NULL_HANDLE,
-      this->GetWidth(),this->GetHeight(),
-      mrectViewport,mrectScissor),eFalse);
+    niCheck(_cmdEncoder->_BeginRendering(currentImage, currentImageView,
+                                         ds ? ds->_vkImage : VK_NULL_HANDLE,
+                                         ds ? ds->_vkView : VK_NULL_HANDLE,
+                                         this->GetWidth(), this->GetHeight(),
+                                         mrectViewport, mrectScissor),
+            eFalse);
     return eTrue;
   }
 
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
-    niCheckIsOK(_window,eFalse);
-    niCheck(_beganFrame,eFalse);
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags,
+                                  const sRecti& aRect) niImpl
+  {
+    niCheckIsOK(_window, eFalse);
+    niCheck(_beganFrame, eFalse);
     _beganFrame = eFalse;
 
     _cmdEncoder->_EndRendering();
-    niCheck(_VkTransitionImageLayout(
-      _cmdEncoder->_cmdBuffer,_swapchainImages[_currentImageIndex],
-      VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),eFalse);
+    niCheck(_VkTransitionImageLayout(_cmdEncoder->_cmdBuffer,
+                                     _swapchainImages[_currentImageIndex],
+                                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                     VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+            eFalse);
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds && ds->_vkImage) {
       niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,ds->_vkImage,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+                _cmdEncoder->_cmdBuffer, ds->_vkImage,
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+              eFalse);
     }
 
-    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
-      _imageAvailableSemaphore,
-      _renderFinishedSemaphore),eFalse);
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(_imageAvailableSemaphore,
+                                                _renderFinishedSemaphore),
+            eFalse);
 
     VkPresentInfoKHR presentInfo = {
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
@@ -5768,9 +6024,14 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
       .pImageIndices = &_currentImageIndex,
     };
 
-    VkResult presentRes = vkQueuePresentKHR(_driver->_graphicsQueue, &presentInfo);
-    if (presentRes == VK_ERROR_OUT_OF_DATE_KHR || presentRes == VK_SUBOPTIMAL_KHR) {
-      if (!_RecreateSwapchain(niFmt("vkQueuePresentKHR -> %s",ni_vulkan::VkResultToString(presentRes)))) {
+    VkResult presentRes =
+      vkQueuePresentKHR(_driver->_graphicsQueue, &presentInfo);
+    if (presentRes == VK_ERROR_OUT_OF_DATE_KHR ||
+        presentRes == VK_SUBOPTIMAL_KHR)
+    {
+      if (!_RecreateSwapchain(niFmt("vkQueuePresentKHR -> %s",
+                                    ni_vulkan::VkResultToString(presentRes))))
+      {
         niError("Failed to recreate swapchain after Present out-of-date.");
         return eFalse;
       }
@@ -5782,75 +6043,78 @@ struct sVulkanContextWindowSurfaceKHR : public sVulkanContextBase {
     return eTrue;
   }
 };
-#endif
+  #endif
 
 iGraphicsContext* sVulkanDriver::CreateContextForWindow(
-  iOSWindow* apWindow,
-  const achar* aaszBBFormat,
-  const achar* aaszDSFormat,
-  tU32 anSwapInterval,
-  tTextureFlags aBackBufferFlags)
+  iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat,
+  tU32 anSwapInterval, tTextureFlags aBackBufferFlags)
 {
-  niCheckIsOK(apWindow,nullptr);
+  niCheckIsOK(apWindow, nullptr);
   niUnused(aBackBufferFlags);
   niUnused(aaszBBFormat);
   niUnused(aaszDSFormat);
   if (!_fixedPipelines.IsOK()) {
-    _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
+    _fixedPipelines =
+      niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
   }
 
-#if defined niOSX
-  Ptr<sVulkanContextWindowMetal> gc = niCheckNN(
-    gc, niNew sVulkanContextWindowMetal(
-      as_nn(this),knVulkanMaxFramesInFlight,apWindow), nullptr);
-  niCheck(gc->_CreateContextWindowMetal(),nullptr);
-#elif defined niVulkan_UseSurfaceKHR
-  Ptr<sVulkanContextWindowSurfaceKHR> gc = niCheckNN(gc, niNew sVulkanContextWindowSurfaceKHR(
-    as_nn(this),knVulkanMaxFramesInFlight,apWindow,anSwapInterval), nullptr);
-  niCheck(gc->_CreateContextWindowSurfaceKHR(),nullptr);
-#else
-#error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"
-#endif
+  #if defined niOSX
+  Ptr<sVulkanContextWindowMetal> gc =
+    niCheckNN(gc,
+              niNew sVulkanContextWindowMetal(
+                as_nn(this), knVulkanMaxFramesInFlight, apWindow),
+              nullptr);
+  niCheck(gc->_CreateContextWindowMetal(), nullptr);
+  #elif defined niVulkan_UseSurfaceKHR
+  Ptr<sVulkanContextWindowSurfaceKHR> gc = niCheckNN(
+    gc,
+    niNew sVulkanContextWindowSurfaceKHR(as_nn(this), knVulkanMaxFramesInFlight,
+                                         apWindow, anSwapInterval),
+    nullptr);
+  niCheck(gc->_CreateContextWindowSurfaceKHR(), nullptr);
+  #else
+    #error "sVulkanDriver::CreateContextForWindow: Unsupported platform!"
+  #endif
 
   return gc.GetRawAndSetNull();
 }
 
 struct sVulkanContextRT : public sVulkanContextBase {
-  sVulkanContextRT(
-    ain<nn<sVulkanDriver>> aDriver,
-    const tU32 aFrameMaxInFlight,
-    iTexture* apRT0,
-    iTexture* apDS)
-      : sVulkanContextBase(aDriver,aFrameMaxInFlight)
+  sVulkanContextRT(ain<nn<sVulkanDriver>> aDriver, const tU32 aFrameMaxInFlight,
+                   iTexture* apRT0, iTexture* apDS)
+      : sVulkanContextBase(aDriver, aFrameMaxInFlight)
   {
   }
 
-  virtual ~sVulkanContextRT() {
+  virtual ~sVulkanContextRT()
+  {
     this->Invalidate();
   }
 
-  tBool _CreateContextRT(iTexture* apRT0, iTexture* apDS) {
-    niCheckIsOK(apRT0,eFalse);
+  tBool _CreateContextRT(iTexture* apRT0, iTexture* apDS)
+  {
+    niCheckIsOK(apRT0, eFalse);
     mptrRT[0] = apRT0;
-    _rt0Format = _GetClosestGpuPixelFormatForRT(
-      apRT0->GetPixelFormat()->GetFormat());
+    _rt0Format =
+      _GetClosestGpuPixelFormatForRT(apRT0->GetPixelFormat()->GetFormat());
 
     if (apDS) {
       mptrDS = apDS;
-      _dsFormat = _GetClosestGpuPixelFormatForDS(
-        apDS->GetPixelFormat()->GetFormat());
+      _dsFormat =
+        _GetClosestGpuPixelFormatForDS(apDS->GetPixelFormat()->GetFormat());
     }
 
     // niDebugFmt((
     //   "... sVulkanContextRT::_CreateContextRT: rt0: %p, ds: %p",
     //   (tIntPtr)apRT0,(tIntPtr)apDS));
 
-    SetViewport(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
-    SetScissorRect(sRecti(0,0,apRT0->GetWidth(),apRT0->GetHeight()));
+    SetViewport(sRecti(0, 0, apRT0->GetWidth(), apRT0->GetHeight()));
+    SetScissorRect(sRecti(0, 0, apRT0->GetWidth(), apRT0->GetHeight()));
     return eTrue;
   }
 
-  tBool _BeginFrame() niImpl {
+  tBool _BeginFrame() niImpl
+  {
     niPanicAssert(_beganFrame == eFalse);
     _beganFrame = eTrue;
 
@@ -5858,180 +6122,218 @@ struct sVulkanContextRT : public sVulkanContextBase {
     //   "... sVulkanContextRT::_BeginFrame: rt0: %p, ds: %p",
     //   (tIntPtr)mptrRT[0].ptr(),(tIntPtr)mptrDS.ptr()));
 
-    niCheck(_cmdEncoder->_BeginCmdBuffer(),eFalse);
+    niCheck(_cmdEncoder->_BeginCmdBuffer(), eFalse);
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,rt0->_vkImage,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),eFalse);
+      niCheck(
+        _VkTransitionImageLayout(_cmdEncoder->_cmdBuffer, rt0->_vkImage,
+                                 VK_IMAGE_LAYOUT_UNDEFINED,
+                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
+        eFalse);
     }
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
       niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,ds->_vkImage,
-        VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),eFalse);
+                _cmdEncoder->_cmdBuffer, ds->_vkImage,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+              eFalse);
     }
 
-    niCheck(_cmdEncoder->_BeginRendering(
-      rt0?rt0->_vkImage:VK_NULL_HANDLE,
-      rt0?rt0->_vkView:VK_NULL_HANDLE,
-      ds?ds->_vkImage:VK_NULL_HANDLE,
-      ds?ds->_vkView:VK_NULL_HANDLE,
-      this->GetWidth(),this->GetHeight(),
-      mrectViewport,mrectScissor),eFalse);
+    niCheck(_cmdEncoder->_BeginRendering(rt0 ? rt0->_vkImage : VK_NULL_HANDLE,
+                                         rt0 ? rt0->_vkView : VK_NULL_HANDLE,
+                                         ds ? ds->_vkImage : VK_NULL_HANDLE,
+                                         ds ? ds->_vkView : VK_NULL_HANDLE,
+                                         this->GetWidth(), this->GetHeight(),
+                                         mrectViewport, mrectScissor),
+            eFalse);
     return eTrue;
   }
 
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) niImpl {
-    niCheck(_beganFrame,eFalse);
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags,
+                                  const sRecti& aRect) niImpl
+  {
+    niCheck(_beganFrame, eFalse);
     _beganFrame = eFalse;
     _cmdEncoder->_EndRendering();
 
     // Add transition to shader read
     sVulkanTexture* rt0 = (sVulkanTexture*)mptrRT[0].ptr();
     if (rt0) {
-      niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,rt0->_vkImage,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+      niCheck(
+        _VkTransitionImageLayout(_cmdEncoder->_cmdBuffer, rt0->_vkImage,
+                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+        eFalse);
     }
 
     sVulkanTexture* ds = (sVulkanTexture*)mptrDS.ptr();
     if (ds) {
       niCheck(_VkTransitionImageLayout(
-        _cmdEncoder->_cmdBuffer,ds->_vkImage,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),eFalse);
+                _cmdEncoder->_cmdBuffer, ds->_vkImage,
+                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL),
+              eFalse);
     }
 
-    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(
-      VK_NULL_HANDLE,VK_NULL_HANDLE),eFalse);
+    niCheck(_cmdEncoder->_EndCmdBufferAndSubmit(VK_NULL_HANDLE, VK_NULL_HANDLE),
+            eFalse);
     return eTrue;
   }
 };
 
 iGraphicsContextRT* sVulkanDriver::CreateContextForRenderTargets(
-  iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
+  iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+  iTexture* apDS)
 {
   if (!_fixedPipelines.IsOK()) {
-    _fixedPipelines = niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
+    _fixedPipelines =
+      niCheckNN(_fixedPipelines, CreateFixedGpuPipelines(this), nullptr);
   }
 
-  Ptr<sVulkanContextRT> gc = niNew sVulkanContextRT(
-    as_nn(this),knVulkanMaxFramesInFlight,apRT0,apDS);
-  niCheck(gc->_CreateContextRT(apRT0,apDS),nullptr);
+  Ptr<sVulkanContextRT> gc =
+    niNew sVulkanContextRT(as_nn(this), knVulkanMaxFramesInFlight, apRT0, apDS);
+  niCheck(gc->_CreateContextRT(apRT0, apDS), nullptr);
   return gc.GetRawAndSetNull();
 }
 
-Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
-  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),ahspName,aMemMode,aUsage);
+Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBuffer(iHString* ahspName, tU32 anSize,
+                                               eGpuBufferMemoryMode aMemMode,
+                                               tGpuBufferUsageFlags aUsage)
+{
+  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this), ahspName, aMemMode, aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
-  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize, 0), nullptr);
   return buffer;
 }
 
-Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromData(iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
-  niCheckIsOK(apFile,nullptr);
+Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromData(
+  iHString* ahspName, iFile* apFile, tU32 anSize, eGpuBufferMemoryMode aMemMode,
+  tGpuBufferUsageFlags aUsage)
+{
+  niCheckIsOK(apFile, nullptr);
   astl::vector<tU8> data;
   data.resize(anSize);
-  if (apFile->ReadRaw(data.data(),anSize) != anSize) {
+  if (apFile->ReadRaw(data.data(), anSize) != anSize) {
     return nullptr;
   }
-  return this->CreateGpuBufferFromDataRaw(ahspName,data.data(),anSize,aMemMode,aUsage);
+  return this->CreateGpuBufferFromDataRaw(ahspName, data.data(), anSize,
+                                          aMemMode, aUsage);
 }
 
-Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode, tGpuBufferUsageFlags aUsage) {
+Ptr<iGpuBuffer> sVulkanDriver::CreateGpuBufferFromDataRaw(
+  iHString* ahspName, tPtr apData, tU32 anSize, eGpuBufferMemoryMode aMemMode,
+  tGpuBufferUsageFlags aUsage)
+{
   niCheck(apData != nullptr, nullptr);
-  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this),ahspName,aMemMode,aUsage);
+  niLet buffer = MakeNN<sVulkanBuffer>(as_nn(this), ahspName, aMemMode, aUsage);
   // TODO: Alignment should be a parameter or coming from a device cap
-  niCheck(buffer->_CreateBuffer(anSize,0),nullptr);
+  niCheck(buffer->_CreateBuffer(anSize, 0), nullptr);
   {
-    niLet data = buffer->Lock(0,anSize,eLock_Discard);
-    niCheck(data != nullptr,nullptr);
-    memcpy(data,apData,anSize);
+    niLet data = buffer->Lock(0, anSize, eLock_Discard);
+    niCheck(data != nullptr, nullptr);
+    memcpy(data, apData, anSize);
     buffer->Unlock();
   }
   return buffer;
 }
 
-iHString* sVulkanDriver::GetGpuFunctionTarget() const {
+iHString* sVulkanDriver::GetGpuFunctionTarget() const
+{
   return _GetVulkanGpuFunctionTarget();
 }
 
-Ptr<iGpuFunction> sVulkanDriver::CreateGpuFunction(eGpuFunctionType aType, iHString* ahspPath) {
+Ptr<iGpuFunction> sVulkanDriver::CreateGpuFunction(eGpuFunctionType aType,
+                                                   iHString* ahspPath)
+{
   niLet newId = _idGenerator.AllocID();
-  NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(as_nn(this),aType,newId);
-  if (!func->_Compile(_device,ahspPath)) {
+  NN<sVulkanFunction> func = MakeNN<sVulkanFunction>(as_nn(this), aType, newId);
+  if (!func->_Compile(_device, ahspPath)) {
     _idGenerator.FreeID(newId);
-    niError(niFmt(
-      "Can't create gpu function '%s': Compilation failed.",
-      ahspPath));
+    niError(
+      niFmt("Can't create gpu function '%s': Compilation failed.", ahspPath));
     return nullptr;
   }
   return func;
 }
 
-Ptr<iGpuPipelineDesc> sVulkanDriver::CreateGpuPipelineDesc() {
+Ptr<iGpuPipelineDesc> sVulkanDriver::CreateGpuPipelineDesc()
+{
   return ni::_CreateGpuPipelineDesc();
 }
 
-Ptr<iGpuBlendMode> sVulkanDriver::CreateGpuBlendMode() {
+Ptr<iGpuBlendMode> sVulkanDriver::CreateGpuBlendMode()
+{
   return ni::_CreateGpuBlendMode();
 }
 
-Ptr<iGpuPipeline> sVulkanDriver::CreateGpuPipeline(iHString* ahspName, const iGpuPipelineDesc* apDesc) {
-  niCheckIsOK(apDesc,nullptr);
-  return CreateVulkanRasterPipeline(as_nn(this),ahspName,apDesc);
+Ptr<iGpuPipeline> sVulkanDriver::CreateGpuPipeline(
+  iHString* ahspName, const iGpuPipelineDesc* apDesc)
+{
+  niCheckIsOK(apDesc, nullptr);
+  return CreateVulkanRasterPipeline(as_nn(this), ahspName, apDesc);
 }
 
 Ptr<iRayPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
-  iHString* ahspName,
-  iRayFunctionTable* apFunctionTable)
+  iHString* ahspName, iRayFunctionTable* apFunctionTable)
 {
-  niCheck(_isRayTracingSupported,nullptr);
-  niCheckIsOK(apFunctionTable,nullptr);
+  niCheck(_isRayTracingSupported, nullptr);
+  niCheckIsOK(apFunctionTable, nullptr);
   Ptr<sVulkanRayPipeline> rayPipeline = MakeNN<sVulkanRayPipeline>(
-    as_nn(this),ahspName,as_nn((sVulkanRayFunctionTable*)apFunctionTable));
-  niCheck(rayPipeline->_CreateRayPipeline(),nullptr);
+    as_nn(this), ahspName, as_nn((sVulkanRayFunctionTable*)apFunctionTable));
+  niCheck(rayPipeline->_CreateRayPipeline(), nullptr);
   return rayPipeline;
 }
 
-Ptr<iRayFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable() {
-  niCheck(_isRayTracingSupported,nullptr);
-  Ptr<sVulkanRayFunctionTable> rayFT = MakeNN<sVulkanRayFunctionTable>(as_nn(this));
+Ptr<iRayFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable()
+{
+  niCheck(_isRayTracingSupported, nullptr);
+  Ptr<sVulkanRayFunctionTable> rayFT =
+    MakeNN<sVulkanRayFunctionTable>(as_nn(this));
   return rayFT;
 }
 
-Ptr<iRayTrianglePrimitivesDesc> __stdcall sVulkanDriver::CreateRayTrianglePrimitivesDesc(iHString* ahspName) {
-  niCheck(_isRayTracingSupported,nullptr);
-  Ptr<sVulkanRayTrianglePrimitivesDesc> as = MakeNN<sVulkanRayTrianglePrimitivesDesc>(as_nn(this),ahspName);
+Ptr<iRayTrianglePrimitivesDesc> __stdcall sVulkanDriver::
+  CreateRayTrianglePrimitivesDesc(iHString* ahspName)
+{
+  niCheck(_isRayTracingSupported, nullptr);
+  Ptr<sVulkanRayTrianglePrimitivesDesc> as =
+    MakeNN<sVulkanRayTrianglePrimitivesDesc>(as_nn(this), ahspName);
   return as;
 }
 
-Ptr<iRayProceduralPrimitivesDesc> __stdcall sVulkanDriver::CreateRayProceduralPrimitivesDesc(iHString* ahspName) {
-  niCheck(_isRayTracingSupported,nullptr);
-  Ptr<sVulkanRayProceduralPrimitivesDesc> as = MakeNN<sVulkanRayProceduralPrimitivesDesc>(as_nn(this),ahspName);
+Ptr<iRayProceduralPrimitivesDesc> __stdcall sVulkanDriver::
+  CreateRayProceduralPrimitivesDesc(iHString* ahspName)
+{
+  niCheck(_isRayTracingSupported, nullptr);
+  Ptr<sVulkanRayProceduralPrimitivesDesc> as =
+    MakeNN<sVulkanRayProceduralPrimitivesDesc>(as_nn(this), ahspName);
   return as;
 }
 
-Ptr<iRayInstancesDesc> __stdcall sVulkanDriver::CreateRayInstancesDesc(iHString* ahspName) {
-  niCheck(_isRayTracingSupported,nullptr);
-  Ptr<sVulkanRayInstancesDesc> as = MakeNN<sVulkanRayInstancesDesc>(as_nn(this),ahspName);
+Ptr<iRayInstancesDesc> __stdcall sVulkanDriver::CreateRayInstancesDesc(
+  iHString* ahspName)
+{
+  niCheck(_isRayTracingSupported, nullptr);
+  Ptr<sVulkanRayInstancesDesc> as =
+    MakeNN<sVulkanRayInstancesDesc>(as_nn(this), ahspName);
   return as;
 }
 
-Ptr<iRayBuildEncoder> __stdcall sVulkanDriver::CreateRayBuildEncoder() {
-  niCheck(_isRayTracingSupported,nullptr);
-  NN<sVulkanRayBuildEncoder> encoder = MakeNN<sVulkanRayBuildEncoder>(as_nn(this));
+Ptr<iRayBuildEncoder> __stdcall sVulkanDriver::CreateRayBuildEncoder()
+{
+  niCheck(_isRayTracingSupported, nullptr);
+  NN<sVulkanRayBuildEncoder> encoder =
+    MakeNN<sVulkanRayBuildEncoder>(as_nn(this));
   return encoder;
 }
 
-niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA, const Var& avarB) {
+niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA,
+                                                  const Var& avarB)
+{
   QPtr<iGraphics> ptrGraphics = avarA;
-  niCheckIsOK(ptrGraphics,nullptr);
+  niCheckIsOK(ptrGraphics, nullptr);
 
   cString appName = ni::GetLang()->GetProperty("ni.app.name");
   if (appName.empty()) {

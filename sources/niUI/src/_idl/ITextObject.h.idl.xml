@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eTextTruncation">
 			<comments desc="Text truncation "/>
-			<value name="eTextTruncation_Left" value="0 ">
+			<value name="eTextTruncation_Left" value="0">
 				<comments desc="The words will be truncated on the left if bigger than the text block. "/>
 			</value>
-			<value name="eTextTruncation_Right" value="1 ">
+			<value name="eTextTruncation_Right" value="1">
 				<comments desc="The words will be truncated on the right if bigger than the text block. "/>
 			</value>
-			<value name="eTextTruncation_None" value="2 ">
+			<value name="eTextTruncation_None" value="2">
 				<comments desc="The words won&apos;t be truncated. "/>
 			</value>
 		</enum>

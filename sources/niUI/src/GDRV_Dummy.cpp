@@ -5,16 +5,16 @@
 
 #ifdef GDRV_DUMMY
 
-#include "Graphics.h"
-#include "GDRV_Utils.h"
+  #include "Graphics.h"
+  #include "GDRV_Utils.h"
 
 //----------------------------------------------------------------------------
 //
 // Section: DummyTexture
 //
 //----------------------------------------------------------------------------
-struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDeviceResource>
-{
+struct cDummyTexture
+    : public ni::ImplRC<iTexture, eImplFlags_DontInherit1, iDeviceResource> {
   WeakPtr<iGraphics> mwGraphics;
   tHStringPtr mhspName;
   const eBitmapType mType;
@@ -24,13 +24,9 @@ struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   const tTextureFlags mnFlags;
   Ptr<iBitmapBase> mptrBitmap;
 
-  cDummyTexture(iGraphics* apGraphics,
-               iHString* ahspName,
-               eBitmapType aType,
-               tU32 anW, tU32 anH, tU32 anD,
-               tU32 anMM,
-               iPixelFormat* apPxf,
-               tTextureFlags anFlags)
+  cDummyTexture(iGraphics* apGraphics, iHString* ahspName, eBitmapType aType,
+                tU32 anW, tU32 anH, tU32 anD, tU32 anMM, iPixelFormat* apPxf,
+                tTextureFlags anFlags)
       : mwGraphics(apGraphics)
       , mhspName(ahspName)
       , mType(aType)
@@ -43,15 +39,15 @@ struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
   {
     apGraphics->GetTextureDeviceResourceManager()->Register(this);
     switch (aType) {
-      case eBitmapType_2D:
-        mptrBitmap = apGraphics->CreateBitmap2DEx(mnW,mnH,mptrPxf);
-        break;
-      case eBitmapType_Cube:
-        mptrBitmap = apGraphics->CreateBitmapCubeEx(mnW,mptrPxf);
-        break;
-      case eBitmapType_3D:
-        mptrBitmap = apGraphics->CreateBitmap3DEx(mnW,mnH,mnD,mptrPxf);
-        break;
+    case eBitmapType_2D:
+      mptrBitmap = apGraphics->CreateBitmap2DEx(mnW, mnH, mptrPxf);
+      break;
+    case eBitmapType_Cube:
+      mptrBitmap = apGraphics->CreateBitmapCubeEx(mnW, mptrPxf);
+      break;
+    case eBitmapType_3D:
+      mptrBitmap = apGraphics->CreateBitmap3DEx(mnW, mnH, mnD, mptrPxf);
+      break;
     }
   }
   cDummyTexture(iGraphics* apGraphics, iBitmap2D* apBmp)
@@ -68,74 +64,81 @@ struct cDummyTexture : public ni::ImplRC<iTexture,eImplFlags_DontInherit1,iDevic
     mptrBitmap = apBmp;
   }
 
-  ~cDummyTexture() {
+  ~cDummyTexture()
+  {
     QPtr<iGraphics> g = mwGraphics;
     if (g.IsOK() && g->GetTextureDeviceResourceManager()) {
       g->GetTextureDeviceResourceManager()->Unregister(this);
     }
   }
 
-  virtual iHString *  __stdcall GetDeviceResourceName () const {
+  virtual iHString* __stdcall GetDeviceResourceName() const
+  {
     return mhspName;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown *apDevice) {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice)
+  {
     return this;
   }
 
-  virtual eBitmapType __stdcall GetType() const {
+  virtual eBitmapType __stdcall GetType() const
+  {
     return mType;
   }
-  virtual tU32 __stdcall GetWidth() const {
+  virtual tU32 __stdcall GetWidth() const
+  {
     return mnW;
   }
-  virtual tU32 __stdcall GetHeight() const {
+  virtual tU32 __stdcall GetHeight() const
+  {
     return mnH;
   }
-  virtual tU32 __stdcall GetDepth() const {
+  virtual tU32 __stdcall GetDepth() const
+  {
     return mnD;
   }
-  virtual iPixelFormat* __stdcall GetPixelFormat() const {
+  virtual iPixelFormat* __stdcall GetPixelFormat() const
+  {
     return mptrPxf;
   }
-  virtual tU32 __stdcall GetNumMipMaps() const {
+  virtual tU32 __stdcall GetNumMipMaps() const
+  {
     return mnMM;
   }
-  virtual tTextureFlags __stdcall GetFlags() const {
+  virtual tTextureFlags __stdcall GetFlags() const
+  {
     return mnFlags;
   }
-  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const {
+  virtual iTexture* __stdcall GetSubTexture(tU32 anIndex) const
+  {
     QPtr<iGraphics> g = mwGraphics;
     if (g.IsOK() && mType == eBitmapType_Cube && anIndex < 6) {
       QPtr<iBitmapCube> cube = mptrBitmap.ptr();
-      Ptr<cDummyTexture> tex = niNew cDummyTexture(
-          g,cube->GetFace((eBitmapCubeFace)anIndex));
+      Ptr<cDummyTexture> tex =
+        niNew cDummyTexture(g, cube->GetFace((eBitmapCubeFace)anIndex));
       return tex.GetRawAndSetNull();
     }
     return NULL;
   }
 };
 
-
 //----------------------------------------------------------------------------
 //
 // Section: DummyGraphicsContext
 //
 //----------------------------------------------------------------------------
-struct cDummyGraphicsContext :
-    public sGraphicsContext<4,ni::ImplRC<iGraphicsContextRT,eImplFlags_DontInherit1,iGraphicsContext> >
-{
+struct cDummyGraphicsContext
+    : public sGraphicsContext<
+        4, ni::ImplRC<iGraphicsContextRT, eImplFlags_DontInherit1,
+                      iGraphicsContext>> {
   iGraphicsDriver* mpParent;
   Ptr<iOSWindow> mptrWindow;
   tU32 mnSwapInterval;
   tTextureFlags mnBBFlags;
 
-  cDummyGraphicsContext(
-      iGraphicsDriver* apParent,
-      iOSWindow* apWindow,
-      const achar* aaszBBPxf,
-      const achar* aaszDSPxf,
-      tU32 anSwapInterval,
-      tTextureFlags anBBFlags)
+  cDummyGraphicsContext(iGraphicsDriver* apParent, iOSWindow* apWindow,
+                        const achar* aaszBBPxf, const achar* aaszDSPxf,
+                        tU32 anSwapInterval, tTextureFlags anBBFlags)
       : tGraphicsContextBase(apParent->GetGraphics())
   {
     mpParent = apParent;
@@ -145,24 +148,25 @@ struct cDummyGraphicsContext :
     mnBBFlags = anBBFlags;
     iGraphics* g = apParent->GetGraphics();
     Ptr<iPixelFormat> pxfBB = g->CreatePixelFormat(aaszBBPxf);
-    if (!pxfBB.IsOK()) return;
+    if (!pxfBB.IsOK())
+      return;
     Ptr<iPixelFormat> pxfDS = g->CreatePixelFormat(aaszDSPxf);
-    if (!pxfDS.IsOK()) return;
+    if (!pxfDS.IsOK())
+      return;
     const tU32 w = mptrWindow->GetClientSize().x;
     const tU32 h = mptrWindow->GetClientSize().y;
-    mptrRT[0] = niNew cDummyTexture(g,_H("Dummy_MainRT"),eBitmapType_2D,
-                                    w,h,0,0,pxfBB,eTextureFlags_RenderTarget);
-    mptrDS = niNew cDummyTexture(g,_H("Dummy_MainDS"),eBitmapType_2D,
-                                 w,h,0,0,pxfDS,eTextureFlags_DepthStencil);
+    mptrRT[0] = niNew cDummyTexture(g, _H("Dummy_MainRT"), eBitmapType_2D, w, h,
+                                    0, 0, pxfBB, eTextureFlags_RenderTarget);
+    mptrDS = niNew cDummyTexture(g, _H("Dummy_MainDS"), eBitmapType_2D, w, h, 0,
+                                 0, pxfDS, eTextureFlags_DepthStencil);
     mptrFS = g->CreateFixedStates();
-    mrectScissor = sRecti(0,0,w,h);
+    mrectScissor = sRecti(0, 0, w, h);
     mrectViewport = mrectScissor;
   }
 
-  cDummyGraphicsContext(
-      iGraphicsDriver* apParent,
-      iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
-      iTexture* apDS)
+  cDummyGraphicsContext(iGraphicsDriver* apParent, iTexture* apRT0,
+                        iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+                        iTexture* apDS)
       : tGraphicsContextBase(apParent->GetGraphics())
   {
     iGraphics* g = apParent->GetGraphics();
@@ -176,43 +180,54 @@ struct cDummyGraphicsContext :
     mptrRT[3] = apRT3;
     mptrDS = apRT1;
     mptrFS = g->CreateFixedStates();
-    mrectScissor = sRecti(0,0,GetWidth(),GetHeight());
+    mrectScissor = sRecti(0, 0, GetWidth(), GetHeight());
     mrectViewport = mrectScissor;
   }
 
-  virtual tBool __stdcall IsOK() const {
+  virtual tBool __stdcall IsOK() const
+  {
     return mptrRT[0].IsOK();
   }
 
-  virtual void __stdcall Invalidate() {
+  virtual void __stdcall Invalidate()
+  {
     mpParent = NULL;
     mptrWindow = NULL;
   }
 
-  virtual iGraphics* __stdcall GetGraphics() const {
-    return mpParent?mpParent->GetGraphics():NULL;
+  virtual iGraphics* __stdcall GetGraphics() const
+  {
+    return mpParent ? mpParent->GetGraphics() : NULL;
   }
-  virtual iGraphicsDriver* __stdcall GetDriver() const {
+  virtual iGraphicsDriver* __stdcall GetDriver() const
+  {
     return mpParent;
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) {
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags,
+                                  const sRecti& aRect)
+  {
     return eTrue;
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) {
+  virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp)
+  {
     return eTrue;
   }
 
   /////////////////////////////////////////////
-  virtual iBitmap2D* __stdcall CaptureFrontBuffer() const {
+  virtual iBitmap2D* __stdcall CaptureFrontBuffer() const
+  {
     return NULL;
   }
 
   /////////////////////////////////////////////
-  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) {
+  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer,
+                                      tU32 anColor, tF32 afDepth,
+                                      tI32 anStencil)
+  {
   }
 };
 
@@ -221,51 +236,52 @@ struct cDummyGraphicsContext :
 // Section: DummyGraphicsDriver
 //
 //----------------------------------------------------------------------------
-struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
-{
+struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver> {
   iGraphics* mpGraphics;
 
-  cDummyGraphicsDriver(iGraphics* apGraphics) {
+  cDummyGraphicsDriver(iGraphics* apGraphics)
+  {
     mpGraphics = apGraphics;
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall IsOK() const {
+  virtual tBool __stdcall IsOK() const
+  {
     return mpGraphics != NULL;
   }
-  virtual void __stdcall Invalidate() {
+  virtual void __stdcall Invalidate()
+  {
     mpGraphics = NULL;
   }
 
   /////////////////////////////////////////////
-  virtual iGraphics* __stdcall GetGraphics() const {
+  virtual iGraphics* __stdcall GetGraphics() const
+  {
     return mpGraphics;
   }
 
   /////////////////////////////////////////////
-  virtual const achar* __stdcall GetName() const {
+  virtual const achar* __stdcall GetName() const
+  {
     return _A("Dummy");
   }
-  virtual const achar* __stdcall GetDesc() const {
+  virtual const achar* __stdcall GetDesc() const
+  {
     return _A("Dummy Graphics Driver");
   }
-  virtual const achar* __stdcall GetDeviceName() const {
+  virtual const achar* __stdcall GetDeviceName() const
+  {
     return _A("Default");
   }
 
-
   /////////////////////////////////////////////
   virtual iGraphicsContext* __stdcall CreateContextForWindow(
-      iOSWindow* apWindow,
-      const achar* aaszBBFormat, const achar* aaszDSFormat,
-      tU32 anSwapInterval, tTextureFlags aBackBufferFlags)
+    iOSWindow* apWindow, const achar* aaszBBFormat, const achar* aaszDSFormat,
+    tU32 anSwapInterval, tTextureFlags aBackBufferFlags)
   {
-    Ptr<iGraphicsContext> ctx = niNew cDummyGraphicsContext(
-        this,
-        apWindow,
-        aaszBBFormat,aaszDSFormat,
-        anSwapInterval,
-        aBackBufferFlags);
+    Ptr<iGraphicsContext> ctx =
+      niNew cDummyGraphicsContext(this, apWindow, aaszBBFormat, aaszDSFormat,
+                                  anSwapInterval, aBackBufferFlags);
     if (!niIsOK(ctx))
       return NULL;
     return ctx.GetRawAndSetNull();
@@ -273,163 +289,185 @@ struct cDummyGraphicsDriver : public ImplRC<iGraphicsDriver>
 
   /////////////////////////////////////////////
   virtual iGraphicsContextRT* __stdcall CreateContextForRenderTargets(
-    iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3, iTexture* apDS)
+    iTexture* apRT0, iTexture* apRT1, iTexture* apRT2, iTexture* apRT3,
+    iTexture* apDS)
   {
-    Ptr<iGraphicsContextRT> ctx = niNew cDummyGraphicsContext(
-      this, apRT0, apRT1, apRT2, apRT3, apDS);
+    Ptr<iGraphicsContextRT> ctx =
+      niNew cDummyGraphicsContext(this, apRT0, apRT1, apRT2, apRT3, apDS);
     if (!niIsOK(ctx))
       return NULL;
     return ctx.GetRawAndSetNull();
   }
 
   /////////////////////////////////////////////
-  virtual tBool __stdcall ResetAllCaches() {
+  virtual tBool __stdcall ResetAllCaches()
+  {
     return eTrue;
   }
 
   /////////////////////////////////////////////
-  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const {
+  virtual tInt __stdcall GetCaps(eGraphicsCaps aCaps) const
+  {
     switch (aCaps) {
-      case eGraphicsCaps_Resize:
-      case eGraphicsCaps_MultiContext:
-      case eGraphicsCaps_ScissorTest:
-      case eGraphicsCaps_OverlayTexture:
-      case eGraphicsCaps_NumTextureUnits:
-        return 1;
-      case eGraphicsCaps_Texture2DMaxSize:
-        return 0xFFFF;
-      case eGraphicsCaps_TextureCubeMaxSize:
-      case eGraphicsCaps_Texture3DMaxSize:
-        return 0;
-      case eGraphicsCaps_MaxVertexIndex:
-        return 0xFFFFFFFF;
-      default:
-        return 0;
+    case eGraphicsCaps_Resize:
+    case eGraphicsCaps_MultiContext:
+    case eGraphicsCaps_ScissorTest:
+    case eGraphicsCaps_OverlayTexture:
+    case eGraphicsCaps_NumTextureUnits: return 1;
+    case eGraphicsCaps_Texture2DMaxSize: return 0xFFFF;
+    case eGraphicsCaps_TextureCubeMaxSize:
+    case eGraphicsCaps_Texture3DMaxSize: return 0;
+    case eGraphicsCaps_MaxVertexIndex: return 0xFFFFFFFF;
+    default: return 0;
     }
   }
 
   /////////////////////////////////////////////
-  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const {
+  virtual tGraphicsDriverImplFlags __stdcall GetGraphicsDriverImplFlags() const
+  {
     return 0;
   }
 
-
   /////////////////////////////////////////////
-  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat, tTextureFlags aFlags) {
+  virtual tBool __stdcall CheckTextureFormat(iBitmapFormat* apFormat,
+                                             tTextureFlags aFlags)
+  {
     return eTrue;
   }
 
-  virtual iTexture* __stdcall CreateTexture(iHString* ahspName, eBitmapType aType, const achar* aaszFormat, tU32 anNumMipMaps, tU32 anWidth, tU32 anHeight, tU32 anDepth, tTextureFlags aFlags)  {
+  virtual iTexture* __stdcall CreateTexture(iHString* ahspName,
+                                            eBitmapType aType,
+                                            const achar* aaszFormat,
+                                            tU32 anNumMipMaps, tU32 anWidth,
+                                            tU32 anHeight, tU32 anDepth,
+                                            tTextureFlags aFlags)
+  {
     Ptr<iPixelFormat> pxf = mpGraphics->CreatePixelFormat(aaszFormat);
-    niCheck(pxf.IsOK(),NULL);
-    return niNew cDummyTexture(
-        mpGraphics,
-        ahspName,
-        aType,
-        anWidth,anHeight,anDepth,
-        anNumMipMaps,
-        pxf,
-        aFlags);
+    niCheck(pxf.IsOK(), NULL);
+    return niNew cDummyTexture(mpGraphics, ahspName, aType, anWidth, anHeight,
+                               anDepth, anNumMipMaps, pxf, aFlags);
   }
 
-  virtual tBool __stdcall BlitBitmapToTexture(iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
-    niCheckSilent(niIsOK(apSrc),eFalse);
-    niCheckSilent(niIsOK(apDest),eFalse);
+  virtual tBool __stdcall BlitBitmapToTexture(
+    iBitmap2D* apSrc, iTexture* apDest, tU32 anDestLevel,
+    const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)
+  {
+    niCheckSilent(niIsOK(apSrc), eFalse);
+    niCheckSilent(niIsOK(apDest), eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_2D, eFalse);
     cDummyTexture* tex = (cDummyTexture*)apDest;
     iBitmap2D* texBmp = (iBitmap2D*)tex->mptrBitmap.ptr();
-    texBmp->BlitStretch(
-        apSrc,
-        aSrcRect.x,aSrcRect.y,
-        aDestRect.x,aDestRect.y,
-        aSrcRect.GetWidth(),aSrcRect.GetHeight(),
-        aDestRect.GetWidth(),aDestRect.GetHeight());
+    texBmp->BlitStretch(apSrc, aSrcRect.x, aSrcRect.y, aDestRect.x, aDestRect.y,
+                        aSrcRect.GetWidth(), aSrcRect.GetHeight(),
+                        aDestRect.GetWidth(), aDestRect.GetHeight());
     return eTrue;
   }
-  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel, iBitmap2D* apDest, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
-    niCheckSilent(niIsOK(apSrc),eFalse);
-    niCheckSilent(niIsOK(apDest),eFalse);
+  virtual tBool __stdcall BlitTextureToBitmap(iTexture* apSrc, tU32 anSrcLevel,
+                                              iBitmap2D* apDest,
+                                              const sRecti& aSrcRect,
+                                              const sRecti& aDestRect,
+                                              eTextureBlitFlags aFlags)
+  {
+    niCheckSilent(niIsOK(apSrc), eFalse);
+    niCheckSilent(niIsOK(apDest), eFalse);
     niCheckSilent(apSrc->GetType() == eBitmapType_2D, eFalse);
     cDummyTexture* tex = (cDummyTexture*)apSrc;
     iBitmap2D* texBmp = (iBitmap2D*)tex->mptrBitmap.ptr();
-    apDest->BlitStretch(
-        texBmp,
-        aSrcRect.x,aSrcRect.y,
-        aDestRect.x,aDestRect.y,
-        aSrcRect.GetWidth(),aSrcRect.GetHeight(),
-        aDestRect.GetWidth(),aDestRect.GetHeight());
+    apDest->BlitStretch(texBmp, aSrcRect.x, aSrcRect.y, aDestRect.x,
+                        aDestRect.y, aSrcRect.GetWidth(), aSrcRect.GetHeight(),
+                        aDestRect.GetWidth(), aDestRect.GetHeight());
     return eTrue;
   }
-  virtual tBool __stdcall BlitTextureToTexture(iTexture* apSrc, tU32 anSrcLevel, iTexture* apDest, tU32 anDestLevel, const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)  {
-    niCheckSilent(niIsOK(apSrc),eFalse);
-    niCheckSilent(niIsOK(apDest),eFalse);
+  virtual tBool __stdcall BlitTextureToTexture(
+    iTexture* apSrc, tU32 anSrcLevel, iTexture* apDest, tU32 anDestLevel,
+    const sRecti& aSrcRect, const sRecti& aDestRect, eTextureBlitFlags aFlags)
+  {
+    niCheckSilent(niIsOK(apSrc), eFalse);
+    niCheckSilent(niIsOK(apDest), eFalse);
     niCheckSilent(apSrc->GetType() == eBitmapType_2D, eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_2D, eFalse);
     cDummyTexture* sTex = (cDummyTexture*)apSrc;
     iBitmap2D* sTexBmp = (iBitmap2D*)sTex->mptrBitmap.ptr();
     cDummyTexture* dTex = (cDummyTexture*)apDest;
     iBitmap2D* dTexBmp = (iBitmap2D*)dTex->mptrBitmap.ptr();
-    dTexBmp->BlitStretch(
-        sTexBmp,
-        aSrcRect.x,aSrcRect.y,
-        aDestRect.x,aDestRect.y,
-        aSrcRect.GetWidth(),aSrcRect.GetHeight(),
-        aDestRect.GetWidth(),aDestRect.GetHeight());
+    dTexBmp->BlitStretch(sTexBmp, aSrcRect.x, aSrcRect.y, aDestRect.x,
+                         aDestRect.y, aSrcRect.GetWidth(), aSrcRect.GetHeight(),
+                         aDestRect.GetWidth(), aDestRect.GetHeight());
     return eTrue;
   }
-  virtual tBool __stdcall BlitBitmap3DToTexture(iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)  {
-    niCheckSilent(niIsOK(apSrc),eFalse);
-    niCheckSilent(niIsOK(apDest),eFalse);
+  virtual tBool __stdcall BlitBitmap3DToTexture(
+    iBitmap3D* apSrc, iTexture* apDest, tU32 anDestLevel, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)
+  {
+    niCheckSilent(niIsOK(apSrc), eFalse);
+    niCheckSilent(niIsOK(apDest), eFalse);
     niCheckSilent(apDest->GetType() == eBitmapType_3D, eFalse);
     cDummyTexture* dTex = (cDummyTexture*)apDest;
     iBitmap3D* dTexBmp = (iBitmap3D*)dTex->mptrBitmap.ptr();
-    dTexBmp->Blit(apSrc,aSrcMin,aDestMin,avSize);
+    dTexBmp->Blit(apSrc, aSrcMin, aDestMin, avSize);
     return eTrue;
   }
-  virtual tBool __stdcall BlitTextureToBitmap3D(iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin, const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)  {
-    niCheckSilent(niIsOK(apSrc),eFalse);
-    niCheckSilent(niIsOK(apDest),eFalse);
+  virtual tBool __stdcall BlitTextureToBitmap3D(
+    iTexture* apSrc, tU32 anSrcLevel, iBitmap3D* apDest, const sVec3i& aSrcMin,
+    const sVec3i& aDestMin, const sVec3i& avSize, eTextureBlitFlags aFlags)
+  {
+    niCheckSilent(niIsOK(apSrc), eFalse);
+    niCheckSilent(niIsOK(apDest), eFalse);
     cDummyTexture* sTex = (cDummyTexture*)apSrc;
     iBitmap3D* sTexBmp = (iBitmap3D*)sTex->mptrBitmap.ptr();
-    apDest->Blit(sTexBmp,aSrcMin,aDestMin,avSize);
+    apDest->Blit(sTexBmp, aSrcMin, aDestMin, avSize);
     return eTrue;
   }
 
   /////////////////////////////////////////////
-  virtual tU32 __stdcall GetNumShaderProfile(eShaderUnit aUnit) const {
+  virtual tU32 __stdcall GetNumShaderProfile(eShaderUnit aUnit) const
+  {
     return 0;
   }
-  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit, tU32 anIndex) const {
+  virtual iHString* __stdcall GetShaderProfile(eShaderUnit aUnit,
+                                               tU32 anIndex) const
+  {
     return NULL;
   }
-  virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apFile) {
-    return NULL;
-  }
-
-  /////////////////////////////////////////////
-  virtual iOcclusionQuery* __stdcall CreateOcclusionQuery() {
-    return NULL;
-  }
-
-  /////////////////////////////////////////////
-  virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture) {
-  }
-  virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const {
+  virtual iShader* __stdcall CreateShader(iHString* ahspName, iFile* apFile)
+  {
     return NULL;
   }
 
   /////////////////////////////////////////////
-  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
+  virtual iOcclusionQuery* __stdcall CreateOcclusionQuery()
+  {
     return NULL;
   }
-  virtual iIndexArray* __stdcall CreateIndexArray(eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
+
+  /////////////////////////////////////////////
+  virtual void __stdcall SetDrawOpCapture(iGraphicsDrawOpCapture* apCapture)
+  {
+  }
+  virtual iGraphicsDrawOpCapture* __stdcall GetDrawOpCapture() const
+  {
+    return NULL;
+  }
+
+  /////////////////////////////////////////////
+  virtual iVertexArray* __stdcall CreateVertexArray(tU32 anNumVertices,
+                                                    tFVF anFVF,
+                                                    eArrayUsage aUsage)
+  {
+    return NULL;
+  }
+  virtual iIndexArray* __stdcall CreateIndexArray(
+    eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndex,
+    tU32 anMaxVertexIndex, eArrayUsage aUsage)
+  {
     return NULL;
   }
 };
 
-niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&) {
+niExportFunc(iUnknown*) New_GraphicsDriver_Dummy(const Var& avarA, const Var&)
+{
   QPtr<iGraphics> ptrGraphics = avarA;
-  niCheckIsOK(ptrGraphics,NULL);
+  niCheckIsOK(ptrGraphics, NULL);
   return niNew cDummyGraphicsDriver(ptrGraphics);
 }
 

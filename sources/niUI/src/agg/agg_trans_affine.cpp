@@ -18,10 +18,7 @@
 //----------------------------------------------------------------------------
 #include "agg_trans_affine.h"
 
-
-
-namespace agg
-{
+namespace agg {
 
 //------------------------------------------------------------------------
 const trans_affine& trans_affine::parl_to_parl(const agg_real* src,
@@ -34,9 +31,8 @@ const trans_affine& trans_affine::parl_to_parl(const agg_real* src,
   m4 = src[0];
   m5 = src[1];
   invert();
-  multiply(trans_affine(dst[2] - dst[0], dst[3] - dst[1],
-                        dst[4] - dst[0], dst[5] - dst[1],
-                        dst[0], dst[1]));
+  multiply(trans_affine(dst[2] - dst[0], dst[3] - dst[1], dst[4] - dst[0],
+                        dst[5] - dst[1], dst[0], dst[1]));
   return *this;
 }
 
@@ -46,9 +42,12 @@ const trans_affine& trans_affine::rect_to_parl(agg_real x1, agg_real y1,
                                                const agg_real* parl)
 {
   agg_real src[6];
-  src[0] = x1; src[1] = y1;
-  src[2] = x2; src[3] = y1;
-  src[4] = x2; src[5] = y2;
+  src[0] = x1;
+  src[1] = y1;
+  src[2] = x2;
+  src[3] = y1;
+  src[4] = x2;
+  src[5] = y2;
   parl_to_parl(src, parl);
   return *this;
 }
@@ -59,9 +58,12 @@ const trans_affine& trans_affine::parl_to_rect(const agg_real* parl,
                                                agg_real x2, agg_real y2)
 {
   agg_real dst[6];
-  dst[0] = x1; dst[1] = y1;
-  dst[2] = x2; dst[3] = y1;
-  dst[4] = x2; dst[5] = y2;
+  dst[0] = x1;
+  dst[1] = y1;
+  dst[2] = x2;
+  dst[3] = y1;
+  dst[4] = x2;
+  dst[5] = y2;
   parl_to_parl(parl, dst);
   return *this;
 }
@@ -81,14 +83,13 @@ const trans_affine& trans_affine::multiply(const trans_affine& m)
   return *this;
 }
 
-
 //------------------------------------------------------------------------
 const trans_affine& trans_affine::invert()
 {
-  agg_real d  = determinant();
+  agg_real d = determinant();
 
-  agg_real t0 =  m3 * d;
-  m3 =  m0 * d;
+  agg_real t0 = m3 * d;
+  m3 = m0 * d;
   m1 = -m1 * d;
   m2 = -m2 * d;
 
@@ -99,7 +100,6 @@ const trans_affine& trans_affine::invert()
   m4 = t4;
   return *this;
 }
-
 
 //------------------------------------------------------------------------
 const trans_affine& trans_affine::flip_x()
@@ -136,23 +136,17 @@ inline bool is_equal_eps(agg_real v1, agg_real v2, agg_real epsilon)
 //------------------------------------------------------------------------
 bool trans_affine::is_identity(agg_real epsilon) const
 {
-  return is_equal_eps(m0, 1.0, epsilon) &&
-      is_equal_eps(m1, 0.0, epsilon) &&
-      is_equal_eps(m2, 0.0, epsilon) &&
-      is_equal_eps(m3, 1.0, epsilon) &&
-      is_equal_eps(m4, 0.0, epsilon) &&
-      is_equal_eps(m5, 0.0, epsilon);
+  return is_equal_eps(m0, 1.0, epsilon) && is_equal_eps(m1, 0.0, epsilon) &&
+         is_equal_eps(m2, 0.0, epsilon) && is_equal_eps(m3, 1.0, epsilon) &&
+         is_equal_eps(m4, 0.0, epsilon) && is_equal_eps(m5, 0.0, epsilon);
 }
 
 //------------------------------------------------------------------------
 bool trans_affine::is_equal(const trans_affine& m, agg_real epsilon) const
 {
-  return is_equal_eps(m0, m.m0, epsilon) &&
-      is_equal_eps(m1, m.m1, epsilon) &&
-      is_equal_eps(m2, m.m2, epsilon) &&
-      is_equal_eps(m3, m.m3, epsilon) &&
-      is_equal_eps(m4, m.m4, epsilon) &&
-      is_equal_eps(m5, m.m5, epsilon);
+  return is_equal_eps(m0, m.m0, epsilon) && is_equal_eps(m1, m.m1, epsilon) &&
+         is_equal_eps(m2, m.m2, epsilon) && is_equal_eps(m3, m.m3, epsilon) &&
+         is_equal_eps(m4, m.m4, epsilon) && is_equal_eps(m5, m.m5, epsilon);
 }
 
 //------------------------------------------------------------------------
@@ -164,7 +158,7 @@ agg_real trans_affine::rotation() const
   agg_real y2 = 0.0;
   transform(&x1, &y1);
   transform(&x2, &y2);
-  return atan2(y2-y1, x2-x1);
+  return atan2(y2 - y1, x2 - x1);
 }
 
 //------------------------------------------------------------------------
@@ -190,6 +184,4 @@ void trans_affine::scaling(agg_real* sx, agg_real* sy) const
   *sy = y2 - y1;
 }
 
-
-}
-
+} // namespace agg

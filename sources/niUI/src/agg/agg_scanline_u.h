@@ -26,8 +26,7 @@
 
 #include "agg_array.h"
 
-namespace agg
-{
+namespace agg {
 //=============================================================scanline_u8
 //
 // Unpacked scanline container class
@@ -106,18 +105,16 @@ namespace agg
 // are better, because switching between two different areas of memory
 // (that can be very large) occurs less frequently.
 //------------------------------------------------------------------------
-class scanline_u8
-{
+class scanline_u8 {
  public:
   typedef scanline_u8 self_type;
-  typedef int8u       cover_type;
-  typedef int16       coord_type;
+  typedef int8u cover_type;
+  typedef int16 coord_type;
 
   //--------------------------------------------------------------------
-  struct span
-  {
-    coord_type  x;
-    coord_type  len;
+  struct span {
+    coord_type x;
+    coord_type len;
     cover_type* covers;
   };
 
@@ -125,23 +122,23 @@ class scanline_u8
   typedef const span* const_iterator;
 
   //--------------------------------------------------------------------
-  scanline_u8() :
-      m_min_x(0),
-      m_last_x(0x7FFFFFF0),
-      m_cur_span(0)
-  {}
+  scanline_u8()
+      : m_min_x(0)
+      , m_last_x(0x7FFFFFF0)
+      , m_cur_span(0)
+  {
+  }
 
   //--------------------------------------------------------------------
   void reset(int min_x, int max_x)
   {
     unsigned max_len = max_x - min_x + 2;
-    if(max_len > m_spans.size())
-    {
+    if (max_len > m_spans.size()) {
       m_spans.resize(max_len);
       m_covers.resize(max_len);
     }
-    m_last_x   = 0x7FFFFFF0;
-    m_min_x    = min_x;
+    m_last_x = 0x7FFFFFF0;
+    m_min_x = min_x;
     m_cur_span = &m_spans[0];
   }
 
@@ -150,15 +147,13 @@ class scanline_u8
   {
     x -= m_min_x;
     m_covers[x] = (cover_type)cover;
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_cur_span->len++;
     }
-    else
-    {
+    else {
       m_cur_span++;
-      m_cur_span->x      = (coord_type)(x + m_min_x);
-      m_cur_span->len    = 1;
+      m_cur_span->x = (coord_type)(x + m_min_x);
+      m_cur_span->len = 1;
       m_cur_span->covers = &m_covers[x];
     }
     m_last_x = x;
@@ -169,15 +164,13 @@ class scanline_u8
   {
     x -= m_min_x;
     memcpy(&m_covers[x], covers, len * sizeof(cover_type));
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_cur_span->len += (coord_type)len;
     }
-    else
-    {
+    else {
       m_cur_span++;
-      m_cur_span->x      = (coord_type)(x + m_min_x);
-      m_cur_span->len    = (coord_type)len;
+      m_cur_span->x = (coord_type)(x + m_min_x);
+      m_cur_span->len = (coord_type)len;
       m_cur_span->covers = &m_covers[x];
     }
     m_last_x = x + len - 1;
@@ -188,15 +181,13 @@ class scanline_u8
   {
     x -= m_min_x;
     memset(&m_covers[x], cover, len);
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_cur_span->len += (coord_type)len;
     }
-    else
-    {
+    else {
       m_cur_span++;
-      m_cur_span->x      = (coord_type)(x + m_min_x);
-      m_cur_span->len    = (coord_type)len;
+      m_cur_span->x = (coord_type)(x + m_min_x);
+      m_cur_span->len = (coord_type)len;
       m_cur_span->covers = &m_covers[x];
     }
     m_last_x = x + len - 1;
@@ -211,66 +202,77 @@ class scanline_u8
   //--------------------------------------------------------------------
   void reset_spans()
   {
-    m_last_x    = 0x7FFFFFF0;
-    m_cur_span  = &m_spans[0];
+    m_last_x = 0x7FFFFFF0;
+    m_cur_span = &m_spans[0];
   }
 
   //--------------------------------------------------------------------
-  int      y()           const { return m_y; }
-  unsigned num_spans()   const { return unsigned(m_cur_span - &m_spans[0]); }
-  const_iterator begin() const { return &m_spans[1]; }
-  iterator       begin()       { return &m_spans[1]; }
+  int y() const
+  {
+    return m_y;
+  }
+  unsigned num_spans() const
+  {
+    return unsigned(m_cur_span - &m_spans[0]);
+  }
+  const_iterator begin() const
+  {
+    return &m_spans[1];
+  }
+  iterator begin()
+  {
+    return &m_spans[1];
+  }
 
  private:
   scanline_u8(const self_type&);
-  const self_type& operator = (const self_type&);
+  const self_type& operator=(const self_type&);
 
  private:
-  int                   m_min_x;
-  int                   m_last_x;
-  int                   m_y;
+  int m_min_x;
+  int m_last_x;
+  int m_y;
   pod_array<cover_type> m_covers;
-  pod_array<span>       m_spans;
-  span*                 m_cur_span;
+  pod_array<span> m_spans;
+  span* m_cur_span;
 };
-
-
-
 
 //==========================================================scanline_u8_am
 //
 // The scanline container with alpha-masking
 //
 //------------------------------------------------------------------------
-template<class AlphaMask>
-class scanline_u8_am : public scanline_u8
-{
+template <class AlphaMask>
+class scanline_u8_am : public scanline_u8 {
  public:
-  typedef scanline_u8           base_type;
-  typedef AlphaMask             alpha_mask_type;
+  typedef scanline_u8 base_type;
+  typedef AlphaMask alpha_mask_type;
   typedef base_type::cover_type cover_type;
   typedef base_type::coord_type coord_type;
 
-  scanline_u8_am() : base_type(), m_alpha_mask(0) {}
-  scanline_u8_am(const AlphaMask& am) : base_type(), m_alpha_mask(&am) {}
+  scanline_u8_am()
+      : base_type()
+      , m_alpha_mask(0)
+  {
+  }
+  scanline_u8_am(const AlphaMask& am)
+      : base_type()
+      , m_alpha_mask(&am)
+  {
+  }
 
   //--------------------------------------------------------------------
   void finalize(int span_y)
   {
     base_type::finalize(span_y);
-    if(m_alpha_mask)
-    {
+    if (m_alpha_mask) {
       typename base_type::iterator span = base_type::begin();
       unsigned count = base_type::num_spans();
-      do
-      {
-        m_alpha_mask->combine_hspan(span->x,
-                                    base_type::y(),
-                                    span->covers,
+      do {
+        m_alpha_mask->combine_hspan(span->x, base_type::y(), span->covers,
                                     span->len);
         ++span;
-      }
-      while(--count);
+      } while (--count);
     }
   }
 
@@ -278,88 +280,105 @@ class scanline_u8_am : public scanline_u8
   const AlphaMask* m_alpha_mask;
 };
 
-
-
-
 //===========================================================scanline32_u8
-class scanline32_u8
-{
+class scanline32_u8 {
  public:
   typedef scanline32_u8 self_type;
-  typedef int8u         cover_type;
-  typedef int32         coord_type;
+  typedef int8u cover_type;
+  typedef int32 coord_type;
 
   //--------------------------------------------------------------------
-  struct span
-  {
-    span() {}
-    span(coord_type x_, coord_type len_, cover_type* covers_) :
-        x(x_), len(len_), covers(covers_) {}
+  struct span {
+    span()
+    {
+    }
+    span(coord_type x_, coord_type len_, cover_type* covers_)
+        : x(x_)
+        , len(len_)
+        , covers(covers_)
+    {
+    }
 
-    coord_type  x;
-    coord_type  len;
+    coord_type x;
+    coord_type len;
     cover_type* covers;
   };
 
   typedef pod_bvector<span, 4> span_array_type;
 
   //--------------------------------------------------------------------
-  class const_iterator
-  {
+  class const_iterator {
    public:
-    const_iterator(const span_array_type& spans) :
-        m_spans(spans),
-        m_span_idx(0)
-    {}
+    const_iterator(const span_array_type& spans)
+        : m_spans(spans)
+        , m_span_idx(0)
+    {
+    }
 
-    const span& operator*()  const { return m_spans[m_span_idx];  }
-    const span* operator->() const { return &m_spans[m_span_idx]; }
+    const span& operator*() const
+    {
+      return m_spans[m_span_idx];
+    }
+    const span* operator->() const
+    {
+      return &m_spans[m_span_idx];
+    }
 
-    void operator ++ () { ++m_span_idx; }
+    void operator++()
+    {
+      ++m_span_idx;
+    }
 
    private:
     const span_array_type& m_spans;
-    unsigned               m_span_idx;
+    unsigned m_span_idx;
   };
 
   //--------------------------------------------------------------------
-  class iterator
-  {
+  class iterator {
    public:
-    iterator(span_array_type& spans) :
-        m_spans(spans),
-        m_span_idx(0)
-    {}
+    iterator(span_array_type& spans)
+        : m_spans(spans)
+        , m_span_idx(0)
+    {
+    }
 
-    span& operator*()  { return m_spans[m_span_idx];  }
-    span* operator->() { return &m_spans[m_span_idx]; }
+    span& operator*()
+    {
+      return m_spans[m_span_idx];
+    }
+    span* operator->()
+    {
+      return &m_spans[m_span_idx];
+    }
 
-    void operator ++ () { ++m_span_idx; }
+    void operator++()
+    {
+      ++m_span_idx;
+    }
 
    private:
     span_array_type& m_spans;
-    unsigned         m_span_idx;
+    unsigned m_span_idx;
   };
 
-
-
   //--------------------------------------------------------------------
-  scanline32_u8() :
-      m_min_x(0),
-      m_last_x(0x7FFFFFF0),
-      m_covers()
-  {}
+  scanline32_u8()
+      : m_min_x(0)
+      , m_last_x(0x7FFFFFF0)
+      , m_covers()
+  {
+  }
 
   //--------------------------------------------------------------------
   void reset(int min_x, int max_x)
   {
     unsigned max_len = max_x - min_x + 2;
-    if(max_len > m_covers.size())
-    {
+    if (max_len > m_covers.size()) {
       m_covers.resize(max_len);
     }
     m_last_x = 0x7FFFFFF0;
-    m_min_x  = min_x;
+    m_min_x = min_x;
     m_spans.remove_all();
   }
 
@@ -368,12 +387,10 @@ class scanline32_u8
   {
     x -= m_min_x;
     m_covers[x] = cover_type(cover);
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_spans.last().len++;
     }
-    else
-    {
+    else {
       m_spans.add(span(coord_type(x + m_min_x), 1, &m_covers[x]));
     }
     m_last_x = x;
@@ -384,15 +401,11 @@ class scanline32_u8
   {
     x -= m_min_x;
     memcpy(&m_covers[x], covers, len * sizeof(cover_type));
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_spans.last().len += coord_type(len);
     }
-    else
-    {
-      m_spans.add(span(coord_type(x + m_min_x),
-                       coord_type(len),
-                       &m_covers[x]));
+    else {
+      m_spans.add(span(coord_type(x + m_min_x), coord_type(len), &m_covers[x]));
     }
     m_last_x = x + len - 1;
   }
@@ -402,15 +415,11 @@ class scanline32_u8
   {
     x -= m_min_x;
     memset(&m_covers[x], cover, len);
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_spans.last().len += coord_type(len);
     }
-    else
-    {
-      m_spans.add(span(coord_type(x + m_min_x),
-                       coord_type(len),
-                       &m_covers[x]));
+    else {
+      m_spans.add(span(coord_type(x + m_min_x), coord_type(len), &m_covers[x]));
     }
     m_last_x = x + len - 1;
   }
@@ -429,61 +438,71 @@ class scanline32_u8
   }
 
   //--------------------------------------------------------------------
-  int      y()           const { return m_y; }
-  unsigned num_spans()   const { return m_spans.size(); }
-  const_iterator begin() const { return const_iterator(m_spans); }
-  iterator       begin()       { return iterator(m_spans); }
+  int y() const
+  {
+    return m_y;
+  }
+  unsigned num_spans() const
+  {
+    return m_spans.size();
+  }
+  const_iterator begin() const
+  {
+    return const_iterator(m_spans);
+  }
+  iterator begin()
+  {
+    return iterator(m_spans);
+  }
 
  private:
   scanline32_u8(const self_type&);
-  const self_type& operator = (const self_type&);
+  const self_type& operator=(const self_type&);
 
  private:
-  int                   m_min_x;
-  int                   m_last_x;
-  int                   m_y;
+  int m_min_x;
+  int m_last_x;
+  int m_y;
   pod_array<cover_type> m_covers;
-  span_array_type       m_spans;
+  span_array_type m_spans;
 };
-
-
-
 
 //========================================================scanline32_u8_am
 //
 // The scanline container with alpha-masking
 //
 //------------------------------------------------------------------------
-template<class AlphaMask>
-class scanline32_u8_am : public scanline32_u8
-{
+template <class AlphaMask>
+class scanline32_u8_am : public scanline32_u8 {
  public:
-  typedef scanline32_u8         base_type;
-  typedef AlphaMask             alpha_mask_type;
+  typedef scanline32_u8 base_type;
+  typedef AlphaMask alpha_mask_type;
   typedef base_type::cover_type cover_type;
   typedef base_type::coord_type coord_type;
 
-
-  scanline32_u8_am() : base_type(), m_alpha_mask(0) {}
-  scanline32_u8_am(const AlphaMask& am) : base_type(), m_alpha_mask(&am) {}
+  scanline32_u8_am()
+      : base_type()
+      , m_alpha_mask(0)
+  {
+  }
+  scanline32_u8_am(const AlphaMask& am)
+      : base_type()
+      , m_alpha_mask(&am)
+  {
+  }
 
   //--------------------------------------------------------------------
   void finalize(int span_y)
   {
     base_type::finalize(span_y);
-    if(m_alpha_mask)
-    {
+    if (m_alpha_mask) {
       typename base_type::iterator span = base_type::begin();
       unsigned count = base_type::num_spans();
-      do
-      {
-        m_alpha_mask->combine_hspan(span->x,
-                                    base_type::y(),
-                                    span->covers,
+      do {
+        m_alpha_mask->combine_hspan(span->x, base_type::y(), span->covers,
                                     span->len);
         ++span;
-      }
-      while(--count);
+      } while (--count);
     }
   }
 
@@ -491,9 +510,6 @@ class scanline32_u8_am : public scanline32_u8
   const AlphaMask* m_alpha_mask;
 };
 
-
-
-}
+} // namespace agg
 
 #endif
-

@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eJpegWriteFlags">
 			<comments desc="Jpeg write flags "/>
-			<value name="eJpegWriteFlags_None" value="0 ">
+			<value name="eJpegWriteFlags_None" value="0">
 				<comments desc="No flags. "/>
 			</value>
-			<value name="eJpegWriteFlags_YCoCg" value="niBit ( 0 ) ">
+			<value name="eJpegWriteFlags_YCoCg" value="niBit(0)">
 				<comments desc="Use the custom YCoCg color space. "/>
 			</value>
-			<value name="eJpegWriteFlags_Alpha" value="niBit ( 1 ) ">
+			<value name="eJpegWriteFlags_Alpha" value="niBit(1)">
 				<comments desc="Has an alpha channel, implies the use of the YCoCg(A) colorspace. "/>
 			</value>
 		</enum>

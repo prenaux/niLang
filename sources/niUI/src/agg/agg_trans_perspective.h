@@ -22,15 +22,15 @@
 #include "agg_basics.h"
 #include "agg_simul_eq.h"
 
-namespace agg
-{
+namespace agg {
 //=======================================================trans_perspective
-class trans_perspective
-{
+class trans_perspective {
  public:
   //--------------------------------------------------------------------
-  trans_perspective() : m_valid(false) {}
-
+  trans_perspective()
+      : m_valid(false)
+  {
+  }
 
   //--------------------------------------------------------------------
   // Arbitrary quadrangle transformations
@@ -38,7 +38,6 @@ class trans_perspective
   {
     quad_to_quad(src, dst);
   }
-
 
   //--------------------------------------------------------------------
   // Direct transformations
@@ -48,15 +47,13 @@ class trans_perspective
     rect_to_quad(x1, y1, x2, y2, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Reverse transformations
-  trans_perspective(const agg_real* quad,
-                    agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  trans_perspective(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                    agg_real y2)
   {
     quad_to_rect(quad, x1, y1, x2, y2);
   }
-
 
   //--------------------------------------------------------------------
   // Set the transformations using two arbitrary quadrangles.
@@ -67,34 +64,32 @@ class trans_perspective
     agg_real right[8][1];
 
     unsigned i;
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
       unsigned ix = i * 2;
       unsigned iy = ix + 1;
 
-      left[ix][0]  =  1.0;
-      left[ix][1]  =  src[ix];
-      left[ix][2]  =  src[iy];
-      left[ix][3]  =  0.0;
-      left[ix][4]  =  0.0;
-      left[ix][5]  =  0.0;
-      left[ix][6]  = -src[ix] * dst[ix];
-      left[ix][7]  = -src[iy] * dst[ix];
-      right[ix][0] =  dst[ix];
+      left[ix][0] = 1.0;
+      left[ix][1] = src[ix];
+      left[ix][2] = src[iy];
+      left[ix][3] = 0.0;
+      left[ix][4] = 0.0;
+      left[ix][5] = 0.0;
+      left[ix][6] = -src[ix] * dst[ix];
+      left[ix][7] = -src[iy] * dst[ix];
+      right[ix][0] = dst[ix];
 
-      left[iy][0]  =  0.0;
-      left[iy][1]  =  0.0;
-      left[iy][2]  =  0.0;
-      left[iy][3]  =  1.0;
-      left[iy][4]  =  src[ix];
-      left[iy][5]  =  src[iy];
-      left[iy][6]  = -src[ix] * dst[iy];
-      left[iy][7]  = -src[iy] * dst[iy];
-      right[iy][0] =  dst[iy];
+      left[iy][0] = 0.0;
+      left[iy][1] = 0.0;
+      left[iy][2] = 0.0;
+      left[iy][3] = 1.0;
+      left[iy][4] = src[ix];
+      left[iy][5] = src[iy];
+      left[iy][6] = -src[ix] * dst[iy];
+      left[iy][7] = -src[iy] * dst[iy];
+      right[iy][0] = dst[iy];
     }
     m_valid = simul_eq<8, 1>::solve(left, right, m_mtx);
   }
-
 
   //--------------------------------------------------------------------
   // Set the direct transformations, i.e., rectangle -> quadrangle
@@ -109,11 +104,10 @@ class trans_perspective
     quad_to_quad(src, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Set the reverse transformations, i.e., quadrangle -> rectangle
-  void quad_to_rect(const agg_real* quad,
-                    agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  void quad_to_rect(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                    agg_real y2)
   {
     agg_real dst[8];
     dst[0] = dst[6] = x1;
@@ -125,7 +119,10 @@ class trans_perspective
 
   //--------------------------------------------------------------------
   // Check if the equations were solved successfully
-  bool is_valid() const { return m_valid; }
+  bool is_valid() const
+  {
+    return m_valid;
+  }
 
   //--------------------------------------------------------------------
   // Transform a point (x, y)
@@ -139,8 +136,7 @@ class trans_perspective
   }
 
   //--------------------------------------------------------------------
-  class iterator_x
-  {
+  class iterator_x {
     agg_real den;
     agg_real den_step;
     agg_real nom_x;
@@ -152,22 +148,24 @@ class trans_perspective
     agg_real x;
     agg_real y;
 
-    iterator_x() {}
-    iterator_x(agg_real tx, agg_real ty, agg_real step, const agg_real m[8][1]) :
-        den(m[6][0] * tx + m[7][0] * ty + 1.0),
-        den_step(m[6][0] * step),
-        nom_x(m[0][0] + m[1][0] * tx + m[2][0] * ty),
-        nom_x_step(m[1][0] * step),
-        nom_y(m[3][0] + m[4][0] * tx + m[5][0] * ty),
-        nom_y_step(m[4][0] * step),
-        x(nom_x / den),
-        y(nom_y / den)
+    iterator_x()
+    {
+    }
+    iterator_x(agg_real tx, agg_real ty, agg_real step, const agg_real m[8][1])
+        : den(m[6][0] * tx + m[7][0] * ty + 1.0)
+        , den_step(m[6][0] * step)
+        , nom_x(m[0][0] + m[1][0] * tx + m[2][0] * ty)
+        , nom_x_step(m[1][0] * step)
+        , nom_y(m[3][0] + m[4][0] * tx + m[5][0] * ty)
+        , nom_y_step(m[4][0] * step)
+        , x(nom_x / den)
+        , y(nom_y / den)
     {
     }
 
-    void operator ++ ()
+    void operator++()
     {
-      den   += den_step;
+      den += den_step;
       nom_x += nom_x_step;
       nom_y += nom_y_step;
       agg_real d = 1.0 / den;
@@ -184,9 +182,9 @@ class trans_perspective
 
  private:
   agg_real m_mtx[8][1];
-  bool   m_valid;
+  bool m_valid;
 };
 
-}
+} // namespace agg
 
 #endif

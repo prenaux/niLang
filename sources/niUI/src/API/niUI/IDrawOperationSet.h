@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! Draw operation set.
-struct iDrawOperationSet : public iUnknown
-{
+struct iDrawOperationSet : public iUnknown {
   niDeclareInterfaceUUID(iDrawOperationSet,0xc5ce498a,0x186a,0x49ed,0x99,0x2c,0xc0,0x0b,0x3b,0x65,0xfb,0x58);
 
   //! Clear the operation set.
@@ -44,19 +43,22 @@ struct iDrawOperationSet : public iUnknown
   //! Draw all draw operation of the set with specified graphics context.
   //! \param apContext the context to draw to
   //! \param apFrustum if specified frustum culling is applied to the draw operation that have a valid bounding volume
-  virtual tU32 __stdcall Draw(iGraphicsContext* apContext, iFrustum* apFrustum) = 0;
+  virtual tU32 __stdcall Draw(iGraphicsContext* apContext,
+                              iFrustum* apFrustum) = 0;
 
   //! Draw all draw operation of the set with specified graphics context and matrix set on each draw op.
   //! \param aMatrix the matrix to set on the draw ops
   //! \param apContext the context to draw to
   //! \param apFrustum if specified frustum culling is applied to the draw operation that have a valid bounding volume
-  virtual tU32 __stdcall XDraw(const sMatrixf& aMatrix, iGraphicsContext* apContext, iFrustum* apFrustum) = 0;
+  virtual tU32 __stdcall XDraw(const sMatrixf& aMatrix,
+                               iGraphicsContext* apContext,
+                               iFrustum* apFrustum) = 0;
 };
 
 //! Draw operation set smart pointer.
-typedef Ptr<iDrawOperationSet>  tDrawOperationSetPtr;
+typedef Ptr<iDrawOperationSet> tDrawOperationSetPtr;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __DRAWOPERATIONSET_842634_H__

@@ -10,15 +10,15 @@ namespace ni {
 //! Combo box widget style.
 enum eWidgetComboBoxStyle {
   //! Drop down combo box, the text cant be edited.
-  eWidgetComboBoxStyle_DropDown = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetComboBoxStyle_DropDown = niBit(eWidgetStyle_MaxBit + 0),
   //! Allow to select multiple items in the combo box.
-  eWidgetComboBoxStyle_Multiselect = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetComboBoxStyle_Multiselect = niBit(eWidgetStyle_MaxBit + 1),
   //! Set the combo box's edity box to be read only.
-  eWidgetComboBoxStyle_ReadOnly = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetComboBoxStyle_ReadOnly = niBit(eWidgetStyle_MaxBit + 2),
   //! No default list box is created, the next child added will be the dropped widget.
-  eWidgetComboBoxStyle_NoDefaultListBox = niBit(eWidgetStyle_MaxBit+3),
+  eWidgetComboBoxStyle_NoDefaultListBox = niBit(eWidgetStyle_MaxBit + 3),
   //! For defautl dropped list box, click down add selection, ctrl+click set selection. (This is the opposite of the default)
-  eWidgetComboBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit+4),
+  eWidgetComboBoxStyle_ClickAddSelection = niBit(eWidgetStyle_MaxBit + 4),
   //! \internal
   eWidgetComboBoxStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
@@ -40,8 +40,7 @@ enum eWidgetComboBoxCmd {
 };
 
 //! Combo box widget interface.
-struct iWidgetComboBox : public iUnknown
-{
+struct iWidgetComboBox : public iUnknown {
   niDeclareInterfaceUUID(iWidgetComboBox,0x69e43028,0xc01d,0x4cb9,0xb3,0xba,0xe3,0xcd,0x0c,0xd4,0x08,0x9e);
   //! Set the number of lines dropped.
   //! {Property}
@@ -59,5 +58,5 @@ struct iWidgetComboBox : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __ICOMBOBOX_3636236_H__

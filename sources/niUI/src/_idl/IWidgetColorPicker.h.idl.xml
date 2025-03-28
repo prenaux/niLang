@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eWidgetColorPickerCmd">
 			<comments desc="Color picker notification messages. "/>
-			<value name="eWidgetColorPickerCmd_ColorChanged" value="0 ">
+			<value name="eWidgetColorPickerCmd_ColorChanged" value="0">
 				<comments desc="Sent when the color changed. "/>
 			</value>
 		</enum>
 		<enum name="eWidgetColorPickerStyle">
 			<comments desc="Color picker style. "/>
-			<value name="eWidgetColorPickerStyle_Brightness" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetColorPickerStyle_Brightness" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Show the brightness control. "/>
 			</value>
 		</enum>

@@ -5,8 +5,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmapCube declaration
-class cBitmapCube : public ImplRC<iBitmapCube,eImplFlags_DontInherit1,iBitmapBase>
-{
+class cBitmapCube
+    : public ImplRC<iBitmapCube, eImplFlags_DontInherit1, iBitmapBase> {
  public:
   cBitmapCube(tU32 ulW, iPixelFormat* pPixFmt, tBool bAllocFaces = eTrue);
   ~cBitmapCube();
@@ -16,11 +16,20 @@ class cBitmapCube : public ImplRC<iBitmapCube,eImplFlags_DontInherit1,iBitmapBas
   //// iUnknown /////////////////////////////////
 
   //// iBitmapCube //////////////////////////////
-  eBitmapType __stdcall GetType() const { return eBitmapType_Cube; }
+  eBitmapType __stdcall GetType() const
+  {
+    return eBitmapType_Cube;
+  }
   iPixelFormat* __stdcall GetPixelFormat() const;
   tU32 __stdcall GetWidth() const;
-  tU32 __stdcall GetHeight() const { return GetWidth(); }
-  tU32 __stdcall GetDepth() const { return GetWidth(); }
+  tU32 __stdcall GetHeight() const
+  {
+    return GetWidth();
+  }
+  tU32 __stdcall GetDepth() const
+  {
+    return GetWidth();
+  }
   iBitmapCube* __stdcall CreateResized(tI32 nW) const;
   tBool __stdcall CreateMipMaps(tU32 anNumMipMap, tBool abCompute);
   void __stdcall RemoveMipMaps();
@@ -33,9 +42,9 @@ class cBitmapCube : public ImplRC<iBitmapCube,eImplFlags_DontInherit1,iBitmapBas
   //// iBitmapCube //////////////////////////////
 
  private:
-  tU32            mulWidth;
+  tU32 mulWidth;
   Ptr<iPixelFormat> mptrPxf;
-  Ptr<iBitmap2D>  mptrFaces[6];
+  Ptr<iBitmap2D> mptrFaces[6];
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////

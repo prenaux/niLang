@@ -13,8 +13,7 @@ struct iGraphics;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Bitmap type
-enum eBitmapType
-{
+enum eBitmapType {
   //! 2D Bitmap.
   eBitmapType_2D = 0,
   //! Cube Bitmap. Six 2D Bitmaps.
@@ -26,8 +25,7 @@ enum eBitmapType
 };
 
 //! Bitmap format interface.
-struct iBitmapFormat : public iUnknown
-{
+struct iBitmapFormat : public iUnknown {
   niDeclareInterfaceUUID(iBitmapFormat,0x08633bcb,0xb637,0xdf11,0xa0,0xfb,0xf7,0x8a,0x46,0xea,0x41,0xc1);
 
   //! Copy another bitmap format.
@@ -76,8 +74,7 @@ struct iBitmapFormat : public iUnknown
 };
 
 //! Base bitmap interface.
-struct iBitmapBase : public iUnknown
-{
+struct iBitmapBase : public iUnknown {
   niDeclareInterfaceUUID(iBitmapBase,0x28d2f00b,0xb685,0x492a,0xb0,0x3c,0x13,0x85,0xad,0x06,0x9f,0xf5);
 
   //! Return the bitmap type.
@@ -103,9 +100,11 @@ struct iBitmapBase : public iUnknown
   //! {Property}
   virtual tU32 __stdcall GetNumMipMaps() const = 0;
   //! Create a copy of the bitmap.
-  virtual iBitmapBase* __stdcall Clone(ePixelFormatBlit eBlit = ePixelFormatBlit_Normal) const = 0;
+  virtual iBitmapBase* __stdcall Clone(
+    ePixelFormatBlit eBlit = ePixelFormatBlit_Normal) const = 0;
   //! Create a copy of the bitmap that use the given format.
-  virtual iBitmapBase* __stdcall CreateConvertedFormat(const iPixelFormat* pFmt) const = 0;
+  virtual iBitmapBase* __stdcall CreateConvertedFormat(
+    const iPixelFormat* pFmt) const = 0;
   //! Create a gamma corrected bitmap.
   virtual iBitmapBase* __stdcall CreateGammaCorrected(tF32 factor) const = 0;
   //! Correct gamma of the bitmap.
@@ -116,31 +115,34 @@ struct iBitmapBase : public iUnknown
 //! {DispatchWrapper}
 struct iBitmapLoader : public iUnknown {
   niDeclareInterfaceUUID(iBitmapLoader, 0x89af4ed6,0xf146,0x4abb,0x81,0x06,0xb1,0x2a,0x40,0xc8,0x24,0x08);
-  virtual iBitmapBase*  __stdcall LoadBitmap(iGraphics* apGraphics, iFile* apFile) = 0;
+  virtual iBitmapBase* __stdcall LoadBitmap(iGraphics* apGraphics,
+                                            iFile* apFile) = 0;
 };
 
 //! Bitmap Saver
 //! {DispatchWrapper}
 struct iBitmapSaver : public iUnknown {
   niDeclareInterfaceUUID(iBitmapSaver, 0x89af4ed6,0xf146,0x4abb,0x81,0x06,0xb1,0x2a,0x40,0xc8,0x24,0x08);
-  virtual tBool  __stdcall SaveBitmap(iGraphics* apGraphics, iFile* apFile, iBitmapBase* apBmp, tU32 anCompression) = 0;
+  virtual tBool __stdcall SaveBitmap(iGraphics* apGraphics, iFile* apFile,
+                                     iBitmapBase* apBmp,
+                                     tU32 anCompression) = 0;
 };
 
-niExportFunc(iUnknown*) New_BitmapLoader_bmp(const Var&,const Var&);
-niExportFunc(iUnknown*) New_BitmapSaver_bmp(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_bmp(const Var&, const Var&);
+niExportFunc(iUnknown*) New_BitmapSaver_bmp(const Var&, const Var&);
 
-niExportFunc(iUnknown*) New_BitmapLoader_jpeg(const Var&,const Var&);
-niExportFunc(iUnknown*) New_BitmapSaver_jpeg(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_jpeg(const Var&, const Var&);
+niExportFunc(iUnknown*) New_BitmapSaver_jpeg(const Var&, const Var&);
 
-niExportFunc(iUnknown*) New_BitmapLoader_png(const Var&,const Var&);
-niExportFunc(iUnknown*) New_BitmapSaver_png(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_png(const Var&, const Var&);
+niExportFunc(iUnknown*) New_BitmapSaver_png(const Var&, const Var&);
 
-niExportFunc(iUnknown*) New_BitmapLoader_tga(const Var&,const Var&);
-niExportFunc(iUnknown*) New_BitmapSaver_tga(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_tga(const Var&, const Var&);
+niExportFunc(iUnknown*) New_BitmapSaver_tga(const Var&, const Var&);
 
-niExportFunc(iUnknown*) New_BitmapLoader_dds(const Var&,const Var&);
+niExportFunc(iUnknown*) New_BitmapLoader_dds(const Var&, const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __IBITMAPBASE_14599053_H__

@@ -30,8 +30,7 @@
 
 #include "agg_array.h"
 
-namespace agg
-{
+namespace agg {
 
 //=============================================================scanline_bin
 //
@@ -40,13 +39,11 @@ namespace agg
 // for details.
 //
 //------------------------------------------------------------------------
-class scanline_bin
-{
+class scanline_bin {
  public:
   typedef int32 coord_type;
 
-  struct span
-  {
+  struct span {
     int16 x;
     int16 len;
   };
@@ -54,10 +51,10 @@ class scanline_bin
   typedef const span* const_iterator;
 
   //--------------------------------------------------------------------
-  scanline_bin() :
-      m_last_x(0x7FFFFFF0),
-      m_spans(),
-      m_cur_span(0)
+  scanline_bin()
+      : m_last_x(0x7FFFFFF0)
+      , m_spans()
+      , m_cur_span(0)
   {
   }
 
@@ -65,23 +62,20 @@ class scanline_bin
   void reset(int min_x, int max_x)
   {
     unsigned max_len = max_x - min_x + 3;
-    if(max_len > m_spans.size())
-    {
+    if (max_len > m_spans.size()) {
       m_spans.resize(max_len);
     }
-    m_last_x   = 0x7FFFFFF0;
+    m_last_x = 0x7FFFFFF0;
     m_cur_span = &m_spans[0];
   }
 
   //--------------------------------------------------------------------
   void add_cell(int x, unsigned)
   {
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_cur_span->len++;
     }
-    else
-    {
+    else {
       ++m_cur_span;
       m_cur_span->x = (int16)x;
       m_cur_span->len = 1;
@@ -92,12 +86,10 @@ class scanline_bin
   //--------------------------------------------------------------------
   void add_span(int x, unsigned len, unsigned)
   {
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_cur_span->len = (int16)(m_cur_span->len + len);
     }
-    else
-    {
+    else {
       ++m_cur_span;
       m_cur_span->x = (int16)x;
       m_cur_span->len = (int16)len;
@@ -120,70 +112,89 @@ class scanline_bin
   //--------------------------------------------------------------------
   void reset_spans()
   {
-    m_last_x    = 0x7FFFFFF0;
-    m_cur_span  = &m_spans[0];
+    m_last_x = 0x7FFFFFF0;
+    m_cur_span = &m_spans[0];
   }
 
   //--------------------------------------------------------------------
-  int            y()         const { return m_y; }
-  unsigned       num_spans() const { return unsigned(m_cur_span - &m_spans[0]); }
-  const_iterator begin()     const { return &m_spans[1]; }
+  int y() const
+  {
+    return m_y;
+  }
+  unsigned num_spans() const
+  {
+    return unsigned(m_cur_span - &m_spans[0]);
+  }
+  const_iterator begin() const
+  {
+    return &m_spans[1];
+  }
 
  private:
   scanline_bin(const scanline_bin&);
-  const scanline_bin operator = (const scanline_bin&);
+  const scanline_bin operator=(const scanline_bin&);
 
-  int             m_last_x;
-  int             m_y;
+  int m_last_x;
+  int m_y;
   pod_array<span> m_spans;
-  span*           m_cur_span;
+  span* m_cur_span;
 };
 
-
-
-
-
-
 //===========================================================scanline32_bin
-class scanline32_bin
-{
+class scanline32_bin {
  public:
   typedef int32 coord_type;
 
   //--------------------------------------------------------------------
-  struct span
-  {
-    span() {}
-    span(coord_type x_, coord_type len_) : x(x_), len(len_) {}
+  struct span {
+    span()
+    {
+    }
+    span(coord_type x_, coord_type len_)
+        : x(x_)
+        , len(len_)
+    {
+    }
 
     coord_type x;
     coord_type len;
   };
   typedef pod_bvector<span, 4> span_array_type;
 
-
   //--------------------------------------------------------------------
-  class const_iterator
-  {
+  class const_iterator {
    public:
-    const_iterator(const span_array_type& spans) :
-        m_spans(spans),
-        m_span_idx(0)
-    {}
+    const_iterator(const span_array_type& spans)
+        : m_spans(spans)
+        , m_span_idx(0)
+    {
+    }
 
-    const span& operator*()  const { return m_spans[m_span_idx];  }
-    const span* operator->() const { return &m_spans[m_span_idx]; }
+    const span& operator*() const
+    {
+      return m_spans[m_span_idx];
+    }
+    const span* operator->() const
+    {
+      return &m_spans[m_span_idx];
+    }
 
-    void operator ++ () { ++m_span_idx; }
+    void operator++()
+    {
+      ++m_span_idx;
+    }
 
    private:
     const span_array_type& m_spans;
-    unsigned               m_span_idx;
+    unsigned m_span_idx;
   };
 
-
   //--------------------------------------------------------------------
-  scanline32_bin() : m_max_len(0), m_last_x(0x7FFFFFF0) {}
+  scanline32_bin()
+      : m_max_len(0)
+      , m_last_x(0x7FFFFFF0)
+  {
+  }
 
   //--------------------------------------------------------------------
   void reset(int min_x, int max_x)
@@ -195,12 +206,10 @@ class scanline32_bin
   //--------------------------------------------------------------------
   void add_cell(int x, unsigned)
   {
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_spans.last().len++;
     }
-    else
-    {
+    else {
       m_spans.add(span(coord_type(x), 1));
     }
     m_last_x = x;
@@ -209,12 +218,10 @@ class scanline32_bin
   //--------------------------------------------------------------------
   void add_span(int x, unsigned len, unsigned)
   {
-    if(x == m_last_x+1)
-    {
+    if (x == m_last_x + 1) {
       m_spans.last().len += coord_type(len);
     }
-    else
-    {
+    else {
       m_spans.add(span(coord_type(x), coord_type(len)));
     }
     m_last_x = x + len - 1;
@@ -240,25 +247,29 @@ class scanline32_bin
   }
 
   //--------------------------------------------------------------------
-  int            y()         const { return m_y; }
-  unsigned       num_spans() const { return m_spans.size(); }
-  const_iterator begin()     const { return const_iterator(m_spans); }
+  int y() const
+  {
+    return m_y;
+  }
+  unsigned num_spans() const
+  {
+    return m_spans.size();
+  }
+  const_iterator begin() const
+  {
+    return const_iterator(m_spans);
+  }
 
  private:
   scanline32_bin(const scanline32_bin&);
-  const scanline32_bin operator = (const scanline32_bin&);
+  const scanline32_bin operator=(const scanline32_bin&);
 
-  unsigned        m_max_len;
-  int             m_last_x;
-  int             m_y;
+  unsigned m_max_len;
+  int m_last_x;
+  int m_y;
   span_array_type m_spans;
 };
 
-
-
-
-
-}
-
+} // namespace agg
 
 #endif

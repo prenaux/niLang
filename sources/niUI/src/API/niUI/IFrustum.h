@@ -7,36 +7,33 @@
 namespace ni {
 
 //! Frustum planes.
-enum eFrustumPlane
-{
+enum eFrustumPlane {
   //! Left frustum plane.
-  eFrustumPlane_Left    = 0,
+  eFrustumPlane_Left = 0,
   //! Right frustum plane.
-  eFrustumPlane_Right   = 1,
+  eFrustumPlane_Right = 1,
   //! Top frustum plane.
-  eFrustumPlane_Top   = 2,
+  eFrustumPlane_Top = 2,
   //! Bottom frustum plane.
-  eFrustumPlane_Bottom  = 3,
+  eFrustumPlane_Bottom = 3,
   //! Near frustum plane.
-  eFrustumPlane_Near    = 4,
+  eFrustumPlane_Near = 4,
   //! Far frustum plane.
-  eFrustumPlane_Far   = 5,
+  eFrustumPlane_Far = 5,
   //! \internal
   eFrustumPlane_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Value return by the culling functions.
-enum eCullCode
-{
-  eCullCode_Out   = 0,    // completely outside the frustum
-  eCullCode_In    = 1,    // completely inside the frustum
-  eCullCode_Intersect = 2   // partially visible
+enum eCullCode {
+  eCullCode_Out = 0,      // completely outside the frustum
+  eCullCode_In = 1,       // completely inside the frustum
+  eCullCode_Intersect = 2 // partially visible
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Frustum interface
-struct iFrustum : public iUnknown
-{
+struct iFrustum : public iUnknown {
   niDeclareInterfaceUUID(iFrustum,0x6cfe2b98,0xb883,0x4344,0xaa,0x1c,0xa7,0xbc,0x56,0x81,0x7d,0x64);
 
   //! Create a copy of this object.
@@ -65,12 +62,14 @@ struct iFrustum : public iUnknown
   virtual tU32 __stdcall GetNumPlanes() const = 0;
   //! Add the given number of planes to the frustum.
   //! {NoAutomation}
-  virtual void __stdcall AddPlanes(tU32 aulNumPlane, const sPlanef* apPlanes) = 0;
+  virtual void __stdcall AddPlanes(tU32 aulNumPlane,
+                                   const sPlanef* apPlanes) = 0;
   //! Add one plane to the frustum.
   virtual void __stdcall AddPlane(const sPlanef& aPlane) = 0;
   //! Set all planes of the frustum.
   //! {NoAutomation}
-  virtual void __stdcall SetPlanes(tU32 aulNumPlane, const sPlanef* apPlanes) = 0;
+  virtual void __stdcall SetPlanes(tU32 aulNumPlane,
+                                   const sPlanef* apPlanes) = 0;
   //! Set the plane of the given index.
   //! {Property}
   virtual void __stdcall SetPlane(tU32 ulIdx, const sPlanef& Plane) = 0;
@@ -81,17 +80,22 @@ struct iFrustum : public iUnknown
   //! {NoAutomation}
   virtual sPlanef* __stdcall GetPlanes() const = 0;
   //! Cull an AABB.
-  virtual eCullCode __stdcall CullAABB(const sVec3f& avMin, const sVec3f& avMax) const = 0;
+  virtual eCullCode __stdcall CullAABB(const sVec3f& avMin,
+                                       const sVec3f& avMax) const = 0;
   //! Check if the given AABB is in the frustum.
-  virtual tBool __stdcall IntersectAABB(const sVec3f& avMin, const sVec3f& avMax) const = 0;
+  virtual tBool __stdcall IntersectAABB(const sVec3f& avMin,
+                                        const sVec3f& avMax) const = 0;
   //! Cull a sphere.
-  virtual eCullCode __stdcall CullSphere(const sVec3f& avCenter, tF32 afRadius) const = 0;
+  virtual eCullCode __stdcall CullSphere(const sVec3f& avCenter,
+                                         tF32 afRadius) const = 0;
   //! Check if the given sphere is in the frustum.
-  virtual tBool __stdcall IntersectSphere(const sVec3f& avCenter, tF32 afRadius) const = 0;
+  virtual tBool __stdcall IntersectSphere(const sVec3f& avCenter,
+                                          tF32 afRadius) const = 0;
   //! Transform the frustum by the given matrix.
   virtual tBool __stdcall Transform(const sMatrixf& M) = 0;
   //! Compute the screen bounding box.
-  virtual sRectf __stdcall ComputeScreenBoundingBox(const sMatrixf& amtxWVP, const sRectf& aViewport) = 0;
+  virtual sRectf __stdcall ComputeScreenBoundingBox(
+    const sMatrixf& amtxWVP, const sRectf& aViewport) = 0;
   //! Set the world bounding volume.
   //! {Property}
   virtual tBool __stdcall SetBoundingVolume(iBoundingVolume* apBV) = 0;

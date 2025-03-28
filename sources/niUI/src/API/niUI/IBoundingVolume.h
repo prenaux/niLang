@@ -6,9 +6,11 @@
 
 namespace ni {
 
-template <class T> class cAABB;
-template <class T> class cFrustum;
-typedef cAABB<tF32>     cAABBf;
+template <class T>
+class cAABB;
+template <class T>
+class cFrustum;
+typedef cAABB<tF32> cAABBf;
 
 struct iFrustum;
 struct iBoundingVolume;
@@ -19,8 +21,7 @@ struct iBoundingVolume;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Bounding volume type.
-enum eBoundingVolumeType
-{
+enum eBoundingVolumeType {
   //! AABB volume type.
   eBoundingVolumeType_AABB = 0,
   //! Sphere volume type.
@@ -35,8 +36,7 @@ enum eBoundingVolumeType
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Bounding volume interface.
-struct iBoundingVolume : public iUnknown
-{
+struct iBoundingVolume : public iUnknown {
   niDeclareInterfaceUUID(iBoundingVolume,0x489ebd21,0x5b90,0x46db,0xa8,0x57,0x5c,0x6e,0x8d,0x3b,0x89,0xba);
 
   //! Copy another bounding volume in this volume.
@@ -118,20 +118,26 @@ struct iBoundingVolume : public iUnknown
   //! @{
 
   //! Intersect with an AABB.
-  virtual eIntersectionResult __stdcall IntersectAABB(iIntersection* apResult, const sVec3f& avMin, const sVec3f& avMax) const = 0;
+  virtual eIntersectionResult __stdcall IntersectAABB(
+    iIntersection* apResult, const sVec3f& avMin,
+    const sVec3f& avMax) const = 0;
   //! Intersect with a ray.
-  virtual eIntersectionResult __stdcall IntersectRay(iIntersection* apResult, const sVec3f& avOrg, const sVec3f& avDir) const = 0;
+  virtual eIntersectionResult __stdcall IntersectRay(
+    iIntersection* apResult, const sVec3f& avOrg,
+    const sVec3f& avDir) const = 0;
   //! Intersect with a point.
-  virtual eIntersectionResult __stdcall IntersectPoint(iIntersection* apResult, const sVec3f& aPosition) const = 0;
+  virtual eIntersectionResult __stdcall IntersectPoint(
+    iIntersection* apResult, const sVec3f& aPosition) const = 0;
   //! Intersect with a frustum.
-  virtual eIntersectionResult __stdcall IntersectFrustum(iIntersection* apResult, const iFrustum* apFrustum) const = 0;
+  virtual eIntersectionResult __stdcall IntersectFrustum(
+    iIntersection* apResult, const iFrustum* apFrustum) const = 0;
   //! @}
 };
 
 //! Bounding volume smart pointer.
-typedef Ptr<iBoundingVolume>  tBoundingVolumePtr;
+typedef Ptr<iBoundingVolume> tBoundingVolumePtr;
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IBOUNDINGVOLUME_2803289_H__

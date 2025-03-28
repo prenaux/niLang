@@ -8,8 +8,9 @@
 // #define NI_VIDEO_USE_WEBCAM
 // #define NI_VIDEO_USE_IPCAM
 
-#if defined NI_VIDEO_USE_THEORAPLAYER || defined NI_VIDEO_USE_WEBCAM || defined NI_VIDEO_USE_IPCAM
-#define NI_VIDEO
+#if defined NI_VIDEO_USE_THEORAPLAYER || defined NI_VIDEO_USE_WEBCAM || \
+  defined NI_VIDEO_USE_IPCAM
+  #define NI_VIDEO
 #endif
 
 tBool Video_FileNameIsVideo(const char* aaszFileName);

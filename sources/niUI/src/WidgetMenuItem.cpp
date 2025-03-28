@@ -39,7 +39,8 @@ ni::tBool __stdcall cWidgetMenuItem::IsOK() const
 }
 
 ///////////////////////////////////////////////
-void __stdcall cWidgetMenuItem::Invalidate() {
+void __stdcall cWidgetMenuItem::Invalidate()
+{
   mpwMenu = NULL;
 }
 
@@ -50,7 +51,7 @@ iWidgetMenu* __stdcall cWidgetMenuItem::GetMenu() const
 }
 
 ///////////////////////////////////////////////
-tBool cWidgetMenuItem::SetName(const achar *aVal)
+tBool cWidgetMenuItem::SetName(const achar* aVal)
 {
   mhspName = _H(aVal);
   if (mpwMenu)
@@ -59,17 +60,19 @@ tBool cWidgetMenuItem::SetName(const achar *aVal)
 }
 
 ///////////////////////////////////////////////
-void cWidgetMenuItem::_UpdateLocale() {
+void cWidgetMenuItem::_UpdateLocale()
+{
   if (mpwMenu)
     mhspLocalizedName = mpwMenu->FindLocalized(mhspName);
 }
 
 ///////////////////////////////////////////////
-const achar * cWidgetMenuItem::GetName() const
+const achar* cWidgetMenuItem::GetName() const
 {
   return niHStr(mhspName);
 }
-const achar* __stdcall cWidgetMenuItem::GetLocalizedName() const {
+const achar* __stdcall cWidgetMenuItem::GetLocalizedName() const
+{
   return niHStr(mhspLocalizedName);
 }
 
@@ -100,14 +103,14 @@ tWidgetMenuItemFlags cWidgetMenuItem::GetFlags() const
 }
 
 ///////////////////////////////////////////////
-tBool cWidgetMenuItem::SetIcon(iOverlay *aVal)
+tBool cWidgetMenuItem::SetIcon(iOverlay* aVal)
 {
   mptrIcon = aVal;
   return eTrue;
 }
 
 ///////////////////////////////////////////////
-iOverlay * cWidgetMenuItem::GetIcon() const
+iOverlay* cWidgetMenuItem::GetIcon() const
 {
   return mptrIcon;
 }
@@ -130,12 +133,10 @@ tBool cWidgetMenuItem::SetSelected(tBool aVal)
 {
   QPtr<iWidgetMenu> wMenu = mpwMenu;
   if (wMenu.IsOK()) {
-    if (aVal && niFlagIs(mnFlags,eWidgetMenuItemFlags_Group))
-    {
-      for (tU32 i = 0; i < wMenu->GetNumItems(); ++i)
-      {
+    if (aVal && niFlagIs(mnFlags, eWidgetMenuItemFlags_Group)) {
+      for (tU32 i = 0; i < wMenu->GetNumItems(); ++i) {
         iWidgetMenuItem* pItem = wMenu->GetItem(i);
-        if (!niFlagIs(pItem->GetFlags(),eWidgetMenuItemFlags_Group))
+        if (!niFlagIs(pItem->GetFlags(), eWidgetMenuItemFlags_Group))
           continue;
         if (pItem->GetGroupID() == mhspGroupID)
           static_cast<cWidgetMenuItem*>(pItem)->mbSelected = eFalse;

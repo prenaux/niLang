@@ -2,40 +2,40 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eVGTransform">
 			<comments desc="VG transform type. "/>
-			<value min_features="20" name="eVGTransform_Path" value="0 ">
+			<value min_features="20" name="eVGTransform_Path" value="0">
 				<comments desc="Path to surface transform. "/>
 			</value>
-			<value min_features="20" name="eVGTransform_Image" value="1 ">
+			<value min_features="20" name="eVGTransform_Image" value="1">
 				<comments desc="Image to surface transform. "/>
 			</value>
-			<value min_features="20" name="eVGTransform_FillPaint" value="2 ">
+			<value min_features="20" name="eVGTransform_FillPaint" value="2">
 				<comments desc="Fill paint to user transform. "/>
 			</value>
-			<value min_features="20" name="eVGTransform_StrokePaint" value="3 ">
+			<value min_features="20" name="eVGTransform_StrokePaint" value="3">
 				<comments desc="Stroke paint to user transform. "/>
 			</value>
-			<value min_features="20" name="eVGTransform_Last" value="4 ">
+			<value min_features="20" name="eVGTransform_Last" value="4">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
 		<enum min_features="20" name="eVGTransformValue">
 			<comments desc="VG transform value. "/>
-			<value min_features="20" name="eVGTransformValue_ScaleX" value="0 ">
+			<value min_features="20" name="eVGTransformValue_ScaleX" value="0">
 				<comments desc="ScaleX (m0) component. "/>
 			</value>
-			<value min_features="20" name="eVGTransformValue_RotationSkew0" value="1 ">
+			<value min_features="20" name="eVGTransformValue_RotationSkew0" value="1">
 				<comments desc="RotationSkew0 (m1) component. "/>
 			</value>
-			<value min_features="20" name="eVGTransformValue_RotationSkew1" value="2 ">
+			<value min_features="20" name="eVGTransformValue_RotationSkew1" value="2">
 				<comments desc="RotationSkew1 (m2) component. "/>
 			</value>
-			<value min_features="20" name="eVGTransformValue_ScaleY" value="3 ">
+			<value min_features="20" name="eVGTransformValue_ScaleY" value="3">
 				<comments desc="RotationSkew1 (m3) component. "/>
 			</value>
-			<value min_features="20" name="eVGTransformValue_TranslateX" value="4 ">
+			<value min_features="20" name="eVGTransformValue_TranslateX" value="4">
 				<comments desc="RotationSkew1 (m4) component. "/>
 			</value>
-			<value min_features="20" name="eVGTransformValue_TranslateY" value="5 ">
+			<value min_features="20" name="eVGTransformValue_TranslateY" value="5">
 				<comments desc="RotationSkew1 (m5) component. "/>
 			</value>
 		</enum>

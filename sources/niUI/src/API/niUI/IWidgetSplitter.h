@@ -8,22 +8,20 @@ namespace ni {
  */
 
 //! Splitter widget style.
-enum eWidgetSplitterStyle
-{
+enum eWidgetSplitterStyle {
   //! The splitter is horizontal.
-  eWidgetSplitterStyle_Horizontal = niBit(eWidgetStyle_MaxBit+0),
+  eWidgetSplitterStyle_Horizontal = niBit(eWidgetStyle_MaxBit + 0),
   //! The splitter cant be resized with the mouse cursor.
-  eWidgetSplitterStyle_NoCursorResize = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetSplitterStyle_NoCursorResize = niBit(eWidgetStyle_MaxBit + 1),
   //! The splitter will start empty.
   //! \remark By default the splitter is created with one splitter.
-  eWidgetSplitterStyle_Empty = niBit(eWidgetStyle_MaxBit+2),
+  eWidgetSplitterStyle_Empty = niBit(eWidgetStyle_MaxBit + 2),
   //! \internal
   eWidgetSplitterStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Splitter folding mode.
-enum eWidgetSplitterFoldMode
-{
+enum eWidgetSplitterFoldMode {
   //! No folding.
   eWidgetSplitterFoldMode_None = 0,
   //! Fold left/top or right/bottom based on the resizable borders enabled. (default)
@@ -35,8 +33,7 @@ enum eWidgetSplitterFoldMode
 };
 
 //! Splitter widget interface.
-struct iWidgetSplitter : public iUnknown
-{
+struct iWidgetSplitter : public iUnknown {
   niDeclareInterfaceUUID(iWidgetSplitter,0x78bc04f6,0x9b0c,0x446c,0x87,0xa2,0x46,0xbc,0x8b,0xb6,0xfb,0xa1);
   //! Add a splitter in the front (top or left).
   virtual tBool __stdcall AddSplitterFront(tF32 afPos) = 0;
@@ -111,7 +108,8 @@ struct iWidgetSplitter : public iUnknown
   //!     if the splitter is docked.
   //! \remark By default the value is (20,20)
   //! {Property}
-  virtual void __stdcall SetSplitterParentDockRectMinimumSize(sVec2f avMinSize) = 0;
+  virtual void __stdcall SetSplitterParentDockRectMinimumSize(
+    sVec2f avMinSize) = 0;
   //! Get the minimum size that the parent dock rect can have.
   //! {Property}
   virtual sVec2f __stdcall GetSplitterParentDockRectMinimumSize() const = 0;
@@ -125,7 +123,8 @@ struct iWidgetSplitter : public iUnknown
   virtual tU32 __stdcall GetSplitterFillerIndex() const = 0;
   //! Set the splitter's fold mode.
   //! {Property}
-  virtual void __stdcall SetSplitterFoldMode(eWidgetSplitterFoldMode aFoldMode) = 0;
+  virtual void __stdcall SetSplitterFoldMode(
+    eWidgetSplitterFoldMode aFoldMode) = 0;
   //! Get the splitter's fold mode.
   //! {Property}
   virtual eWidgetSplitterFoldMode __stdcall GetSplitterFoldMode() const = 0;
@@ -133,5 +132,5 @@ struct iWidgetSplitter : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETSPLITTER_14554643_H__

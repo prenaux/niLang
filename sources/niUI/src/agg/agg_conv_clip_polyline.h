@@ -30,34 +30,47 @@
 #include "agg_conv_adaptor_vpgen.h"
 #include "agg_vpgen_clip_polyline.h"
 
-namespace agg
-{
+namespace agg {
 
 //=======================================================conv_clip_polyline
-template<class VertexSource>
-struct conv_clip_polyline : public conv_adaptor_vpgen<VertexSource, vpgen_clip_polyline>
-{
+template <class VertexSource>
+struct conv_clip_polyline
+    : public conv_adaptor_vpgen<VertexSource, vpgen_clip_polyline> {
   typedef conv_adaptor_vpgen<VertexSource, vpgen_clip_polyline> base_type;
 
-  conv_clip_polyline(VertexSource& vs) :
-      conv_adaptor_vpgen<VertexSource, vpgen_clip_polyline>(vs) {}
+  conv_clip_polyline(VertexSource& vs)
+      : conv_adaptor_vpgen<VertexSource, vpgen_clip_polyline>(vs)
+  {
+  }
 
   void clip_box(agg_real x1, agg_real y1, agg_real x2, agg_real y2)
   {
     base_type::vpgen().clip_box(x1, y1, x2, y2);
   }
 
-  agg_real x1() const { return base_type::vpgen().x1(); }
-  agg_real y1() const { return base_type::vpgen().y1(); }
-  agg_real x2() const { return base_type::vpgen().x2(); }
-  agg_real y2() const { return base_type::vpgen().y2(); }
+  agg_real x1() const
+  {
+    return base_type::vpgen().x1();
+  }
+  agg_real y1() const
+  {
+    return base_type::vpgen().y1();
+  }
+  agg_real x2() const
+  {
+    return base_type::vpgen().x2();
+  }
+  agg_real y2() const
+  {
+    return base_type::vpgen().y2();
+  }
 
  private:
   conv_clip_polyline(const conv_clip_polyline<VertexSource>&);
-  const conv_clip_polyline<VertexSource>&
-  operator = (const conv_clip_polyline<VertexSource>&);
+  const conv_clip_polyline<VertexSource>& operator=(
+    const conv_clip_polyline<VertexSource>&);
 };
 
-}
+} // namespace agg
 
 #endif

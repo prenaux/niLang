@@ -16,8 +16,7 @@ struct iVertexArray;
 
 //! Vertex Array interface.
 //! \remark Bindable
-struct iVertexArray : public iDeviceResource
-{
+struct iVertexArray : public iDeviceResource {
   niDeclareInterfaceUUID(iVertexArray,0x1c847f71,0x312f,0x41ea,0x97,0xb9,0xab,0x29,0xb0,0xc3,0x81,0x21);
 
   //########################################################################################
@@ -47,7 +46,8 @@ struct iVertexArray : public iDeviceResource
   //! \param  aLock specify to locking mode.
   //! \return a pointer to the vertex data.
   //! \remark pass 0 for ulFirstVertex and ulNumVertex to lock the entire array.
-  virtual tPtr __stdcall Lock(tU32 ulFirstVertex, tU32 ulNumVertex, eLock aLock) = 0;
+  virtual tPtr __stdcall Lock(tU32 ulFirstVertex, tU32 ulNumVertex,
+                              eLock aLock) = 0;
   //! Unlock vertex array memory.
   virtual tBool __stdcall Unlock() = 0;
   //! Return true if the array is locked.
@@ -58,5 +58,5 @@ struct iVertexArray : public iDeviceResource
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVERTEXARRAY_10143733_H__

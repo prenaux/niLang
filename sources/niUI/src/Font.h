@@ -18,13 +18,13 @@ niConstValue auto kFontFilterOffSS = eCompiledStates_SS_PointClamp;
 
 struct sFontGlyph {
   Ptr<iBitmap2D> bmp;
-  Ptr<iImage>    img;
-  sVec2f         lead;
-  sVec2i         dim;
-  sRectf         texCoo;
-  tF32           xadv;
-  tU32           glyphIndex;
-  Ptr<iOverlay>  overlay;
+  Ptr<iImage> img;
+  sVec2f lead;
+  sVec2i dim;
+  sRectf texCoo;
+  tF32 xadv;
+  tU32 glyphIndex;
+  Ptr<iOverlay> overlay;
 
   sFontGlyph()
       : xadv(0)
@@ -32,30 +32,36 @@ struct sFontGlyph {
       , dim(sVec2i::Zero())
       , texCoo(sRectf::Null())
       , glyphIndex(0)
-  {}
-
-  inline void SetInvalidGlyph() {
-    this->dim = Vec2i(-1,-1);
+  {
   }
-  inline tBool IsValidGlyph() const {
+
+  inline void SetInvalidGlyph()
+  {
+    this->dim = Vec2i(-1, -1);
+  }
+  inline tBool IsValidGlyph() const
+  {
     return dim.x != -1 || dim.y != -1;
   }
 
-  inline tI32 GetWidth() const {
+  inline tI32 GetWidth() const
+  {
     return dim.x;
   }
-  inline tI32 GetHeight() const {
+  inline tI32 GetHeight() const
+  {
     return dim.y;
   }
 
   inline void SetGlyphInBitmap(tU32 anChar, const sVec2f& avSize,
-                               const tF32 afFontSizeDivByRes) {
-    const tF32 x = float(anChar&0xF)*(1/16.0f);
-    const tF32 y = float(anChar>>4)*(1/16.0f);
+                               const tF32 afFontSizeDivByRes)
+  {
+    const tF32 x = float(anChar & 0xF) * (1 / 16.0f);
+    const tF32 y = float(anChar >> 4) * (1 / 16.0f);
     texCoo.SetLeft(x);
     texCoo.SetTop(y);
-    texCoo.SetRight(x+(1/16.0f));
-    texCoo.SetBottom(y+(1/16.0f));
+    texCoo.SetRight(x + (1 / 16.0f));
+    texCoo.SetBottom(y + (1 / 16.0f));
     dim.x = (tI32)avSize.x;
     dim.y = (tI32)avSize.y;
     // '/ afFontSizeDivByRes' to match the convention used by ttf fonts
@@ -66,8 +72,7 @@ struct sFontGlyph {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Font interface implementation
-class cFont : public ImplRC<iFont>
-{
+class cFont : public ImplRC<iFont> {
  public:
   cFont(cGraphics* pFontFactory);
   ~cFont();
@@ -101,7 +106,9 @@ class cFont : public ImplRC<iFont>
   tU32 __stdcall GetColor() const;
   void __stdcall SetBlendMode(eBlendMode aBlend);
   eBlendMode __stdcall GetBlendMode() const;
-  void __stdcall SetSizeAndResolution(const sVec2f& avSize, const tU32 anResolution, const tF32 afContentsScale);
+  void __stdcall SetSizeAndResolution(const sVec2f& avSize,
+                                      const tU32 anResolution,
+                                      const tF32 afContentsScale);
   tU32 __stdcall GetResolution() const;
   sVec2f __stdcall GetSize() const;
 
@@ -133,20 +140,29 @@ class cFont : public ImplRC<iFont>
   tF32 __stdcall GetLineSpacing() const;
   tF32 __stdcall GetLineHeight() const;
 
-  sVec2i __stdcall BlitChar(iBitmap2D* apBmp, tI32 anX, tI32 anY, tU32 anChar) {
-    return BlitCharEx(apBmp,anX,anY,0,0,anChar,eBlendMode_Translucent);
+  sVec2i __stdcall BlitChar(iBitmap2D* apBmp, tI32 anX, tI32 anY, tU32 anChar)
+  {
+    return BlitCharEx(apBmp, anX, anY, 0, 0, anChar, eBlendMode_Translucent);
   }
-  sVec2i __stdcall BlitCharStretch(iBitmap2D* apBmp, tI32 anX, tI32 anY, tU32 anChar) {
-    return BlitCharEx(apBmp,anX,anY,(tI32)GetCharWidth(anChar),(tI32)GetCharHeight(anChar),anChar,eBlendMode_Translucent);
+  sVec2i __stdcall BlitCharStretch(iBitmap2D* apBmp, tI32 anX, tI32 anY,
+                                   tU32 anChar)
+  {
+    return BlitCharEx(apBmp, anX, anY, (tI32)GetCharWidth(anChar),
+                      (tI32)GetCharHeight(anChar), anChar,
+                      eBlendMode_Translucent);
   }
-  sVec2i __stdcall BlitCharEx(iBitmap2D* apBmp, tI32 anX, tI32 anY, tI32 anW, tI32 anH, tU32 anChar, eBlendMode aBlendMode);
+  sVec2i __stdcall BlitCharEx(iBitmap2D* apBmp, tI32 anX, tI32 anY, tI32 anW,
+                              tI32 anH, tU32 anChar, eBlendMode aBlendMode);
 
   sRectf __stdcall GetCharTexCoo(tU32 c) const;
   iTexture* __stdcall GetCharTexture(tU32 anChar) const;
   iBitmap2D* __stdcall GetCharBitmap(tU32 anChar) const;
 
-  sRectf __stdcall ComputeTextSize(const sRectf& aRect, const achar* aaszText, tFontFormatFlags aFormat);
-  sRectf __stdcall DrawText(ni::iCanvas* apCanvas, const sRectf& aRect, tF32 afZ, const achar* aaszText, tFontFormatFlags aFormat);
+  sRectf __stdcall ComputeTextSize(const sRectf& aRect, const achar* aaszText,
+                                   tFontFormatFlags aFormat);
+  sRectf __stdcall DrawText(ni::iCanvas* apCanvas, const sRectf& aRect,
+                            tF32 afZ, const achar* aaszText,
+                            tFontFormatFlags aFormat);
 
   tU32 __stdcall GetGlyphIndexFromName(const achar* aaszName) const;
   tU32 __stdcall GetGlyphIndexFromCodepoint(const tU32 anCodepoint) const;
@@ -154,7 +170,9 @@ class cFont : public ImplRC<iFont>
   Ptr<tU32CMap> __stdcall EnumGlyphs() const;
   tU32 __stdcall GetGlyphCodePointFromName(const achar* aaszName) const;
 
-  sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex, const sVec2f& avOffset, const tF32 afScale) const;
+  sVec2f __stdcall GetGlyphPath(iVGPath* apPath, tU32 anGlyphIndex,
+                                const sVec2f& avOffset,
+                                const tF32 afScale) const;
 
   sRectf __stdcall GetGlyphTexCoo(tU32 anGlyphIndex) const;
   iTexture* __stdcall GetGlyphTexture(tU32 anGlyphIndex) const;
@@ -162,8 +180,10 @@ class cFont : public ImplRC<iFont>
   iOverlay* __stdcall GetGlyphOverlay(tU32 anGlyphIndex) const;
   ///////////////////////////////////////////////
 
-  const sFontGlyph* GetGlyphFromCodepoint(tU32 anChar, sFontGlyph* apTmpStorage) const;
-  const sFontGlyph* GetGlyphFromIndex(tU32 anChar, sFontGlyph* apTmpStorage) const;
+  const sFontGlyph* GetGlyphFromCodepoint(tU32 anChar,
+                                          sFontGlyph* apTmpStorage) const;
+  const sFontGlyph* GetGlyphFromIndex(tU32 anChar,
+                                      sFontGlyph* apTmpStorage) const;
 
   tF32 GetCharRectWidth(const sRectf& rectTexCoo) const;
   tF32 GetCharRectHeight(const sRectf& rectTexCoo) const;
@@ -173,17 +193,16 @@ class cFont : public ImplRC<iFont>
 
  public:
   WeakPtr<cGraphics> mpwGraphics;
-  tHStringPtr        mhspName;
-  tHStringPtr        mhspFamilyName;
-  tHStringPtr        mhspStyleName;
-  tHStringPtr        mhspFilePath;
-  tHStringPtr        mhspFileName;
-  Ptr<iFont>         mptrParentFont;
-  Ptr<iImage>        mptrImage;
-  Ptr<cFontTTF>      mptrTTF;
+  tHStringPtr mhspName;
+  tHStringPtr mhspFamilyName;
+  tHStringPtr mhspStyleName;
+  tHStringPtr mhspFilePath;
+  tHStringPtr mhspFileName;
+  Ptr<iFont> mptrParentFont;
+  Ptr<iImage> mptrImage;
+  Ptr<cFontTTF> mptrTTF;
 
-  struct sStates
-  {
+  struct sStates {
     Ptr<iMaterial> mptrMaterial;
     tF32 mfTabSize;
     tU32 mnColor;
@@ -196,7 +215,8 @@ class cFont : public ImplRC<iFont>
     tBool mbMaterialInstanced;
     tF32 mfLineSpacing;
 
-    sStates(iGraphics* apGraphics) {
+    sStates(iGraphics* apGraphics)
+    {
       mfTabSize = 4;
       mfYSign = 1.0f;
       mbFiltering = eTrue;
@@ -209,31 +229,36 @@ class cFont : public ImplRC<iFont>
       mfLineSpacing = 1.0f;
       mptrMaterial = apGraphics->CreateMaterial();
       mptrMaterial->SetName(_HC(Default));
-      mptrMaterial->SetFlags(mptrMaterial->GetFlags()|
-                             eMaterialFlags_Transparent|
-                             eMaterialFlags_Translucent|
-                             eMaterialFlags_NoLighting|
-                             eMaterialFlags_DoubleSided|
-                             eMaterialFlags_Vertex);
+      mptrMaterial->SetFlags(
+        mptrMaterial->GetFlags() | eMaterialFlags_Transparent |
+        eMaterialFlags_Translucent | eMaterialFlags_NoLighting |
+        eMaterialFlags_DoubleSided | eMaterialFlags_Vertex);
       mptrMaterial->SetBlendMode(eBlendMode_Translucent);
-      mptrMaterial->SetChannelSamplerStates(eMaterialChannel_Base,kFontFilterOnSS);
+      mptrMaterial->SetChannelSamplerStates(eMaterialChannel_Base,
+                                            kFontFilterOnSS);
     }
-    tF32 GetWidth() const {
+    tF32 GetWidth() const
+    {
       return mvSize.x;
     }
-    tF32 GetHeight() const {
+    tF32 GetHeight() const
+    {
       return mvSize.y;
     }
-    void SetResolution(tU32 anSize) {
+    void SetResolution(tU32 anSize)
+    {
       niAssert(anSize > 0);
       mnResolution = anSize;
-      mfInvResolution = 1.0f/tF32(mnResolution);
+      mfInvResolution = 1.0f / tF32(mnResolution);
     }
-    tU32 GetResolution() const {
+    tU32 GetResolution() const
+    {
       return mnResolution;
     }
-    void NewMaterial(iGraphics* apGraphics) {
+    void NewMaterial(iGraphics* apGraphics)
+    {
     }
+
    private:
     sStates(const sStates&);
   };

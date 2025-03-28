@@ -22,8 +22,7 @@
 
 #include "agg_array.h"
 
-namespace agg
-{
+namespace agg {
 //----------------------------------------------------------------bspline
 // A very simple class of Bi-cubic Spline interpolation.
 // First call init(num, x[], y[]) where num - number of source points,
@@ -37,40 +36,38 @@ namespace agg
 //
 //  See Implementation agg_bspline.cpp
 //------------------------------------------------------------------------
-class bspline
-{
+class bspline {
  public:
   bspline();
   bspline(int num);
   bspline(int num, const agg_real* x, const agg_real* y);
 
-  void   init(int num);
-  void   add_point(agg_real x, agg_real y);
-  void   prepare();
+  void init(int num);
+  void add_point(agg_real x, agg_real y);
+  void prepare();
 
-  void   init(int num, const agg_real* x, const agg_real* y);
+  void init(int num, const agg_real* x, const agg_real* y);
 
   agg_real get(agg_real x) const;
   agg_real get_stateful(agg_real x) const;
 
  private:
   bspline(const bspline&);
-  const bspline& operator = (const bspline&);
+  const bspline& operator=(const bspline&);
 
-  static void bsearch(int n, const agg_real *x, agg_real x0, int *i);
+  static void bsearch(int n, const agg_real* x, agg_real x0, int* i);
   agg_real extrapolation_left(agg_real x) const;
   agg_real extrapolation_right(agg_real x) const;
   agg_real interpolation(agg_real x, int i) const;
 
-  int               m_max;
-  int               m_num;
-  agg_real*           m_x;
-  agg_real*           m_y;
+  int m_max;
+  int m_num;
+  agg_real* m_x;
+  agg_real* m_y;
   pod_array<agg_real> m_am;
-  mutable int       m_last_idx;
+  mutable int m_last_idx;
 };
 
-
-}
+} // namespace agg
 
 #endif

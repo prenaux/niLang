@@ -3,22 +3,23 @@
 
 #if defined niEmbedded
 
-#define niInitScriptVMForDebugUI() ;
+  #define niInitScriptVMForDebugUI() ;
 
 #else
-#include <niUI.h>
-#include <niScript.h>
+  #include <niUI.h>
+  #include <niScript.h>
 
 namespace ni {
-inline tBool InitScriptVMForDebugUI() {
+inline tBool InitScriptVMForDebugUI()
+{
   ni::Ptr<ni::iScriptVM> vm = ni::ScriptCreateOrGetDefaultVM();
-  niCheckIsOK(vm,eFalse);
+  niCheckIsOK(vm, eFalse);
   vm->Import(_H("gui.ni"));
-  niLog(Info,"InitScriptVMForDebugUI initialized.");
+  niLog(Info, "InitScriptVMForDebugUI initialized.");
   return eTrue;
 }
 
-#define niInitScriptVMForDebugUI() ni::InitScriptVMForDebugUI()
+  #define niInitScriptVMForDebugUI() ni::InitScriptVMForDebugUI()
 } // namespace ni
 
 #endif

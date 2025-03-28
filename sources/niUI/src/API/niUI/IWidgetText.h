@@ -14,15 +14,14 @@ namespace ni {
 //! Widget text style
 enum eWidgetTextStyle {
   //! Allow text selection with the mouse
-  eWidgetTextStyle_MouseSelect = niBit(eWidgetStyle_MaxBit+1),
+  eWidgetTextStyle_MouseSelect = niBit(eWidgetStyle_MaxBit + 1),
   //! \internal
   eWidgetTextStyle_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! iWidgetText interface
 //! \remark Implements the iWidgetText interface.
-struct iWidgetText : public iUnknown
-{
+struct iWidgetText : public iUnknown {
   niDeclareInterfaceUUID(iWidgetText,0x4c922f2d,0x7732,0x4093,0x8d,0x68,0x5c,0x77,0x00,0x6f,0xa6,0x8e);
 
   //! Get the text object of the text widget
@@ -34,5 +33,5 @@ struct iWidgetText : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETTEXT_16284140_H__

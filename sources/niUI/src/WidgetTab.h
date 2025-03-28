@@ -6,11 +6,13 @@
 struct TabPage {
   Ptr<iWidget> pPage;
   Ptr<iWidget> pButton;
-  void Reset() {
+  void Reset()
+  {
     pPage = NULL;
     pButton = NULL;
   }
-  tBool IsNull() const {
+  tBool IsNull() const
+  {
     return !pPage.IsOK();
   }
 };
@@ -18,15 +20,15 @@ struct TabPage {
 typedef astl::vector<TabPage> tTabPageVec;
 typedef astl::vector<tTabPageVec> tTabPageVecVec;
 
-class cTabWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetTab>
-{
+class cTabWidget : public ImplRC<iWidgetSink, eImplFlags_Default, iWidgetTab> {
   niBeginClass(cTabWidget);
+
  public:
-  cTabWidget(iWidget *pWidget);
+  cTabWidget(iWidget* pWidget);
   ~cTabWidget();
 
   //// iWidgetTab //////////////////////////////////
-  void __stdcall AddPage(iHString* ahspName, iWidget *apPage);
+  void __stdcall AddPage(iHString* ahspName, iWidget* apPage);
   tBool __stdcall RemovePage(iWidget* apPage);
   tBool __stdcall HasPage(iWidget* apPage) const;
   tU32 __stdcall GetNumPages() const;
@@ -54,25 +56,29 @@ class cTabWidget : public ImplRC<iWidgetSink,eImplFlags_Default,iWidgetTab>
   tBool __stdcall GetForceActivated(tBool abForce) const;
   //// iWidgetTab //////////////////////////////////
 
-  tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const Var& varParam0, const Var& varParam1);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 nMsg,
+                               const Var& varParam0, const Var& varParam1);
 
   void _AdjustChildrenLayout();
-  void _ActivateTab(iWidget *button);
-  iWidget* _GetSelectedButton() const { return mSelectedPage.pButton; }
+  void _ActivateTab(iWidget* button);
+  iWidget* _GetSelectedButton() const
+  {
+    return mSelectedPage.pButton;
+  }
   void _NeedsAdjusting();
   tBool _IsActivatedStyle() const;
   tBool _IsTooSmall() const;
   //     void _UpdateStyle();
 
  public:
-  iWidget*    mpWidget;
-  iWidget*    mpPageContainer;
+  iWidget* mpWidget;
+  iWidget* mpPageContainer;
   tTabPageVec mvecPages;
-  TabPage     mSelectedPage;
-  tBool       mbNeedsAdjusting;
-  tBool       mbActive;
-  tBool       mbForceActivated;
-  tU32        mnMinNumPagesToShowTabs;
+  TabPage mSelectedPage;
+  tBool mbNeedsAdjusting;
+  tBool mbActive;
+  tBool mbForceActivated;
+  tU32 mnMinNumPagesToShowTabs;
 
   void InitSkin();
   struct sSkin {

@@ -7,15 +7,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cWidgetForm declaration.
-class cWidgetForm
-    : public ni::ImplRC<ni::iWidgetSink,
-                               ni::eImplFlags_Default,
-                               ni::iWidgetForm,iWidgetDockable>
-{
+class cWidgetForm : public ni::ImplRC<ni::iWidgetSink, ni::eImplFlags_Default,
+                                      ni::iWidgetForm, iWidgetDockable> {
   niBeginClass(cWidgetForm);
 
-  enum eResizeArea
-  {
+  enum eResizeArea {
     eResizeArea_None = 0,
     eResizeArea_TopLeft,
     eResizeArea_TopRight,
@@ -43,8 +39,8 @@ class cWidgetForm
   void __stdcall ListInterfaces(iMutableCollection* apLst, tU32 anFlags) const;
 
   //// ni::iWidgetForm /////////////////////////
-  tBool __stdcall SetTitle(const achar *aVal);
-  const achar * __stdcall GetTitle() const;
+  tBool __stdcall SetTitle(const achar* aVal);
+  const achar* __stdcall GetTitle() const;
   tBool __stdcall SetResizeBorderArea(tF32 aVal);
   tF32 __stdcall GetResizeBorderArea() const;
 
@@ -63,7 +59,8 @@ class cWidgetForm
   //// iWidgetDockable //////////////////////////
 
   //// iWidgetSink //////////////////////////////
-  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA, const Var& aB);
+  tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 anMsg, const Var& aA,
+                               const Var& aB);
   //// iWidgetSink //////////////////////////////
 
   void PushBeforeDock();
@@ -79,36 +76,36 @@ class cWidgetForm
   void _HandleDragDock(tBool abEnd, const sVec2f* apMousePos = NULL);
 
  private:
-  cWidget*             mpWidget;
-  tHStringPtr          mhspTitle;
-  tF32                 mfResizeBorderArea;
-  tU32                 mnDrag;
-  sVec2f            mvPrevMousePos;
-  eResizeArea          mResizeArea;
-  sVec2f            mvMinSize;
-  tBool                mbIsDocked;
-  WeakPtr<iWidget>     mpwDockedTo;
+  cWidget* mpWidget;
+  tHStringPtr mhspTitle;
+  tF32 mfResizeBorderArea;
+  tU32 mnDrag;
+  sVec2f mvPrevMousePos;
+  eResizeArea mResizeArea;
+  sVec2f mvMinSize;
+  tBool mbIsDocked;
+  WeakPtr<iWidget> mpwDockedTo;
   tRectFrameFlags mFormFrameFlags;
   struct sBeforeDock {
-    sRectf      mRect;
-    tU32             mnStyle;
+    sRectf mRect;
+    tU32 mnStyle;
     eWidgetDockStyle mDockStyle;
-    tBool            mbEnabled;
-    tBool            mbVisible;
-    tBool            mbIgnoreInput;
-    eWidgetZOrder    mZOrder;
+    tBool mbEnabled;
+    tBool mbVisible;
+    tBool mbIgnoreInput;
+    eWidgetZOrder mZOrder;
   } mBeforeDock;
-  Ptr<iWidget>         mptrButtonClose;
+  Ptr<iWidget> mptrButtonClose;
 
   struct sSkin {
-    sRectf   titleTextFrame;
-    sRectf   titleFrame;
-    tF32          titleHeight;
-    sColor4f      backgroundColor;
+    sRectf titleTextFrame;
+    sRectf titleFrame;
+    tF32 titleHeight;
+    sColor4f backgroundColor;
     Ptr<iOverlay> normalFrame;
-    Ptr<iFont>    normalFont;
+    Ptr<iFont> normalFont;
     Ptr<iOverlay> inactiveFrame;
-    Ptr<iFont>    inactiveFont;
+    Ptr<iFont> inactiveFont;
     Ptr<iOverlay> curResizeTL;
     Ptr<iOverlay> curResizeTR;
     Ptr<iOverlay> curResizeHz;

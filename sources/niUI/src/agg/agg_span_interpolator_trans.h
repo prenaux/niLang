@@ -23,33 +23,41 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 //=================================================span_interpolator_trans
-template<class Transformer, unsigned SubpixelShift = 8>
-class span_interpolator_trans
-{
+template <class Transformer, unsigned SubpixelShift = 8>
+class span_interpolator_trans {
  public:
   typedef Transformer trans_type;
-  enum subpixel_scale_e
-  {
+  enum subpixel_scale_e {
     subpixel_shift = SubpixelShift,
     subpixel_scale = 1 << subpixel_shift
   };
 
   //--------------------------------------------------------------------
-  span_interpolator_trans() {}
-  span_interpolator_trans(const trans_type& trans) : m_trans(&trans) {}
-  span_interpolator_trans(const trans_type& trans,
-                          agg_real x, agg_real y, unsigned) :
-      m_trans(&trans)
+  span_interpolator_trans()
+  {
+  }
+  span_interpolator_trans(const trans_type& trans)
+      : m_trans(&trans)
+  {
+  }
+  span_interpolator_trans(const trans_type& trans, agg_real x, agg_real y,
+                          unsigned)
+      : m_trans(&trans)
   {
     begin(x, y, 0);
   }
 
   //----------------------------------------------------------------
-  const trans_type& transformer() const { return *m_trans; }
-  void transformer(const trans_type& trans) { m_trans = &trans; }
+  const trans_type& transformer() const
+  {
+    return *m_trans;
+  }
+  void transformer(const trans_type& trans)
+  {
+    m_trans = &trans;
+  }
 
   //----------------------------------------------------------------
   void begin(agg_real x, agg_real y, unsigned)
@@ -81,12 +89,12 @@ class span_interpolator_trans
 
  private:
   const trans_type* m_trans;
-  agg_real            m_x;
-  agg_real            m_y;
-  int               m_ix;
-  int               m_iy;
+  agg_real m_x;
+  agg_real m_y;
+  int m_ix;
+  int m_iy;
 };
 
-}
+} // namespace agg
 
 #endif

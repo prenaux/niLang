@@ -2,19 +2,19 @@
 	<namespace name="ni">
 		<enum name="eVideoDecoderFlags">
 			<comments desc="Video decoder flags. "/>
-			<value name="eVideoDecoderFlags_TargetBitmap" value="niBit ( 0 ) ">
+			<value name="eVideoDecoderFlags_TargetBitmap" value="niBit(0)">
 				<comments desc="Bitmap target. ">
 					<remark text="Manual update only. "/>
 					<remark text="If no target type is specified no actual decoding will occur. "/>
 				</comments>
 			</value>
-			<value name="eVideoDecoderFlags_TargetTexture" value="niBit ( 1 ) ">
+			<value name="eVideoDecoderFlags_TargetTexture" value="niBit(1)">
 				<comments desc="Texture target. ">
 					<remark text="Update the decoder when binded in the renderer. "/>
 					<remark text="If no target type is specified no actual decoding will occur. "/>
 				</comments>
 			</value>
-			<value name="eVideoDecoderFlags_Sound" value="niBit ( 2 ) ">
+			<value name="eVideoDecoderFlags_Sound" value="niBit(2)">
 				<comments desc="If available decode and sync sound stream with the video. "/>
 			</value>
 		</enum>

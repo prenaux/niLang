@@ -2,70 +2,70 @@
 	<namespace name="ni">
 		<enum name="eWidgetTreeStyle">
 			<comments desc="Widget tree style. "/>
-			<value name="eWidgetTreeStyle_ClickDownSelect" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetTreeStyle_ClickDownSelect" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Select the item on left click down. Note that this disables the secondary selection. "/>
 			</value>
-			<value name="eWidgetTreeStyle_NoHScroll" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetTreeStyle_NoHScroll" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Don&apos;t show the horizontal scrollbar. "/>
 			</value>
-			<value name="eWidgetTreeStyle_NoVScroll" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetTreeStyle_NoVScroll" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="Don&apos;t show the vertical scrollbar. "/>
 			</value>
-			<value name="eWidgetTreeStyle_Autoscroll" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetTreeStyle_Autoscroll" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="Automaticall scroll to the selected nodes. "/>
 			</value>
-			<value name="eWidgetTreeStyle_DontDrawRoot" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+			<value name="eWidgetTreeStyle_DontDrawRoot" value="niBit(eWidgetStyle_MaxBit+4)">
 				<comments desc="Don&apos;t draw the root node. "/>
 			</value>
-			<value name="eWidgetTreeStyle_AlwaysHScroll" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+			<value name="eWidgetTreeStyle_AlwaysHScroll" value="niBit(eWidgetStyle_MaxBit+5)">
 				<comments desc="Always show the horizontal scrollbar. "/>
 			</value>
-			<value name="eWidgetTreeStyle_AlwaysVScroll" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+			<value name="eWidgetTreeStyle_AlwaysVScroll" value="niBit(eWidgetStyle_MaxBit+6)">
 				<comments desc="Always show the vertical scrollbar. "/>
 			</value>
-			<value name="eWidgetTreeStyle_SingleSelection" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+			<value name="eWidgetTreeStyle_SingleSelection" value="niBit(eWidgetStyle_MaxBit+7)">
 				<comments desc="Single selection only. "/>
 			</value>
 		</enum>
 		<enum name="eWidgetTreeCmd">
 			<comments desc="Widget tree notify message "/>
-			<value name="eWidgetTreeCmd_Selected" value="0 ">
+			<value name="eWidgetTreeCmd_Selected" value="0">
 				<comments desc="A tree node has been selected. "/>
 			</value>
-			<value name="eWidgetTreeCmd_Unselected" value="1 ">
+			<value name="eWidgetTreeCmd_Unselected" value="1">
 				<comments desc="">
 					<params text="A iWidgetTreeNode A tree node has been unselected. "/>
 					<params text="A iWidgetTreeNode "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_Expanded" value="2 ">
+			<value name="eWidgetTreeCmd_Expanded" value="2">
 				<comments desc="A tree node has been expanded. ">
 					<remark text="This is sent before the node is actually drawn so it&apos;s the good time to fill the node with the appropriate children if it&apos;s not already done. "/>
 					<params text="A iWidgetTreeNode "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_Collapsed" value="3 ">
+			<value name="eWidgetTreeCmd_Collapsed" value="3">
 				<comments desc="A tree node has been collapsed. ">
 					<params text="A iWidgetTreeNode "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_SecondarySelected" value="4 ">
+			<value name="eWidgetTreeCmd_SecondarySelected" value="4">
 				<comments desc="A tree node has been selected as a secondary selection. ">
 					<params text="A iWidgetTreeNode "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_SecondaryUnselected" value="5 ">
+			<value name="eWidgetTreeCmd_SecondaryUnselected" value="5">
 				<comments desc="A tree node has been unselected as a secondary selection. ">
 					<params text="A iWidgetTreeNode "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_SetAttributes" value="6 ">
+			<value name="eWidgetTreeCmd_SetAttributes" value="6">
 				<comments desc="A tree node&apos;s attribute have changed. ">
 					<params text="A iWidgetTreeNode "/>
 					<params text="B the previous attributes "/>
 				</comments>
 			</value>
-			<value name="eWidgetTreeCmd_SetName" value="7 ">
+			<value name="eWidgetTreeCmd_SetName" value="7">
 				<comments desc="A tree node&apos;s name has changed. ">
 					<params text="A iWidgetTreeNode "/>
 					<params text="B the previous attributes "/>
@@ -74,40 +74,40 @@
 		</enum>
 		<enum name="eWidgetTreeNodeFlags">
 			<comments desc="Widget tree node flags. "/>
-			<value name="eWidgetTreeNodeFlags_Selected" value="niBit ( 0 ) ">
+			<value name="eWidgetTreeNodeFlags_Selected" value="niBit(0)">
 				<comments desc="The node is selected. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_Expanded" value="niBit ( 1 ) ">
+			<value name="eWidgetTreeNodeFlags_Expanded" value="niBit(1)">
 				<comments desc="The node is expanded. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_DontDrawName" value="niBit ( 2 ) ">
+			<value name="eWidgetTreeNodeFlags_DontDrawName" value="niBit(2)">
 				<comments desc="Don&apos;t draw the name of the node. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_Expandable" value="niBit ( 3 ) ">
+			<value name="eWidgetTreeNodeFlags_Expandable" value="niBit(3)">
 				<comments desc="The node is expandable even if it doesn&apos;t have any children. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_WidgetPlaceV" value="niBit ( 4 ) ">
+			<value name="eWidgetTreeNodeFlags_WidgetPlaceV" value="niBit(4)">
 				<comments desc="The widget in the tree node will be placed vertically. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_WidgetPlaceH" value="niBit ( 5 ) ">
+			<value name="eWidgetTreeNodeFlags_WidgetPlaceH" value="niBit(5)">
 				<comments desc="The widget in the tree node will be placed horizontally. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_WidgetPlace" value="eWidgetTreeNodeFlags_WidgetPlaceV|eWidgetTreeNodeFlags_WidgetPlaceH ">
+			<value name="eWidgetTreeNodeFlags_WidgetPlace" value="eWidgetTreeNodeFlags_WidgetPlaceV|eWidgetTreeNodeFlags_WidgetPlaceH">
 				<comments desc="The widget in the tree node will be placed vertically and horizontally. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_WidgetSize" value="niBit ( 6 ) ">
+			<value name="eWidgetTreeNodeFlags_WidgetSize" value="niBit(6)">
 				<comments desc="The widget in the tree node will be sized to fit in the tree. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_WidgetLeft" value="niBit ( 7 ) ">
+			<value name="eWidgetTreeNodeFlags_WidgetLeft" value="niBit(7)">
 				<comments desc="The widget in the tree node will be placed at the left of the text. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_UseTextColor" value="niBit ( 8 ) ">
+			<value name="eWidgetTreeNodeFlags_UseTextColor" value="niBit(8)">
 				<comments desc="Use the tree node&apos;s text color. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_Visible" value="niBit ( 9 ) ">
+			<value name="eWidgetTreeNodeFlags_Visible" value="niBit(9)">
 				<comments desc="The widget tree node is visible. "/>
 			</value>
-			<value name="eWidgetTreeNodeFlags_Default" value="eWidgetTreeNodeFlags_WidgetPlace|eWidgetTreeNodeFlags_Visible ">
+			<value name="eWidgetTreeNodeFlags_Default" value="eWidgetTreeNodeFlags_WidgetPlace|eWidgetTreeNodeFlags_Visible">
 				<comments desc="Default tree node flags. "/>
 			</value>
 		</enum>

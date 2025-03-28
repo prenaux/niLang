@@ -14,14 +14,16 @@ _HDecl(gpufunction);
 #define GPU_TRACE(aFmt) //niDebugFmt(aFmt)
 
 /////////////////////////////////////////////////////////////////
-eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat) {
+eGpuPixelFormat _GetClosestGpuPixelFormatForRT(const achar* aRTFormat)
+{
   // the default RT is using BGRA8, other RT will follow this format so we can
   // reuse those pipelines
   return eGpuPixelFormat_BGRA8;
 }
 
 /////////////////////////////////////////////////////////////////
-eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
+eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat)
+{
   if (niStringIsOK(aDSFormat)) {
     return eGpuPixelFormat_D32;
   }
@@ -29,42 +31,44 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForDS(const achar* aDSFormat) {
 }
 
 /////////////////////////////////////////////////////////////////
-eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat, tTextureFlags aTexFlags) {
-  if (niFlagIs(aTexFlags,eTextureFlags_DepthStencil)) {
+eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat,
+                                                    tTextureFlags aTexFlags)
+{
+  if (niFlagIs(aTexFlags, eTextureFlags_DepthStencil)) {
     return _GetClosestGpuPixelFormatForDS(aTexFormat);
   }
-  else if (niFlagIs(aTexFlags,eTextureFlags_RenderTarget)) {
+  else if (niFlagIs(aTexFlags, eTextureFlags_RenderTarget)) {
     return _GetClosestGpuPixelFormatForRT(aTexFormat);
   }
 
   // Depth formats
-  if (ni::StrEq(aTexFormat,"D16")) {
+  if (ni::StrEq(aTexFormat, "D16")) {
     return eGpuPixelFormat_D16;
   }
-  else if (ni::StrEq(aTexFormat,"D32")) {
+  else if (ni::StrEq(aTexFormat, "D32")) {
     return eGpuPixelFormat_D32;
   }
-  else if (ni::StrEq(aTexFormat,"D24S8")) {
+  else if (ni::StrEq(aTexFormat, "D24S8")) {
     return eGpuPixelFormat_D24S8;
   }
-  else if (ni::StrEq(aTexFormat,"D24X8")) {
+  else if (ni::StrEq(aTexFormat, "D24X8")) {
     return eGpuPixelFormat_D32; // Fallback to D32
   }
 
   // Color formats
-  if (ni::StrEq(aTexFormat,"R8G8B8A8")) {
+  if (ni::StrEq(aTexFormat, "R8G8B8A8")) {
     return eGpuPixelFormat_RGBA8;
   }
-  else if (ni::StrEq(aTexFormat,"B8G8R8A8")) {
+  else if (ni::StrEq(aTexFormat, "B8G8R8A8")) {
     return eGpuPixelFormat_BGRA8;
   }
-  else if (ni::StrEq(aTexFormat,"FR16G16B16A16")) {
+  else if (ni::StrEq(aTexFormat, "FR16G16B16A16")) {
     return eGpuPixelFormat_RGBA16F;
   }
-  else if (ni::StrEq(aTexFormat,"FR16")) {
+  else if (ni::StrEq(aTexFormat, "FR16")) {
     return eGpuPixelFormat_R16F;
   }
-  else if (ni::StrEq(aTexFormat,"FR32")) {
+  else if (ni::StrEq(aTexFormat, "FR32")) {
     return eGpuPixelFormat_R32F;
   }
 
@@ -73,20 +77,21 @@ eGpuPixelFormat _GetClosestGpuPixelFormatForTexture(const achar* aTexFormat, tTe
 }
 
 /////////////////////////////////////////////////////////////////
-iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat) {
+iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat)
+{
   static Ptr<iPixelFormat> _pixelFormats[eGpuPixelFormat_Last];
   if (!_pixelFormats[aFormat].IsOK()) {
     const achar* pxf = nullptr;
     switch (aFormat) {
-      case eGpuPixelFormat_BGRA8: pxf = "B8G8R8A8"; break;
-      case eGpuPixelFormat_RGBA8: pxf = "R8G8B8A8"; break;
-      case eGpuPixelFormat_RGBA16F: pxf = "FR16G16B16A16"; break;
-      case eGpuPixelFormat_R16F: pxf = "FR16"; break;
-      case eGpuPixelFormat_R32F: pxf = "FR32"; break;
-      case eGpuPixelFormat_D32: pxf = "D32"; break;
-      case eGpuPixelFormat_D16: pxf = "D16"; break;
-      case eGpuPixelFormat_D24S8: pxf = "D24S8"; break;
-      case eGpuPixelFormat_None: return nullptr;
+    case eGpuPixelFormat_BGRA8: pxf = "B8G8R8A8"; break;
+    case eGpuPixelFormat_RGBA8: pxf = "R8G8B8A8"; break;
+    case eGpuPixelFormat_RGBA16F: pxf = "FR16G16B16A16"; break;
+    case eGpuPixelFormat_R16F: pxf = "FR16"; break;
+    case eGpuPixelFormat_R32F: pxf = "FR32"; break;
+    case eGpuPixelFormat_D32: pxf = "D32"; break;
+    case eGpuPixelFormat_D16: pxf = "D16"; break;
+    case eGpuPixelFormat_D24S8: pxf = "D24S8"; break;
+    case eGpuPixelFormat_None: return nullptr;
     }
     _pixelFormats[aFormat] = pxf ? apGraphics->CreatePixelFormat(pxf) : nullptr;
   }
@@ -94,11 +99,15 @@ iPixelFormat* _GetIPixelFormat(iGraphics* apGraphics, eGpuPixelFormat aFormat) {
 }
 
 /////////////////////////////////////////////////////////////////
-#define GPU_BLENDMODE(OP,SRCRGB,SRCALPHA,DESTRGB,DESTALPHA) \
-  { eGpuBlendOp_##OP, eGpuBlendFactor_##SRCRGB, eGpuBlendFactor_##SRCALPHA, eGpuBlendFactor_##DESTRGB, eGpuBlendFactor_##DESTALPHA }
+#define GPU_BLENDMODE(OP, SRCRGB, SRCALPHA, DESTRGB, DESTALPHA)             \
+  {                                                                         \
+    eGpuBlendOp_##OP, eGpuBlendFactor_##SRCRGB, eGpuBlendFactor_##SRCALPHA, \
+      eGpuBlendFactor_##DESTRGB, eGpuBlendFactor_##DESTALPHA                \
+  }
 
 /////////////////////////////////////////////////////////////////
-const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode) {
+const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode)
+{
   static const sGpuBlendModeDesc _toBlendModeDesc[] = {
     // eBlendMode_NoBlending
     GPU_BLENDMODE(Add, One, One, Zero, Zero),
@@ -131,7 +140,8 @@ const sGpuBlendModeDesc& _BlendModeToGpuBlendModeDesc(eBlendMode aBlendMode) {
 struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
   sGpuBlendModeDesc _desc;
 
-  sGpuBlendMode() {
+  sGpuBlendMode()
+  {
     _desc.mOp = eGpuBlendOp_Add;
     _desc.mSrcRGB = eGpuBlendFactor_One;
     _desc.mSrcAlpha = eGpuBlendFactor_One;
@@ -139,67 +149,82 @@ struct sGpuBlendMode : public ImplRC<iGpuBlendMode> {
     _desc.mDstAlpha = eGpuBlendFactor_Zero;
   }
 
-  sGpuBlendMode(const sGpuBlendModeDesc& aDesc) {
+  sGpuBlendMode(const sGpuBlendModeDesc& aDesc)
+  {
     _desc = aDesc;
   }
 
-  tBool __stdcall Copy(const iGpuBlendMode* apBlend) niImpl {
-    niCheckIsOK(apBlend,eFalse);
+  tBool __stdcall Copy(const iGpuBlendMode* apBlend) niImpl
+  {
+    niCheckIsOK(apBlend, eFalse);
     _desc = *(sGpuBlendModeDesc*)apBlend->GetDescStructPtr();
     return eTrue;
   }
 
-  Ptr<iGpuBlendMode> __stdcall Clone() const niImpl {
+  Ptr<iGpuBlendMode> __stdcall Clone() const niImpl
+  {
     return MakeNN<sGpuBlendMode>(_desc);
   }
 
-  tBool __stdcall SetOp(eGpuBlendOp aOp) niImpl {
+  tBool __stdcall SetOp(eGpuBlendOp aOp) niImpl
+  {
     _desc.mOp = aOp;
     return eTrue;
   }
-  eGpuBlendOp __stdcall GetOp() const niImpl {
+  eGpuBlendOp __stdcall GetOp() const niImpl
+  {
     return _desc.mOp;
   }
 
-  tBool __stdcall SetSrcRGB(eGpuBlendFactor aFactor) niImpl {
+  tBool __stdcall SetSrcRGB(eGpuBlendFactor aFactor) niImpl
+  {
     _desc.mSrcRGB = aFactor;
     return eTrue;
   }
-  eGpuBlendFactor __stdcall GetSrcRGB() const niImpl {
+  eGpuBlendFactor __stdcall GetSrcRGB() const niImpl
+  {
     return _desc.mSrcRGB;
   }
 
-  tBool __stdcall SetSrcAlpha(eGpuBlendFactor aFactor) niImpl {
+  tBool __stdcall SetSrcAlpha(eGpuBlendFactor aFactor) niImpl
+  {
     _desc.mSrcAlpha = aFactor;
     return eTrue;
   }
-  eGpuBlendFactor __stdcall GetSrcAlpha() const niImpl {
+  eGpuBlendFactor __stdcall GetSrcAlpha() const niImpl
+  {
     return _desc.mSrcAlpha;
   }
 
-  tBool __stdcall SetDstRGB(eGpuBlendFactor aFactor) niImpl {
+  tBool __stdcall SetDstRGB(eGpuBlendFactor aFactor) niImpl
+  {
     _desc.mDstRGB = aFactor;
     return eTrue;
   }
-  eGpuBlendFactor __stdcall GetDstRGB() const niImpl {
+  eGpuBlendFactor __stdcall GetDstRGB() const niImpl
+  {
     return _desc.mDstRGB;
   }
 
-  tBool __stdcall SetDstAlpha(eGpuBlendFactor aFactor) niImpl {
+  tBool __stdcall SetDstAlpha(eGpuBlendFactor aFactor) niImpl
+  {
     _desc.mDstAlpha = aFactor;
     return eTrue;
   }
-  eGpuBlendFactor __stdcall GetDstAlpha() const niImpl {
+  eGpuBlendFactor __stdcall GetDstAlpha() const niImpl
+  {
     return _desc.mDstAlpha;
   }
 
-  tPtr __stdcall GetDescStructPtr() const niImpl {
+  tPtr __stdcall GetDescStructPtr() const niImpl
+  {
     return (tPtr)&_desc;
   }
 };
 
 /////////////////////////////////////////////////////////////////
-NN<iGpuBlendMode> _CreateGpuBlendMode() {
+NN<iGpuBlendMode> _CreateGpuBlendMode()
+{
   return MakeNN<sGpuBlendMode>();
 }
 
@@ -207,94 +232,116 @@ NN<iGpuBlendMode> _CreateGpuBlendMode() {
 struct sGpuPipelineDescImpl : public ImplRC<iGpuPipelineDesc> {
   sGpuPipelineDesc _desc;
 
-  sGpuPipelineDescImpl() {
+  sGpuPipelineDescImpl()
+  {
     _desc.mDepthFormat = eGpuPixelFormat_None;
     _desc.mFVF = 0;
     _desc.mhRS = 0;
     _desc.mhDS = 0;
     niCAssert(niCountOf(_desc.mColorFormats) == 4);
-    niLoop(i,niCountOf(_desc.mColorFormats)) {
+    niLoop (i, niCountOf(_desc.mColorFormats)) {
       _desc.mColorFormats[i] = eGpuPixelFormat_None;
     }
   }
 
-  tBool __stdcall Copy(const iGpuPipelineDesc* apPipe) niImpl {
-    niCheckIsOK(apPipe,eFalse);
+  tBool __stdcall Copy(const iGpuPipelineDesc* apPipe) niImpl
+  {
+    niCheckIsOK(apPipe, eFalse);
     _desc = *(sGpuPipelineDesc*)apPipe->GetDescStructPtr();
     return eTrue;
   }
 
-  Ptr<iGpuPipelineDesc> __stdcall Clone() const niImpl {
+  Ptr<iGpuPipelineDesc> __stdcall Clone() const niImpl
+  {
     NN<sGpuPipelineDescImpl> clone = MakeNN<sGpuPipelineDescImpl>();
     clone->Copy(this);
     return clone;
   }
 
-  tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPixelFormat aFormat) niImpl {
-    if (anIndex >= 4) return eFalse;
+  tBool __stdcall SetColorFormat(tU32 anIndex, eGpuPixelFormat aFormat) niImpl
+  {
+    if (anIndex >= 4)
+      return eFalse;
     _desc.mColorFormats[anIndex] = aFormat;
     return eTrue;
   }
-  eGpuPixelFormat __stdcall GetColorFormat(tU32 anIndex) const niImpl {
+  eGpuPixelFormat __stdcall GetColorFormat(tU32 anIndex) const niImpl
+  {
     return anIndex >= 4 ? eGpuPixelFormat_None : _desc.mColorFormats[anIndex];
   }
 
-  tBool __stdcall SetDepthFormat(eGpuPixelFormat aFormat) niImpl {
+  tBool __stdcall SetDepthFormat(eGpuPixelFormat aFormat) niImpl
+  {
     _desc.mDepthFormat = aFormat;
     return eTrue;
   }
-  eGpuPixelFormat __stdcall GetDepthFormat() const niImpl {
+  eGpuPixelFormat __stdcall GetDepthFormat() const niImpl
+  {
     return _desc.mDepthFormat;
   }
 
-  tBool __stdcall SetFVF(tFVF aFVF) niImpl {
+  tBool __stdcall SetFVF(tFVF aFVF) niImpl
+  {
     _desc.mFVF = aFVF;
     return eTrue;
   }
-  tFVF __stdcall GetFVF() const niImpl {
+  tFVF __stdcall GetFVF() const niImpl
+  {
     return _desc.mFVF;
   }
 
-  tBool __stdcall SetRasterizerStates(tIntPtr aHandle) niImpl {
+  tBool __stdcall SetRasterizerStates(tIntPtr aHandle) niImpl
+  {
     _desc.mhRS = aHandle;
     return eTrue;
   }
-  tIntPtr __stdcall GetRasterizerStates() const niImpl {
+  tIntPtr __stdcall GetRasterizerStates() const niImpl
+  {
     return _desc.mhRS;
   }
 
-  tBool __stdcall SetDepthStencilStates(tIntPtr aHandle) niImpl {
+  tBool __stdcall SetDepthStencilStates(tIntPtr aHandle) niImpl
+  {
     _desc.mhDS = aHandle;
     return eTrue;
   }
-  tIntPtr __stdcall GetDepthStencilStates() const niImpl {
+  tIntPtr __stdcall GetDepthStencilStates() const niImpl
+  {
     return _desc.mhDS;
   }
 
-  tBool __stdcall SetFunction(eGpuFunctionType aType, iGpuFunction* apFunc) niImpl {
-    if (aType >= eGpuFunctionType_Last) return eFalse;
+  tBool __stdcall SetFunction(eGpuFunctionType aType,
+                              iGpuFunction* apFunc) niImpl
+  {
+    if (aType >= eGpuFunctionType_Last)
+      return eFalse;
     _desc.mptrFuncs[aType] = apFunc;
     return eTrue;
   }
-  iGpuFunction* __stdcall GetFunction(eGpuFunctionType aType) const niImpl {
+  iGpuFunction* __stdcall GetFunction(eGpuFunctionType aType) const niImpl
+  {
     return aType >= eGpuFunctionType_Last ? nullptr : _desc.mptrFuncs[aType];
   }
 
-  virtual tBool __stdcall SetBlendMode(iGpuBlendMode* apBlendMode) niImpl {
+  virtual tBool __stdcall SetBlendMode(iGpuBlendMode* apBlendMode) niImpl
+  {
     _desc.mptrBlendMode = apBlendMode;
     return eTrue;
   }
-  virtual iGpuBlendMode* __stdcall GetBlendMode() const niImpl {
+  virtual iGpuBlendMode* __stdcall GetBlendMode() const niImpl
+  {
     return _desc.mptrBlendMode;
   }
 
-  tPtr __stdcall GetDescStructPtr() const niImpl {
+  tPtr __stdcall GetDescStructPtr() const niImpl
+  {
     return (tPtr)&_desc;
   }
 };
 
 /////////////////////////////////////////////////////////////////
-NN<iGpuPipelineDesc> _CreateGpuPipelineDesc() {
+NN<iGpuPipelineDesc> _CreateGpuPipelineDesc()
+{
   return MakeNN<sGpuPipelineDescImpl>();
 }
 
@@ -303,7 +350,7 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   typedef sVertexPA tVertexClearRects;
   static_assert(sizeof(sVertexPA) == 16);
 
-  typedef astl::hash_map<tFixedGpuPipelineId,Ptr<iGpuPipeline> > tPipelineMap;
+  typedef astl::hash_map<tFixedGpuPipelineId, Ptr<iGpuPipeline>> tPipelineMap;
   tPipelineMap _pipelines;
   NN<iGpuFunction> _vertFuncP = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _vertFuncPA = niDeferredInit(NN<iGpuFunction>);
@@ -317,23 +364,27 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   NN<iGpuPipeline> _pipelineClearColor = niDeferredInit(NN<iGpuPipeline>);
   NN<iGpuPipeline> _pipelineClearDepth = niDeferredInit(NN<iGpuPipeline>);
 
-  tBool _CreateFixedGpuPipelines(iGraphicsDriver* apDriver) {
+  tBool _CreateFixedGpuPipelines(iGraphicsDriver* apDriver)
+  {
     iGraphics* g = apDriver->GetGraphics();
-    NN<iGraphicsDriverGpu> gpuDriver = niCheckNN(gpuDriver,ni::QueryInterface<iGraphicsDriverGpu>(apDriver),eFalse);
+    NN<iGraphicsDriverGpu> gpuDriver = niCheckNN(
+      gpuDriver, ni::QueryInterface<iGraphicsDriverGpu>(apDriver), eFalse);
 
     {
-      _texWhite = niCheckNN(
-        _texWhite,
-        g->CreateTextureFromRes(_H("niUI://white1x1.tga"),nullptr,eTextureFlags_Default),
-        eFalse);
+      _texWhite =
+        niCheckNN(_texWhite,
+                  g->CreateTextureFromRes(_H("niUI://white1x1.tga"), nullptr,
+                                          eTextureFlags_Default),
+                  eFalse);
     }
 
-#define LOAD_FIXED_GPUFUNC(TYPE,VAR,PATH) {                             \
-      tHStringPtr hspPath = _H("niUI://nish/fixed/fixed_" #PATH ".gpufunc.xml"); \
-      VAR = niCheckNN(                                                  \
-        VAR, gpuDriver->CreateGpuFunction(eGpuFunctionType_##TYPE,hspPath), \
-        eFalse);                                                        \
-    }
+#define LOAD_FIXED_GPUFUNC(TYPE, VAR, PATH)                                    \
+  {                                                                            \
+    tHStringPtr hspPath = _H("niUI://nish/fixed/fixed_" #PATH ".gpufunc.xml"); \
+    VAR = niCheckNN(                                                           \
+      VAR, gpuDriver->CreateGpuFunction(eGpuFunctionType_##TYPE, hspPath),     \
+      eFalse);                                                                 \
+  }
 
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncP, p_vs);
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPA, pa_vs);
@@ -345,56 +396,81 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
 #undef LOAD_FIXED_GPUFUNC
 
     {
-      tHStringPtr hspVfPath = _H("niUI://nish/fixed/fixed_clear_vs.gpufunc.xml");
-      niLet dtVertex = niCheckNN(dtVertex,LoadDataTable(niHStr(hspVfPath)),eFalse);
-      niLet vertexGpuFun = niCheckNN(vertexGpuFun, gpuDriver->CreateGpuFunction(
-        eGpuFunctionType_Vertex,hspVfPath),eFalse);
+      tHStringPtr hspVfPath =
+        _H("niUI://nish/fixed/fixed_clear_vs.gpufunc.xml");
+      niLet dtVertex =
+        niCheckNN(dtVertex, LoadDataTable(niHStr(hspVfPath)), eFalse);
+      niLet vertexGpuFun = niCheckNN(
+        vertexGpuFun,
+        gpuDriver->CreateGpuFunction(eGpuFunctionType_Vertex, hspVfPath),
+        eFalse);
 
-      tHStringPtr hspPfPath = _H("niUI://nish/fixed/fixed_clear_ps.gpufunc.xml");
-      niLet dtPixel = niCheckNN(dtPixel,LoadDataTable(niHStr(hspPfPath)),eFalse);
-      niLet pixelGpuFun = niCheckNN(pixelGpuFun, gpuDriver->CreateGpuFunction(
-        eGpuFunctionType_Pixel,hspPfPath),eFalse);
+      tHStringPtr hspPfPath =
+        _H("niUI://nish/fixed/fixed_clear_ps.gpufunc.xml");
+      niLet dtPixel =
+        niCheckNN(dtPixel, LoadDataTable(niHStr(hspPfPath)), eFalse);
+      niLet pixelGpuFun = niCheckNN(
+        pixelGpuFun,
+        gpuDriver->CreateGpuFunction(eGpuFunctionType_Pixel, hspPfPath),
+        eFalse);
 
-      NN<iGpuPipelineDesc> pipelineDesc = niCheckNN(pipelineDesc, gpuDriver->CreateGpuPipelineDesc(), eFalse);
+      NN<iGpuPipelineDesc> pipelineDesc =
+        niCheckNN(pipelineDesc, gpuDriver->CreateGpuPipelineDesc(), eFalse);
       pipelineDesc->SetFVF(tVertexClearRects::eFVF);
-      pipelineDesc->SetColorFormat(0,eGpuPixelFormat_BGRA8);
+      pipelineDesc->SetColorFormat(0, eGpuPixelFormat_BGRA8);
       pipelineDesc->SetDepthFormat(eGpuPixelFormat_D32);
-      pipelineDesc->SetFunction(eGpuFunctionType_Vertex,vertexGpuFun);
-      pipelineDesc->SetFunction(eGpuFunctionType_Pixel,pixelGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Vertex, vertexGpuFun);
+      pipelineDesc->SetFunction(eGpuFunctionType_Pixel, pixelGpuFun);
 
       pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
-      _pipelineClearColorDepth = niCheckNN(_pipelineClearColorDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearColorDepth = niCheckNN(
+        _pipelineClearColorDepth,
+        gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"), pipelineDesc),
+        eFalse);
 
       pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingFilled);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
-      _pipelineClearColor = niCheckNN(_pipelineClearColor, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearColor = niCheckNN(
+        _pipelineClearColor,
+        gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"), pipelineDesc),
+        eFalse);
 
-      pipelineDesc->SetRasterizerStates(eCompiledStates_RS_NoCullingColorWriteNone);
+      pipelineDesc->SetRasterizerStates(
+        eCompiledStates_RS_NoCullingColorWriteNone);
       pipelineDesc->SetDepthStencilStates(eCompiledStates_DS_DepthWriteOnly);
-      _pipelineClearDepth = niCheckNN(_pipelineClearDepth, gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"),pipelineDesc), eFalse);
+      _pipelineClearDepth = niCheckNN(
+        _pipelineClearDepth,
+        gpuDriver->CreateGpuPipeline(_H("GpuTriangle_Pipeline"), pipelineDesc),
+        eFalse);
     }
 
     return eTrue;
   }
 
-  Ptr<iGpuPipeline> __stdcall GetRenderPipeline(iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId, iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl {
+  Ptr<iGpuPipeline> __stdcall GetRenderPipeline(
+    iGraphicsDriverGpu* apGpuDriver, tFixedGpuPipelineId aPipelineId,
+    iGpuFunction* apFuncVertex, iGpuFunction* apFuncPixel) niImpl
+  {
     tPipelineMap::iterator it = _pipelines.find(aPipelineId);
     if (it == _pipelines.end()) {
-      GPU_TRACE((">>> sFixedGpuPipelines::GetRenderPipeline: CreateFixedGpuPipeline: %s.",((sFixedGpuPipelineIdDesc&)aPipelineId).ToString()));
+      GPU_TRACE((
+        ">>> sFixedGpuPipelines::GetRenderPipeline: CreateFixedGpuPipeline: %s.",
+        ((sFixedGpuPipelineIdDesc&)aPipelineId).ToString()));
       Ptr<iGpuPipeline> pipeline = CreateFixedGpuPipeline(
-        apGpuDriver,aPipelineId,apFuncVertex,apFuncPixel);
+        apGpuDriver, aPipelineId, apFuncVertex, apFuncPixel);
       if (!pipeline.IsOK()) {
         // niDebugFmt(("VS %s, PS %s",vs->GetCode(),ps->GetCode()));
         niPanicUnreachable("Can't create gpu pipeline.");
         return nullptr;
       }
-      it = _pipelines.insert(astl::make_pair(aPipelineId,pipeline)).first;      
-    }    
+      it = _pipelines.insert(astl::make_pair(aPipelineId, pipeline)).first;
+    }
     return it->second;
   }
 
-  iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const niImpl {
+  iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const niImpl
+  {
     niUnused(aFVF);
     if (aFVF & eFVF_ColorA) {
       if (aFVF & eFVF_Tex1) {
@@ -414,7 +490,9 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     }
   }
 
-  iGpuFunction* __stdcall GetFixedGpuFuncPixel(ain<sMaterialDesc> aMatDesc) const niImpl {
+  iGpuFunction* __stdcall GetFixedGpuFuncPixel(
+    ain<sMaterialDesc> aMatDesc) const niImpl
+  {
     if (aMatDesc.mFlags & eMaterialFlags_Transparent) {
       return _pixelFuncTexAlphaTest;
     }
@@ -423,22 +501,27 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     }
   }
 
-  nn<iTexture> __stdcall GetWhiteTexture() const niImpl {
+  nn<iTexture> __stdcall GetWhiteTexture() const niImpl
+  {
     return _texWhite;
   }
 
   // Convert from screen coordinates (pixels) to normalized device coordinates (NDC)
   // Screen space: (0,0) is top-left, (width,height) is bottom-right
   // Clip space: (-1,-1) is bottom-left, (1,1) is top-right, z is unchanged
-  __forceinline sVec3f ScreenToClipSpace(ain<sVec2f> aPixelSize, tF32 x, tF32 y, tF32 z) {
-    return Vec3f(
-      (x * aPixelSize.x) - 1.0f,    // Map [0,width] to [-1,1]
-      1.0f - (y * aPixelSize.y),    // Map [0,height] to [1,-1] (flip Y)
-      z                             // Keep Z as-is
+  __forceinline sVec3f ScreenToClipSpace(ain<sVec2f> aPixelSize, tF32 x, tF32 y,
+                                         tF32 z)
+  {
+    return Vec3f((x * aPixelSize.x) - 1.0f, // Map [0,width] to [-1,1]
+                 1.0f - (y * aPixelSize.y), // Map [0,height] to [1,-1] (flip Y)
+                 z                          // Keep Z as-is
     );
   }
 
-  tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder, ain<sVec2f> aPixelSize, tClearBuffersFlags aFlags, ain<sRectf> aRect, tU32 anColor, tF32 afZ) niImpl {
+  tBool __stdcall ClearRect(iGpuCommandEncoder* apCmdEncoder,
+                            ain<sVec2f> aPixelSize, tClearBuffersFlags aFlags,
+                            ain<sRectf> aRect, tU32 anColor, tF32 afZ) niImpl
+  {
     if (aFlags == eClearBuffersFlags_Depth) {
       apCmdEncoder->SetPipeline(_pipelineClearDepth);
     }
@@ -446,7 +529,8 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
       apCmdEncoder->SetPipeline(_pipelineClearColor);
     }
     else if (aFlags == eClearBuffersFlags_ColorDepth ||
-             aFlags == eClearBuffersFlags_ColorDepthStencil) {
+             aFlags == eClearBuffersFlags_ColorDepthStencil)
+    {
       apCmdEncoder->SetPipeline(_pipelineClearColorDepth);
     }
     else {
@@ -456,23 +540,22 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     niLet posTL = aRect.GetTopLeft();
     niLet posBR = aRect.GetBottomRight();
     tVertexClearRects verts[4] = {
-      {ScreenToClipSpace(aPixelSize,posTL.x,posTL.y,afZ), anColor}, // TL
-      {ScreenToClipSpace(aPixelSize,posBR.x,posTL.y,afZ), anColor}, // TR
-      {ScreenToClipSpace(aPixelSize,posTL.x,posBR.y,afZ), anColor}, // BL
-      {ScreenToClipSpace(aPixelSize,posBR.x,posBR.y,afZ), anColor}, // BR
+      { ScreenToClipSpace(aPixelSize, posTL.x, posTL.y, afZ), anColor }, // TL
+      { ScreenToClipSpace(aPixelSize, posBR.x, posTL.y, afZ), anColor }, // TR
+      { ScreenToClipSpace(aPixelSize, posTL.x, posBR.y, afZ), anColor }, // BL
+      { ScreenToClipSpace(aPixelSize, posBR.x, posBR.y, afZ), anColor }, // BR
     };
-    apCmdEncoder->StreamVertexBuffer((tPtr)verts,sizeof(verts),0);
-    apCmdEncoder->Draw(eGraphicsPrimitiveType_TriangleStrip,0,1,0,4);
+    apCmdEncoder->StreamVertexBuffer((tPtr)verts, sizeof(verts), 0);
+    apCmdEncoder->Draw(eGraphicsPrimitiveType_TriangleStrip, 0, 1, 0, 4);
     return eTrue;
   }
 };
 
 /////////////////////////////////////////////////////////////////
-Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver) {
+Ptr<iFixedGpuPipelines> CreateFixedGpuPipelines(iGraphicsDriver* apGpuDriver)
+{
   NN<sFixedGpuPipelines> fixedPipelines = ni::MakeNN<sFixedGpuPipelines>();
-  niCheck(
-    fixedPipelines->_CreateFixedGpuPipelines(apGpuDriver),
-    nullptr);
+  niCheck(fixedPipelines->_CreateFixedGpuPipelines(apGpuDriver), nullptr);
   return fixedPipelines;
 }
 
@@ -484,7 +567,8 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
   const eArrayUsage _arrayUsage;
   const tU32 _numVertices;
 
-  sFixedGpuVertexArray(iGpuBuffer* apGpuBuffer, tFVF aFVF, eArrayUsage aUsage, tU32 anNumVertices)
+  sFixedGpuVertexArray(iGpuBuffer* apGpuBuffer, tFVF aFVF, eArrayUsage aUsage,
+                       tU32 anNumVertices)
       : _arrayUsage(aUsage)
       , _buffer(apGpuBuffer)
       , _fvf(aFVF)
@@ -494,59 +578,72 @@ struct sFixedGpuVertexArray : public ni::ImplRC<iVertexArray> {
     niDebugAssert(_buffer->GetSize() >= (_fvfStride * _numVertices));
     GPU_TRACE((
       ">>> sFixedGpuVertexArray: FVF:%s, NumVertex: %d, Stride: %d, Size: %db (%gMB).",
-      FVFToString(_fvf).Chars(),
-      this->GetNumVertices(), _fvfStride,
+      FVFToString(_fvf).Chars(), this->GetNumVertices(), _fvfStride,
       _fvfStride * anNumVertices,
-      ((tF64)(_fvfStride * anNumVertices))/(1024.0*1024.0)));
+      ((tF64)(_fvfStride * anNumVertices)) / (1024.0 * 1024.0)));
   }
 
-  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl {
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl
+  {
     if (aIID == niGetInterfaceUUID(iGpuBuffer))
       return _buffer;
     return BaseImpl::QueryInterface(aIID);
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _buffer->IsOK();
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return NULL;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return _buffer->Bind(apDevice);
   }
 
-  virtual tFVF __stdcall GetFVF() const niImpl {
+  virtual tFVF __stdcall GetFVF() const niImpl
+  {
     return _fvf;
   }
-  virtual tU32 __stdcall GetNumVertices() const niImpl {
+  virtual tU32 __stdcall GetNumVertices() const niImpl
+  {
     return _numVertices;
   }
-  virtual eArrayUsage __stdcall GetUsage() const niImpl {
+  virtual eArrayUsage __stdcall GetUsage() const niImpl
+  {
     return _arrayUsage;
   }
-  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex, eLock aLock) niImpl {
+  virtual tPtr __stdcall Lock(tU32 anFirstVertex, tU32 anNumVertex,
+                              eLock aLock) niImpl
+  {
     niUnused(aLock);
-    return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride, aLock);
+    return _buffer->Lock(anFirstVertex * _fvfStride, anNumVertex * _fvfStride,
+                         aLock);
   }
-  virtual tBool __stdcall Unlock() niImpl {
+  virtual tBool __stdcall Unlock() niImpl
+  {
     return _buffer->Unlock();
   }
-  virtual tBool __stdcall GetIsLocked() const niImpl {
+  virtual tBool __stdcall GetIsLocked() const niImpl
+  {
     return _buffer->GetIsLocked();
   }
 };
 
 /////////////////////////////////////////////////////////////////
-iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA) {
+iGpuBuffer* GetVertexArrayGpuBuffer(iVertexArray* apVA)
+{
   return ((sFixedGpuVertexArray*)apVA)->_buffer;
 }
 
 /////////////////////////////////////////////////////////////////
-sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA) {
+sVec2i GetVertexArrayFvfAndStride(iVertexArray* apVA)
+{
   niLet va = (sFixedGpuVertexArray*)apVA;
-  return Vec2i((tI32)va->_fvf,(tI32)va->_fvfStride);
+  return Vec2i((tI32)va->_fvf, (tI32)va->_fvfStride);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -557,7 +654,9 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
   const tU32 _numIndices;
   const tU32 _maxVertexIndex;
 
-  sFixedGpuIndexArray(iGpuBuffer* apGpuBuffer, eGraphicsPrimitiveType aPrimType, eArrayUsage aUsage, tU32 anNumIndices, tU32 anMaxVertexIndex)
+  sFixedGpuIndexArray(iGpuBuffer* apGpuBuffer, eGraphicsPrimitiveType aPrimType,
+                      eArrayUsage aUsage, tU32 anNumIndices,
+                      tU32 anMaxVertexIndex)
       : _arrayUsage(aUsage)
       , _primType(aPrimType)
       , _buffer(apGpuBuffer)
@@ -567,95 +666,110 @@ struct sFixedGpuIndexArray : public ni::ImplRC<iIndexArray> {
     niDebugAssert(_buffer->GetSize() >= (knFixedGpuIndexSize * _numIndices));
     GPU_TRACE((
       ">>> sFixedGpuIndexArray: PT: %s, MaxVertexIndex:%d, NumIndices: %d, Stride: %d, Size: %db (%gMB).",
-      niEnumToChars(eGraphicsPrimitiveType,_primType),
-      0xFFFFFFFF,
+      niEnumToChars(eGraphicsPrimitiveType, _primType), 0xFFFFFFFF,
       this->GetNumIndices(), knFixedGpuIndexSize,
       knFixedGpuIndexSize * anNumIndices,
-      ((tF64)(knFixedGpuIndexSize * anNumIndices))/(1024.0*1024.0)));
+      ((tF64)(knFixedGpuIndexSize * anNumIndices)) / (1024.0 * 1024.0)));
   }
 
-  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl {
+  virtual iUnknown* __stdcall QueryInterface(const tUUID& aIID) niImpl
+  {
     if (aIID == niGetInterfaceUUID(iGpuBuffer))
       return _buffer;
     return BaseImpl::QueryInterface(aIID);
   }
 
-  virtual tBool __stdcall IsOK() const niImpl {
+  virtual tBool __stdcall IsOK() const niImpl
+  {
     return _buffer->IsOK();
   }
 
-  virtual iHString* __stdcall GetDeviceResourceName() const niImpl {
+  virtual iHString* __stdcall GetDeviceResourceName() const niImpl
+  {
     return NULL;
   }
-  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl {
+  virtual iDeviceResource* __stdcall Bind(iUnknown* apDevice) niImpl
+  {
     return _buffer->Bind(apDevice);
   }
 
-  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const niImpl {
+  virtual eGraphicsPrimitiveType __stdcall GetPrimitiveType() const niImpl
+  {
     return _primType;
   }
-  virtual tU32 __stdcall GetNumIndices() const niImpl {
+  virtual tU32 __stdcall GetNumIndices() const niImpl
+  {
     return _numIndices;
   }
-  virtual tU32 __stdcall GetMaxVertexIndex() const niImpl {
+  virtual tU32 __stdcall GetMaxVertexIndex() const niImpl
+  {
     return _maxVertexIndex;
   }
-  virtual eArrayUsage __stdcall GetUsage() const niImpl {
+  virtual eArrayUsage __stdcall GetUsage() const niImpl
+  {
     return _arrayUsage;
   }
 
-  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex, eLock aLock) niImpl {
-    return _buffer->Lock(anFirstIndex * knFixedGpuIndexSize, anNumIndex * knFixedGpuIndexSize, aLock);
+  virtual tPtr __stdcall Lock(tU32 anFirstIndex, tU32 anNumIndex,
+                              eLock aLock) niImpl
+  {
+    return _buffer->Lock(anFirstIndex * knFixedGpuIndexSize,
+                         anNumIndex * knFixedGpuIndexSize, aLock);
   }
-  virtual tBool __stdcall Unlock() niImpl {
+  virtual tBool __stdcall Unlock() niImpl
+  {
     return _buffer->Unlock();
   }
-  virtual tBool __stdcall GetIsLocked() const niImpl {
+  virtual tBool __stdcall GetIsLocked() const niImpl
+  {
     return _buffer->GetIsLocked();
   }
 };
 
 /////////////////////////////////////////////////////////////////
-iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA) {
+iGpuBuffer* GetIndexArrayGpuBuffer(iIndexArray* apVA)
+{
   return ((sFixedGpuIndexArray*)apVA)->_buffer;
 }
 
 /////////////////////////////////////////////////////////////////
-iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver, tU32 anNumVertices, tFVF anFVF, eArrayUsage aUsage) {
+iVertexArray* CreateFixedGpuVertexArray(iGraphicsDriverGpu* apGpuDriver,
+                                        tU32 anNumVertices, tFVF anFVF,
+                                        eArrayUsage aUsage)
+{
   niLet fvfStride = FVFGetStride(anFVF);
   Ptr<iGpuBuffer> vaBuffer = apGpuDriver->CreateGpuBuffer(
-    nullptr,
-    fvfStride * anNumVertices,
-    eGpuBufferMemoryMode_Shared,
-    eGpuBufferUsageFlags_Vertex|
-    eGpuBufferUsageFlags_Storage|
-    eGpuBufferUsageFlags_RayBuildInput);
-  niCheckIsOK(vaBuffer,nullptr);
+    nullptr, fvfStride * anNumVertices, eGpuBufferMemoryMode_Shared,
+    eGpuBufferUsageFlags_Vertex | eGpuBufferUsageFlags_Storage |
+      eGpuBufferUsageFlags_RayBuildInput);
+  niCheckIsOK(vaBuffer, nullptr);
   return niNew sFixedGpuVertexArray(vaBuffer, anFVF, aUsage, anNumVertices);
 }
 
-iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver, eGraphicsPrimitiveType aPrimitiveType, tU32 anNumIndices, tU32 anMaxVertexIndex, eArrayUsage aUsage) {
+iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver,
+                                      eGraphicsPrimitiveType aPrimitiveType,
+                                      tU32 anNumIndices, tU32 anMaxVertexIndex,
+                                      eArrayUsage aUsage)
+{
   niUnused(anMaxVertexIndex);
   Ptr<iGpuBuffer> iaBuffer = apGpuDriver->CreateGpuBuffer(
-    nullptr,
-    knFixedGpuIndexSize * anNumIndices,
-    eGpuBufferMemoryMode_Shared,
-    eGpuBufferUsageFlags_Index|
-    eGpuBufferUsageFlags_Storage|
-    eGpuBufferUsageFlags_RayBuildInput);
-  return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage, anNumIndices, anMaxVertexIndex);
+    nullptr, knFixedGpuIndexSize * anNumIndices, eGpuBufferMemoryMode_Shared,
+    eGpuBufferUsageFlags_Index | eGpuBufferUsageFlags_Storage |
+      eGpuBufferUsageFlags_RayBuildInput);
+  return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage,
+                                   anNumIndices, anMaxVertexIndex);
 }
 
 /////////////////////////////////////////////////////////////////
-static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString* ahspTarget) {
+static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT,
+                                                const iHString* ahspTarget)
+{
   if (!apDT)
     return nullptr;
 
   niLet dtName = apDT->GetName();
-  if (!StrEq(dtName,"Shader") &&
-      !StrEq(dtName,"Target") &&
-      !StrEq(dtName,"GpuFunction") &&
-      !StrEq(dtName,"GpuLibrary"))
+  if (!StrEq(dtName, "Shader") && !StrEq(dtName, "Target") &&
+      !StrEq(dtName, "GpuFunction") && !StrEq(dtName, "GpuLibrary"))
     return nullptr;
 
   tHStringPtr hspTarget = apDT->GetHString("target");
@@ -663,8 +777,9 @@ static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString
   if (hspTarget == ahspTarget) {
     return apDT;
   }
-  niLoop(i,apDT->GetNumChildren()) {
-    iDataTable* foundDT = GpuFunctionDT_FindTarget(apDT->GetChildFromIndex(i), ahspTarget);
+  niLoop (i, apDT->GetNumChildren()) {
+    iDataTable* foundDT =
+      GpuFunctionDT_FindTarget(apDT->GetChildFromIndex(i), ahspTarget);
     if (foundDT)
       return foundDT;
   }
@@ -672,12 +787,13 @@ static Ptr<iDataTable> GpuFunctionDT_FindTarget(iDataTable* apDT, const iHString
 }
 
 /////////////////////////////////////////////////////////////////
-static inline tBool _ReflectionHasArray(iDataTable* apDT) {
+static inline tBool _ReflectionHasArray(iDataTable* apDT)
+{
   if (!apDT)
     return eFalse;
-  niLoop(i,apDT->GetNumChildren()) {
+  niLoop (i, apDT->GetNumChildren()) {
     iDataTable* cdt = apDT->GetChildFromIndex(i);
-    if (cdt && StrIEq(cdt->GetName(),"array"))
+    if (cdt && StrIEq(cdt->GetName(), "array"))
       return eTrue;
     if (_ReflectionHasArray(cdt))
       return eTrue;
@@ -686,29 +802,31 @@ static inline tBool _ReflectionHasArray(iDataTable* apDT) {
 }
 
 /////////////////////////////////////////////////////////////////
-Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpuFunctionBindType* apOutBindType) {
-  niLet dtRoot = niCheckNN_(
-    dtRoot,LoadDataTable(aURL),
-    niFmt("Can't load gpufunc datatable from '%s'.",aURL),
-    nullptr);
+Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget,
+                                   eGpuFunctionBindType* apOutBindType)
+{
+  niLet dtRoot =
+    niCheckNN_(dtRoot, LoadDataTable(aURL),
+               niFmt("Can't load gpufunc datatable from '%s'.", aURL), nullptr);
 
   if (apOutBindType) {
     *apOutBindType = eGpuFunctionBindType_None;
 
-    niLet dtReflection = niCheckNN(dtReflection,dtRoot->GetChild("Reflection"),nullptr);
+    niLet dtReflection =
+      niCheckNN(dtReflection, dtRoot->GetChild("Reflection"), nullptr);
     Ptr<iDataTable> dtSeparateImages = dtReflection->GetChild("SeparateImages");
     Ptr<iDataTable> dtUBOs = dtReflection->GetChild("UBOs");
     Ptr<iDataTable> dtSSBOs = dtReflection->GetChild("SSBOs");
-    Ptr<iDataTable> dtAccelerationStructures = dtReflection->GetChild("AccelerationStructures");
+    Ptr<iDataTable> dtAccelerationStructures =
+      dtReflection->GetChild("AccelerationStructures");
 
-    niLet isBindless =
-        _ReflectionHasArray(dtSeparateImages) ||
-        _ReflectionHasArray(dtUBOs) ||
-        _ReflectionHasArray(dtSSBOs) ||
-        _ReflectionHasArray(dtAccelerationStructures);
+    niLet isBindless = _ReflectionHasArray(dtSeparateImages) ||
+                       _ReflectionHasArray(dtUBOs) ||
+                       _ReflectionHasArray(dtSSBOs) ||
+                       _ReflectionHasArray(dtAccelerationStructures);
 
-    niLet isRT =
-        (dtAccelerationStructures.has_value() && (dtAccelerationStructures->GetNumChildren() > 0));
+    niLet isRT = (dtAccelerationStructures.has_value() &&
+                  (dtAccelerationStructures->GetNumChildren() > 0));
 
     if (isBindless) {
       if (isRT) {
@@ -731,29 +849,34 @@ Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpu
         }
       }
     }
-    niDebugFmt((
-      "... GpuFunctionDT_Load: url: %s, target: %s, bindType: %s",
-      aURL, ahspTarget, niEnumToChars(eGpuFunctionBindType,*apOutBindType)));
+    niDebugFmt(("... GpuFunctionDT_Load: url: %s, target: %s, bindType: %s",
+                aURL, ahspTarget,
+                niEnumToChars(eGpuFunctionBindType, *apOutBindType)));
   }
 
-  niLet dtTarget = niCheckNN_(
-    dtTarget,GpuFunctionDT_FindTarget(dtRoot,ahspTarget),
-    niFmt("Can't find gpufunc target '%s' datatable from '%s'.",ahspTarget,aURL),
-    nullptr);
+  niLet dtTarget =
+    niCheckNN_(dtTarget, GpuFunctionDT_FindTarget(dtRoot, ahspTarget),
+               niFmt("Can't find gpufunc target '%s' datatable from '%s'.",
+                     ahspTarget, aURL),
+               nullptr);
 
   niLet dataPI = dtTarget->GetPropertyIndex("_data");
   if (dataPI == eInvalidHandle) {
     niLet codePath = dtTarget->GetString("code_path");
     if (!codePath.empty()) {
-      niLet foundCodePath = ni::GetLang()->URLFindFilePath(codePath.c_str(),aURL,nullptr);
+      niLet foundCodePath =
+        ni::GetLang()->URLFindFilePath(codePath.c_str(), aURL, nullptr);
       niLet fpCode = niCheckNN_(
-        dtTarget,ni::GetLang()->URLOpen(foundCodePath.c_str()),
-        niFmt("Can't load gpufunc target '%s' code from '%s' in datatable '%s'.",ahspTarget,codePath,aURL),
+        dtTarget, ni::GetLang()->URLOpen(foundCodePath.c_str()),
+        niFmt(
+          "Can't load gpufunc target '%s' code from '%s' in datatable '%s'.",
+          ahspTarget, codePath, aURL),
         nullptr);
-      dtTarget->SetIUnknown("code_fp",fpCode);
+      dtTarget->SetIUnknown("code_fp", fpCode);
     }
     else {
-      niError(niFmt("Can't find gpufunc target '%s' code in datatable '%s'.",ahspTarget,aURL));
+      niError(niFmt("Can't find gpufunc target '%s' code in datatable '%s'.",
+                    ahspTarget, aURL));
       return nullptr;
     }
   }
@@ -762,12 +885,14 @@ Ptr<iDataTable> GpuFunctionDT_Load(const achar* aURL, iHString* ahspTarget, eGpu
 }
 
 /////////////////////////////////////////////////////////////////
-cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT) {
+cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT)
+{
   if (aDT->HasProperty("_data")) {
     return aDT->GetString("_data");
   }
   else if (aDT->HasProperty("code_fp")) {
-    NN<iFile> fpCode = niCheckNN(fpCode,QueryInterface<iFile>(aDT->GetIUnknown("code_fp")),AZEROSTR);
+    NN<iFile> fpCode = niCheckNN(
+      fpCode, QueryInterface<iFile>(aDT->GetIUnknown("code_fp")), AZEROSTR);
     return fpCode->ReadString();
   }
   niError("No source text in gpufunction datatable.");
@@ -775,112 +900,123 @@ cString GpuFunctionDT_GetSourceText(ain<nn<iDataTable>> aDT) {
 }
 
 /////////////////////////////////////////////////////////////////
-Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT) {
+Ptr<iFile> GpuFunctionDT_GetSourceData(ain<nn<iDataTable>> aDT)
+{
   if (aDT->HasProperty("code_fp")) {
-    NN<iFile> fpCode = niCheckNN(fpCode,QueryInterface<iFile>(aDT->GetIUnknown("code_fp")),nullptr);
+    NN<iFile> fpCode = niCheckNN(
+      fpCode, QueryInterface<iFile>(aDT->GetIUnknown("code_fp")), nullptr);
     return fpCode;
   }
   niError("No source binary data in gpufunction datatable.");
   return nullptr;
 }
 
-
-
-static tU32 _VertexFormatToFixedGpuVertexFormat(tFVF aFVF) {
+static tU32 _VertexFormatToFixedGpuVertexFormat(tFVF aFVF)
+{
   switch (aFVF) {
-    case eVertexFormat_P: return eFixedGpuVertexFormat_P;
-    case eVertexFormat_PA: return eFixedGpuVertexFormat_PA;
-    case eVertexFormat_PAT1: return eFixedGpuVertexFormat_PAT1;
-    case eVertexFormat_PN: return eFixedGpuVertexFormat_PN;
-    case eVertexFormat_PNA: return eFixedGpuVertexFormat_PNA;
-    case eVertexFormat_PNT1: return eFixedGpuVertexFormat_PNT1;
-    case eVertexFormat_PNAT1: return eFixedGpuVertexFormat_PNAT1;
-    case eVertexFormat_PNT2: return eFixedGpuVertexFormat_PNT2;
-    case eVertexFormat_PNAT2: return eFixedGpuVertexFormat_PNAT2;
-    case eVertexFormat_PB4INT1: return eFixedGpuVertexFormat_PB4INT1;
-    case eVertexFormat_PB4INAT1: return eFixedGpuVertexFormat_PB4INAT1;
-    default: return eInvalidHandle;
+  case eVertexFormat_P: return eFixedGpuVertexFormat_P;
+  case eVertexFormat_PA: return eFixedGpuVertexFormat_PA;
+  case eVertexFormat_PAT1: return eFixedGpuVertexFormat_PAT1;
+  case eVertexFormat_PN: return eFixedGpuVertexFormat_PN;
+  case eVertexFormat_PNA: return eFixedGpuVertexFormat_PNA;
+  case eVertexFormat_PNT1: return eFixedGpuVertexFormat_PNT1;
+  case eVertexFormat_PNAT1: return eFixedGpuVertexFormat_PNAT1;
+  case eVertexFormat_PNT2: return eFixedGpuVertexFormat_PNT2;
+  case eVertexFormat_PNAT2: return eFixedGpuVertexFormat_PNAT2;
+  case eVertexFormat_PB4INT1: return eFixedGpuVertexFormat_PB4INT1;
+  case eVertexFormat_PB4INAT1: return eFixedGpuVertexFormat_PB4INAT1;
+  default: return eInvalidHandle;
   }
 }
 
-static tU32 _CompiledStatesRSToFixedGpuRS(eCompiledStates aRS) {
+static tU32 _CompiledStatesRSToFixedGpuRS(eCompiledStates aRS)
+{
   switch (aRS) {
-    case eCompiledStates_RS_ColorWriteNone: return eFixedGpuRS_ColorWriteNone;
-    case eCompiledStates_RS_Filled: return eFixedGpuRS_Filled;
-    case eCompiledStates_RS_Wireframe: return eFixedGpuRS_Wireframe;
-    case eCompiledStates_RS_NoCullingColorWriteNone: return eFixedGpuRS_NoCullingColorWriteNone;
-    case eCompiledStates_RS_NoCullingFilled: return eFixedGpuRS_NoCullingFilled;
-    case eCompiledStates_RS_NoCullingWireframe: return eFixedGpuRS_NoCullingWireframe;
-    case eCompiledStates_RS_CWCullingColorWriteNone: return eFixedGpuRS_CWCullingColorWriteNone;
-    case eCompiledStates_RS_CWCullingFilled: return eFixedGpuRS_CWCullingFilled;
-    case eCompiledStates_RS_CWCullingWireframe: return eFixedGpuRS_CWCullingWireframe;
-    default: return eInvalidHandle;
+  case eCompiledStates_RS_ColorWriteNone: return eFixedGpuRS_ColorWriteNone;
+  case eCompiledStates_RS_Filled: return eFixedGpuRS_Filled;
+  case eCompiledStates_RS_Wireframe: return eFixedGpuRS_Wireframe;
+  case eCompiledStates_RS_NoCullingColorWriteNone:
+    return eFixedGpuRS_NoCullingColorWriteNone;
+  case eCompiledStates_RS_NoCullingFilled: return eFixedGpuRS_NoCullingFilled;
+  case eCompiledStates_RS_NoCullingWireframe:
+    return eFixedGpuRS_NoCullingWireframe;
+  case eCompiledStates_RS_CWCullingColorWriteNone:
+    return eFixedGpuRS_CWCullingColorWriteNone;
+  case eCompiledStates_RS_CWCullingFilled: return eFixedGpuRS_CWCullingFilled;
+  case eCompiledStates_RS_CWCullingWireframe:
+    return eFixedGpuRS_CWCullingWireframe;
+  default: return eInvalidHandle;
   }
 }
 
-static tU32 _CompiledStatesDSToFixedGpuDS(eCompiledStates aDS) {
+static tU32 _CompiledStatesDSToFixedGpuDS(eCompiledStates aDS)
+{
   switch (aDS) {
-    case eCompiledStates_DS_NoDepthTest: return eFixedGpuDS_NoDepthTest;
-    case eCompiledStates_DS_DepthTestAndWrite: return eFixedGpuDS_DepthTestAndWrite;
-    case eCompiledStates_DS_DepthTestOnly: return eFixedGpuDS_DepthTestOnly;
-    default: return eInvalidHandle;
+  case eCompiledStates_DS_NoDepthTest: return eFixedGpuDS_NoDepthTest;
+  case eCompiledStates_DS_DepthTestAndWrite:
+    return eFixedGpuDS_DepthTestAndWrite;
+  case eCompiledStates_DS_DepthTestOnly: return eFixedGpuDS_DepthTestOnly;
+  default: return eInvalidHandle;
   }
 }
 
-static tFVF _FixedGpuVertexFormatToVertexFormat(tU32 aVF) {
+static tFVF _FixedGpuVertexFormatToVertexFormat(tU32 aVF)
+{
   switch (aVF) {
-    case eFixedGpuVertexFormat_P: return eVertexFormat_P;
-    case eFixedGpuVertexFormat_PA: return eVertexFormat_PA;
-    case eFixedGpuVertexFormat_PAT1: return eVertexFormat_PAT1;
-    case eFixedGpuVertexFormat_PN: return eVertexFormat_PN;
-    case eFixedGpuVertexFormat_PNA: return eVertexFormat_PNA;
-    case eFixedGpuVertexFormat_PNT1: return eVertexFormat_PNT1;
-    case eFixedGpuVertexFormat_PNAT1: return eVertexFormat_PNAT1;
-    case eFixedGpuVertexFormat_PNT2: return eVertexFormat_PNT2;
-    case eFixedGpuVertexFormat_PNAT2: return eVertexFormat_PNAT2;
-    case eFixedGpuVertexFormat_PB4INT1: return eVertexFormat_PB4INT1;
-    case eFixedGpuVertexFormat_PB4INAT1: return eVertexFormat_PB4INAT1;
+  case eFixedGpuVertexFormat_P: return eVertexFormat_P;
+  case eFixedGpuVertexFormat_PA: return eVertexFormat_PA;
+  case eFixedGpuVertexFormat_PAT1: return eVertexFormat_PAT1;
+  case eFixedGpuVertexFormat_PN: return eVertexFormat_PN;
+  case eFixedGpuVertexFormat_PNA: return eVertexFormat_PNA;
+  case eFixedGpuVertexFormat_PNT1: return eVertexFormat_PNT1;
+  case eFixedGpuVertexFormat_PNAT1: return eVertexFormat_PNAT1;
+  case eFixedGpuVertexFormat_PNT2: return eVertexFormat_PNT2;
+  case eFixedGpuVertexFormat_PNAT2: return eVertexFormat_PNAT2;
+  case eFixedGpuVertexFormat_PB4INT1: return eVertexFormat_PB4INT1;
+  case eFixedGpuVertexFormat_PB4INAT1: return eVertexFormat_PB4INAT1;
   }
   niPanicUnreachable(niFmt("Unknown fixed gpu vertex format '%d'.", (tU32)aVF));
   return 0;
 }
 
-static eCompiledStates _FixedGpuRSToCompiledStatesRS(tU32 aRS) {
+static eCompiledStates _FixedGpuRSToCompiledStatesRS(tU32 aRS)
+{
   switch (aRS) {
-    case eFixedGpuRS_ColorWriteNone: return eCompiledStates_RS_ColorWriteNone;
-    case eFixedGpuRS_Filled: return eCompiledStates_RS_Filled;
-    case eFixedGpuRS_Wireframe: return eCompiledStates_RS_Wireframe;
-    case eFixedGpuRS_NoCullingColorWriteNone: return eCompiledStates_RS_NoCullingColorWriteNone;
-    case eFixedGpuRS_NoCullingFilled: return eCompiledStates_RS_NoCullingFilled;
-    case eFixedGpuRS_NoCullingWireframe: return eCompiledStates_RS_NoCullingWireframe;
-    case eFixedGpuRS_CWCullingColorWriteNone: return eCompiledStates_RS_CWCullingColorWriteNone;
-    case eFixedGpuRS_CWCullingFilled: return eCompiledStates_RS_CWCullingFilled;
-    case eFixedGpuRS_CWCullingWireframe: return eCompiledStates_RS_CWCullingWireframe;
+  case eFixedGpuRS_ColorWriteNone: return eCompiledStates_RS_ColorWriteNone;
+  case eFixedGpuRS_Filled: return eCompiledStates_RS_Filled;
+  case eFixedGpuRS_Wireframe: return eCompiledStates_RS_Wireframe;
+  case eFixedGpuRS_NoCullingColorWriteNone:
+    return eCompiledStates_RS_NoCullingColorWriteNone;
+  case eFixedGpuRS_NoCullingFilled: return eCompiledStates_RS_NoCullingFilled;
+  case eFixedGpuRS_NoCullingWireframe:
+    return eCompiledStates_RS_NoCullingWireframe;
+  case eFixedGpuRS_CWCullingColorWriteNone:
+    return eCompiledStates_RS_CWCullingColorWriteNone;
+  case eFixedGpuRS_CWCullingFilled: return eCompiledStates_RS_CWCullingFilled;
+  case eFixedGpuRS_CWCullingWireframe:
+    return eCompiledStates_RS_CWCullingWireframe;
   }
   niPanicUnreachable(niFmt("Unknown fixed gpu RS '%d'.", (tU32)aRS));
   return eCompiledStates_Invalid;
 }
 
-static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS) {
+static eCompiledStates _FixedGpuDSToCompiledStatesDS(tU32 aDS)
+{
   switch (aDS) {
-    case eFixedGpuDS_NoDepthTest: return eCompiledStates_DS_NoDepthTest;
-    case eFixedGpuDS_DepthTestAndWrite: return eCompiledStates_DS_DepthTestAndWrite;
-    case eFixedGpuDS_DepthTestOnly: return eCompiledStates_DS_DepthTestOnly;
-    case eFixedGpuDS_DepthWriteOnly: return eCompiledStates_DS_DepthWriteOnly;
+  case eFixedGpuDS_NoDepthTest: return eCompiledStates_DS_NoDepthTest;
+  case eFixedGpuDS_DepthTestAndWrite:
+    return eCompiledStates_DS_DepthTestAndWrite;
+  case eFixedGpuDS_DepthTestOnly: return eCompiledStates_DS_DepthTestOnly;
+  case eFixedGpuDS_DepthWriteOnly: return eCompiledStates_DS_DepthWriteOnly;
   }
   niPanicUnreachable(niFmt("Unknown fixed gpu DS '%d'.", (tU32)aDS));
   return eCompiledStates_Invalid;
 }
 
 tFixedGpuPipelineId GetFixedGpuPipelineId(
-  eGpuPixelFormat aRT0Format,
-  eGpuPixelFormat aDSFormat,
-  tFVF aFVF,
-  eBlendMode aBlendMode,
-  eCompiledStates aRS,
-  eCompiledStates aDS,
-  const iGpuFunction* apFuncVertex,
-  const iGpuFunction* apFuncPixel)
+  eGpuPixelFormat aRT0Format, eGpuPixelFormat aDSFormat, tFVF aFVF,
+  eBlendMode aBlendMode, eCompiledStates aRS, eCompiledStates aDS,
+  const iGpuFunction* apFuncVertex, const iGpuFunction* apFuncPixel)
 {
   sFixedGpuPipelineIdDesc id = {};
 
@@ -890,7 +1026,8 @@ tFixedGpuPipelineId GetFixedGpuPipelineId(
   {
     niLet v = _VertexFormatToFixedGpuVertexFormat(aFVF);
     if (v == eInvalidHandle) {
-      niError(niFmt("Invalid vertex format: %s (%x).", FVFToString(aFVF), aFVF));
+      niError(
+        niFmt("Invalid vertex format: %s (%x).", FVFToString(aFVF), aFVF));
       return 0;
     }
     id.vertexFormat = (eFixedGpuVertexFormat)v;
@@ -916,7 +1053,7 @@ tFixedGpuPipelineId GetFixedGpuPipelineId(
 
   id.blendMode = aBlendMode;
 
-  niCheckIsOK(apFuncVertex,0);
+  niCheckIsOK(apFuncVertex, 0);
   {
     niLet v = apFuncVertex->GetFunctionId();
     if (v >= knFixedGpuMaxFuncId) {
@@ -926,7 +1063,7 @@ tFixedGpuPipelineId GetFixedGpuPipelineId(
     id.funcVertex = v;
   }
 
-  niCheckIsOK(apFuncPixel,0);
+  niCheckIsOK(apFuncPixel, 0);
   {
     niLet v = apFuncPixel->GetFunctionId();
     if (v >= knFixedGpuMaxFuncId) {
@@ -939,21 +1076,21 @@ tFixedGpuPipelineId GetFixedGpuPipelineId(
   return id.ToId();
 }
 
-Ptr<iGpuPipeline> CreateFixedGpuPipeline(
-  iGraphicsDriverGpu* apGpuDriver,
-  tFixedGpuPipelineId aPipelineId,
-  iGpuFunction* apFuncVertex,
-  iGpuFunction* apFuncPixel)
+Ptr<iGpuPipeline> CreateFixedGpuPipeline(iGraphicsDriverGpu* apGpuDriver,
+                                         tFixedGpuPipelineId aPipelineId,
+                                         iGpuFunction* apFuncVertex,
+                                         iGpuFunction* apFuncPixel)
 {
-  niCheck(apFuncVertex != nullptr,nullptr);
-  niCheck(apFuncVertex->GetFunctionType() == eGpuFunctionType_Vertex,nullptr);
-  niCheck(apFuncPixel != nullptr,nullptr);
-  niCheck(apFuncPixel->GetFunctionType() == eGpuFunctionType_Pixel,nullptr);
+  niCheck(apFuncVertex != nullptr, nullptr);
+  niCheck(apFuncVertex->GetFunctionType() == eGpuFunctionType_Vertex, nullptr);
+  niCheck(apFuncPixel != nullptr, nullptr);
+  niCheck(apFuncPixel->GetFunctionType() == eGpuFunctionType_Pixel, nullptr);
 
   sFixedGpuPipelineIdDesc idDesc = sFixedGpuPipelineIdDesc::FromId(aPipelineId);
 
-  NN<iGpuPipelineDesc> ptrPipelineDesc{apGpuDriver->CreateGpuPipelineDesc()};
-  sGpuPipelineDesc& desc = *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
+  NN<iGpuPipelineDesc> ptrPipelineDesc{ apGpuDriver->CreateGpuPipelineDesc() };
+  sGpuPipelineDesc& desc =
+    *(sGpuPipelineDesc*)ptrPipelineDesc->GetDescStructPtr();
   desc.mFVF = _FixedGpuVertexFormatToVertexFormat(idDesc.vertexFormat);
   desc.mColorFormats[0] = idDesc.GetRT0PixelFormat();
   desc.mColorFormats[1] = eGpuPixelFormat_None;
@@ -968,7 +1105,8 @@ Ptr<iGpuPipeline> CreateFixedGpuPipeline(
     desc.mptrBlendMode = nullptr;
   }
   else if (idDesc.blendMode < eBlendMode_Last) {
-    const sGpuBlendModeDesc& bm = _BlendModeToGpuBlendModeDesc((eBlendMode)idDesc.blendMode);
+    const sGpuBlendModeDesc& bm =
+      _BlendModeToGpuBlendModeDesc((eBlendMode)idDesc.blendMode);
     desc.mptrBlendMode = apGpuDriver->CreateGpuBlendMode();
     *((sGpuBlendModeDesc*)desc.mptrBlendMode->GetDescStructPtr()) = bm;
   }
@@ -977,15 +1115,13 @@ Ptr<iGpuPipeline> CreateFixedGpuPipeline(
     niWarning("Invalid blend mode, falling back to 'no blending'.");
   }
   return apGpuDriver->CreateGpuPipeline(
-    HFmt("sFixedGpuPipelines{%s}",idDesc.ToString()),
-    ptrPipelineDesc);
+    HFmt("sFixedGpuPipelines{%s}", idDesc.ToString()), ptrPipelineDesc);
 }
 
 /////////////////////////////////////////////////////////////////
 // Submits the draw call for the specified draw operation.
-tBool DrawOperationSubmitGpuDrawCall(
-  iGpuCommandEncoder* apCmdEncoder,
-  iDrawOperation* apDrawOp)
+tBool DrawOperationSubmitGpuDrawCall(iGpuCommandEncoder* apCmdEncoder,
+                                     iDrawOperation* apDrawOp)
 {
   iVertexArray* va = apDrawOp->GetVertexArray();
   iIndexArray* ia = apDrawOp->GetIndexArray();
@@ -1001,15 +1137,17 @@ tBool DrawOperationSubmitGpuDrawCall(
     const tU32 firstInd = apDrawOp->GetFirstIndex();
     tU32 numInds = apDrawOp->GetNumIndices();
     if (!numInds) {
-      numInds = ia->GetNumIndices()-firstInd;
+      numInds = ia->GetNumIndices() - firstInd;
     }
     iGpuBuffer* iaBuffer = GetIndexArrayGpuBuffer(ia);
     apCmdEncoder->SetIndexBuffer(iaBuffer, 0, eGpuIndexType_U32);
-    apCmdEncoder->DrawIndexed(apDrawOp->GetPrimitiveType(), 0, 1, baseVertexIndex, firstInd, numInds);
+    apCmdEncoder->DrawIndexed(apDrawOp->GetPrimitiveType(), 0, 1,
+                              baseVertexIndex, firstInd, numInds);
   }
   else {
-    const tU32 nNumVerts = va->GetNumVertices()-baseVertexIndex;
-    apCmdEncoder->Draw(apDrawOp->GetPrimitiveType(), 0, 1, baseVertexIndex, nNumVerts);
+    const tU32 nNumVerts = va->GetNumVertices() - baseVertexIndex;
+    apCmdEncoder->Draw(apDrawOp->GetPrimitiveType(), 0, 1, baseVertexIndex,
+                       nNumVerts);
   }
 
   return eTrue;
@@ -1029,10 +1167,8 @@ struct sGpuStream : public ImplRC<iGpuStream> {
   tU32 _numBlocks = 0;
 
   sGpuStream(ain<nn<iGraphicsDriverGpu>> apDriver,
-             tGpuBufferUsageFlags aUsageFlags,
-             tU32 aBlockAlignment,
-             tU32 aChunkSize,
-             tU32 aMaxChunks)
+             tGpuBufferUsageFlags aUsageFlags, tU32 aBlockAlignment,
+             tU32 aChunkSize, tU32 aMaxChunks)
       : _chunkSize(aChunkSize)
       , _maxChunks(aMaxChunks)
       , _blockAlignment(aBlockAlignment)
@@ -1042,17 +1178,22 @@ struct sGpuStream : public ImplRC<iGpuStream> {
     _chunks.reserve(_maxChunks);
   }
 
-  tBool _AllocateNextChunk() {
-    niLet chunk = niCheckNN(chunk, _driver->CreateGpuBuffer(
-      nullptr, _chunkSize,
-      eGpuBufferMemoryMode_Shared, _usageFlags),eFalse);
+  tBool _AllocateNextChunk()
+  {
+    niLet chunk = niCheckNN(
+      chunk,
+      _driver->CreateGpuBuffer(nullptr, _chunkSize, eGpuBufferMemoryMode_Shared,
+                               _usageFlags),
+      eFalse);
     _chunks.push_back(chunk);
     return eTrue;
   }
 
-  tBool __stdcall UpdateNextBlock(ain<tPtr> apData, ain<tU32> anSize) niImpl {
+  tBool __stdcall UpdateNextBlock(ain<tPtr> apData, ain<tU32> anSize) niImpl
+  {
     if (anSize > _chunkSize) {
-      niError(niFmt("Data size '%d' larger than chunk size '%d'.", anSize, _chunkSize));
+      niError(niFmt("Data size '%d' larger than chunk size '%d'.", anSize,
+                    _chunkSize));
       return eFalse;
     }
 
@@ -1061,12 +1202,14 @@ struct sGpuStream : public ImplRC<iGpuStream> {
         // Reuse existing chunk
         _currentChunk++;
         _currentOffset = 0;
-      } else if (_chunks.size() >= _maxChunks) {
+      }
+      else if (_chunks.size() >= _maxChunks) {
         niError("Maximum chunks reached");
         return eFalse;
-      } else {
+      }
+      else {
         // Allocate new chunk
-        niCheck(_AllocateNextChunk(),eFalse);
+        niCheck(_AllocateNextChunk(), eFalse);
         _currentChunk = (tU32)_chunks.size() - 1;
         _currentOffset = 0;
       }
@@ -1085,34 +1228,41 @@ struct sGpuStream : public ImplRC<iGpuStream> {
     _lastBlock.mBuffer = chunk;
     _lastBlock.mOffset = _currentOffset;
     _lastBlock.mSize = anSize;
-    _lastBlock.mAlignedSize = _blockAlignment ?
-        ((anSize + _blockAlignment - 1) & ~(_blockAlignment - 1)) :
-        anSize;
+    _lastBlock.mAlignedSize =
+      _blockAlignment
+        ? ((anSize + _blockAlignment - 1) & ~(_blockAlignment - 1))
+        : anSize;
     ++_numBlocks;
 
     _currentOffset += _lastBlock.mAlignedSize;
     return eTrue;
   }
 
-  const sGpuStreamBlock& __stdcall GetLastBlock() const niImpl {
+  const sGpuStreamBlock& __stdcall GetLastBlock() const niImpl
+  {
     return _lastBlock;
   }
 
-  iGpuBuffer* __stdcall GetLastBuffer() const niImpl {
+  iGpuBuffer* __stdcall GetLastBuffer() const niImpl
+  {
     return _lastBlock.mBuffer;
   }
-  tU32 __stdcall GetLastOffset() const niImpl {
+  tU32 __stdcall GetLastOffset() const niImpl
+  {
     return _lastBlock.mOffset;
   }
-  tU32 __stdcall GetLastSize() const niImpl {
+  tU32 __stdcall GetLastSize() const niImpl
+  {
     return _lastBlock.mSize;
   }
 
-  tU32 __stdcall GetNumBlocks() const niImpl {
+  tU32 __stdcall GetNumBlocks() const niImpl
+  {
     return _numBlocks;
   }
 
-  void __stdcall Reset() niImpl {
+  void __stdcall Reset() niImpl
+  {
     _currentChunk = 0;
     _currentOffset = 0;
     _numBlocks = 0;
@@ -1120,32 +1270,43 @@ struct sGpuStream : public ImplRC<iGpuStream> {
 };
 
 /////////////////////////////////////////////////////////////////
-Ptr<iGpuStream> CreateGpuStream(
-  ain<nn<iGraphicsDriverGpu>> apDriver,
-  tGpuBufferUsageFlags aUsageFlags,
-  tU32 aBlockAlignment,
-  tU32 aChunkSize,
-  tU32 aMaxChunks)
+Ptr<iGpuStream> CreateGpuStream(ain<nn<iGraphicsDriverGpu>> apDriver,
+                                tGpuBufferUsageFlags aUsageFlags,
+                                tU32 aBlockAlignment, tU32 aChunkSize,
+                                tU32 aMaxChunks)
 {
-  return niNew sGpuStream(apDriver,aUsageFlags,aBlockAlignment,aChunkSize,aMaxChunks);
+  return niNew sGpuStream(apDriver, aUsageFlags, aBlockAlignment, aChunkSize,
+                          aMaxChunks);
 }
 
 /////////////////////////////////////////////////////////////////
-tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding) {
+tBool UpdateGpuStreamToVertexBuffer(iGpuStream* apStream,
+                                    iGpuCommandEncoder* apEncoder,
+                                    const tPtr apData, tU32 anSize,
+                                    tU32 anBinding)
+{
   niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
   niLet& block = apStream->GetLastBlock();
   apEncoder->SetVertexBuffer(block.mBuffer, block.mOffset, anBinding);
   return eTrue;
 }
 
-tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, eGpuIndexType aIndexType) {
+tBool UpdateGpuStreamToIndexBuffer(iGpuStream* apStream,
+                                   iGpuCommandEncoder* apEncoder,
+                                   const tPtr apData, tU32 anSize,
+                                   eGpuIndexType aIndexType)
+{
   niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
   niLet& block = apStream->GetLastBlock();
   apEncoder->SetIndexBuffer(block.mBuffer, block.mOffset, aIndexType);
   return eTrue;
 }
 
-tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* apEncoder, const tPtr apData, tU32 anSize, tU32 anBinding) {
+tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream,
+                                     iGpuCommandEncoder* apEncoder,
+                                     const tPtr apData, tU32 anSize,
+                                     tU32 anBinding)
+{
   niCheck(apStream->UpdateNextBlock(apData, anSize), eFalse);
   niLet& block = apStream->GetLastBlock();
   apEncoder->SetUniformBuffer(block.mBuffer, block.mOffset, anBinding);
@@ -1153,22 +1314,26 @@ tBool UpdateGpuStreamToUniformBuffer(iGpuStream* apStream, iGpuCommandEncoder* a
 }
 
 /////////////////////////////////////////////////////////////////
-nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics, tIntPtr ahRS) {
+nn<const sRasterizerStatesDesc> GetGpuRasterizerDesc(nn<iGraphics> aGraphics,
+                                                     tIntPtr ahRS)
+{
   iRasterizerStates* pRS = aGraphics->GetCompiledRasterizerStates(ahRS);
   if (!pRS) {
-    pRS = aGraphics->GetCompiledRasterizerStates(eCompiledStates_RS_NoCullingFilled);
+    pRS = aGraphics->GetCompiledRasterizerStates(
+      eCompiledStates_RS_NoCullingFilled);
   }
   return as_nn((const sRasterizerStatesDesc*)pRS->GetDescStructPtr());
 }
 
-nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(nn<iGraphics> aGraphics, tIntPtr ahDS) {
+nn<const sDepthStencilStatesDesc> GetGpuDepthStencilDesc(
+  nn<iGraphics> aGraphics, tIntPtr ahDS)
+{
   iDepthStencilStates* pDS = aGraphics->GetCompiledDepthStencilStates(ahDS);
   if (!pDS) {
-    pDS = aGraphics->GetCompiledDepthStencilStates(
-      eCompiledStates_DS_NoDepthTest);
+    pDS =
+      aGraphics->GetCompiledDepthStencilStates(eCompiledStates_DS_NoDepthTest);
   }
   return as_nn((const sDepthStencilStatesDesc*)pDS->GetDescStructPtr());
 }
 
-
-}
+} // namespace ni

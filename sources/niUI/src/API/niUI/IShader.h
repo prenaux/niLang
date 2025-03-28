@@ -15,8 +15,7 @@ struct iShaderConstants;
 static const tU32 kfccD3DShader = niFourCC('A','D','3','D');
 
 //! Shader Units.
-enum eShaderUnit
-{
+enum eShaderUnit {
   //! Vertex shader.
   eShaderUnit_Vertex = 0,
   //! Pixel shader.
@@ -30,8 +29,7 @@ enum eShaderUnit
 };
 
 //! Shader input register type.
-enum eShaderRegisterType
-{
+enum eShaderRegisterType {
   //! Input register.
   eShaderRegisterType_Input = 0,
   //! Output position register.
@@ -59,22 +57,21 @@ enum eShaderRegisterType
 };
 
 //! Shader constants buffer description structure.
-struct sShaderConstantsDesc
-{
+struct sShaderConstantsDesc {
   struct sConstant {
     //! The constant's name, as extracted from the shader.
-    tHStringPtr         hspName;
+    tHStringPtr hspName;
     //! The constant's metadata
-    tHStringPtr         hspMetadata;
+    tHStringPtr hspMetadata;
     //! The constant's size, each register has four components.
-    tU32                nSize;
+    tU32 nSize;
     //! Index in the default data, float used mvFloatRegisters,
     //! int and bools uses mvIntRegisters.
-    tU32                nDataIndex;
+    tU32 nDataIndex;
     //! Index of the constant to be set on the device.
-    tU32                nHwIndex;
+    tU32 nHwIndex;
     //! The constant's type.
-    tU32                Type;
+    tU32 Type;
 
     explicit sConstant()
         : nSize(0)
@@ -83,7 +80,8 @@ struct sShaderConstantsDesc
         , Type(0)
     {
     }
-    explicit sConstant(iHString* ahspName, eShaderRegisterType aType, tU32 anSize, tU32 anDataIndex)
+    explicit sConstant(iHString* ahspName, eShaderRegisterType aType,
+                       tU32 anSize, tU32 anDataIndex)
         : hspName(ahspName)
         , nSize(anSize)
         , nDataIndex(anDataIndex)
@@ -100,13 +98,13 @@ struct sShaderConstantsDesc
     {
     }
   };
-  typedef astl::hstring_hash_map<tU32>    tConstMap;
+  typedef astl::hstring_hash_map<tU32> tConstMap;
 
-  tU32              mnMaxRegisters;
+  tU32 mnMaxRegisters;
   astl::vector<sVec4f> mvFloatRegisters;
   astl::vector<sVec4i> mvIntRegisters;
   astl::vector<sConstant> mvConstants;
-  tConstMap       mmapConstants;
+  tConstMap mmapConstants;
 };
 
 niCAssert(sizeof(sShaderConstantsDesc::sConstant) == ((2*sizeof(tPtr)) + 16));
@@ -125,7 +123,9 @@ struct iShaderConstants : public iSerializable {
 
   //! Add a new constant.
   //! \return The index of the added constant, eInvalidHandle if error.
-  virtual tU32 __stdcall AddConstant(iHString* ahspName, eShaderRegisterType aType, tU32 anSize) = 0;
+  virtual tU32 __stdcall AddConstant(iHString* ahspName,
+                                     eShaderRegisterType aType,
+                                     tU32 anSize) = 0;
 
   //! Get the number of constants in the buffer.
   //! {Property}
@@ -141,33 +141,43 @@ struct iShaderConstants : public iSerializable {
   virtual tU32 __stdcall GetConstantSize(tU32 anConstIndex) const = 0;
   //! Get the type of the specified constant.
   //! {Property}
-  virtual eShaderRegisterType __stdcall GetConstantType(tU32 anConstIndex) const = 0;
+  virtual eShaderRegisterType __stdcall GetConstantType(
+    tU32 anConstIndex) const = 0;
 
   //! Set the hardware register index of the specified constant.
   //! \remark a eInvalidHandle value means that the register index is not specified and
   //!     has to be determined from the context.
   //! {Property}
-  virtual tBool __stdcall SetHwIndex(tU32 anConstIndex, tU32 anRegisterIndex) = 0;
+  virtual tBool __stdcall SetHwIndex(tU32 anConstIndex,
+                                     tU32 anRegisterIndex) = 0;
   //! Get the hardware register index of the specified constant.
   //! {Property}
   virtual tU32 __stdcall GetHwIndex(tU32 anConstIndex) const = 0;
 
   //! Set a float constant from 4D vectors.
-  virtual tBool __stdcall SetFloatArray(tU32 anConstIndex, const tVec4fCVec* apV, tU32 anSize = 1) = 0;
+  virtual tBool __stdcall SetFloatArray(tU32 anConstIndex,
+                                        const tVec4fCVec* apV,
+                                        tU32 anSize = 1) = 0;
   //! Set a float constant from 4D vectors.
   //! {NoAutomation}
-  virtual tBool __stdcall SetFloatPointer(tU32 anConstIndex, const sVec4f* apV, tU32 anSize = 1) = 0;
+  virtual tBool __stdcall SetFloatPointer(tU32 anConstIndex, const sVec4f* apV,
+                                          tU32 anSize = 1) = 0;
   //! Set a float constant from 4D vectors.
   virtual tBool __stdcall SetFloat(tU32 anConstIndex, const sVec4f& aV) = 0;
   //! Set four float constants from matrices.
-  virtual tBool __stdcall SetFloatMatrixArray(tU32 anConstIndex, const tMatrixfCVec* apV, tU32 anSize = 1) = 0;
+  virtual tBool __stdcall SetFloatMatrixArray(tU32 anConstIndex,
+                                              const tMatrixfCVec* apV,
+                                              tU32 anSize = 1) = 0;
   //! Set four float constants from matrices.
-  virtual tBool __stdcall SetFloatMatrix(tU32 anConstIndex, const sMatrixf& aV) = 0;
+  virtual tBool __stdcall SetFloatMatrix(tU32 anConstIndex,
+                                         const sMatrixf& aV) = 0;
   //! Set an integer constant from 4D vectors.
-  virtual tBool __stdcall SetIntArray(tU32 anConstIndex, const tVec4iCVec* apV, tU32 anSize = 1) = 0;
+  virtual tBool __stdcall SetIntArray(tU32 anConstIndex, const tVec4iCVec* apV,
+                                      tU32 anSize = 1) = 0;
   //! Set an integer constant from 4D vectors.
   //! {NoAutomation}
-  virtual tBool __stdcall SetIntPointer(tU32 anConstIndex, const sVec4i* apV, tU32 anSize = 1) = 0;
+  virtual tBool __stdcall SetIntPointer(tU32 anConstIndex, const sVec4i* apV,
+                                        tU32 anSize = 1) = 0;
   //! Set an integer constant from 4D vectors.
   virtual tBool __stdcall SetInt(tU32 anConstIndex, const sVec4i& aV) = 0;
 
@@ -190,23 +200,22 @@ struct iShaderConstants : public iSerializable {
 
   //! Set the metadata of the specified constant.
   //! {Property}
-  virtual void __stdcall SetConstantMetadata(tU32 anConstIndex, iHString* ahspMetadata) = 0;
+  virtual void __stdcall SetConstantMetadata(tU32 anConstIndex,
+                                             iHString* ahspMetadata) = 0;
   //! Get the metadata of the specified constant.
   //! {Property}
   virtual iHString* __stdcall GetConstantMetadata(tU32 anConstIndex) const = 0;
 };
 
 //! Shader description structure.
-struct sShaderDesc
-{
-  tHStringPtr            mhspName;
-  Ptr<iHString>          mhspProfile;
-  Ptr<iShaderConstants>  mptrConstants;
+struct sShaderDesc {
+  tHStringPtr mhspName;
+  Ptr<iHString> mhspProfile;
+  Ptr<iShaderConstants> mptrConstants;
 };
 
 //! Shader interface.
-struct iShader : public iDeviceResource
-{
+struct iShader : public iDeviceResource {
   niDeclareInterfaceUUID(iShader,0xd33a0c21,0xad8f,0x4a61,0xa1,0x32,0xc0,0xcd,0x95,0xf9,0x86,0x4d);
 
   //! Return the Shader unit on which it runs.
@@ -256,5 +265,5 @@ struct iGLShader : public iUnknown {
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ISHADER_34445783_H__

@@ -12,8 +12,7 @@ namespace ni {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Texture flags.
-enum eTextureFlags
-{
+enum eTextureFlags {
   //! Texture default.
   eTextureFlags_Default = 0,
   //! Texture is in system memory.
@@ -53,7 +52,9 @@ enum eTextureFlags
   //! Texture is an antialiased render target with 16 samples.
   eTextureFlags_RTAA16Samples = niBit(12),
   //! All RTAA flags, can be used to test whether a texture is antialiased.
-  eTextureFlags_RTAA_All = eTextureFlags_RTAA4Samples|eTextureFlags_RTAA8Samples|eTextureFlags_RTAA16Samples,
+  eTextureFlags_RTAA_All = eTextureFlags_RTAA4Samples |
+                           eTextureFlags_RTAA8Samples |
+                           eTextureFlags_RTAA16Samples,
   //! Render target is flipped.
   //! \remark Shader projection matrices should be flipped when rendering in a
   //!         render target that has this flags set. The fixed/plain rendering
@@ -67,8 +68,7 @@ enum eTextureFlags
 typedef tU32 tTextureFlags;
 
 //! Texture blit flags.
-enum eTextureBlitFlags
-{
+enum eTextureBlitFlags {
   //! No flags
   eTextureBlitFlags_None = 0,
   //! Bilinear filtering.
@@ -86,8 +86,7 @@ typedef tU32 tTextureBlitFlags;
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Texture interface
 //! \remark Bindable
-struct iTexture : public iDeviceResource
-{
+struct iTexture : public iDeviceResource {
   niDeclareInterfaceUUID(iTexture,0x604af5db,0x7590,0x444a,0x94,0x7c,0xd3,0x20,0xbb,0x95,0xf7,0x8c);
 
   //! Get the texture type.
@@ -121,8 +120,7 @@ struct iTexture : public iDeviceResource
 //  OpenGL interfaces
 //
 //===========================================================================
-struct iGLTexture : public iTexture
-{
+struct iGLTexture : public iTexture {
   niDeclareInterfaceUUID(iGLTexture,0xa960dac0,0x7f0e,0x0000,0xc8,0x91,0xb3,0xb1,0xff,0x7f,0x00,0x00);
   //! Get the OpenGL handle.
   //! {Property}
@@ -134,5 +132,5 @@ struct iGLTexture : public iTexture
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ITEXTURE_28471243_H__

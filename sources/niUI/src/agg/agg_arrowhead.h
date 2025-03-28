@@ -21,15 +21,13 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 
 //===============================================================arrowhead
 //
 // See implementation agg_arrowhead.cpp
 //
-class arrowhead
-{
+class arrowhead {
  public:
   arrowhead();
 
@@ -42,8 +40,14 @@ class arrowhead
     m_head_flag = true;
   }
 
-  void head()    { m_head_flag = true; }
-  void no_head() { m_head_flag = false; }
+  void head()
+  {
+    m_head_flag = true;
+  }
+  void no_head()
+  {
+    m_head_flag = false;
+  }
 
   void tail(agg_real d1, agg_real d2, agg_real d3, agg_real d4)
   {
@@ -54,29 +58,35 @@ class arrowhead
     m_tail_flag = true;
   }
 
-  void tail()    { m_tail_flag = true;  }
-  void no_tail() { m_tail_flag = false; }
+  void tail()
+  {
+    m_tail_flag = true;
+  }
+  void no_tail()
+  {
+    m_tail_flag = false;
+  }
 
   void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
-  agg_real   m_head_d1;
-  agg_real   m_head_d2;
-  agg_real   m_head_d3;
-  agg_real   m_head_d4;
-  agg_real   m_tail_d1;
-  agg_real   m_tail_d2;
-  agg_real   m_tail_d3;
-  agg_real   m_tail_d4;
-  bool     m_head_flag;
-  bool     m_tail_flag;
-  agg_real   m_coord[16];
+  agg_real m_head_d1;
+  agg_real m_head_d2;
+  agg_real m_head_d3;
+  agg_real m_head_d4;
+  agg_real m_tail_d1;
+  agg_real m_tail_d2;
+  agg_real m_tail_d3;
+  agg_real m_tail_d4;
+  bool m_head_flag;
+  bool m_tail_flag;
+  agg_real m_coord[16];
   unsigned m_cmd[8];
   unsigned m_curr_id;
   unsigned m_curr_coord;
 };
 
-}
+} // namespace agg
 
 #endif

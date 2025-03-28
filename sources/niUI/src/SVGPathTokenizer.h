@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT
 #if niMinFeatures(20)
 
-#include "AGG.h"
+  #include "AGG.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // SVG path tokenizer.
@@ -37,8 +37,7 @@
 // the last_number() values won't change, that is, last_number() always
 // returns the last recognized numeric value, so does last_command().
 //===============================================================
-class cSVGPathTokenizer
-{
+class cSVGPathTokenizer {
  public:
   cSVGPathTokenizer();
 
@@ -47,17 +46,26 @@ class cSVGPathTokenizer
 
   tF32 Next(char cmd);
 
-  char LastCommand() const { return m_last_command; }
-  tF32 LastNumber() const { return (tF32)m_last_number; }
+  char LastCommand() const
+  {
+    return m_last_command;
+  }
+  tF32 LastNumber() const
+  {
+    return (tF32)m_last_number;
+  }
 
-  tBool HasError() const { return mbError; }
+  tBool HasError() const
+  {
+    return mbError;
+  }
 
  private:
   static void InitCharMask(char* mask, const char* char_set);
 
   bool Contains(const char* mask, unsigned c) const
   {
-    return (mask[(c >> 3) & (256/8-1)] & (1 << (c & 7))) != 0;
+    return (mask[(c >> 3) & (256 / 8 - 1)] & (1 << (c & 7))) != 0;
   }
 
   bool IsCommand(unsigned c) const
@@ -77,13 +85,13 @@ class cSVGPathTokenizer
 
   tBool ParseNumber();
 
-  char m_separators_mask[256/8];
-  char m_commands_mask[256/8];
-  char m_numeric_mask[256/8];
+  char m_separators_mask[256 / 8];
+  char m_commands_mask[256 / 8];
+  char m_numeric_mask[256 / 8];
 
   const char* m_path;
   agg_real m_last_number;
-  char   m_last_command;
+  char m_last_command;
   tBool mbError;
 
   static const char s_commands[];

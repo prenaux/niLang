@@ -5,46 +5,48 @@
 
 class cWidget;
 
-typedef astl::list<cWidget*>          tWidgetPtrDeq;
-typedef tWidgetPtrDeq::iterator         tWidgetPtrDeqIt;
-typedef tWidgetPtrDeq::const_iterator     tWidgetPtrDeqCIt;
-typedef tWidgetPtrDeq::reverse_iterator     tWidgetPtrDeqRIt;
+typedef astl::list<cWidget*> tWidgetPtrDeq;
+typedef tWidgetPtrDeq::iterator tWidgetPtrDeqIt;
+typedef tWidgetPtrDeq::const_iterator tWidgetPtrDeqCIt;
+typedef tWidgetPtrDeq::reverse_iterator tWidgetPtrDeqRIt;
 typedef tWidgetPtrDeq::const_reverse_iterator tWidgetPtrDeqCRIt;
 
-typedef astl::map<tU32,tWidgetPtrDeq> tWidgetZMap;
-typedef tWidgetZMap::iterator     tWidgetZMapIt;
-typedef tWidgetZMap::const_iterator   tWidgetZMapCIt;
-typedef tWidgetZMap::reverse_iterator     tWidgetZMapRIt;
-typedef tWidgetZMap::const_reverse_iterator   tWidgetZMapCRIt;
+typedef astl::map<tU32, tWidgetPtrDeq> tWidgetZMap;
+typedef tWidgetZMap::iterator tWidgetZMapIt;
+typedef tWidgetZMap::const_iterator tWidgetZMapCIt;
+typedef tWidgetZMap::reverse_iterator tWidgetZMapRIt;
+typedef tWidgetZMap::const_reverse_iterator tWidgetZMapCRIt;
 
-struct iWidgetZMap : public iUnknown
-{
+struct iWidgetZMap : public iUnknown {
   niDeclareInterfaceUUID(iWidgetZMap,0xf265b538,0xe1bc,0x4811,0xbe,0xf3,0x0f,0xae,0x0b,0x13,0x6d,0xea);
   virtual tBool __stdcall RemoveOfZMap(cWidget* apW) = 0;
   virtual void __stdcall SetZOrder(cWidget* apW, eWidgetZOrder aZOrder) = 0;
   virtual void __stdcall SetZOrderAbove(cWidget* apW, cWidget* apAbove) = 0;
 };
 
-class cWidgetZMap : public ImplLocal<iWidgetZMap>
-{
+class cWidgetZMap : public ImplLocal<iWidgetZMap> {
  public:
-  cWidgetZMap() {
+  cWidgetZMap()
+  {
     mnTouchCount = 0;
   }
 
   ///////////////////////////////////////////////
-  void Clear() {
+  void Clear()
+  {
     mmapZOrder.clear();
   }
 
   ///////////////////////////////////////////////
-  tBool IsEmpty() const {
+  tBool IsEmpty() const
+  {
     return mmapZOrder.empty();
   }
 
   ///////////////////////////////////////////////
-  cWidget* GetTargetByPos(const sVec2f &pos,
-                          tBool (*apfnExcludeWidget)(const cWidget* w, tIntPtr apUserData),
+  cWidget* GetTargetByPos(const sVec2f& pos,
+                          tBool (*apfnExcludeWidget)(const cWidget* w,
+                                                     tIntPtr apUserData),
                           tIntPtr apUserData) const;
 
   ///////////////////////////////////////////////
@@ -53,49 +55,39 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
     tBool bBottom = eFalse;
     tU32 nMap = 0;
     switch (aZOrder) {
-      case eWidgetZOrder_BackgroundBottom:
-        bBottom = eTrue;
-        niFallthrough;
-      case eWidgetZOrder_Background:
-        {
-          nMap = 3;
-          break;
-        }
-      case eWidgetZOrder_Bottom:
-        bBottom = eTrue;
-        niFallthrough;
-      case eWidgetZOrder_Top:
-        {
-          nMap = 2;
-          break;
-        }
-      case eWidgetZOrder_TopMostBottom:
-        bBottom = eTrue;
-        niFallthrough;
-      case eWidgetZOrder_TopMost:
-        {
-          nMap = 1;
-          break;
-        }
-      case eWidgetZOrder_OverlayBottom:
-        bBottom = eTrue;
-        niFallthrough;
-      case eWidgetZOrder_Overlay:
-        {
-          nMap = 0;
-          break;
-        }
+    case eWidgetZOrder_BackgroundBottom: bBottom = eTrue; niFallthrough;
+    case eWidgetZOrder_Background: {
+      nMap = 3;
+      break;
+    }
+    case eWidgetZOrder_Bottom: bBottom = eTrue; niFallthrough;
+    case eWidgetZOrder_Top: {
+      nMap = 2;
+      break;
+    }
+    case eWidgetZOrder_TopMostBottom: bBottom = eTrue; niFallthrough;
+    case eWidgetZOrder_TopMost: {
+      nMap = 1;
+      break;
+    }
+    case eWidgetZOrder_OverlayBottom: bBottom = eTrue; niFallthrough;
+    case eWidgetZOrder_Overlay: {
+      nMap = 0;
+      break;
+    }
     }
 
     tWidgetZMapIt it = mmapZOrder.find(nMap);
     if (it == mmapZOrder.end()) {
       tWidgetPtrDeq deq;
       deq.push_back(apW);
-      astl::upsert(mmapZOrder,nMap,deq);
+      astl::upsert(mmapZOrder, nMap, deq);
     }
     else {
-      if (bBottom)  it->second.push_front(apW);
-      else      it->second.push_back(apW);
+      if (bBottom)
+        it->second.push_front(apW);
+      else
+        it->second.push_back(apW);
     }
 
     ++mnTouchCount;
@@ -105,7 +97,7 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   void __stdcall SetZOrder(cWidget* apW, eWidgetZOrder aZOrder)
   {
     RemoveOfZMap(apW);
-    AddToZMap(apW,aZOrder);
+    AddToZMap(apW, aZOrder);
   }
 
   ///////////////////////////////////////////////
@@ -113,11 +105,12 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   {
     RemoveOfZMap(apW);
     for (tWidgetZMapIt it = mmapZOrder.begin(); it != mmapZOrder.end(); ++it) {
-      for (tWidgetPtrDeqIt lit = it->second.begin(); lit != it->second.end(); ++lit)
+      for (tWidgetPtrDeqIt lit = it->second.begin(); lit != it->second.end();
+           ++lit)
       {
         if (*lit == (cWidget*)apAbove) {
           ++lit;
-          it->second.insert(lit,apW);
+          it->second.insert(lit, apW);
           ++mnTouchCount;
           return;
         }
@@ -129,7 +122,8 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   tBool __stdcall RemoveOfZMap(cWidget* apW)
   {
     for (tWidgetZMapIt it = mmapZOrder.begin(); it != mmapZOrder.end(); ++it) {
-      for (tWidgetPtrDeqIt lit = it->second.begin(); lit != it->second.end(); ++lit)
+      for (tWidgetPtrDeqIt lit = it->second.begin(); lit != it->second.end();
+           ++lit)
       {
         if (*lit == apW) {
           it->second.erase(lit);
@@ -144,9 +138,12 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   }
 
   ///////////////////////////////////////////////
-  tBool HasWidget(cWidget* apW) const {
+  tBool HasWidget(cWidget* apW) const
+  {
     for (tWidgetZMapCIt it = mmapZOrder.begin(); it != mmapZOrder.end(); ++it) {
-      for (tWidgetPtrDeqCIt lit = it->second.begin(); lit != it->second.end(); ++lit) {
+      for (tWidgetPtrDeqCIt lit = it->second.begin(); lit != it->second.end();
+           ++lit)
+      {
         if (*lit == apW) {
           return eTrue;
         }
@@ -159,7 +156,9 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   ni::tU32 GetNumDrawable() const
   {
     tU32 nCount = 0;
-    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend(); ++zit) {
+    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend();
+         ++zit)
+    {
       nCount += (tU32)zit->second.size();
     }
     return nCount;
@@ -170,9 +169,11 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   {
     tU32 nCount = 0;
 
-    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend(); ++zit)
+    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend();
+         ++zit)
     {
-      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end(); ++lit)
+      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end();
+           ++lit)
       {
         if (*lit == (cWidget*)apW)
           return nCount;
@@ -187,9 +188,11 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   cWidget* GetFromDrawOrder(tU32 anDrawOrder) const
   {
     tU32 nCount = 0;
-    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend(); ++zit)
+    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend();
+         ++zit)
     {
-      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end(); ++lit)
+      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end();
+           ++lit)
       {
         if (nCount == anDrawOrder)
           return (cWidget*)*lit;
@@ -200,23 +203,32 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   }
 
   ///////////////////////////////////////////////
-  tWidgetZMapRIt RBegin() {
+  tWidgetZMapRIt RBegin()
+  {
     return mmapZOrder.rbegin();
   }
-  tWidgetZMapCRIt RBegin() const {
+  tWidgetZMapCRIt RBegin() const
+  {
     return mmapZOrder.rbegin();
   }
-  tWidgetZMapRIt REnd() {
+  tWidgetZMapRIt REnd()
+  {
     return mmapZOrder.rend();
   }
-  tWidgetZMapCRIt REnd() const {
+  tWidgetZMapCRIt REnd() const
+  {
     return mmapZOrder.rend();
   }
 
   ///////////////////////////////////////////////
-  void GetReverseList(astl::list<cWidget*>& aOut) const {
-    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend(); ++zit) {
-      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end(); ++lit) {
+  void GetReverseList(astl::list<cWidget*>& aOut) const
+  {
+    for (tWidgetZMapCRIt zit = mmapZOrder.rbegin(); zit != mmapZOrder.rend();
+         ++zit)
+    {
+      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end();
+           ++lit)
+      {
         cWidget* w = (cWidget*)*lit;
         aOut.push_back(w);
       }
@@ -224,9 +236,14 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   }
 
   ///////////////////////////////////////////////
-  void GetList(astl::list<cWidget*>& aOut) const {
-    for (tWidgetZMapCIt zit = mmapZOrder.begin(); zit != mmapZOrder.end(); ++zit) {
-      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end(); ++lit) {
+  void GetList(astl::list<cWidget*>& aOut) const
+  {
+    for (tWidgetZMapCIt zit = mmapZOrder.begin(); zit != mmapZOrder.end();
+         ++zit)
+    {
+      for (tWidgetPtrDeqCIt lit = zit->second.begin(); lit != zit->second.end();
+           ++lit)
+      {
         cWidget* w = (cWidget*)*lit;
         aOut.push_back(w);
       }
@@ -234,7 +251,8 @@ class cWidgetZMap : public ImplLocal<iWidgetZMap>
   }
 
   ///////////////////////////////////////////////
-  tU32 __stdcall GetTouchCount() const {
+  tU32 __stdcall GetTouchCount() const
+  {
     return mnTouchCount;
   }
 

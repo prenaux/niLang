@@ -63,84 +63,105 @@ vertex[x]
   </pre>
 */
 template <class T>
-class cAABB
-{
+class cAABB {
  public:
-  cAABB() {
+  cAABB()
+  {
     ZeroMembers();
   }
 
-  cAABB(const sVec3<T>& min, const sVec3<T>& max) {
+  cAABB(const sVec3<T>& min, const sVec3<T>& max)
+  {
     ZeroMembers();
     Set(min, max);
   }
 
-  cAABB(const sVec3<T>& center, T afRadius) {
+  cAABB(const sVec3<T>& center, T afRadius)
+  {
     ZeroMembers();
     SetCenterExtents(center, afRadius);
   }
 
-  ~cAABB() {
+  ~cAABB()
+  {
   }
 
-  void ZeroMembers() {
-    mvMin.Set( 99999,  99999,  99999);
+  void ZeroMembers()
+  {
+    mvMin.Set(99999, 99999, 99999);
     mvMax.Set(-99999, -99999, -99999);
   }
 
-  const sVec3<T>& GetMin() const {
+  const sVec3<T>& GetMin() const
+  {
     return mvMin;
   }
-  const sVec3<T>& GetMax() const {
+  const sVec3<T>& GetMax() const
+  {
     return mvMax;
   }
 
-  const T GetXSize() const {
-    return mvMax.x-mvMin.x;
+  const T GetXSize() const
+  {
+    return mvMax.x - mvMin.x;
   }
-  const T GetYSize() const {
-    return mvMax.y-mvMin.y;
+  const T GetYSize() const
+  {
+    return mvMax.y - mvMin.y;
   }
-  const T GetZSize() const {
-    return mvMax.z-mvMin.z;
+  const T GetZSize() const
+  {
+    return mvMax.z - mvMin.z;
   }
-  const T GetMaxSize() const {
+  const T GetMaxSize() const
+  {
     return Max(GetXSize(), Max(GetYSize(), GetZSize()));
   }
-  const T GetRadius() const {
-    return GetMaxSize()/(T)2;
+  const T GetRadius() const
+  {
+    return GetMaxSize() / (T)2;
   }
 
-  sVec3<T> GetSize() const {
+  sVec3<T> GetSize() const
+  {
     return mvMax - mvMin;
   }
-  sVec3<T> GetExtents() const {
-    return (mvMax - mvMin)/T(2);
+  sVec3<T> GetExtents() const
+  {
+    return (mvMax - mvMin) / T(2);
   }
-  sVec3<T> GetCenter() const {
-    return (mvMax - mvMin)/T(2) + mvMin;
+  sVec3<T> GetCenter() const
+  {
+    return (mvMax - mvMin) / T(2) + mvMin;
   }
-  T GetAverageExtent() const {
-    return (GetXSize()+GetYSize()+GetZSize())/3;
+  T GetAverageExtent() const
+  {
+    return (GetXSize() + GetYSize() + GetZSize()) / 3;
   }
 
-  void Set(const sVec3<T>& min, const sVec3<T>& max) {
+  void Set(const sVec3<T>& min, const sVec3<T>& max)
+  {
     mvMin = min;
     mvMax = max;
   }
-  void SetMin(const sVec3<T>& min) {
+  void SetMin(const sVec3<T>& min)
+  {
     mvMin = min;
   }
-  void SetMax(const sVec3<T>& max) {
+  void SetMax(const sVec3<T>& max)
+  {
     mvMax = max;
   }
-  void SetCenterSize(const sVec3<T>& center, T size) {
-    SetCenterExtents(center, size/T(2));
+  void SetCenterSize(const sVec3<T>& center, T size)
+  {
+    SetCenterExtents(center, size / T(2));
   }
-  void SetCenterSize(const sVec3<T>& center, const sVec3<T>& size) {
-    SetCenterExtents(center, size/T(2));
+  void SetCenterSize(const sVec3<T>& center, const sVec3<T>& size)
+  {
+    SetCenterExtents(center, size / T(2));
   }
-  void SetCenterExtents(const sVec3<T>& center, T size) {
+  void SetCenterExtents(const sVec3<T>& center, T size)
+  {
     mvMin.x = center.x - size;
     mvMin.y = center.y - size;
     mvMin.z = center.z - size;
@@ -148,53 +169,68 @@ class cAABB
     mvMax.y = center.y + size;
     mvMax.z = center.z + size;
   }
-  void SetCenterExtents(const sVec3<T>& center, const sVec3<T>& size) {
+  void SetCenterExtents(const sVec3<T>& center, const sVec3<T>& size)
+  {
     mvMin = center - size;
     mvMax = center + size;
   }
 
-  tBool Intersect(const sVec3<T>& p, T epsilon = niEpsilon5) const {
-    if (p.x < mvMin.x-epsilon)  return eFalse;
-    if (p.y < mvMin.y-epsilon)  return eFalse;
-    if (p.z < mvMin.z-epsilon)  return eFalse;
-    if (p.x > mvMax.x+epsilon) return eFalse;
-    if (p.y > mvMax.y+epsilon) return eFalse;
-    if (p.z > mvMax.z+epsilon) return eFalse;
+  tBool Intersect(const sVec3<T>& p, T epsilon = niEpsilon5) const
+  {
+    if (p.x < mvMin.x - epsilon)
+      return eFalse;
+    if (p.y < mvMin.y - epsilon)
+      return eFalse;
+    if (p.z < mvMin.z - epsilon)
+      return eFalse;
+    if (p.x > mvMax.x + epsilon)
+      return eFalse;
+    if (p.y > mvMax.y + epsilon)
+      return eFalse;
+    if (p.z > mvMax.z + epsilon)
+      return eFalse;
     return eTrue;
   }
-  tBool Intersect(const cAABB<T>& aabb, T epsilon = niEpsilon5) const {
-    return Intersect(GetMin(),GetMax(),aabb.GetMin(),aabb.GetMax(),epsilon);
+  tBool Intersect(const cAABB<T>& aabb, T epsilon = niEpsilon5) const
+  {
+    return Intersect(GetMin(), GetMax(), aabb.GetMin(), aabb.GetMax(), epsilon);
   }
-  tBool Intersect(const sVec3<T>& min, const sVec3<T>& max, T epsilon = niEpsilon5) const {
-    return Intersect(GetMin(),GetMax(),min,max,epsilon);
+  tBool Intersect(const sVec3<T>& min, const sVec3<T>& max,
+                  T epsilon = niEpsilon5) const
+  {
+    return Intersect(GetMin(), GetMax(), min, max, epsilon);
   }
   static tBool Intersect(const sVec3<T>& mina, const sVec3<T>& maxa,
                          const sVec3<T>& minb, const sVec3<T>& maxb,
-                         T epsilon = niEpsilon5) {
-    if (maxa.x+epsilon < minb.x-epsilon || mina.x-epsilon > maxb.x+epsilon)
+                         T epsilon = niEpsilon5)
+  {
+    if (maxa.x + epsilon < minb.x - epsilon ||
+        mina.x - epsilon > maxb.x + epsilon)
       return eFalse;
 
-    if (maxa.y+epsilon < minb.y-epsilon || mina.y-epsilon > maxb.y+epsilon)
+    if (maxa.y + epsilon < minb.y - epsilon ||
+        mina.y - epsilon > maxb.y + epsilon)
       return eFalse;
 
-    if (maxa.z+epsilon < minb.z-epsilon || mina.z-epsilon > maxb.z+epsilon)
+    if (maxa.z + epsilon < minb.z - epsilon ||
+        mina.z - epsilon > maxb.z + epsilon)
       return eFalse;
 
     return eTrue;
   }
-  tBool IntersectRay(const sVec3<T>& avRayPos, const sVec3<T>& avRayDir, sVec3<T>* pOut = NULL, T epsilon = niEpsilon5) const {
+  tBool IntersectRay(const sVec3<T>& avRayPos, const sVec3<T>& avRayDir,
+                     sVec3<T>* pOut = NULL, T epsilon = niEpsilon5) const
+  {
     tBool bInside = eTrue;
-    sVec3<T> vMaxT = Vec3<T>(T(-1),T(-1),T(-1));
+    sVec3<T> vMaxT = Vec3<T>(T(-1), T(-1), T(-1));
     sVec3<T> vOut = sVec3<T>::Zero();
     tU32 i;
 
     // Find candidate planes.
-    for (i = 0; i < 3; ++i)
-    {
+    for (i = 0; i < 3; ++i) {
       T fPos = avRayPos[i];
       T fDir = avRayDir[i];
-      if (fPos < mvMin[i])
-      {
+      if (fPos < mvMin[i]) {
         vOut[i] = mvMin[i];
         bInside = eFalse;
 
@@ -202,8 +238,7 @@ class cAABB
         if (fDir != T(0))
           vMaxT[i] = (mvMin[i] - fPos) / fDir;
       }
-      else if (fPos > mvMax[i])
-      {
+      else if (fPos > mvMax[i]) {
         vOut[i] = mvMax[i];
         bInside = eFalse;
 
@@ -214,85 +249,97 @@ class cAABB
     }
 
     // Ray origin inside bounding box
-    if (bInside)
-    {
-      if (pOut) *pOut = avRayPos;
+    if (bInside) {
+      if (pOut)
+        *pOut = avRayPos;
       return eTrue;
     }
 
     // Get largest of the maxT's for final choice of intersection
     tU32 WhichPlane = 0;
-    if (vMaxT.y > vMaxT[WhichPlane])  WhichPlane = 1;
-    if (vMaxT.z > vMaxT[WhichPlane])  WhichPlane = 2;
+    if (vMaxT.y > vMaxT[WhichPlane])
+      WhichPlane = 1;
+    if (vMaxT.z > vMaxT[WhichPlane])
+      WhichPlane = 2;
 
     // Check final candidate actually inside box
     if (vMaxT[WhichPlane] < T(0))
       return eFalse;
 
-    for (i = 0; i < 3; ++i)
-    {
-      if (i != WhichPlane)
-      {
+    for (i = 0; i < 3; ++i) {
+      if (i != WhichPlane) {
         vOut[i] = avRayPos[i] + vMaxT[WhichPlane] * avRayDir[i];
-        if (vOut[i] < mvMin[i] - epsilon ||
-            vOut[i] > mvMax[i] + epsilon)
+        if (vOut[i] < mvMin[i] - epsilon || vOut[i] > mvMax[i] + epsilon)
           return eFalse;
       }
     }
 
-    if (pOut) *pOut = vOut;
+    if (pOut)
+      *pOut = vOut;
     return eTrue; // ray hits box
   }
 
   //! Bounding box computing helper
-  void Reset() {
+  void Reset()
+  {
     ZeroMembers();
   }
-  void SetPoint(const sVec3<T>& p) {
-    if (p.x < mvMin.x)  mvMin.x = p.x;
-    if (p.x > mvMax.x)  mvMax.x = p.x;
+  void SetPoint(const sVec3<T>& p)
+  {
+    if (p.x < mvMin.x)
+      mvMin.x = p.x;
+    if (p.x > mvMax.x)
+      mvMax.x = p.x;
 
-    if (p.y < mvMin.y)  mvMin.y = p.y;
-    if (p.y > mvMax.y)  mvMax.y = p.y;
+    if (p.y < mvMin.y)
+      mvMin.y = p.y;
+    if (p.y > mvMax.y)
+      mvMax.y = p.y;
 
-    if (p.z < mvMin.z)  mvMin.z = p.z;
-    if (p.z > mvMax.z)  mvMax.z = p.z;
+    if (p.z < mvMin.z)
+      mvMin.z = p.z;
+    if (p.z > mvMax.z)
+      mvMax.z = p.z;
   }
 
   //! Inflate the bounding box of the given percent (1.0 == 100%).
-  void Inflate(T percent) {
+  void Inflate(T percent)
+  {
     T fSzX = GetXSize();
     T fSzY = GetYSize();
     T fSzZ = GetZSize();
 
-    mvMin.x = mvMin.x - (fSzX*percent);
-    mvMin.y = mvMin.y - (fSzY*percent);
-    mvMin.z = mvMin.z - (fSzZ*percent);
+    mvMin.x = mvMin.x - (fSzX * percent);
+    mvMin.y = mvMin.y - (fSzY * percent);
+    mvMin.z = mvMin.z - (fSzZ * percent);
 
-    mvMax.x = mvMax.x + (fSzX*percent);
-    mvMax.y = mvMax.y + (fSzY*percent);
-    mvMax.z = mvMax.z + (fSzZ*percent);
+    mvMax.x = mvMax.x + (fSzX * percent);
+    mvMax.y = mvMax.y + (fSzY * percent);
+    mvMax.z = mvMax.z + (fSzZ * percent);
   }
 
   //! Extend the bounding box of the given vector.
-  void Extend(const sVec3<T>& v) {
+  void Extend(const sVec3<T>& v)
+  {
     mvMin -= v;
     mvMax += v;
   }
 
   //! Translate the AABB.
-  void Translate(const sVec3<T>& vVec) {
+  void Translate(const sVec3<T>& vVec)
+  {
     mvMin += vVec;
     mvMax += vVec;
   }
 
   //! Rotate/Scale the AABB.
-  void Rotate(const sMatrix<T>& aMtx) {
+  void Rotate(const sMatrix<T>& aMtx)
+  {
     sVec3<T> verts[8];
-    GetVertices((tPtr)verts,0,sizeof(verts[0]));
+    GetVertices((tPtr)verts, 0, sizeof(verts[0]));
     Reset();
-    niLoop(i,niCountOf(verts)) {
-      VecTransformNormal(verts[i],verts[i],aMtx);
+    niLoop (i, niCountOf(verts)) {
+      VecTransformNormal(verts[i], verts[i], aMtx);
       SetPoint(verts[i]);
     }
 
@@ -322,60 +369,62 @@ class cAABB
   }
 
   //! Transform the AABB.
-  void Transform(const sMatrix<T>& aMtx) {
+  void Transform(const sMatrix<T>& aMtx)
+  {
     // sVec3<T> temp;
     // Rotate(aMtx);
     // Translate(MatrixGetTranslation(temp,aMtx));
     sVec3<T> verts[8];
-    GetVertices((tPtr)verts,0,sizeof(verts[0]));
+    GetVertices((tPtr)verts, 0, sizeof(verts[0]));
     Reset();
-    niLoop(i,niCountOf(verts)) {
-      VecTransformCoord(verts[i],verts[i],aMtx);
+    niLoop (i, niCountOf(verts)) {
+      VecTransformCoord(verts[i], verts[i], aMtx);
       SetPoint(verts[i]);
     }
   }
 
   //! Get the AABB vertices.
   //! \remark The array needs to have room for 8 elements.
-  void GetVertices(tPtr pVerts, tU32 aulPosOffset, tU32 aulStride) const {
+  void GetVertices(tPtr pVerts, tU32 aulPosOffset, tU32 aulStride) const
+  {
     sVec3<T>* pV;
     // 0: bottom left front
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*0));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 0));
     pV->x = mvMin.x;
     pV->y = mvMin.y;
     pV->z = mvMin.z;
     // 1: bottom right front
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*1));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 1));
     pV->x = mvMax.x;
     pV->y = mvMin.y;
     pV->z = mvMin.z;
     // 2: bottom right back
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*2));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 2));
     pV->x = mvMax.x;
     pV->y = mvMin.y;
     pV->z = mvMax.z;
     // 3: bottom left back
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*3));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 3));
     pV->x = mvMin.x;
     pV->y = mvMin.y;
     pV->z = mvMax.z;
     // 4: top left front
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*4));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 4));
     pV->x = mvMin.x;
     pV->y = mvMax.y;
     pV->z = mvMin.z;
     // 5: top right front
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*5));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 5));
     pV->x = mvMax.x;
     pV->y = mvMax.y;
     pV->z = mvMin.z;
     // 6: top right back
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*6));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 6));
     pV->x = mvMax.x;
     pV->y = mvMax.y;
     pV->z = mvMax.z;
     // 7: top left back
-    pV = (sVec3<T>*)(pVerts+aulPosOffset+(aulStride*7));
+    pV = (sVec3<T>*)(pVerts + aulPosOffset + (aulStride * 7));
     pV->x = mvMin.x;
     pV->y = mvMax.y;
     pV->z = mvMax.z;
@@ -383,7 +432,8 @@ class cAABB
 
   //! Get triangles indices.
   //! \remark The array needs to have room for 36 elements.
-  static void GetTrianglesIndices(tU32* pIndices, bool bCW) {
+  static void GetTrianglesIndices(tU32* pIndices, bool bCW)
+  {
     //
     // Note: The MSVC 19 optimizer deadlocked when compiling the previous
     // version of GetTrianglesIndices that was using *pIndices++ instead of
@@ -394,59 +444,121 @@ class cAABB
     // - https://gist.github.com/prenaux/0fd3157abbf15e4cad6db733d0516bac
     //
     if (bCW) {
-      pIndices[0] = 5; pIndices[1] = 6; pIndices[2] = 1;
-      pIndices[3] = 6; pIndices[4] = 2; pIndices[5] = 1;
-      pIndices[6] = 7; pIndices[7] = 4; pIndices[8] = 3;
-      pIndices[9] = 3; pIndices[10] = 4; pIndices[11] = 0;
-      pIndices[12] = 7; pIndices[13] = 6; pIndices[14] = 4;
-      pIndices[15] = 6; pIndices[16] = 5; pIndices[17] = 4;
-      pIndices[18] = 0; pIndices[19] = 1; pIndices[20] = 3;
-      pIndices[21] = 1; pIndices[22] = 2; pIndices[23] = 3;
-      pIndices[24] = 6; pIndices[25] = 7; pIndices[26] = 2;
-      pIndices[27] = 7; pIndices[28] = 3; pIndices[29] = 2;
-      pIndices[30] = 4; pIndices[31] = 5; pIndices[32] = 0;
-      pIndices[33] = 5; pIndices[34] = 1; pIndices[35] = 0;
+      pIndices[0] = 5;
+      pIndices[1] = 6;
+      pIndices[2] = 1;
+      pIndices[3] = 6;
+      pIndices[4] = 2;
+      pIndices[5] = 1;
+      pIndices[6] = 7;
+      pIndices[7] = 4;
+      pIndices[8] = 3;
+      pIndices[9] = 3;
+      pIndices[10] = 4;
+      pIndices[11] = 0;
+      pIndices[12] = 7;
+      pIndices[13] = 6;
+      pIndices[14] = 4;
+      pIndices[15] = 6;
+      pIndices[16] = 5;
+      pIndices[17] = 4;
+      pIndices[18] = 0;
+      pIndices[19] = 1;
+      pIndices[20] = 3;
+      pIndices[21] = 1;
+      pIndices[22] = 2;
+      pIndices[23] = 3;
+      pIndices[24] = 6;
+      pIndices[25] = 7;
+      pIndices[26] = 2;
+      pIndices[27] = 7;
+      pIndices[28] = 3;
+      pIndices[29] = 2;
+      pIndices[30] = 4;
+      pIndices[31] = 5;
+      pIndices[32] = 0;
+      pIndices[33] = 5;
+      pIndices[34] = 1;
+      pIndices[35] = 0;
     }
     else {
-      pIndices[0] = 5; pIndices[1] = 1; pIndices[2] = 6;
-      pIndices[3] = 6; pIndices[4] = 1; pIndices[5] = 2;
-      pIndices[6] = 7; pIndices[7] = 3; pIndices[8] = 4;
-      pIndices[9] = 3; pIndices[10] = 0; pIndices[11] = 4;
-      pIndices[12] = 7; pIndices[13] = 4; pIndices[14] = 6;
-      pIndices[15] = 6; pIndices[16] = 4; pIndices[17] = 5;
-      pIndices[18] = 0; pIndices[19] = 3; pIndices[20] = 1;
-      pIndices[21] = 1; pIndices[22] = 3; pIndices[23] = 2;
-      pIndices[24] = 6; pIndices[25] = 2; pIndices[26] = 7;
-      pIndices[27] = 7; pIndices[28] = 2; pIndices[29] = 3;
-      pIndices[30] = 4; pIndices[31] = 0; pIndices[32] = 5;
-      pIndices[33] = 5; pIndices[34] = 0; pIndices[35] = 1;
+      pIndices[0] = 5;
+      pIndices[1] = 1;
+      pIndices[2] = 6;
+      pIndices[3] = 6;
+      pIndices[4] = 1;
+      pIndices[5] = 2;
+      pIndices[6] = 7;
+      pIndices[7] = 3;
+      pIndices[8] = 4;
+      pIndices[9] = 3;
+      pIndices[10] = 0;
+      pIndices[11] = 4;
+      pIndices[12] = 7;
+      pIndices[13] = 4;
+      pIndices[14] = 6;
+      pIndices[15] = 6;
+      pIndices[16] = 4;
+      pIndices[17] = 5;
+      pIndices[18] = 0;
+      pIndices[19] = 3;
+      pIndices[20] = 1;
+      pIndices[21] = 1;
+      pIndices[22] = 3;
+      pIndices[23] = 2;
+      pIndices[24] = 6;
+      pIndices[25] = 2;
+      pIndices[26] = 7;
+      pIndices[27] = 7;
+      pIndices[28] = 2;
+      pIndices[29] = 3;
+      pIndices[30] = 4;
+      pIndices[31] = 0;
+      pIndices[32] = 5;
+      pIndices[33] = 5;
+      pIndices[34] = 0;
+      pIndices[35] = 1;
     }
   }
 
   //! Get lines indices. To draw the AABB borders by example.
   //! \remark The array needs to have room for 24 elements.
-  static void GetLinesIndices(tU32* pIndices) {
-    *pIndices++ = 0; *pIndices++ = 1;
-    *pIndices++ = 1; *pIndices++ = 2;
-    *pIndices++ = 2; *pIndices++ = 3;
-    *pIndices++ = 3; *pIndices++ = 0;
+  static void GetLinesIndices(tU32* pIndices)
+  {
+    *pIndices++ = 0;
+    *pIndices++ = 1;
+    *pIndices++ = 1;
+    *pIndices++ = 2;
+    *pIndices++ = 2;
+    *pIndices++ = 3;
+    *pIndices++ = 3;
+    *pIndices++ = 0;
 
-    *pIndices++ = 0; *pIndices++ = 4;
-    *pIndices++ = 1; *pIndices++ = 5;
-    *pIndices++ = 2; *pIndices++ = 6;
-    *pIndices++ = 3; *pIndices++ = 7;
+    *pIndices++ = 0;
+    *pIndices++ = 4;
+    *pIndices++ = 1;
+    *pIndices++ = 5;
+    *pIndices++ = 2;
+    *pIndices++ = 6;
+    *pIndices++ = 3;
+    *pIndices++ = 7;
 
-    *pIndices++ = 4; *pIndices++ = 5;
-    *pIndices++ = 5; *pIndices++ = 6;
-    *pIndices++ = 6; *pIndices++ = 7;
-    *pIndices++ = 7; *pIndices++ = 4;
+    *pIndices++ = 4;
+    *pIndices++ = 5;
+    *pIndices++ = 5;
+    *pIndices++ = 6;
+    *pIndices++ = 6;
+    *pIndices++ = 7;
+    *pIndices++ = 7;
+    *pIndices++ = 4;
   }
 
   //! Get the AABB faces planes.
   //! \remark The array needs to have room for 6 elements.
-  void GetFacesPlanes(sVec4<T>* pPlanes, bool bOutward) const {
+  void GetFacesPlanes(sVec4<T>* pPlanes, bool bOutward) const
+  {
     sVec3<T> vVerts[8];
-    GetVertices(tPtr(vVerts),0,sizeof(vVerts[0]));
+    GetVertices(tPtr(vVerts), 0, sizeof(vVerts[0]));
 
     if (bOutward) {
       PlaneFromPoints(pPlanes[0], vVerts[1], vVerts[5], vVerts[6]);
@@ -481,100 +593,131 @@ typedef cAABB<tF32> cAABBf;
 typedef cAABB<tF64> cAABBd;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf
-{
+class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
  public:
-  cBoundingVolumeAABB() {
+  cBoundingVolumeAABB()
+  {
   }
-  ~cBoundingVolumeAABB() {
+  ~cBoundingVolumeAABB()
+  {
   }
 
   //// iBoundingVolume //////////////////////////
-  tBool __stdcall Copy(iBoundingVolume* apSrc) {
+  tBool __stdcall Copy(iBoundingVolume* apSrc)
+  {
     SetMin(apSrc->GetMin());
     SetMax(apSrc->GetMax());
     return eTrue;
   }
-  iBoundingVolume* __stdcall Clone() const {
+  iBoundingVolume* __stdcall Clone() const
+  {
     cBoundingVolumeAABB* pNew = niNew cBoundingVolumeAABB();
     pNew->mvMin = this->mvMin;
     pNew->mvMax = this->mvMax;
     return pNew;
   }
-  eBoundingVolumeType __stdcall GetType() const {
+  eBoundingVolumeType __stdcall GetType() const
+  {
     return eBoundingVolumeType_AABB;
   }
-  tBool __stdcall Begin(tBool abReset) {
-    if (abReset) cAABBf::Reset();
+  tBool __stdcall Begin(tBool abReset)
+  {
+    if (abReset)
+      cAABBf::Reset();
     return eTrue;
   }
-  tBool __stdcall End() {
+  tBool __stdcall End()
+  {
     return eTrue;
   }
-  tBool __stdcall AddPoint(const sVec3f& avPoint) {
+  tBool __stdcall AddPoint(const sVec3f& avPoint)
+  {
     cAABBf::SetPoint(avPoint);
     return eTrue;
   }
-  tBool __stdcall SetCenter(const sVec3f& avPos) {
+  tBool __stdcall SetCenter(const sVec3f& avPos)
+  {
     sVec3f vExtents = GetExtents();
-    cAABBf::SetCenterExtents(avPos,vExtents);
+    cAABBf::SetCenterExtents(avPos, vExtents);
     return eTrue;
   }
-  sVec3f __stdcall GetCenter() const {
+  sVec3f __stdcall GetCenter() const
+  {
     return cAABBf::GetCenter();
   }
-  void __stdcall SetRadius(tF32 afRadius) {
-    cAABBf::SetCenterExtents(GetCenter(),afRadius);
+  void __stdcall SetRadius(tF32 afRadius)
+  {
+    cAABBf::SetCenterExtents(GetCenter(), afRadius);
   }
-  tF32 __stdcall GetRadius() const {
-    return cAABBf::GetMaxSize()*0.5f;
+  tF32 __stdcall GetRadius() const
+  {
+    return cAABBf::GetMaxSize() * 0.5f;
   }
-  void __stdcall SetExtents(const sVec3f& avExtends) {
-    cAABBf::SetCenterExtents(GetCenter(),avExtends);
+  void __stdcall SetExtents(const sVec3f& avExtends)
+  {
+    cAABBf::SetCenterExtents(GetCenter(), avExtends);
   }
-  sVec3f __stdcall GetExtents() const {
+  sVec3f __stdcall GetExtents() const
+  {
     return cAABBf::GetExtents();
   }
-  void __stdcall SetSize(const sVec3f& avSize) {
-    cAABBf::SetCenterSize(GetCenter(),avSize);
+  void __stdcall SetSize(const sVec3f& avSize)
+  {
+    cAABBf::SetCenterSize(GetCenter(), avSize);
   }
-  sVec3f __stdcall GetSize() const {
+  sVec3f __stdcall GetSize() const
+  {
     return cAABBf::GetSize();
   }
-  void __stdcall SetMin(const sVec3f& avMin) {
+  void __stdcall SetMin(const sVec3f& avMin)
+  {
     cAABBf::SetMin(avMin);
   }
-  sVec3f __stdcall GetMin() const {
+  sVec3f __stdcall GetMin() const
+  {
     return cAABBf::GetMin();
   }
-  void __stdcall SetMax(const sVec3f& avMax) {
+  void __stdcall SetMax(const sVec3f& avMax)
+  {
     cAABBf::SetMax(avMax);
   }
-  sVec3f __stdcall GetMax() const {
+  sVec3f __stdcall GetMax() const
+  {
     return cAABBf::GetMax();
   }
-  tBool __stdcall Translate(const sVec3f& avV) {
+  tBool __stdcall Translate(const sVec3f& avV)
+  {
     cAABBf::Translate(avV);
     return eTrue;
   }
-  tBool __stdcall Rotate(const sMatrixf& amtxRotation) {
+  tBool __stdcall Rotate(const sMatrixf& amtxRotation)
+  {
     cAABBf::Rotate(amtxRotation);
     return eTrue;
   }
-  tBool __stdcall Transform(const sMatrixf& aMatrix) {
+  tBool __stdcall Transform(const sMatrixf& aMatrix)
+  {
     cAABBf::Transform(aMatrix);
     return eTrue;
   }
-  void __stdcall Inflate(tF32 afPercent) {
+  void __stdcall Inflate(tF32 afPercent)
+  {
     cAABBf::Inflate(afPercent);
   }
-  eIntersectionResult __stdcall IntersectAABB(iIntersection* apResult, const sVec3f& avMin, const sVec3f& avMax) const {
-    return cAABBf::Intersect(avMin,avMax)?eIntersectionResult_Intersect:eIntersectionResult_None;
+  eIntersectionResult __stdcall IntersectAABB(iIntersection* apResult,
+                                              const sVec3f& avMin,
+                                              const sVec3f& avMax) const
+  {
+    return cAABBf::Intersect(avMin, avMax) ? eIntersectionResult_Intersect
+                                           : eIntersectionResult_None;
   }
-  eIntersectionResult __stdcall IntersectRay(iIntersection* apResult, const sVec3f& avPos, const sVec3f& avDir) const {
+  eIntersectionResult __stdcall IntersectRay(iIntersection* apResult,
+                                             const sVec3f& avPos,
+                                             const sVec3f& avDir) const
+  {
     eIntersectionResult res = eIntersectionResult_None;
     sVec3f vPos;
-    if (cAABBf::IntersectRay(avPos,avDir,&vPos)) {
+    if (cAABBf::IntersectRay(avPos, avDir, &vPos)) {
       res = eIntersectionResult_Intersect;
     }
     if (apResult) {
@@ -583,10 +726,11 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf
     }
     return res;
   }
-  eIntersectionResult __stdcall IntersectPoint(iIntersection* apResult, const sVec3f& aPosition) const {
+  eIntersectionResult __stdcall IntersectPoint(iIntersection* apResult,
+                                               const sVec3f& aPosition) const
+  {
     eIntersectionResult res = eIntersectionResult_None;
-    if (cAABBf::Intersect(aPosition))
-    {
+    if (cAABBf::Intersect(aPosition)) {
       res = eIntersectionResult_Intersect;
     }
     if (apResult) {
@@ -595,10 +739,12 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf
     }
     return res;
   }
-  eIntersectionResult __stdcall IntersectFrustum(iIntersection* apResult, const iFrustum* apFrustum) const {
-    eIntersectionResult res = apFrustum ?
-        (eIntersectionResult)apFrustum->CullAABB(mvMin,mvMax) :
-        eIntersectionResult_Inside; // no frustum, set as 'inside'
+  eIntersectionResult __stdcall IntersectFrustum(
+    iIntersection* apResult, const iFrustum* apFrustum) const
+  {
+    eIntersectionResult res =
+      apFrustum ? (eIntersectionResult)apFrustum->CullAABB(mvMin, mvMax)
+                : eIntersectionResult_Inside; // no frustum, set as 'inside'
     if (apResult) {
       apResult->SetResult(res);
     }
@@ -610,5 +756,5 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}; // End of ni
+};     // namespace ni
 #endif // __AABB_17223519_H__

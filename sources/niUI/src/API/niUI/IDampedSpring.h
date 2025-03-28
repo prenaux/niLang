@@ -11,8 +11,7 @@ namespace ni {
 
 //! 1D Damped spring interface.
 //! \see ni::DampedSpringAcceleration
-struct iDampedSpring1 : public iUnknown
-{
+struct iDampedSpring1 : public iUnknown {
   niDeclareInterfaceUUID(iDampedSpring1,0x8c5a71f0,0x3e1b,0x41b6,0x84,0xa2,0xf6,0xf8,0xfe,0x08,0x56,0x7a);
 
   //! Set the Kd constant.
@@ -52,13 +51,13 @@ struct iDampedSpring1 : public iUnknown
   //! Update the spring's velocity from the specified displacement.
   virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime, tF32 avD) = 0;
   //! Update the spring's velocity from the specified acceleration.
-  virtual void __stdcall UpdateVelocityWithAcceleration(ni::tF32 afDeltaTime, tF32 avAcc) = 0;
+  virtual void __stdcall UpdateVelocityWithAcceleration(ni::tF32 afDeltaTime,
+                                                        tF32 avAcc) = 0;
 };
 
 //! 2D Damped spring interface.
 //! \see ni::DampedSpringAcceleration
-struct iDampedSpring2 : public iUnknown
-{
+struct iDampedSpring2 : public iUnknown {
   niDeclareInterfaceUUID(iDampedSpring2,0xab391d38,0xff1b,0x4503,0xa0,0x57,0x82,0x42,0xa5,0x11,0x02,0x15);
 
   //! Set the Kd constant.
@@ -96,15 +95,16 @@ struct iDampedSpring2 : public iUnknown
   //! Compute the spring's acceleration for the specified displacement.
   virtual sVec2f __stdcall ComputeAcceleration(const sVec2f& avD) = 0;
   //! Update the spring's velocity from the specified displacement.
-  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime, const sVec2f& avD) = 0;
+  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime,
+                                        const sVec2f& avD) = 0;
   //! Update the spring's velocity from the specified acceleration.
-  virtual void __stdcall UpdateVelocityWithAcceleration(ni::tF32 afDeltaTime, const sVec2f& avAcc) = 0;
+  virtual void __stdcall UpdateVelocityWithAcceleration(
+    ni::tF32 afDeltaTime, const sVec2f& avAcc) = 0;
 };
 
 //! 3D Damped spring interface.
 //! \see ni::DampedSpringAcceleration
-struct iDampedSpring3 : public iUnknown
-{
+struct iDampedSpring3 : public iUnknown {
   niDeclareInterfaceUUID(iDampedSpring3,0x70fe36f4,0x59c8,0x4590,0xa5,0xa5,0x7d,0xc7,0x37,0xdb,0xf8,0x74);
 
   //! Set the Kd constant.
@@ -142,15 +142,16 @@ struct iDampedSpring3 : public iUnknown
   //! Compute the spring's acceleration for the specified displacement.
   virtual sVec3f __stdcall ComputeAcceleration(const sVec3f& avD) = 0;
   //! Update the spring's velocity from the specified displacement.
-  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime, const sVec3f& avD) = 0;
+  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime,
+                                        const sVec3f& avD) = 0;
   //! Update the spring's velocity from the specified acceleration.
-  virtual void __stdcall UpdateVelocityWithAcceleration(ni::tF32 afDeltaTime, const sVec3f& avAcc) = 0;
+  virtual void __stdcall UpdateVelocityWithAcceleration(
+    ni::tF32 afDeltaTime, const sVec3f& avAcc) = 0;
 };
 
 //! 4D Damped spring interface.
 //! \see ni::DampedSpringAcceleration
-struct iDampedSpring4 : public iUnknown
-{
+struct iDampedSpring4 : public iUnknown {
   niDeclareInterfaceUUID(iDampedSpring4,0xc37f3b6d,0x6bb6,0x4036,0xae,0x64,0x80,0xf4,0x3c,0x87,0xc7,0xb2);
 
   //! Set the Kd constant.
@@ -188,14 +189,15 @@ struct iDampedSpring4 : public iUnknown
   //! Compute the spring's acceleration for the specified displacement.
   virtual sVec4f __stdcall ComputeAcceleration(const sVec4f& avD) = 0;
   //! Update the spring's velocity from the specified displacement.
-  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime, const sVec4f& avD) = 0;
+  virtual void __stdcall UpdateVelocity(ni::tF32 afDeltaTime,
+                                        const sVec4f& avD) = 0;
   //! Update the spring's velocity from the specified acceleration.
-  virtual void __stdcall UpdateVelocityWithAcceleration(ni::tF32 afDeltaTime, const sVec4f& avAcc) = 0;
+  virtual void __stdcall UpdateVelocityWithAcceleration(
+    ni::tF32 afDeltaTime, const sVec4f& avAcc) = 0;
 };
 
 //! 1D Damped spring position interface.
-struct iDampedSpringPosition1 : public iDampedSpring1
-{
+struct iDampedSpringPosition1 : public iDampedSpring1 {
   niDeclareInterfaceUUID(iDampedSpringPosition1,0x58b648fe,0x1cc2,0x4398,0xb9,0x11,0x3c,0x10,0x9f,0x12,0xcc,0xe0);
 
   //! Set the ideal (target) position of the spring.
@@ -243,8 +245,7 @@ struct iDampedSpringPosition1 : public iDampedSpring1
 };
 
 //! 2D Damped spring position interface.
-struct iDampedSpringPosition2 : public iDampedSpring2
-{
+struct iDampedSpringPosition2 : public iDampedSpring2 {
   niDeclareInterfaceUUID(iDampedSpringPosition2,0xa842b5c6,0x3331,0x4a8a,0x81,0xeb,0xf5,0xf1,0x46,0xf5,0xaa,0xc2);
 
   //! Set the ideal (target) position of the spring.
@@ -292,8 +293,7 @@ struct iDampedSpringPosition2 : public iDampedSpring2
 };
 
 //! 3D Damped spring position interface.
-struct iDampedSpringPosition3 : public iDampedSpring3
-{
+struct iDampedSpringPosition3 : public iDampedSpring3 {
   niDeclareInterfaceUUID(iDampedSpringPosition3,0x1fb0297e,0x3d7d,0x4f26,0xa6,0xd3,0x07,0x83,0x13,0x10,0x46,0x1d);
 
   //! Set the ideal (target) position of the spring.
@@ -341,8 +341,7 @@ struct iDampedSpringPosition3 : public iDampedSpring3
 };
 
 //! 4D Damped spring position interface.
-struct iDampedSpringPosition4 : public iDampedSpring4
-{
+struct iDampedSpringPosition4 : public iDampedSpring4 {
   niDeclareInterfaceUUID(iDampedSpringPosition4,0x466c694d,0x0e04,0x47ee,0x8a,0x39,0x2e,0xd3,0x1f,0x0f,0xc3,0x8c);
 
   //! Set the ideal (target) position of the spring.
@@ -391,5 +390,5 @@ struct iDampedSpringPosition4 : public iDampedSpring4
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IDAMPEDSPRING_19269492_H__

@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eWidgetSplitterStyle">
 			<comments desc="Splitter widget style. "/>
-			<value name="eWidgetSplitterStyle_Horizontal" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetSplitterStyle_Horizontal" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="The splitter is horizontal. "/>
 			</value>
-			<value name="eWidgetSplitterStyle_NoCursorResize" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetSplitterStyle_NoCursorResize" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="The splitter cant be resized with the mouse cursor. "/>
 			</value>
-			<value name="eWidgetSplitterStyle_Empty" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetSplitterStyle_Empty" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="The splitter will start empty. ">
 					<remark text="By default the splitter is created with one splitter. "/>
 				</comments>
@@ -16,13 +16,13 @@
 		</enum>
 		<enum name="eWidgetSplitterFoldMode">
 			<comments desc="Splitter folding mode. "/>
-			<value name="eWidgetSplitterFoldMode_None" value="0 ">
+			<value name="eWidgetSplitterFoldMode_None" value="0">
 				<comments desc="No folding. "/>
 			</value>
-			<value name="eWidgetSplitterFoldMode_Auto" value="1 ">
+			<value name="eWidgetSplitterFoldMode_Auto" value="1">
 				<comments desc="Fold left/top or right/bottom based on the resizable borders enabled. (default) "/>
 			</value>
-			<value name="eWidgetSplitterFoldMode_All" value="2 ">
+			<value name="eWidgetSplitterFoldMode_All" value="2">
 				<comments desc="Fold left/top &amp; right/bottom regardless of the resizable borders. "/>
 			</value>
 		</enum>

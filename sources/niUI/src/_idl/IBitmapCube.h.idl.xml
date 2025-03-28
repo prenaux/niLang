@@ -4,22 +4,22 @@
 			<comments desc="Bitmap cube faces. ">
 				<remark text="The coordinate system is Left-Handed as in DX7/8. "/>
 			</comments>
-			<value name="eBitmapCubeFace_PositiveX" value="0 ">
+			<value name="eBitmapCubeFace_PositiveX" value="0">
 				<comments desc=""/>
 			</value>
-			<value name="eBitmapCubeFace_NegativeX" value="1 ">
+			<value name="eBitmapCubeFace_NegativeX" value="1">
 				<comments desc=""/>
 			</value>
-			<value name="eBitmapCubeFace_PositiveY" value="2 ">
+			<value name="eBitmapCubeFace_PositiveY" value="2">
 				<comments desc=""/>
 			</value>
-			<value name="eBitmapCubeFace_NegativeY" value="3 ">
+			<value name="eBitmapCubeFace_NegativeY" value="3">
 				<comments desc=""/>
 			</value>
-			<value name="eBitmapCubeFace_PositiveZ" value="4 ">
+			<value name="eBitmapCubeFace_PositiveZ" value="4">
 				<comments desc=""/>
 			</value>
-			<value name="eBitmapCubeFace_NegativeZ" value="5 ">
+			<value name="eBitmapCubeFace_NegativeZ" value="5">
 				<comments desc=""/>
 			</value>
 		</enum>

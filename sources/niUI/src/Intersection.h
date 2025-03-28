@@ -5,8 +5,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cIntersection declaration.
-class cIntersection : public ni::ImplRC<ni::iIntersection,ni::eImplFlags_Default>
-{
+class cIntersection
+    : public ni::ImplRC<ni::iIntersection, ni::eImplFlags_Default> {
   niBeginClass(cIntersection);
 
  public:
@@ -23,9 +23,9 @@ class cIntersection : public ni::ImplRC<ni::iIntersection,ni::eImplFlags_Default
   //// ni::iIntersection ///////////////////////
   void __stdcall SetResult(eIntersectionResult aResult);
   eIntersectionResult __stdcall GetResult() const;
-  void __stdcall SetPosition(const sVec3f &avPos);
+  void __stdcall SetPosition(const sVec3f& avPos);
   sVec3f __stdcall GetPosition() const;
-  void __stdcall SetBaryCentric(const sVec2f &avBC);
+  void __stdcall SetBaryCentric(const sVec2f& avBC);
   sVec2f __stdcall GetBaryCentric() const;
   void __stdcall SetPolygonIndex(tU32 anIndex);
   tU32 __stdcall GetPolygonIndex() const;
@@ -35,7 +35,7 @@ class cIntersection : public ni::ImplRC<ni::iIntersection,ni::eImplFlags_Default
   eIntersectionResult mResult;
   sVec3f mvPosition;
   sVec2f mvBaryCentric;
-  tU32    mnPolygonIndex;
+  tU32 mnPolygonIndex;
   niEndClass(cIntersection);
 };
 

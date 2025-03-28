@@ -18,19 +18,27 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 //----------------------------------------------------------span_converter
-template<class SpanGenerator, class SpanConverter> class span_converter
-{
+template <class SpanGenerator, class SpanConverter>
+class span_converter {
  public:
   typedef typename SpanGenerator::color_type color_type;
 
-  span_converter(SpanGenerator& span_gen, SpanConverter& span_cnv) :
-      m_span_gen(&span_gen), m_span_cnv(&span_cnv) {}
+  span_converter(SpanGenerator& span_gen, SpanConverter& span_cnv)
+      : m_span_gen(&span_gen)
+      , m_span_cnv(&span_cnv)
+  {
+  }
 
-  void attach_generator(SpanGenerator& span_gen) { m_span_gen = &span_gen; }
-  void attach_converter(SpanConverter& span_cnv) { m_span_cnv = &span_cnv; }
+  void attach_generator(SpanGenerator& span_gen)
+  {
+    m_span_gen = &span_gen;
+  }
+  void attach_converter(SpanConverter& span_cnv)
+  {
+    m_span_cnv = &span_cnv;
+  }
 
   //--------------------------------------------------------------------
   void prepare()
@@ -51,6 +59,6 @@ template<class SpanGenerator, class SpanConverter> class span_converter
   SpanConverter* m_span_cnv;
 };
 
-}
+} // namespace agg
 
 #endif

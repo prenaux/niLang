@@ -20,26 +20,25 @@ namespace ni {
 
 ///////////////////////////////////////////////
 template <typename T>
-sVec3<T>& ColorScaleToUnit(sVec3<T>& aOut, const sVec3<T>& aCol) {
-  T maxC = ni::Max(aCol.x,aCol.y,aCol.z);
+sVec3<T>& ColorScaleToUnit(sVec3<T>& aOut, const sVec3<T>& aCol)
+{
+  T maxC = ni::Max(aCol.x, aCol.y, aCol.z);
   if (maxC > 1.0) {
-    aOut.x = aCol.x/maxC;
-    aOut.y = aCol.y/maxC;
-    aOut.z = aCol.z/maxC;
+    aOut.x = aCol.x / maxC;
+    aOut.y = aCol.y / maxC;
+    aOut.z = aCol.z / maxC;
   }
   else {
     aOut.x = aCol.x;
     aOut.y = aCol.y;
     aOut.z = aCol.z;
   }
-  return VecMaximize(aOut,aOut,sVec3<T>::Zero());
+  return VecMaximize(aOut, aOut, sVec3<T>::Zero());
 }
 
 ///////////////////////////////////////////////
 template <class T>
-sVec3<T>& ColorAdjustContrast(sVec3<T>& Out,
-                                 const sVec3<T>& C,
-                                 T c)
+sVec3<T>& ColorAdjustContrast(sVec3<T>& Out, const sVec3<T>& C, T c)
 {
   Out.x = 0.5f + c * (C.x - 0.5f);
   Out.y = 0.5f + c * (C.y - 0.5f);
@@ -49,9 +48,7 @@ sVec3<T>& ColorAdjustContrast(sVec3<T>& Out,
 
 ///////////////////////////////////////////////
 template <class T>
-sVec3<T>& ColorAdjustSaturation(sVec3<T>& Out,
-                                   const sVec3<T>& C,
-                                   T s)
+sVec3<T>& ColorAdjustSaturation(sVec3<T>& Out, const sVec3<T>& C, T s)
 {
   // Approximate values for each component's contribution to luminance.
   // Based upon the NTSC standard described in ITU-R Recommendation BT.709.
@@ -78,14 +75,12 @@ template <class T>
 sVec3<T>& ColorBlackWhite(sVec3<T>& Out, const sVec3<T>& C, T s)
 {
   T add = C.x + C.y + C.z;
-  if(add <= s)
-  {
+  if (add <= s) {
     Out.x = 0.0;
     Out.y = 0.0;
     Out.z = 0.0;
   }
-  else
-  {
+  else {
     Out.x = 1.0;
     Out.y = 1.0;
     Out.z = 1.0;
@@ -95,35 +90,33 @@ sVec3<T>& ColorBlackWhite(sVec3<T>& Out, const sVec3<T>& C, T s)
 
 ///////////////////////////////////////////////
 template <class T>
-sVec3<T>& ColorGammaCorrect(sVec3<T>& Out, tF32 afFactor, const sVec3<T>* pSrc = NULL)
+sVec3<T>& ColorGammaCorrect(sVec3<T>& Out, tF32 afFactor,
+                            const sVec3<T>* pSrc = NULL)
 {
   if (!pSrc)
     pSrc = &Out;
 
   T fInvFac = 1.0f / afFactor;
-  if (sizeof(Out.x) == 1)
-  {
-    tU32 lr = tU32(powf(T(pSrc->x),fInvFac));
-    tU32 lg = tU32(powf(T(pSrc->y),fInvFac));
-    tU32 lb = tU32(powf(T(pSrc->z),fInvFac));
+  if (sizeof(Out.x) == 1) {
+    tU32 lr = tU32(powf(T(pSrc->x), fInvFac));
+    tU32 lg = tU32(powf(T(pSrc->y), fInvFac));
+    tU32 lb = tU32(powf(T(pSrc->z), fInvFac));
     Out.x = T((lr > 255) ? 255 : lr);
     Out.y = T((lg > 255) ? 255 : lg);
     Out.z = T((lb > 255) ? 255 : lb);
   }
-  else if (sizeof(Out.x) == 2)
-  {
-    tU32 lr = tU32(powf(T(pSrc->x),fInvFac));
-    tU32 lg = tU32(powf(T(pSrc->y),fInvFac));
-    tU32 lb = tU32(powf(T(pSrc->z),fInvFac));
+  else if (sizeof(Out.x) == 2) {
+    tU32 lr = tU32(powf(T(pSrc->x), fInvFac));
+    tU32 lg = tU32(powf(T(pSrc->y), fInvFac));
+    tU32 lb = tU32(powf(T(pSrc->z), fInvFac));
     Out.x = T((lr > 65535) ? 65535 : lr);
     Out.y = T((lg > 65535) ? 65535 : lg);
     Out.z = T((lb > 65535) ? 65535 : lb);
   }
-  else
-  {
-    Out.x = (T)powf(T(pSrc->x),fInvFac);
-    Out.y = (T)powf(T(pSrc->y),fInvFac);
-    Out.z = (T)powf(T(pSrc->z),fInvFac);
+  else {
+    Out.x = (T)powf(T(pSrc->x), fInvFac);
+    Out.y = (T)powf(T(pSrc->y), fInvFac);
+    Out.z = (T)powf(T(pSrc->z), fInvFac);
   }
 
   return Out;
@@ -131,18 +124,17 @@ sVec3<T>& ColorGammaCorrect(sVec3<T>& Out, tF32 afFactor, const sVec3<T>* pSrc =
 
 ///////////////////////////////////////////////
 template <typename T>
-T ColorLuminance(const sVec3<T>& aColor, const sVec3f& avLuminanceDistribution = kvColorLuminanceR21G71B07)
+T ColorLuminance(const sVec3<T>& aColor, const sVec3f& avLuminanceDistribution =
+                                           kvColorLuminanceR21G71B07)
 {
-  return (aColor.x*avLuminanceDistribution.x+
-          aColor.y*avLuminanceDistribution.y+
-          aColor.z*avLuminanceDistribution.z);
+  return (aColor.x * avLuminanceDistribution.x +
+          aColor.y * avLuminanceDistribution.y +
+          aColor.z * avLuminanceDistribution.z);
 }
 
 ///////////////////////////////////////////////
 template <class T>
-sVec4<T>& ColorAdjustContrast(sVec4<T>& Out,
-                                 const sVec4<T>& C,
-                                 T c)
+sVec4<T>& ColorAdjustContrast(sVec4<T>& Out, const sVec4<T>& C, T c)
 {
   Out.x = 0.5f + c * (C.x - 0.5f);
   Out.y = 0.5f + c * (C.y - 0.5f);
@@ -153,9 +145,7 @@ sVec4<T>& ColorAdjustContrast(sVec4<T>& Out,
 
 ///////////////////////////////////////////////
 template <class T>
-sVec4<T>& ColorAdjustSaturation(sVec4<T>& Out,
-                                   const sVec4<T>& C,
-                                   T s)
+sVec4<T>& ColorAdjustSaturation(sVec4<T>& Out, const sVec4<T>& C, T s)
 {
   // Approximate values for each component's contribution to luminance.
   // Based upon the NTSC standard described in ITU-R Recommendation BT.709.
@@ -182,14 +172,12 @@ template <class T>
 sVec4<T>& ColorBlackWhite(sVec4<T>& Out, const sVec4<T>& C, T s)
 {
   T add = C.x + C.y + C.z;
-  if(add <= s)
-  {
+  if (add <= s) {
     Out.x = 0.0;
     Out.y = 0.0;
     Out.z = 0.0;
   }
-  else
-  {
+  else {
     Out.x = 1.0;
     Out.y = 1.0;
     Out.z = 1.0;
@@ -200,11 +188,11 @@ sVec4<T>& ColorBlackWhite(sVec4<T>& Out, const sVec4<T>& C, T s)
 
 ///////////////////////////////////////////////
 template <typename T>
-T ColorLuminance(const sVec4<T>& aColor, const sVec3f& avLuminanceDistribution = kvColorLuminanceR21G71B07)
+T ColorLuminance(const sVec4<T>& aColor, const sVec3f& avLuminanceDistribution =
+                                           kvColorLuminanceR21G71B07)
 {
   return ColorLuminance((const sVec3<T>&)aColor);
 }
-
 
 //----------------------------------------------------------------------------
 //
@@ -274,34 +262,36 @@ T ColorLuminance(const sVec4<T>& aColor, const sVec3f& avLuminanceDistribution =
 
 //! Convert an XYZ to a RGB color
 template <typename T>
-inline sVec4<T> ColorConvert_XYZ_RGB(const sVec4<T>& aXYZ, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_XYZ_RGB(const sVec4<T>& aXYZ,
+                                     const sVec4<T>& aXYZRef)
+{
   T X = aXYZ.x / aXYZRef.x;
   T Y = aXYZ.y / aXYZRef.y;
   T Z = aXYZ.z / aXYZRef.z;
-  T R = T(X *  T(3.2406) + Y * -T(1.5372) + Z * -T(0.4986));
-  T G = T(X * -T(0.9689) + Y *  T(1.8758) + Z *  T(0.0415));
-  T B = T(X *  T(0.0557) + Y * -T(0.2040) + Z *  T(1.0570));
+  T R = T(X * T(3.2406) + Y * -T(1.5372) + Z * -T(0.4986));
+  T G = T(X * -T(0.9689) + Y * T(1.8758) + Z * T(0.0415));
+  T B = T(X * T(0.0557) + Y * -T(0.2040) + Z * T(1.0570));
 
-  if ( R > T(0.0031308) ) {
-    R = T(1.055) * ni::Pow<T>(R, T(1)/T(2.4)) - T(0.055);
+  if (R > T(0.0031308)) {
+    R = T(1.055) * ni::Pow<T>(R, T(1) / T(2.4)) - T(0.055);
   }
   else {
     R = T(12.92) * R;
   }
-  if ( G > T(0.0031308) ) {
-    G = T(1.055) * ni::Pow<T>(G, T(1)/T(2.4)) - T(0.055);
+  if (G > T(0.0031308)) {
+    G = T(1.055) * ni::Pow<T>(G, T(1) / T(2.4)) - T(0.055);
   }
   else {
     G = T(12.92) * G;
   }
-  if ( B > T(0.0031308) ) {
-    B = T(1.055) * ni::Pow<T>(B, T(1)/T(2.4)) - T(0.055);
+  if (B > T(0.0031308)) {
+    B = T(1.055) * ni::Pow<T>(B, T(1) / T(2.4)) - T(0.055);
   }
-  else  {
+  else {
     B = T(12.92) * B;
   }
 
-  return Vec4<T>(R,G,B,T(0));
+  return Vec4<T>(R, G, B, T(0));
 }
 
 /*
@@ -330,24 +320,26 @@ inline sVec4<T> ColorConvert_XYZ_RGB(const sVec4<T>& aXYZ, const sVec4<T>& aXYZR
 
 //! Convert a RGB color to a XYZ color
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_XYZ(const sVec4<T>& aRGB, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_RGB_XYZ(const sVec4<T>& aRGB,
+                                     const sVec4<T>& aXYZRef)
+{
   T R = aRGB.x;
   T G = aRGB.y;
   T B = aRGB.z;
 
-  if ( R > T(0.04045) ) {
+  if (R > T(0.04045)) {
     R = ni::Pow(((R + T(0.055)) / T(1.055)), T(2.4));
   }
   else {
     R = R / T(12.92);
   }
-  if ( G > T(0.04045) ) {
+  if (G > T(0.04045)) {
     G = ni::Pow(((G + T(0.055)) / T(1.055)), T(2.4));
   }
   else {
     G = G / T(12.92);
   }
-  if ( B > T(0.04045) ) {
+  if (B > T(0.04045)) {
     B = ni::Pow(((B + T(0.055)) / T(1.055)), T(2.4));
   }
   else {
@@ -362,7 +354,7 @@ inline sVec4<T> ColorConvert_RGB_XYZ(const sVec4<T>& aRGB, const sVec4<T>& aXYZR
   T X = T(R * T(0.4124) + G * T(0.3576) + B * T(0.1805));
   T Y = T(R * T(0.2126) + G * T(0.7152) + B * T(0.0722));
   T Z = T(R * T(0.0193) + G * T(0.1192) + B * T(0.9505));
-  return Vec4<T>(X,Y,Z,T(0));
+  return Vec4<T>(X, Y, Z, T(0));
 }
 
 /*
@@ -381,16 +373,12 @@ inline sVec4<T> ColorConvert_RGB_XYZ(const sVec4<T>& aRGB, const sVec4<T>& aXYZR
 
 //! Convert a normalize XYZ to Yxy
 template <typename T>
-inline sVec4<T> ColorConvert_XYZ_Yxy(const sVec4<T>& aXYZ) {
+inline sVec4<T> ColorConvert_XYZ_Yxy(const sVec4<T>& aXYZ)
+{
   T X = aXYZ.x;
   T Y = aXYZ.y;
   T Z = aXYZ.z;
-  return Vec4<T>(
-      Y,
-      X / (X + Y + Z),
-      Y / (X + Y + Z),
-      T(0)
-                    );
+  return Vec4<T>(Y, X / (X + Y + Z), Y / (X + Y + Z), T(0));
 }
 
 /*
@@ -409,16 +397,12 @@ inline sVec4<T> ColorConvert_XYZ_Yxy(const sVec4<T>& aXYZ) {
 
 //! Convert a Yxy to XYZ
 template <typename T>
-inline sVec4<T> ColorConvert_Yxy_XYZ(const sVec4<T>& aYxy) {
+inline sVec4<T> ColorConvert_Yxy_XYZ(const sVec4<T>& aYxy)
+{
   T Y = aYxy.x;
   T x = aYxy.y;
   T y = aYxy.z;
-  return Vec4<T>(
-      x * (Y / y),
-      Y,
-      (1 - x - y) * (Y / y),
-      T(0)
-                    );
+  return Vec4<T>(x * (Y / y), Y, (1 - x - y) * (Y / y), T(0));
 }
 
 /*
@@ -431,17 +415,16 @@ inline sVec4<T> ColorConvert_Yxy_XYZ(const sVec4<T>& aYxy) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_XYZ_HunterLab(const sVec4<T>& aXYZ) {
+inline sVec4<T> ColorConvert_XYZ_HunterLab(const sVec4<T>& aXYZ)
+{
   T X = aXYZ.x;
   T Y = aXYZ.y;
   T Z = aXYZ.z;
   T sqrtY = ni::Sqrt(Y);
-  return Vec4<T>(
-      T(T(10.0) * sqrtY),           // L
-      T(T(17.7) * (((T(1.02)*X)-Y) / sqrtY)), // a
-      T(T(10.0) * ((Y-(T(0.847) * Z)) / sqrtY)),  // b
-      T(0)
-                    );
+  return Vec4<T>(T(T(10.0) * sqrtY),                          // L
+                 T(T(17.7) * (((T(1.02) * X) - Y) / sqrtY)),  // a
+                 T(T(10.0) * ((Y - (T(0.847) * Z)) / sqrtY)), // b
+                 T(0));
 }
 
 /*
@@ -458,21 +441,17 @@ inline sVec4<T> ColorConvert_XYZ_HunterLab(const sVec4<T>& aXYZ) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_HunterLab_XYZ(const sVec4<T>& aHLab) {
+inline sVec4<T> ColorConvert_HunterLab_XYZ(const sVec4<T>& aHLab)
+{
   T L = aHLab.x;
   T a = aHLab.y;
   T b = aHLab.z;
   T Y = T(L / T(10.0));
   T X = T(a / T(17.5) * L / T(10.0));
-  T Z = T(b /  T(7.0) * L / T(10.0));
+  T Z = T(b / T(7.0) * L / T(10.0));
 
-  Y = ni::Pow<T>(Y,T(2.0));
-  return Vec4<T>(
-      Y,
-      (X + Y) / T(1.02),
-      -(Z - Y) / T(0.847),
-      T(0)
-                    );
+  Y = ni::Pow<T>(Y, T(2.0));
+  return Vec4<T>(Y, (X + Y) / T(1.02), -(Z - Y) / T(0.847), T(0));
 }
 
 /*
@@ -496,33 +475,35 @@ inline sVec4<T> ColorConvert_HunterLab_XYZ(const sVec4<T>& aHLab) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_XYZ_CIELab(const sVec4<T>& aXYZ, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_XYZ_CIELab(const sVec4<T>& aXYZ,
+                                        const sVec4<T>& aXYZRef)
+{
   T X = aXYZ.x / aXYZRef.x;
   T Y = aXYZ.y / aXYZRef.y;
   T Z = aXYZ.z / aXYZRef.z;
 
-  if ( X > T(0.008856) ) {
-    X = T(ni::Pow<T>(X, T(1)/T(3)));
+  if (X > T(0.008856)) {
+    X = T(ni::Pow<T>(X, T(1) / T(3)));
   }
   else {
-    X = T(( T(7.787) * X ) + ( T(16) / T(116) ));
+    X = T((T(7.787) * X) + (T(16) / T(116)));
   }
-  if ( Y > 0.008856 ) {
-    Y = T(ni::Pow<T>(Y, T(1)/T(3)));
-  }
-  else {
-    Y = T(( T(7.787) * Y ) + ( T(16) / T(116) ));
-  }
-  if ( Z > 0.008856 ) {
-    Z = T(ni::Pow<T>(Z, T(1)/T(3)));
+  if (Y > 0.008856) {
+    Y = T(ni::Pow<T>(Y, T(1) / T(3)));
   }
   else {
-    Z = T(( T(7.787) * Z ) + ( T(16) / T(116) ));
+    Y = T((T(7.787) * Y) + (T(16) / T(116)));
+  }
+  if (Z > 0.008856) {
+    Z = T(ni::Pow<T>(Z, T(1) / T(3)));
+  }
+  else {
+    Z = T((T(7.787) * Z) + (T(16) / T(116)));
   }
 
-  T CIE_L = ( T(116) * Y ) - T(16);
-  T CIE_a = T(500) * ( X - Y );
-  T CIE_b = T(200) * ( Y - Z );
+  T CIE_L = (T(116) * Y) - T(16);
+  T CIE_a = T(500) * (X - Y);
+  T CIE_b = T(200) * (Y - Z);
 
   return Vec4<T>(CIE_L, CIE_a, CIE_b, T(0));
 }
@@ -548,7 +529,9 @@ inline sVec4<T> ColorConvert_XYZ_CIELab(const sVec4<T>& aXYZ, const sVec4<T>& aX
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CIELab_XYZ(const sVec4<T>& aCIELab, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_CIELab_XYZ(const sVec4<T>& aCIELab,
+                                        const sVec4<T>& aXYZRef)
+{
   T CIE_L = aCIELab.x;
   T CIE_a = aCIELab.y;
   T CIE_b = aCIELab.z;
@@ -559,23 +542,29 @@ inline sVec4<T> ColorConvert_CIELab_XYZ(const sVec4<T>& aCIELab, const sVec4<T>&
 
   T pow3;
 
-  pow3 = ni::Pow<T>(Y,T(3));
-  if ( pow3 > 0.008856 ) Y = pow3;
-  else                  Y = T(( Y - T(16) / T(116) ) / T(7.787));
+  pow3 = ni::Pow<T>(Y, T(3));
+  if (pow3 > 0.008856)
+    Y = pow3;
+  else
+    Y = T((Y - T(16) / T(116)) / T(7.787));
 
-  pow3 = ni::Pow<T>(X,T(3));
-  if ( pow3 > 0.008856 ) X = pow3;
-  else                  X = T(( X - T(16) / T(116) ) / T(7.787));
+  pow3 = ni::Pow<T>(X, T(3));
+  if (pow3 > 0.008856)
+    X = pow3;
+  else
+    X = T((X - T(16) / T(116)) / T(7.787));
 
-  pow3 = ni::Pow<T>(Z,T(3));
-  if ( pow3 > 0.008856 ) Z = pow3;
-  else                  Z = T(( Z - T(16) / T(116) ) / T(7.787));
+  pow3 = ni::Pow<T>(Z, T(3));
+  if (pow3 > 0.008856)
+    Z = pow3;
+  else
+    Z = T((Z - T(16) / T(116)) / T(7.787));
 
-  X = aXYZRef.x * X;     //ref_X =  95.047  Observer= 2, Illuminant= D65
-  Y = aXYZRef.y * Y;    //ref_Y = 100.000
-  Z = aXYZRef.z * Z;     //ref_Z = 108.883
+  X = aXYZRef.x * X; //ref_X =  95.047  Observer= 2, Illuminant= D65
+  Y = aXYZRef.y * Y; //ref_Y = 100.000
+  Z = aXYZRef.z * Z; //ref_Z = 108.883
 
-  return Vec4<T>(X,Y,Z,T(0));
+  return Vec4<T>(X, Y, Z, T(0));
 }
 
 /*
@@ -593,16 +582,19 @@ inline sVec4<T> ColorConvert_CIELab_XYZ(const sVec4<T>& aCIELab, const sVec4<T>&
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CIELab_CIELCH(const sVec4<T>& aCIELab) {
+inline sVec4<T> ColorConvert_CIELab_CIELCH(const sVec4<T>& aCIELab)
+{
   T CIE_L = aCIELab.x;
   T CIE_a = aCIELab.y;
   T CIE_b = aCIELab.z;
 
   T H = ni::ATan2<T>(CIE_b, CIE_a); //Quadrant by signs
-  if (H > 0)  H = (H / ni::Pi<T>()) * T(180);
-  else    H = T(360) - (ni::Abs(H) / ni::Pi<T>()) * T(180);
+  if (H > 0)
+    H = (H / ni::Pi<T>()) * T(180);
+  else
+    H = T(360) - (ni::Abs(H) / ni::Pi<T>()) * T(180);
   T CIELCH_L = CIE_L;
-  T CIELCH_C = ni::Sqrt<T>(ni::Pow<T>(CIE_a,2) + ni::Pow<T>(CIE_b,2));
+  T CIELCH_C = ni::Sqrt<T>(ni::Pow<T>(CIE_a, 2) + ni::Pow<T>(CIE_b, 2));
   T CIELCH_H = H;
   return Vec4<T>(CIELCH_L, CIELCH_C, CIELCH_H, T(0));
 }
@@ -619,17 +611,14 @@ inline sVec4<T> ColorConvert_CIELab_CIELCH(const sVec4<T>& aCIELab) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CIELCH_CIELab(const sVec4<T>& aCIELCH) {
+inline sVec4<T> ColorConvert_CIELCH_CIELab(const sVec4<T>& aCIELCH)
+{
   T CIELCH_L = aCIELCH.x;
   T CIELCH_C = aCIELCH.y;
   T CIELCH_H = aCIELCH.z;
 
-  return Vec4<T>(
-      CIELCH_L,
-      ni::Cos<T>(ni::Rad<T>(CIELCH_H)) * CIELCH_C,
-      ni::Sin<T>(ni::Rad<T>(CIELCH_H)) * CIELCH_C,
-      T(0)
-                    );
+  return Vec4<T>(CIELCH_L, ni::Cos<T>(ni::Rad<T>(CIELCH_H)) * CIELCH_C,
+                 ni::Sin<T>(ni::Rad<T>(CIELCH_H)) * CIELCH_C, T(0));
 }
 
 /*
@@ -656,20 +645,26 @@ inline sVec4<T> ColorConvert_CIELCH_CIELab(const sVec4<T>& aCIELCH) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_XYZ_CIELuv(const sVec4<T>& aXYZ, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_XYZ_CIELuv(const sVec4<T>& aXYZ,
+                                        const sVec4<T>& aXYZRef)
+{
   T U = (T(4) * aXYZ.x) / (aXYZ.x + (T(15) * aXYZ.y) + (T(3) * aXYZ.z));
   T V = (T(9) * aXYZ.y) / (aXYZ.x + (T(15) * aXYZ.y) + (T(3) * aXYZ.z));
 
   T Y = aXYZ.y / T(100);
-  if ( Y > 0.008856 ) Y = ni::Pow<T>(Y, ( T(1)/T(3) ));
-  else                Y = T(( 7.787 * Y ) + ( T(16) / T(116) ));
+  if (Y > 0.008856)
+    Y = ni::Pow<T>(Y, (T(1) / T(3)));
+  else
+    Y = T((7.787 * Y) + (T(16) / T(116)));
 
-  T ref_U = ( T(4) * aXYZRef.x ) / ( aXYZRef.x + ( T(15) * aXYZRef.y ) + ( T(3) * aXYZRef.z ) );
-  T ref_V = ( T(9) * aXYZRef.y ) / ( aXYZRef.x + ( T(15) * aXYZRef.y ) + ( T(3) * aXYZRef.z ) );
+  T ref_U =
+    (T(4) * aXYZRef.x) / (aXYZRef.x + (T(15) * aXYZRef.y) + (T(3) * aXYZRef.z));
+  T ref_V =
+    (T(9) * aXYZRef.y) / (aXYZRef.x + (T(15) * aXYZRef.y) + (T(3) * aXYZRef.z));
 
-  T CIE_L = ( T(116) * Y ) - T(16);
-  T CIE_u = T(13) * CIE_L * ( U - ref_U );
-  T CIE_v = T(13) * CIE_L * ( V - ref_V );
+  T CIE_L = (T(116) * Y) - T(16);
+  T CIE_u = T(13) * CIE_L * (U - ref_U);
+  T CIE_v = T(13) * CIE_L * (V - ref_V);
 
   return Vec4<T>(CIE_L, CIE_u, CIE_v, T(0));
 }
@@ -698,31 +693,35 @@ inline sVec4<T> ColorConvert_XYZ_CIELuv(const sVec4<T>& aXYZ, const sVec4<T>& aX
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CIELuv_XYZ(const sVec4<T>& aCIELuv, const sVec4<T>& aXYZRef) {
+inline sVec4<T> ColorConvert_CIELuv_XYZ(const sVec4<T>& aCIELuv,
+                                        const sVec4<T>& aXYZRef)
+{
   T CIE_L = aCIELuv.x;
   T CIE_u = aCIELuv.y;
   T CIE_v = aCIELuv.z;
 
-  T Y = ( CIE_L + T(16) ) / T(116);
-  T pow3 = ni::Pow<T>(Y,T(3));
-  if ( pow3 > T(0.008856) ) {
+  T Y = (CIE_L + T(16)) / T(116);
+  T pow3 = ni::Pow<T>(Y, T(3));
+  if (pow3 > T(0.008856)) {
     Y = pow3;
   }
   else {
-    Y = T(( Y - T(16) / T(116) ) / T(7.787));
+    Y = T((Y - T(16) / T(116)) / T(7.787));
   }
 
-  T ref_U = ( T(4) * aXYZRef.x ) / ( aXYZRef.x + ( T(15) * aXYZRef.y ) + ( T(3) * aXYZRef.z ) );
-  T ref_V = ( T(9) * aXYZRef.y ) / ( aXYZRef.x + ( T(15) * aXYZRef.y ) + ( T(3) * aXYZRef.z ) );
+  T ref_U =
+    (T(4) * aXYZRef.x) / (aXYZRef.x + (T(15) * aXYZRef.y) + (T(3) * aXYZRef.z));
+  T ref_V =
+    (T(9) * aXYZRef.y) / (aXYZRef.x + (T(15) * aXYZRef.y) + (T(3) * aXYZRef.z));
 
-  T U = CIE_u / ( T(13) * CIE_L ) + ref_U;
-  T V = CIE_v / ( T(13) * CIE_L ) + ref_V;
+  T U = CIE_u / (T(13) * CIE_L) + ref_U;
+  T V = CIE_v / (T(13) * CIE_L) + ref_V;
 
   Y = Y * T(100);
-  T X =  - ( T(9) * Y * U ) / ( ( U - T(4) ) * V  - U * V );
-  T Z = ( T(9) * Y - ( T(15) * V * Y ) - ( V * X ) ) / ( T(3) * V );
+  T X = -(T(9) * Y * U) / ((U - T(4)) * V - U * V);
+  T Z = (T(9) * Y - (T(15) * V * Y) - (V * X)) / (T(3) * V);
 
-  return Vec4<T>(X,Y,Z,T(0));
+  return Vec4<T>(X, Y, Z, T(0));
 }
 
 /*
@@ -762,44 +761,50 @@ inline sVec4<T> ColorConvert_CIELuv_XYZ(const sVec4<T>& aCIELuv, const sVec4<T>&
   }
 */
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_HSL(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_HSL(const sVec4<T>& aRGB)
+{
   T R = aRGB.x;
   T G = aRGB.y;
   T B = aRGB.z;
 
-  T Min = ni::Min( R, G, B );    //Min. value of RGB
-  T Max = ni::Max( R, G, B );    //Max. value of RGB
-  T del_Max = Max - Min;          //Delta RGB value
+  T Min = ni::Min(R, G, B); //Min. value of RGB
+  T Max = ni::Max(R, G, B); //Max. value of RGB
+  T del_Max = Max - Min;    //Delta RGB value
 
   T H = 0, S = 0, L = 0;
 
-  L = ( Max + Min ) / T(2);
+  L = (Max + Min) / T(2);
 
-  if ( del_Max == 0 )                     //This is a gray, no chroma...
+  if (del_Max == 0) //This is a gray, no chroma...
   {
-    H = 0;                                //HSL results = 0 - 1
+    H = 0; //HSL results = 0 - 1
     S = 0;
   }
-  else                                    //Chromatic data...
+  else //Chromatic data...
   {
-    if ( L < T(0.5) )
-      S = del_Max / ( Max + Min );
+    if (L < T(0.5))
+      S = del_Max / (Max + Min);
     else
-      S = del_Max / ( T(2) - Max - Min );
+      S = del_Max / (T(2) - Max - Min);
 
-    T del_R = ( ( ( Max - R ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
-    T del_G = ( ( ( Max - G ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
-    T del_B = ( ( ( Max - B ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
+    T del_R = (((Max - R) / T(6)) + (del_Max / T(2))) / del_Max;
+    T del_G = (((Max - G) / T(6)) + (del_Max / T(2))) / del_Max;
+    T del_B = (((Max - B) / T(6)) + (del_Max / T(2))) / del_Max;
 
-    if      ( R == Max ) H = del_B - del_G;
-    else if ( G == Max ) H = ( T(1) / T(3) ) + del_R - del_B;
-    else if ( B == Max ) H = ( T(2) / T(3) ) + del_G - del_R;
+    if (R == Max)
+      H = del_B - del_G;
+    else if (G == Max)
+      H = (T(1) / T(3)) + del_R - del_B;
+    else if (B == Max)
+      H = (T(2) / T(3)) + del_G - del_R;
 
-    if ( H < 0 ) H += T(1);
-    if ( H > 1 ) H -= T(1);
+    if (H < 0)
+      H += T(1);
+    if (H > 1)
+      H -= T(1);
   }
 
-  return Vec4<T>(H,S,L,T(0));
+  return Vec4<T>(H, S, L, T(0));
 }
 
 /*
@@ -836,47 +841,50 @@ inline sVec4<T> ColorConvert_RGB_HSL(const sVec4<T>& aRGB) {
 
 */
 template <typename T>
-inline T Hue_2_RGB(T v1, T v2, T vH ) {
-  if ( vH < T(0) ) vH += T(1);
-  if ( vH > T(1) ) vH -= T(1);
-  if ( ( T(6) * vH ) < T(1) )
-    return ( v1 + ( v2 - v1 ) * T(6) * vH );
-  if ( ( T(2) * vH ) < T(1) )
-    return ( v2 );
-  if ( ( T(3) * vH ) < T(2) )
-    return ( v1 + ( v2 - v1 ) * ( ( T(2) / T(3) ) - vH ) * T(6) );
-  return ( v1 );
+inline T Hue_2_RGB(T v1, T v2, T vH)
+{
+  if (vH < T(0))
+    vH += T(1);
+  if (vH > T(1))
+    vH -= T(1);
+  if ((T(6) * vH) < T(1))
+    return (v1 + (v2 - v1) * T(6) * vH);
+  if ((T(2) * vH) < T(1))
+    return (v2);
+  if ((T(3) * vH) < T(2))
+    return (v1 + (v2 - v1) * ((T(2) / T(3)) - vH) * T(6));
+  return (v1);
 }
 
 template <typename T>
-inline sVec4<T> ColorConvert_HSL_RGB(const sVec4<T>& aHSL) {
-  T R,G,B;
+inline sVec4<T> ColorConvert_HSL_RGB(const sVec4<T>& aHSL)
+{
+  T R, G, B;
   T H = aHSL.x;
   T S = aHSL.y;
   T L = aHSL.z;
-  if ( S == 0 )                       //HSL values = 0 - 1
+  if (S == 0) //HSL values = 0 - 1
   {
-    R = L;                      //RGB results = 0 - 255
+    R = L; //RGB results = 0 - 255
     G = L;
     B = L;
   }
-  else
-  {
+  else {
     T var_1, var_2;
 
-    if ( L < T(0.5) )
-      var_2 = L * ( T(1) + S );
+    if (L < T(0.5))
+      var_2 = L * (T(1) + S);
     else
-      var_2 = ( L + S ) - ( S * L );
+      var_2 = (L + S) - (S * L);
 
     var_1 = T(2) * L - var_2;
 
-    R = Hue_2_RGB<T>( var_1, var_2, H + ( T(1) / T(3) ) );
-    G = Hue_2_RGB<T>( var_1, var_2, H );
-    B = Hue_2_RGB<T>( var_1, var_2, H - ( T(1) / T(3) ) );
+    R = Hue_2_RGB<T>(var_1, var_2, H + (T(1) / T(3)));
+    G = Hue_2_RGB<T>(var_1, var_2, H);
+    B = Hue_2_RGB<T>(var_1, var_2, H - (T(1) / T(3)));
   }
 
-  return Vec4<T>(R,G,B,T(0));
+  return Vec4<T>(R, G, B, T(0));
 }
 
 /*
@@ -916,41 +924,47 @@ inline sVec4<T> ColorConvert_HSL_RGB(const sVec4<T>& aHSL) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_HSV(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_HSV(const sVec4<T>& aRGB)
+{
   T R = aRGB.x;
   T G = aRGB.y;
   T B = aRGB.z;
 
-  T Min = ni::Min( R, G, B );    //Min. value of RGB
-  T Max = ni::Max( R, G, B );    //Max. value of RGB
-  T del_Max = Max - Min;             //Delta RGB value
+  T Min = ni::Min(R, G, B); //Min. value of RGB
+  T Max = ni::Max(R, G, B); //Max. value of RGB
+  T del_Max = Max - Min;    //Delta RGB value
 
   T H = 0, S = 0, V = 0;
 
   V = Max;
 
-  if (del_Max == T(0) )                     //This is a gray, no chroma...
+  if (del_Max == T(0)) //This is a gray, no chroma...
   {
-    H = 0;                                //HSV results = 0 - 1
+    H = 0; //HSV results = 0 - 1
     S = 0;
   }
-  else                                    //Chromatic data...
+  else //Chromatic data...
   {
     S = del_Max / Max;
 
-    T del_R = ( ( ( Max - R ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
-    T del_G = ( ( ( Max - G ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
-    T del_B = ( ( ( Max - B ) / T(6) ) + ( del_Max / T(2) ) ) / del_Max;
+    T del_R = (((Max - R) / T(6)) + (del_Max / T(2))) / del_Max;
+    T del_G = (((Max - G) / T(6)) + (del_Max / T(2))) / del_Max;
+    T del_B = (((Max - B) / T(6)) + (del_Max / T(2))) / del_Max;
 
-    if      ( R == Max ) H = del_B - del_G;
-    else if ( G == Max ) H = ( T(1) / T(3) ) + del_R - del_B;
-    else if ( B == Max ) H = ( T(2) / T(3) ) + del_G - del_R;
+    if (R == Max)
+      H = del_B - del_G;
+    else if (G == Max)
+      H = (T(1) / T(3)) + del_R - del_B;
+    else if (B == Max)
+      H = (T(2) / T(3)) + del_G - del_R;
 
-    if ( H < T(0) ) H += T(1);
-    if ( H > T(1) ) H -= T(1);
+    if (H < T(0))
+      H += T(1);
+    if (H > T(1))
+      H -= T(1);
   }
 
-  return Vec4<T>(H,S,V,T(0));
+  return Vec4<T>(H, S, V, T(0));
 }
 
 /*
@@ -987,7 +1001,8 @@ inline sVec4<T> ColorConvert_RGB_HSV(const sVec4<T>& aRGB) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_HSV_RGB(const sVec4<T>& aHSV) {
+inline sVec4<T> ColorConvert_HSV_RGB(const sVec4<T>& aHSV)
+{
   T H = aHSV.x;
   T S = aHSV.y;
   T V = aHSV.z;
@@ -1002,27 +1017,51 @@ inline sVec4<T> ColorConvert_HSV_RGB(const sVec4<T>& aHSV) {
     else*/
   {
     T var_h = H * T(6);
-    if ( var_h == T(6) )
-      var_h = T(0);      //H must be < 1
-    T var_i = ni::Floor<T>( var_h );             //Or ... var_i = floor( var_h )
-    T var_1 = V * ( T(1) - S );
-    T var_2 = V * ( T(1) - S * ( var_h - var_i ) );
-    T var_3 = V * ( T(1) - S * ( T(1) - ( var_h - var_i ) ) );
+    if (var_h == T(6))
+      var_h = T(0);                //H must be < 1
+    T var_i = ni::Floor<T>(var_h); //Or ... var_i = floor( var_h )
+    T var_1 = V * (T(1) - S);
+    T var_2 = V * (T(1) - S * (var_h - var_i));
+    T var_3 = V * (T(1) - S * (T(1) - (var_h - var_i)));
 
     T var_r, var_g, var_b;
-    if      ( var_i == 0 ) { var_r = V     ; var_g = var_3 ; var_b = var_1; }
-    else if ( var_i == 1 ) { var_r = var_2 ; var_g = V     ; var_b = var_1; }
-    else if ( var_i == 2 ) { var_r = var_1 ; var_g = V     ; var_b = var_3; }
-    else if ( var_i == 3 ) { var_r = var_1 ; var_g = var_2 ; var_b = V;     }
-    else if ( var_i == 4 ) { var_r = var_3 ; var_g = var_1 ; var_b = V;     }
-    else                   { var_r = V     ; var_g = var_1 ; var_b = var_2; }
+    if (var_i == 0) {
+      var_r = V;
+      var_g = var_3;
+      var_b = var_1;
+    }
+    else if (var_i == 1) {
+      var_r = var_2;
+      var_g = V;
+      var_b = var_1;
+    }
+    else if (var_i == 2) {
+      var_r = var_1;
+      var_g = V;
+      var_b = var_3;
+    }
+    else if (var_i == 3) {
+      var_r = var_1;
+      var_g = var_2;
+      var_b = V;
+    }
+    else if (var_i == 4) {
+      var_r = var_3;
+      var_g = var_1;
+      var_b = V;
+    }
+    else {
+      var_r = V;
+      var_g = var_1;
+      var_b = var_2;
+    }
 
     R = var_r;
     G = var_g;
     B = var_b;
   }
 
-  return Vec4<T>(R,G,B,T(0));
+  return Vec4<T>(R, G, B, T(0));
 }
 
 /*
@@ -1055,12 +1094,9 @@ inline sVec4<T> ColorConvert_HSV_RGB(const sVec4<T>& aHSV) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_CMY(const sVec4<T>& aRGB) {
-  return Vec4<T>(
-      T(1) - aRGB.x,
-      T(1) - aRGB.y,
-      T(1) - aRGB.z,
-      T(0));
+inline sVec4<T> ColorConvert_RGB_CMY(const sVec4<T>& aRGB)
+{
+  return Vec4<T>(T(1) - aRGB.x, T(1) - aRGB.y, T(1) - aRGB.z, T(0));
 }
 
 /*
@@ -1076,12 +1112,9 @@ inline sVec4<T> ColorConvert_RGB_CMY(const sVec4<T>& aRGB) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CMY_RGB(const sVec4<T>& aCMY) {
-  return Vec4<T>(
-      T(1) - aCMY.x,
-      T(1) - aCMY.y,
-      T(1) - aCMY.z,
-      T(0));
+inline sVec4<T> ColorConvert_CMY_RGB(const sVec4<T>& aCMY)
+{
+  return Vec4<T>(T(1) - aCMY.x, T(1) - aCMY.y, T(1) - aCMY.z, T(0));
 }
 
 /*
@@ -1109,30 +1142,31 @@ inline sVec4<T> ColorConvert_CMY_RGB(const sVec4<T>& aCMY) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CMY_CMYK(const sVec4<T>& aCMY) {
+inline sVec4<T> ColorConvert_CMY_CMYK(const sVec4<T>& aCMY)
+{
   T C = aCMY.x;
   T M = aCMY.y;
   T Y = aCMY.z;
   T K = T(1);
 
-  if ( C < K )
+  if (C < K)
     K = C;
-  if ( M < K )
+  if (M < K)
     K = M;
-  if ( Y < K )
+  if (Y < K)
     K = Y;
 
-  if ( K == 1 ) { //Black
+  if (K == 1) { //Black
     C = 0;
     M = 0;
     Y = 0;
   }
   else {
-    C = ( C - K ) / ( T(1) - K );
-    M = ( M - K ) / ( T(1) - K );
-    Y = ( Y - K ) / ( T(1) - K );
+    C = (C - K) / (T(1) - K);
+    M = (M - K) / (T(1) - K);
+    Y = (Y - K) / (T(1) - K);
   }
-  return Vec4<T>(C,M,Y,K);
+  return Vec4<T>(C, M, Y, K);
 }
 
 /*
@@ -1146,179 +1180,168 @@ inline sVec4<T> ColorConvert_CMY_CMYK(const sVec4<T>& aCMY) {
 
 */
 template <typename T>
-inline sVec4<T> ColorConvert_CMYK_CMY(const sVec4<T>& aCMYK) {
-  return Vec4<T>(
-      aCMYK.x * ( T(1) - aCMYK.w ) + aCMYK.w,
-      aCMYK.y * ( T(1) - aCMYK.w ) + aCMYK.w,
-      aCMYK.z * ( T(1) - aCMYK.w ) + aCMYK.w,
-      T(0)
-                    );
+inline sVec4<T> ColorConvert_CMYK_CMY(const sVec4<T>& aCMYK)
+{
+  return Vec4<T>(aCMYK.x * (T(1) - aCMYK.w) + aCMYK.w,
+                 aCMYK.y * (T(1) - aCMYK.w) + aCMYK.w,
+                 aCMYK.z * (T(1) - aCMYK.w) + aCMYK.w, T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_YIQ(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_YIQ(const sVec4<T>& aRGB)
+{
   T Red = aRGB.x;
   T Green = aRGB.y;
   T Blue = aRGB.z;
-  return Vec4<T>(
-      T(T(0.299)*Red+T(0.587)*Green+T(0.114)*Blue),
-      T(T(0.596)*Red-T(0.274)*Green+T(0.322)*Blue),
-      T(T(0.212)*Red-T(0.523)*Green-T(0.311)*Blue),
-      T(0)
-                    );
+  return Vec4<T>(T(T(0.299) * Red + T(0.587) * Green + T(0.114) * Blue),
+                 T(T(0.596) * Red - T(0.274) * Green + T(0.322) * Blue),
+                 T(T(0.212) * Red - T(0.523) * Green - T(0.311) * Blue), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YIQ_RGB(const sVec4<T>& aYIQ) {
+inline sVec4<T> ColorConvert_YIQ_RGB(const sVec4<T>& aYIQ)
+{
   T Y = aYIQ.x;
   T I = aYIQ.y;
   T Q = aYIQ.z;
-  return Vec4<T>(
-      T(Y+T(0.956)*I+T(0.621)*Q),
-      T(Y-T(0.272)*I-T(0.647)*Q),
-      T(Y-T(1.105)*I+T(1.702)*Q),
-      T(0)
-                    );
+  return Vec4<T>(T(Y + T(0.956) * I + T(0.621) * Q),
+                 T(Y - T(0.272) * I - T(0.647) * Q),
+                 T(Y - T(1.105) * I + T(1.702) * Q), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_YUV(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_YUV(const sVec4<T>& aRGB)
+{
   T Red = aRGB.x;
   T Green = aRGB.y;
   T Blue = aRGB.z;
-  return Vec4<T>(
-      T(T(0.299)*Red+T(0.587)*Green+T(0.114)*Blue),
-      T(-T(0.147)*Red-T(0.289)*Green+T(0.436)*Blue),
-      T(T(0.615)*Red-T(0.515)*Green-T(0.100)*Blue),
-      T(0));
+  return Vec4<T>(T(T(0.299) * Red + T(0.587) * Green + T(0.114) * Blue),
+                 T(-T(0.147) * Red - T(0.289) * Green + T(0.436) * Blue),
+                 T(T(0.615) * Red - T(0.515) * Green - T(0.100) * Blue), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YUV_RGB(const sVec4<T>& aYUV) {
+inline sVec4<T> ColorConvert_YUV_RGB(const sVec4<T>& aYUV)
+{
   T Y = aYUV.x;
   T U = aYUV.y;
   T V = aYUV.z;
-  return Vec4<T>(
-      T(Y+T(0.000)*U+T(1.140)*V),
-      T(Y-T(0.396)*U-T(0.581)*V),
-      T(Y+T(2.029)*U+T(0.000)*V),
-      T(0));
+  return Vec4<T>(T(Y + T(0.000) * U + T(1.140) * V),
+                 T(Y - T(0.396) * U - T(0.581) * V),
+                 T(Y + T(2.029) * U + T(0.000) * V), T(0));
 }
-
-
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YIQ_YUV(const sVec4<T>& aYIQ) {
+inline sVec4<T> ColorConvert_YIQ_YUV(const sVec4<T>& aYIQ)
+{
   T Y = aYIQ.x;
   T I = aYIQ.y;
   T Q = aYIQ.z;
-  return Vec4<T>(
-      Y,
-      T(-T(1.1270)*I+T(1.8050)*Q),
-      T(T(0.9489)*I+T(0.6561)*Q),
-      T(0));
+  return Vec4<T>(Y, T(-T(1.1270) * I + T(1.8050) * Q),
+                 T(T(0.9489) * I + T(0.6561) * Q), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YUV_YIQ(const sVec4<T>& aYUV) {
+inline sVec4<T> ColorConvert_YUV_YIQ(const sVec4<T>& aYUV)
+{
   T Y = aYUV.x;
   T U = aYUV.y;
   T V = aYUV.z;
-  return Vec4<T>(
-      Y,
-      T(-T(0.2676)*U+T(0.7361)*V),
-      T(T(0.3869)*U+T(0.4596)*V),
-      T(0));
+  return Vec4<T>(Y, T(-T(0.2676) * U + T(0.7361) * V),
+                 T(T(0.3869) * U + T(0.4596) * V), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_YCbCr(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_YCbCr(const sVec4<T>& aRGB)
+{
   T Red = aRGB.x;
   T Green = aRGB.y;
   T Blue = aRGB.z;
-  return Vec4<T>(
-      T(T(0.2989)*Red+T(0.5866)*Green+T(0.1145)*Blue),
-      T(-T(0.1687)*Red-T(0.3312)*Green+T(0.5000)*Blue),
-      T(T(0.5000)*Red-T(0.4183)*Green-T(0.0816)*Blue),
-      T(0));
+  return Vec4<T>(T(T(0.2989) * Red + T(0.5866) * Green + T(0.1145) * Blue),
+                 T(-T(0.1687) * Red - T(0.3312) * Green + T(0.5000) * Blue),
+                 T(T(0.5000) * Red - T(0.4183) * Green - T(0.0816) * Blue),
+                 T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YCbCr_RGB(const sVec4<T>& aYCbCr) {
+inline sVec4<T> ColorConvert_YCbCr_RGB(const sVec4<T>& aYCbCr)
+{
   T Y = aYCbCr.x;
   T Cb = aYCbCr.y;
   T Cr = aYCbCr.z;
-  return Vec4<T>(
-      T(Y+T(0.0000)*Cb+T(1.4022)*Cr),
-      T(Y-T(0.3456)*Cb-T(0.7145)*Cr),
-      T(Y+T(1.7710)*Cb+T(0.0000)*Cr),
-      T(0));
+  return Vec4<T>(T(Y + T(0.0000) * Cb + T(1.4022) * Cr),
+                 T(Y - T(0.3456) * Cb - T(0.7145) * Cr),
+                 T(Y + T(1.7710) * Cb + T(0.0000) * Cr), T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_YPbPr(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_YPbPr(const sVec4<T>& aRGB)
+{
   T Red = aRGB.x;
   T Green = aRGB.y;
   T Blue = aRGB.z;
 
   // Gamma correction
-  Red = ni::Pow<T>(ni::Abs<T>(Red),T(0.45));
-  Green = ni::Pow<T>(ni::Abs<T>(Green),T(0.45));
-  Blue = ni::Pow<T>(ni::Abs<T>(Blue),T(0.45));
+  Red = ni::Pow<T>(ni::Abs<T>(Red), T(0.45));
+  Green = ni::Pow<T>(ni::Abs<T>(Green), T(0.45));
+  Blue = ni::Pow<T>(ni::Abs<T>(Blue), T(0.45));
 
   // Linear transformations:
-  T Y  = T( T(0.2122)*Red+T(0.7013)*Green+T(0.0865)*Blue);
-  T Pb = T( -T(0.1162)*Red-T(0.3838)*Green+T(0.5000)*Blue);
-  T Pr = T( T(0.5000)*Red-T(0.4451)*Green-T(0.0549)*Blue);
+  T Y = T(T(0.2122) * Red + T(0.7013) * Green + T(0.0865) * Blue);
+  T Pb = T(-T(0.1162) * Red - T(0.3838) * Green + T(0.5000) * Blue);
+  T Pr = T(T(0.5000) * Red - T(0.4451) * Green - T(0.0549) * Blue);
 
-  return Vec4<T>(Y,Pb,Pr,T(0));
+  return Vec4<T>(Y, Pb, Pr, T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YPbPr_RGB(const sVec4<T>& aYPbPr) {
+inline sVec4<T> ColorConvert_YPbPr_RGB(const sVec4<T>& aYPbPr)
+{
   T Y = aYPbPr.x;
   T Pb = aYPbPr.y;
   T Pr = aYPbPr.z;
 
-  T Red = T(1*Y+T(0.0000)*Pb+T(1.5756)*Pr);
-  T Green = T(1*Y-T(0.2253)*Pb+T(0.5000)*Pr);
-  T Blue  = T(1*Y+T(1.8270)*Pb+T(0.0000)*Pr);
+  T Red = T(1 * Y + T(0.0000) * Pb + T(1.5756) * Pr);
+  T Green = T(1 * Y - T(0.2253) * Pb + T(0.5000) * Pr);
+  T Blue = T(1 * Y + T(1.8270) * Pb + T(0.0000) * Pr);
 
   // Gamma correction
-  Red = ni::Pow<T>(ni::Abs<T>(Red),T(T(1)/T(0.45)));
-  Green = ni::Pow<T>(ni::Abs<T>(Green),T(T(1)/T(0.45)));
-  Blue = ni::Pow<T>(ni::Abs<T>(Blue),T(T(1)/T(0.45)));
-  return Vec4<T>(Red,Green,Blue,T(0));
+  Red = ni::Pow<T>(ni::Abs<T>(Red), T(T(1) / T(0.45)));
+  Green = ni::Pow<T>(ni::Abs<T>(Green), T(T(1) / T(0.45)));
+  Blue = ni::Pow<T>(ni::Abs<T>(Blue), T(T(1) / T(0.45)));
+  return Vec4<T>(Red, Green, Blue, T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_RGB_YCoCg(const sVec4<T>& aRGB) {
+inline sVec4<T> ColorConvert_RGB_YCoCg(const sVec4<T>& aRGB)
+{
   const T Red = aRGB.x;
   const T Green = aRGB.y;
   const T Blue = aRGB.z;
 
   // Linear transformations:
-  T Y  = T( Red/T(4)+Green/T(2)+Blue/T(4));
-  T Co = T( Red/T(2)-Blue/T(2));
-  T Cg = T( -Red/T(4)+Green/T(2)-Blue/T(4));
+  T Y = T(Red / T(4) + Green / T(2) + Blue / T(4));
+  T Co = T(Red / T(2) - Blue / T(2));
+  T Cg = T(-Red / T(4) + Green / T(2) - Blue / T(4));
 
-  return Vec4<T>(Y,Co,Cg,T(0));
+  return Vec4<T>(Y, Co, Cg, T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-inline sVec4<T> ColorConvert_YCoCg_RGB(const sVec4<T>& aYCoCg) {
+inline sVec4<T> ColorConvert_YCoCg_RGB(const sVec4<T>& aYCoCg)
+{
   const T Y = aYCoCg.x;
   const T Co = aYCoCg.y;
   const T Cg = aYCoCg.z;
@@ -1326,404 +1349,370 @@ inline sVec4<T> ColorConvert_YCoCg_RGB(const sVec4<T>& aYCoCg) {
   const T t = Y - Cg;
   T Red = t + Co;
   T Green = Y + Cg;
-  T Blue  = t - Co;
+  T Blue = t - Co;
 
-  return Vec4<T>(Red,Green,Blue,T(0));
+  return Vec4<T>(Red, Green, Blue, T(0));
 }
 
 ///////////////////////////////////////////////
 template <typename T>
-sVec4<T> __stdcall ColorConvert(eColorSpace aSource, eColorSpace aDest, const sVec4<T>& aColor, const sVec4<T>& aXYZRef) {
+sVec4<T> __stdcall ColorConvert(eColorSpace aSource, eColorSpace aDest,
+                                const sVec4<T>& aColor, const sVec4<T>& aXYZRef)
+{
   if (aSource == aDest)
     return aColor;
 
   sVec4<T> xyzColor = sVec4<T>::Zero();
 
   switch (aSource) {
-    case eColorSpace_RGB:
-      {
-        switch (aDest) {
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(aColor);
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(aColor);
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(aColor);
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(aColor);
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(aColor);
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(aColor);
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(aColor);
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(aColor);
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(aColor,aXYZRef);
-            break;
-        }
-        break;
-      }
-    case eColorSpace_CMY:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_CMY_RGB(aColor);
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(aColor);
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_CMY_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_CMY_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_CMY_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+  case eColorSpace_RGB: {
+    switch (aDest) {
+    case eColorSpace_CMY: return ColorConvert_RGB_CMY(aColor);
     case eColorSpace_CMYK:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor));
-          case eColorSpace_CMY:
-            return ColorConvert_CMYK_CMY(aColor);
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)),aXYZRef);
-            break;
-        }
-        break;
-      }
-    case eColorSpace_HSV:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_HSV_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_HSV_RGB(aColor)));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_HSV_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_HSV_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_HSV_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(aColor));
+    case eColorSpace_HSL: return ColorConvert_RGB_HSL(aColor);
+    case eColorSpace_HSV: return ColorConvert_RGB_HSV(aColor);
+    case eColorSpace_YIQ: return ColorConvert_RGB_YIQ(aColor);
+    case eColorSpace_YUV: return ColorConvert_RGB_YUV(aColor);
+    case eColorSpace_YCbCr: return ColorConvert_RGB_YCbCr(aColor);
+    case eColorSpace_YPbPr: return ColorConvert_RGB_YPbPr(aColor);
+    case eColorSpace_YCoCg: return ColorConvert_RGB_YCoCg(aColor);
+    default: xyzColor = ColorConvert_RGB_XYZ(aColor, aXYZRef); break;
+    }
+    break;
+  }
+  case eColorSpace_CMY: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_CMY_RGB(aColor);
+    case eColorSpace_CMYK: return ColorConvert_CMY_CMYK(aColor);
     case eColorSpace_HSL:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_HSL_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_HSL_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_HSL_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_HSL_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_HSL_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
-    case eColorSpace_XYZ:
-      {
-        // in XYZ space already
-        break;
-      }
-    case eColorSpace_Yxy:
-      {
-        xyzColor = ColorConvert_Yxy_XYZ(aColor);
-        break;
-      }
-    case eColorSpace_HunterLab:
-      {
-        xyzColor = ColorConvert_HunterLab_XYZ(aColor);
-        break;
-      }
-    case eColorSpace_CIELab:
-      {
-        if (aDest == eColorSpace_CIELCH) {
-          return ColorConvert_CIELab_CIELCH(aColor);
-        }
-        else {
-          xyzColor = ColorConvert_CIELab_XYZ(aColor,aXYZRef);
-        }
-        break;
-      }
-    case eColorSpace_CIELCH:
-      {
-        if (aDest == eColorSpace_CIELab) {
-          return ColorConvert_CIELCH_CIELab(aColor);
-        }
-        else {
-          xyzColor = ColorConvert_CIELab_XYZ(ColorConvert_CIELCH_CIELab(aColor),aXYZRef);
-        }
-        break;
-      }
-    case eColorSpace_CIELuv:
-      {
-        xyzColor = ColorConvert_CIELuv_XYZ(aColor,aXYZRef);
-        break;
-      }
+      return ColorConvert_RGB_HSL(ColorConvert_CMY_RGB(aColor));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_CMY_RGB(aColor));
     case eColorSpace_YIQ:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_YIQ_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_YIQ_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_YIQ_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_YIQ_RGB(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_YIQ_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_YIQ_YUV(aColor);
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_YIQ_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_YIQ_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_YIQ_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YIQ_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_RGB_YIQ(ColorConvert_CMY_RGB(aColor));
     case eColorSpace_YUV:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_YUV_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_YUV_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_YUV_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_YUV_RGB(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_YUV_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_YUV_YIQ(aColor);
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_YUV_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_YUV_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_YUV_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YUV_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_RGB_YUV(ColorConvert_CMY_RGB(aColor));
     case eColorSpace_YCbCr:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_YCbCr_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_YCbCr_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_YCbCr_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCoCg(ColorConvert_YCbCr_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YCbCr_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_RGB_YCbCr(ColorConvert_CMY_RGB(aColor));
     case eColorSpace_YPbPr:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_YPbPr_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_YPbPr_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_YPbPr_RGB(aColor));
-          case eColorSpace_YCoCg:
-            return ColorConvert_RGB_YCbCr(ColorConvert_YPbPr_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YPbPr_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_RGB_YPbPr(ColorConvert_CMY_RGB(aColor));
     case eColorSpace_YCoCg:
-      {
-        switch (aDest) {
-          case eColorSpace_RGB:
-            return ColorConvert_YCoCg_RGB(aColor);
-          case eColorSpace_CMY:
-            return ColorConvert_RGB_CMY(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_CMYK:
-            return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_YCoCg_RGB(aColor)));
-          case eColorSpace_HSV:
-            return ColorConvert_RGB_HSV(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_HSL:
-            return ColorConvert_RGB_HSL(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_YIQ:
-            return ColorConvert_RGB_YIQ(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_YUV:
-            return ColorConvert_RGB_YUV(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_YCbCr:
-            return ColorConvert_RGB_YCbCr(ColorConvert_YCoCg_RGB(aColor));
-          case eColorSpace_YPbPr:
-            return ColorConvert_RGB_YPbPr(ColorConvert_YCoCg_RGB(aColor));
-          default:
-            xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YCoCg_RGB(aColor),aXYZRef);
-            break;
-        }
-        break;
-      }
+      return ColorConvert_RGB_YCoCg(ColorConvert_CMY_RGB(aColor));
     default:
-      /* do nothing */
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_CMY_RGB(aColor), aXYZRef);
       break;
+    }
+    break;
+  }
+  case eColorSpace_CMYK: {
+    switch (aDest) {
+    case eColorSpace_RGB:
+      return ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor));
+    case eColorSpace_CMY: return ColorConvert_CMYK_CMY(aColor);
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(
+        ColorConvert_CMY_RGB(ColorConvert_CMYK_CMY(aColor)), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_HSV: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_HSV_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_HSV_RGB(aColor)));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_HSV_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(ColorConvert_HSV_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_HSV_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_HSL: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_HSL_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_HSL_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_HSL_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(ColorConvert_HSL_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_HSL_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_XYZ: {
+    // in XYZ space already
+    break;
+  }
+  case eColorSpace_Yxy: {
+    xyzColor = ColorConvert_Yxy_XYZ(aColor);
+    break;
+  }
+  case eColorSpace_HunterLab: {
+    xyzColor = ColorConvert_HunterLab_XYZ(aColor);
+    break;
+  }
+  case eColorSpace_CIELab: {
+    if (aDest == eColorSpace_CIELCH) {
+      return ColorConvert_CIELab_CIELCH(aColor);
+    }
+    else {
+      xyzColor = ColorConvert_CIELab_XYZ(aColor, aXYZRef);
+    }
+    break;
+  }
+  case eColorSpace_CIELCH: {
+    if (aDest == eColorSpace_CIELab) {
+      return ColorConvert_CIELCH_CIELab(aColor);
+    }
+    else {
+      xyzColor =
+        ColorConvert_CIELab_XYZ(ColorConvert_CIELCH_CIELab(aColor), aXYZRef);
+    }
+    break;
+  }
+  case eColorSpace_CIELuv: {
+    xyzColor = ColorConvert_CIELuv_XYZ(aColor, aXYZRef);
+    break;
+  }
+  case eColorSpace_YIQ: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_YIQ_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_YIQ_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_YIQ_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_YIQ_RGB(aColor));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_YIQ_RGB(aColor));
+    case eColorSpace_YUV: return ColorConvert_YIQ_YUV(aColor);
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_YIQ_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_YIQ_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(ColorConvert_YIQ_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YIQ_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_YUV: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_YUV_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_YUV_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_YUV_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_YUV_RGB(aColor));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_YUV_RGB(aColor));
+    case eColorSpace_YIQ: return ColorConvert_YUV_YIQ(aColor);
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_YUV_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_YUV_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(ColorConvert_YUV_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YUV_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_YCbCr: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_YCbCr_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_YCbCr_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_YCbCr_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCoCg(ColorConvert_YCbCr_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YCbCr_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_YPbPr: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_YPbPr_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_YPbPr_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_YPbPr_RGB(aColor));
+    case eColorSpace_YCoCg:
+      return ColorConvert_RGB_YCbCr(ColorConvert_YPbPr_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YPbPr_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  case eColorSpace_YCoCg: {
+    switch (aDest) {
+    case eColorSpace_RGB: return ColorConvert_YCoCg_RGB(aColor);
+    case eColorSpace_CMY:
+      return ColorConvert_RGB_CMY(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_CMYK:
+      return ColorConvert_CMY_CMYK(
+        ColorConvert_RGB_CMY(ColorConvert_YCoCg_RGB(aColor)));
+    case eColorSpace_HSV:
+      return ColorConvert_RGB_HSV(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_HSL:
+      return ColorConvert_RGB_HSL(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_YIQ:
+      return ColorConvert_RGB_YIQ(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_YUV:
+      return ColorConvert_RGB_YUV(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_YCbCr:
+      return ColorConvert_RGB_YCbCr(ColorConvert_YCoCg_RGB(aColor));
+    case eColorSpace_YPbPr:
+      return ColorConvert_RGB_YPbPr(ColorConvert_YCoCg_RGB(aColor));
+    default:
+      xyzColor = ColorConvert_RGB_XYZ(ColorConvert_YCoCg_RGB(aColor), aXYZRef);
+      break;
+    }
+    break;
+  }
+  default:
+    /* do nothing */
+    break;
   }
 
   /// XYZ to other color formats
   switch (aDest) {
-    case eColorSpace_RGB:
-      {
-        return ColorConvert_XYZ_RGB(xyzColor,aXYZRef);
-      }
-    case eColorSpace_CMY:
-      {
-        return ColorConvert_RGB_CMY(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_CMYK:
-      {
-        return ColorConvert_CMY_CMYK(ColorConvert_RGB_CMY(ColorConvert_XYZ_RGB(xyzColor,aXYZRef)));
-      }
-    case eColorSpace_HSV:
-      {
-        return ColorConvert_RGB_HSV(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_HSL:
-      {
-        return ColorConvert_RGB_HSL(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_XYZ:
-      { // already in XYZ format
-        return xyzColor;
-      }
-    case eColorSpace_Yxy:
-      {
-        return ColorConvert_XYZ_Yxy(xyzColor);
-      }
-    case eColorSpace_HunterLab:
-      {
-        return ColorConvert_XYZ_HunterLab(xyzColor);
-      }
-    case eColorSpace_CIELab:
-      {
-        return ColorConvert_XYZ_CIELab(xyzColor,aXYZRef);
-      }
-    case eColorSpace_CIELCH:
-      {
-        return ColorConvert_CIELab_CIELCH(ColorConvert_XYZ_CIELab(xyzColor,aXYZRef));
-      }
-    case eColorSpace_CIELuv:
-      {
-        return ColorConvert_XYZ_CIELuv(xyzColor,aXYZRef);
-      }
-    case eColorSpace_YIQ:
-      {
-        return ColorConvert_RGB_YIQ(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_YUV:
-      {
-        return ColorConvert_RGB_YUV(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_YCbCr:
-      {
-        return ColorConvert_RGB_YCbCr(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_YPbPr:
-      {
-        return ColorConvert_RGB_YPbPr(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    case eColorSpace_YCoCg:
-      {
-        return ColorConvert_RGB_YCoCg(ColorConvert_XYZ_RGB(xyzColor,aXYZRef));
-      }
-    default:
-      /* do nothing */
-      break;
+  case eColorSpace_RGB: {
+    return ColorConvert_XYZ_RGB(xyzColor, aXYZRef);
+  }
+  case eColorSpace_CMY: {
+    return ColorConvert_RGB_CMY(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_CMYK: {
+    return ColorConvert_CMY_CMYK(
+      ColorConvert_RGB_CMY(ColorConvert_XYZ_RGB(xyzColor, aXYZRef)));
+  }
+  case eColorSpace_HSV: {
+    return ColorConvert_RGB_HSV(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_HSL: {
+    return ColorConvert_RGB_HSL(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_XYZ: { // already in XYZ format
+    return xyzColor;
+  }
+  case eColorSpace_Yxy: {
+    return ColorConvert_XYZ_Yxy(xyzColor);
+  }
+  case eColorSpace_HunterLab: {
+    return ColorConvert_XYZ_HunterLab(xyzColor);
+  }
+  case eColorSpace_CIELab: {
+    return ColorConvert_XYZ_CIELab(xyzColor, aXYZRef);
+  }
+  case eColorSpace_CIELCH: {
+    return ColorConvert_CIELab_CIELCH(
+      ColorConvert_XYZ_CIELab(xyzColor, aXYZRef));
+  }
+  case eColorSpace_CIELuv: {
+    return ColorConvert_XYZ_CIELuv(xyzColor, aXYZRef);
+  }
+  case eColorSpace_YIQ: {
+    return ColorConvert_RGB_YIQ(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_YUV: {
+    return ColorConvert_RGB_YUV(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_YCbCr: {
+    return ColorConvert_RGB_YCbCr(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_YPbPr: {
+    return ColorConvert_RGB_YPbPr(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  case eColorSpace_YCoCg: {
+    return ColorConvert_RGB_YCoCg(ColorConvert_XYZ_RGB(xyzColor, aXYZRef));
+  }
+  default:
+    /* do nothing */
+    break;
   }
 
   return xyzColor;
@@ -1732,5 +1721,5 @@ sVec4<T> __stdcall ColorConvert(eColorSpace aSource, eColorSpace aDest, const sV
 /// EOF //////////////////////////////////////////////////////////////////////////////////////}
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __MATHCOLORS_22202854_H__

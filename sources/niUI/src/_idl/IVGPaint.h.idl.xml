@@ -2,25 +2,25 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eVGPaintType">
 			<comments desc="VG paint type. "/>
-			<value min_features="20" name="eVGPaintType_Solid" value="0 ">
+			<value min_features="20" name="eVGPaintType_Solid" value="0">
 				<comments desc="Solid paint type. "/>
 			</value>
-			<value min_features="20" name="eVGPaintType_Image" value="1 ">
+			<value min_features="20" name="eVGPaintType_Image" value="1">
 				<comments desc="Image paint type. "/>
 			</value>
-			<value min_features="20" name="eVGPaintType_Gradient" value="2 ">
+			<value min_features="20" name="eVGPaintType_Gradient" value="2">
 				<comments desc="Gradient paint type. "/>
 			</value>
 		</enum>
 		<enum min_features="20" name="eVGPaintUnits">
 			<comments desc="VG paint units. "/>
-			<value min_features="20" name="eVGPaintUnits_Absolute" value="0 ">
+			<value min_features="20" name="eVGPaintUnits_Absolute" value="0">
 				<comments desc="Units are absolute (default). "/>
 			</value>
-			<value min_features="20" name="eVGPaintUnits_ObjectBoundingBox" value="1 ">
+			<value min_features="20" name="eVGPaintUnits_ObjectBoundingBox" value="1">
 				<comments desc="Units relative to the element&apos;s bounding box. "/>
 			</value>
-			<value min_features="20" name="eVGPaintUnits_UserSpaceOnUse" value="2 ">
+			<value min_features="20" name="eVGPaintUnits_UserSpaceOnUse" value="2">
 				<comments desc="Units relative to the current coordinate system. "/>
 			</value>
 		</enum>

@@ -18,10 +18,9 @@ struct iVGPolygonTesselator;
 #if niMinFeatures(20)
 
 //! VGPath commands.
-enum eVGPathCommand
-{
+enum eVGPathCommand {
   //! Stop command.
-  eVGPathCommand_Stop   = 0,
+  eVGPathCommand_Stop = 0,
   //! MoveTo command.
   eVGPathCommand_MoveTo = 1,
   //! LineTo command.
@@ -37,32 +36,35 @@ enum eVGPathCommand
   //! UBSpline command.
   eVGPathCommand_UBSpline = 7,
   //! End poly command.
-  eVGPathCommand_EndPoly  = 0x0F,
+  eVGPathCommand_EndPoly = 0x0F,
   //! Command mask.
-  eVGPathCommand_Mask   = 0x0F,
+  eVGPathCommand_Mask = 0x0F,
   //! \internal
   eVGPathCommand_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! VGPathTesselatedRenderer interface.
 //! {DispatchWrapper}
-struct iVGPathTesselatedRenderer : public iUnknown
-{
+struct iVGPathTesselatedRenderer : public iUnknown {
   niDeclareInterfaceUUID(iVGPathTesselatedRenderer,0x4629b016,0x9a7a,0x44bb,0x8f,0x6c,0x24,0xf5,0x88,0x6d,0xe4,0x62);
 
   //! Called when begining to render a path.
-  virtual void __stdcall BeginAddPath(const iVGStyle* apStyle, tBool abStroke) = 0;
+  virtual void __stdcall BeginAddPath(const iVGStyle* apStyle,
+                                      tBool abStroke) = 0;
   //! Called when end adding a path.
-  virtual void __stdcall EndAddPath(const iVGStyle* apStyle, tBool abStroke) = 0;
+  virtual void __stdcall EndAddPath(const iVGStyle* apStyle,
+                                    tBool abStroke) = 0;
   //! Called to request the approximation scale.
-  virtual tF32 __stdcall GetPathApproximationScale(const iVGStyle* apStyle) const = 0;
+  virtual tF32 __stdcall GetPathApproximationScale(
+    const iVGStyle* apStyle) const = 0;
   //! Called to add the path's polygons.
-  virtual void __stdcall AddPathPolygons(iVGPolygonTesselator* apTess, const iVGStyle* apStyle, tBool abStroke) = 0;
+  virtual void __stdcall AddPathPolygons(iVGPolygonTesselator* apTess,
+                                         const iVGStyle* apStyle,
+                                         tBool abStroke) = 0;
 };
 
 //! VGPath interface.
-struct iVGPath : public iUnknown
-{
+struct iVGPath : public iUnknown {
   niDeclareInterfaceUUID(iVGPath,0x01302541,0x1712,0x47b1,0x80,0xa9,0xe2,0xb1,0x61,0x53,0x9f,0x96);
 
   //! Copy the specified path.
@@ -72,7 +74,8 @@ struct iVGPath : public iUnknown
   //! Clear the path.
   virtual void __stdcall Clear() = 0;
   //! Add a vertex to the path.
-  virtual tBool __stdcall AddVertex(const sVec2f& avVertex, eVGPathCommand aCommand) = 0;
+  virtual tBool __stdcall AddVertex(const sVec2f& avVertex,
+                                    eVGPathCommand aCommand) = 0;
   //! Add another path to the end of this path.
   virtual tBool __stdcall AddPath(const iVGPath* apPath) = 0;
   //! Get the number of vertices in the path.
@@ -141,38 +144,50 @@ struct iVGPath : public iUnknown
   virtual void __stdcall Curve3PrevRel(tF32 x, tF32 y) = 0;
   //! Cubic Bezier curveto.
   //! \remark Maps to the 'C' path command.
-  virtual void __stdcall Curve4(tF32 x1, tF32 y1, tF32 x2, tF32 y2, tF32 x,  tF32 y) = 0;
+  virtual void __stdcall Curve4(tF32 x1, tF32 y1, tF32 x2, tF32 y2, tF32 x,
+                                tF32 y) = 0;
   //! Cubic Bezier curveto, relativly to the previous vertex.
   //! \remark Maps to the 'c' path command.
-  virtual void __stdcall Curve4Rel(tF32 x1, tF32 y1, tF32 x2, tF32 y2, tF32 x,  tF32 y) = 0;
+  virtual void __stdcall Curve4Rel(tF32 x1, tF32 y1, tF32 x2, tF32 y2, tF32 x,
+                                   tF32 y) = 0;
   //! Shorthand/smooth cubic Bezier curveto.
   //! \remark Maps to the 'S' path command.
-  virtual void __stdcall Curve4Prev(tF32 x2, tF32 y2, tF32 x,  tF32 y) = 0;
+  virtual void __stdcall Curve4Prev(tF32 x2, tF32 y2, tF32 x, tF32 y) = 0;
   //! Shorthand/smooth cubic Bezier curveto, relativly to the previous vertex.
   //! \remark Maps to the 's' path command.
-  virtual void __stdcall Curve4PrevRel(tF32 x2, tF32 y2, tF32 x,  tF32 y) = 0;
+  virtual void __stdcall Curve4PrevRel(tF32 x2, tF32 y2, tF32 x, tF32 y) = 0;
   //! Cubic curve with auto control point computation, relativly to the previous vertex.
   virtual void __stdcall Curve4K(tF32 x2, tF32 y2, tF32 k) = 0;
   //! Cubic curve with auto control point computation.
   virtual void __stdcall Curve4KRel(tF32 x2, tF32 y2, tF32 k) = 0;
   // Hermite curve.
-  virtual void __stdcall Hermite(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall Hermite(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4,
+                                 tF32 y4) = 0;
   // Hermite curve, relativly to the previous vertex.
-  virtual void __stdcall HermiteRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall HermiteRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4,
+                                    tF32 y4) = 0;
   // UBSpline.
-  virtual void __stdcall UBSpline(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall UBSpline(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4,
+                                  tF32 y4) = 0;
   // UBSpline, relativly to the previous vertex.
-  virtual void __stdcall UBSplineRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall UBSplineRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3,
+                                     tF32 x4, tF32 y4) = 0;
   // Catrom.
-  virtual void __stdcall Catrom(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall Catrom(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4,
+                                tF32 y4) = 0;
   // Catrom, relativly to the previous vertex.
-  virtual void __stdcall CatromRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4, tF32 y4) = 0;
+  virtual void __stdcall CatromRel(tF32 x2, tF32 y2, tF32 x3, tF32 y3, tF32 x4,
+                                   tF32 y4) = 0;
   //! Elliptical arc.
   //! \remark Maps to the SVG 'A' path command.
-  virtual void __stdcall ArcTo(tF32 rx, tF32 ry, tF32 angle, tBool large_arc_flag, tBool sweep_flag, tF32 x, tF32 y) = 0;
+  virtual void __stdcall ArcTo(tF32 rx, tF32 ry, tF32 angle,
+                               tBool large_arc_flag, tBool sweep_flag, tF32 x,
+                               tF32 y) = 0;
   //! Elliptical arc, relativly to the previous vertex.
   //! \remark Maps to the SVG 'a' path command.
-  virtual void __stdcall ArcToRel(tF32 rx, tF32 ry, tF32 angle, tBool large_arc_flag, tBool sweep_flag, tF32 x, tF32 y) = 0;
+  virtual void __stdcall ArcToRel(tF32 rx, tF32 ry, tF32 angle,
+                                  tBool large_arc_flag, tBool sweep_flag,
+                                  tF32 x, tF32 y) = 0;
   //! Close the current path's polygon.
   //! \remark Maps to the SVG 'Z' and 'z' path commands.
   virtual void __stdcall ClosePolygon() = 0;
@@ -180,17 +195,21 @@ struct iVGPath : public iUnknown
   //! Add a rectangle.
   virtual void __stdcall Rect(tF32 x, tF32 y, tF32 width, tF32 height) = 0;
   //! Add a rounded rectangle.
-  virtual void __stdcall RoundedRect(tF32 x, tF32 y, tF32 width, tF32 height, tF32 rx, tF32 ry) = 0;
+  virtual void __stdcall RoundedRect(tF32 x, tF32 y, tF32 width, tF32 height,
+                                     tF32 rx, tF32 ry) = 0;
   //! Add a centered rectangle.
-  virtual void __stdcall RectCentered(tF32 cx, tF32 cy, tF32 width, tF32 height) = 0;
+  virtual void __stdcall RectCentered(tF32 cx, tF32 cy, tF32 width,
+                                      tF32 height) = 0;
   //! Add a rounded centered rectangle.
-  virtual void __stdcall RoundedRectCentered(tF32 cx, tF32 cy, tF32 width, tF32 height, tF32 rx, tF32 ry) = 0;
+  virtual void __stdcall RoundedRectCentered(tF32 cx, tF32 cy, tF32 width,
+                                             tF32 height, tF32 rx, tF32 ry) = 0;
   //! Add a speech bubble rectangle.
-  virtual void __stdcall SpeechBubbleRect(
-    const tF32 x, const tF32 y, const tF32 w, const tF32 h,
-    const tF32 rx, const tF32 ry,
-    const tF32 tx, const tF32 ty,
-    const tF32 arrowGap, const tF32 arrowLen) = 0;
+  virtual void __stdcall SpeechBubbleRect(const tF32 x, const tF32 y,
+                                          const tF32 w, const tF32 h,
+                                          const tF32 rx, const tF32 ry,
+                                          const tF32 tx, const tF32 ty,
+                                          const tF32 arrowGap,
+                                          const tF32 arrowLen) = 0;
 
   //! Add a circle.
   virtual void __stdcall Circle(tF32 cx, tF32 cy, tF32 radius) = 0;
@@ -210,14 +229,24 @@ struct iVGPath : public iUnknown
   // r2 : odd points radius
   // n : number of sides
   // start_angle : initial rotation angle
-  virtual void __stdcall Star(tF32 xc, tF32 yc, tF32 r1, tF32 r2, tU32 n, tF32 start_angle = 0.0) = 0;
+  virtual void __stdcall Star(tF32 xc, tF32 yc, tF32 r1, tF32 r2, tU32 n,
+                              tF32 start_angle = 0.0) = 0;
 
   //! Add a text.
-  virtual tBool __stdcall Text(iFont* apFont, const sVec2f& avPos, const achar* aaszText) = 0;
+  virtual tBool __stdcall Text(iFont* apFont, const sVec2f& avPos,
+                               const achar* aaszText) = 0;
   //! Add a text along a path.
-  virtual tBool __stdcall TextAlongOnePath(iFont* apFont, const achar* aaszText, const iVGPath* apPath, tBool abPreserveXScale, tF32 afBaseLength, tF32 afSegmentApproxScale, tF32 afCurvesApproxScale) = 0;
+  virtual tBool __stdcall TextAlongOnePath(iFont* apFont, const achar* aaszText,
+                                           const iVGPath* apPath,
+                                           tBool abPreserveXScale,
+                                           tF32 afBaseLength,
+                                           tF32 afSegmentApproxScale,
+                                           tF32 afCurvesApproxScale) = 0;
   //! Add a text between two paths.
-  virtual tBool __stdcall TextAlongTwoPaths(iFont* apFont, const achar* aaszText, const iVGPath* apPath1, const iVGPath* apPath2, tBool abPreserveXScale, tF32 afBaseHeight, tF32 afBaseLength, tF32 afSegmentApproxScale, tF32 afCurvesApproxScale) = 0;
+  virtual tBool __stdcall TextAlongTwoPaths(
+    iFont* apFont, const achar* aaszText, const iVGPath* apPath1,
+    const iVGPath* apPath2, tBool abPreserveXScale, tF32 afBaseHeight,
+    tF32 afBaseLength, tF32 afSegmentApproxScale, tF32 afCurvesApproxScale) = 0;
 
   //! Transform the path to a bspline
   virtual void __stdcall ToBSpline(tF32 afInterpolationStep) = 0;
@@ -230,16 +259,26 @@ struct iVGPath : public iUnknown
   //! Transform the path with the specified transform.
   virtual tBool __stdcall Transform(const iVGTransform* apTransform) = 0;
   //! Transform the path along another path
-  virtual tBool __stdcall TransformAlongOnePath(const iVGPath* apPath, tBool abPreserveXScale, tF32 afBaseLength, tF32 afSegmentApproxScale, tF32 afCurvesApproxScale) = 0;
+  virtual tBool __stdcall TransformAlongOnePath(const iVGPath* apPath,
+                                                tBool abPreserveXScale,
+                                                tF32 afBaseLength,
+                                                tF32 afSegmentApproxScale,
+                                                tF32 afCurvesApproxScale) = 0;
   //! Transform the path against two other paths
-  virtual tBool __stdcall TransformAlongTwoPaths(const iVGPath* apPath1, const iVGPath* apPath2, tBool abPreserveXScale, tF32 afBaseHeight, tF32 afBaseLength, tF32 afSegmentApproxScale, tF32 afCurvesApproxScale) = 0;
+  virtual tBool __stdcall TransformAlongTwoPaths(
+    const iVGPath* apPath1, const iVGPath* apPath2, tBool abPreserveXScale,
+    tF32 afBaseHeight, tF32 afBaseLength, tF32 afSegmentApproxScale,
+    tF32 afCurvesApproxScale) = 0;
   //! Make all polygons follow the same orientation.
   virtual void __stdcall ArrangeOrientations(tBool abCW) = 0;
   //! Get the path's bounding box.
-  virtual sRectf __stdcall GetBoundingRect(const iVGTransform* apTransform) const = 0;
+  virtual sRectf __stdcall GetBoundingRect(
+    const iVGTransform* apTransform) const = 0;
 
   //! Render the tesselated path.
-  virtual tBool __stdcall RenderTesselated(iVGPathTesselatedRenderer* apPath, const iVGTransform* apTransform, const iVGStyle* apStyle) const = 0;
+  virtual tBool __stdcall RenderTesselated(iVGPathTesselatedRenderer* apPath,
+                                           const iVGTransform* apTransform,
+                                           const iVGStyle* apStyle) const = 0;
 
   //! Add a SVG path.
   //! \remark The syntax of the path is the same as SVG paths.
@@ -259,5 +298,5 @@ struct iVGPath : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGPATH_35982248_H__

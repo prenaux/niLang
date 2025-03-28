@@ -2,16 +2,16 @@
 	<namespace name="ni">
 		<enum name="eVGWrapType">
 			<comments desc="VG wrap type. "/>
-			<value name="eVGWrapType_Clamp" value="0 ">
+			<value name="eVGWrapType_Clamp" value="0">
 				<comments desc="Clamp, the edge color is used when outside of the source rectangle. "/>
 			</value>
-			<value name="eVGWrapType_Repeat" value="1 ">
+			<value name="eVGWrapType_Repeat" value="1">
 				<comments desc="Repeat, the source is repeated at each source rectangle boundary. "/>
 			</value>
-			<value name="eVGWrapType_Mirror" value="2 ">
+			<value name="eVGWrapType_Mirror" value="2">
 				<comments desc="Mirror, the source is mirror at each source rectangle boundary. "/>
 			</value>
-			<value name="eVGWrapType_Pad" value="3 ">
+			<value name="eVGWrapType_Pad" value="3">
 				<comments desc="Padding, the background color is used when outside of the source rectangle. ">
 					<remark text="Not supported by gradients. "/>
 				</comments>
@@ -19,74 +19,74 @@
 		</enum>
 		<enum name="eVGImageFilter">
 			<comments desc="VG Image filter. "/>
-			<value name="eVGImageFilter_Point" value="0 ">
+			<value name="eVGImageFilter_Point" value="0">
 				<comments desc="No filter. "/>
 			</value>
-			<value name="eVGImageFilter_Bilinear" value="1 ">
+			<value name="eVGImageFilter_Bilinear" value="1">
 				<comments desc="Bilinear filter. "/>
 			</value>
-			<value name="eVGImageFilter_Bicubic" value="2 ">
+			<value name="eVGImageFilter_Bicubic" value="2">
 				<comments desc="Bicubic filter. "/>
 			</value>
-			<value name="eVGImageFilter_Spline16" value="3 ">
+			<value name="eVGImageFilter_Spline16" value="3">
 				<comments desc="Spline16 filter. "/>
 			</value>
-			<value name="eVGImageFilter_Spline36" value="4 ">
+			<value name="eVGImageFilter_Spline36" value="4">
 				<comments desc="Spline36 filter. "/>
 			</value>
-			<value name="eVGImageFilter_Hanning" value="5 ">
+			<value name="eVGImageFilter_Hanning" value="5">
 				<comments desc="Hanning filter. "/>
 			</value>
-			<value name="eVGImageFilter_Hamming" value="6 ">
+			<value name="eVGImageFilter_Hamming" value="6">
 				<comments desc="Hamming filter. "/>
 			</value>
-			<value name="eVGImageFilter_Hermite" value="7 ">
+			<value name="eVGImageFilter_Hermite" value="7">
 				<comments desc="Hermite filter. "/>
 			</value>
-			<value name="eVGImageFilter_Kaiser" value="8 ">
+			<value name="eVGImageFilter_Kaiser" value="8">
 				<comments desc="Kaiser filter. "/>
 			</value>
-			<value name="eVGImageFilter_Quadric" value="9 ">
+			<value name="eVGImageFilter_Quadric" value="9">
 				<comments desc="Quadric filter. "/>
 			</value>
-			<value name="eVGImageFilter_Catrom" value="10 ">
+			<value name="eVGImageFilter_Catrom" value="10">
 				<comments desc="Catrom filter. "/>
 			</value>
-			<value name="eVGImageFilter_Gaussian" value="11 ">
+			<value name="eVGImageFilter_Gaussian" value="11">
 				<comments desc="Gaussian filter. "/>
 			</value>
-			<value name="eVGImageFilter_Bessel" value="12 ">
+			<value name="eVGImageFilter_Bessel" value="12">
 				<comments desc="Bessel filter. "/>
 			</value>
-			<value name="eVGImageFilter_Mitchell" value="13 ">
+			<value name="eVGImageFilter_Mitchell" value="13">
 				<comments desc="Mitchell filter. "/>
 			</value>
-			<value name="eVGImageFilter_Sinc" value="14 ">
+			<value name="eVGImageFilter_Sinc" value="14">
 				<comments desc="Sinc filter. "/>
 			</value>
-			<value name="eVGImageFilter_Lanczos" value="15 ">
+			<value name="eVGImageFilter_Lanczos" value="15">
 				<comments desc="Lanczos filter. "/>
 			</value>
-			<value name="eVGImageFilter_Blackman" value="16 ">
+			<value name="eVGImageFilter_Blackman" value="16">
 				<comments desc="Blackman filter. "/>
 			</value>
-			<value name="eVGImageFilter_Last" value="17 ">
+			<value name="eVGImageFilter_Last" value="17">
 				<comments desc="\internal "/>
 			</value>
 		</enum>
 		<enum name="eVGImageUsage">
 			<comments desc="VGImage usage. "/>
-			<value name="eVGImageUsage_Source" value="0 ">
+			<value name="eVGImageUsage_Source" value="0">
 				<comments desc="The usage is read-only to be used a source for rendering. ">
 					<remark text="No dirty region is added. "/>
 				</comments>
 			</value>
-			<value name="eVGImageUsage_Target" value="1 ">
+			<value name="eVGImageUsage_Target" value="1">
 				<comments desc="The usage is write-only to be used as a render target. ">
 					<remark text="For texture this will force the creation of a render target texture. Once a render target has been created the image will always remain a render target. "/>
 				</comments>
 			</value>
-			<value name="eVGImageUsage_DepthStencil" value="2 ">
+			<value name="eVGImageUsage_DepthStencil" value="2">
 				<comments desc="For GetTexture only, grabs the depth stencil for rendering. "/>
 			</value>
 		</enum>

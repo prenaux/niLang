@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! Occlusion query status.
-enum eOcclusionQueryStatus
-{
+enum eOcclusionQueryStatus {
   //! No query has been issued yet.
   eOcclusionQueryStatus_NotIssued = 0,
   //! The query has began but is not ended yet.
@@ -25,8 +24,7 @@ enum eOcclusionQueryStatus
 };
 
 //! Occlusion query object.
-struct iOcclusionQuery : public iUnknown
-{
+struct iOcclusionQuery : public iUnknown {
   niDeclareInterfaceUUID(iOcclusionQuery,0x9bda9d89,0x23e7,0x4cf7,0xaa,0xa7,0xc9,0x5b,0xa7,0xed,0xae,0x2a);
   //! Begin the query.
   virtual tBool __stdcall Begin() = 0;
@@ -44,5 +42,5 @@ struct iOcclusionQuery : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IOCCLUSIONQUERY_84092360_H__

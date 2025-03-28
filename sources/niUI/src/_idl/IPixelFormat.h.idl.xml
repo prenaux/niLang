@@ -2,64 +2,64 @@
 	<namespace name="ni">
 		<enum name="ePixelFormatBlit">
 			<comments desc="Pixel Format Blitting flags. "/>
-			<value name="ePixelFormatBlit_Normal" value="0x00000000 ">
+			<value name="ePixelFormatBlit_Normal" value="0x00000000">
 				<comments desc="Normal blitting. "/>
 			</value>
-			<value name="ePixelFormatBlit_MirrorLeftRight" value="0x00000001 ">
+			<value name="ePixelFormatBlit_MirrorLeftRight" value="0x00000001">
 				<comments desc="Mirrored left right blitting. "/>
 			</value>
-			<value name="ePixelFormatBlit_MirrorUpDown" value="0x00000002 ">
+			<value name="ePixelFormatBlit_MirrorUpDown" value="0x00000002">
 				<comments desc="Mirrored up down blitting. "/>
 			</value>
-			<value name="ePixelFormatBlit_MirrorDiagonal" value="ePixelFormatBlit_MirrorLeftRight|ePixelFormatBlit_MirrorUpDown ">
+			<value name="ePixelFormatBlit_MirrorDiagonal" value="ePixelFormatBlit_MirrorLeftRight|ePixelFormatBlit_MirrorUpDown">
 				<comments desc="Diagonal mirror. Equivalent to a Pi rad rotation. "/>
 			</value>
 		</enum>
 		<enum name="ePixelFormatCaps">
 			<comments desc="Pixel format capabilities. "/>
-			<value name="ePixelFormatCaps_BuildPixel" value="niBit ( 0 ) ">
+			<value name="ePixelFormatCaps_BuildPixel" value="niBit(0)">
 				<comments desc="Support the build pixel methods. "/>
 			</value>
-			<value name="ePixelFormatCaps_UnpackPixel" value="niBit ( 1 ) ">
+			<value name="ePixelFormatCaps_UnpackPixel" value="niBit(1)">
 				<comments desc="Support pixel unpacking. "/>
 			</value>
-			<value name="ePixelFormatCaps_Blit" value="niBit ( 2 ) ">
+			<value name="ePixelFormatCaps_Blit" value="niBit(2)">
 				<comments desc="Support standard blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitMirrorLeftRight" value="niBit ( 3 ) ">
+			<value name="ePixelFormatCaps_BlitMirrorLeftRight" value="niBit(3)">
 				<comments desc="Support mirrored left right blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitMirrorUpDown" value="niBit ( 4 ) ">
+			<value name="ePixelFormatCaps_BlitMirrorUpDown" value="niBit(4)">
 				<comments desc="Support mirrored up down blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitStretch" value="niBit ( 5 ) ">
+			<value name="ePixelFormatCaps_BlitStretch" value="niBit(5)">
 				<comments desc="Support stretched blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitStretchHalf" value="niBit ( 6 ) ">
+			<value name="ePixelFormatCaps_BlitStretchHalf" value="niBit(6)">
 				<comments desc="Support stretched blitting of half size only (for mipmaps generation). "/>
 			</value>
-			<value name="ePixelFormatCaps_Signed" value="niBit ( 7 ) ">
+			<value name="ePixelFormatCaps_Signed" value="niBit(7)">
 				<comments desc="Is a signed pixel format. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitAlpha" value="niBit ( 8 ) ">
+			<value name="ePixelFormatCaps_BlitAlpha" value="niBit(8)">
 				<comments desc="Support standard alpha blended blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitAlphaMirrorLeftRight" value="niBit ( 9 ) ">
+			<value name="ePixelFormatCaps_BlitAlphaMirrorLeftRight" value="niBit(9)">
 				<comments desc="Support mirrored left right alpha blended blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitAlphaMirrorUpDown" value="niBit ( 10 ) ">
+			<value name="ePixelFormatCaps_BlitAlphaMirrorUpDown" value="niBit(10)">
 				<comments desc="Support mirrored up down alpha blended blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitAlphaStretch" value="niBit ( 11 ) ">
+			<value name="ePixelFormatCaps_BlitAlphaStretch" value="niBit(11)">
 				<comments desc="Support stretched alpha blended blitting. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlitAlphaStretchHalf" value="niBit ( 12 ) ">
+			<value name="ePixelFormatCaps_BlitAlphaStretchHalf" value="niBit(12)">
 				<comments desc="Support stretched alpha blended blitting of half size only (for mipmaps generation). "/>
 			</value>
-			<value name="ePixelFormatCaps_Clear" value="niBit ( 13 ) ">
+			<value name="ePixelFormatCaps_Clear" value="niBit(13)">
 				<comments desc="Support a specialize clear method. "/>
 			</value>
-			<value name="ePixelFormatCaps_BlockCompressed" value="niBit ( 14 ) ">
+			<value name="ePixelFormatCaps_BlockCompressed" value="niBit(14)">
 				<comments desc="Block compressed format. ">
 					<remark text="This includes format such as DXT formats and ASTC. "/>
 				</comments>

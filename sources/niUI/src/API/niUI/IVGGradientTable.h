@@ -12,8 +12,7 @@ namespace ni {
 #if niMinFeatures(20)
 
 //! Gradient type.
-enum eVGGradientType
-{
+enum eVGGradientType {
   //! Linear gradient.
   eVGGradientType_Linear = 0,
   //! Radial/circle gradient.
@@ -31,8 +30,7 @@ enum eVGGradientType
 };
 
 //! Gradient table.
-struct iVGGradientTable : public iUnknown
-{
+struct iVGGradientTable : public iUnknown {
   niDeclareInterfaceUUID(iVGGradientTable,0xd508082d,0x9992,0x4eeb,0xa8,0xa7,0x0a,0xde,0xe6,0xe2,0x66,0x48);
   //! Copy another table.
   virtual tBool __stdcall Copy(const iVGGradientTable* apSrc) = 0;
@@ -49,18 +47,25 @@ struct iVGGradientTable : public iUnknown
   virtual sColor4f __stdcall GetColor(tU32 anIndex) const = 0;
   //! Set a range of color.
   //! {Property}
-  virtual tBool __stdcall SetColorRange(tU32 anStart, tU32 anEnd, const sColor4f& avColor) = 0;
+  virtual tBool __stdcall SetColorRange(tU32 anStart, tU32 anEnd,
+                                        const sColor4f& avColor) = 0;
   //! Generate a gradient between two colors.
-  virtual void __stdcall GenerateTwoColors(const sColor4f& aStartColor, const sColor4f& aEndColor) = 0;
+  virtual void __stdcall GenerateTwoColors(const sColor4f& aStartColor,
+                                           const sColor4f& aEndColor) = 0;
   //! Generate a gradient between specified stops.
-  virtual tBool __stdcall GenerateStops(const tF32CVec* apOffsets, const tVec4fCVec* apColors) = 0;
+  virtual tBool __stdcall GenerateStops(const tF32CVec* apOffsets,
+                                        const tVec4fCVec* apColors) = 0;
   //! Create an image containing the gradient.
-  virtual iVGImage* __stdcall CreateImage(eVGGradientType aType, eVGWrapType aWrapType, const iVGTransform* apTransform, tU32 anWidth, tU32 anHeight, tI32 anD1, tI32 anD2) = 0;
+  virtual iVGImage* __stdcall CreateImage(eVGGradientType aType,
+                                          eVGWrapType aWrapType,
+                                          const iVGTransform* apTransform,
+                                          tU32 anWidth, tU32 anHeight,
+                                          tI32 anD1, tI32 anD2) = 0;
 };
 
 #endif // niMinFeatures
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IVGGRADIENTTABLE_27968128_H__

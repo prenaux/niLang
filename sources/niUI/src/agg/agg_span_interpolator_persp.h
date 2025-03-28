@@ -18,26 +18,23 @@
 #include "agg_trans_perspective.h"
 #include "agg_dda_line.h"
 
-namespace agg
-{
-
-
+namespace agg {
 
 //===========================================span_interpolator_persp_exact
-template<unsigned SubpixelShift = 8>
-class span_interpolator_persp_exact
-{
+template <unsigned SubpixelShift = 8>
+class span_interpolator_persp_exact {
  public:
   typedef trans_perspective trans_type;
   typedef trans_perspective::iterator_x iterator_type;
-  enum subpixel_scale_e
-  {
+  enum subpixel_scale_e {
     subpixel_shift = SubpixelShift,
     subpixel_scale = 1 << subpixel_shift
   };
 
   //--------------------------------------------------------------------
-  span_interpolator_persp_exact() {}
+  span_interpolator_persp_exact()
+  {
+  }
 
   //--------------------------------------------------------------------
   // Arbitrary quadrangle transformations
@@ -48,17 +45,15 @@ class span_interpolator_persp_exact
 
   //--------------------------------------------------------------------
   // Direct transformations
-  span_interpolator_persp_exact(agg_real x1, agg_real y1,
-                                agg_real x2, agg_real y2,
-                                const agg_real* quad)
+  span_interpolator_persp_exact(agg_real x1, agg_real y1, agg_real x2,
+                                agg_real y2, const agg_real* quad)
   {
     rect_to_quad(x1, y1, x2, y2, quad);
   }
 
   //--------------------------------------------------------------------
   // Reverse transformations
-  span_interpolator_persp_exact(const agg_real* quad,
-                                agg_real x1, agg_real y1,
+  span_interpolator_persp_exact(const agg_real* quad, agg_real x1, agg_real y1,
                                 agg_real x2, agg_real y2)
   {
     quad_to_rect(quad, x1, y1, x2, y2);
@@ -85,11 +80,10 @@ class span_interpolator_persp_exact
     quad_to_quad(src, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Set the reverse transformations, i.e., quadrangle -> rectangle
-  void quad_to_rect(const agg_real* quad,
-                    agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  void quad_to_rect(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                    agg_real y2)
   {
     agg_real dst[8];
     dst[0] = dst[6] = x1;
@@ -101,7 +95,10 @@ class span_interpolator_persp_exact
 
   //--------------------------------------------------------------------
   // Check if the equations were solved successfully
-  bool is_valid() const { return m_trans_dir.is_valid(); }
+  bool is_valid() const
+  {
+    return m_trans_dir.is_valid();
+  }
 
   //----------------------------------------------------------------
   void begin(agg_real x, agg_real y, unsigned len)
@@ -112,19 +109,21 @@ class span_interpolator_persp_exact
 
     agg_real dx;
     agg_real dy;
-    const agg_real delta = 1/agg_real(subpixel_scale);
+    const agg_real delta = 1 / agg_real(subpixel_scale);
     dx = xt + delta;
     dy = yt;
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sx1 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx1 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
     dx = xt;
     dy = yt + delta;
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sy1 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy1 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     x += len;
     xt = x;
@@ -136,18 +135,19 @@ class span_interpolator_persp_exact
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sx2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
     dx = xt;
     dy = yt + delta;
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sy2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     m_scale_x = dda2_line_interpolator(sx1, sx2, len);
     m_scale_y = dda2_line_interpolator(sy1, sy2, len);
   }
-
 
   //----------------------------------------------------------------
   void resynchronize(agg_real xe, agg_real ye, unsigned len)
@@ -161,7 +161,7 @@ class span_interpolator_persp_exact
     agg_real yt = ye;
     m_trans_dir.transform(&xt, &yt);
 
-    const agg_real delta = 1/agg_real(subpixel_scale);
+    const agg_real delta = 1 / agg_real(subpixel_scale);
     agg_real dx;
     agg_real dy;
 
@@ -171,7 +171,8 @@ class span_interpolator_persp_exact
     m_trans_inv.transform(&dx, &dy);
     dx -= xe;
     dy -= ye;
-    int sx2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Calculate scale by Y at x2,y2
     dx = xt;
@@ -179,14 +180,13 @@ class span_interpolator_persp_exact
     m_trans_inv.transform(&dx, &dy);
     dx -= xe;
     dy -= ye;
-    int sy2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Initialize the interpolators
     m_scale_x = dda2_line_interpolator(sx1, sx2, len);
     m_scale_y = dda2_line_interpolator(sy1, sy2, len);
   }
-
-
 
   //----------------------------------------------------------------
   void operator++()
@@ -217,37 +217,27 @@ class span_interpolator_persp_exact
   }
 
  private:
-  trans_type             m_trans_dir;
-  trans_type             m_trans_inv;
-  iterator_type          m_iterator;
+  trans_type m_trans_dir;
+  trans_type m_trans_inv;
+  iterator_type m_iterator;
   dda2_line_interpolator m_scale_x;
   dda2_line_interpolator m_scale_y;
 };
 
-
-
-
-
-
-
-
-
-
-
 //============================================span_interpolator_persp_lerp
-template<unsigned SubpixelShift = 8>
-class span_interpolator_persp_lerp
-{
+template <unsigned SubpixelShift = 8>
+class span_interpolator_persp_lerp {
  public:
   typedef trans_perspective trans_type;
-  enum subpixel_scale_e
-  {
+  enum subpixel_scale_e {
     subpixel_shift = SubpixelShift,
     subpixel_scale = 1 << subpixel_shift
   };
 
   //--------------------------------------------------------------------
-  span_interpolator_persp_lerp() {}
+  span_interpolator_persp_lerp()
+  {
+  }
 
   //--------------------------------------------------------------------
   // Arbitrary quadrangle transformations
@@ -258,17 +248,15 @@ class span_interpolator_persp_lerp
 
   //--------------------------------------------------------------------
   // Direct transformations
-  span_interpolator_persp_lerp(agg_real x1, agg_real y1,
-                               agg_real x2, agg_real y2,
-                               const agg_real* quad)
+  span_interpolator_persp_lerp(agg_real x1, agg_real y1, agg_real x2,
+                               agg_real y2, const agg_real* quad)
   {
     rect_to_quad(x1, y1, x2, y2, quad);
   }
 
   //--------------------------------------------------------------------
   // Reverse transformations
-  span_interpolator_persp_lerp(const agg_real* quad,
-                               agg_real x1, agg_real y1,
+  span_interpolator_persp_lerp(const agg_real* quad, agg_real x1, agg_real y1,
                                agg_real x2, agg_real y2)
   {
     quad_to_rect(quad, x1, y1, x2, y2);
@@ -295,11 +283,10 @@ class span_interpolator_persp_lerp
     quad_to_quad(src, quad);
   }
 
-
   //--------------------------------------------------------------------
   // Set the reverse transformations, i.e., quadrangle -> rectangle
-  void quad_to_rect(const agg_real* quad,
-                    agg_real x1, agg_real y1, agg_real x2, agg_real y2)
+  void quad_to_rect(const agg_real* quad, agg_real x1, agg_real y1, agg_real x2,
+                    agg_real y2)
   {
     agg_real dst[8];
     dst[0] = dst[6] = x1;
@@ -311,7 +298,10 @@ class span_interpolator_persp_lerp
 
   //--------------------------------------------------------------------
   // Check if the equations were solved successfully
-  bool is_valid() const { return m_trans_dir.is_valid(); }
+  bool is_valid() const
+  {
+    return m_trans_dir.is_valid();
+  }
 
   //----------------------------------------------------------------
   void begin(agg_real x, agg_real y, unsigned len)
@@ -325,7 +315,7 @@ class span_interpolator_persp_lerp
 
     agg_real dx;
     agg_real dy;
-    const agg_real delta = 1/agg_real(subpixel_scale);
+    const agg_real delta = 1 / agg_real(subpixel_scale);
 
     // Calculate scale by X at x1,y1
     dx = xt + delta;
@@ -333,7 +323,8 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sx1 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx1 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Calculate scale by Y at x1,y1
     dx = xt;
@@ -341,7 +332,8 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sy1 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy1 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Calculate transformed coordinates at x2,y2
     x += len;
@@ -357,7 +349,8 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sx2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Calculate scale by Y at x2,y2
     dx = xt;
@@ -365,22 +358,22 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= x;
     dy -= y;
-    int sy2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Initialize the interpolators
-    m_coord_x = dda2_line_interpolator(x1,  x2,  len);
-    m_coord_y = dda2_line_interpolator(y1,  y2,  len);
+    m_coord_x = dda2_line_interpolator(x1, x2, len);
+    m_coord_y = dda2_line_interpolator(y1, y2, len);
     m_scale_x = dda2_line_interpolator(sx1, sx2, len);
     m_scale_y = dda2_line_interpolator(sy1, sy2, len);
   }
-
 
   //----------------------------------------------------------------
   void resynchronize(agg_real xe, agg_real ye, unsigned len)
   {
     // Assume x1,y1 are equal to the ones at the previous end point
-    int x1  = m_coord_x.y();
-    int y1  = m_coord_y.y();
+    int x1 = m_coord_x.y();
+    int y1 = m_coord_y.y();
     int sx1 = m_scale_x.y();
     int sy1 = m_scale_y.y();
 
@@ -391,7 +384,7 @@ class span_interpolator_persp_lerp
     int x2 = iround(xt * subpixel_scale);
     int y2 = iround(yt * subpixel_scale);
 
-    const agg_real delta = 1/agg_real(subpixel_scale);
+    const agg_real delta = 1 / agg_real(subpixel_scale);
     agg_real dx;
     agg_real dy;
 
@@ -401,7 +394,8 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= xe;
     dy -= ye;
-    int sx2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sx2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Calculate scale by Y at x2,y2
     dx = xt;
@@ -409,15 +403,15 @@ class span_interpolator_persp_lerp
     m_trans_inv.transform(&dx, &dy);
     dx -= xe;
     dy -= ye;
-    int sy2 = uround(subpixel_scale/sqrt(dx*dx + dy*dy)) >> subpixel_shift;
+    int sy2 =
+      uround(subpixel_scale / sqrt(dx * dx + dy * dy)) >> subpixel_shift;
 
     // Initialize the interpolators
-    m_coord_x = dda2_line_interpolator(x1,  x2,  len);
-    m_coord_y = dda2_line_interpolator(y1,  y2,  len);
+    m_coord_x = dda2_line_interpolator(x1, x2, len);
+    m_coord_y = dda2_line_interpolator(y1, y2, len);
     m_scale_x = dda2_line_interpolator(sx1, sx2, len);
     m_scale_y = dda2_line_interpolator(sy1, sy2, len);
   }
-
 
   //----------------------------------------------------------------
   void operator++()
@@ -449,14 +443,14 @@ class span_interpolator_persp_lerp
   }
 
  private:
-  trans_type             m_trans_dir;
-  trans_type             m_trans_inv;
+  trans_type m_trans_dir;
+  trans_type m_trans_inv;
   dda2_line_interpolator m_coord_x;
   dda2_line_interpolator m_coord_y;
   dda2_line_interpolator m_scale_x;
   dda2_line_interpolator m_scale_y;
 };
 
-}
+} // namespace agg
 
 #endif

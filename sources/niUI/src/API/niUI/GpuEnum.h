@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! GPU Index type
-enum eGpuIndexType
-{
+enum eGpuIndexType {
   //! 16-bit unsigned integer
   eGpuIndexType_U16 = 0,
   //! 32-bit unsigned integer
@@ -21,8 +20,7 @@ enum eGpuIndexType
 };
 
 //! GPU Buffer memory mode
-enum eGpuBufferMemoryMode
-{
+enum eGpuBufferMemoryMode {
   //! Default shared memory between CPU & GPU, best for dynamic resources
   //! that are updated frequently by the CPU.
   eGpuBufferMemoryMode_Shared = 0,
@@ -45,8 +43,7 @@ enum eGpuBufferMemoryMode
 };
 
 //! GPU Buffer usage flags
-enum eGpuBufferUsageFlags
-{
+enum eGpuBufferUsageFlags {
   //! Can be used as vertex buffer
   eGpuBufferUsageFlags_Vertex = niBit(0),
   //! Can be used as index buffer
@@ -72,8 +69,7 @@ enum eGpuBufferUsageFlags
 };
 
 //! GPU Function type
-enum eGpuFunctionType
-{
+enum eGpuFunctionType {
   //! Vertex function
   eGpuFunctionType_Vertex = 0,
   //! Pixel/Fragment function
@@ -121,8 +117,7 @@ enum eGpuFunctionBindType {
 };
 
 //! GPU Pixel format
-enum eGpuPixelFormat
-{
+enum eGpuPixelFormat {
   eGpuPixelFormat_None = 0,
   eGpuPixelFormat_BGRA8 = 1,
   eGpuPixelFormat_RGBA8 = 2,
@@ -140,8 +135,7 @@ enum eGpuPixelFormat
 };
 
 //! GPU Blend factor
-enum eGpuBlendFactor
-{
+enum eGpuBlendFactor {
   //! (0, 0, 0, 0)
   eGpuBlendFactor_Zero = 0,
   //! (1, 1, 1, 1)
@@ -230,5 +224,5 @@ enum eGLSLVulkanVertexInputLayout {
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __GRAPHICSENUM_456789789_H__

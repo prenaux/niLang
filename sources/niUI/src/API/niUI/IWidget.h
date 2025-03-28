@@ -19,8 +19,7 @@ struct iWidgetSink;
  */
 
 //! Widget style.
-enum eWidgetStyle
-{
+enum eWidgetStyle {
   // Is drawn in the NC area.
   eWidgetStyle_NCRelative = niBit(0),
   //! Free widget.
@@ -77,8 +76,7 @@ typedef tU32 tWidgetStyleFlags;
 //! \remark Dock stretch the widget to reach the specified edge and update the docking area, so that
 //!     a fill dock will fill only the empty space left.
 //! \remark The widgets are docked in the ZOrder.
-enum eWidgetDockStyle
-{
+enum eWidgetDockStyle {
   //! No docking.
   eWidgetDockStyle_None = 0,
   //! Snap the widget on the left.
@@ -145,8 +143,7 @@ enum eWidgetDockStyle
 //! \remark These are the reserved ZOrder, to define a ZOrder explicitly
 //!     pass a value less that eWidgetZOrder_Max.
 //!     Zero is the overlay widget, higher values are below it.
-enum eWidgetZOrder
-{
+enum eWidgetZOrder {
   //! Places the widget in the background behind all background widgets.
   eWidgetZOrder_BackgroundBottom = 0,
   //! Places the widget in the background.
@@ -168,8 +165,7 @@ enum eWidgetZOrder
 };
 
 //! Widget serialize flags.
-enum eWidgetSerializeFlags
-{
+enum eWidgetSerializeFlags {
   //! Serialize write.
   //! \remark Read or Write must be specified, both can't be specified simultaneously.
   //! \remark This is intentionally the same as ni::eSerializeFlags_Write
@@ -200,8 +196,7 @@ niCAssert((ni::tU32)eWidgetSerializeFlags_PropertyBox == (ni::tU32)eSerializeFla
 typedef tU32 tWidgetSerializeFlags;
 
 //! Widget auto layout flags.
-enum eWidgetAutoLayoutFlags
-{
+enum eWidgetAutoLayoutFlags {
   //! Compute the children's relative sizes.
   eWidgetAutoLayoutFlags_Relative = niBit(0),
   //! Compute the children's docking positions.
@@ -217,16 +212,16 @@ typedef tU32 tWidgetAutoLayoutFlags;
 
 //! Widget sink interface.
 //{DispatchWrapper}
-struct iWidgetSink : public iUnknown
-{
+struct iWidgetSink : public iUnknown {
   niDeclareInterfaceUUID(iWidgetSink,0x6905dfa1,0xfa65,0x4444,0xa3,0x90,0xba,0x80,0x95,0x80,0xdb,0xf6);
   //! Widget sink message handler.
-  virtual tBool __stdcall OnWidgetSink(iWidget *apWidget, tU32 nMsg, const ni::Var& varParam0, const ni::Var& varParam1) = 0;
+  virtual tBool __stdcall OnWidgetSink(iWidget* apWidget, tU32 nMsg,
+                                       const ni::Var& varParam0,
+                                       const ni::Var& varParam1) = 0;
 };
 
 //! Widget command interface.
-struct iWidgetCommand : public iUnknown
-{
+struct iWidgetCommand : public iUnknown {
   niDeclareInterfaceUUID(iWidgetCommand,0x6d19a44f,0x87ad,0x4517,0xb5,0xae,0xfe,0x57,0xc7,0xa2,0xf2,0x5e);
   //! Copy the specified command in this command.
   virtual tBool __stdcall Copy(const iWidgetCommand* apSrc) = 0;
@@ -259,25 +254,23 @@ struct iWidgetCommand : public iUnknown
 };
 
 //! Widget system timers.
-enum eWidgetSystemTimer
-{
+enum eWidgetSystemTimer {
   //! First system timer id.
-  eWidgetSystemTimer_First = eInvalidHandle+1,
+  eWidgetSystemTimer_First = eInvalidHandle + 1,
   //! Hover system timer.
-  eWidgetSystemTimer_Hover = eWidgetSystemTimer_First+0,
+  eWidgetSystemTimer_Hover = eWidgetSystemTimer_First + 0,
   //! Non-client area hover system timer.
-  eWidgetSystemTimer_NCHover = eWidgetSystemTimer_First+1,
+  eWidgetSystemTimer_NCHover = eWidgetSystemTimer_First + 1,
   //! Left doubleclick timer.
-  eWidgetSystemTimer_LeftDoubleClick = eWidgetSystemTimer_First+2,
+  eWidgetSystemTimer_LeftDoubleClick = eWidgetSystemTimer_First + 2,
   //! Right doubleclick timer.
-  eWidgetSystemTimer_RightDoubleClick = eWidgetSystemTimer_First+3,
+  eWidgetSystemTimer_RightDoubleClick = eWidgetSystemTimer_First + 3,
   //! \internal
   eWidgetSystemTimer_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };
 
 //! Widget interface.
-struct iWidget : public iMessageHandler
-{
+struct iWidget : public iMessageHandler {
   niDeclareInterfaceUUID(iWidget,0x84722d61,0x18b8,0x4081,0xab,0xce,0x5a,0xfe,0x18,0x6f,0x3f,0xda);
 
   //########################################################################################
@@ -599,7 +592,8 @@ struct iWidget : public iMessageHandler
   //! {Property}
   virtual tBool __stdcall GetIgnoreInput() const = 0;
   //! Set all the status.
-  virtual void __stdcall SetStatus(tBool abVisible, tBool abEnabled, tBool abIgnoreInput) = 0;
+  virtual void __stdcall SetStatus(tBool abVisible, tBool abEnabled,
+                                   tBool abIgnoreInput) = 0;
   //! Set whether all client children of the widget are hidden.
   //! {Property}
   virtual void __stdcall SetHideChildren(tBool abHideChildren) = 0;
@@ -662,7 +656,8 @@ struct iWidget : public iMessageHandler
   //! Add a new instance of a widget sink as first sink called.
   virtual iWidgetSink* __stdcall AddClassSink(const achar* aaszClassName) = 0;
   //! Add a new instance of a widget sink as last sink called.
-  virtual iWidgetSink* __stdcall AddClassPostSink(const achar* aaszClassName) = 0;
+  virtual iWidgetSink* __stdcall AddClassPostSink(
+    const achar* aaszClassName) = 0;
   //! Remove a widget sink.
   virtual void __stdcall RemoveSink(iWidgetSink* apSink) = 0;
   //! @}
@@ -698,7 +693,8 @@ struct iWidget : public iMessageHandler
   virtual iWidget* __stdcall FindWidgetByPos(const sVec2f& avPos) const = 0;
   //! Check whether the specified widget is a child of this widget.
   //! \param abRecursive if true the check will recursively check in all the children of the children.
-  virtual tBool __stdcall HasChild(const iWidget* apW, tBool abRecursive) const = 0;
+  virtual tBool __stdcall HasChild(const iWidget* apW,
+                                   tBool abRecursive) const = 0;
   //! Walks up the parent to check if the specified widget is one of the parent of this widget.
   virtual tBool __stdcall HasParent(const iWidget* apW) const = 0;
   //! @}
@@ -734,9 +730,11 @@ struct iWidget : public iMessageHandler
   //! {Property}
   virtual iHString* __stdcall GetHoverText() const = 0;
   //! Create a default hover widget (Text only).
-  virtual ni::iWidget* __stdcall CreateDefaultHoverWidget(ni::iHString* ahspHoverText) = 0;
+  virtual ni::iWidget* __stdcall CreateDefaultHoverWidget(
+    ni::iHString* ahspHoverText) = 0;
   //! Show a hover widget.
-  virtual tBool __stdcall ShowHoverWidget(ni::iWidget* apWidget, const sVec2f& avAbsPos) = 0;
+  virtual tBool __stdcall ShowHoverWidget(ni::iWidget* apWidget,
+                                          const sVec2f& avAbsPos) = 0;
   //! Reset the hover widget.
   //! \param abRestart: if true and hover delay >=0 restarts the hover timer, else stops the timer.
   virtual void __stdcall ResetHoverWidget(tBool abRestart) = 0;
@@ -785,13 +783,22 @@ struct iWidget : public iMessageHandler
   virtual iHString* __stdcall GetActiveLocale() const = 0;
 
   //! Find the font of the specified item in the widget's skin.
-  virtual iFont*   __stdcall FindSkinFont(iHString* ahspSkinClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iFont* __stdcall FindSkinFont(iHString* ahspSkinClass,
+                                        iHString* ahspState,
+                                        iHString* ahspName) const = 0;
   //! Find the cursor of the specified item in the widget's skin.
-  virtual iOverlay* __stdcall FindSkinCursor(iHString* ahspSkinClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iOverlay* __stdcall FindSkinCursor(iHString* ahspSkinClass,
+                                             iHString* ahspState,
+                                             iHString* ahspName) const = 0;
   //! Find the element of the specified item in the widget's skin.
-  virtual iOverlay* __stdcall FindSkinElement(iHString* ahspSkinClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual iOverlay* __stdcall FindSkinElement(iHString* ahspSkinClass,
+                                              iHString* ahspState,
+                                              iHString* ahspName) const = 0;
   //! Find the color of the specified item in the widget's skin.
-  virtual sColor4f __stdcall FindSkinColor(const sColor4f& aDefault, iHString* ahspSkinClass, iHString* ahspState, iHString* ahspName) const = 0;
+  virtual sColor4f __stdcall FindSkinColor(const sColor4f& aDefault,
+                                           iHString* ahspSkinClass,
+                                           iHString* ahspState,
+                                           iHString* ahspName) const = 0;
   //! Find a localized text.
   virtual iHString* __stdcall FindLocalized(iHString* ahspText) const = 0;
   //! @}
@@ -816,11 +823,16 @@ struct iWidget : public iMessageHandler
   //! @{
 
   //! Send a message to this widget.
-  virtual tBool __stdcall SendMessage(tU32 anMsg, const Var& avarA = niVarNull, const Var& avarB = niVarNull) = 0;
+  virtual tBool __stdcall SendMessage(tU32 anMsg, const Var& avarA = niVarNull,
+                                      const Var& avarB = niVarNull) = 0;
   //! Send a command to the specified widget.
-  virtual tBool __stdcall SendCommand(iWidget* apDest, tU32 anCommand, const Var& avarExtra1 = niVarNull, const Var& avarExtra2 = niVarNull) = 0;
+  virtual tBool __stdcall SendCommand(iWidget* apDest, tU32 anCommand,
+                                      const Var& avarExtra1 = niVarNull,
+                                      const Var& avarExtra2 = niVarNull) = 0;
   //! Send a message to this widget and its children recursivly.
-  virtual tBool __stdcall BroadcastMessage(tU32 anMsg, const Var& avarA = niVarNull, const Var& avarB = niVarNull) = 0;
+  virtual tBool __stdcall BroadcastMessage(tU32 anMsg,
+                                           const Var& avarA = niVarNull,
+                                           const Var& avarB = niVarNull) = 0;
   //! @}
 
   //########################################################################################
@@ -842,10 +854,12 @@ struct iWidget : public iMessageHandler
   //! @{
 
   //! Serialize the layout of this widget.
-  virtual tBool __stdcall SerializeLayout(iDataTable* apDT, tWidgetSerializeFlags anFlags) = 0;
+  virtual tBool __stdcall SerializeLayout(iDataTable* apDT,
+                                          tWidgetSerializeFlags anFlags) = 0;
   //! Serialize the children widget.
   //! \remark The Children data table passed can contain a _regex_filter regular expression (iRegex) property.
-  virtual tBool __stdcall SerializeChildren(iDataTable* apDT, tWidgetSerializeFlags anFlags) = 0;
+  virtual tBool __stdcall SerializeChildren(iDataTable* apDT,
+                                            tWidgetSerializeFlags anFlags) = 0;
   //! @}
 
   //########################################################################################
@@ -861,19 +875,22 @@ struct iWidget : public iMessageHandler
   //! \param aRect is the parent-relative rectangle which specify the 'starting' position of the widget, if the size/pos is <= 1.0 the coordinates are assumed to be relative to the widget's parent.
   //! \param aStyle dock style to use the place the widget.
   //! \param avMargin is the size of the margin to use to place the widget.
-  virtual tBool __stdcall Place(const sRectf& aRect, eWidgetDockStyle aStyle, const sVec4f& avMargin) = 0;
+  virtual tBool __stdcall Place(const sRectf& aRect, eWidgetDockStyle aStyle,
+                                const sVec4f& avMargin) = 0;
 
   //! Makes sure the widget is within the bounds of the specified 'container' widget.
   //! \param apContainer: the container widget, if null the root widget.
   //! \param afSnapMargin: the distance margin below which the
   //!        widget will be snapped to the container's inner border
-  virtual tBool __stdcall SnapInside(iWidget* apContainer, tF32 afSnapMargin) = 0;
+  virtual tBool __stdcall SnapInside(iWidget* apContainer,
+                                     tF32 afSnapMargin) = 0;
   //! Move the widget at the specified position making sure it is within the bounds of the specified 'container' widget.
   //! \param apContainer: the container widget, if null the root widget.
   //! \param avAbsPos: the position where the widget should be placed
   //! \param afSnapMargin: the distance margin below which the
   //!        widget will be snapped to the container's inner border
-  virtual tBool __stdcall PopAt(iWidget* apContainer, const sVec2f& avAbsPos, tF32 afSnapMargin) = 0;
+  virtual tBool __stdcall PopAt(iWidget* apContainer, const sVec2f& avAbsPos,
+                                tF32 afSnapMargin) = 0;
 
   //! Compute the Widget's layout.
   //! \param abChildren if true compute all the children's layout
@@ -900,5 +917,5 @@ struct iWidget : public iMessageHandler
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-};
+};     // namespace ni
 #endif // __IWIDGET_6023245_H__

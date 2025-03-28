@@ -2,137 +2,137 @@
 	<namespace name="ni">
 		<enum name="eMaterialFlags">
 			<comments desc="Material flags. "/>
-			<value name="eMaterialFlags_DoubleSided" value="niBit ( 0 ) ">
+			<value name="eMaterialFlags_DoubleSided" value="niBit(0)">
 				<comments desc="Material is double sided. ">
 					<remark text="This is independant of the culling mode, the graphics driver is responsible for making sure that double sided materials are drawn both sides when this flag is set. "/>
 				</comments>
 			</value>
-			<value name="eMaterialFlags_Translucent" value="niBit ( 1 ) ">
+			<value name="eMaterialFlags_Translucent" value="niBit(1)">
 				<comments desc="Material is translucent. "/>
 			</value>
-			<value name="eMaterialFlags_Transparent" value="niBit ( 2 ) ">
+			<value name="eMaterialFlags_Transparent" value="niBit(2)">
 				<comments desc="Material is transparent. ">
 					<remark text="A transparent material is alpha tested, the alpha test key value is in the alpha channel of the Base Channel color. "/>
 				</comments>
 			</value>
-			<value name="eMaterialFlags_DiffuseModulate" value="niBit ( 3 ) ">
+			<value name="eMaterialFlags_DiffuseModulate" value="niBit(3)">
 				<comments desc="Multiply the diffuse channel texture by the diffuse channel&apos;s color. "/>
 			</value>
-			<value name="eMaterialFlags_Vertex" value="niBit ( 4 ) ">
+			<value name="eMaterialFlags_Vertex" value="niBit(4)">
 				<comments desc="The material is vertex lit. "/>
 			</value>
-			<value name="eMaterialFlags_HeightMap" value="niBit ( 5 ) ">
+			<value name="eMaterialFlags_HeightMap" value="niBit(5)">
 				<comments desc="The material has a height map. "/>
 			</value>
-			<value name="eMaterialFlags_NormalMap" value="niBit ( 6 ) ">
+			<value name="eMaterialFlags_NormalMap" value="niBit(6)">
 				<comments desc="The material uses a normal map. Otherwise it&apos;s considered to be a grayscale bump. "/>
 			</value>
-			<value name="eMaterialFlags_Refraction" value="niBit ( 7 ) ">
+			<value name="eMaterialFlags_Refraction" value="niBit(7)">
 				<comments desc="The material is refracting. "/>
 			</value>
-			<value name="eMaterialFlags_Decal" value="niBit ( 8 ) ">
+			<value name="eMaterialFlags_Decal" value="niBit(8)">
 				<comments desc="The material is used as a decal. "/>
 			</value>
-			<value name="eMaterialFlags_TileMap" value="niBit ( 9 ) ">
+			<value name="eMaterialFlags_TileMap" value="niBit(9)">
 				<comments desc="The material is a tilemap. "/>
 			</value>
-			<value name="eMaterialFlags_DepthOnly" value="niBit ( 10 ) ">
+			<value name="eMaterialFlags_DepthOnly" value="niBit(10)">
 				<comments desc="The material should only be drawn in the depth buffer. (no color write) "/>
 			</value>
-			<value name="eMaterialFlags_NoShadow" value="niBit ( 11 ) ">
+			<value name="eMaterialFlags_NoShadow" value="niBit(11)">
 				<comments desc="The material doesn&apos;t cast shadow. "/>
 			</value>
-			<value name="eMaterialFlags_NoLighting" value="niBit ( 12 ) ">
+			<value name="eMaterialFlags_NoLighting" value="niBit(12)">
 				<comments desc="The material shouldn&apos;t be lit. "/>
 			</value>
-			<value name="eMaterialFlags_NoDraw" value="niBit ( 13 ) ">
+			<value name="eMaterialFlags_NoDraw" value="niBit(13)">
 				<comments desc="The material isnt drawn. "/>
 			</value>
-			<value name="eMaterialFlags_DistanceField" value="niBit ( 14 ) ">
+			<value name="eMaterialFlags_DistanceField" value="niBit(14)">
 				<comments desc="The material&apos;s opacity channel contains a distance field. "/>
 			</value>
-			<value name="eMaterialFlags_TransparentAA" value="niBit ( 15 ) ">
+			<value name="eMaterialFlags_TransparentAA" value="niBit(15)">
 				<comments desc="Enable transparent (alpha-tested) anti-aliasing. "/>
 			</value>
-			<value name="eMaterialFlags_NoCollision" value="niBit ( 16 ) ">
+			<value name="eMaterialFlags_NoCollision" value="niBit(16)">
 				<comments desc="No collision mesh should be associated with this material. "/>
 			</value>
-			<value name="eMaterialFlags_PolygonOffset" value="niBit ( 17 ) ">
+			<value name="eMaterialFlags_PolygonOffset" value="niBit(17)">
 				<comments desc="Using polygon offset in this material "/>
 			</value>
 		</enum>
 		<enum name="eMaterialChannel">
 			<comments desc="Material channel "/>
-			<value name="eMaterialChannel_Base" value="0 ">
+			<value name="eMaterialChannel_Base" value="0">
 				<comments desc="Base texture map. RGB : Diffuse/albedo color Alpha : Opacity Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_Opacity" value="1 ">
+			<value name="eMaterialChannel_Opacity" value="1">
 				<comments desc="Opacity/Detail texture map. RGB : Detail Alpha : Opacity/Detail Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_Bump" value="2 ">
+			<value name="eMaterialChannel_Bump" value="2">
 				<comments desc="Bump map. RGB : Normal map. Alpha : Height map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_Specular" value="3 ">
+			<value name="eMaterialChannel_Specular" value="3">
 				<comments desc="Specular map. RGB : Specular color Grayscale : Gloss. Specular color alpha contains the specular power. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_Environment" value="4 ">
+			<value name="eMaterialChannel_Environment" value="4">
 				<comments desc="Environment map. RGB : Color Default Blend mode : Modulate "/>
 			</value>
-			<value name="eMaterialChannel_Ambient" value="5 ">
+			<value name="eMaterialChannel_Ambient" value="5">
 				<comments desc="Light/ambient map. RGB : Light color Alpha : Light intensity Default Blend mode : Modulate "/>
 			</value>
-			<value name="eMaterialChannel_Emissive" value="6 ">
+			<value name="eMaterialChannel_Emissive" value="6">
 				<comments desc="Emissive map. RGB : Color Alpha : Directional coefficient. Default Blend mode : Additive "/>
 			</value>
-			<value name="eMaterialChannel_Refraction" value="7 ">
+			<value name="eMaterialChannel_Refraction" value="7">
 				<comments desc="Refraction direction map. RGB : Refraction direction Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T0" value="8 ">
+			<value name="eMaterialChannel_T0" value="8">
 				<comments desc="User 0 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T1" value="9 ">
+			<value name="eMaterialChannel_T1" value="9">
 				<comments desc="User 1 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T2" value="10 ">
+			<value name="eMaterialChannel_T2" value="10">
 				<comments desc="User 2 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T3" value="11 ">
+			<value name="eMaterialChannel_T3" value="11">
 				<comments desc="User 3 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T4" value="12 ">
+			<value name="eMaterialChannel_T4" value="12">
 				<comments desc="User 4 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T5" value="13 ">
+			<value name="eMaterialChannel_T5" value="13">
 				<comments desc="User 5 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T6" value="14 ">
+			<value name="eMaterialChannel_T6" value="14">
 				<comments desc="User 6 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_T7" value="15 ">
+			<value name="eMaterialChannel_T7" value="15">
 				<comments desc="User 7 map. Default Blend mode : NoBlending "/>
 			</value>
-			<value name="eMaterialChannel_Last" value="16 ">
+			<value name="eMaterialChannel_Last" value="16">
 				<comments desc="\internal Default Blend mode : NoBlending "/>
 			</value>
 		</enum>
 		<enum name="eMaterialExpression">
 			<comments desc="Material expressions "/>
-			<value name="eMaterialExpression_Tex0" value="0 ">
+			<value name="eMaterialExpression_Tex0" value="0">
 				<comments desc="Texture channel 0 matrix expression. Shader uniform: float4 fpsExprTex0. ">
 					<remark text="Works with the fixed pipeline. "/>
 				</comments>
 			</value>
-			<value name="eMaterialExpression_Tex1" value="1 ">
+			<value name="eMaterialExpression_Tex1" value="1">
 				<comments desc="Texture channel 1 matrix expression. Shader uniform: float4 fpsExprTex1. ">
 					<remark text="Works with the fixed pipeline. "/>
 				</comments>
 			</value>
-			<value name="eMaterialExpression_Matrix0" value="2 ">
+			<value name="eMaterialExpression_Matrix0" value="2">
 				<comments desc="Generic matrix expression. Shader uniform: float4x4 fpsExprMatrix0. ">
 					<remark text="The usage depends on the shader / render path actually used. "/>
 				</comments>
 			</value>
-			<value name="eMaterialExpression_Matrix1" value="3 ">
+			<value name="eMaterialExpression_Matrix1" value="3">
 				<comments desc="Generic matrix expression. Shader uniform: float4x4 fpsExprMatrix1. ">
 					<remark text="The usage depends on the shader / render path actually used. "/>
 				</comments>

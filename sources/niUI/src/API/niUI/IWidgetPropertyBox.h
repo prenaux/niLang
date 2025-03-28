@@ -12,8 +12,7 @@ namespace ni {
 //! \remark To notifications of the datatable's modifications register a iDataTableSink int the
 //!     datatable of the property box.
 //! {DispatchWrapper}
-struct iWidgetPropertyBox : public iUnknown
-{
+struct iWidgetPropertyBox : public iUnknown {
   niDeclareInterfaceUUID(iWidgetPropertyBox,0xa0370d2b,0x9d59,0x416f,0x93,0x94,0x35,0xc0,0xee,0x08,0xc9,0x28);
 
   //! Set the property box's data table.
@@ -29,5 +28,5 @@ struct iWidgetPropertyBox : public iUnknown
 #endif
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IWIDGETPROPERTYBOX_8630971_H__

@@ -13,8 +13,7 @@ struct iDataTable;
  */
 
 //! Non-uniform spline type.
-enum eNUSplineType
-{
+enum eNUSplineType {
   //! Linear spline. Not a spline simple linear interpolation.
   eNUSplineType_Linear = 0,
   //! Rounded non-uniform spline.
@@ -30,8 +29,7 @@ enum eNUSplineType
 };
 
 //! Non-uniform spline interface.
-struct iNUSpline : public iUnknown
-{
+struct iNUSpline : public iUnknown {
   niDeclareInterfaceUUID(iNUSpline,0x37096dfe,0xb7f7,0x4d34,0xa5,0xbf,0x5e,0x2e,0x2a,0x91,0xa8,0x4a);
   //! Set the spline type.
   //! {Property}
@@ -74,12 +72,13 @@ struct iNUSpline : public iUnknown
   //! {Property}
   virtual sVec3f __stdcall GetRelativePosition(tF32 afTime) = 0;
   //! Serialize the spline in the specified datatable.
-  virtual tBool __stdcall SerializeDataTable(iDataTable* apDT, tSerializeFlags aFlags) = 0;
+  virtual tBool __stdcall SerializeDataTable(iDataTable* apDT,
+                                             tSerializeFlags aFlags) = 0;
 };
 
 niExportFunc(iUnknown*) New_niUI_NUSpline(const Var&, const Var&);
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __INUSPLINE_30471746_H__

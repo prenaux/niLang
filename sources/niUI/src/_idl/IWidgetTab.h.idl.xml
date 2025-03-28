@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eWidgetTabCmd">
 			<comments desc="Tab widget notify message. "/>
-			<value name="eWidgetTabCmd_ActivatePage" value="0 ">
+			<value name="eWidgetTabCmd_ActivatePage" value="0">
 				<comments desc="A page has been activated. "/>
 			</value>
-			<value name="eWidgetTabCmd_AddPage" value="1 ">
+			<value name="eWidgetTabCmd_AddPage" value="1">
 				<comments desc="A page has been added. "/>
 			</value>
-			<value name="eWidgetTabCmd_RemovePage" value="2 ">
+			<value name="eWidgetTabCmd_RemovePage" value="2">
 				<comments desc="A page has been removed. "/>
 			</value>
 		</enum>

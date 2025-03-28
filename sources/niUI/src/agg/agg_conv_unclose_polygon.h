@@ -18,14 +18,19 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 //====================================================conv_unclose_polygon
-template<class VertexSource> class conv_unclose_polygon
-{
+template <class VertexSource>
+class conv_unclose_polygon {
  public:
-  conv_unclose_polygon(VertexSource& vs) : m_source(&vs) {}
-  void attach(VertexSource& source) { m_source = &source; }
+  conv_unclose_polygon(VertexSource& vs)
+      : m_source(&vs)
+  {
+  }
+  void attach(VertexSource& source)
+  {
+    m_source = &source;
+  }
 
   void rewind(unsigned path_id)
   {
@@ -35,18 +40,19 @@ template<class VertexSource> class conv_unclose_polygon
   unsigned vertex(agg_real* x, agg_real* y)
   {
     unsigned cmd = m_source->vertex(x, y);
-    if(is_end_poly(cmd)) cmd &= ~path_flags_close;
+    if (is_end_poly(cmd))
+      cmd &= ~path_flags_close;
     return cmd;
   }
 
  private:
   conv_unclose_polygon(const conv_unclose_polygon<VertexSource>&);
-  const conv_unclose_polygon<VertexSource>&
-  operator = (const conv_unclose_polygon<VertexSource>&);
+  const conv_unclose_polygon<VertexSource>& operator=(
+    const conv_unclose_polygon<VertexSource>&);
 
   VertexSource* m_source;
 };
 
-}
+} // namespace agg
 
 #endif

@@ -6,10 +6,11 @@
 namespace ni {
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cBitmap3D declaration
-class cBitmap3D : public ImplRC<iBitmap3D,eImplFlags_DontInherit1,iBitmapBase>
-{
+class cBitmap3D
+    : public ImplRC<iBitmap3D, eImplFlags_DontInherit1, iBitmapBase> {
  public:
-  cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt, tBool abAllocateData);
+  cBitmap3D(tU32 ulW, tU32 ulH, tU32 ulD, iPixelFormat* pPixFmt,
+            tBool abAllocateData);
   ~cBitmap3D();
 
   //// iUnknown /////////////////////////////////
@@ -17,7 +18,10 @@ class cBitmap3D : public ImplRC<iBitmap3D,eImplFlags_DontInherit1,iBitmapBase>
   //// iUnknown /////////////////////////////////
 
   //// iBitmapBase //////////////////////////////
-  eBitmapType __stdcall GetType() const { return eBitmapType_3D; }
+  eBitmapType __stdcall GetType() const
+  {
+    return eBitmapType_3D;
+  }
   tU32 __stdcall GetWidth() const;
   tU32 __stdcall GetHeight() const;
   tU32 __stdcall GetDepth() const;
@@ -32,47 +36,53 @@ class cBitmap3D : public ImplRC<iBitmap3D,eImplFlags_DontInherit1,iBitmapBase>
   //// iBitmapBase //////////////////////////////
 
   //// iBitmap3D ////////////////////////////////
-  tBool __stdcall SetMemoryAddress(tPtr apAddr, tBool abFreeAddr, tU32 anRowPitch, tU32 anSlicePitch);
-  tU32  __stdcall GetRowPitch() const;
-  tU32  __stdcall GetSlicePitch() const;
-  tPtr  __stdcall GetData() const;
-  tU32  __stdcall GetSize() const;
-  tPtr  __stdcall GetSlicePtr(tU32 anSlice) const {
+  tBool __stdcall SetMemoryAddress(tPtr apAddr, tBool abFreeAddr,
+                                   tU32 anRowPitch, tU32 anSlicePitch);
+  tU32 __stdcall GetRowPitch() const;
+  tU32 __stdcall GetSlicePitch() const;
+  tPtr __stdcall GetData() const;
+  tU32 __stdcall GetSize() const;
+  tPtr __stdcall GetSlicePtr(tU32 anSlice) const
+  {
     return _GetSlicePtr(anSlice);
   }
-  iBitmap2D*  __stdcall CreateSliceBitmap(tU32 anSlice) const {
+  iBitmap2D* __stdcall CreateSliceBitmap(tU32 anSlice) const
+  {
     return _GetSliceBmp(anSlice);
   }
   iBitmap3D* __stdcall CreateResized(tU32 anW, tU32 anH, tU32 anD) const;
   iBitmap3D* __stdcall GetMipMap(tU32 ulIdx) const;
   iBitmap3D* __stdcall GetLevel(tU32 anIndex) const;
   tBool __stdcall BeginUnpackPixels();
-  void  __stdcall EndUnpackPixels();
-  tBool __stdcall Blit(const iBitmap3D* src, const sVec3i& avSrcMin, const sVec3i& avDestMin, const sVec3i& avSize);
+  void __stdcall EndUnpackPixels();
+  tBool __stdcall Blit(const iBitmap3D* src, const sVec3i& avSrcMin,
+                       const sVec3i& avDestMin, const sVec3i& avSize);
   void __stdcall PutPixel(const sVec3i& avPos, tPtr col);
   tPtr __stdcall GetPixel(const sVec3i& avPos, tPtr pOut) const;
   void __stdcall Clear(tPtr pColor = NULL);
-  void __stdcall ClearBox(const sVec3i& avMin, const sVec3i& avSize, tPtr pColor);
+  void __stdcall ClearBox(const sVec3i& avMin, const sVec3i& avSize,
+                          tPtr pColor);
   void __stdcall PutPixelf(const sVec3i& avPos, const sColor4f& avCol);
   sColor4f __stdcall GetPixelf(const sVec3i& avPos) const;
   void __stdcall Clearf(const sColor4f& avCol);
-  void __stdcall ClearBoxf(const sVec3i& avMin, const sVec3i& avSize, const sColor4f& avCol);
+  void __stdcall ClearBoxf(const sVec3i& avMin, const sVec3i& avSize,
+                           const sColor4f& avCol);
   //// iBitmap3D ////////////////////////////////
 
  private:
   Ptr<iPixelFormat> mptrPxf;
-  astl::vector<Ptr<iBitmap3D> > mvMipMaps;
-  tU32    mulWidth;
-  tU32    mulHeight;
-  tU32    mulDepth;
-  tU32    mnSize;
-  tPtr    mptrData;
-  tU32    mnRowPitch;
-  tU32    mnSlicePitch;
-  tBool   mbFreeData;
+  astl::vector<Ptr<iBitmap3D>> mvMipMaps;
+  tU32 mulWidth;
+  tU32 mulHeight;
+  tU32 mulDepth;
+  tU32 mnSize;
+  tPtr mptrData;
+  tU32 mnRowPitch;
+  tU32 mnSlicePitch;
+  tBool mbFreeData;
 
-  tPtr        _GetSlicePtr(tU32 anSlice) const;
-  iBitmap2D*  _GetSliceBmp(tU32 anSlice) const;
+  tPtr _GetSlicePtr(tU32 anSlice) const;
+  iBitmap2D* _GetSliceBmp(tU32 anSlice) const;
   void _ResizeMipMapsVector(tU32 aulNumMipMaps);
 };
 } // end of namespace ni

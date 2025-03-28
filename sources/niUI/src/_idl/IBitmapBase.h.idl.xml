@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eBitmapType">
 			<comments desc="Bitmap type "/>
-			<value name="eBitmapType_2D" value="0 ">
+			<value name="eBitmapType_2D" value="0">
 				<comments desc="2D Bitmap. "/>
 			</value>
-			<value name="eBitmapType_Cube" value="1 ">
+			<value name="eBitmapType_Cube" value="1">
 				<comments desc="Cube Bitmap. Six 2D Bitmaps. "/>
 			</value>
-			<value name="eBitmapType_3D" value="2 ">
+			<value name="eBitmapType_3D" value="2">
 				<comments desc="3D Bitmap. "/>
 			</value>
 		</enum>
@@ -355,12 +355,8 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method
-				dispatchwrapper="yes"
-				java_name="loadBitmap"
-				name="LoadBitmap"
-				num_parameters="2">
-				<comments desc="Bitmap Loader "/>
+			<method java_name="loadBitmap" name="LoadBitmap" num_parameters="2">
+				<comments desc=""/>
 				<return type="iBitmapBase *" typec="iBitmapBase*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 				<parameter
 					name="apGraphics"
@@ -384,12 +380,8 @@
 			<parents>
 				<parent name="iUnknown"/>
 			</parents>
-			<method
-				dispatchwrapper="yes"
-				java_name="saveBitmap"
-				name="SaveBitmap"
-				num_parameters="4">
-				<comments desc="Bitmap Saver "/>
+			<method java_name="saveBitmap" name="SaveBitmap" num_parameters="4">
+				<comments desc=""/>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					name="apGraphics"

@@ -15,8 +15,7 @@ struct iDrawOperationSet;
  */
 
 //! Graphics context description interface.
-struct iGraphicsContext : public iUnknown
-{
+struct iGraphicsContext : public iUnknown {
   niDeclareInterfaceUUID(iGraphicsContext,0xf61a7db5,0x532f,0x4c23,0x90,0xf5,0xb5,0x86,0xf9,0x9c,0x78,0x53);
 
   //########################################################################################
@@ -48,7 +47,9 @@ struct iGraphicsContext : public iUnknown
   //! \param  anColor is the color to use to clear the color buffer.
   //! \param  afDepth is the value to use to clear the depth buffer.
   //! \param  anStencil is the value to use to clear the stencil buffer.
-  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer, tU32 anColor, tF32 afDepth, tI32 anStencil) = 0;
+  virtual void __stdcall ClearBuffers(tClearBuffersFlags clearBuffer,
+                                      tU32 anColor, tF32 afDepth,
+                                      tI32 anStencil) = 0;
 
   //! Get the render target set on the specified index.
   //! \remark Might be ignored by some contexts
@@ -65,7 +66,8 @@ struct iGraphicsContext : public iUnknown
   //!         for drivers that dont fully support multi-threaded
   //!         rendering. If you do not wish to show the content of
   //!         the context use eGraphicsDisplayFlags_Skip.
-  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags, const sRecti& aRect) = 0;
+  virtual tBool __stdcall Display(tGraphicsDisplayFlags aFlags,
+                                  const sRecti& aRect) = 0;
 
   //! Draw the specified draw operation.
   virtual tBool __stdcall DrawOperation(iDrawOperation* apDrawOp) = 0;
@@ -107,8 +109,7 @@ struct iGraphicsContext : public iUnknown
 };
 
 //! Render target graphics context interface.
-struct iGraphicsContextRT : public iGraphicsContext
-{
+struct iGraphicsContextRT : public iGraphicsContext {
   niDeclareInterfaceUUID(iGraphicsContextRT,0x16b1a400,0x2499,0xc141,0xa6,0x51,0x1c,0x46,0xca,0xc3,0x13,0xc3);
 
   //! Change a render target.
@@ -121,5 +122,5 @@ struct iGraphicsContextRT : public iGraphicsContext
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IGRAPHICSCONTEXT_175BBCD3_F2EC_40C8_883A_8FFB806BF1C6_H__

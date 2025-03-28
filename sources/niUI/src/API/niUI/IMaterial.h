@@ -19,8 +19,7 @@ struct iShaderConstants;
  */
 
 //! Material flags.
-enum eMaterialFlags
-{
+enum eMaterialFlags {
   //! Material is double sided.
   //! \remark This is independant of the culling mode, the graphics driver is responsible
   //!         for making sure that double sided materials are drawn both sides when this
@@ -68,11 +67,10 @@ enum eMaterialFlags
 };
 
 //! Material flags type.
-typedef tU32  tMaterialFlags;
+typedef tU32 tMaterialFlags;
 
 //! Material channel
-enum eMaterialChannel
-{
+enum eMaterialChannel {
   //! Base texture map.
   //! RGB : Diffuse/albedo color
   //! Alpha : Opacity
@@ -164,28 +162,27 @@ enum eMaterialExpression {
 //! Material channel
 struct sMaterialChannel {
   Ptr<iTexture> mTexture;
-  sColor4f      mColor;
-  tIntPtr       mhSS;
+  sColor4f mColor;
+  tIntPtr mhSS;
 };
 
 //! Material description structure.
 struct sMaterialDesc {
-  tHStringPtr           mhspName;
-  tHStringPtr           mhspClass;
-  tMaterialFlags        mFlags;
-  eBlendMode            mBlendMode;
-  tIntPtr               mhRS;
-  tIntPtr               mhDS;
-  sMaterialChannel      mChannels[eMaterialChannel_Last];
-  Ptr<iShader>          mShaders[eShaderUnit_Last];
+  tHStringPtr mhspName;
+  tHStringPtr mhspClass;
+  tMaterialFlags mFlags;
+  eBlendMode mBlendMode;
+  tIntPtr mhRS;
+  tIntPtr mhDS;
+  sMaterialChannel mChannels[eMaterialChannel_Last];
+  Ptr<iShader> mShaders[eShaderUnit_Last];
   Ptr<iShaderConstants> mptrConstants;
-  Ptr<iExpression>      mptrExpressions[eMaterialExpression_Last];
-  sVec2f                mvPolygonOffset;
+  Ptr<iExpression> mptrExpressions[eMaterialExpression_Last];
+  sVec2f mvPolygonOffset;
 };
 
 //! Material interface.
-struct iMaterial : public iUnknown
-{
+struct iMaterial : public iUnknown {
   niDeclareInterfaceUUID(iMaterial,0x3d0f9569,0x2d97,0x4efd,0xab,0xe2,0x85,0x3f,0xbf,0xaf,0xbc,0x88);
 
   //########################################################################################
@@ -230,7 +227,7 @@ struct iMaterial : public iUnknown
   //! Get the material's blend mode.
   //! {Property}
   //! \remark Shortcut to base sampler's blend mode.
-  virtual eBlendMode  __stdcall GetBlendMode() const = 0;
+  virtual eBlendMode __stdcall GetBlendMode() const = 0;
   //! @}
 
   //########################################################################################
@@ -289,29 +286,38 @@ struct iMaterial : public iUnknown
   //! @{
 
   //! Check if the material has the specified channel texture.
-  virtual tBool __stdcall HasChannelTexture(eMaterialChannel aChannel) const = 0;
+  virtual tBool __stdcall HasChannelTexture(
+    eMaterialChannel aChannel) const = 0;
   //! Set a material channel texture.
   //! {Property}
   //! \remark Not cloned with the material.
-  virtual tBool __stdcall SetChannelTexture(eMaterialChannel aChannel, iTexture* apTexture) = 0;
+  virtual tBool __stdcall SetChannelTexture(eMaterialChannel aChannel,
+                                            iTexture* apTexture) = 0;
   //! Get a material channel texture.
   //! {Property}
-  virtual iTexture* __stdcall GetChannelTexture(eMaterialChannel aChannel) const = 0;
+  virtual iTexture* __stdcall GetChannelTexture(
+    eMaterialChannel aChannel) const = 0;
   //! Set a material channel color.
   //! {Property}
-  virtual tBool __stdcall SetChannelColor(eMaterialChannel aChannel, const sColor4f& aColor) = 0;
+  virtual tBool __stdcall SetChannelColor(eMaterialChannel aChannel,
+                                          const sColor4f& aColor) = 0;
   //! Get a material channel color.
   //! {Property}
-  virtual const sColor4f&  __stdcall GetChannelColor(eMaterialChannel aChannel) const = 0;
+  virtual const sColor4f& __stdcall GetChannelColor(
+    eMaterialChannel aChannel) const = 0;
   //! Set the sampler states of the specified texture channel.
   //! \remark If the sampler states are not specified the default states are used.
   //! {Property}
-  virtual tBool __stdcall SetChannelSamplerStates(eMaterialChannel aChannel, tIntPtr aHandle) = 0;
+  virtual tBool __stdcall SetChannelSamplerStates(eMaterialChannel aChannel,
+                                                  tIntPtr aHandle) = 0;
   //! Get the sampler states of the specified texture channel.
   //! {Property}
-  virtual tIntPtr __stdcall GetChannelSamplerStates(eMaterialChannel aChannel) const = 0;
+  virtual tIntPtr __stdcall GetChannelSamplerStates(
+    eMaterialChannel aChannel) const = 0;
   //! Copy the channel properties from another material.
-  virtual tBool __stdcall CopyChannel(eMaterialChannel aDestChannel, const iMaterial* apSource, eMaterialChannel aSrcChannel) = 0;
+  virtual tBool __stdcall CopyChannel(eMaterialChannel aDestChannel,
+                                      const iMaterial* apSource,
+                                      eMaterialChannel aSrcChannel) = 0;
   //! @}
 
   //########################################################################################
@@ -324,7 +330,8 @@ struct iMaterial : public iUnknown
   //! Clone this material.
   virtual iMaterial* __stdcall Clone() const = 0;
   //! Serialize the material in a data table.
-  virtual tBool __stdcall Serialize(eSerializeMode aMode, iDataTable* apDT, iHString* ahspBasePath) = 0;
+  virtual tBool __stdcall Serialize(eSerializeMode aMode, iDataTable* apDT,
+                                    iHString* ahspBasePath) = 0;
   //! @}
 
   //########################################################################################
@@ -344,25 +351,31 @@ struct iMaterial : public iUnknown
 
   //! Set an expression of the material.
   //! {Property}
-  virtual void __stdcall SetExpression(eMaterialExpression aExpr, iHString* ahspExpr) = 0;
+  virtual void __stdcall SetExpression(eMaterialExpression aExpr,
+                                       iHString* ahspExpr) = 0;
   //! Get the expression of the material.
   //! {Property}
-  virtual iHString* __stdcall GetExpression(eMaterialExpression aExpr) const = 0;
+  virtual iHString* __stdcall GetExpression(
+    eMaterialExpression aExpr) const = 0;
   //! Get the matrix result of the specified material expression.
   //! {Property}
   //! \remark Returns identity if no valid expression is set.
-  virtual sMatrixf __stdcall GetExpressionValueMatrix(eMaterialExpression aExpr) const = 0;
+  virtual sMatrixf __stdcall GetExpressionValueMatrix(
+    eMaterialExpression aExpr) const = 0;
   //! Get the vector4 result of the specified material expression.
   //! {Property}
   //! \remark Returns zero if no valid expression is set.
-  virtual sVec4f __stdcall GetExpressionValueVector(eMaterialExpression aExpr) const = 0;
+  virtual sVec4f __stdcall GetExpressionValueVector(
+    eMaterialExpression aExpr) const = 0;
 
   //! Set an expression object on the material.
-  virtual void __stdcall SetExpressionObject(eMaterialExpression aExpr, iHString* ahspExpr, iExpression* apExpr) = 0;
+  virtual void __stdcall SetExpressionObject(eMaterialExpression aExpr,
+                                             iHString* ahspExpr,
+                                             iExpression* apExpr) = 0;
   //! Get the expression object.
-  virtual iExpression* __stdcall GetExpressionObject(eMaterialExpression aExpr) = 0;
+  virtual iExpression* __stdcall GetExpressionObject(
+    eMaterialExpression aExpr) = 0;
   //! @}
-
 
   //########################################################################################
   //! \name Userdata
@@ -371,7 +384,8 @@ struct iMaterial : public iUnknown
 
   //! Set a userdata.
   //! {Property}
-  virtual tBool __stdcall SetUserdata(iHString* ahspID, iUnknown* apUserdata) = 0;
+  virtual tBool __stdcall SetUserdata(iHString* ahspID,
+                                      iUnknown* apUserdata) = 0;
   //! Get a userdata.
   //! {Property}
   virtual iUnknown* __stdcall GetUserdata(iHString* ahspID) const = 0;
@@ -389,5 +403,5 @@ struct iMaterial : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IMATERIAL_38682273_H__

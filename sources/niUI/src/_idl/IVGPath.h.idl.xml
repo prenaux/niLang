@@ -2,34 +2,34 @@
 	<namespace name="ni">
 		<enum min_features="20" name="eVGPathCommand">
 			<comments desc="VGPath commands. "/>
-			<value min_features="20" name="eVGPathCommand_Stop" value="0 ">
+			<value min_features="20" name="eVGPathCommand_Stop" value="0">
 				<comments desc="Stop command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_MoveTo" value="1 ">
+			<value min_features="20" name="eVGPathCommand_MoveTo" value="1">
 				<comments desc="MoveTo command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_LineTo" value="2 ">
+			<value min_features="20" name="eVGPathCommand_LineTo" value="2">
 				<comments desc="LineTo command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_Curve3" value="3 ">
+			<value min_features="20" name="eVGPathCommand_Curve3" value="3">
 				<comments desc="Quadric curve command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_Curve4" value="4 ">
+			<value min_features="20" name="eVGPathCommand_Curve4" value="4">
 				<comments desc="Cubic curve command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_CurveN" value="5 ">
+			<value min_features="20" name="eVGPathCommand_CurveN" value="5">
 				<comments desc="N curve command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_Catrom" value="6 ">
+			<value min_features="20" name="eVGPathCommand_Catrom" value="6">
 				<comments desc="Catrom command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_UBSpline" value="7 ">
+			<value min_features="20" name="eVGPathCommand_UBSpline" value="7">
 				<comments desc="UBSpline command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_EndPoly" value="0x0F ">
+			<value min_features="20" name="eVGPathCommand_EndPoly" value="0x0F">
 				<comments desc="End poly command. "/>
 			</value>
-			<value min_features="20" name="eVGPathCommand_Mask" value="0x0F ">
+			<value min_features="20" name="eVGPathCommand_Mask" value="0x0F">
 				<comments desc="Command mask. "/>
 			</value>
 		</enum>

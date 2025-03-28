@@ -8,8 +8,7 @@ namespace ni {
  */
 
 //! Tab widget notify message.
-enum eWidgetTabCmd
-{
+enum eWidgetTabCmd {
   //! A page has been activated.
   eWidgetTabCmd_ActivatePage = 0,
   //! A page has been added.
@@ -21,8 +20,7 @@ enum eWidgetTabCmd
 };
 
 //! Tab widget.
-struct iWidgetTab : public iUnknown
-{
+struct iWidgetTab : public iUnknown {
   niDeclareInterfaceUUID(iWidgetTab,0xd7908465,0xa722,0x4bd3,0xbd,0xe1,0x27,0xe7,0xc2,0xc9,0x58,0x19);
 
   //########################################################################################
@@ -31,7 +29,7 @@ struct iWidgetTab : public iUnknown
   //! @{
 
   //! Add a page.
-  virtual void __stdcall AddPage(iHString* ahspName, iWidget *apPage) = 0;
+  virtual void __stdcall AddPage(iHString* ahspName, iWidget* apPage) = 0;
   //! Remove a page.
   virtual tBool __stdcall RemovePage(iWidget* apPage) = 0;
 
@@ -120,10 +118,9 @@ struct iWidgetTab : public iUnknown
   //! {Property}
   virtual tBool __stdcall GetForceActivated(tBool abForce) const = 0;
   //! @}
-
 };
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __ITABWIDGET_3249727_H__

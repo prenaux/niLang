@@ -22,22 +22,18 @@
 #include "agg_basics.h"
 #include "agg_vertex_sequence.h"
 
-namespace agg
-{
+namespace agg {
 
 //---------------------------------------------------------------vcgen_dash
 //
 // See Implementation agg_vcgen_dash.cpp
 //
-class vcgen_dash
-{
-  enum max_dashes_e
-  {
+class vcgen_dash {
+  enum max_dashes_e {
     max_dashes = 32
   };
 
-  enum status_e
-  {
+  enum status_e {
     initial,
     ready,
     polyline,
@@ -53,41 +49,46 @@ class vcgen_dash
   void add_dash(agg_real dash_len, agg_real gap_len);
   void dash_start(agg_real ds);
 
-  void shorten(agg_real s) { m_shorten = s; }
-  agg_real shorten() const { return m_shorten; }
+  void shorten(agg_real s)
+  {
+    m_shorten = s;
+  }
+  agg_real shorten() const
+  {
+    return m_shorten;
+  }
 
   // Vertex Generator Interface
   void remove_all();
   void add_vertex(agg_real x, agg_real y, unsigned cmd);
 
   // Vertex Source Interface
-  void     rewind(unsigned path_id);
+  void rewind(unsigned path_id);
   unsigned vertex(agg_real* x, agg_real* y);
 
  private:
   vcgen_dash(const vcgen_dash&);
-  const vcgen_dash& operator = (const vcgen_dash&);
+  const vcgen_dash& operator=(const vcgen_dash&);
 
   void calc_dash_start(agg_real ds);
 
-  agg_real             m_dashes[max_dashes];
-  agg_real             m_total_dash_len;
-  unsigned           m_num_dashes;
-  agg_real             m_dash_start;
-  agg_real             m_shorten;
-  agg_real             m_curr_dash_start;
-  unsigned           m_curr_dash;
-  agg_real             m_curr_rest;
+  agg_real m_dashes[max_dashes];
+  agg_real m_total_dash_len;
+  unsigned m_num_dashes;
+  agg_real m_dash_start;
+  agg_real m_shorten;
+  agg_real m_curr_dash_start;
+  unsigned m_curr_dash;
+  agg_real m_curr_rest;
   const vertex_dist* m_v1;
   const vertex_dist* m_v2;
 
   vertex_storage m_src_vertices;
-  unsigned       m_closed;
-  status_e       m_status;
-  unsigned       m_src_vertex;
+  unsigned m_closed;
+  status_e m_status;
+  unsigned m_src_vertex;
 };
 
-
-}
+} // namespace agg
 
 #endif

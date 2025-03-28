@@ -11,8 +11,7 @@ extern "C" {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cJpegWriter declaration.
-class cJpegWriter : public ni::ImplRC<ni::iJpegWriter,ni::eImplFlags_Default>
-{
+class cJpegWriter : public ni::ImplRC<ni::iJpegWriter, ni::eImplFlags_Default> {
   niBeginClass(cJpegWriter);
 
  public:
@@ -25,51 +24,56 @@ class cJpegWriter : public ni::ImplRC<ni::iJpegWriter,ni::eImplFlags_Default>
   ni::tBool __stdcall IsOK() const;
 
   //// ni::iJpegWriter /////////////////////////
-  tBool __stdcall BeginWrite(iFile *apDest,
-                             tU32 anWidth, tU32 anHeight,
-                             eColorSpace aInCS, tU32 anC,
-                             tU32 anQuality, tJpegWriteFlags aFlags);
+  tBool __stdcall BeginWrite(iFile* apDest, tU32 anWidth, tU32 anHeight,
+                             eColorSpace aInCS, tU32 anC, tU32 anQuality,
+                             tJpegWriteFlags aFlags);
   tBool __stdcall EndWrite();
-  tBool __stdcall WriteScanline(iFile *apSrc);
-  tBool __stdcall WriteBitmap(iFile* apDest, const iBitmap2D *apBmp, tU32 anQuality, tJpegWriteFlags aFlags);
+  tBool __stdcall WriteScanline(iFile* apSrc);
+  tBool __stdcall WriteBitmap(iFile* apDest, const iBitmap2D* apBmp,
+                              tU32 anQuality, tJpegWriteFlags aFlags);
   //// ni::iJpegWriter /////////////////////////
 
  private:
-  struct my_error_mgr
-  {
+  struct my_error_mgr {
     // setjmp_buffer must be the first member of the struct to make sure its
     // memory aligned
-    jmp_buf        setjmp_buffer;
+    jmp_buf setjmp_buffer;
     jpeg_error_mgr pub;
-    cJpegWriter*   pWriter;
-    j_common_ptr   cinfo;
-    void Cleanup() {
-      if (pWriter) { pWriter->_EndWriteCleanup(); }
+    cJpegWriter* pWriter;
+    j_common_ptr cinfo;
+    void Cleanup()
+    {
+      if (pWriter) {
+        pWriter->_EndWriteCleanup();
+      }
     }
-    int ErrCode() const {
+    int ErrCode() const
+    {
       return pub.msg_code;
     }
-    cString GetError() {
+    cString GetError()
+    {
       char szBuffer[JMSG_LENGTH_MAX];
       (*cinfo->err->format_message)(cinfo, szBuffer);
       return niFmt(_A("JPEG WRITE: %s"), _ASZ(szBuffer));
     }
-    cString GetWarning() {
+    cString GetWarning()
+    {
       char szBuffer[JMSG_LENGTH_MAX];
       (*cinfo->err->format_message)(cinfo, szBuffer);
       return niFmt(_A("JPEG WRITE: %s"), _ASZ(szBuffer));
     }
   } niAligned(16); // jmp_buf requires 16 bytes alignment
-  typedef struct my_error_mgr *my_error_ptr;
+  typedef struct my_error_mgr* my_error_ptr;
   static void my_error_exit(j_common_ptr cinfo);
   static void my_output_message(j_common_ptr cinfo);
 
   void _EndWriteCleanup();
 
-  Ptr<iFile>           mptrFile;
-  astl::vector<tU8>    mvOutBuffer;
+  Ptr<iFile> mptrFile;
+  astl::vector<tU8> mvOutBuffer;
   jpeg_compress_struct mInfo;
-  my_error_ptr         mpErr;
+  my_error_ptr mpErr;
 
   niEndClass(cJpegWriter);
 };

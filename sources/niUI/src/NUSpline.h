@@ -10,24 +10,25 @@ using namespace ni;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // cNUSpline declaration.
-class cNUSpline : public ni::ImplRC<ni::iNUSpline,ni::eImplFlags_Default,ni::iSerializable>
-{
+class cNUSpline : public ni::ImplRC<ni::iNUSpline, ni::eImplFlags_Default,
+                                    ni::iSerializable> {
   niBeginClass(cNUSpline);
 
-  struct sNode
-  {
+  struct sNode {
     sVec3f mvPos;
     sVec3f mvVel;
-    tF32    mfTime;
-    tF32    mfDist;
-    sNode() { mfDist = 0.0f; }
+    tF32 mfTime;
+    tF32 mfDist;
+    sNode()
+    {
+      mfDist = 0.0f;
+    }
   };
-  typedef astl::vector<sNode>     tNodeVec;
-  typedef tNodeVec::iterator      tNodeVecIt;
-  typedef tNodeVec::const_iterator  tNodeVecCIt;
+  typedef astl::vector<sNode> tNodeVec;
+  typedef tNodeVec::iterator tNodeVecIt;
+  typedef tNodeVec::const_iterator tNodeVecCIt;
 
  public:
-
   //! Constructor.
   cNUSpline(eNUSplineType aType);
   //! Destructor.
@@ -47,7 +48,7 @@ class cNUSpline : public ni::ImplRC<ni::iNUSpline,ni::eImplFlags_Default,ni::iSe
   tBool __stdcall SetType(eNUSplineType aType);
   eNUSplineType __stdcall GetType() const;
   void __stdcall Clear();
-  void __stdcall AddNode(const sVec4f &avNode);
+  void __stdcall AddNode(const sVec4f& avNode);
   tBool __stdcall RemoveNode(tU32 anIndex);
   tU32 __stdcall GetNumNodes() const;
   tBool __stdcall SetNode(tU32 anIndex, const sVec4f& avNode);
@@ -67,9 +68,9 @@ class cNUSpline : public ni::ImplRC<ni::iNUSpline,ni::eImplFlags_Default,ni::iSe
   void Constrain();
 
   eNUSplineType mType;
-  tBool   mbDirty;
-  tNodeVec  mvNodes;
-  tF32    mfMaxDist;
+  tBool mbDirty;
+  tNodeVec mvNodes;
+  tF32 mfMaxDist;
 
   niEndClass(cNUSpline);
 };

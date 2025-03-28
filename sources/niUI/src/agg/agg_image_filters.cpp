@@ -17,12 +17,9 @@
 //
 //----------------------------------------------------------------------------
 
-
 #include "agg_image_filters.h"
 
-
-namespace agg
-{
+namespace agg {
 //--------------------------------------------------------------------
 void image_filter_lut::realloc_lut(agg_real radius)
 {
@@ -30,13 +27,10 @@ void image_filter_lut::realloc_lut(agg_real radius)
   m_diameter = uceil(radius) * 2;
   m_start = -int(m_diameter / 2 - 1);
   unsigned size = m_diameter << image_subpixel_shift;
-  if(size > m_weight_array.size())
-  {
+  if (size > m_weight_array.size()) {
     m_weight_array.resize(size);
   }
 }
-
-
 
 //--------------------------------------------------------------------
 // This function normalizes integer values and corrects the rounding
@@ -50,37 +44,32 @@ void image_filter_lut::normalize()
   unsigned i;
   int flip = 1;
 
-  for(i = 0; i < image_subpixel_scale; i++)
-  {
-    for(;;)
-    {
+  for (i = 0; i < image_subpixel_scale; i++) {
+    for (;;) {
       int sum = 0;
       unsigned j;
-      for(j = 0; j < m_diameter; j++)
-      {
+      for (j = 0; j < m_diameter; j++) {
         sum += m_weight_array[j * image_subpixel_scale + i];
       }
 
-      if(sum == image_filter_scale) break;
+      if (sum == image_filter_scale)
+        break;
 
       agg_real k = agg_real(image_filter_scale) / agg_real(sum);
       sum = 0;
-      for(j = 0; j < m_diameter; j++)
-      {
-        sum +=     m_weight_array[j * image_subpixel_scale + i] =
-            iround(m_weight_array[j * image_subpixel_scale + i] * k);
+      for (j = 0; j < m_diameter; j++) {
+        sum += m_weight_array[j * image_subpixel_scale + i] =
+          iround(m_weight_array[j * image_subpixel_scale + i] * k);
       }
 
       sum -= image_filter_scale;
       int inc = (sum > 0) ? -1 : 1;
 
-      for(j = 0; j < m_diameter && sum; j++)
-      {
+      for (j = 0; j < m_diameter && sum; j++) {
         flip ^= 1;
-        unsigned idx = flip ? m_diameter/2 + j/2 : m_diameter/2 - j/2;
+        unsigned idx = flip ? m_diameter / 2 + j / 2 : m_diameter / 2 - j / 2;
         int v = m_weight_array[idx * image_subpixel_scale + i];
-        if(v < image_filter_scale)
-        {
+        if (v < image_filter_scale) {
           m_weight_array[idx * image_subpixel_scale + i] += inc;
           sum += inc;
         }
@@ -90,14 +79,11 @@ void image_filter_lut::normalize()
 
   unsigned pivot = m_diameter << (image_subpixel_shift - 1);
 
-  for(i = 0; i < pivot; i++)
-  {
+  for (i = 0; i < pivot; i++) {
     m_weight_array[pivot + i] = m_weight_array[pivot - i];
   }
   unsigned end = (diameter() << image_subpixel_shift) - 1;
   m_weight_array[0] = m_weight_array[end];
 }
 
-
-}
-
+} // namespace agg

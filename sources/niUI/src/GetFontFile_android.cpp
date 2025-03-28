@@ -2,13 +2,14 @@
 
 #if defined niAndroid || defined niEmbedded || defined niLinuxDesktop
 
-#include "GetFontFile.h"
-#include <niLang/Utils/FileEnum.h>
+  #include "GetFontFile.h"
+  #include <niLang/Utils/FileEnum.h>
 
 ///////////////////////////////////////////////
-tBool GetAllFontFiles(tFontFileLst& aLst) {
+tBool GetAllFontFiles(tFontFileLst& aLst)
+{
   const cString fontDir = GetFontsDirectory() + _ASTR("*.ttf");
-  niDebugFmt((_A("Looking for Android fonts in '%s'"),fontDir.Chars()));
+  niDebugFmt((_A("Looking for Android fonts in '%s'"), fontDir.Chars()));
   ni::FindFile findFiles;
   if (findFiles.First(fontDir.Chars())) {
     do {
@@ -18,21 +19,24 @@ tBool GetAllFontFiles(tFontFileLst& aLst) {
       path.SetExtension(NULL);
       item.strDisp = path.GetFile();
       aLst.push_back(item);
-      niDebugFmt((_A("Found Font: %s, %s"),item.strFile.Chars(),item.strDisp.Chars()));
+      niDebugFmt(
+        (_A("Found Font: %s, %s"), item.strFile.Chars(), item.strDisp.Chars()));
     } while (findFiles.Next());
   }
   return !aLst.empty();
 }
 
 ///////////////////////////////////////////////
-cString GetFontsDirectory() {
-#if defined niAndroid
+cString GetFontsDirectory()
+{
+  #if defined niAndroid
   return _A("/system/fonts/");
-#elif defined niMSVC
-  return niFmt(_A("%s/toolsets/android/device/system/fonts/"),ni::GetLang()->GetEnv(_A("HAM_HOME")));
-#else
-  return ni::GetModuleDataDir("niLang","niUI") + "fonts/";
-#endif
+  #elif defined niMSVC
+  return niFmt(_A("%s/toolsets/android/device/system/fonts/"),
+               ni::GetLang()->GetEnv(_A("HAM_HOME")));
+  #else
+  return ni::GetModuleDataDir("niLang", "niUI") + "fonts/";
+  #endif
 }
 
 #endif

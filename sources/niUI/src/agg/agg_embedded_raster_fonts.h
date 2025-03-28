@@ -18,8 +18,7 @@
 
 #include "agg_basics.h"
 
-namespace agg
-{
+namespace agg {
 extern const int8u gse4x6[];
 extern const int8u gse4x8[];
 extern const int8u gse5x7[];
@@ -54,6 +53,6 @@ extern const int8u verdana17[];
 extern const int8u verdana17_bold[];
 extern const int8u verdana18[];
 extern const int8u verdana18_bold[];
-}
+} // namespace agg
 
 #endif

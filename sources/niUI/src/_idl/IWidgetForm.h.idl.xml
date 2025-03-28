@@ -2,65 +2,65 @@
 	<namespace name="ni">
 		<enum name="eWidgetFormStyle">
 			<comments desc="Widget form flags. "/>
-			<value name="eWidgetFormStyle_Dock" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetFormStyle_Dock" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Allow the form to dock by a parent docking manager. "/>
 			</value>
-			<value name="eWidgetFormStyle_Move" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetFormStyle_Move" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Allow the form to be moved. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeTopLeftCorner" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetFormStyle_ResizeTopLeftCorner" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="The form can be resized using the top left corner. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeTopRightCorner" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetFormStyle_ResizeTopRightCorner" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="The form can be resized using the top right corner. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeBottomLeftCorner" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+			<value name="eWidgetFormStyle_ResizeBottomLeftCorner" value="niBit(eWidgetStyle_MaxBit+4)">
 				<comments desc="The form can be resized using the bottom left corner. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeBottomRightCorner" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+			<value name="eWidgetFormStyle_ResizeBottomRightCorner" value="niBit(eWidgetStyle_MaxBit+5)">
 				<comments desc="The form can be resized using the bottom right corner. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeAnyCorner" value="eWidgetFormStyle_ResizeTopLeftCorner|eWidgetFormStyle_ResizeTopRightCorner|eWidgetFormStyle_ResizeBottomLeftCorner|eWidgetFormStyle_ResizeBottomRightCorner ">
+			<value name="eWidgetFormStyle_ResizeAnyCorner" value="eWidgetFormStyle_ResizeTopLeftCorner|eWidgetFormStyle_ResizeTopRightCorner|eWidgetFormStyle_ResizeBottomLeftCorner|eWidgetFormStyle_ResizeBottomRightCorner">
 				<comments desc="The form can be resized from any corner. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeLeftEdge" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+			<value name="eWidgetFormStyle_ResizeLeftEdge" value="niBit(eWidgetStyle_MaxBit+6)">
 				<comments desc="The form can be resized using the left edge. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeRightEdge" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+			<value name="eWidgetFormStyle_ResizeRightEdge" value="niBit(eWidgetStyle_MaxBit+7)">
 				<comments desc="The form can be resized using the right edge. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeTopEdge" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+			<value name="eWidgetFormStyle_ResizeTopEdge" value="niBit(eWidgetStyle_MaxBit+8)">
 				<comments desc="The form can be resized using the top edge. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeBottomEdge" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+			<value name="eWidgetFormStyle_ResizeBottomEdge" value="niBit(eWidgetStyle_MaxBit+9)">
 				<comments desc="The form can be resized using the bottom edge. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeAnyEdge" value="eWidgetFormStyle_ResizeLeftEdge|eWidgetFormStyle_ResizeRightEdge|eWidgetFormStyle_ResizeTopEdge|eWidgetFormStyle_ResizeBottomEdge ">
+			<value name="eWidgetFormStyle_ResizeAnyEdge" value="eWidgetFormStyle_ResizeLeftEdge|eWidgetFormStyle_ResizeRightEdge|eWidgetFormStyle_ResizeTopEdge|eWidgetFormStyle_ResizeBottomEdge">
 				<comments desc="The form can be resized from any edge. "/>
 			</value>
-			<value name="eWidgetFormStyle_ResizeAny" value="eWidgetFormStyle_ResizeAnyCorner|eWidgetFormStyle_ResizeAnyEdge ">
+			<value name="eWidgetFormStyle_ResizeAny" value="eWidgetFormStyle_ResizeAnyCorner|eWidgetFormStyle_ResizeAnyEdge">
 				<comments desc="The form can be resized using any of the edges and corners. "/>
 			</value>
-			<value name="eWidgetFormStyle_CloseButton" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+			<value name="eWidgetFormStyle_CloseButton" value="niBit(eWidgetStyle_MaxBit+10)">
 				<comments desc="The form has a close button. (ID_Close) ">
 					<remark text="The default handler will destroy the form. "/>
 				</comments>
 			</value>
-			<value name="eWidgetFormStyle_FormManagerButtons" value="niBit ( eWidgetStyle_MaxBit+11 ) ">
+			<value name="eWidgetFormStyle_FormManagerButtons" value="niBit(eWidgetStyle_MaxBit+11)">
 				<comments desc="The form has the form manager buttons, these are the minimize, maximize and restore buttons. (ID_Minimize, ID_Maximize, ID_Restore) ">
 					<remark text="The default handler will call the parent form manager with the command corresponding to the pressed button. "/>
 				</comments>
 			</value>
-			<value name="eWidgetFormStyle_DockNoInputModifier" value="niBit ( eWidgetStyle_MaxBit+12 ) ">
+			<value name="eWidgetFormStyle_DockNoInputModifier" value="niBit(eWidgetStyle_MaxBit+12)">
 				<comments desc="The docking overlays are always displayed when moving. The default behavior is that the &apos;Control&apos; input modifier needs to be pressed while moving the form to display the docking overlays. "/>
 			</value>
-			<value name="eWidgetFormStyle_Default" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move ">
+			<value name="eWidgetFormStyle_Default" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move">
 				<comments desc="Default form flags. "/>
 			</value>
-			<value name="eWidgetFormStyle_DefaultButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move|eWidgetFormStyle_CloseButton|eWidgetFormStyle_FormManagerButtons ">
+			<value name="eWidgetFormStyle_DefaultButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move|eWidgetFormStyle_CloseButton|eWidgetFormStyle_FormManagerButtons">
 				<comments desc="Default form flags with close button. "/>
 			</value>
-			<value name="eWidgetFormStyle_DefaultManagerButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move ">
+			<value name="eWidgetFormStyle_DefaultManagerButtons" value="eWidgetFormStyle_Dock|eWidgetFormStyle_ResizeAny|eWidgetFormStyle_Move">
 				<comments desc="Default form flags with close and form manager buttons. "/>
 			</value>
 		</enum>

@@ -11,8 +11,7 @@ struct iMaterialLibrary;
  */
 
 //! Material Serialization flags.
-enum eMaterialSerializeFlags
-{
+enum eMaterialSerializeFlags {
   //! Serialize write.
   eMaterialSerializeFlags_Write = niBit(0),
   //! Serialize read.
@@ -46,32 +45,35 @@ enum eMaterialSerializeFlags
 //! Material Serialization flags type.
 typedef ni::tU32 tMaterialSerializeFlags;
 
-#define eMaterialSerializeFlags_TextureCompression(VAL) (ni::Clamp(VAL,0,100)<<25)
-#define eMaterialSerializeFlags_TextureMaxResIndex(VAL) (ni::Clamp(VAL,0,15)<<20)
-#define eMaterialSerializeFlags_GetTextureCompression(FLAGS) (((FLAGS)>>25)&127)
-#define eMaterialSerializeFlags_GetTextureMaxResIndex(FLAGS) (((FLAGS)>>20)&15)
+#define eMaterialSerializeFlags_TextureCompression(VAL) \
+  (ni::Clamp(VAL, 0, 100) << 25)
+#define eMaterialSerializeFlags_TextureMaxResIndex(VAL) \
+  (ni::Clamp(VAL, 0, 15) << 20)
+#define eMaterialSerializeFlags_GetTextureCompression(FLAGS) \
+  (((FLAGS) >> 25) & 127)
+#define eMaterialSerializeFlags_GetTextureMaxResIndex(FLAGS) \
+  (((FLAGS) >> 20) & 15)
 
 //! Material library sink.
 //! {DispatchWrapper}
-struct iMaterialLibrarySink : public iUnknown
-{
+struct iMaterialLibrarySink : public iUnknown {
   niDeclareInterfaceUUID(iMaterialLibrarySink,0xdd70858c,0xd1f5,0x459a,0x99,0x63,0x7f,0xe6,0x1d,0xb4,0x36,0x98);
 
   //! Called when a material is added.
   //! {Optional}
-  virtual void __stdcall OnMaterialLibrarySink_MaterialAdded(iMaterialLibrary* apLib, iMaterial* apMat) = 0;
+  virtual void __stdcall OnMaterialLibrarySink_MaterialAdded(
+    iMaterialLibrary* apLib, iMaterial* apMat) = 0;
   //! Called when a material is removed.
   //! {Optional}
-  virtual void __stdcall OnMaterialLibrarySink_MaterialRemoved(iMaterialLibrary* apLib, iMaterial* apMat) = 0;
+  virtual void __stdcall OnMaterialLibrarySink_MaterialRemoved(
+    iMaterialLibrary* apLib, iMaterial* apMat) = 0;
 };
 
 //! Material library sink list;
-typedef ni::SinkList<iMaterialLibrarySink>  tMaterialLibrarySinkLst;
-
+typedef ni::SinkList<iMaterialLibrarySink> tMaterialLibrarySinkLst;
 
 //! Material library interface.
-struct iMaterialLibrary : public iUnknown
-{
+struct iMaterialLibrary : public iUnknown {
   niDeclareInterfaceUUID(iMaterialLibrary,0xbded3ee6,0xbb4c,0x45a8,0x94,0x97,0xe5,0x8c,0x38,0x71,0xb6,0x09);
 
   //! Get the sink list.
@@ -81,7 +83,8 @@ struct iMaterialLibrary : public iUnknown
   //! Copy the material library.
   //! \param apSrc is the source library to copy
   //! \param abCloneMats sets whether the materials will be cloned, or just their pointer transfered.
-  virtual ni::tBool __stdcall Copy(const iMaterialLibrary* apSrc, tBool abCloneMats) = 0;
+  virtual ni::tBool __stdcall Copy(const iMaterialLibrary* apSrc,
+                                   tBool abCloneMats) = 0;
   //! Clone the material library.
   virtual iMaterialLibrary* __stdcall Clone(tBool abCloneMats) const = 0;
 
@@ -100,15 +103,19 @@ struct iMaterialLibrary : public iUnknown
   virtual ni::iMaterial* __stdcall GetMaterial(ni::tU32 anIndex) const = 0;
   //! Get the material from the specified name.
   //! {Property}
-  virtual ni::iMaterial* __stdcall GetMaterialFromName(ni::iHString* ahspName) const = 0;
+  virtual ni::iMaterial* __stdcall GetMaterialFromName(
+    ni::iHString* ahspName) const = 0;
   //! Get the index of the specified material.
   //! {Property}
-  virtual ni::tU32 __stdcall GetMaterialIndex(ni::iMaterial* apMaterial) const = 0;
+  virtual ni::tU32 __stdcall GetMaterialIndex(
+    ni::iMaterial* apMaterial) const = 0;
 
   //! Serialize the library in a datatable.
-  virtual ni::tBool __stdcall SerializeDataTable(ni::iDataTable* apDT, tMaterialSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeDataTable(
+    ni::iDataTable* apDT, tMaterialSerializeFlags aFlags) = 0;
   //! Serialize the library in a file.
-  virtual ni::tBool __stdcall SerializeFile(ni::iFile* apFile, tMaterialSerializeFlags aFlags) = 0;
+  virtual ni::tBool __stdcall SerializeFile(ni::iFile* apFile,
+                                            tMaterialSerializeFlags aFlags) = 0;
 
   //! Set the material library's base path.
   //! {Property}
@@ -120,5 +127,5 @@ struct iMaterialLibrary : public iUnknown
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
-}
+} // namespace ni
 #endif // __IMATERIALLIBRARY_2996328_H__

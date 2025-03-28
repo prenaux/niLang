@@ -5,8 +5,7 @@ using namespace ni;
 
 namespace {
 
-struct sFGDRV_Clear : public sFGDRV_Base {
-};
-TEST_CLASS(FGDRV,Clear);
+struct sFGDRV_Clear : public sFGDRV_Base {};
+TEST_CLASS(FGDRV, Clear);
 
-}
+} // namespace

@@ -14,8 +14,7 @@ namespace ni {
 //////////////////////////////////////////////////////////////////////////////////////////////
 //! Sphere template class.
 template <typename T>
-class cSphere
-{
+class cSphere {
  public:
   cSphere(const sVec3<T>& aPos, T aRadius);
   cSphere(const sVec3<T>& aPos);
@@ -35,9 +34,15 @@ class cSphere
   //! Get the sphere position.
   const sVec3<T>& GetPosition() const;
   //! Set the sphere center (same as position).
-  inline void SetCenter(const sVec3<T>& aPos) { SetPosition(aPos); }
+  inline void SetCenter(const sVec3<T>& aPos)
+  {
+    SetPosition(aPos);
+  }
   //! Get the sphere center (same as position).
-  inline const sVec3<T>& GetCenter() const { return GetPosition(); }
+  inline const sVec3<T>& GetCenter() const
+  {
+    return GetPosition();
+  }
   //! @}
 
   //########################################################################################
@@ -57,7 +62,7 @@ class cSphere
 
  protected:
   sVec3<T> mvPosition;
-  T     mRadius;
+  T mRadius;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +134,7 @@ const sVec3<T>& cSphere<T>::GetPosition() const
 template <typename T>
 tBool cSphere<T>::Intersect(const sVec3<T>& vPos) const
 {
-  return VecLength(vPos-mvPosition) <= mRadius;
+  return VecLength(vPos - mvPosition) <= mRadius;
 }
 
 ///////////////////////////////////////////////
@@ -139,11 +144,11 @@ tBool cSphere<T>::Intersect(const sVec3<T>& vPos) const
 template <typename T>
 T cSphere<T>::Intersect(const sVec3<T>& avPos, const sVec3<T>& avDir) const
 {
-  sVec3<T> Q = mvPosition-avPos;
+  sVec3<T> Q = mvPosition - avPos;
 
   T c = VecLength(Q);
-  T v = VecDot(Q, VecNormalize(sVec3<T>(),avDir));
-  T d = (mRadius*mRadius) - ((c*c) - (v*v));
+  T v = VecDot(Q, VecNormalize(sVec3<T>(), avDir));
+  T d = (mRadius * mRadius) - ((c * c) - (v * v));
 
   // If there was no intersection, return -1
   if (d < 0.0)
@@ -158,16 +163,16 @@ T cSphere<T>::Intersect(const sVec3<T>& avPos, const sVec3<T>& avDir) const
 template <typename T>
 void cSphere<T>::Transform(const sMatrixf& aMatrix)
 {
-  sVec3<T> vec,p;
-  VecSetLength(vec,sVec3<T>::XAxis(),GetRadius());
-  VecTransformNormal(vec,vec,aMatrix);
+  sVec3<T> vec, p;
+  VecSetLength(vec, sVec3<T>::XAxis(), GetRadius());
+  VecTransformNormal(vec, vec, aMatrix);
   SetRadius(VecLength(vec));
-  VecTransformCoord(p,GetCenter(),aMatrix);
+  VecTransformCoord(p, GetCenter(), aMatrix);
   SetPosition(p);
 }
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __SPHERE_32687073_H__

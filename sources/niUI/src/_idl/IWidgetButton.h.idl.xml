@@ -2,90 +2,90 @@
 	<namespace name="ni">
 		<enum name="eWidgetButtonStyle">
 			<comments desc=""/>
-			<value name="eWidgetButtonStyle_OnOff" value="niBit ( eWidgetStyle_MaxBit+0 ) ">
+			<value name="eWidgetButtonStyle_OnOff" value="niBit(eWidgetStyle_MaxBit+0)">
 				<comments desc="Toggle button. "/>
 			</value>
-			<value name="eWidgetButtonStyle_CheckBox" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetButtonStyle_CheckBox" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc="Check box button. "/>
 			</value>
-			<value name="eWidgetButtonStyle_RadioButton" value="niBit ( eWidgetStyle_MaxBit+2 ) ">
+			<value name="eWidgetButtonStyle_RadioButton" value="niBit(eWidgetStyle_MaxBit+2)">
 				<comments desc="Radio button. "/>
 			</value>
-			<value name="eWidgetButtonStyle_TabButton" value="niBit ( eWidgetStyle_MaxBit+3 ) ">
+			<value name="eWidgetButtonStyle_TabButton" value="niBit(eWidgetStyle_MaxBit+3)">
 				<comments desc="Tab button. "/>
 			</value>
-			<value name="eWidgetButtonStyle_Select" value="niBit ( eWidgetStyle_MaxBit+4 ) ">
+			<value name="eWidgetButtonStyle_Select" value="niBit(eWidgetStyle_MaxBit+4)">
 				<comments desc="Draw the button in a selected state when checked. "/>
 			</value>
-			<value name="eWidgetButtonStyle_NoText" value="niBit ( eWidgetStyle_MaxBit+5 ) ">
+			<value name="eWidgetButtonStyle_NoText" value="niBit(eWidgetStyle_MaxBit+5)">
 				<comments desc="Dont draw the text. "/>
 			</value>
-			<value name="eWidgetButtonStyle_Sticky" value="niBit ( eWidgetStyle_MaxBit+6 ) ">
+			<value name="eWidgetButtonStyle_Sticky" value="niBit(eWidgetStyle_MaxBit+6)">
 				<comments desc="The button will stay pressed and &apos;click&apos; once it has been pressed, even if the mouse moves out of it. "/>
 			</value>
-			<value name="eWidgetButtonStyle_NoFrame" value="niBit ( eWidgetStyle_MaxBit+7 ) ">
+			<value name="eWidgetButtonStyle_NoFrame" value="niBit(eWidgetStyle_MaxBit+7)">
 				<comments desc="Dont draw the button frame. "/>
 			</value>
-			<value name="eWidgetButtonStyle_IconFit" value="niBit ( eWidgetStyle_MaxBit+8 ) ">
+			<value name="eWidgetButtonStyle_IconFit" value="niBit(eWidgetStyle_MaxBit+8)">
 				<comments desc="Set the icon size automatically to fit into the button. ">
 					<remark text="Fit keeps the ratio of the button. "/>
 				</comments>
 			</value>
-			<value name="eWidgetButtonStyle_IconStretch" value="niBit ( eWidgetStyle_MaxBit+9 ) ">
+			<value name="eWidgetButtonStyle_IconStretch" value="niBit(eWidgetStyle_MaxBit+9)">
 				<comments desc="Set the icon size automatically to fill the button. ">
 					<remark text="Stretch doesnt keep the icon ratio. "/>
 				</comments>
 			</value>
-			<value name="eWidgetButtonStyle_IconLeft" value="0 ">
+			<value name="eWidgetButtonStyle_IconLeft" value="0">
 				<comments desc="The icon position is on the left. The text position is on the right. ">
 					<remark text="This is the default if not position is specified. "/>
 				</comments>
 			</value>
-			<value name="eWidgetButtonStyle_IconRight" value="niBit ( eWidgetStyle_MaxBit+10 ) ">
+			<value name="eWidgetButtonStyle_IconRight" value="niBit(eWidgetStyle_MaxBit+10)">
 				<comments desc="The icon position is on the right. The text position is on the left. "/>
 			</value>
-			<value name="eWidgetButtonStyle_IconTop" value="niBit ( eWidgetStyle_MaxBit+11 ) ">
+			<value name="eWidgetButtonStyle_IconTop" value="niBit(eWidgetStyle_MaxBit+11)">
 				<comments desc="The icon position is on the top. The text position is in the bottom. "/>
 			</value>
-			<value name="eWidgetButtonStyle_IconBottom" value="niBit ( eWidgetStyle_MaxBit+12 ) ">
+			<value name="eWidgetButtonStyle_IconBottom" value="niBit(eWidgetStyle_MaxBit+12)">
 				<comments desc="The icon position is in the bottom. The text position is on the top. "/>
 			</value>
-			<value name="eWidgetButtonStyle_IconCenter" value="niBit ( eWidgetStyle_MaxBit+13 ) ">
+			<value name="eWidgetButtonStyle_IconCenter" value="niBit(eWidgetStyle_MaxBit+13)">
 				<comments desc="The icon position is in the center. The text position is over the icon. "/>
 			</value>
-			<value name="eWidgetButtonStyle_TextLeft" value="niBit ( eWidgetStyle_MaxBit+14 ) ">
+			<value name="eWidgetButtonStyle_TextLeft" value="niBit(eWidgetStyle_MaxBit+14)">
 				<comments desc="The text is left/top aligned. "/>
 			</value>
-			<value name="eWidgetButtonStyle_TextRight" value="niBit ( eWidgetStyle_MaxBit+15 ) ">
+			<value name="eWidgetButtonStyle_TextRight" value="niBit(eWidgetStyle_MaxBit+15)">
 				<comments desc="The text is right/bottom aligned. "/>
 			</value>
-			<value name="eWidgetButtonStyle_TextCenter" value="0 ">
+			<value name="eWidgetButtonStyle_TextCenter" value="0">
 				<comments desc="The text is center aligned. ">
 					<remark text="This is the default if no text position is specified. "/>
 				</comments>
 			</value>
-			<value name="eWidgetButtonStyle_BitmapButton" value="eWidgetButtonStyle_IconCenter ">
+			<value name="eWidgetButtonStyle_BitmapButton" value="eWidgetButtonStyle_IconCenter">
 				<comments desc="Bitmap button. Text is drawn over the icon. "/>
 			</value>
-			<value name="eWidgetButtonStyle_IconButton" value="eWidgetButtonStyle_IconTop ">
+			<value name="eWidgetButtonStyle_IconButton" value="eWidgetButtonStyle_IconTop">
 				<comments desc="Icon button, same as bitmap button excepted that the text is drawn below the icon. "/>
 			</value>
 		</enum>
 		<enum name="eWidgetButtonCmd">
 			<comments desc="Button notification messages. "/>
-			<value name="eWidgetButtonCmd_Clicked" value="0 ">
+			<value name="eWidgetButtonCmd_Clicked" value="0">
 				<comments desc="The button has been clicked. "/>
 			</value>
-			<value name="eWidgetButtonCmd_Pushed" value="1 ">
+			<value name="eWidgetButtonCmd_Pushed" value="1">
 				<comments desc="The button has been pushed. "/>
 			</value>
-			<value name="eWidgetButtonCmd_UnPushed" value="2 ">
+			<value name="eWidgetButtonCmd_UnPushed" value="2">
 				<comments desc="The button has been unpushed. "/>
 			</value>
-			<value name="eWidgetButtonCmd_Checked" value="3 ">
+			<value name="eWidgetButtonCmd_Checked" value="3">
 				<comments desc="The button has been checked. "/>
 			</value>
-			<value name="eWidgetButtonCmd_UnChecked" value="4 ">
+			<value name="eWidgetButtonCmd_UnChecked" value="4">
 				<comments desc="The button has been unchecked. "/>
 			</value>
 		</enum>
@@ -295,7 +295,9 @@
 				property="get"
 				property_name2="iconDrawRect"
 				property_name="icon_draw_rect">
-				<comments desc="Get the icon&apos;s drawing rectangle, client rectangle relative. "/>
+				<comments desc="Get the icon&apos;s drawing rectangle, client rectangle relative. ">
+					<remark text="Includes the icon&apos;s margin. "/>
+				</comments>
 				<return type="sRectf" typec="sRectf" typei="ni::eType_Vec4f"/>
 			</method>
 			<method

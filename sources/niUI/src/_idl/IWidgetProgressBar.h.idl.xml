@@ -2,7 +2,7 @@
 	<namespace name="ni">
 		<enum name="eWidgetProgressBarStyle">
 			<comments desc=""/>
-			<value name="eWidgetProgressBarStyle_Vert" value="niBit ( eWidgetStyle_MaxBit+1 ) ">
+			<value name="eWidgetProgressBarStyle_Vert" value="niBit(eWidgetStyle_MaxBit+1)">
 				<comments desc=""/>
 			</value>
 			<value name="eWidgetProgressBarStyle_DWORD" value="0xFFFFFFFF">

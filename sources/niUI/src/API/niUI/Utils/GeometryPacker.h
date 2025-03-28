@@ -21,16 +21,16 @@ struct sPackMeshRef {
 };
 
 //! Pack mesh
-struct sPackMesh
-{
-  sPackMesh() {
+struct sPackMesh {
+  sPackMesh()
+  {
     _mesh = NULL;
     _fvf = 0;
     _chunk = 0;
   }
   sPackMeshRef* _mesh;
-  tFVF  _fvf;
-  tU64  _chunk;
+  tFVF _fvf;
+  tU64 _chunk;
 };
 
 //! Pack mesh vector.
@@ -38,34 +38,30 @@ typedef astl::vector<sPackMesh> tPackMeshVec;
 
 //! Pack a geometry into several geometries.
 //! \remark mesh format is (tU32:FirstIdx, tU32:NumIndices, tU32:MaterialIndex, tU32:Geom)
-inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
-                                   iGeometry* apGeom,
-                                   tPtr apMeshes,
-                                   tU32 anMeshStride,
-                                   tU32 anNumMeshes,
-                                   tU32 anGeomIndexBase,
+inline tU32 __stdcall PackGeometry(iGraphics* apGraphics, iGeometry* apGeom,
+                                   tPtr apMeshes, tU32 anMeshStride,
+                                   tU32 anNumMeshes, tU32 anGeomIndexBase,
                                    iMaterialLibrary* apMatLib,
-                                   tIUnknownCVec& aOutput,
-                                   eArrayUsage aUsage,
-                                   tFVF aDefaultFVF,
-                                   tBool abOneFVF)
+                                   tIUnknownCVec& aOutput, eArrayUsage aUsage,
+                                   tFVF aDefaultFVF, tBool abOneFVF)
 {
   sVertexArrayInitializer vaInit(apGraphics);
 
   // Collect meshes infos
-  tPackMeshVec  packMeshes;
+  tPackMeshVec packMeshes;
   packMeshes.resize(anNumMeshes);
 
   // Lock the geometry
-  tPtr  vaPtr = apGeom->GetVertexArray()->Lock(0,0,eLock_Normal);
-  tIndex* iaPtr = (tIndex*)apGeom->GetIndexArray()->Lock(0,0,eLock_Normal);
+  tPtr vaPtr = apGeom->GetVertexArray()->Lock(0, 0, eLock_Normal);
+  tIndex* iaPtr = (tIndex*)apGeom->GetIndexArray()->Lock(0, 0, eLock_Normal);
   cFVFDescription vertFVF(apGeom->GetVertexArray()->GetFVF());
-  cFVFStream    vertStream(&vertFVF,vaPtr,apGeom->GetVertexArray()->GetNumVertices());
+  cFVFStream vertStream(&vertFVF, vaPtr,
+                        apGeom->GetVertexArray()->GetNumVertices());
 
   // Detect the FVF
-  niLoop(i,anNumMeshes) {
+  niLoop (i, anNumMeshes) {
     sPackMesh& packMesh = packMeshes[i];
-    packMesh._mesh = (sPackMeshRef*)(apMeshes+anMeshStride*i);
+    packMesh._mesh = (sPackMeshRef*)(apMeshes + anMeshStride * i);
     if (abOneFVF) {
       packMesh._fvf = aDefaultFVF;
     }
@@ -79,8 +75,8 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
         if (vertFVF.HasColorA()) {
           const tSize coloraOffset = vertFVF.GetColorAOffset();
           const tIndex* idx = &iaPtr[packMesh._mesh->firstIdx];
-          niLoop(i,packMesh._mesh->numIndices) {
-            tU32* colora = (tU32*)(vertStream.GetVertex(*idx)+coloraOffset);
+          niLoop (i, packMesh._mesh->numIndices) {
+            tU32* colora = (tU32*)(vertStream.GetVertex(*idx) + coloraOffset);
             if (*colora != 0xFFFFFFFF) {
               fvf |= eFVF_ColorA;
               break;
@@ -92,8 +88,9 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
         if (vertFVF.GetTexCooDim(1) == 2) {
           const tSize tex2offset = vertFVF.GetTexCooOffset(1);
           const tIndex* idx = &iaPtr[packMesh._mesh->firstIdx];
-          niLoop(i,packMesh._mesh->numIndices) {
-            sVec2f* texCoo2 = (sVec2f*)(vertStream.GetVertex(*idx)+tex2offset);
+          niLoop (i, packMesh._mesh->numIndices) {
+            sVec2f* texCoo2 =
+              (sVec2f*)(vertStream.GetVertex(*idx) + tex2offset);
             if (!niFloatIsZero(texCoo2->x) || !niFloatIsZero(texCoo2->y)) {
               hasTex2 = eTrue;
               break;
@@ -119,25 +116,27 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
   const tU32 numIndices = apGeom->GetIndexArray()->GetNumIndices();
 
   // Init the index array output
-  astl::vector<tIndex>  destIA;
+  astl::vector<tIndex> destIA;
   destIA.reserve(apGeom->GetIndexArray()->GetNumIndices());
 
   // Fill up and init the chunks
-  niLoop(i,anNumMeshes) {
+  niLoop (i, anNumMeshes) {
     sPackMesh& packMesh = packMeshes[i];
     if (packMesh._mesh->firstIdx >= numIndices)
       continue; // invalid index
-    if (packMesh._mesh->firstIdx+packMesh._mesh->numIndices > numIndices)
+    if (packMesh._mesh->firstIdx + packMesh._mesh->numIndices > numIndices)
       continue; // invalid index
 
-    tU32 chunk = vaInit.GetNextChunk(packMesh._fvf,packMesh._mesh->numIndices);
+    tU32 chunk = vaInit.GetNextChunk(packMesh._fvf, packMesh._mesh->numIndices);
     niAssert(chunk != eInvalidHandle);
-    packMesh._chunk = vaInit.GetHash(packMesh._fvf,chunk);
+    packMesh._chunk = vaInit.GetHash(packMesh._fvf, chunk);
 
     const tIndex* idx = &iaPtr[packMesh._mesh->firstIdx];
     packMesh._mesh->firstIdx = destIA.size();
-    niLoop(i,packMesh._mesh->numIndices) {
-      tIndex newIndex = vaInit.PushVertex(packMesh._fvf,chunk,*idx,vertFVF.GetFVF(),vertStream.GetVertex(*idx));
+    niLoop (i, packMesh._mesh->numIndices) {
+      tIndex newIndex =
+        vaInit.PushVertex(packMesh._fvf, chunk, *idx, vertFVF.GetFVF(),
+                          vertStream.GetVertex(*idx));
       niAssert(newIndex < vertStream.GetNumVertices());
       destIA.push_back(newIndex);
       ++idx;
@@ -147,20 +146,22 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
   apGeom->GetVertexArray()->Unlock();
 
   // output arrays
-  astl::vector<Ptr<iVertexArray> >  vaOutput;
-  Ptr<iIndexArray>          iaOutput;
+  astl::vector<Ptr<iVertexArray>> vaOutput;
+  Ptr<iIndexArray> iaOutput;
 
   tU32 nNewGeomIndex = 0;
 
   // get the new VAs
-  for (sVertexArrayInitializer::tVBHMap::iterator it = vaInit.GetVBBeginIt(); it != vaInit.GetVBEndIt(); ++it) {
-    Ptr<iVertexArray> va = vaInit.GetVA(apGraphics,it,aUsage);
-    niCheck(va.IsOK(),0);
+  for (sVertexArrayInitializer::tVBHMap::iterator it = vaInit.GetVBBeginIt();
+       it != vaInit.GetVBEndIt(); ++it)
+  {
+    Ptr<iVertexArray> va = vaInit.GetVA(apGraphics, it, aUsage);
+    niCheck(va.IsOK(), 0);
     // assign the new geom index
-    niLoop(i,anNumMeshes) {
+    niLoop (i, anNumMeshes) {
       if (packMeshes[i]._chunk == it->first) {
         sPackMesh& packMesh = packMeshes[i];
-        packMesh._mesh->geomIndex = anGeomIndexBase+nNewGeomIndex;
+        packMesh._mesh->geomIndex = anGeomIndexBase + nNewGeomIndex;
       }
     }
     vaOutput.push_back(va);
@@ -168,16 +169,20 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
   }
 
   // get the new IA
-  iaOutput = apGraphics->CreateIndexArray(eGraphicsPrimitiveType_TriangleList,destIA.size(),vertStream.GetNumVertices(),eArrayUsage_Static);
-  niCheck(iaOutput.IsOK(),0);
-  tPtr iaOutputPtr = iaOutput->Lock(0,0,eLock(eLock_Discard|eLock_NoOverwrite));
-  ni::MemCopy(iaOutputPtr,(tPtr)&destIA[0],destIA.size()*sizeof(tIndex));
+  iaOutput = apGraphics->CreateIndexArray(
+    eGraphicsPrimitiveType_TriangleList, destIA.size(),
+    vertStream.GetNumVertices(), eArrayUsage_Static);
+  niCheck(iaOutput.IsOK(), 0);
+  tPtr iaOutputPtr =
+    iaOutput->Lock(0, 0, eLock(eLock_Discard | eLock_NoOverwrite));
+  ni::MemCopy(iaOutputPtr, (tPtr)&destIA[0], destIA.size() * sizeof(tIndex));
   iaOutput->Unlock();
 
   // output the new geometries
-  niLoop(i,vaOutput.size()) {
-    Ptr<iGeometry> geomOutput = apGraphics->CreateGeometryPolygonalEx(vaOutput[i],iaOutput);
-    niCheck(geomOutput.IsOK(),0);
+  niLoop (i, vaOutput.size()) {
+    Ptr<iGeometry> geomOutput =
+      apGraphics->CreateGeometryPolygonalEx(vaOutput[i], iaOutput);
+    niCheck(geomOutput.IsOK(), 0);
     aOutput.push_back(geomOutput.ptr());
   }
 
@@ -185,24 +190,14 @@ inline tU32 __stdcall PackGeometry(iGraphics* apGraphics,
 }
 
 //! Pack meshes into a single geometry.
-inline iGeometry* __stdcall PackSingleGeometry(iGraphics* apGraphics,
-                                                        iGeometry* apGeom,
-                                                        tPtr apMeshes,
-                                                        tU32 anMeshStride,
-                                                        tU32 anNumMeshes,
-                                                        tU32 anGeomIndexBase,
-                                                        iMaterialLibrary* apMatLib,
-                                                        eArrayUsage aUsage,
-                                                        tFVF aDefaultFVF)
+inline iGeometry* __stdcall PackSingleGeometry(
+  iGraphics* apGraphics, iGeometry* apGeom, tPtr apMeshes, tU32 anMeshStride,
+  tU32 anNumMeshes, tU32 anGeomIndexBase, iMaterialLibrary* apMatLib,
+  eArrayUsage aUsage, tFVF aDefaultFVF)
 {
   Ptr<tIUnknownCVec> output = tIUnknownCVec::Create();
-  if (PackGeometry(apGraphics,apGeom,
-                   apMeshes,anMeshStride,
-                   anNumMeshes,anGeomIndexBase,
-                   apMatLib,
-                   *output,
-                   aUsage,
-                   aDefaultFVF,
+  if (PackGeometry(apGraphics, apGeom, apMeshes, anMeshStride, anNumMeshes,
+                   anGeomIndexBase, apMatLib, *output, aUsage, aDefaultFVF,
                    eTrue) != 1)
   {
     return NULL;
@@ -215,5 +210,5 @@ inline iGeometry* __stdcall PackSingleGeometry(iGraphics* apGraphics,
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-}
+} // namespace ni
 #endif // __GEOMETRYPACKER_29385760_H__

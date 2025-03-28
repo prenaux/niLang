@@ -2,13 +2,13 @@
 	<namespace name="ni">
 		<enum name="eIntersectionResult">
 			<comments desc="Intersection result. "/>
-			<value name="eIntersectionResult_None" value="0 ">
+			<value name="eIntersectionResult_None" value="0">
 				<comments desc="No intersection result. "/>
 			</value>
-			<value name="eIntersectionResult_Inside" value="1 ">
+			<value name="eIntersectionResult_Inside" value="1">
 				<comments desc="Inside the bounding volume. "/>
 			</value>
-			<value name="eIntersectionResult_Intersect" value="2 ">
+			<value name="eIntersectionResult_Intersect" value="2">
 				<comments desc="Intersect the bounding volume. "/>
 			</value>
 		</enum>

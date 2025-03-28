@@ -941,8 +941,11 @@
         if (mLine[0] == '#') {
           skipPreprocessor(mLine)
         }
-        // Inline functions, static inline functions, and templates
-        else if (mLine.startswith("inline") ||
+        // Inline functions, static inline functions, templates, typedefs.
+        // Skip forward declaration and blocks.
+        else if ((mLine.startswith("typedef") &&
+                  !mLine.startswith("typedef enum")) ||
+                 mLine.startswith("inline") ||
                  mLine.startswith("__forceinline") ||
                  mLine.startswith("static") ||
                  mLine.startswith("template") ||
@@ -1080,7 +1083,7 @@
         if (mLine.startswith(name) || (name=="" && !mLine.startswith("};"))) {
           // process the enum value
           tokens = tokenize(mLine,null)
-          local n = "", v = ""
+          local n = ""
           // read the name
           n = tokens[0];
 
@@ -1102,18 +1105,9 @@
           if (!isValid)
             parserError(mLineCount,"Invalid enum value declaration inside enum '"+name+"', no value or missing colon.")
 
+          local v = ""
           if (eqIdx) {
-            if ((tokens.len()-eqIdx) < 2) {
-              parserError(mLineCount,"Invalid assigned enum value declaration inside enum '"+name+"'.")
-            }
-            for (local i = eqIdx+1; i < tokens.len(); ++i) {
-              v += tokens[i];
-              if (i+1 != tokens.len())
-                v += " ";
-            }
-            if (v.endswith(",")) {
-              v = v.slice(0,-1)
-            }
+            v = processEnumValue(tokens,eqIdx,n)
           }
 
           if (!n.endswith("ForceDWORD")) {
@@ -1149,6 +1143,52 @@
 
       if (numValues == 0) {
         parserError(startLine,"Empty enum, the values cant be on the same same line as the enum header.")
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////
+  function processEnumValue(tokens, eqIdx, enumName)
+  {
+    local v = ""
+    local ntokens = tokens.len()
+    for (local i = eqIdx+1; i < ntokens; ++i) {
+      v += tokens[i];
+    }
+    if (v.empty() || v.endswith("|")) {
+      // continue
+    }
+    else {
+      // we're done
+      if (v.endswith(",")) {
+        v = v.slice(0,-1)
+      }
+      return v;
+    }
+
+    // Continue reading lines until the value is complete
+    while (1) {
+      mLine = readLine()
+      if (processCommentsAndEmptyLines())
+        continue;
+
+      if (mSrc.partial_read)
+        parserError(mLineCount, "Unexpected end of file while parsing enum value")
+
+      tokens = tokenize(mLine, null)
+      local ntokens = tokens.len()
+      for (local i = 0; i < ntokens; ++i) {
+        v += tokens[i];
+      }
+      if (v.empty() || v.endswith("|")) {
+        // continue
+      }
+      else {
+        // we're done
+        if (v.endswith(",")) {
+          v = v.slice(0,-1)
+        }
+        return v;
       }
     }
   }
@@ -1297,6 +1337,7 @@
 
       dtPushNewNameAttrs("interface",name,attributes)
       dtPushComments(mComments);
+      resetComments();
       if (parents.len()) {
         dtPushNew("parents")
         foreach (p in parents) {
@@ -1467,6 +1508,7 @@
 
       dtPushNewNameAttrs("struct",name,attributes)
       dtPushComments(mComments);
+      resetComments();
       if (parents.len()) {
         dtPushNew("parents")
         foreach (p in parents) {
@@ -1994,6 +2036,7 @@
     dtPushNewNameAttrs("method",name,attributes)
     dtSet("java_name", getJavaName(name))
     dtPushComments(mComments);
+    resetComments();
     dtSet("num_parameters",params.len().tostring())
     if (isConst)
       dtSet("const","yes")

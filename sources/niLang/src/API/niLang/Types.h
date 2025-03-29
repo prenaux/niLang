@@ -1163,16 +1163,14 @@ niExportFunc(void) ni_harakiri(niConst struct iHString* aKind,
   #ifdef __cplusplus
 class cString; // string class forward declaration
 
-niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind,
-                                     const char* msg, const char* file,
-                                     int line, const char* func);
+niExportFuncCPP(void) ni_panic(niConst struct iHString* aKind, const char* msg,
+                               const char* file, int line, const char* func);
 
-    #define niThrowPanic(NS, KIND, MSG) \
-      ni_throw_panic(_HSym(NS, KIND), MSG, niSourceLoc)
+    #define niPanic(NS, KIND, MSG) ni_panic(_HSym(NS, KIND), MSG, niSourceLoc)
 
   #else
 
-    #define niThrowPanic(NS, KIND, MSG) \
+    #define niPanic(NS, KIND, MSG) \
       ni_harakiri(_HSym(NS, KIND), MSG, NULL, niSourceLoc)
 
   #endif
@@ -1180,19 +1178,19 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind,
   #define niCheckPanic(NS, KIND, EXP) \
     do {                              \
       if (!(EXP)) {                   \
-        niThrowPanic(NS, KIND, #EXP); \
+        niPanic(NS, KIND, #EXP);      \
       }                               \
     } while (0);
   #define niCheckPanicMsg(NS, KIND, EXP, MSG) \
     do {                                      \
       if (!(EXP)) {                           \
-        niThrowPanic(NS, KIND, MSG);          \
+        niPanic(NS, KIND, MSG);               \
       }                                       \
     } while (0);
 
   #define niPanicAssert(exp) niCheckPanic(ni, panic, exp)
   #define niPanicAssertMsg(exp, msg) niCheckPanicMsg(ni, panic, exp, msg)
-  #define niPanicUnreachable(msg) niThrowPanic(ni, unreachable, msg)
+  #define niPanicUnreachable(msg) niPanic(ni, unreachable, msg)
 
   #ifdef _DEBUG
     #define niDebugAssert(exp) niCheckPanic(ni, debug_assert, exp)

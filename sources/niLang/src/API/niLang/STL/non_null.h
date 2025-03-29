@@ -273,8 +273,8 @@ template <class T>
 inline auto as_non_null(T&& t, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) noexcept
 {
   if (!t) {
-    ni_throw_panic(_HSym(ni, panic), "as_non_null(&&) with nullptr",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HSym(ni, panic), "as_non_null(&&) with nullptr",
+             ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   typedef non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>> tNN;
   return tNN{ typename tNN::tUnsafeUncheckedInitializer(eastl::forward<T>(t)) };

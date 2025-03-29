@@ -490,7 +490,7 @@ namespace eastl {
 
 #ifndef EASTL_FAIL_MSG
   #if EASTL_ASSERT_ENABLED
-    #define EASTL_FAIL_MSG(message) niThrowPanic(ni, astl, message)
+    #define EASTL_FAIL_MSG(message) niPanic(ni, astl, message)
   #else
     #define EASTL_FAIL_MSG(message)
   #endif

@@ -186,23 +186,29 @@ struct sNiCrashReport {
     #define niCrashReport_ModuleInstall()
   #endif
 
-struct __ni_module_export sPanicException : public astl::exception {
-  sPanicException(const iHString* aKind, cString&& aDesc) noexcept;
-  virtual ~sPanicException();
+  #ifdef niUseWindowsSEHExceptions
+    #define niPanicDescExport
+  #else
+    #define niPanicDescExport __ni_module_export
+  #endif
+
+struct niPanicDescExport sPanicDesc {
+  sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept;
+  virtual ~sPanicDesc();
 
   const iHString* GetKind() const noexcept;
   const cString& GetDesc() const noexcept;
 
   // Implement std::exception::what()
-  const char* what() const noexcept override;
+  const char* what() const noexcept;
 
  private:
   const iHString* _kind;
   const cString _desc;
 
-  sPanicException(const sPanicException& aRight) noexcept = delete;
-  sPanicException(sPanicException&& aRight) noexcept = delete;
-  sPanicException() noexcept = delete;
+  sPanicDesc(const sPanicDesc& aRight) noexcept = delete;
+  sPanicDesc(sPanicDesc&& aRight) noexcept = delete;
+  sPanicDesc() noexcept = delete;
 };
 
   #ifdef niUseWindowsSEHExceptions
@@ -213,23 +219,23 @@ extern "C" unsigned long __cdecl _exception_code(void);
     #pragma intrinsic(_exception_code)
 
 niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo);
-niExportFunc(sPanicException*) ni_windows_seh_get_last_panic();
+niExportFunc(sPanicDesc*) ni_windows_seh_get_last_panic();
 
-template <typename RunFunc, typename CatchFunc>
-auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
+template <typename RunFunc, typename RecoverFunc>
+auto RecoverPanic(RunFunc&& aRun, RecoverFunc&& aRecover) -> decltype(aRun())
 {
-  using RunReturnType = decltype(aRun());
-  using CatchReturnType = decltype(aCatch(*ni_windows_seh_get_last_panic()));
-  static_assert(std::is_same_v<RunReturnType, CatchReturnType>,
+  using RunRetType = decltype(aRun());
+  using RecoverRetType = decltype(aRecover(*ni_windows_seh_get_last_panic()));
+  static_assert(std::is_same_v<RunRetType, RecoverRetType>,
                 "Run and catch functions must return the same type");
 
-  if constexpr (std::is_void_v<RunReturnType>) {
+  if constexpr (std::is_void_v<RunRetType>) {
     __try
     {
       aRun();
     } __except (ni_windows_seh_on_handle(_exception_code(), _exception_info()))
     {
-      aCatch(*ni_windows_seh_get_last_panic());
+      aRecover(*ni_windows_seh_get_last_panic());
     }
   }
   else {
@@ -238,36 +244,35 @@ auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
       return aRun();
     } __except (ni_windows_seh_on_handle(_exception_code(), _exception_info()))
     {
-      return aCatch(*ni_windows_seh_get_last_panic());
+      return aRecover(*ni_windows_seh_get_last_panic());
     }
   }
 }
 
   #else // #ifdef niUseWindowsSEHExceptions
 
-template <typename RunFunc, typename CatchFunc>
-auto TryCatchPanic(RunFunc&& aRun, CatchFunc&& aCatch) -> decltype(aRun())
+template <typename RunFunc, typename RecoverFunc>
+auto RecoverPanic(RunFunc&& aRun, RecoverFunc&& aRecover) -> decltype(aRun())
 {
-  using RunReturnType = decltype(aRun());
-  using CatchReturnType =
-    decltype(aCatch(astl::declval<ni::sPanicException>()));
-  static_assert(std::is_same_v<RunReturnType, CatchReturnType>,
+  using RunRetType = decltype(aRun());
+  using RecoverRetType = decltype(aRecover(astl::declval<ni::sPanicDesc>()));
+  static_assert(std::is_same_v<RunRetType, RecoverRetType>,
                 "Run and catch functions must return the same type");
 
-  if constexpr (std::is_void_v<RunReturnType>) {
+  if constexpr (std::is_void_v<RunRetType>) {
     niTry {
       aRun();
     }
-    niCatch (ni::sPanicException, e) {
-      aCatch(e);
+    niCatch (ni::sPanicDesc, e) {
+      aRecover(e);
     }
   }
   else {
     niTry {
       return aRun();
     }
-    niCatch (ni::sPanicException, e) {
-      return aCatch(e);
+    niCatch (ni::sPanicDesc, e) {
+      return aRecover(e);
     }
   }
 }

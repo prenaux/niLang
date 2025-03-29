@@ -118,7 +118,7 @@ ni_windows_seh_unhandled_exception_filter(EXCEPTION_POINTERS* pExInfo)
 #endif
 
 #ifdef niUseWindowsSEHExceptions
-thread_local sPanicException* _lastPanic = nullptr;
+thread_local sPanicDesc* _lastPanic = nullptr;
 
 niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
 {
@@ -130,7 +130,7 @@ niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
     if (_lastPanic) {
       delete _lastPanic;
     }
-    _lastPanic = reinterpret_cast<sPanicException*>(
+    _lastPanic = reinterpret_cast<sPanicDesc*>(
       pExp->ExceptionRecord->ExceptionInformation[0]);
     return EXCEPTION_EXECUTE_HANDLER;
   }
@@ -144,7 +144,7 @@ niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
   }
 }
 
-niExportFunc(sPanicException*) ni_windows_seh_get_last_panic()
+niExportFunc(sPanicDesc*) ni_windows_seh_get_last_panic()
 {
   return _lastPanic;
 }
@@ -179,9 +179,8 @@ void JSCC_ConsoleError(const char* message)
 #endif
 
 ///////////////////////////////////////////////
-niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind,
-                                     const char* msg, const char* file,
-                                     int line, const char* func)
+niExportFuncCPP(void) ni_panic(niConst struct iHString* aKind, const char* msg,
+                               const char* file, int line, const char* func)
 {
 #if defined niWindows
   if (::IsDebuggerPresent()) {
@@ -208,11 +207,11 @@ niExportFuncCPP(void) ni_throw_panic(niConst struct iHString* aKind,
   #endif
 
   #ifdef niUseWindowsSEHExceptions
-  sPanicException* pEx = new sPanicException{ aKind, std::move(fmt) };
+  sPanicDesc* pEx = new sPanicDesc{ aKind, std::move(fmt) };
   ULONG_PTR exceptionArgs[1] = { reinterpret_cast<ULONG_PTR>(pEx) };
   RaiseException(NI_SEH_EXCEPTION_PANIC, 0, 1, exceptionArgs);
   #else
-  throw sPanicException{ aKind, std::move(fmt) };
+  throw sPanicDesc{ aKind, std::move(fmt) };
   #endif
 
 #endif
@@ -313,32 +312,31 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int)
 #endif
 }
 
-sPanicException::sPanicException(const iHString* aKind,
-                                 cString&& aDesc) noexcept
+sPanicDesc::sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept
     : _kind(aKind)
     , _desc(std::move(aDesc))
 {
   const_cast<iHString*>(_kind)->AddRef();
 }
 
-sPanicException::~sPanicException()
+sPanicDesc::~sPanicDesc()
 {
   if (_kind) {
     const_cast<iHString*>(_kind)->Release();
   }
 }
 
-const iHString* sPanicException::GetKind() const noexcept
+const iHString* sPanicDesc::GetKind() const noexcept
 {
   return _kind;
 }
 
-const cString& sPanicException::GetDesc() const noexcept
+const cString& sPanicDesc::GetDesc() const noexcept
 {
   return _desc;
 }
 
-const char* sPanicException::what() const noexcept
+const char* sPanicDesc::what() const noexcept
 {
   return _desc.c_str();
 }

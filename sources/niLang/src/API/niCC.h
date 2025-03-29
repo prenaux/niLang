@@ -432,8 +432,8 @@ constexpr T narrow_cast(U u) noexcept(false)
   if (static_cast<U>(t) != u ||
       (is_different_signedness && ((t < T{}) != (u < U{}))))
   {
-    niThrowPanic(ni, invalid_cast,
-                 niFmt("narrows_cast changes the value: '%s' -> '%s'", u, t));
+    niPanic(ni, invalid_cast,
+            niFmt("narrows_cast changes the value: '%s' -> '%s'", u, t));
   }
   return t;
 }
@@ -455,8 +455,8 @@ inline auto as_non_null(T&& t, F&& afnHFmtPanicMsg,
                         ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT) noexcept
 {
   if (!t) {
-    ni_throw_panic(_HSym(ni, panic), niHStr(afnHFmtPanicMsg()),
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HSym(ni, panic), niHStr(afnHFmtPanicMsg()),
+             ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   typedef astl::non_null<eastl::remove_cv_t<eastl::remove_reference_t<T>>> tNN;
   return tNN{ typename tNN::tUnsafeUncheckedInitializer(eastl::forward<T>(t)) };
@@ -530,8 +530,7 @@ template <typename T>
 inline ni::Nonnull<T> AsNN(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p) {
-    ni_throw_panic(_HC(panic_NN_nullptr_raw), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{ p };
 }
@@ -541,8 +540,7 @@ requires IsConvertiblePointer<TTo, TFrom>
 inline ni::Nonnull<TTo> AsNN(TFrom* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p) {
-    ni_throw_panic(_HC(panic_NN_nullptr_raw), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{
     static_cast<TTo*>(p)
@@ -554,8 +552,7 @@ inline ni::Nonnull<T> AsNN(const Ptr<T>& p,
                            ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_NN_nullptr_SmartPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{ p.raw_ptr() };
 }
@@ -566,8 +563,7 @@ inline ni::Nonnull<TTo> AsNN(const Ptr<TFrom>& p,
                              ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_NN_nullptr_SmartPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{
     static_cast<TTo*>(p.raw_ptr())
@@ -579,8 +575,7 @@ inline ni::Nonnull<T> AsNN(const QPtr<T>& p,
                            ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_NN_nullptr_QPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<T>::tUnsafeUncheckedInitializer{ p.raw_ptr() };
 }
@@ -591,8 +586,7 @@ inline ni::Nonnull<TTo> AsNN(const QPtr<TFrom>& p,
                              ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_NN_nullptr_QPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_NN_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   return typename ni::Nonnull<TTo>::tUnsafeUncheckedInitializer{
     static_cast<TTo*>(p.raw_ptr())
@@ -616,8 +610,7 @@ template <typename T>
 inline astl::non_null<T*> as_nn(T* p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p) {
-    ni_throw_panic(_HC(panic_nn_nullptr_raw), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p;
   return
@@ -630,8 +623,7 @@ inline astl::non_null<TTo*> as_nn(TFrom* p,
                                   ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p) {
-    ni_throw_panic(_HC(panic_nn_nullptr_raw), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_raw), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   TTo* rp = static_cast<TTo*>(p);
   return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{ astl::move(
@@ -643,8 +635,7 @@ inline astl::non_null<T*> as_nn(const Ptr<T>& p,
                                 ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_SmartPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p.raw_ptr();
   return
@@ -657,8 +648,7 @@ inline astl::non_null<TTo*> as_nn(const Ptr<TFrom>& p,
                                   ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_SmartPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_SmartPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   TTo* rp = static_cast<TTo*>(p.raw_ptr());
   return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{ astl::move(
@@ -670,8 +660,7 @@ inline astl::non_null<T*> as_nn(const QPtr<T>& p,
                                 ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_QPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p.raw_ptr();
   return
@@ -684,8 +673,7 @@ inline astl::non_null<TTo*> as_nn(const QPtr<TFrom>& p,
                                   ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_QPtr), "",
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_QPtr), "", ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   TTo* rp = static_cast<TTo*>(p.raw_ptr());
   return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{ astl::move(
@@ -696,8 +684,8 @@ template <typename T>
 inline nn<T> as_nn(const opt<T>& p, ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR,
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_opt), AZEROSTR,
+             ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   T* rp = p.value();
   return
@@ -710,8 +698,8 @@ inline nn<TTo> as_nn(const opt<TFrom>& p,
                      ASTL_SOURCE_LOCATION_PARAM_WITH_DEFAULT)
 {
   if (!p.has_value()) {
-    ni_throw_panic(_HC(panic_nn_nullptr_opt), AZEROSTR,
-                   ASTL_SOURCE_LOCATION_ARG_CALL);
+    ni_panic(_HC(panic_nn_nullptr_opt), AZEROSTR,
+             ASTL_SOURCE_LOCATION_ARG_CALL);
   }
   TTo* rp = static_cast<TTo*>(p.value());
   return typename astl::non_null<TTo*>::tUnsafeUncheckedInitializer{ astl::move(

@@ -242,7 +242,7 @@ Test::~Test()
 
 bool Test::BeforeRun(TestResults& testResults) const
 {
-  return ni::TryCatchPanic(
+  return ni::RecoverPanic(
     [&]() {
 #if defined TEST_NICATCHALL
       TEST_TRY
@@ -276,7 +276,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 #endif
       return true;
     },
-    [&](const ni::sPanicException& e) {
+    [&](const ni::sPanicDesc& e) {
       ni::cString stream;
       stream << "Unhandled panic: " << e.GetDesc();
       testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
@@ -287,7 +287,7 @@ bool Test::BeforeRun(TestResults& testResults) const
 
 bool Test::Run(TestResults& testResults) const
 {
-  return ni::TryCatchPanic(
+  return ni::RecoverPanic(
     [&]() {
 #if defined TEST_NICATCHALL
       TEST_TRY
@@ -316,7 +316,7 @@ bool Test::Run(TestResults& testResults) const
 #endif
       return true;
     },
-    [&](const ni::sPanicException& e) {
+    [&](const ni::sPanicDesc& e) {
       ni::cString stream;
       stream << "Unhandled panic: " << e.GetDesc();
       testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,
@@ -327,7 +327,7 @@ bool Test::Run(TestResults& testResults) const
 
 bool Test::AfterRun(TestResults& testResults) const
 {
-  return ni::TryCatchPanic(
+  return ni::RecoverPanic(
     [&]() {
 #if defined TEST_NICATCHALL
       TEST_TRY
@@ -360,7 +360,7 @@ bool Test::AfterRun(TestResults& testResults) const
 #endif
       return true;
     },
-    [&](const ni::sPanicException& e) {
+    [&](const ni::sPanicDesc& e) {
       ni::cString stream;
       stream << "Unhandled panic: " << e.GetDesc();
       testResults.OnTestFailure(m_filename, m_lineNumber, m_testName,

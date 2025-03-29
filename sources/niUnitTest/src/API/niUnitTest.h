@@ -394,7 +394,7 @@ struct iTestClass {
 #define TEST_FIXTURE_WIDGET_EX_DISABLED(FIXTURE, NAME, LIST)
 
 #ifdef TEST_NITHROWASSERT
-  #define TEST_THROW_ASSERT(DESC) niThrowPanic(UnitTest, unittest_assert, DESC)
+  #define TEST_THROW_ASSERT(DESC) niPanic(UnitTest, unittest_assert, DESC)
   #undef niAssert
   #undef niAssertMsg
   #undef niAssertUnreachable

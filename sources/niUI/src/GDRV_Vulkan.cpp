@@ -107,15 +107,15 @@ niLetK knVkRequiredRayTracingExtensionsCount =
 
 _HSymImpl(vulkan_panic);
 
-  #define VK_PANIC(x, RET)                                    \
-    {                                                         \
-      VkResult r = (x);                                       \
-      if (r != VK_SUCCESS) {                                  \
-        niThrowPanic(ni, vulkan_panic,                        \
-                     niFmt("Vulkan call failed '" #x "': %s", \
-                           ni_vulkan::VkResultToString(r)));  \
-        return RET;                                           \
-      }                                                       \
+  #define VK_PANIC(x, RET)                               \
+    {                                                    \
+      VkResult r = (x);                                  \
+      if (r != VK_SUCCESS) {                             \
+        niPanic(ni, vulkan_panic,                        \
+                niFmt("Vulkan call failed '" #x "': %s", \
+                      ni_vulkan::VkResultToString(r)));  \
+        return RET;                                      \
+      }                                                  \
     }
 
   #define NISH_VULKAN_TARGET spv_vk12

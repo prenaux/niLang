@@ -1278,13 +1278,13 @@ ni_main
   #ifdef NI_WINDOWED
 niWindowedMain()
 {
-  TryCatchPanic(
+  RecoverPanic(
     [&]() {
       ni::GetLang()->SetProperty("ni.app.name", "niw");
       return niw_main(
         ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
     },
-    [&](const ni::sPanicException& e) {
+    [&](const ni::sPanicDesc& e) {
       ni::GetLang()->FatalError(e.GetDesc().Chars());
       return (int)eInvalidHandle;
     });
@@ -1292,13 +1292,13 @@ niWindowedMain()
   #else
 niConsoleMain()
 {
-  TryCatchPanic(
+  RecoverPanic(
     [&]() {
       ni::GetLang()->SetProperty("ni.app.name", "ni");
       return ni_main(
         ni::GetOSProcessManager()->GetCurrentProcess()->GetCommandLine());
     },
-    [&](const ni::sPanicException& e) {
+    [&](const ni::sPanicDesc& e) {
       ni::GetLang()->FatalError(e.GetDesc().Chars());
       return (int)eInvalidHandle;
     });

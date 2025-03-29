@@ -94,6 +94,34 @@ struct FGDRV_WindowHandler : public ImplRC<iMessageHandler> {
           niLog(Info, niFmt("Toggled animation: %z.", _context->_animated));
           break;
         }
+        case eKey_S: {
+          // Capture front buffer
+          Ptr<iBitmap2D> screenshot =
+            _context->_graphicsContext->CaptureFrontBuffer();
+          if (screenshot.IsOK()) {
+            // Generate filename with timestamp
+            cString filename = niFmt("screenshot_%s.png",
+                                     GetCurrentTime()->Format("YYMMDD_HHmmss"));
+            cString filepath = UnitTest::GetTestOutputFilePath(
+                                 _context->m_testName, filename.Chars())
+                                 .Chars();
+
+            // Save screenshot
+            if (_context->_graphics->SaveBitmap(filepath.Chars(), screenshot,
+                                                0))
+            {
+              niLog(Info, niFmt("Screenshot saved to: %s", filepath.Chars()));
+            }
+            else {
+              niLog(Error, niFmt("Failed to save screenshot to: %s",
+                                 filepath.Chars()));
+            }
+          }
+          else {
+            niLog(Error, "Failed to capture front buffer for screenshot.");
+          }
+          break;
+        }
         default: {
           switch (a.mU32 | _debugKeyMod) {
           // trigger a breakpoint

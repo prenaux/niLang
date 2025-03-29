@@ -29,6 +29,10 @@ _HSymImpl(astl);
 _HSymImpl(invalid_cast);
 _HSymImpl(harakiri);
 
+#ifdef niPanicAsPureInterface
+static sPanicDesc* _MakePanicDesc(const iHString* aKind, cString&& aDesc);
+#endif
+
 static int _bShowFatalErrorMessageBox = -1;
 niExportFunc(void) ni_set_show_fatal_error_message_box(
   int aShowAssertMessageBox)
@@ -127,6 +131,7 @@ niExportFunc(tU32) ni_windows_seh_on_handle(tU32 aExcCode, void* aExcInfo)
   if ((aExcCode == NI_SEH_EXCEPTION_PANIC) &&
       (pExp->ExceptionRecord->NumberParameters >= 1))
   {
+    // delete the previous panic if there's one to not leak the memory...
     if (_lastPanic) {
       delete _lastPanic;
     }
@@ -207,7 +212,7 @@ niExportFuncCPP(void) ni_panic(niConst struct iHString* aKind, const char* msg,
   #endif
 
   #ifdef niUseWindowsSEHExceptions
-  sPanicDesc* pEx = new sPanicDesc{ aKind, std::move(fmt) };
+  sPanicDesc* pEx = _MakePanicDesc(aKind, astl::move(fmt));
   ULONG_PTR exceptionArgs[1] = { reinterpret_cast<ULONG_PTR>(pEx) };
   RaiseException(NI_SEH_EXCEPTION_PANIC, 0, 1, exceptionArgs);
   #else
@@ -312,6 +317,48 @@ extern "C" __ni_module_export void cpp_sigabrt_handler(int)
 #endif
 }
 
+#ifdef niPanicAsPureInterface
+struct sPanicDescImpl : public sPanicDesc {
+  sPanicDescImpl(const iHString* aKind, cString&& aDesc) noexcept
+      : _kind(aKind)
+      , _desc(std::move(aDesc))
+  {
+    const_cast<iHString*>(_kind)->AddRef();
+  }
+
+  ~sPanicDescImpl()
+  {
+    if (_kind) {
+      const_cast<iHString*>(_kind)->Release();
+    }
+  }
+
+  const iHString* GetKind() const noexcept
+  {
+    return _kind;
+  }
+
+  const cString& GetDesc() const noexcept
+  {
+    return _desc;
+  }
+
+  const char* what() const noexcept
+  {
+    return _desc.c_str();
+  }
+
+  const iHString* _kind;
+  const cString _desc;
+};
+
+static sPanicDesc* _MakePanicDesc(const iHString* aKind, cString&& aDesc)
+{
+  return new sPanicDescImpl(aKind, astl::move(aDesc));
+}
+#endif
+
+#ifdef niPanicAsException
 sPanicDesc::sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept
     : _kind(aKind)
     , _desc(std::move(aDesc))
@@ -340,5 +387,6 @@ const char* sPanicDesc::what() const noexcept
 {
   return _desc.c_str();
 }
+#endif
 
 } // namespace ni

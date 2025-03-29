@@ -187,14 +187,22 @@ struct sNiCrashReport {
   #endif
 
   #ifdef niUseWindowsSEHExceptions
-    #define niPanicDescExport
+    #define niPanicAsPureInterface
   #else
-    #define niPanicDescExport __ni_module_export
+    #define niPanicAsException
   #endif
 
-struct niPanicDescExport sPanicDesc {
+  #ifdef niPanicAsPureInterface
+struct sPanicDesc {
+  virtual const iHString* GetKind() const noexcept = 0;
+  virtual const cString& GetDesc() const noexcept = 0;
+  virtual const char* what() const noexcept = 0;
+};
+
+  #elif niPanicAsException
+struct __ni_module_export sPanicDesc {
   sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept;
-  virtual ~sPanicDesc();
+  ~sPanicDesc();
 
   const iHString* GetKind() const noexcept;
   const cString& GetDesc() const noexcept;
@@ -210,6 +218,10 @@ struct niPanicDescExport sPanicDesc {
   sPanicDesc(sPanicDesc&& aRight) noexcept = delete;
   sPanicDesc() noexcept = delete;
 };
+  #else
+    #error \
+      "Unknown kind of panic implementation, expected niPanicAsPureInterface or niPanicAsException to be set."
+  #endif
 
   #ifdef niUseWindowsSEHExceptions
 extern "C" void* __cdecl _exception_info(void);

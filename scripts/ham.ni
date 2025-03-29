@@ -299,13 +299,13 @@ module <- {
     return proc
   }
 
-  function seqProcess(aCmd,aOptions) {
+  function seqProcess(aCmd,_aOptions) {
     local r = {
       _cmd = aCmd
       _options = {
-        differentStdOutAndStdErr = aOptions.?differentStdOutAndStdErr || false
-        drainStdErrBeforeStdIn = aOptions.?drainStdErrBeforeStdIn || false
-        detached = aOptions.?detached || false
+        differentStdOutAndStdErr = _aOptions.?differentStdOutAndStdErr || false
+        drainStdErrBeforeStdIn = _aOptions.?drainStdErrBeforeStdIn || false
+        detached = _aOptions.?detached || false
       }
       _debugEchoAll = _debugEchoAll
 
@@ -496,6 +496,76 @@ module <- {
     return seqProcess(
       getBashPath().quote() + " " + tmpFilePath.quote(),
       _aOptions)
+  }
+
+  function findNiExePath(_aBuild) {
+    local build = _aBuild || "ra";
+    local niExePath = "".setdir(::gLang.property["ni.dirs.bin"]).setfile("ni_"+build).setext(::lang.getExeExtension());
+    if (!::fs.fileExists(niExePath)) {
+      throw "Can't find the ni exe path '"+niExePath+"."
+    }
+    return niExePath;
+  }
+
+  function toArgString(aValue) string {
+    if (_debugEchoAll) {
+      ::dbg(::format("toArgString:" typeof(aValue)));
+    }
+    if (typeof(aValue) == "array") {
+      local nargs = aValue.len();
+      if (_debugEchoAll) {
+        ::dbg(::format("toArgString: nargs:" nargs));
+      }
+      local cmd = ""
+      foreach (i in nargs) {
+        if (!cmd.empty())
+          cmd += " ";
+        local v = aValue[?i];
+        if (_debugEchoAll) {
+          ::dbg(::format("toArgString: v:" i v));
+        }
+        cmd += toArgString(v);
+      }
+      return cmd
+    }
+    else {
+      local v;
+      if (typeof(aValue) == "string") {
+        v = aValue;
+      }
+      else {
+        v = ::lang.toString(aValue);
+      }
+      if (v.contains(" ")) {
+        v = v.quote();
+      }
+      return v;
+    }
+  }
+
+  function buildCmdFromArgs(_args_) string {
+    // NOTE: The _args_ keyword is a bit special (broken?), we cant iterate or
+    // index the array correctly so we pass it to toArgString which receives a
+    // usable array object.
+    return toArgString(_args_)
+  }
+
+  function buildNiCmd(array aVmArgs, string aScript, array aArgs) {
+    local niExePath = findNiExePath();
+    local scriptPath = ::fs.getAbsolutePath(aScript)
+    if (!::fs.fileExists(scriptPath)) {
+      throw "Cant find script file '"+scriptPath+"'.";
+    }
+
+    return buildCmdFromArgs(niExePath,aVmArgs||[],scriptPath,aArgs)
+  }
+
+  function seqNi(aVmArgs,aScript,aArgs,_aProcessOptions) {
+    local cmd = buildNiCmd(aVmArgs,aScript,aArgs)
+    if (_debugEchoAll) {
+      ::dbg(::format("seqNi cmd: {["+cmd+"]}"));
+    }
+    return ::ham.seqProcess(cmd,_aProcessOptions);
   }
 }
 

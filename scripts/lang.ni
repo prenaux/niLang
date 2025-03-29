@@ -93,30 +93,31 @@ local __lint = {
 {
   local d = ::GetLangDelegate("string")
   if (!d) throw "Can't get 'string' LangDelegate."
-  d.GetNumChars <- #() {
+  d.GetNumChars <- function() int {
     local that = ::LINT_AS_TYPE("string",this)
     local it = that.CreateCharIt(0)
     return it.num_chars
   }
-  d.quote <- function() {
+  d.quote <- function() string {
     local str = this;
     return "\"" + str + "\""
   }
-  d.unquote <- function() {
+  d.unquote <- function() string {
     local str = ::LINT_AS_TYPE("string",this);
     return str.trimex("\"");
   }
-  d.squote <- function() {
+  d.squote <- function() string {
     local str = this;
     return "'" + str + "'"
   }
-  d.unsquote <- function() {
+  d.unsquote <- function() string {
     local str = ::LINT_AS_TYPE("string",this);
     return str.trimex("'");
   }
-  d.replace <- function(aSearchFor, aReplaceBy) {
+  d.replace <- function(aSearchFor, aReplaceBy) string {
+    ::LINT_THIS_AS_TYPE("string")
     if (typeof aSearchFor == "table") {
-      local s = ::LINT_AS_TYPE("string",this);
+      local s = this;
       foreach (k,v in aSearchFor) {
         s = s.replace(k,v);
       }
@@ -206,7 +207,7 @@ local __lint = {
   // Join all elements of an array into a text, same as the regular join with
   // spaces but it takes into account punctuation to decide whether or not to
   // insert a space.
-  d.joinText <- function(_aFirst,_aLast,_aToString) {
+  d.joinText <- function(_aFirst,_aLast,_aToString) string {
     _aFirst = _aFirst || 0;
     _aLast = _aLast || this.len();
     _aToString = _aToString || ::lang.toString;
@@ -707,7 +708,7 @@ local __lint = {
 
   ///////////////////////////////////////////////
   // Build a printable string
-  function toPrintString(aMsg) {
+  function toPrintString(aMsg) string {
     switch (typeof aMsg) {
       case "string": {
         return aMsg;

@@ -192,6 +192,20 @@ struct sNiCrashReport {
     #define niPanicAsException
   #endif
 
+  //
+  // sPanicDesc holds panic information.
+  //
+  // Implementation notes:
+  // - On some platforms (niPanicAsPureInterface), this is a pure interface.
+  // - On others (niPanicAsException), it's implemented as a concrete class.
+  //
+  // This dual nature exists to handle C++ exception handling differences
+  // across dynamic library boundaries on different operating systems.
+  //
+  // Panics should be treated as an opaque type, they ARE NOT C++ exceptions.
+  //
+  // To handle them use the ni::RecoverPanic utility function.
+  //
   #ifdef niPanicAsPureInterface
 struct sPanicDesc {
   virtual const iHString* GetKind() const noexcept = 0;
@@ -199,16 +213,29 @@ struct sPanicDesc {
   virtual const char* what() const noexcept = 0;
 };
 
-  #elif niPanicAsException
+  #elif defined niPanicAsException
 struct __ni_module_export sPanicDesc {
-  sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept;
-  ~sPanicDesc();
-
   const iHString* GetKind() const noexcept;
   const cString& GetDesc() const noexcept;
 
   // Implement std::exception::what()
   const char* what() const noexcept;
+
+    #if !defined __Maybe_niPanicAsExceptionPrivateImplementation
+ private:
+    #endif
+  //
+  // This constructor is private outside of its implementation to prevent
+  // direct instantiation by client code. Panics are NOT exceptions - they
+  // are implemented this way only on some platforms due to C++ cross-module
+  // exception handling limitations.
+  //
+  // Panics should be treated as an opaque type, they ARE NOT C++ exceptions.
+  //
+  // To handle them use the ni::RecoverPanic utility function.
+  //
+  sPanicDesc(const iHString* aKind, cString&& aDesc) noexcept;
+  ~sPanicDesc();
 
  private:
   const iHString* _kind;

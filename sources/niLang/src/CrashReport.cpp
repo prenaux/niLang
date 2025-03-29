@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "API/niLang/Types.h"
+#define __Maybe_niPanicAsExceptionPrivateImplementation
 #include "API/niLang/Utils/CrashReport.h"
 #include "API/niLang/ILang.h"
 

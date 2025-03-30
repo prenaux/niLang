@@ -157,17 +157,15 @@ void cButtonWidget::Measure_PushButton(const sRectf& aWidgetRect)
     // ratio of the icon by default.
     sVec2f layoutSize =
       (mvIconSize != sVec2f::Zero()) ? mvIconSize : pIcon->GetSize();
-    sVec2f drawSize;
+    sVec2f drawSize = layoutSize;
     if (niFlagIs(nStyle, eWidgetButtonStyle_IconStretch)) {
       // both stretched so same size
       drawSize = layoutSize = destRectSize;
     }
-    else {
-      if (niFlagIs(nStyle, eWidgetButtonStyle_IconFit)) {
-        // fit the layout in the destination size
-        layoutSize =
-          Rectf(0, 0, layoutSize).FitInto(Rectf(0, 0, destRectSize)).GetSize();
-      }
+    else if (niFlagIs(nStyle, eWidgetButtonStyle_IconFit)) {
+      // fit the layout in the destination size
+      layoutSize =
+        Rectf(0, 0, layoutSize).FitInto(Rectf(0, 0, destRectSize)).GetSize();
       // the drawSize is always fitted in the layoutSize
       drawSize = Rectf(0, 0, pIcon->GetSize())
                    .FitInto(Rectf(0, 0, layoutSize))

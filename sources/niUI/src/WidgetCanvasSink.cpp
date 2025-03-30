@@ -131,7 +131,7 @@ tBool cWidgetCanvasSink::OnWidgetSink(ni::iWidget* apWidget, tU32 nMsg,
       if (c.IsOK()) {
         sRectf clientRect = mpWidget->GetClientRect();
         if (hasFillColor) {
-          c->BlitFillAlpha(clientRect, skin.mnFillColor);
+          c->BlitFill(clientRect, skin.mnFillColor);
         }
         if (hasBorderColor) {
           const sVec4f padding = mpWidget->GetPadding();
@@ -394,6 +394,6 @@ void cWidgetCanvasSink::InitSkin()
 {
   skin.mnBorderColor = ULColorBuild(
     mpWidget->FindSkinColor(Vec4<tF32>(1, 1, 1, 1), NULL, NULL, _H("Border")));
-  skin.mnFillColor = ULColorBuild(
-    mpWidget->FindSkinColor(Vec4<tF32>(0, 0, 0, 0), NULL, NULL, _H("Fill")));
+  skin.mnFillColor = ULColorBuild(mpWidget->FindSkinColor(
+    Vec4<tF32>(0, 0, 0, 0), NULL, NULL, _H("Background")));
 }

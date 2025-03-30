@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 
-#if defined _FLYMAKE
-  #define NI_CONSOLE
-#endif
 
 #if defined NI_CONSOLE
   #pragma message("Building Console Ni")
   #define NI_REPL
 #elif defined NI_WINDOWED
   #pragma message("Building Windowed Ni")
+#elif defined _FLYMAKE
+  #define NI_CONSOLE
+  #define NI_REPL
 #else
   #error "Ni Build type not defined."
 #endif

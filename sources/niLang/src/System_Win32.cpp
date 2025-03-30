@@ -3349,6 +3349,10 @@ struct sOpenFileNameDialog {
     else {
       niWin32_UTF8ToUTF16(wInitDir, GetProperty("ni.dirs.home").Chars());
     }
+    // Convert forward slashes to backslashes
+    for (wchar_t* p = wInitDir.data(); *p; ++p) {
+      if (*p == L'/') *p = L'\\';
+    }
     ofn.lpstrInitialDir = wInitDir.data();
   }
 

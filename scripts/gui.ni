@@ -866,7 +866,7 @@
   }
 
   ///////////////////////////////////////////////
-  function loadFormEx(aRes,aParent,aID,aTitle,aStyle,aRect,abCenter,abExclusive) {
+  function loadFormEx(aRes,aParent,aID,aTitle,aStyle,aRect,abCenter,abExclusive) iWidget {
     local form = ::gUIContext.CreateWidgetFromResource(aRes,aParent,aID?aID:"",aTitle?aTitle:"")
     if (!form)    throw "Can't create form from resource '"+aRes+"'."
     if (!aStyle)  form.style = aParent ? (0) : (::eWidgetFormStyle.Default|::eWidgetStyle.FocusActivate|::eWidgetStyle.HoldFocus|::eWidgetFormStyle.CloseButton)
@@ -877,7 +877,7 @@
 
     return form
   }
-  function loadForm(aRes,aParent,aID) {
+  function loadForm(aRes,aParent,aID) iWidget {
     return loadFormEx(aRes,aParent,aID,null,null,null,false,false)
   }
 

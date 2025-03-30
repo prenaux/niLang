@@ -85,14 +85,14 @@ static __forceinline void TextLineMetric_PushToCanvas(
   if (apRectClipH) {
     const tU32 numGlyphs = (tU32)apTM->glyphs.size();
     tU32 i = 0;
-    // find the first visible glyph
-    const tF32 lp = apRectClipH->Left() - avPos.x;
+    // find the first visible glyph, +1 to include the edge
+    const tF32 lp = (apRectClipH->Left() - avPos.x) + 1;
     for (; i < numGlyphs; ++i, ++gm) {
-      if (gm->displayPos.z >= lp)
+      if (gm->displayPos.z > lp)
         break;
     }
-    // draw all the visible glyphs
-    const tF32 rp = apRectClipH->Right() - avPos.x;
+    // draw all the visible glyphs, +1 to include the edge
+    const tF32 rp = (apRectClipH->Right() - avPos.x) + 1;
     for (; i < numGlyphs; ++i, ++gm) {
       if (gm->displayPos.z > rp)
         break;

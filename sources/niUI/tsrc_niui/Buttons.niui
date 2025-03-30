@@ -1,0 +1,102 @@
+<Canvas
+  title="Button Test"
+  id="ID_Form"
+  client_size="Vec2(400,500)"
+  padding="Vec4(20,20,20,20)"
+  code="Buttons_form.ni">
+
+  <Dummy margin="Vec4(50,50,50,50)" dock_style="DockFill">
+
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_PushButton1"
+    text="Push Button 1"
+    style="eWidgetButtonStyle.TextCenter" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_PushButton2"
+    text="Push Button 2"
+    style="eWidgetButtonStyle.TextLeft" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_PushButton3"
+    text="Push Button 3"
+    style="eWidgetButtonStyle.TextRight" />
+
+  <Dummy height="5" dock_style="DockTop" />
+
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_CheckButton1"
+    text="Checkbox 1"
+    style="eWidgetButtonStyle.CheckBox|eWidgetButtonStyle.OnOff" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_CheckButton2"
+    text="Checkbox 2"
+    style="eWidgetButtonStyle.CheckBox|eWidgetButtonStyle.OnOff" />
+
+  <Dummy height="5" dock_style="DockTop" />
+
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_RadioButton1"
+    text="Radio 1"
+    style="eWidgetButtonStyle.RadioButton"
+    group_id="radio_group" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_RadioButton2"
+    text="Radio 2"
+    style="eWidgetButtonStyle.RadioButton"
+    group_id="radio_group" />
+
+  <Dummy height="5" dock_style="DockTop" />
+
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_CheckButtonRight1"
+    text="Checkbox Right 1"
+    style="eWidgetButtonStyle.CheckBox|eWidgetButtonStyle.OnOff|eWidgetButtonStyle.TextRight" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_CheckButtonRight2"
+    text="Checkbox Right 2"
+    style="eWidgetButtonStyle.CheckBox|eWidgetButtonStyle.OnOff|eWidgetButtonStyle.TextRight" />
+
+  <Dummy height="5" dock_style="DockTop" />
+
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_RadioButtonRight1"
+    text="Radio Right 1"
+    style="eWidgetButtonStyle.RadioButton|eWidgetButtonStyle.TextRight"
+    group_id="radio_group_right" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_RadioButtonRight2"
+    text="Radio Right 2"
+    style="eWidgetButtonStyle.RadioButton|eWidgetButtonStyle.TextRight"
+    group_id="radio_group_right" />
+  <Button
+    dock_style="DockTop"
+    height="25"
+    id="ID_RadioButtonRight3"
+    text="Radio Right 3"
+    style="eWidgetButtonStyle.RadioButton|eWidgetButtonStyle.TextRight"
+    group_id="radio_group_right" />
+
+  </Dummy>
+
+</Canvas>

@@ -342,13 +342,12 @@ void cButtonWidget::Measure_CheckRadioButton(const sRectf& aWidgetRect)
   tF32 xoff = 0;
   tF32 yoff =
     ni::UnitSnapf((mrectText.GetHeight() - frame->GetSize().y) * 0.5f);
-  sVec2f framePos;
   if (niFlagIs(nStyle, eWidgetButtonStyle_TextRight)) {
-    framePos = Vec2<tF32>(mrectText.Right() - frame->GetSize().x, yoff);
+    mrectIcon = Vec2<tF32>(mrectText.Right() - frame->GetSize().x, yoff);
     mrectText.Right() -= frame->GetSize().x + 4;
   }
   else {
-    framePos = Vec2<tF32>(xoff, yoff);
+    mrectIcon = Vec2<tF32>(xoff, yoff);
     mrectText.Left() += frame->GetSize().x + 4;
   }
 }
@@ -357,35 +356,23 @@ void cButtonWidget::Paint_CheckRadioButton(const sRectf& rect,
                                            ain_nn<iCanvas> apCanvas) const
 {
   tU32 nStyle = mpWidget->GetStyle();
-  sRectf txtrect = rect;
   iFont* pFont = NULL;
   iOverlay* frame = NULL;
   tBool bIsPressed;
   _GetStatusItems(&frame, &pFont, NULL, &bIsPressed);
 
-  tF32 xoff = 0;
-  tF32 yoff = ni::UnitSnapf((rect.GetHeight() - frame->GetSize().y) * 0.5f);
-  sVec2f framePos;
-  if (niFlagIs(nStyle, eWidgetButtonStyle_TextRight)) {
-    framePos = Vec2<tF32>(rect.Right() - frame->GetSize().x, yoff);
-    txtrect.Right() -= frame->GetSize().x + 4;
-  }
-  else {
-    framePos = Vec2<tF32>(xoff, yoff);
-    txtrect.Left() += frame->GetSize().x + 4;
-  }
-
   apCanvas->BlitOverlay(
-    sRectf(framePos.x, framePos.y, frame->GetSize().x, frame->GetSize().y),
+    sRectf(mrectIcon.x, mrectIcon.y, frame->GetSize().x, frame->GetSize().y),
     frame);
   if (mbChecked) {
-    apCanvas->BlitOverlay(sRectf(framePos.x, framePos.y, skin.mark->GetSize().x,
+    apCanvas->BlitOverlay(sRectf(mrectIcon.x, mrectIcon.y,
+                                 skin.mark->GetSize().x,
                                  skin.mark->GetSize().y),
                           skin.mark);
   }
 
   if (!niFlagIs(nStyle, eWidgetButtonStyle_NoText) && pFont) {
-    apCanvas->BlitText(pFont, txtrect,
+    apCanvas->BlitText(pFont, mrectText,
                        eFontFormatFlags_CenterV | eFontFormatFlags_ClipH |
                          eFontFormatFlags_ClipV |
                          (niFlagIs(nStyle, eWidgetButtonStyle_TextRight)

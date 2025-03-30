@@ -22,11 +22,13 @@ cd "$SCRIPT_DIR"
 
   # ham Run_Test_niUI FIXTURE=FRayTracer,LitTexturedCube
   # ham Run_Test_niUI FIXTURE=FRayTracer,Triangle
-  # ham Run_Test_niUI_niui_ListBox
-  # ham Run_Test_niUI_niui_Text
 
   # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Quad
   # ham Run_Test_niUI_GDRV FIXTURE=FRayPipeline,Triangle
   # ham Run_Test_niUI_GDRV FIXTURE=FRayQuery,IntSphere
-  ham Run_Test_niUI_GDRV FIXTURE=FGpu,Triangle
+  # ham Run_Test_niUI_GDRV FIXTURE=FGpu,Triangle
+
+  # ham Run_Test_niUI_niui_ListBox
+  # ham Run_Test_niUI_niui_Text
+  ham Run_Test_niUI_niui_Buttons
 )

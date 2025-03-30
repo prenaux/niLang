@@ -70,16 +70,10 @@ iOverlay* cButtonWidget::GetIconHover() const
 
 void cButtonWidget::SetIconSize(const sVec2f& avSize)
 {
-  if (mpWidget->GetID() == _H("Gizmo.Select")) {
-    mvIconSize = Vec2f(111, 111);
-  }
   mvIconSize = avSize;
 }
 sVec2f cButtonWidget::GetIconSize() const
 {
-  if (mpWidget->GetID() == _H("Gizmo.Select")) {
-    return mvIconSize;
-  }
   return mvIconSize;
 }
 

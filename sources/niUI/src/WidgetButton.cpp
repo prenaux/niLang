@@ -479,6 +479,7 @@ tBool cButtonWidget::OnWidgetSink(iWidget* apWidget, tU32 nMsg,
       if (nFlags & eWidgetSerializeFlags_Write) {
         ptrDT->SetString(_A("group_id"), niHStr(mhspGroupID));
         ptrDT->SetInt(_A("checked"), GetCheck());
+        // TODO: We should write the icon properties aswell?
       }
       else if (nFlags & eWidgetSerializeFlags_Read) {
         tU32 nIndex = ptrDT->GetPropertyIndex(_A("group_id"));
@@ -502,8 +503,12 @@ tBool cButtonWidget::OnWidgetSink(iWidget* apWidget, tU32 nMsg,
           }
         }
         nIndex = ptrDT->GetPropertyIndex(_A("icon_size"));
-        if (nIndex != eInvalidHandle && mptrIconNormal.IsOK()) {
-          mptrIconNormal->SetSize(ptrDT->GetVec2FromIndex(nIndex));
+        if (nIndex != eInvalidHandle) {
+          mvIconSize = ptrDT->GetVec2FromIndex(nIndex);
+        }
+        nIndex = ptrDT->GetPropertyIndex(_A("icon_margin"));
+        if (nIndex != eInvalidHandle) {
+          mvIconMargin = ptrDT->GetVec4FromIndex(nIndex);
         }
       }
     }

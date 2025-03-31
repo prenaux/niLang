@@ -1030,6 +1030,28 @@
     }
   }
 
+  function createHideOnEscapeSink(aWidget) iWidgetSink {
+    local sink = {
+      function OnKeyDown(aW,aA,aB) {
+        switch (aA) {
+          case ::eKey.Escape: {
+            local dockable = aW.QueryInterface("iWidgetDockable")
+            if (dockable && dockable.GetIsDocked()) {
+              return false;
+            }
+            aW.enabled = false;
+            aW.visible = false;
+            return true;
+          }
+        }
+      }
+    }.SetDelegate(::gui.baseWidgetSink)
+    if (aWidget) {
+      aWidget.AddPostSink(sink)
+    }
+    return ::QueryInterface(sink,"iWidgetSink");
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////
 } // end of gui
 

@@ -475,16 +475,24 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
                                        const tUUID& aIID)
   {
 
-  #define CHECK_SCRIPTCPP_RES(CHECK, DESC)                              \
-    if (!(CHECK)) {                                                     \
-      niError(niFmt("Invalid ScriptCpp resource definition '%s'. " DESC \
-                    " (Syntax: TOOLKIT/sources/MODULE/path/CLASS.cpp)", \
-                    ahspCodeResource));                                 \
-      return nullptr;                                                   \
+  #define CHECK_SCRIPTCPP_RES(CHECK, DESC)                                                                    \
+    if (!(CHECK)) {                                                                                           \
+      niError(niFmt(                                                                                          \
+        "Invalid ScriptCpp resource definition '%s'. " DESC                                                   \
+        " (Syntax: TOOLKIT/sources/MODULE/path/CLASS.cpp or CLASSNAME#TOOLKIT/sources/MODULE/path/File.cpp)", \
+        ahspCodeResource));                                                                                   \
+      return nullptr;                                                                                         \
     }
 
-    const cString strResource = niHStr(ahspCodeResource);
+    cString strResource = niHStr(ahspCodeResource);
     CHECK_SCRIPTCPP_RES(strResource.IsNotEmpty(), "Empty.");
+
+    // Check for explicit class name at the beginning
+    cString strExplicitClass;
+    if (strResource.contains("#")) {
+      strExplicitClass = strResource.Before("#");
+      strResource = strResource.After("#");
+    }
 
     const cString strTkName = strResource.Before("/sources/");
     CHECK_SCRIPTCPP_RES(strTkName.IsNotEmpty(), "No TOOLKIT.");
@@ -495,7 +503,10 @@ struct CppScriptingHost : public ImplRC<iScriptingHost> {
     const cString strModule = strPath.Before("/");
     CHECK_SCRIPTCPP_RES(strModule.IsNotEmpty(), "No MODULE.");
 
-    const cString strClass = strPath.RAfter("/").RBefore(".");
+    // Use explicit class name if specified, otherwise use filename
+    const cString strClass = strExplicitClass.IsNotEmpty()
+                               ? strExplicitClass
+                               : strPath.RAfter("/").RBefore(".");
     CHECK_SCRIPTCPP_RES(strClass.IsNotEmpty(), "No CLASS.");
 
     const cString strModuleFileName = _GetModuleFileName(strModule);

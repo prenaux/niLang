@@ -25,9 +25,6 @@ static const tU32 _knMaxVertsBeforeAutoFlush =
 enum CANVAS_FLAGS {
   CANVAS_FLAGS_BakeTransform = niBit(1),
   CANVAS_FLAGS_LineConstantScreenSize = niBit(2),
-  CANVAS_FLAGS_Blitting = niBit(3),
-  CANVAS_FLAGS_BBRightSet = niBit(4),
-  CANVAS_FLAGS_BBUpSet = niBit(5),
 };
 
 struct sGraphicsCanvasStates {
@@ -1929,16 +1926,6 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
   virtual void __stdcall SetBillboard(tBillboardModeFlags aBB)
   {
     mStates.mBBMode = aBB;
-    if (mStates.mBBMode) {
-      if (!niFlagIs(mStates.mnFlags, CANVAS_FLAGS_BBRightSet)) {
-        SetBillboardRight(MatrixGetRight(
-          mStates.mvBBRight, mptrContext->GetFixedStates()->GetViewMatrix()));
-      }
-      if (!niFlagIs(mStates.mnFlags, CANVAS_FLAGS_BBUpSet)) {
-        SetBillboardUp(MatrixGetUp(
-          mStates.mvBBUp, mptrContext->GetFixedStates()->GetViewMatrix()));
-      }
-    }
   }
   virtual tBillboardModeFlags __stdcall GetBillboard() const
   {
@@ -1947,7 +1934,6 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
   virtual void __stdcall SetBillboardRight(const sVec3f& avRight)
   {
     mStates.mvBBRight = avRight;
-    niFlagOn(mStates.mnFlags, CANVAS_FLAGS_BBRightSet);
   }
   virtual sVec3f __stdcall GetBillboardRight() const
   {
@@ -1956,7 +1942,6 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
   virtual void __stdcall SetBillboardUp(const sVec3f& avUp)
   {
     mStates.mvBBUp = avUp;
-    niFlagOn(mStates.mnFlags, CANVAS_FLAGS_BBUpSet);
   }
   virtual sVec3f __stdcall GetBillboardUp() const
   {

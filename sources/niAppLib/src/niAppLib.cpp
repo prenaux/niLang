@@ -209,21 +209,25 @@ struct AppWindow
     // update the console
     ni::GetConsole()->PopAndRunAllCommands();
 
+    sRecti windowRect = Recti(0, 0, mpContext->_window->GetClientSize().x,
+                              mpContext->_window->GetClientSize().y);
+
+    if (mpContext->_config.clearBuffers) {
+      // Make sure we clear the whole buffer
+      mpContext->_graphicsContext->SetViewport(windowRect);
+      mpContext->_graphicsContext->SetScissorRect(windowRect);
+      mpContext->_graphicsContext->ClearBuffers(mpContext->_config.clearBuffers,
+                                                mpContext->_config.clearColor,
+                                                1.0f, 0);
+    }
+
     // Update the UI Context if the window is active
     if (mpContext->_config.backgroundUpdate ||
         mpContext->_window->GetIsActive())
     {
-      mpContext->_uiContext->Resize(
-        Rectf(0, 0, mpContext->_window->GetClientSize().x,
-              mpContext->_window->GetClientSize().y),
-        mpContext->GetContentsScale());
+      mpContext->_uiContext->Resize(windowRect.ToFloat(),
+                                    mpContext->GetContentsScale());
       mpContext->_uiContext->Update(ni::GetLang()->GetFrameTime());
-    }
-
-    if (mpContext->_config.clearBuffers) {
-      mpContext->_graphicsContext->ClearBuffers(mpContext->_config.clearBuffers,
-                                                mpContext->_config.clearColor,
-                                                1.0f, 0);
     }
 
     // Draw the UI Context

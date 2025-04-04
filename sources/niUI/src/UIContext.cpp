@@ -41,8 +41,9 @@ static void _ApplyViewport(iGraphicsContext* apContext, const sRectf& aViewport,
   iFixedStates* fs = apContext->GetFixedStates();
 
   sMatrixf viewportMatrix = sMatrixf::Identity();
-  MatrixTranslation(viewportMatrix,
-                    Vec3f(aViewport.x, aViewport.y, 0) * (afContentsScale - 1));
+  MatrixTranslation(
+    viewportMatrix,
+    UnitSnapf(Vec3f(aViewport.x, aViewport.y, 0) * (afContentsScale - 1)));
   MatrixScale(viewportMatrix, viewportMatrix,
               Vec3f(afContentsScale, afContentsScale, 1));
   fs->SetCameraViewMatrix(viewportMatrix);

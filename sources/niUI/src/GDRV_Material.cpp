@@ -482,9 +482,9 @@ tBool cMaterial::SerializeWrite(iDataTableWriteStack* apDT,
                sizeof(sMaterialChannel)) == 0)
       continue;
     apDT->PushNew(_A("Channel"));
+
     // base parameters
     apDT->SetEnum(_A("type"), niEnumExpr(eMaterialChannel), c);
-    apDT->SetVec4(_A("color"), GetChannelColor(c));
 
     // texture
     iTexture* pTex = GetChannelTexture(c);
@@ -492,17 +492,20 @@ tBool cMaterial::SerializeWrite(iDataTableWriteStack* apDT,
       niIsOK(pTex) ? pTex->GetDeviceResourceName() : NULL;
     if (pTex) {
       apDT->SetHString(_A("texture"), hspTexName);
-      apDT->SetEnum(_A("texture_flags"), niFlagsExpr(eTextureFlags),
-                    pTex->GetFlags());
     }
     else {
       apDT->SetString(_A("texture"), _A(""));
-      apDT->SetString(_A("texture_flags"), _A("eTextureFlags.Default"));
     }
+
+    // color
+    apDT->SetVec4(_A("color"), GetChannelColor(c));
+
+    // sampler_states
     if (GetChannelSamplerStates(c) != DEFAULT_SS) {
       apDT->SetEnum("sampler_states", niEnumExpr(eCompiledStates),
                     GetChannelSamplerStates(c));
     }
+
     apDT->Pop();
   }
   apDT->Pop();

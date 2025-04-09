@@ -20,6 +20,8 @@ if (!::gUIContext) {
   mbExiting = false
   mMainWindow = null
   mDebugDumpedFPS = 0
+  mLastUpdate = ::gLang.TimerInSeconds()
+  mInUpdateProgress = false
 
   // Loading queue
   mLQ = ::loading_queue.Clone()
@@ -28,6 +30,31 @@ if (!::gUIContext) {
   ///////////////////////////////////////////////
   // Called when a blocking process wants progress to be reported
   function updateProgress() {
+    if (mInUpdateProgress) {
+      return;
+    }
+    mInUpdateProgress = true
+    local currentTimer = ::gLang.TimerInSeconds();
+    local timeSinceLastUpdate = currentTimer - mLastUpdate;
+    try {
+      // ::println("UPDATE PROGRESS: timeSinceLastUpdate:" timeSinceLastUpdate
+      //   "mLastUpdate:" mLastUpdate)
+      if (timeSinceLastUpdate > 0.25) {
+        ::gUIContext.Update(0.0);
+        ::gUIContext.Draw();
+        ::gUIContext.DrawCursor(::?gWindow);
+        ::gGraphicsContext.Display(0, ::Rect());
+        ::gLang.UpdateFrameTime(currentTimer);
+        //::println("UPDATE PROGRESS: Done.")
+      }
+      else {
+        //::println("UPDATE PROGRESS: Skipped, not enough timeSinceLastUpdate.")
+      }
+    }
+    catch (e) {
+      ::println("UPDATE PROGRESS FAILED:" + e)
+    }
+    mInUpdateProgress = false
   }
 
   ///////////////////////////////////////////////
@@ -44,6 +71,7 @@ if (!::gUIContext) {
   ///////////////////////////////////////////////
   // Called when the Application is update, after the standard updates
   function appUpdate() {
+    mLastUpdate = ::gLang.TimerInSeconds()
   }
 
   ///////////////////////////////////////////////

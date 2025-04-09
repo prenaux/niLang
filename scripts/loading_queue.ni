@@ -38,14 +38,15 @@
     gc.viewport = vp
     gc.scissor_rect = vp
 
+    local spinnerN = 3;
     if (mMiniProgress) {
-      local subSize = 7 * aContentsScale
+      local subSize = 8 * aContentsScale
       local margin = ::Vec2(subSize)
-      local spinnerSize = getSpinnerSize(subSize)
+      local spinnerSize = getSpinnerSize(subSize,spinnerN)
       local spinnerPos = ::Vec2(vp.width-spinnerSize.x-3,vp.height-spinnerSize.y-3)-margin
       mCanvas.SetDefaultMaterial(null,::eBlendMode.Translucent,0)
       mCanvas.RectA(spinnerPos-margin,spinnerPos+spinnerSize+margin,0,0x33000000)
-      drawSpinner(mCanvas,spinnerPos,subSize)
+      drawSpinner(mCanvas,spinnerPos,subSize,spinnerN)
 
       if (mFont && mProgressMessage) {
         local spinnerHeight = spinnerSize.y + margin.y*2.0 + 8
@@ -57,9 +58,9 @@
       }
     }
     else {
-      local subSize = 7 * aContentsScale
+      local subSize = 8 * aContentsScale
       local margin = ::Vec2(2,3) * aContentsScale
-      local spinnerSize = getSpinnerSize(subSize)
+      local spinnerSize = getSpinnerSize(subSize,spinnerN)
       local spinnerPos = ::Vec2(vp.width/2.0-spinnerSize.x/2.0,vp.height/2.0-spinnerSize.y/2.0)
 
       mCanvas.SetDefaultMaterial(null,::eBlendMode.Translucent,0)
@@ -76,22 +77,22 @@
                      ::eFontFormatFlags.CenterH|::eFontFormatFlags.CenterV|::eFontFormatFlags.Border,
                      mProgressMessage)
       }
-      drawSpinner(mCanvas,spinnerPos - ::Vec2(0,spinnerSize.y / 2.0),subSize)
+      drawSpinner(mCanvas,spinnerPos - ::Vec2(0,spinnerSize.y / 2.0),subSize,spinnerN)
     }
 
     mCanvas.Flush()
     return mQueue.empty() ? false : true
   }
 
-  function getSpinnerSize(subSize) {
-    return ::Vec2(3*(subSize+1),3*(subSize+1))
+  function getSpinnerSize(subSize,N) {
+    return ::Vec2(N*(subSize+1),N*(subSize+1))
   }
-  function drawSpinner(aCanvas,spinnerPos,subSize) {
+  function drawSpinner(aCanvas,spinnerPos,subSize,N) {
     aCanvas.SetDefaultMaterial(null,::eBlendMode.NoBlending,0)
     local xpos = spinnerPos.x
-    for (local x = 0; x < 3; ++x) {
+    for (local x = 0; x < N; ++x) {
       local ypos = spinnerPos.y
-      for (local y = 0; y < 3; ++y) {
+      for (local y = 0; y < N; ++y) {
         local p = ::Vec2(xpos,ypos)
         local f = ::gMath.Max(0.3,::gMath.RandFloat())
         aCanvas.RectA(p,p+::Vec2(subSize,subSize),0,

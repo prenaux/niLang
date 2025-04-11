@@ -1,5 +1,5 @@
-#ifndef __THREADBASEIMPL_7799222_H__
-#define __THREADBASEIMPL_7799222_H__
+#ifndef __THREADIMPL_H_ADD7FA69_FD57_4E9A_9AA7_9EB4924B385A__
+#define __THREADIMPL_H_ADD7FA69_FD57_4E9A_9AA7_9EB4924B385A__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
 #include "UnknownImpl.h"
@@ -87,9 +87,9 @@ struct ThreadEvent : public Impl_HeapAlloc {
 
 } // namespace ni
 
-#else
+#else // #ifdef niNoThreads
 
-  #ifdef niWin32
+  #if defined niWin32
 // We don't include windows.h because it pollutes the global namespace horribly.
 extern "C" {
 
@@ -159,25 +159,21 @@ MY_WINBASEAPI void MY_WINAPI Sleep(MY_DWORD dwMilliseconds);
 
 namespace ni {
 
+static inline tU64 ThreadGetCurrentThreadID()
+{
   #ifdef niWin32
-static inline tU64 ThreadGetCurrentThreadID()
-{
   return ::GetCurrentThreadId();
-}
   #elif defined niOSX || defined niIOS
-static inline tU64 ThreadGetCurrentThreadID()
-{
   uint64_t tid;
   pthread_threadid_np(NULL, &tid);
   return tid;
-}
-  #else
-static inline tU64 ThreadGetCurrentThreadID()
-{
+  #elif defined niPosix
   // Maybe should return a U32 (some implementation might return a 64bit pointer...)
   return (tU64)pthread_self();
-}
+  #else
+    #error "ThreadGetCurrentThreadID not implemented on this platform!"
   #endif
+}
 
 } // namespace ni
 
@@ -348,7 +344,7 @@ struct ThreadEvent : public Impl_HeapAlloc {
   //
   //----------------------------------------------------------------------------
   #ifdef niWin32
-  // #include <windows.h>
+    // #include <windows.h>
   #elif defined niOSX || defined niIOS
     #include <mach/mach.h>
   #elif defined niLinux || defined niQNX
@@ -483,9 +479,9 @@ niExportFunc(void) ni_join_all_threads();
     #undef MY_INFINITE
   #endif
 
-#endif
+#endif // #ifdef niNoThreads
 
 /// EOF //////////////////////////////////////////////////////////////////////////////////////
 /**@}*/
 /**@}*/
-#endif // __THREADBASEIMPL_7799222_H__
+#endif // __THREADIMPL_H_ADD7FA69_FD57_4E9A_9AA7_9EB4924B385A__

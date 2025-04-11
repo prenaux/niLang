@@ -55,6 +55,7 @@ class TimerManager {
 
   typedef astl::map<sHandlerAndId, sTimer> tTimerMap;
   tTimerMap mmapTimers;
+  tBool mbUpdatingTimers = eFalse;
 
  public:
   void ClearTimers()
@@ -103,13 +104,20 @@ class TimerManager {
     }
   }
 
-  void UpdateTimers(tF32 afFrameTime)
+  tBool UpdateTimers(tF32 afFrameTime)
   {
     niAssert(afFrameTime >= 0.0f && afFrameTime <= 10.0f);
-    for (tTimerMap::iterator it = mmapTimers.begin(); it != mmapTimers.end();) {
+    if (mbUpdatingTimers) {
+      niWarning(niFmt("Re-entrant UpdateTimers '%s'.", GetTimersName()));
+      return eFalse;
+    }
+
+    mbUpdatingTimers = eTrue;
+    niDefer { mbUpdatingTimers = eFalse; };
+    for (tTimerMap::iterator it = mmapTimers.begin(); it != mmapTimers.end(); ++it) {
       sTimer& timer = it->second;
       if (timer.mfDuration <= niEpsilon5) {
-        it = astl::map_erase(mmapTimers, it);
+        continue;
       }
       else {
         timer.mfStart += afFrameTime;
@@ -135,9 +143,9 @@ class TimerManager {
         if (mmapTimers.empty()) {
           break; // in case timers have been cleared by TimerTriggered
         }
-        ++it;
       }
     }
+
     // Remove all invalid timers
     {
       for (tTimerMap::iterator it = mmapTimers.begin(); it != mmapTimers.end();)
@@ -151,6 +159,8 @@ class TimerManager {
         }
       }
     }
+
+    return eFalse;
   }
 
   virtual const achar* __stdcall GetTimersName() const = 0;

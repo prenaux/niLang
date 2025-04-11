@@ -183,139 +183,142 @@ fragment main0_out main0(const device void* spvBufferAliasSet9Binding0 [[buffer(
     const device auto& nil_builtin_GetVertexRay = *(const device spvUnsafeArray<SBO_GetVertexRay, 1>*)spvBufferAliasSet9Binding0;
     const device auto& nil_builtin_GetIndex = *(const device spvUnsafeArray<SBO_GetIndex, 1>*)spvBufferAliasSet9Binding0;
     main0_out out = {};
-    niUIGpuFuncs_RayUniforms _954;
-    _954.rtWidth = IN_1_aUniforms.v.rtWidth;
-    _954.rtHeight = IN_1_aUniforms.v.rtHeight;
-    _954.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
-    _954.padding = IN_1_aUniforms.v.padding;
-    _954.cameraInvView = IN_1_aUniforms.v.cameraInvView;
-    _954.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
-    float3 _1059 = float3(_954.cameraInvView[3].x, _954.cameraInvView[3].y, _954.cameraInvView[3].z);
-    float4 _1178 = _954.cameraInvViewProj * float4(((gl_FragCoord.x / _954.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _954.rtHeight) * 2.0), 1.0, 1.0);
-    float3 _1067 = fast::normalize((_1178 / float4(_1178.w)).xyz - _1059);
+    niUIGpuFuncs_RayUniforms _965;
+    _965.rtWidth = IN_1_aUniforms.v.rtWidth;
+    _965.rtHeight = IN_1_aUniforms.v.rtHeight;
+    _965.cameraFarClipPlane = IN_1_aUniforms.v.cameraFarClipPlane;
+    _965.padding = IN_1_aUniforms.v.padding;
+    _965.cameraInvView = IN_1_aUniforms.v.cameraInvView;
+    _965.cameraInvViewProj = IN_1_aUniforms.v.cameraInvViewProj;
+    float3 _1070 = float3(_965.cameraInvView[3].x, _965.cameraInvView[3].y, _965.cameraInvView[3].z);
+    float4 _1189 = _965.cameraInvViewProj * float4(((gl_FragCoord.x / _965.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _965.rtHeight) * 2.0), 1.0, 1.0);
+    float3 _1078 = fast::normalize((_1189 / float4(_1189.w)).xyz - _1070);
     raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery_1;
-    rayQuery_1.reset(ray(_1059, _1067, 0.001000000047497451305389404296875, _954.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(0u));
-    bool _1074 = rayQuery_1.next();
-    uint _1225 = uint(rayQuery_1.get_committed_intersection_type());
-    int _1226 = rayQuery_1.get_committed_user_instance_id();
-    uint _1231 = uint(_1226);
-    niUIGpuFuncs_RayInstanceData _1235;
-    _1235.ibIndex = nil_builtin_GetRayInstanceData[_1231]->v.ibIndex;
-    _1235.vbIndex = nil_builtin_GetRayInstanceData[_1231]->v.vbIndex;
-    _1235.firstIndex = nil_builtin_GetRayInstanceData[_1231]->v.firstIndex;
-    _1235.baseVertexIndex = nil_builtin_GetRayInstanceData[_1231]->v.baseVertexIndex;
-    _1235.texIndex = nil_builtin_GetRayInstanceData[_1231]->v.texIndex;
-    _1235.materialColor = nil_builtin_GetRayInstanceData[_1231]->v.materialColor;
+    rayQuery_1.reset(ray(_1070, _1078, 0.001000000047497451305389404296875, _965.cameraFarClipPlane), IN_1_aAS, 255u, spvMakeIntersectionParams(16u));
+    bool _1085 = rayQuery_1.next();
+    uint _1237 = uint(rayQuery_1.get_committed_intersection_type());
+    int _1238 = rayQuery_1.get_committed_user_instance_id();
+    uint _1243 = uint(_1238);
+    niUIGpuFuncs_RayInstanceData _1247;
+    _1247.ibIndex = nil_builtin_GetRayInstanceData[_1243]->v.ibIndex;
+    _1247.vbIndex = nil_builtin_GetRayInstanceData[_1243]->v.vbIndex;
+    _1247.firstIndex = nil_builtin_GetRayInstanceData[_1243]->v.firstIndex;
+    _1247.baseVertexIndex = nil_builtin_GetRayInstanceData[_1243]->v.baseVertexIndex;
+    _1247.texIndex = nil_builtin_GetRayInstanceData[_1243]->v.texIndex;
+    _1247.materialColor = nil_builtin_GetRayInstanceData[_1243]->v.materialColor;
     raytracing::intersection_query<raytracing::instancing, raytracing::triangle_data> rayQuery;
-    float2 _2253;
-    float3 _2255;
-    float3 _2257;
-    int _2263;
-    if (_1225 == 1u)
+    float2 _2274;
+    float3 _2276;
+    float3 _2278;
+    int _2284;
+    if (_1237 == 1u)
     {
-        int _1241 = rayQuery_1.get_committed_primitive_id();
-        float2 _1244 = rayQuery_1.get_committed_triangle_barycentric_coord();
-        float4x3 _1245 = rayQuery_1.get_committed_object_to_world_transform();
-        bool _1296 = _1235.vbIndex == 0u;
-        float2 _2249;
-        float3 _2250;
-        float3 _2251;
-        if (_1296)
+        int _1253 = rayQuery_1.get_committed_primitive_id();
+        float2 _1256 = rayQuery_1.get_committed_triangle_barycentric_coord();
+        float4x3 _1257 = rayQuery_1.get_committed_object_to_world_transform();
+        bool _1310 = _1247.vbIndex == 0u;
+        float2 _2270;
+        float3 _2271;
+        float3 _2272;
+        if (_1310)
         {
-            _2251 = float3(0.0);
-            _2250 = float3(0.0);
-            _2249 = float2(0.0);
+            _2272 = float3(0.0);
+            _2271 = float3(0.0);
+            _2270 = float2(0.0);
         }
         else
         {
-            uint _1380 = _1235.firstIndex + (3u * uint(_1241));
-            uint _1382 = _1235.ibIndex;
-            uint _1385 = _1380;
-            uint _1392 = _1380 + 1u;
-            uint _1399 = _1380 + 2u;
-            uint _1309 = _1235.vbIndex;
-            niUIGpuFuncs_VertexRay _1315;
-            _1315.pos = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1385]].pos);
-            _1315.normal = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1385]].normal);
-            _1315.color = nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1385]].color;
-            _1315.tex0 = float2(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1385]].tex0);
-            niUIGpuFuncs_VertexRay _1323;
-            _1323.pos = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1392]].pos);
-            _1323.normal = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1392]].normal);
-            _1323.color = nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1392]].color;
-            _1323.tex0 = float2(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1392]].tex0);
+            uint _1400 = _1247.firstIndex + (3u * uint(_1253));
+            uint _1402 = _1247.ibIndex;
+            uint _1405 = _1400;
+            uint _1412 = _1400 + 1u;
+            uint _1419 = _1400 + 2u;
+            uint _1323 = _1247.vbIndex;
+            uint _1328 = _1247.baseVertexIndex + nil_builtin_GetIndex[_1402]->v[_1405];
             niUIGpuFuncs_VertexRay _1331;
-            _1331.pos = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1399]].pos);
-            _1331.normal = float3(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1399]].normal);
-            _1331.color = nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1399]].color;
-            _1331.tex0 = float2(nil_builtin_GetVertexRay[_1309]->v[nil_builtin_GetIndex[_1382]->v[_1399]].tex0);
-            float _1410 = (1.0 - _1244.x) - _1244.y;
-            _2251 = _1245 * float4(((_1315.pos * _1410) + (_1323.pos * _1244.x)) + (_1331.pos * _1244.y), 1.0);
-            _2250 = fast::normalize(_1245 * float4(fast::normalize(((_1315.normal * _1410) + (_1323.normal * _1244.x)) + (_1331.normal * _1244.y)), 0.0));
-            _2249 = ((_1315.tex0 * _1410) + (_1323.tex0 * _1244.x)) + (_1331.tex0 * _1244.y);
+            _1331.pos = float3(nil_builtin_GetVertexRay[_1323]->v[_1328].pos);
+            _1331.normal = float3(nil_builtin_GetVertexRay[_1323]->v[_1328].normal);
+            _1331.color = nil_builtin_GetVertexRay[_1323]->v[_1328].color;
+            _1331.tex0 = float2(nil_builtin_GetVertexRay[_1323]->v[_1328].tex0);
+            uint _1338 = _1247.baseVertexIndex + nil_builtin_GetIndex[_1402]->v[_1412];
+            niUIGpuFuncs_VertexRay _1341;
+            _1341.pos = float3(nil_builtin_GetVertexRay[_1323]->v[_1338].pos);
+            _1341.normal = float3(nil_builtin_GetVertexRay[_1323]->v[_1338].normal);
+            _1341.color = nil_builtin_GetVertexRay[_1323]->v[_1338].color;
+            _1341.tex0 = float2(nil_builtin_GetVertexRay[_1323]->v[_1338].tex0);
+            uint _1348 = _1247.baseVertexIndex + nil_builtin_GetIndex[_1402]->v[_1419];
+            niUIGpuFuncs_VertexRay _1351;
+            _1351.pos = float3(nil_builtin_GetVertexRay[_1323]->v[_1348].pos);
+            _1351.normal = float3(nil_builtin_GetVertexRay[_1323]->v[_1348].normal);
+            _1351.color = nil_builtin_GetVertexRay[_1323]->v[_1348].color;
+            _1351.tex0 = float2(nil_builtin_GetVertexRay[_1323]->v[_1348].tex0);
+            float _1430 = (1.0 - _1256.x) - _1256.y;
+            _2272 = _1257 * float4(((_1331.pos * _1430) + (_1341.pos * _1256.x)) + (_1351.pos * _1256.y), 1.0);
+            _2271 = fast::normalize(_1257 * float4(fast::normalize(((_1331.normal * _1430) + (_1341.normal * _1256.x)) + (_1351.normal * _1256.y)), 0.0));
+            _2270 = ((_1331.tex0 * _1430) + (_1341.tex0 * _1256.x)) + (_1351.tex0 * _1256.y);
         }
-        _2263 = _1296 ? (-1) : 1;
-        _2257 = _2251;
-        _2255 = _2250;
-        _2253 = _2249;
+        _2284 = _1310 ? (-1) : 1;
+        _2278 = _2272;
+        _2276 = _2271;
+        _2274 = _2270;
     }
     else
     {
-        _2263 = (_1225 == 2u) ? 2 : 0;
-        _2257 = float3(0.0);
-        _2255 = float3(0.0);
-        _2253 = float2(0.0);
+        _2284 = (_1237 == 2u) ? 2 : 0;
+        _2278 = float3(0.0);
+        _2276 = float3(0.0);
+        _2274 = float2(0.0);
     }
-    float4 _2269;
-    if (_2263 == 1)
+    float4 _2290;
+    if (_2284 == 1)
     {
-        float4 _1500 = unpack_unorm4x8_to_float(_1235.materialColor).zyxw;
-        float4 _2265;
-        if (_1235.texIndex > 0u)
+        float4 _1520 = unpack_unorm4x8_to_float(_1247.materialColor).zyxw;
+        float4 _2286;
+        if (_1247.texIndex > 0u)
         {
-            uint _1508 = _1235.texIndex;
-            _2265 = nil_builtin_GetTexture2D[_1508].sample(IN_1_aSS, _2253) * _1500;
+            uint _1528 = _1247.texIndex;
+            _2286 = nil_builtin_GetTexture2D[_1528].sample(IN_1_aSS, _2274) * _1520;
         }
         else
         {
-            _2265 = _1500;
+            _2286 = _1520;
         }
-        rayQuery.reset(ray(_2257, float3(0.4016096591949462890625, 0.562253534793853759765625, -0.72289741039276123046875), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
-        bool _1567 = rayQuery.next();
-        uint _1568 = uint(rayQuery.get_committed_intersection_type());
-        rayQuery.reset(ray(_2257, float3(-0.707106769084930419921875, -0.0, -0.707106769084930419921875), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
-        bool _1633 = rayQuery.next();
-        uint _1634 = uint(rayQuery.get_committed_intersection_type());
-        rayQuery.reset(ray(_2257, float3(-0.0, 1.0, -0.0), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
-        bool _1699 = rayQuery.next();
-        uint _1700 = uint(rayQuery.get_committed_intersection_type());
-        _2269 = float4((mix(_2265.xyz * float3(0.2400000095367431640625), float3(0.800000011920928955078125) * _2265.xyz, float3(((_1568 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (dot(_2255, float3(0.4016096591949462890625, 0.562253534793853759765625, -0.72289741039276123046875)) * 0.5) + 0.5), 0.0, 1.0))) + mix(_2265.xyz * float3(0.12000000476837158203125, 0.060000002384185791015625, 0.0), float3(0.4000000059604644775390625, 0.20000000298023223876953125, 0.0) * _2265.xyz, float3(((_1634 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (dot(_2255, float3(-0.707106769084930419921875, -0.0, -0.707106769084930419921875)) * 0.5) + 0.5), 0.0, 1.0)))) + mix(_2265.xyz * float3(0.0, 0.060000002384185791015625, 0.12000000476837158203125), float3(0.0, 0.20000000298023223876953125, 0.4000000059604644775390625) * _2265.xyz, float3(((_1700 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (_2255.y * 0.5) + 0.5), 0.0, 1.0))), 1.0);
+        rayQuery.reset(ray(_2278, float3(0.4016096591949462890625, 0.562253534793853759765625, -0.72289741039276123046875), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
+        bool _1587 = rayQuery.next();
+        uint _1588 = uint(rayQuery.get_committed_intersection_type());
+        rayQuery.reset(ray(_2278, float3(-0.707106769084930419921875, -0.0, -0.707106769084930419921875), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
+        bool _1653 = rayQuery.next();
+        uint _1654 = uint(rayQuery.get_committed_intersection_type());
+        rayQuery.reset(ray(_2278, float3(-0.0, 1.0, -0.0), 0.001000000047497451305389404296875, 10000.0), IN_1_aAS, 255u, spvMakeIntersectionParams(9u));
+        bool _1719 = rayQuery.next();
+        uint _1720 = uint(rayQuery.get_committed_intersection_type());
+        _2290 = float4((mix(_2286.xyz * float3(0.2400000095367431640625), float3(0.800000011920928955078125) * _2286.xyz, float3(((_1588 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (dot(_2276, float3(0.4016096591949462890625, 0.562253534793853759765625, -0.72289741039276123046875)) * 0.5) + 0.5), 0.0, 1.0))) + mix(_2286.xyz * float3(0.12000000476837158203125, 0.060000002384185791015625, 0.0), float3(0.4000000059604644775390625, 0.20000000298023223876953125, 0.0) * _2286.xyz, float3(((_1654 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (dot(_2276, float3(-0.707106769084930419921875, -0.0, -0.707106769084930419921875)) * 0.5) + 0.5), 0.0, 1.0)))) + mix(_2286.xyz * float3(0.0, 0.060000002384185791015625, 0.12000000476837158203125), float3(0.0, 0.20000000298023223876953125, 0.4000000059604644775390625) * _2286.xyz, float3(((_1720 == 1u) ? 0.0 : 1.0) * fast::clamp(fast::max(0.0, (_2276.y * 0.5) + 0.5), 0.0, 1.0))), 1.0);
     }
     else
     {
-        float4 _2270;
-        if (_2263 == 2)
+        float4 _2291;
+        if (_2284 == 2)
         {
-            _2270 = float4(1.0, 0.0, 0.0, 1.0);
+            _2291 = float4(1.0, 0.0, 0.0, 1.0);
         }
         else
         {
-            float4 _2271;
-            if (_2263 < 0)
+            float4 _2292;
+            if (_2284 < 0)
             {
-                _2271 = float4(1.0, 0.0, 1.0, 1.0);
+                _2292 = float4(1.0, 0.0, 1.0, 1.0);
             }
             else
             {
-                float _1743 = _1067.y;
-                float _1788 = smoothstep(-0.0199999995529651641845703125, 0.0, _1743);
-                _2271 = float4(mix(float3(0.3499999940395355224609375, 0.300000011920928955078125, 0.3499999940395355224609375), mix(float3(1.0), float3(0.07999999821186065673828125, 0.37000000476837158203125, 0.730000019073486328125), float3(powr(smoothstep(9.9999997473787516355514526367188e-05, 0.4000000059604644775390625, _1743), 0.3499999940395355224609375))), float3(_1788)) + ((float3(1.0, 0.89999997615814208984375, 0.699999988079071044921875) * (smoothstep(0.997500002384185791015625, 1.0, dot(_1067, float3(0.099014751613140106201171875, 0.099014751613140106201171875, 0.990147531032562255859375))) * 10.0)) * float(_1788 >= 1.0)), 0.0);
+                float _1763 = _1078.y;
+                float _1808 = smoothstep(-0.0199999995529651641845703125, 0.0, _1763);
+                _2292 = float4(mix(float3(0.3499999940395355224609375, 0.300000011920928955078125, 0.3499999940395355224609375), mix(float3(1.0), float3(0.07999999821186065673828125, 0.37000000476837158203125, 0.730000019073486328125), float3(powr(smoothstep(9.9999997473787516355514526367188e-05, 0.4000000059604644775390625, _1763), 0.3499999940395355224609375))), float3(_1808)) + ((float3(1.0, 0.89999997615814208984375, 0.699999988079071044921875) * (smoothstep(0.997500002384185791015625, 1.0, dot(_1078, float3(0.099014751613140106201171875, 0.099014751613140106201171875, 0.990147531032562255859375))) * 10.0)) * float(_1808 >= 1.0)), 0.0);
             }
-            _2270 = _2271;
+            _2291 = _2292;
         }
-        _2269 = _2270;
+        _2290 = _2291;
     }
-    out.OUT_0_rval_color = _2269;
+    out.OUT_0_rval_color = _2290;
     return out;
 }
 

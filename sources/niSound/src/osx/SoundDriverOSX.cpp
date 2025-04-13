@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #if defined TARGET_OS_IPHONE
 // nothing to define...
-#elif defined OSX
+#elif defined HAM_LOA_OS_OSX
 #define MACOSX_COREAUDIO 1
 #else
 #error "SoundDriverOSX: Unknown OS."

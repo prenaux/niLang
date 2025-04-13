@@ -57,6 +57,11 @@ EA_ENABLE_CLANG_WARNING_AS_ERROR(-Wunused-but-set-variable);
 // clang-format on
 #endif
 
+#ifdef niJSCC
+// Pierre: tSize/size_t is 32bits in emscripten it seems
+EA_DISABLE_CLANG_WARNING(-Wshorten-64-to-32);
+#endif
+
 #ifdef __cplusplus
   #if __cplusplus == 199711L
     #define niStdCppVersion 1998

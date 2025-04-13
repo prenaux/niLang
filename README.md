@@ -56,7 +56,7 @@ Run Test\_niLang:
 ```
 # Serve the $WORK folder (niLang's parent folder)
 cd "$WORK"
-simple-http-server
+simple-http-server regular
 # Open the test case
 open http://localhost:8123/niLang/bin/web-js/Test_niLang_ra.html
 ```

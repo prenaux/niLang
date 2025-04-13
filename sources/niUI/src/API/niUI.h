@@ -11,6 +11,8 @@
 #include "niUI/IBitmap2D.h"
 #include "niUI/IBitmapCube.h"
 #include "niUI/IBitmap3D.h"
+#include "niUI/IJpegWriter.h"
+#include "niUI/IJpegReader.h"
 #include "niUI/IFrustum.h"
 #include "niUI/ICamera.h"
 #include "niUI/ITransform.h"

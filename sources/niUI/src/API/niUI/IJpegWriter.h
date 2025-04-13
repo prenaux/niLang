@@ -2,6 +2,8 @@
 #define __IJPEGWRITER_61487884_H__
 // SPDX-FileCopyrightText: (c) 2022 The niLang Authors
 // SPDX-License-Identifier: MIT
+#include "Colors.h"
+
 namespace ni {
 /** \addtogroup niUI
  * @{

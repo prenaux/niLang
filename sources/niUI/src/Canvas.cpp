@@ -715,7 +715,7 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
   {
     if (!mvVertices.empty()) {
       NN<iGpuCommandEncoder> cmdEncoder =
-        AsNN(mptrContextGpu->GetCommandEncoder());
+        niCheckNN(cmdEncoder, mptrContextGpu->GetCommandEncoder(), eFalse);
 
       niLet fvf = tVertexCanvas::eFVF;
       niLet& matDesc =

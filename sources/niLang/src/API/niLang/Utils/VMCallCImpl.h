@@ -198,8 +198,8 @@ __forceinline void BufReadIntf(const Var& aVar, T** v)
 template <typename T>
 __forceinline void BufReadNull(const Var& aVar, T*& v)
 {
-  niAssert(aVar.IsNull());
-  v = (T*)NULL;
+  niAssert(aVar.IsNull() || aVar.mIntPtr == 0);
+  v = (T*)nullptr;
 }
 
 ///

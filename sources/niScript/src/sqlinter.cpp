@@ -1836,8 +1836,8 @@ struct sLinter {
           return r;
         dest = niNew sScriptTypeErrorCode(
           _ss, _HC(error_code_cant_find_method_def),
-          niFmt("Cant find method definition '%s::%s'", selfIDef->maszName,
-                _stringhval(key)));
+          niFmt("Cant find method definition %s::%s", selfIDef->maszName,
+                _ObjToString(key)));
         return false;
       }
       case eScriptType_EnumDef: {

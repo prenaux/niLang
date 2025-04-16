@@ -46,7 +46,7 @@ cScriptDispatch::cScriptDispatch(SQTable* apTable)
   niAssert(apTable);
   niAssert(apTable->mpDispatch == NULL);
   apTable->mpDispatch = this;
-  #ifdef _DEBUG
+  #ifdef DEBUG_SQ_TABLE_LOG_DISPATCH
   niDebugFmt(
     ("Dispatch %p for table %p created ...", (void*)this, (void*)apTable));
   #endif
@@ -55,7 +55,7 @@ cScriptDispatch::cScriptDispatch(SQTable* apTable)
 ///////////////////////////////////////////////
 cScriptDispatch::~cScriptDispatch()
 {
-  #ifdef _DEBUG
+  #ifdef DEBUG_SQ_TABLE_LOG_DISPATCH
   niDebugFmt(
     ("Dispatch %p for table %p deleted ...", (void*)this, (void*)_GetTable()));
   #endif

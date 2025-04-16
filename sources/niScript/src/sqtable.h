@@ -3,6 +3,8 @@
 
 #include "sqobject.h"
 
+// #define DEBUG_SQ_TABLE_LOG_DISPATCH
+
 #define hashptr(p) (((unsigned long)(p)) >> 3)
 
 // don't start at zero because the preprocessor will use 0 by default if the value isn't defined...

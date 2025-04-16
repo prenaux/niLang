@@ -124,7 +124,7 @@ SQTable::~SQTable()
   {
     Invalidate();
     if (mpDispatch) {
-#ifdef _DEBUG
+#ifdef DEBUG_SQ_TABLE_LOG_DISPATCH
       niDebugFmt(("Table %p with dispatch %p deleted ...", (void*)this,
                   (void*)mpDispatch));
 #endif

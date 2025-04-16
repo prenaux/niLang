@@ -526,6 +526,7 @@ void tsglSwapBuffers(tsglContext* apCtx, tBool abDoNotWait) {
 
 #undef TSGL_CORE_PROC
 #undef TSGL_EXT_PROC
+#undef TSGL_ARB_EXT_PROC
 #undef TSGL_OPT_EXT_PROC
 
 ////////////////////////////////////////////////////////////////////////////
@@ -540,9 +541,11 @@ NI_DLL_BEGIN_LOADER(opengl, TSGL_DLL_NAME);
 
 #ifdef __TSGL_STATIC_EXT__
 #define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC; ++_dllLoader._numLoaded._static
+#define TSGL_ARB_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC##ARB; ++_dllLoader._numLoaded._static
 #define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = &FUNC; ++_dllLoader._numLoaded._static
 #else
 #define TSGL_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcCustom(#FUNC, tsglGetExtProcAddress, eFalse)
+#define TSGL_ARB_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcCustom(#FUNC, tsglGetExtProcAddress, eFalse, "ARB")
 #define TSGL_OPT_EXT_PROC(RET,FUNC,PARAMS) _##FUNC = (tpfn_##FUNC)_dllLoader.LoadProcCustom(#FUNC, tsglGetExtProcAddress, eTrue)
 #endif
 

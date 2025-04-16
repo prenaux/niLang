@@ -105,6 +105,7 @@ struct sDLLLoader {
   }
 
   tBool _LoadHandle() {
+#ifndef niNoDLL
     niPanicAssert(_dllHandle == 0);
     if (_fileName.empty()) {
       niLog(Info, niFmt("DLLLoader: %s: Using static methods.", _dllName, _fileName));
@@ -118,15 +119,18 @@ struct sDLLLoader {
     else {
       niLog(Info, niFmt("DLLLoader: %s: Loaded dll '%s'.", _dllName, _fileName));
     }
+#endif
     return eTrue;
   }
 
   void _FreeHandle() {
+#ifndef niNoDLL
     if (_dllHandle) {
       niLog(Info, niFmt("DLLLoader: %s: freed dll '%s'.", _dllName, _fileName));
       ni_dll_free(_dllHandle);
       _dllHandle = 0;
     }
+#endif
   }
 
   tBool IsLoaded() const {
@@ -138,6 +142,7 @@ struct sDLLLoader {
   }
 
   tBool BeginLoad() {
+#ifndef niNoDLL
     _loadErrors.clear();
     _loadMutex.ThreadLock();
     niZeroMember(_numLoaded);
@@ -145,29 +150,38 @@ struct sDLLLoader {
     // we dont have a race condition if this is called from multiple thread
     _isLoaded = eTrue;
     return _LoadHandle();
+#else
+    return ni::eTrue;
+#endif
   }
 
   tBool EndLoad() {
+#ifndef niNoDLL
     if (HasLoadError()) {
       for (auto& err : _loadErrors) {
         niError(err.Chars());
       }
       niLog(Info, niFmt(
-        "DLLLoader: %s: Loading failed with %d errors. Loaded %d from dll, %d from custom, %d statically.",
-        _dllName, _loadErrors.size(),
-        _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
+              "DLLLoader: %s: Loading failed with %d errors. Loaded %d from dll, %d from custom, %d statically.",
+              _dllName, _loadErrors.size(),
+              _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
       _FreeHandle();
     }
     else {
       niLog(Info, niFmt(
-        "DLLLoader: %s: Loaded successfully. Loaded %d from dll, %d from custom, %d statically.",
-        _dllName, _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
+              "DLLLoader: %s: Loaded successfully. Loaded %d from dll, %d from custom, %d statically.",
+              _dllName, _numLoaded._dll, _numLoaded._custom, _numLoaded._static));
     }
     _loadMutex.ThreadUnlock();
     return !HasLoadError();
+#else
+    _isLoaded = eTrue;
+    return ni::eTrue;
+#endif
   }
 
   void* LoadProc(const achar* aProcName, tBool abOptional = eFalse) {
+#ifndef niNoDLL
     void* r = _dllHandle ? ni_dll_get_proc(_dllHandle, aProcName) : nullptr;
     if (!r) {
       if (!abOptional) {
@@ -177,10 +191,14 @@ struct sDLLLoader {
     }
     ++_numLoaded._dll;
     return r;
+#else
+    return nullptr;
+#endif
   }
 
-  void* LoadProcCustom(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse) {
-    void* r = apfnLoadProc(aProcName);
+  void* LoadProcCustom(const achar* aProcName, tpfnDLLGetProcAddress apfnLoadProc, tBool abOptional = eFalse, const achar* aaszExt = "") {
+#ifndef niNoDLL
+    void* r = apfnLoadProc(niFmt("%s%s",aProcName,aaszExt));
     if (!r) {
       if (!abOptional) {
         _AddError(niFmt("DLLLoader: %s: Can't load proc '%s' with custom GetProcAddress.", _dllName, aProcName));
@@ -189,6 +207,9 @@ struct sDLLLoader {
     }
     ++_numLoaded._custom;
     return r;
+#else
+    return nullptr;
+#endif
   }
 };
 

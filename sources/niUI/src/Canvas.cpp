@@ -422,16 +422,14 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
   Ptr<iVGTransform>       mVGTransforms[eVGTransform_Last];
 
   Ptr<iMaterial>          mptrVGMaterial;
+  Ptr<iMaterial>          mptrVGMaterialSolid;
   tIntPtr                 mhSS_MirrorPoint;
   tIntPtr                 mhSS_MirrorBilinear;
   tIntPtr                 mhSS_WhiteBorderPoint;
   tIntPtr                 mhSS_WhiteBorderBilinear;
 
   tIntPtr mnBeginAddPath_PrevImageSig;
-  tBool mbAddPathPolygons_TexGen;
   tU32 mnAddPathPolygons_VertexColor;
-  sVec2f mvAddPathPolygons_TexGen_Scale;
-  sVec2f mvAddPathPolygons_TexGen_Translation;
 
   sCanvasVGPathTesselatedRenderer(iCanvas* apCanvas) : _canvas(apCanvas) {
     iGraphics* g = apCanvas->GetGraphicsContext()->GetGraphics();
@@ -442,6 +440,14 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
     }
 
     // Material
+    mptrVGMaterialSolid = g->CreateMaterial();
+    mptrVGMaterialSolid->SetBlendMode(eBlendMode_Translucent);
+    mptrVGMaterialSolid->SetFlags(
+      mptrVGMaterialSolid->GetFlags()|
+      eMaterialFlags_NoLighting|
+      eMaterialFlags_DoubleSided|
+      eMaterialFlags_Vertex);
+
     mptrVGMaterial = g->CreateMaterial();
     mptrVGMaterial->SetRasterizerStates(eCompiledStates_RS_NoCullingFilledScissor);
     mptrVGMaterial->SetDepthStencilStates(eCompiledStates_DS_NoDepthTest);
@@ -485,60 +491,30 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
   virtual void __stdcall BeginAddPath(const iVGStyle* apStyle, tBool abStroke) {
     iVGPaint* apPaint = (abStroke)?apStyle->GetStrokePaint():apStyle->GetFillPaint();
     tF32 fOpacity = apStyle->GetOpacity();
-    mbAddPathPolygons_TexGen = eFalse;
 
     switch (apPaint->GetType()) {
-    case eVGPaintType_Gradient:
-    case eVGPaintType_Image:
+      case eVGPaintType_Gradient:
+      case eVGPaintType_Image:
       {
-        mbAddPathPolygons_TexGen = eTrue;
         mnAddPathPolygons_VertexColor = ~0;
-        const iVGTransform* pTransform = mVGTransforms[
-          abStroke?eVGTransform_StrokePaint:eVGTransform_FillPaint];
         Ptr<iVGImage> ptrImage;
-
+        eVGPaintUnits units = ni::eVGPaintUnits_Absolute;
         sVec2f vTrans = {0,0};
         sVec2f vScale = {1,1};
         eVGWrapType wrapType;
         eVGImageFilter imageFilter;
         if (apPaint->GetType() == eVGPaintType_Gradient) {
-          tU32 nResX = 128, nResY = 128;
-          const iVGPaintGradient* pPaintGrad = niStaticCast(const iVGPaintGradient*,apPaint);
-          switch (pPaintGrad->GetGradientType()) {
-          default:
-          case eVGGradientType_Linear:
-            {
-              wrapType = eVGWrapType_Mirror;
-              imageFilter = eVGImageFilter_Bilinear;
-              ptrImage = pPaintGrad->GetGradientTable()->CreateImage(pPaintGrad->GetGradientType(),pPaintGrad->GetWrapType(),NULL,nResX,1,pPaintGrad->GetD1(),pPaintGrad->GetD2());
-              break;
-            }
-          case eVGGradientType_Radial:
-          case eVGGradientType_Conic:
-          case eVGGradientType_SqrtCross:
-          case eVGGradientType_Cross:
-          case eVGGradientType_Diamond:
-            {
-              wrapType = eVGWrapType_Clamp;
-              imageFilter = eVGImageFilter_Bilinear;
-              Ptr<iVGTransform> transform = CreateVGTransform();
-              vScale *= pTransform->GetScaling()*0.5f;
-              vTrans.x = tF32(nResX/2);
-              vTrans.y = tF32(nResY/2);
-              transform->Scaling(vScale);
-              transform->Translate(vTrans);
-              ptrImage = pPaintGrad->GetGradientTable()->
-                  CreateImage(pPaintGrad->GetGradientType(),pPaintGrad->GetWrapType(),
-                              transform,
-                              nResX,nResX,pPaintGrad->GetD1(),pPaintGrad->GetD2());
-              vTrans /= vScale;
-              //VecInverse(vScale,vScale);
-              break;
-            }
-          }
+          QPtr<iVGPaintGradient> pPaintGradient(apPaint);
+          if (!pPaintGradient.IsOK()) return;
+
+          ptrImage = pPaintGradient->GetGradientImage();
+          wrapType = pPaintGradient->GetWrapType();
+          imageFilter = eVGImageFilter_Bilinear;
         }
         else {
-          const iVGPaintImage* pPaintImage = niStaticCast(const iVGPaintImage*,apPaint);
+          QPtr<iVGPaintImage> pPaintImage(apPaint);
+          if (!pPaintImage.IsOK()) return;
+
           ptrImage = pPaintImage->GetImage();
           wrapType = pPaintImage->GetWrapType();
           imageFilter = pPaintImage->GetFilterType();
@@ -549,10 +525,6 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
           _canvas->Flush();
           mnBeginAddPath_PrevImageSig = nImageSig;
         }
-
-        mvAddPathPolygons_TexGen_Scale.x = (1.0f/tF32(ptrImage->GetWidth()))*vScale.x;
-        mvAddPathPolygons_TexGen_Scale.y = (1.0f/tF32(ptrImage->GetHeight()))*vScale.y;
-        mvAddPathPolygons_TexGen_Translation = vTrans;
 
         mptrVGMaterial->SetChannelColor(eMaterialChannel_Base,Vec4f(1,1,1,fOpacity));
 
@@ -583,8 +555,9 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         _canvas->SetMaterial(mptrVGMaterial);
         break;
       }
-    default:
-    case eVGPaintType_Solid:
+
+      default:
+      case eVGPaintType_Solid:
       {
         if (mnBeginAddPath_PrevImageSig != 0) {
           _canvas->Flush();
@@ -592,17 +565,11 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
         }
 
         sColor4f vertexColor = (abStroke) ?
-            apStyle->GetStrokeColor4() :
-            apStyle->GetFillColor4();
+        apStyle->GetStrokeColor4() :
+        apStyle->GetFillColor4();
         vertexColor.w *= apStyle->GetOpacity();
 
-#if 1
-        mptrVGMaterial->SetBlendMode(eBlendMode_Translucent);
-        _canvas->SetMaterial(mptrVGMaterial);
-#else
-        _IMSetMaterial(NULL,ni::FuzzyEqual(vertexColor.w,1.0f,0.001f) ?
-                       eBlendMode_NoBlending : eBlendMode_Translucent);
-#endif
+        _canvas->SetMaterial(mptrVGMaterialSolid);
 
         mnAddPathPolygons_VertexColor = ULColorBuild(vertexColor);
         break;
@@ -619,30 +586,88 @@ struct sCanvasVGPathTesselatedRenderer : public ImplRC<iVGPathTesselatedRenderer
     return apStyle->GetTesselatorApproximationScale();
   }
 
+  const astl::vector<sVec2f> _TransformVec(const tVec2fCVec* apVerts, tBool abStroke) {
+    astl::vector<sVec2f> v_transformed(apVerts->GetSize());
+    agg::trans_affine paintTrans = AGGGetTransform(
+      mVGTransforms[abStroke?eVGTransform_StrokePaint:eVGTransform_FillPaint].ptr());
+    niLoop(i, apVerts->GetSize()) {
+      sVec2f v = apVerts->Get(i).mVec2f;
+      paintTrans.transform(&v.x,&v.y);
+      v_transformed[i] = v;
+    }
+    return v_transformed;
+  }
+
+  // template<typename Paint>
+  sRectf _ComputeBoundingBox(const astl::vector<sVec2f>& aVec) {
+    sRectf bb;
+    bb.x = bb.z = aVec.front().x;
+    bb.y = bb.w = aVec.front().y;
+    for (const auto& v : aVec) {
+      bb.x = Min(bb.x, v.x);
+      bb.z = Max(bb.z, v.x);
+      bb.y = Min(bb.y, v.y);
+      bb.w = Max(bb.w, v.y);
+    }
+    return bb;
+  }
+
   //! Called to add the path's polygons.
   virtual void __stdcall AddPathPolygons(iVGPolygonTesselator* apTess, const iVGStyle* apStyle, tBool abStroke) {
+
     const tVec2fCVec* pVerts = apTess->GetTesselatedVertices();
-    if (pVerts) {
-      _canvas->SetColorA(mnAddPathPolygons_VertexColor);
-      if (mbAddPathPolygons_TexGen) {
-        agg::trans_affine paintTrans = AGGGetTransform(
-            mVGTransforms[abStroke?eVGTransform_StrokePaint:eVGTransform_FillPaint].ptr());
-        // paintTrans.invert();
-        for (tVec2fCVec::const_iterator it = pVerts->begin(); it != pVerts->end(); ++it) {
-          const tF32 x = it->x;
-          const tF32 y = it->y;
-          agg_real tx = x;
-          agg_real ty = y;
-          paintTrans.transform(&tx,&ty);
-          tx = tx * mvAddPathPolygons_TexGen_Scale.x + mvAddPathPolygons_TexGen_Translation.x;
-          ty = ty * mvAddPathPolygons_TexGen_Scale.y + mvAddPathPolygons_TexGen_Translation.y;
-          _canvas->VertexPT(Vec3f(x,y,0.0f),Vec2f(tx,ty));
-        }
-      }
-      else {
+    if (!pVerts || pVerts->empty()) return;
+
+    _canvas->SetColorA(mnAddPathPolygons_VertexColor);
+
+    iVGPaint* apPaint = (abStroke)?apStyle->GetStrokePaint():apStyle->GetFillPaint();
+    eVGPaintType type =  apPaint->GetType();
+    switch (type) {
+      case ni::eVGPaintType_Solid: {
         for (tVec2fCVec::const_iterator it = pVerts->begin(); it != pVerts->end(); ++it) {
           _canvas->VertexP(Vec3f(it->x,it->y,0.0f));
         }
+        break;
+      }
+      case ni::eVGPaintType_Gradient:
+      case ni::eVGPaintType_Image: {
+        const astl::vector<sVec2f> v_transformed = _TransformVec(pVerts, abStroke);
+        eVGPaintUnits pu = ni::eVGPaintUnits_Absolute;
+        Ptr<iVGImage> image;
+        if (type == eVGPaintType_Gradient) {
+          QPtr<iVGPaintGradient> pGradient(apPaint);
+          if (!pGradient.IsOK()) return;
+          pu = pGradient->GetUnits();
+          image = pGradient->GetGradientImage();
+        }
+        else {
+          QPtr<iVGPaintImage> pImage(apPaint);
+          if (!pImage.IsOK()) return;
+          pu = pImage->GetUnits();
+          image = pImage->GetImage();
+        }
+
+        sRectf bb;
+        switch (pu) {
+          case eVGPaintUnits_ObjectBoundingBox: {
+            bb = _ComputeBoundingBox(v_transformed);
+            break;
+          }
+          case eVGPaintUnits_UserSpaceOnUse:
+          case eVGPaintUnits_Absolute: {
+            bb = Rectf(0,0, image->GetWidth(), image->GetHeight());
+            break;
+          }
+        }
+
+        tF32 w = bb.GetWidth();
+        tF32 h = bb.GetHeight();
+        for (const auto& v : v_transformed) {
+          tF32 tx = (v.x - bb.x) / w;
+          tF32 ty = (v.y - bb.y) / h;
+          _canvas->VertexPT(Vec3f(v.x,v.y,0.0f),Vec2f(tx,ty));
+        }
+        break;
       }
     }
   }

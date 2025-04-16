@@ -209,7 +209,8 @@ class cVGGradientTable : public ImplRC<iVGGradientTable>
       trans.invert();
     }
     tAGGLinearInterpolator  inter(trans);
-    tAGGGradientSpanGen   span_gen(inter, *ptrGrad, AGGGetGradientTable(this), agg_real(anD1), agg_real(anD2));
+    sAGGGradientTable t = AGGGetGradientTable(this);
+    tAGGGradientSpanGen  span_gen(inter, *ptrGrad, t, agg_real(anD1), agg_real(anD2));
     tAGGRendererBinGradient r1(rb, span_alloc, span_gen);
 
     tAGGRasterizerScanline pf;
@@ -534,11 +535,38 @@ class cVGPaintGradient : public ImplRC<iVGPaintGradient,eImplFlags_DontInherit1,
     return mptrTable;
   }
 
+  iVGImage* __stdcall GetGradientImage() {
+    if (!mptrImage.IsOK()) {
+      tU32 res = mptrTable->GetSize();
+      switch (mGradientType) {
+        default:
+        case eVGGradientType_Linear:
+        {
+          mptrImage = mptrTable->CreateImage(mGradientType, mWrapType, NULL, res, 1, mnD1, mnD2);
+          break;
+        }
+        case eVGGradientType_Radial:
+        case eVGGradientType_Conic:
+        case eVGGradientType_SqrtCross:
+        case eVGGradientType_Cross:
+        case eVGGradientType_Diamond:
+        {
+          Ptr<iVGTransform> transform = CreateVGTransform();
+          transform->Translate(sVec2f::One() * res * 0.5f);
+          mptrImage = mptrTable->CreateImage(mGradientType, mWrapType, transform, res, res, mnD1, mnD2);
+          break;
+        }
+      }
+    }
+    return mptrImage;
+  }
+
  private:
   eVGGradientType       mGradientType;
   eVGWrapType           mWrapType;
   Ptr<iGraphics>        mptrGraphics;
   Ptr<iVGGradientTable> mptrTable;
+  Ptr<iVGImage>         mptrImage;
   sColor4f              mColor;
   tI32                  mnD1,mnD2;
   sVec2f             mA,mB;

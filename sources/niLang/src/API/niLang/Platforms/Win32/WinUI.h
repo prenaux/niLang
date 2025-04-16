@@ -6588,7 +6588,7 @@ class cTextDlg {
     niWin32_UTF8ToUTF16(wErrorText, mstrText.Chars());
 
     // Create edit control
-    mEditWnd = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", wErrorText.begin(),
+    mEditWnd = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"",
                                WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL |
                                  ES_MULTILINE | ES_AUTOVSCROLL |
                                  ES_AUTOHSCROLL | ES_READONLY,
@@ -6634,10 +6634,12 @@ class cTextDlg {
       FIXED_PITCH | FF_MODERN, // PitchAndFamily
       L"Courier New" // Fallback to Courier New which is widely available
     );
-
     if (mFont) {
       niWin32API(SendMessage)(mEditWnd, WM_SETFONT, (WPARAM)mFont, TRUE);
     }
+
+    // Set the text
+    ::SetWindowTextW(mEditWnd, wErrorText.begin());
 
     // Give focus to the text box by default
     ::SetFocus(mEditWnd);

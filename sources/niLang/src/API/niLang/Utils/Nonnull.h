@@ -259,9 +259,6 @@ struct Nonnull {
     {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
-#ifdef _DEBUG
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-#endif
       }
     }
 
@@ -271,9 +268,6 @@ struct Nonnull {
     {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
-#ifdef _DEBUG
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-#endif
       }
     }
     template <typename U>
@@ -281,11 +275,6 @@ struct Nonnull {
         : _maybe_null_ptr(aPtr.raw_ptr())
     {
       aPtr.mPtr = NULL;
-#ifdef _DEBUG
-      if (_maybe_null_ptr) {
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-      }
-#endif
     }
 
     template <typename U>
@@ -294,9 +283,6 @@ struct Nonnull {
     {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
-#ifdef _DEBUG
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-#endif
       }
     }
     template <typename U>
@@ -304,11 +290,6 @@ struct Nonnull {
         : _maybe_null_ptr(aPtr.raw_ptr())
     {
       aPtr.mPtr = NULL;
-#ifdef _DEBUG
-      if (_maybe_null_ptr) {
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-      }
-#endif
     }
 
     template <typename U>
@@ -318,26 +299,14 @@ struct Nonnull {
     {
       if (_maybe_null_ptr) {
         ni::AddRef(_maybe_null_ptr);
-#ifdef _DEBUG
-        _initialNumRef = _maybe_null_ptr->GetNumRefs();
-#endif
       }
     }
 
     ~tUnsafeUncheckedInitializer()
     {
-#ifdef _DEBUG
-      if (_maybe_null_ptr) {
-        niDebugAssertMsg(_maybe_null_ptr->GetNumRefs() == _initialNumRef,
-                         "Invalid NumRef");
-      }
-#endif
     }
 
     T* _maybe_null_ptr;
-#ifdef _DEBUG
-    tI32 _initialNumRef = -1;
-#endif
 
    private:
     tUnsafeUncheckedInitializer() = delete;

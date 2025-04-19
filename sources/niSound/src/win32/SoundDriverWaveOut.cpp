@@ -37,24 +37,6 @@ class cSoundDriverBufferWaveOut
   ///////////////////////////////////////////////
   cSoundDriverBufferWaveOut()
   {
-    ZeroMembers();
-  }
-
-  ///////////////////////////////////////////////
-  ~cSoundDriverBufferWaveOut()
-  {
-    Invalidate();
-  }
-
-  ///////////////////////////////////////////////
-  void __stdcall Invalidate()
-  {
-    Stop();
-  }
-
-  ///////////////////////////////////////////////
-  void __stdcall ZeroMembers()
-  {
     memset(waves, 0, sizeof(waves));
     wave_device = NULL;
     wave_buffer_size = 0;
@@ -67,17 +49,26 @@ class cSoundDriverBufferWaveOut
   }
 
   ///////////////////////////////////////////////
-  ni::tBool __stdcall IsOK() const
+  ~cSoundDriverBufferWaveOut()
+  {
+    Invalidate();
+  }
+
+  ///////////////////////////////////////////////
+  void __stdcall Invalidate() niImpl
+  {
+    Stop();
+  }
+
+  ///////////////////////////////////////////////
+  ni::tBool __stdcall IsOK() const niImpl
   {
     return ni::eTrue;
   }
 
   ///////////////////////////////////////////////
-  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq)
+  tBool __stdcall Play(eSoundFormat aFormat, tU32 anFreq) niImpl
   {
-    int i;
-    HRESULT hr;
-    WAVEFORMATEX pcmwf;
     tBool bStereo = eFalse;
     WORD nBits = 0;
     switch (aFormat) {
@@ -127,27 +118,6 @@ class cSoundDriverBufferWaveOut
     pcmwf.nAvgBytesPerSec = pcmwf.nSamplesPerSec * pcmwf.nBlockAlign;
     pcmwf.cbSize = 0;
 
-    hr = waveOutOpen(&wave_device, WAVE_MAPPER, &pcmwf, 0, 0, 0);
-    if (FAILED(hr)) {
-      niError(_A("Can't open WAVE device."));
-      goto error;
-    }
-
-    for (i = 0; i < NBUFFERS; i++) {
-      waves[i].dwBufferLength = wave_buffer_size;
-      waves[i].lpData = (char*)niMalloc(waves[i].dwBufferLength);
-      if (!waves[i].lpData) {
-        niError(niFmt(_A("Unable to alloc memory to waves %d."), i));
-        goto error;
-      }
-      waves[i].dwFlags = 0;
-      waves[i].reserved = 0;
-      waveOutPrepareHeader(wave_device, &waves[i], sizeof(WAVEHDR));
-      waves[i].dwFlags |= WHDR_DONE;
-      ZeroMemory(waves[i].lpData, waves[i].dwBufferLength);
-      waveOutWrite(wave_device, &waves[i], sizeof(WAVEHDR));
-    }
-
 #ifdef THREADED_WAVEOUT
     wait_thread = CreateThread(0, 0, _WaveOutThreadProc, (LPVOID)this,
                                CREATE_SUSPENDED, &wait_thread_id);
@@ -155,17 +125,13 @@ class cSoundDriverBufferWaveOut
 #endif
 
     is_playing = true;
-    ThreadPlay();
+    _ThreadPlay();
 
     return eTrue;
-
-error:;
-    Stop();
-    return eFalse;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall Stop()
+  virtual tBool __stdcall Stop() niImpl
   {
     int i;
 
@@ -173,6 +139,7 @@ error:;
 
 #ifdef THREADED_WAVEOUT
     if (wait_thread) {
+      ResumeThread(wait_thread);
       WaitForSingleObject(wait_thread, 1000);
       CloseHandle(wait_thread);
       wait_thread = NULL;
@@ -195,48 +162,75 @@ error:;
   }
 
   ///////////////////////////////////////////////
-  virtual tSize __stdcall GetSize() const
+  virtual tSize __stdcall GetSize() const niImpl
   {
     return wave_buffer_size;
   }
 
   ///////////////////////////////////////////////
-  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink)
+  virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) niImpl
   {
     sink = apSink;
-    ThreadPlay();
+    _ThreadPlay();
   }
 
   ///////////////////////////////////////////////
-  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const
+  virtual iSoundDriverBufferDataSink* __stdcall GetSink() const niImpl
   {
     return sink;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchIn()
+  virtual tBool __stdcall SwitchIn() niImpl
   {
-    ThreadPlay();
+    _ThreadPlay();
     return eTrue;
   }
 
   ///////////////////////////////////////////////
-  virtual tBool __stdcall SwitchOut()
+  virtual tBool __stdcall SwitchOut() niImpl
   {
-    ThreadStop();
+    _ThreadStop();
     return eTrue;
   }
 
-  void __stdcall UpdateBuffer()
+  ///////////////////////////////////////////////
+  void __stdcall UpdateBuffer() niImpl
   {
 #ifndef THREADED_WAVEOUT
-    DoUpdate();
+    _DoUpdate();
 #endif
   }
 
-  //! Update the sound buffer.
-  void __stdcall DoUpdate()
+  ///////////////////////////////////////////////
+  tBool __stdcall _DoUpdate()
   {
+    if (!wave_device) {
+      // NOTE: Initialization is done here so that it runs in the thread. We
+      // do this because sometimes Windows takes a couple of seconds to
+      // initialize the audio device which increase our startup time
+      // significantly for nothing.
+      HRESULT hr = waveOutOpen(&wave_device, WAVE_MAPPER, &pcmwf, 0, 0, 0);
+      if (FAILED(hr)) {
+        niError(_A("Can't open WAVE device."));
+        return eFalse;
+      }
+      for (int i = 0; i < NBUFFERS; i++) {
+        waves[i].dwBufferLength = wave_buffer_size;
+        waves[i].lpData = (char*)niMalloc(waves[i].dwBufferLength);
+        if (!waves[i].lpData) {
+          niError(niFmt(_A("Unable to alloc memory to waves %d."), i));
+          return eFalse;
+        }
+        waves[i].dwFlags = 0;
+        waves[i].reserved = 0;
+        waveOutPrepareHeader(wave_device, &waves[i], sizeof(WAVEHDR));
+        waves[i].dwFlags |= WHDR_DONE;
+        ZeroMemory(waves[i].lpData, waves[i].dwBufferLength);
+        waveOutWrite(wave_device, &waves[i], sizeof(WAVEHDR));
+      }
+    }
+
     if (sink.IsOK()) {
       for (tU32 i = 0; i < NBUFFERS; i++) {
         if (waves[i].dwFlags & WHDR_DONE) {
@@ -245,10 +239,12 @@ error:;
         }
       }
     }
+
+    return eTrue;
   }
 
   ///////////////////////////////////////////////
-  void ThreadPlay()
+  void _ThreadPlay()
   {
 #ifdef THREADED_WAVEOUT
     if (is_playing && wait_thread && sink.IsOK()) {
@@ -256,7 +252,9 @@ error:;
     }
 #endif
   }
-  void ThreadStop()
+
+  ///////////////////////////////////////////////
+  void _ThreadStop()
   {
 #ifdef THREADED_WAVEOUT
     if (wait_thread)
@@ -267,6 +265,8 @@ error:;
   Ptr<iSoundDriverBufferDataSink> sink;
 
   WAVEHDR waves[NBUFFERS];
+
+  WAVEFORMATEX pcmwf;
   HWAVEOUT wave_device;
 
   unsigned long wave_buffer_size;
@@ -289,11 +289,11 @@ static DWORD WINAPI _WaveOutThreadProc(LPVOID apData)
     niUnsafeCast(cSoundDriverBufferWaveOut*, apData);
 
   while (pBuf->is_playing) {
-    pBuf->DoUpdate();
+    niCheck(pBuf->_DoUpdate(), eInvalidHandle);
     Sleep(1);
   }
 
-  ExitThread(0);
+  //ExitThread(0);
   return 0;
 }
 #endif

@@ -39,28 +39,26 @@ cSoundFactory::cSoundFactory()
 
   // register drivers
 #if !defined NO_SOUND
+  auto addDriver = [&](const achar* aName, Ptr<iSoundDriver> aDriver) {
+    if (!niIsOK(aDriver)) {
+      niError(niFmt("Can't add invalid driver '%s'.", aName));
+      return eFalse;
+    }
+    mvDrivers.push_back(aDriver);
+    return eTrue;
+  };
 
   #if defined niWindows
-  //mvDrivers.push_back(New_SoundDriverWaveOut());
-  mvDrivers.push_back(New_SoundDriverDSound());
-  if (!niIsOK(mvDrivers.back()))
-    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  addDriver("DSound", New_SoundDriverDSound());
+  addDriver("WaveOut", New_SoundDriverWaveOut());
   #elif defined niAndroid
-  mvDrivers.push_back(New_SoundDriverJNI());
-  if (!niIsOK(mvDrivers.back()))
-    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  addDriver("JNI", New_SoundDriverJNI());
   #elif defined niOSX || defined niIOS
-  mvDrivers.push_back(New_SoundDriverOSX());
-  if (!niIsOK(mvDrivers.back()))
-    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  addDriver("OSX", New_SoundDriverOSX());
   #elif defined niLinuxDesktop
-  mvDrivers.push_back(New_SoundDriverALSA());
-  if (!niIsOK(mvDrivers.back()))
-    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  addDriver("ALSA", New_SoundDriverALSA());
   #else
-  mvDrivers.push_back(New_SoundDriverSDL());
-  if (!niIsOK(mvDrivers.back()))
-    mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
+  addDriver("SDL", New_SoundDriverSDL());
   #endif
 
 #endif

@@ -87,6 +87,11 @@ struct sDSoundLoader {
     return eTrue;
   }
 
+  tBool IsLoaded() const
+  {
+    return dsound_dll != 0;
+  }
+
   ///////////////////////////////////////////////
   HRESULT dsound_capture_create(LPCGUID aGUID, LPDIRECTSOUNDCAPTURE* appOut,
                                 LPUNKNOWN apUnknown) const
@@ -335,8 +340,6 @@ class cSoundDriverBufferDSound
       goto error;
     }
 
-    is_playing = true;
-
     current_split = NSPLIT - 1;
 
     wait_thread = CreateThread(0, 0, _DSBuffThreadProc, (LPVOID)this,
@@ -344,16 +347,7 @@ class cSoundDriverBufferDSound
     SetThreadPriority(wait_thread, THREAD_PRIORITY_TIME_CRITICAL);
 
     is_playing = true;
-    ThreadPlay();
-
-    hr = dsbuff_buffer->Play(0, 0, DSBPLAY_LOOPING);
-    if (FAILED(hr)) {
-      niError(niFmt("Unable to start DSound Playing, DSError: '%s'.",
-                    DSoundGetErrorString(hr)));
-      goto error;
-    }
-
-    dsbuff_play = true;
+    _ThreadPlay();
 
     return eTrue;
 
@@ -370,6 +364,7 @@ error:;
     is_playing = false;
 
     if (wait_thread) {
+      ResumeThread(wait_thread);
       WaitForSingleObject(wait_thread, 1000);
       CloseHandle(wait_thread);
       wait_thread = NULL;
@@ -417,7 +412,7 @@ error:;
   virtual void __stdcall SetSink(iSoundDriverBufferDataSink* apSink) niImpl
   {
     _sink = apSink;
-    ThreadPlay();
+    _ThreadPlay();
   }
 
   ///////////////////////////////////////////////
@@ -429,22 +424,16 @@ error:;
   ///////////////////////////////////////////////
   virtual tBool __stdcall SwitchIn() niImpl
   {
-    if (is_playing) {
-      dsbuff_play = true;
-      dsbuff_buffer->Play(0, 0, DSBPLAY_LOOPING);
-    }
-    ThreadPlay();
+    _DSBufferPlay();
+    _ThreadPlay();
     return eTrue;
   }
 
   ///////////////////////////////////////////////
   virtual tBool __stdcall SwitchOut() niImpl
   {
-    ThreadStop();
-    if (is_playing) {
-      dsbuff_buffer->Stop();
-      dsbuff_play = false;
-    }
+    _ThreadStop();
+    _DSBufferStop();
     return eTrue;
   }
 
@@ -454,16 +443,17 @@ error:;
   }
 
   ///////////////////////////////////////////////
-  void ThreadPlay()
+  void _ThreadPlay()
   {
     if (is_playing && wait_thread && _sink.has_value()) {
       ResumeThread(wait_thread);
     }
   }
-  void ThreadStop()
+  void _ThreadStop()
   {
-    if (wait_thread)
+    if (wait_thread) {
       SuspendThread(wait_thread);
+    }
   }
 
   ///////////////////////////////////////////////
@@ -491,8 +481,43 @@ error:;
   }
 
   ///////////////////////////////////////////////
-  void ThreadLoop()
+  tBool _DSBufferPlay()
   {
+    if (!dsbuff_buffer || dsbuff_play)
+      return eFalse;
+    HRESULT hr = dsbuff_buffer->Play(0, 0, DSBPLAY_LOOPING);
+    if (FAILED(hr)) {
+      niError(niFmt("Unable to start DSound Playing, DSError: '%s'.",
+                    DSoundGetErrorString(hr)));
+      return eFalse;
+    }
+    dsbuff_play = true;
+    return eTrue;
+  }
+
+  tBool _DSBufferStop()
+  {
+    if (!dsbuff_buffer || !dsbuff_play)
+      return eFalse;
+    HRESULT hr = dsbuff_buffer->Stop();
+    if (FAILED(hr)) {
+      niError(niFmt("Unable to stop DSound Playing, DSError: '%s'.",
+                    DSoundGetErrorString(hr)));
+      return eFalse;
+    }
+    dsbuff_play = false;
+    return eTrue;
+  }
+
+  ///////////////////////////////////////////////
+  tBool _ThreadLoop()
+  {
+    // NOTE: Initialization is done here so that it runs in the thread. We do
+    // this because sometimes Windows takes a couple of seconds to initialize
+    // the audio device which increase our startup time significantly for
+    // nothing.
+    niCheck(_DSBufferPlay(), eFalse);
+
     //int i = NSPLIT-1;
     while (is_playing) {
       DWORD ret = WaitForMultipleObjects(NSPLIT, events, FALSE, 1000);
@@ -510,6 +535,8 @@ error:;
           i = 0;
       }*/
     }
+
+    return eTrue;
   }
 
   ///////////////////////////////////////////////
@@ -517,8 +544,7 @@ error:;
   {
     cSoundDriverBufferDSound* pBuf =
       reinterpret_cast<cSoundDriverBufferDSound*>(apData);
-    pBuf->ThreadLoop();
-    //ExitThread(0);
+    niCheck(pBuf->_ThreadLoop(), eInvalidHandle);
     return 0;
   }
 
@@ -555,7 +581,7 @@ class cSoundDriverDSound : public ImplRC<iSoundDriver> {
   ///////////////////////////////////////////////
   cSoundDriverDSound()
   {
-    ZeroMembers();
+    niCheck(mDSLoader.Load(), ;);
   }
 
   ///////////////////////////////////////////////
@@ -565,15 +591,10 @@ class cSoundDriverDSound : public ImplRC<iSoundDriver> {
   }
 
   ///////////////////////////////////////////////
-  void __stdcall ZeroMembers()
-  {
-  }
-
-  ///////////////////////////////////////////////
   tBool __stdcall IsOK() const
   {
     niClassIsOK(cSoundDriverDSound);
-    return eTrue;
+    return mDSLoader.IsLoaded();
   }
 
   ///////////////////////////////////////////////
@@ -592,8 +613,6 @@ class cSoundDriverDSound : public ImplRC<iSoundDriver> {
   tBool __stdcall Startup(eSoundFormat aSoundFormat, tU32 anFrequency,
                           tIntPtr aWindowHandle)
   {
-    niCheck(mDSLoader.Load(), eFalse);
-
     mptrBuffer = niNew cSoundDriverBufferDSound(mDSLoader, (HWND)aWindowHandle);
     if (!mptrBuffer.IsOK()) {
       niError(_A("Can't create the sound driver buffer."));

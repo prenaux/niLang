@@ -41,7 +41,8 @@ cSoundFactory::cSoundFactory()
 #if !defined NO_SOUND
 
   #if defined niWindows
-  mvDrivers.push_back(New_SoundDriverWaveOut());
+  //mvDrivers.push_back(New_SoundDriverWaveOut());
+  mvDrivers.push_back(New_SoundDriverDSound());
   if (!niIsOK(mvDrivers.back()))
     mvDrivers.erase(mvDrivers.begin() + mvDrivers.size() - 1);
   #elif defined niAndroid

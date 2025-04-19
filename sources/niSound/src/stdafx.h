@@ -9,6 +9,7 @@ using namespace ni;
 
 #if defined niWindows
 iSoundDriver* __stdcall New_SoundDriverWaveOut();
+iSoundDriver* __stdcall New_SoundDriverDSound();
 
 #elif defined niJSCC
 iSoundDriver* __stdcall New_SoundDriverSDL();

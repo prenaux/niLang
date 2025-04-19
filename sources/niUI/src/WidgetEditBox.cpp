@@ -757,8 +757,8 @@ void cEditBoxWidget::MoveCursorLineDelta(tI32 line)
   }
 
   niLet cursor = mbufText.GetCursor();
-  niLet targetline = ni::Min(0, cursor._line + line);
   niLet targetcol = mbufText.GetLogicalCursorCol();
+  niLet targetline = ni::Max(0, (tI32)cursor._line + line);
   niLet pos = Position(targetline, targetcol);
   niLet closestPos = mbufText.GetClosestValidPos(pos, 0);
   if (closestPos._line == cursor._line) {

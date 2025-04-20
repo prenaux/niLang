@@ -365,7 +365,7 @@ struct sRayGeometry {
   ni::Ptr<iTransform> transform;
   ni::tU32 userIndex = eInvalidHandle;
 
-  void UpdateTexIndex(ain<tU32> anTexResIndex)
+  void UpdateMaterial(ain<tU32> anTexResIndex, ain<tU32> anMatColor)
   {
     niLet lock = AutoLockBufferReadWrite<niUIGpuFuncs_RayInstanceData>(
       rayInstData.non_null());
@@ -376,6 +376,10 @@ struct sRayGeometry {
         "... sRayGeometry::InitFromDrawOp: currentTexIndex: %d -> newTexIndex: %d",
         currentTexIndex, newTexIndex));
       lock->texIndex = newTexIndex;
+    }
+    niLet currentMatColor = lock->materialColor;
+    if (currentMatColor != anMatColor) {
+      lock->materialColor = anMatColor;
     }
   }
 

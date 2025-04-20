@@ -1,13 +1,11 @@
 #include "stdafx.h"
 
 #ifdef _DEBUG
-#ifdef _MSC_VER
+  #ifdef _MSC_VER
     #pragma optimize("O2", on)
-#elif defined(__clang__)
-    #pragma clang optimize O2
-#elif defined(__GNUC__)
+  #elif defined(__clang__) || defined(__GNUC__)
     #pragma GCC optimize("O2")
-#endif
+  #endif
 #endif
 
 #include <math.h>

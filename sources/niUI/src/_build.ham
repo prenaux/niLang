@@ -133,6 +133,7 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
   raytracer_lit_textured_cube_ps
   raytracer_cullfront_ps
   raytracer_cullback_ps
+  raytracer_reflection_ps
 ] ;
 
 DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;

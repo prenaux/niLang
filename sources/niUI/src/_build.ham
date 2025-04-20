@@ -134,6 +134,12 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
   raytracer_cullfront_ps
   raytracer_cullback_ps
   raytracer_reflection_ps
+  raytracer_mat_diffuse_ps
+  raytracer_mat_diffuse_r_ps
+  raytracer_mat_diffuse_g_ps
+  raytracer_mat_diffuse_b_ps
+  raytracer_mat_diffuse_a_ps
+  raytracer_mat_reflection_ps
 ] ;
 
 DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;

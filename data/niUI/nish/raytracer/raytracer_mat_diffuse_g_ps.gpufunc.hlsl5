@@ -1,0 +1,204 @@
+struct niUIGpuFuncs_RayInstanceData
+{
+    uint ibIndex;
+    uint vbIndex;
+    uint firstIndex;
+    uint baseVertexIndex;
+    uint texIndex;
+    uint materialColor;
+};
+
+struct niUIGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    row_major float4x4 cameraInvView;
+    row_major float4x4 cameraInvViewProj;
+};
+
+struct niUIGpuFuncs_VertexRay
+{
+    float3 pos;
+    float3 normal;
+    uint color;
+    float2 tex0;
+};
+
+ByteAddressBuffer nil_builtin_GetRayInstanceData[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetVertexRay[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetIndex[] : register(t0, space9);
+cbuffer UBO_niUIGpuFuncs_RayUniforms : register(b0, space0)
+{
+    niUIGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+Texture2D<float4> nil_builtin_GetTexture2D[] : register(t0, space10);
+uniform RaytracingAccelerationStructure IN_1_aAS : register(t0, space7);
+SamplerState IN_1_aSS : register(s0, space5);
+
+static float4 gl_FragCoord;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 gl_FragCoord : SV_Position;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+static RayQuery<RAY_FLAG_NONE> rayQuery;
+
+uint spvPackUnorm4x8(float4 value)
+{
+    uint4 Packed = uint4(round(saturate(value) * 255.0));
+    return Packed.x | (Packed.y << 8) | (Packed.z << 16) | (Packed.w << 24);
+}
+
+float4 spvUnpackUnorm4x8(uint value)
+{
+    uint4 Packed = uint4(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, value >> 24);
+    return float4(Packed) / 255.0;
+}
+
+void frag_main()
+{
+    niUIGpuFuncs_RayUniforms _844;
+    _844.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _844.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _844.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _844.padding = IN_1_aUniforms_v.padding;
+    _844.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _844.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _976 = float3(_844.cameraInvView[3].x, _844.cameraInvView[3].y, _844.cameraInvView[3].z);
+    float4 _1094 = mul(float4(((gl_FragCoord.x / _844.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _844.rtHeight) * 2.0f), 1.0f, 1.0f), _844.cameraInvViewProj);
+    RayDesc _1ident = {_976, 0.001000000047497451305389404296875f, normalize((_1094 / _1094.w.xxxx).xyz - _976), _844.cameraFarClipPlane};
+    rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
+    bool _1111 = rayQuery.Proceed();
+    uint _1158 = rayQuery.CommittedStatus();
+    int _1159 = rayQuery.CommittedInstanceID();
+    uint _1164 = uint(_1159);
+    niUIGpuFuncs_RayInstanceData _1166;
+    _1166.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(0);
+    _1166.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(4);
+    _1166.firstIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(8);
+    _1166.baseVertexIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(12);
+    _1166.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(16);
+    _1166.materialColor = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1164)].Load(20);
+    niUIGpuFuncs_RayInstanceData _1168;
+    _1168.ibIndex = _1166.ibIndex;
+    _1168.vbIndex = _1166.vbIndex;
+    _1168.firstIndex = _1166.firstIndex;
+    _1168.baseVertexIndex = _1166.baseVertexIndex;
+    _1168.texIndex = _1166.texIndex;
+    _1168.materialColor = _1166.materialColor;
+    float2 _2106;
+    int _2112;
+    if (_1158 == 1u)
+    {
+        int _1174 = rayQuery.CommittedPrimitiveIndex();
+        float2 _1177 = rayQuery.CommittedTriangleBarycentrics();
+        float4x3 _1178 = rayQuery.CommittedObjectToWorld4x3();
+        bool _1231 = _1168.vbIndex == 0u;
+        float2 _2104;
+        if (_1231)
+        {
+            _2104 = 0.0f.xx;
+        }
+        else
+        {
+            uint _1321 = _1168.firstIndex + (3u * uint(_1174));
+            uint _1323 = _1168.ibIndex;
+            uint _1326 = _1321;
+            uint _1333 = _1321 + 1u;
+            uint _1340 = _1321 + 2u;
+            uint _1244 = _1168.vbIndex;
+            uint _1249 = _1168.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1323)].Load(_1326 * 4 + 0);
+            niUIGpuFuncs_VertexRay _1251;
+            _1251.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1249 * 36 + 0));
+            _1251.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1249 * 36 + 12));
+            _1251.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load(_1249 * 36 + 24);
+            _1251.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load2(_1249 * 36 + 28));
+            niUIGpuFuncs_VertexRay _1252;
+            _1252.pos = _1251.pos;
+            _1252.normal = _1251.normal;
+            _1252.color = _1251.color;
+            _1252.tex0 = _1251.tex0;
+            uint _1259 = _1168.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1323)].Load(_1333 * 4 + 0);
+            niUIGpuFuncs_VertexRay _1261;
+            _1261.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1259 * 36 + 0));
+            _1261.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1259 * 36 + 12));
+            _1261.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load(_1259 * 36 + 24);
+            _1261.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load2(_1259 * 36 + 28));
+            niUIGpuFuncs_VertexRay _1262;
+            _1262.pos = _1261.pos;
+            _1262.normal = _1261.normal;
+            _1262.color = _1261.color;
+            _1262.tex0 = _1261.tex0;
+            uint _1269 = _1168.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1323)].Load(_1340 * 4 + 0);
+            niUIGpuFuncs_VertexRay _1271;
+            _1271.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1269 * 36 + 0));
+            _1271.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load3(_1269 * 36 + 12));
+            _1271.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load(_1269 * 36 + 24);
+            _1271.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1244)].Load2(_1269 * 36 + 28));
+            niUIGpuFuncs_VertexRay _1272;
+            _1272.pos = _1271.pos;
+            _1272.normal = _1271.normal;
+            _1272.color = _1271.color;
+            _1272.tex0 = _1271.tex0;
+            _2104 = ((_1252.tex0 * ((1.0f - _1177.x) - _1177.y)) + (_1262.tex0 * _1177.x)) + (_1272.tex0 * _1177.y);
+        }
+        _2112 = _1231 ? (-1) : 1;
+        _2106 = _2104;
+    }
+    else
+    {
+        _2112 = (_1158 == 2u) ? 2 : 0;
+        _2106 = 0.0f.xx;
+    }
+    float4 _2115;
+    if (_2112 == 1)
+    {
+        float4 _1448 = spvUnpackUnorm4x8(_1168.materialColor).zyxw;
+        float4 _2114;
+        if (_1168.texIndex > 0u)
+        {
+            uint _1456 = _1168.texIndex;
+            _2114 = nil_builtin_GetTexture2D[NonUniformResourceIndex(_1456)].Sample(IN_1_aSS, _2106) * _1448;
+        }
+        else
+        {
+            _2114 = _1448;
+        }
+        _2115 = float4(0.0f, _2114.y, 0.0f, 1.0f);
+    }
+    else
+    {
+        float4 _2116;
+        if (_2112 == 2)
+        {
+            _2116 = float4(0.5f, 0.0f, 0.5f, 1.0f);
+        }
+        else
+        {
+            bool4 _2119 = (_2112 == (-1)).xxxx;
+            _2116 = float4(_2119.x ? float4(1.0f, 0.0f, 1.0f, 1.0f).x : 0.0f.xxxx.x, _2119.y ? float4(1.0f, 0.0f, 1.0f, 1.0f).y : 0.0f.xxxx.y, _2119.z ? float4(1.0f, 0.0f, 1.0f, 1.0f).z : 0.0f.xxxx.z, _2119.w ? float4(1.0f, 0.0f, 1.0f, 1.0f).w : 0.0f.xxxx.w);
+        }
+        _2115 = _2116;
+    }
+    OUT_0_rval_color = _2115;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    gl_FragCoord = stage_input.gl_FragCoord;
+    gl_FragCoord.w = 1.0 / gl_FragCoord.w;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

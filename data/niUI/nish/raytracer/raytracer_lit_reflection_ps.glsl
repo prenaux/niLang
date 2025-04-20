@@ -15,6 +15,9 @@ struct nish_std_PixelOutput {
 };
 // TypeStaticFwd: RayFlags
 uint nish_std_RayFlags_None;
+uint nish_std_RayFlags_Opaque;
+uint nish_std_RayFlags_TerminateOnFirstHit;
+uint nish_std_RayFlags_SkipClosestHitShader;
 // TypeStaticFwd: RayQueryIntersectionType
 uint nish_std_RayQueryIntersectionType_CommittedTriangle;
 uint nish_std_RayQueryIntersectionType_CommittedBoundingVolume;
@@ -32,6 +35,9 @@ vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m);
 void nish_std_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
   nish_std_RayFlags_None = 0;
+  nish_std_RayFlags_Opaque = 1;
+  nish_std_RayFlags_TerminateOnFirstHit = 4;
+  nish_std_RayFlags_SkipClosestHitShader = 8;
 }
 void nish_std_RayQueryIntersectionType_static_initialize() {
   // TypeStatic: RayQueryIntersectionType
@@ -136,12 +142,14 @@ vec4 niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(niUIGpuFuncs_RayIns
 
 // TypeMethFwd: _IntersectionTypeValue
 niUIGpuFuncs__IntersectionTypeValue niUIGpuFuncs__IntersectionTypeValue_new(int a__v);
+bool niUIGpuFuncs__op__ne_2__IntersectionTypeValue__IntersectionTypeValue(niUIGpuFuncs__IntersectionTypeValue aLeft, niUIGpuFuncs__IntersectionTypeValue aRight);
 bool niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(niUIGpuFuncs__IntersectionTypeValue aLeft, niUIGpuFuncs__IntersectionTypeValue aRight);
 
 // TypeMethFwd: IntersectionResult
 niUIGpuFuncs_IntersectionResult niUIGpuFuncs_IntersectionResult_new_default();
 bool niUIGpuFuncs_IntersectionResult_SetFromCommittedIntersection(inout /* mut */ niUIGpuFuncs_IntersectionResult r, rayQueryEXT aRayQuery);
 void niUIGpuFuncs_IntersectionResult_SetFromTriangleData(inout /* mut */ niUIGpuFuncs_IntersectionResult r, uint aVBIndex, uint aIBIndex, uint aPrimIndex, uint aFirstIndex, uint aBaseVertexIndex, vec2 aIntersectionBaryCentrics, mat4x3 aObjectToWorld);
+vec4 niUIGpuFuncs_IntersectionResult_ShadeIntersection(niUIGpuFuncs_IntersectionResult aIntersection, vec3 aViewDir, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
 
 // FunctionFwd: niUIGpuFuncs
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_niUIGpuFuncs_RayInstanceData { niUIGpuFuncs_RayInstanceData v; } nil_builtin_GetRayInstanceData[];
@@ -151,10 +159,15 @@ uvec3 niUIGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirs
 vec3 niUIGpuFuncs_BaryToVec3(vec2 aBary);
 vec2 niUIGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBary);
 vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
+float niUIGpuFuncs_SkyStep(float a, float b, float v);
+vec3 niUIGpuFuncs_ComputeSimpleSkyColor(vec3 aRayDir, vec3 aSunDir);
+float niUIGpuFuncs_CosineBiasSat(float v, float b);
+float niUIGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS);
+vec3 niUIGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS);
 niUIGpuFuncs_IntersectionResult niUIGpuFuncs_TraceRay(vec3 aOrigin, vec3 aDir, float aMinT, float aMaxT, accelerationStructureEXT aAS);
+vec4 niUIGpuFuncs_CalculateReflectionColor(uint aMaxRecursionDepth, float aSurfaceBias, float aMinReflectionFactorForBounce, niUIGpuFuncs_IntersectionResult aSurfaceHit, vec3 aIncomingDir, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
 float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor);
-nish_std_PixelOutput niUIGpuFuncs_rayTraceShowMatDiffuse(uint aRGBAChannel, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
-nish_std_PixelOutput niUIGpuFuncs_raytracer_mat_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
+nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
 void niUIGpuFuncs_IntersectionType_static_initialize() {
 
   // TypeStatic: IntersectionType
@@ -200,6 +213,9 @@ niUIGpuFuncs__IntersectionTypeValue niUIGpuFuncs__IntersectionTypeValue_new(int 
   t._v = a__v;
   return t;
 }
+bool niUIGpuFuncs__op__ne_2__IntersectionTypeValue__IntersectionTypeValue(niUIGpuFuncs__IntersectionTypeValue aLeft, niUIGpuFuncs__IntersectionTypeValue aRight) {
+  return (aLeft._v != aRight._v);
+}
 bool niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(niUIGpuFuncs__IntersectionTypeValue aLeft, niUIGpuFuncs__IntersectionTypeValue aRight) {
   return (aLeft._v == aRight._v);
 }
@@ -221,22 +237,22 @@ bool niUIGpuFuncs_IntersectionResult_SetFromCommittedIntersection(inout /* mut *
   uint committedType = rayQueryGetIntersectionTypeEXT(aRayQuery,true);
   r.userInstIndex = uint(rayQueryGetIntersectionInstanceCustomIndexEXT(aRayQuery,true));
   r.instData = nil_builtin_GetRayInstanceData[nonuniformEXT(r.userInstIndex)].v /*SKIPPED COPY VALUETYPE: funcret*/;
-  bool _tmp_t = (committedType == nish_std_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_t) {
+  bool _tmp_y = (committedType == nish_std_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_y) {
     r.primIndex = uint(rayQueryGetIntersectionPrimitiveIndexEXT(aRayQuery,true));
     niUIGpuFuncs_IntersectionResult_SetFromTriangleData(r,r.instData.vbIndex,r.instData.ibIndex,r.primIndex,r.instData.firstIndex,r.instData.baseVertexIndex,rayQueryGetIntersectionBarycentricsEXT(aRayQuery,true),rayQueryGetIntersectionObjectToWorldEXT(aRayQuery,true));
   }
   else {
-    bool _tmp_U = (committedType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_U) {
+    bool _tmp_Z = (committedType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_Z) {
       r.type = niUIGpuFuncs_IntersectionType_BoundingVolume;
     }
   }
   return false;
 }
 void niUIGpuFuncs_IntersectionResult_SetFromTriangleData(inout /* mut */ niUIGpuFuncs_IntersectionResult r, uint aVBIndex, uint aIBIndex, uint aPrimIndex, uint aFirstIndex, uint aBaseVertexIndex, vec2 aIntersectionBaryCentrics, mat4x3 aObjectToWorld) {
-  bool _tmp_11 = (aVBIndex == 0);
-  if (_tmp_11) {
+  bool _tmp_61 = (aVBIndex == 0);
+  if (_tmp_61) {
     r.type = niUIGpuFuncs_IntersectionType_InvalidTriangle;
   }
   else {
@@ -255,6 +271,48 @@ void niUIGpuFuncs_IntersectionResult_SetFromTriangleData(inout /* mut */ niUIGpu
     }
   }
 }
+vec4 niUIGpuFuncs_IntersectionResult_ShadeIntersection(niUIGpuFuncs_IntersectionResult aIntersection, vec3 aViewDir, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
+  vec3 sunDir = normalize(vec3(0.1,0.1,1.0));
+  vec4 _tmp_i2;
+  bool _tmp_j2 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(aIntersection.type,niUIGpuFuncs_IntersectionType_Triangle);
+  if (_tmp_j2) {
+    /* mut */ niUIGpuFuncs_RayInstanceData instData = aIntersection.instData /*COPY VALUETYPE: membervar*/;
+    vec3 worldPos = aIntersection.worldPos;
+    vec3 worldNormal = aIntersection.worldNormal;
+    vec2 uv = aIntersection.uv;
+    vec3 matColor = (niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(instData,aSS,uv).rgb);
+    float cosBias = 0.5;
+    vec3 shadowColor = vec3(0.3,0.3,0.3);
+    vec3 lightColor0 = vec3(0.8,0.8,0.8);
+    vec3 worldLightDir0 = normalize(vec3(-0.5,-0.7,0.9));
+    vec3 lightColor1 = vec3(0.4,0.2,0.0);
+    vec3 worldLightDir1 = normalize(vec3(0.707107,0.0,0.707107));
+    vec3 lightColor2 = vec3(0.0,0.2,0.4);
+    vec3 worldLightDir2 = vec3(0.0,-1.0,0.0);
+    vec3 C = ((niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir0,(lightColor0*matColor),cosBias,shadowColor,aAS)+niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir1,(lightColor1*matColor),cosBias,shadowColor,aAS))+niUIGpuFuncs_DirLight(worldPos,worldNormal,worldLightDir2,(lightColor2*matColor),cosBias,shadowColor,aAS));
+    vec3 _tmp_C3 = C;
+    _tmp_i2 = vec4(_tmp_C3.x,_tmp_C3.y,_tmp_C3.z,1.0);
+  }
+  else {
+    bool _tmp_D3 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(aIntersection.type,niUIGpuFuncs_IntersectionType_BoundingVolume);
+    if (_tmp_D3) {
+      _tmp_i2 = vec4(1.0,0.0,0.0,1.0);
+    }
+    else {
+      bool _tmp_L3 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(aIntersection.type,niUIGpuFuncs_IntersectionType_InvalidTriangle);
+      if (_tmp_L3) {
+        _tmp_i2 = vec4(1.0,0.0,1.0,1.0);
+      }
+      else {
+        {
+          vec3 _tmp_U3 = niUIGpuFuncs_ComputeSimpleSkyColor(-aViewDir,sunDir);
+          _tmp_i2 = vec4(_tmp_U3.x,_tmp_U3.y,_tmp_U3.z,0.0);
+        }
+      }
+    }
+  }
+  return _tmp_i2;
+}
 
 // Function: niUIGpuFuncs
 uvec3 niUIGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex) {
@@ -270,6 +328,52 @@ vec2 niUIGpuFuncs_Lerp_4_Vec2_Vec2_Vec2_Vec3(vec2 aX, vec2 aY, vec2 aZ, vec3 aBa
 vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary) {
   return (((aX*aBary.x)+(aY*aBary.y))+(aZ*aBary.z));
 }
+float niUIGpuFuncs_SkyStep(float a, float b, float v) {
+  return smoothstep(a, b, v);
+}
+vec3 niUIGpuFuncs_ComputeSimpleSkyColor(vec3 aRayDir, vec3 aSunDir) {
+  vec3 groundColor = vec3(0.35,0.3,0.35);
+  vec3 skyColorHorizon = vec3(1.0,1.0,1.0);
+  vec3 skyColorZenith = vec3(0.08,0.37,0.73);
+  vec3 sunColor = vec3(1.0,0.9,0.7);
+  float sunSize = 0.0025;
+  float sunIntensity = 10.0;
+  float skyGradientT = pow(niUIGpuFuncs_SkyStep(0.0001,0.4,aRayDir.y),0.35);
+  vec3 skyGradient = mix(skyColorHorizon,skyColorZenith,skyGradientT);
+  float groundToSkyT = niUIGpuFuncs_SkyStep(-0.02,0.0,aRayDir.y);
+  float cosAngle = dot(aRayDir,aSunDir);
+  float sunDisk = (niUIGpuFuncs_SkyStep((1.0 - sunSize),1.0,cosAngle) * sunIntensity);
+  float sunVisibility = float((groundToSkyT >= 1.0));
+  return (mix(groundColor,skyGradient,groundToSkyT)+((sunDisk*sunColor)*sunVisibility));
+}
+float niUIGpuFuncs_CosineBiasSat(float v, float b) {
+  return clamp(max(0.0,((v * (1.0 - b)) + b)),0.0,1.0);
+}
+float niUIGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT aAS) {
+  /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
+  rayQueryInitializeEXT(rayQuery,aAS,((nish_std_RayFlags_SkipClosestHitShader | nish_std_RayFlags_Opaque) | nish_std_RayFlags_TerminateOnFirstHit),255,aPos,0.001,aDir,10000.0);
+  rayQueryProceedEXT(rayQuery);
+  bool hasHit = (rayQueryGetIntersectionTypeEXT(rayQuery,true) == nish_std_RayQueryIntersectionType_CommittedTriangle);
+  float _tmp_e6;
+  bool _tmp_f6 = hasHit;
+  if (_tmp_f6) {
+    _tmp_e6 = 0.0;
+  }
+  else {
+    {
+      _tmp_e6 = 1.0;
+    }
+  }
+  return _tmp_e6;
+}
+vec3 niUIGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS) {
+  float att = niUIGpuFuncs_DirShadowRay(worldPos,-worldLightDir,aAS);
+  vec3 D = lightColor;
+  vec3 S = vec3_Zero;
+  float NdotL = niUIGpuFuncs_CosineBiasSat(dot(worldNormal,-worldLightDir),cosBias);
+  vec3 C = (D+S);
+  return mix((shadowColor*C),C,(att * NdotL));
+}
 niUIGpuFuncs_IntersectionResult niUIGpuFuncs_TraceRay(vec3 aOrigin, vec3 aDir, float aMinT, float aMaxT, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
   rayQueryInitializeEXT(rayQuery,aAS,nish_std_RayFlags_None,255,aOrigin,aMinT,aDir,aMaxT);
@@ -278,88 +382,106 @@ niUIGpuFuncs_IntersectionResult niUIGpuFuncs_TraceRay(vec3 aOrigin, vec3 aDir, f
   niUIGpuFuncs_IntersectionResult_SetFromCommittedIntersection(intersection,rayQuery);
   return intersection;
 }
+vec4 niUIGpuFuncs_CalculateReflectionColor(uint aMaxRecursionDepth, float aSurfaceBias, float aMinReflectionFactorForBounce, niUIGpuFuncs_IntersectionResult aSurfaceHit, vec3 aIncomingDir, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
+  bool _tmp_M6 = niUIGpuFuncs__op__ne_2__IntersectionTypeValue__IntersectionTypeValue(aSurfaceHit.type,niUIGpuFuncs_IntersectionType_Triangle);
+  if (_tmp_M6) {
+    return vec4(0.0,0.0,0.0,1.0);
+  }
+  vec3 currentOrigin = (aSurfaceHit.worldPos+(aSurfaceHit.worldNormal*aSurfaceBias));
+  vec3 currentDir = reflect(aIncomingDir,aSurfaceHit.worldNormal);
+  uint bounceIndex = 1;
+  while(true) {
+    niUIGpuFuncs_IntersectionResult hit = niUIGpuFuncs_TraceRay(currentOrigin,currentDir,aSurfaceBias,aUniforms.cameraFarClipPlane,aAS);
+    bool _tmp_e7 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(hit.type,niUIGpuFuncs_IntersectionType_Triangle);
+    if (_tmp_e7) {
+      vec4 hitMatColor = niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(hit.instData,aSS,hit.uv);
+      float hitReflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(hitMatColor);
+      bool _tmp_q7 = ((bounceIndex >= aMaxRecursionDepth) || (hitReflectionFactor < aMinReflectionFactorForBounce));
+      if (_tmp_q7) {
+        return niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+      }
+      else {
+        {
+          currentOrigin = (hit.worldPos+(hit.worldNormal*aSurfaceBias));
+          currentDir = reflect(currentDir,hit.worldNormal);
+        }
+      }
+    }
+    else {
+      {
+        return niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+      }
+    }
+    bounceIndex = (bounceIndex + 1);
+    bool _tmp_Z7 = (bounceIndex > aMaxRecursionDepth);
+    if (_tmp_Z7) {
+      break;
+    }
+  }
+  return vec4(0.0,0.0,0.0,1.0);
+}
 float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
   float factor = (aMatColor.z * (1.0 - (1.0 * max(aMatColor.x,aMatColor.y))));
-  float _tmp_w3;
-  bool _tmp_x3 = (factor > 0.1);
-  if (_tmp_x3) {
-    _tmp_w3 = clamp(factor,0.0,1.0);
+  float _tmp_j8;
+  bool _tmp_k8 = (factor > 0.1);
+  if (_tmp_k8) {
+    _tmp_j8 = clamp(factor,0.0,1.0);
   }
   else {
     {
-      _tmp_w3 = 0.0;
+      _tmp_j8 = 0.0;
     }
   }
-  return _tmp_w3;
+  return _tmp_j8;
 }
-nish_std_PixelOutput niUIGpuFuncs_rayTraceShowMatDiffuse(uint aRGBAChannel, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
+nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_Y3 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_Y3[3][0],_tmp_Y3[3][1],_tmp_Y3[3][2]);
+  mat4 _tmp_L8 = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_L8[3][0],_tmp_L8[3][1],_tmp_L8[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
   niUIGpuFuncs_IntersectionResult primaryHit = niUIGpuFuncs_TraceRay(origin,dir,0.001,aUniforms.cameraFarClipPlane,aAS);
   vec4 finalColor;
-  bool _tmp_e4 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_Triangle);
-  if (_tmp_e4) {
+  bool _tmp_19 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_Triangle);
+  if (_tmp_19) {
+    vec4 litColor = niUIGpuFuncs_IntersectionResult_ShadeIntersection(primaryHit,-dir,aUniforms,aAS,aSS);
     vec4 matColor = niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(primaryHit.instData,aSS,primaryHit.uv);
-    bool _tmp_o4 = (aRGBAChannel == 1);
-    if (_tmp_o4) {
-      finalColor = vec4(matColor.x,0.0,0.0,1.0);
+    float reflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(matColor);
+    bool _tmp_k9 = (reflectionFactor < 0.1);
+    if (_tmp_k9) {
+      finalColor = litColor;
     }
     else {
-      bool _tmp_w4 = (aRGBAChannel == 2);
-      if (_tmp_w4) {
-        finalColor = vec4(0.0,matColor.y,0.0,1.0);
-      }
-      else {
-        bool _tmp_E4 = (aRGBAChannel == 3);
-        if (_tmp_E4) {
-          finalColor = vec4(0.0,0.0,matColor.z,1.0);
-        }
-        else {
-          bool _tmp_M4 = (aRGBAChannel == 4);
-          if (_tmp_M4) {
-            finalColor = vec4(matColor.w,matColor.w,matColor.w,1.0);
-          }
-          else {
-            bool _tmp_W4 = (aRGBAChannel == 5);
-            if (_tmp_W4) {
-              float reflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(matColor);
-              finalColor = vec4(reflectionFactor,reflectionFactor,reflectionFactor,1.0);
-            }
-            else {
-              {
-                finalColor = vec4(matColor.x,matColor.y,matColor.z,matColor.w);
-              }
-            }
-          }
-        }
+      {
+        uint reflectionMaxBounces = 3;
+        float reflectionSurfaceBias = 0.001;
+        float minFactorForBounce = 0.1;
+        vec4 reflectionColor = niUIGpuFuncs_CalculateReflectionColor(reflectionMaxBounces,reflectionSurfaceBias,minFactorForBounce,primaryHit,dir,aUniforms,aAS,aSS);
+        finalColor = mix(litColor,reflectionColor,reflectionFactor);
       }
     }
   }
   else {
-    bool _tmp_d5 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_BoundingVolume);
-    if (_tmp_d5) {
+    bool _tmp_C9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_BoundingVolume);
+    if (_tmp_C9) {
       finalColor = vec4(0.5,0.0,0.5,1.0);
     }
     else {
-      bool _tmp_l5 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_InvalidTriangle);
-      if (_tmp_l5) {
+      bool _tmp_K9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_InvalidTriangle);
+      if (_tmp_K9) {
         finalColor = vec4(1.0,0.0,1.0,1.0);
       }
       else {
         {
-          finalColor = vec4(0.0,0.0,0.0,0.0);
+          vec3 sunDir = normalize(vec3(0.1,0.1,1.0));
+          vec3 _tmp_Y9 = niUIGpuFuncs_ComputeSimpleSkyColor(dir,sunDir);
+          finalColor = vec4(_tmp_Y9.x,_tmp_Y9.y,_tmp_Y9.z,0.0);
         }
       }
     }
   }
-  vec4 _tmp_z5 = finalColor;
-  return nish_std_PixelOutput_new(_tmp_z5);
-}
-nish_std_PixelOutput niUIGpuFuncs_raytracer_mat_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
-  return niUIGpuFuncs_rayTraceShowMatDiffuse(5,aInput,aUniforms,aAS,aSS);
+  vec4 _tmp_3a = finalColor;
+  return nish_std_PixelOutput_new(_tmp_3a);
 }
 
 // ModuleInitialize: niUIGpuFuncs
@@ -368,7 +490,7 @@ void niUIGpuFuncs_initialize() {
 }
 // MODULE END niUIGpuFuncs
 
-// Pixel Shader main: niUIGpuFuncs_raytracer_mat_reflection_ps
+// Pixel Shader main: niUIGpuFuncs_raytracer_lit_reflection_ps
 // type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_niUIGpuFuncs_RayUniforms { niUIGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
@@ -382,7 +504,7 @@ void main(void) {
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;
-  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_mat_reflection_ps(aInput, aUniforms, IN_1_aAS, IN_1_aSS);
+  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_lit_reflection_ps(aInput, aUniforms, IN_1_aAS, IN_1_aSS);
   OUT_0_rval_color = _rval_.color;
 }
 

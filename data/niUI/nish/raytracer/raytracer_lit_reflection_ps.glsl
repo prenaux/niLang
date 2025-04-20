@@ -387,6 +387,8 @@ vec4 niUIGpuFuncs_CalculateReflectionColor(uint aMaxRecursionDepth, float aSurfa
   if (_tmp_M6) {
     return vec4(0.0,0.0,0.0,1.0);
   }
+  float throughput = 1.0;
+  float minThroughput = 0.01;
   vec3 currentOrigin = (aSurfaceHit.worldPos+(aSurfaceHit.worldNormal*aSurfaceBias));
   vec3 currentDir = reflect(aIncomingDir,aSurfaceHit.worldNormal);
   uint bounceIndex = 1;
@@ -396,9 +398,13 @@ vec4 niUIGpuFuncs_CalculateReflectionColor(uint aMaxRecursionDepth, float aSurfa
     if (_tmp_e7) {
       vec4 hitMatColor = niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(hit.instData,aSS,hit.uv);
       float hitReflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(hitMatColor);
-      bool _tmp_q7 = ((bounceIndex >= aMaxRecursionDepth) || (hitReflectionFactor < aMinReflectionFactorForBounce));
-      if (_tmp_q7) {
-        return niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+      throughput = (throughput * hitReflectionFactor);
+      bool terminate = (((bounceIndex >= aMaxRecursionDepth) || (hitReflectionFactor < aMinReflectionFactorForBounce)) || (throughput < minThroughput));
+      bool _tmp_E7 = terminate;
+      if (_tmp_E7) {
+        vec4 shadedColor = niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+        vec3 _tmp_P7 = ((shadedColor*throughput).rgb);
+        return vec4(_tmp_P7.x,_tmp_P7.y,_tmp_P7.z,shadedColor.a);
       }
       else {
         {
@@ -409,51 +415,53 @@ vec4 niUIGpuFuncs_CalculateReflectionColor(uint aMaxRecursionDepth, float aSurfa
     }
     else {
       {
-        return niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+        vec4 shadedColor = niUIGpuFuncs_IntersectionResult_ShadeIntersection(hit,-currentDir,aUniforms,aAS,aSS);
+        vec3 _tmp_d8 = ((shadedColor*throughput).rgb);
+        return vec4(_tmp_d8.x,_tmp_d8.y,_tmp_d8.z,shadedColor.a);
       }
     }
     bounceIndex = (bounceIndex + 1);
-    bool _tmp_Z7 = (bounceIndex > aMaxRecursionDepth);
-    if (_tmp_Z7) {
+    bool _tmp_l8 = (bounceIndex > aMaxRecursionDepth);
+    if (_tmp_l8) {
       break;
     }
   }
   return vec4(0.0,0.0,0.0,1.0);
 }
 float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
-  float factor = (aMatColor.z * (1.0 - (1.0 * max(aMatColor.x,aMatColor.y))));
-  float _tmp_j8;
-  bool _tmp_k8 = (factor > 0.1);
-  if (_tmp_k8) {
-    _tmp_j8 = clamp(factor,0.0,1.0);
+  float factor = (aMatColor.z * (1.0 - max(aMatColor.x,aMatColor.y)));
+  float _tmp_D8;
+  bool _tmp_E8 = (factor > 0.1);
+  if (_tmp_E8) {
+    _tmp_D8 = clamp(factor,0.0,1.0);
   }
   else {
     {
-      _tmp_j8 = 0.0;
+      _tmp_D8 = 0.0;
     }
   }
-  return _tmp_j8;
+  return _tmp_D8;
 }
 nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_L8 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_L8[3][0],_tmp_L8[3][1],_tmp_L8[3][2]);
+  mat4 _tmp_59 = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_59[3][0],_tmp_59[3][1],_tmp_59[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
   niUIGpuFuncs_IntersectionResult primaryHit = niUIGpuFuncs_TraceRay(origin,dir,0.001,aUniforms.cameraFarClipPlane,aAS);
   vec4 finalColor;
-  bool _tmp_19 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_Triangle);
-  if (_tmp_19) {
+  bool _tmp_l9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_Triangle);
+  if (_tmp_l9) {
     vec4 litColor = niUIGpuFuncs_IntersectionResult_ShadeIntersection(primaryHit,-dir,aUniforms,aAS,aSS);
     vec4 matColor = niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(primaryHit.instData,aSS,primaryHit.uv);
     float reflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(matColor);
-    bool _tmp_k9 = (reflectionFactor < 0.1);
-    if (_tmp_k9) {
+    bool _tmp_E9 = (reflectionFactor < 0.1);
+    if (_tmp_E9) {
       finalColor = litColor;
     }
     else {
       {
-        uint reflectionMaxBounces = 3;
+        uint reflectionMaxBounces = 1;
         float reflectionSurfaceBias = 0.001;
         float minFactorForBounce = 0.1;
         vec4 reflectionColor = niUIGpuFuncs_CalculateReflectionColor(reflectionMaxBounces,reflectionSurfaceBias,minFactorForBounce,primaryHit,dir,aUniforms,aAS,aSS);
@@ -462,26 +470,26 @@ nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_reflection_ps(nish_std_PixelInpu
     }
   }
   else {
-    bool _tmp_C9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_BoundingVolume);
-    if (_tmp_C9) {
+    bool _tmp_W9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_BoundingVolume);
+    if (_tmp_W9) {
       finalColor = vec4(0.5,0.0,0.5,1.0);
     }
     else {
-      bool _tmp_K9 = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_InvalidTriangle);
-      if (_tmp_K9) {
+      bool _tmp_4a = niUIGpuFuncs__op__eq_2__IntersectionTypeValue__IntersectionTypeValue(primaryHit.type,niUIGpuFuncs_IntersectionType_InvalidTriangle);
+      if (_tmp_4a) {
         finalColor = vec4(1.0,0.0,1.0,1.0);
       }
       else {
         {
           vec3 sunDir = normalize(vec3(0.1,0.1,1.0));
-          vec3 _tmp_Y9 = niUIGpuFuncs_ComputeSimpleSkyColor(dir,sunDir);
-          finalColor = vec4(_tmp_Y9.x,_tmp_Y9.y,_tmp_Y9.z,0.0);
+          vec3 _tmp_ia = niUIGpuFuncs_ComputeSimpleSkyColor(dir,sunDir);
+          finalColor = vec4(_tmp_ia.x,_tmp_ia.y,_tmp_ia.z,0.0);
         }
       }
     }
   }
-  vec4 _tmp_3a = finalColor;
-  return nish_std_PixelOutput_new(_tmp_3a);
+  vec4 _tmp_na = finalColor;
+  return nish_std_PixelOutput_new(_tmp_na);
 }
 
 // ModuleInitialize: niUIGpuFuncs

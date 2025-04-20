@@ -1,0 +1,86 @@
+struct niUIGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    row_major float4x4 cameraInvView;
+    row_major float4x4 cameraInvViewProj;
+};
+
+cbuffer UBO_niUIGpuFuncs_RayUniforms : register(b0, space0)
+{
+    niUIGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+uniform RaytracingAccelerationStructure IN_1_aAS : register(t0, space7);
+
+static float4 gl_FragCoord;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 gl_FragCoord : SV_Position;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+static RayQuery<RAY_FLAG_NONE> rayQuery;
+
+void frag_main()
+{
+    niUIGpuFuncs_RayUniforms _334;
+    _334.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _334.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _334.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _334.padding = IN_1_aUniforms_v.padding;
+    _334.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _334.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _446 = float3(_334.cameraInvView[3].x, _334.cameraInvView[3].y, _334.cameraInvView[3].z);
+    float4 _474 = mul(float4(((gl_FragCoord.x / _334.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _334.rtHeight) * 2.0f), 1.0f, 1.0f), _334.cameraInvViewProj);
+    RayDesc _1ident = {_446, 0.001000000047497451305389404296875f, normalize((_474 / _474.w.xxxx).xyz - _446), _334.cameraFarClipPlane};
+    rayQuery.TraceRayInline(IN_1_aAS, 16u, 255u, _1ident);
+    bool _376 = rayQuery.Proceed();
+    uint _377 = rayQuery.CommittedStatus();
+    float4 _646;
+    if (_377 == 1u)
+    {
+        float2 _383 = rayQuery.CommittedTriangleBarycentrics();
+        float4 _647;
+        if (((_383.x < 0.0199999995529651641845703125f) || (_383.y < 0.0199999995529651641845703125f)) || (((1.0f - _383.x) - _383.y) < 0.0199999995529651641845703125f))
+        {
+            _647 = 1.0f.xxxx;
+        }
+        else
+        {
+            int _391 = rayQuery.CommittedPrimitiveIndex();
+            uint _392 = uint(_391);
+            uint _534 = _392 + (_392 << uint(10));
+            uint _538 = _534 ^ (_534 >> uint(6));
+            uint _542 = _538 + (_538 << uint(3));
+            uint _546 = _542 ^ (_542 >> uint(11));
+            uint _550 = _546 + (_546 << uint(15));
+            _647 = float4(float((_550 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_550 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_550 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
+        }
+        _646 = _647;
+    }
+    else
+    {
+        bool4 _650 = (_377 == 2u).xxxx;
+        _646 = float4(_650.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _650.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _650.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _650.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+    }
+    OUT_0_rval_color = _646;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    gl_FragCoord = stage_input.gl_FragCoord;
+    gl_FragCoord.w = 1.0 / gl_FragCoord.w;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

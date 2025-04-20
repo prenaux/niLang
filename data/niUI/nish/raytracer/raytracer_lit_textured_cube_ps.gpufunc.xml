@@ -15,18 +15,18 @@
 			<SeparateSampler name="IN_1_aSS" type="sampler" set="5" binding="0"/>
 		</SeparateSamplers>
 		<SSBOs>
-			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_386" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_387" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
-			<SSBO name="SBO_GetVertexRay" type="_469" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_GetVertexRay" type="_470" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
-			<SSBO name="SBO_GetIndex" type="_572" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_GetIndex" type="_573" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
 		</SSBOs>
 		<UBOs>
-			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_1033" set="0" binding="0"/>
+			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_1036" set="0" binding="0"/>
 		</UBOs>
 		<AccelerationStructures>
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>

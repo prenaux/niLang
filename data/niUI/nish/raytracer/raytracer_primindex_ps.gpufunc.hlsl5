@@ -32,37 +32,47 @@ static RayQuery<RAY_FLAG_NONE> rayQuery;
 
 void frag_main()
 {
-    niUIGpuFuncs_RayUniforms _283;
-    _283.rtWidth = IN_1_aUniforms_v.rtWidth;
-    _283.rtHeight = IN_1_aUniforms_v.rtHeight;
-    _283.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
-    _283.padding = IN_1_aUniforms_v.padding;
-    _283.cameraInvView = IN_1_aUniforms_v.cameraInvView;
-    _283.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
-    float3 _378 = float3(_283.cameraInvView[3].x, _283.cameraInvView[3].y, _283.cameraInvView[3].z);
-    float4 _406 = mul(float4(((gl_FragCoord.x / _283.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _283.rtHeight) * 2.0f), 1.0f, 1.0f), _283.cameraInvViewProj);
-    RayDesc _1ident = {_378, 0.001000000047497451305389404296875f, normalize((_406 / _406.w.xxxx).xyz - _378), _283.cameraFarClipPlane};
-    rayQuery.TraceRayInline(IN_1_aAS, 16u, 255u, _1ident);
-    bool _317 = rayQuery.Proceed();
-    uint _318 = rayQuery.CommittedStatus();
-    float4 _552;
-    if (_318 == 1u)
+    niUIGpuFuncs_RayUniforms _345;
+    _345.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _345.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _345.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _345.padding = IN_1_aUniforms_v.padding;
+    _345.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _345.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _463 = float3(_345.cameraInvView[3].x, _345.cameraInvView[3].y, _345.cameraInvView[3].z);
+    float4 _491 = mul(float4(((gl_FragCoord.x / _345.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _345.rtHeight) * 2.0f), 1.0f, 1.0f), _345.cameraInvViewProj);
+    RayDesc _1ident = {_463, 0.001000000047497451305389404296875f, normalize((_491 / _491.w.xxxx).xyz - _463), _345.cameraFarClipPlane};
+    rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
+    bool _385 = rayQuery.Proceed();
+    uint _386 = rayQuery.CommittedStatus();
+    float4 _683;
+    if (_386 == 1u)
     {
-        int _324 = rayQuery.CommittedPrimitiveIndex();
-        uint _325 = uint(_324);
-        uint _442 = _325 + (_325 << uint(10));
-        uint _446 = _442 ^ (_442 >> uint(6));
-        uint _450 = _446 + (_446 << uint(3));
-        uint _454 = _450 ^ (_450 >> uint(11));
-        uint _458 = _454 + (_454 << uint(15));
-        _552 = float4(float((_458 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_458 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_458 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
+        float2 _392 = rayQuery.CommittedTriangleBarycentrics();
+        float4 _684;
+        if (((_392.x < 0.0199999995529651641845703125f) || (_392.y < 0.0199999995529651641845703125f)) || (((1.0f - _392.x) - _392.y) < 0.0199999995529651641845703125f))
+        {
+            _684 = 1.0f.xxxx;
+        }
+        else
+        {
+            int _400 = rayQuery.CommittedPrimitiveIndex();
+            uint _401 = uint(_400);
+            uint _551 = _401 + (_401 << uint(10));
+            uint _555 = _551 ^ (_551 >> uint(6));
+            uint _559 = _555 + (_555 << uint(3));
+            uint _563 = _559 ^ (_559 >> uint(11));
+            uint _567 = _563 + (_563 << uint(15));
+            _684 = float4(float((_567 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_567 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_567 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
+        }
+        _683 = _684;
     }
     else
     {
-        bool4 _555 = (_318 == 2u).xxxx;
-        _552 = float4(_555.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _555.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _555.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _555.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _687 = (_386 == 2u).xxxx;
+        _683 = float4(_687.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _687.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _687.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _687.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _552;
+    OUT_0_rval_color = _683;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

@@ -1,0 +1,20 @@
+<GpuFunction ver="3" name="raytracer_cullfront_ps" exec="pixel">
+	<Reflection>
+		<EntryPoints>
+			<EntryPoint name="main" exec="pixel"/>
+		</EntryPoints>
+		<Outputs>
+			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
+		</Outputs>
+		<UBOs>
+			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_328" set="0" binding="0"/>
+		</UBOs>
+		<AccelerationStructures>
+			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>
+		</AccelerationStructures>
+	</Reflection>
+	<Target target="spv_vk12" code_path="raytracer_cullfront_ps.gpufunc.spv_vk12"/>
+	<Target target="glsl_vk46" code_path="raytracer_cullfront_ps.gpufunc.glsl_vk46"/>
+	<Target target="msl2_macos" code_path="raytracer_cullfront_ps.gpufunc.msl2_macos"/>
+	<Target target="hlsl5" code_path="raytracer_cullfront_ps.gpufunc.hlsl5"/>
+</GpuFunction>

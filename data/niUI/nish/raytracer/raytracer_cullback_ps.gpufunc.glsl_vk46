@@ -1,0 +1,63 @@
+#version 460
+#extension GL_EXT_ray_query : require
+
+struct niUIGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    mat4 cameraInvView;
+    mat4 cameraInvViewProj;
+};
+
+uniform vec4 UBO_niUIGpuFuncs_RayUniforms[9];
+layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
+
+layout(location = 0) out vec4 OUT_0_rval_color;
+rayQueryEXT rayQuery;
+
+void main()
+{
+    niUIGpuFuncs_RayUniforms _333 = niUIGpuFuncs_RayUniforms(UBO_niUIGpuFuncs_RayUniforms[0].x, UBO_niUIGpuFuncs_RayUniforms[0].y, UBO_niUIGpuFuncs_RayUniforms[0].z, UBO_niUIGpuFuncs_RayUniforms[0].w, mat4(UBO_niUIGpuFuncs_RayUniforms[1], UBO_niUIGpuFuncs_RayUniforms[2], UBO_niUIGpuFuncs_RayUniforms[3], UBO_niUIGpuFuncs_RayUniforms[4]), mat4(UBO_niUIGpuFuncs_RayUniforms[5], UBO_niUIGpuFuncs_RayUniforms[6], UBO_niUIGpuFuncs_RayUniforms[7], UBO_niUIGpuFuncs_RayUniforms[8]));
+    niUIGpuFuncs_RayUniforms _334;
+    _334.rtWidth = _333.rtWidth;
+    _334.rtHeight = _333.rtHeight;
+    _334.cameraFarClipPlane = _333.cameraFarClipPlane;
+    _334.padding = _333.padding;
+    _334.cameraInvView = _333.cameraInvView;
+    _334.cameraInvViewProj = _333.cameraInvViewProj;
+    vec3 _446 = vec3(_334.cameraInvView[3].x, _334.cameraInvView[3].y, _334.cameraInvView[3].z);
+    vec4 _474 = _334.cameraInvViewProj * vec4(((gl_FragCoord.x / _334.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _334.rtHeight) * 2.0), 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 16u, 255u, _446, 0.001000000047497451305389404296875, normalize((_474 / vec4(_474.w)).xyz - _446), _334.cameraFarClipPlane);
+    bool _376 = rayQueryProceedEXT(rayQuery);
+    uint _377 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    vec4 _646;
+    if (_377 == 1u)
+    {
+        vec2 _383 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
+        vec4 _647;
+        if (((_383.x < 0.0199999995529651641845703125) || (_383.y < 0.0199999995529651641845703125)) || (((1.0 - _383.x) - _383.y) < 0.0199999995529651641845703125))
+        {
+            _647 = vec4(1.0);
+        }
+        else
+        {
+            int _391 = rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery, bool(1));
+            uint _392 = uint(_391);
+            uint _534 = _392 + (_392 << uint(10));
+            uint _538 = _534 ^ (_534 >> uint(6));
+            uint _542 = _538 + (_538 << uint(3));
+            uint _546 = _542 ^ (_542 >> uint(11));
+            uint _550 = _546 + (_546 << uint(15));
+            _647 = vec4(float((_550 >> uint(0)) & 255u) * 0.0039215688593685626983642578125, float((_550 >> uint(8)) & 255u) * 0.0039215688593685626983642578125, float((_550 >> uint(16)) & 255u) * 0.0039215688593685626983642578125, 1.0);
+        }
+        _646 = _647;
+    }
+    else
+    {
+        _646 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_377 == 2u));
+    }
+    OUT_0_rval_color = _646;
+}
+

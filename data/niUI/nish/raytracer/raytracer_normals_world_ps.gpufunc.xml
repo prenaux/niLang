@@ -7,18 +7,18 @@
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
 		<SSBOs>
-			<SSBO name="SBO_GetIndex" type="_148" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_GetIndex" type="_155" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
-			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_285" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_299" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
-			<SSBO name="SBO_GetVertexRay" type="_331" readonly="1" set="9" binding="0">
+			<SSBO name="SBO_GetVertexRay" type="_345" readonly="1" set="9" binding="0">
 				<array size="0"/>
 			</SSBO>
 		</SSBOs>
 		<UBOs>
-			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_440" set="0" binding="0"/>
+			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_454" set="0" binding="0"/>
 		</UBOs>
 		<AccelerationStructures>
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>

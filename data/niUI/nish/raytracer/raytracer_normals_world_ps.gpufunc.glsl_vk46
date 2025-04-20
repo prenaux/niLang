@@ -54,73 +54,73 @@ rayQueryEXT rayQuery;
 
 void main()
 {
-    niUIGpuFuncs_RayUniforms _445 = niUIGpuFuncs_RayUniforms(UBO_niUIGpuFuncs_RayUniforms[0].x, UBO_niUIGpuFuncs_RayUniforms[0].y, UBO_niUIGpuFuncs_RayUniforms[0].z, UBO_niUIGpuFuncs_RayUniforms[0].w, mat4(UBO_niUIGpuFuncs_RayUniforms[1], UBO_niUIGpuFuncs_RayUniforms[2], UBO_niUIGpuFuncs_RayUniforms[3], UBO_niUIGpuFuncs_RayUniforms[4]), mat4(UBO_niUIGpuFuncs_RayUniforms[5], UBO_niUIGpuFuncs_RayUniforms[6], UBO_niUIGpuFuncs_RayUniforms[7], UBO_niUIGpuFuncs_RayUniforms[8]));
-    niUIGpuFuncs_RayUniforms _446;
-    _446.rtWidth = _445.rtWidth;
-    _446.rtHeight = _445.rtHeight;
-    _446.cameraFarClipPlane = _445.cameraFarClipPlane;
-    _446.padding = _445.padding;
-    _446.cameraInvView = _445.cameraInvView;
-    _446.cameraInvViewProj = _445.cameraInvViewProj;
-    vec3 _631 = vec3(_446.cameraInvView[3].x, _446.cameraInvView[3].y, _446.cameraInvView[3].z);
-    vec4 _659 = _446.cameraInvViewProj * vec4(((gl_FragCoord.x / _446.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _446.rtHeight) * 2.0), 1.0, 1.0);
-    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 16u, 255u, _631, 0.001000000047497451305389404296875, normalize((_659 / vec4(_659.w)).xyz - _631), _446.cameraFarClipPlane);
-    bool _500 = rayQueryProceedEXT(rayQuery);
-    uint _501 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
-    int _502 = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, bool(1));
-    uint _505 = uint(_502);
-    niUIGpuFuncs_RayInstanceData _508;
-    _508.ibIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.ibIndex;
-    _508.vbIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.vbIndex;
-    _508.firstIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.firstIndex;
-    _508.baseVertexIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.baseVertexIndex;
-    _508.texIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.texIndex;
-    _508.materialColor = nil_builtin_GetRayInstanceData[nonuniformEXT(_505)].v.materialColor;
-    vec4 _867;
-    if (_501 == 1u)
+    niUIGpuFuncs_RayUniforms _459 = niUIGpuFuncs_RayUniforms(UBO_niUIGpuFuncs_RayUniforms[0].x, UBO_niUIGpuFuncs_RayUniforms[0].y, UBO_niUIGpuFuncs_RayUniforms[0].z, UBO_niUIGpuFuncs_RayUniforms[0].w, mat4(UBO_niUIGpuFuncs_RayUniforms[1], UBO_niUIGpuFuncs_RayUniforms[2], UBO_niUIGpuFuncs_RayUniforms[3], UBO_niUIGpuFuncs_RayUniforms[4]), mat4(UBO_niUIGpuFuncs_RayUniforms[5], UBO_niUIGpuFuncs_RayUniforms[6], UBO_niUIGpuFuncs_RayUniforms[7], UBO_niUIGpuFuncs_RayUniforms[8]));
+    niUIGpuFuncs_RayUniforms _460;
+    _460.rtWidth = _459.rtWidth;
+    _460.rtHeight = _459.rtHeight;
+    _460.cameraFarClipPlane = _459.cameraFarClipPlane;
+    _460.padding = _459.padding;
+    _460.cameraInvView = _459.cameraInvView;
+    _460.cameraInvViewProj = _459.cameraInvViewProj;
+    vec3 _653 = vec3(_460.cameraInvView[3].x, _460.cameraInvView[3].y, _460.cameraInvView[3].z);
+    vec4 _681 = _460.cameraInvViewProj * vec4(((gl_FragCoord.x / _460.rtWidth) * 2.0) - 1.0, 1.0 - ((gl_FragCoord.y / _460.rtHeight) * 2.0), 1.0, 1.0);
+    rayQueryInitializeEXT(rayQuery, IN_1_aAS, 0u, 255u, _653, 0.001000000047497451305389404296875, normalize((_681 / vec4(_681.w)).xyz - _653), _460.cameraFarClipPlane);
+    bool _514 = rayQueryProceedEXT(rayQuery);
+    uint _515 = rayQueryGetIntersectionTypeEXT(rayQuery, bool(1));
+    int _516 = rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery, bool(1));
+    uint _519 = uint(_516);
+    niUIGpuFuncs_RayInstanceData _522;
+    _522.ibIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.ibIndex;
+    _522.vbIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.vbIndex;
+    _522.firstIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.firstIndex;
+    _522.baseVertexIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.baseVertexIndex;
+    _522.texIndex = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.texIndex;
+    _522.materialColor = nil_builtin_GetRayInstanceData[nonuniformEXT(_519)].v.materialColor;
+    vec4 _909;
+    if (_515 == 1u)
     {
-        vec4 _868;
-        if (_508.vbIndex == 0u)
+        vec4 _910;
+        if (_522.vbIndex == 0u)
         {
-            _868 = vec4(1.0, 0.0, 1.0, 1.0);
+            _910 = vec4(1.0, 0.0, 1.0, 1.0);
         }
         else
         {
-            int _520 = rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery, bool(1));
-            uint _672 = _508.firstIndex + (3u * uint(_520));
-            uint _674 = _508.ibIndex;
-            uint _677 = _672;
-            uint _684 = _672 + 1u;
-            uint _691 = _672 + 2u;
-            uint _530 = _508.vbIndex;
-            uint _536 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_677];
-            niUIGpuFuncs_VertexRay _539;
-            _539.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].pos;
-            _539.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].normal;
-            _539.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].color;
-            _539.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_536].tex0;
-            uint _548 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_684];
-            niUIGpuFuncs_VertexRay _551;
-            _551.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].pos;
-            _551.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].normal;
-            _551.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].color;
-            _551.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_548].tex0;
-            uint _560 = _508.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_674)].v[_691];
-            niUIGpuFuncs_VertexRay _563;
-            _563.pos = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].pos;
-            _563.normal = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].normal;
-            _563.color = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].color;
-            _563.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_530)].v[_560].tex0;
-            vec2 _564 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
-            mat4x3 _575 = rayQueryGetIntersectionObjectToWorldEXT(rayQuery, bool(1));
-            _868 = vec4(((_575 * vec4(normalize(((_539.normal * ((1.0 - _564.x) - _564.y)) + (_551.normal * _564.x)) + (_563.normal * _564.y)), 0.0)) * 0.5) + vec3(0.5), 1.0);
+            int _534 = rayQueryGetIntersectionPrimitiveIndexEXT(rayQuery, bool(1));
+            uint _694 = _522.firstIndex + (3u * uint(_534));
+            uint _696 = _522.ibIndex;
+            uint _699 = _694;
+            uint _706 = _694 + 1u;
+            uint _713 = _694 + 2u;
+            uint _544 = _522.vbIndex;
+            uint _550 = _522.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_696)].v[_699];
+            niUIGpuFuncs_VertexRay _553;
+            _553.pos = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_550].pos;
+            _553.normal = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_550].normal;
+            _553.color = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_550].color;
+            _553.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_550].tex0;
+            uint _562 = _522.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_696)].v[_706];
+            niUIGpuFuncs_VertexRay _565;
+            _565.pos = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_562].pos;
+            _565.normal = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_562].normal;
+            _565.color = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_562].color;
+            _565.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_562].tex0;
+            uint _574 = _522.baseVertexIndex + nil_builtin_GetIndex[nonuniformEXT(_696)].v[_713];
+            niUIGpuFuncs_VertexRay _577;
+            _577.pos = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_574].pos;
+            _577.normal = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_574].normal;
+            _577.color = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_574].color;
+            _577.tex0 = nil_builtin_GetVertexRay[nonuniformEXT(_544)].v[_574].tex0;
+            vec2 _578 = rayQueryGetIntersectionBarycentricsEXT(rayQuery, bool(1));
+            mat4x3 _589 = rayQueryGetIntersectionObjectToWorldEXT(rayQuery, bool(1));
+            _910 = vec4(((_589 * vec4(normalize(((_553.normal * ((1.0 - _578.x) - _578.y)) + (_565.normal * _578.x)) + (_577.normal * _578.y)), 0.0)) * 0.5) + vec3(0.5), 1.0);
         }
-        _867 = _868;
+        _909 = _910;
     }
     else
     {
-        _867 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_501 == 2u));
+        _909 = mix(vec4(0.0, 0.5, 0.800000011920928955078125, 0.0), vec4(1.0, 0.0, 0.0, 1.0), bvec4(_515 == 2u));
     }
-    OUT_0_rval_color = _867;
+    OUT_0_rval_color = _909;
 }
 

@@ -32,37 +32,37 @@ static RayQuery<RAY_FLAG_NONE> rayQuery;
 
 void frag_main()
 {
-    niUIGpuFuncs_RayUniforms _281;
-    _281.rtWidth = IN_1_aUniforms_v.rtWidth;
-    _281.rtHeight = IN_1_aUniforms_v.rtHeight;
-    _281.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
-    _281.padding = IN_1_aUniforms_v.padding;
-    _281.cameraInvView = IN_1_aUniforms_v.cameraInvView;
-    _281.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
-    float3 _374 = float3(_281.cameraInvView[3].x, _281.cameraInvView[3].y, _281.cameraInvView[3].z);
-    float4 _402 = mul(float4(((gl_FragCoord.x / _281.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _281.rtHeight) * 2.0f), 1.0f, 1.0f), _281.cameraInvViewProj);
-    RayDesc _1ident = {_374, 0.001000000047497451305389404296875f, normalize((_402 / _402.w.xxxx).xyz - _374), _281.cameraFarClipPlane};
-    rayQuery.TraceRayInline(IN_1_aAS, 16u, 255u, _1ident);
-    bool _314 = rayQuery.Proceed();
-    uint _315 = rayQuery.CommittedStatus();
-    int _316 = rayQuery.CommittedInstanceID();
-    uint _317 = uint(_316);
-    uint _438 = _317 + (_317 << uint(10));
-    uint _442 = _438 ^ (_438 >> uint(6));
-    uint _446 = _442 + (_442 << uint(3));
-    uint _450 = _446 ^ (_446 >> uint(11));
-    uint _454 = _450 + (_450 << uint(15));
-    float4 _548;
-    if (_315 == 1u)
+    niUIGpuFuncs_RayUniforms _295;
+    _295.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _295.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _295.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _295.padding = IN_1_aUniforms_v.padding;
+    _295.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _295.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _396 = float3(_295.cameraInvView[3].x, _295.cameraInvView[3].y, _295.cameraInvView[3].z);
+    float4 _424 = mul(float4(((gl_FragCoord.x / _295.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _295.rtHeight) * 2.0f), 1.0f, 1.0f), _295.cameraInvViewProj);
+    RayDesc _1ident = {_396, 0.001000000047497451305389404296875f, normalize((_424 / _424.w.xxxx).xyz - _396), _295.cameraFarClipPlane};
+    rayQuery.TraceRayInline(IN_1_aAS, 0u, 255u, _1ident);
+    bool _328 = rayQuery.Proceed();
+    uint _329 = rayQuery.CommittedStatus();
+    int _330 = rayQuery.CommittedInstanceID();
+    uint _331 = uint(_330);
+    uint _460 = _331 + (_331 << uint(10));
+    uint _464 = _460 ^ (_460 >> uint(6));
+    uint _468 = _464 + (_464 << uint(3));
+    uint _472 = _468 ^ (_468 >> uint(11));
+    uint _476 = _472 + (_472 << uint(15));
+    float4 _590;
+    if (_329 == 1u)
     {
-        _548 = float4(float((_454 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_454 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_454 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
+        _590 = float4(float((_476 >> uint(0)) & 255u) * 0.0039215688593685626983642578125f, float((_476 >> uint(8)) & 255u) * 0.0039215688593685626983642578125f, float((_476 >> uint(16)) & 255u) * 0.0039215688593685626983642578125f, 1.0f);
     }
     else
     {
-        bool4 _551 = (_315 == 2u).xxxx;
-        _548 = float4(_551.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _551.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _551.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _551.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        bool4 _593 = (_329 == 2u).xxxx;
+        _590 = float4(_593.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _593.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _593.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _593.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
     }
-    OUT_0_rval_color = _548;
+    OUT_0_rval_color = _590;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

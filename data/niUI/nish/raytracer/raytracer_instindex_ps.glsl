@@ -14,7 +14,7 @@ struct nish_std_PixelOutput {
   vec4 color;
 };
 // TypeStaticFwd: RayFlags
-uint nish_std_RayFlags_CullBackFacingTriangles;
+uint nish_std_RayFlags_None;
 // TypeStaticFwd: RayQueryIntersectionType
 uint nish_std_RayQueryIntersectionType_CommittedTriangle;
 uint nish_std_RayQueryIntersectionType_CommittedBoundingVolume;
@@ -26,7 +26,7 @@ uint nish_std_HashJenkins(uint aStartX);
 vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m);
 void nish_std_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
-  nish_std_RayFlags_CullBackFacingTriangles = 16;
+  nish_std_RayFlags_None = 0;
 }
 void nish_std_RayQueryIntersectionType_static_initialize() {
   // TypeStatic: RayQueryIntersectionType
@@ -79,42 +79,46 @@ struct niUIGpuFuncs_RayUniforms {
 };
 
 // FunctionFwd: niUIGpuFuncs
-void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+void niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+void niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, uint aRayFlags, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 nish_std_PixelOutput niUIGpuFuncs_raytracer_instindex_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 
 // Function: niUIGpuFuncs
-void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+void niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+  niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(aRayQuery,nish_std_RayFlags_None,aInput,aUniforms,aAS);
+}
+void niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, uint aRayFlags, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_l = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_l[3][0],_tmp_l[3][1],_tmp_l[3][2]);
+  mat4 _tmp_q = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_q[3][0],_tmp_q[3][1],_tmp_q[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
-  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+  rayQueryInitializeEXT(aRayQuery,aAS,aRayFlags,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
 nish_std_PixelOutput niUIGpuFuncs_raytracer_instindex_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
-  niUIGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
+  niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(rayQuery,aInput,aUniforms,aAS);
   bool done = rayQueryProceedEXT(rayQuery);
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
-  vec3 _tmp_N = nish_std_UIntToHashColor(uint(rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery,true)));
-  vec4 instanceColor = vec4(_tmp_N.x,_tmp_N.y,_tmp_N.z,1.0);
-  vec4 _tmp_S;
-  bool _tmp_T = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_T) {
-    _tmp_S = instanceColor;
+  vec3 _tmp_S = nish_std_UIntToHashColor(uint(rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery,true)));
+  vec4 instanceColor = vec4(_tmp_S.x,_tmp_S.y,_tmp_S.z,1.0);
+  vec4 _tmp_X;
+  bool _tmp_Y = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_Y) {
+    _tmp_X = instanceColor;
   }
   else {
-    bool _tmp_W = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_W) {
-      _tmp_S = vec4(1.0,0.0,0.0,1.0);
+    bool _tmp_11 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_11) {
+      _tmp_X = vec4(1.0,0.0,0.0,1.0);
     }
     else {
       {
-        _tmp_S = vec4(0.0,0.5,0.8,0.0);
+        _tmp_X = vec4(0.0,0.5,0.8,0.0);
       }
     }
   }
-  return nish_std_PixelOutput_new(_tmp_S);
+  return nish_std_PixelOutput_new(_tmp_X);
 }
 // MODULE END niUIGpuFuncs
 

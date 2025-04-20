@@ -14,7 +14,7 @@ struct nish_std_PixelOutput {
   vec4 color;
 };
 // TypeStaticFwd: RayFlags
-uint nish_std_RayFlags_CullBackFacingTriangles;
+uint nish_std_RayFlags_None;
 // TypeStaticFwd: RayQueryIntersectionType
 uint nish_std_RayQueryIntersectionType_CommittedTriangle;
 uint nish_std_RayQueryIntersectionType_CommittedBoundingVolume;
@@ -30,7 +30,7 @@ vec3 nish_std_Vec3TransformNormal_2_Vec3_Matrix4x3(vec3 v, mat4x3 m);
 vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m);
 void nish_std_RayFlags_static_initialize() {
   // TypeStatic: RayFlags
-  nish_std_RayFlags_CullBackFacingTriangles = 16;
+  nish_std_RayFlags_None = 0;
 }
 void nish_std_RayQueryIntersectionType_static_initialize() {
   // TypeStatic: RayQueryIntersectionType
@@ -110,7 +110,8 @@ layout(scalar, set = 9, binding = 0) readonly buffer SBO_GetVertexRay { niUIGpuF
 uvec3 niUIGpuFuncs_GetTriangleIndices(uint aIBIndex, uint aPrimIndex, uint aFirstIndex);
 vec3 niUIGpuFuncs_BaryToVec3(vec2 aBary);
 vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary);
-void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+void niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
+void niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, uint aRayFlags, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
 float niUIGpuFuncs_PositionToWorldChecker(vec3 aPos, float aGridSize, vec3 aNormal);
 vec3 niUIGpuFuncs_PositionToHeat(vec3 aPos, float aMaxDist);
 nish_std_PixelOutput niUIGpuFuncs_raytracer_pos_world_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS);
@@ -126,25 +127,28 @@ vec3 niUIGpuFuncs_BaryToVec3(vec2 aBary) {
 vec3 niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(vec3 aX, vec3 aY, vec3 aZ, vec3 aBary) {
   return (((aX*aBary.x)+(aY*aBary.y))+(aZ*aBary.z));
 }
-void niUIGpuFuncs_InitRayQuery(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+void niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
+  niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(aRayQuery,nish_std_RayFlags_None,aInput,aUniforms,aAS);
+}
+void niUIGpuFuncs_InitRayQuery_5_RayQuery_uint_PixelInput_RayUniforms_RayInstances(/* mut */ rayQueryEXT aRayQuery, uint aRayFlags, nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   vec3 ndc = vec3((((aInput.fragCoord.x / aUniforms.rtWidth) * 2.0) - 1.0),(1.0 - ((aInput.fragCoord.y / aUniforms.rtHeight) * 2.0)),1.0);
-  mat4 _tmp_61 = aUniforms.cameraInvView;
-  vec3 origin = vec3(_tmp_61[3][0],_tmp_61[3][1],_tmp_61[3][2]);
+  mat4 _tmp_b1 = aUniforms.cameraInvView;
+  vec3 origin = vec3(_tmp_b1[3][0],_tmp_b1[3][1],_tmp_b1[3][2]);
   vec3 target = nish_std_Vec3TransformCoord(ndc,aUniforms.cameraInvViewProj);
   vec3 dir = normalize(((target-(origin.xyz)).xyz));
-  rayQueryInitializeEXT(aRayQuery,aAS,nish_std_RayFlags_CullBackFacingTriangles,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
+  rayQueryInitializeEXT(aRayQuery,aAS,aRayFlags,255,(origin.xyz),0.001,(dir.xyz),aUniforms.cameraFarClipPlane);
 }
 float niUIGpuFuncs_PositionToWorldChecker(vec3 aPos, float aGridSize, vec3 aNormal) {
   vec3 gridCoords = floor((aPos/aGridSize));
   vec3 absNormal = abs(aNormal);
   float checker;
-  bool _tmp_v1 = ((absNormal.x > absNormal.y) && (absNormal.x > absNormal.z));
-  if (_tmp_v1) {
+  bool _tmp_A1 = ((absNormal.x > absNormal.y) && (absNormal.x > absNormal.z));
+  if (_tmp_A1) {
     checker = mod((gridCoords.y + gridCoords.z),2.0);
   }
   else {
-    bool _tmp_M1 = (absNormal.y > absNormal.z);
-    if (_tmp_M1) {
+    bool _tmp_R1 = (absNormal.y > absNormal.z);
+    if (_tmp_R1) {
       checker = mod((gridCoords.x + gridCoords.z),2.0);
     }
     else {
@@ -162,11 +166,11 @@ vec3 niUIGpuFuncs_PositionToHeat(vec3 aPos, float aMaxDist) {
   vec3 centerColor = vec3_Green;
   vec3 bandColor1 = vec3_Red;
   vec3 bandColor2 = vec3_Blue;
-  vec3 _tmp_92;
-  bool _tmp_a2 = (distance < centerDist);
-  if (_tmp_a2) {
+  vec3 _tmp_e2;
+  bool _tmp_f2 = (distance < centerDist);
+  if (_tmp_f2) {
     float t = (distance / centerDist);
-    _tmp_92 = mix(centerColor,bandColor1,t);
+    _tmp_e2 = mix(centerColor,bandColor1,t);
   }
   else {
     {
@@ -174,31 +178,31 @@ vec3 niUIGpuFuncs_PositionToHeat(vec3 aPos, float aMaxDist) {
       float cyclePos = mod(remainingDist,cycleSize);
       float cycleT = (cyclePos / cycleSize);
       float isRedToBlue = mod(floor((remainingDist / cycleSize)),2.0);
-      bool _tmp_y2 = (isRedToBlue < 0.5);
-      if (_tmp_y2) {
-        _tmp_92 = mix(bandColor1,bandColor2,cycleT);
+      bool _tmp_D2 = (isRedToBlue < 0.5);
+      if (_tmp_D2) {
+        _tmp_e2 = mix(bandColor1,bandColor2,cycleT);
       }
       else {
         {
-          _tmp_92 = mix(bandColor2,bandColor1,cycleT);
+          _tmp_e2 = mix(bandColor2,bandColor1,cycleT);
         }
       }
     }
   }
-  return _tmp_92;
+  return _tmp_e2;
 }
 nish_std_PixelOutput niUIGpuFuncs_raytracer_pos_world_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS) {
   /* mut */ rayQueryEXT rayQuery/*__noinit__*/;
-  niUIGpuFuncs_InitRayQuery(rayQuery,aInput,aUniforms,aAS);
+  niUIGpuFuncs_InitRayQuery_4_RayQuery_PixelInput_RayUniforms_RayInstances(rayQuery,aInput,aUniforms,aAS);
   bool done = rayQueryProceedEXT(rayQuery);
   uint intersectionType = rayQueryGetIntersectionTypeEXT(rayQuery,true);
   uint userInstIndex = uint(rayQueryGetIntersectionInstanceCustomIndexEXT(rayQuery,true));
   niUIGpuFuncs_RayInstanceData instData = nil_builtin_GetRayInstanceData[nonuniformEXT(userInstIndex)].v;
   vec4 color;
-  bool _tmp_P2 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
-  if (_tmp_P2) {
-    bool _tmp_S2 = (instData.vbIndex == 0);
-    if (_tmp_S2) {
+  bool _tmp_U2 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedTriangle);
+  if (_tmp_U2) {
+    bool _tmp_X2 = (instData.vbIndex == 0);
+    if (_tmp_X2) {
       color = vec4(1.0,0.0,1.0,1.0);
     }
     else {
@@ -213,14 +217,14 @@ nish_std_PixelOutput niUIGpuFuncs_raytracer_pos_world_ps(nish_std_PixelInput aIn
         vec3 worldNormal = nish_std_Vec3TransformNormal_2_Vec3_Matrix4x3(n,rayQueryGetIntersectionObjectToWorldEXT(rayQuery,true));
         vec3 p = niUIGpuFuncs_Lerp_4_Vec3_Vec3_Vec3_Vec3(v0.pos,v1.pos,v2.pos,bary);
         vec3 worldPos = nish_std_Vec3Transform_2_Vec3_Matrix4x3(p,rayQueryGetIntersectionObjectToWorldEXT(rayQuery,true));
-        vec3 _tmp_Z3 = (mix(1.0,0.2,niUIGpuFuncs_PositionToWorldChecker(worldPos,10.0,worldNormal))*niUIGpuFuncs_PositionToHeat(worldPos,200.0));
-        color = vec4(_tmp_Z3.x,_tmp_Z3.y,_tmp_Z3.z,1.0);
+        vec3 _tmp_44 = (mix(1.0,0.2,niUIGpuFuncs_PositionToWorldChecker(worldPos,10.0,worldNormal))*niUIGpuFuncs_PositionToHeat(worldPos,200.0));
+        color = vec4(_tmp_44.x,_tmp_44.y,_tmp_44.z,1.0);
       }
     }
   }
   else {
-    bool _tmp_a4 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
-    if (_tmp_a4) {
+    bool _tmp_f4 = (intersectionType == nish_std_RayQueryIntersectionType_CommittedBoundingVolume);
+    if (_tmp_f4) {
       color = vec4(1.0,0.0,0.0,1.0);
     }
     else {
@@ -229,8 +233,8 @@ nish_std_PixelOutput niUIGpuFuncs_raytracer_pos_world_ps(nish_std_PixelInput aIn
       }
     }
   }
-  vec4 _tmp_n4 = color;
-  return nish_std_PixelOutput_new(_tmp_n4);
+  vec4 _tmp_s4 = color;
+  return nish_std_PixelOutput_new(_tmp_s4);
 }
 // MODULE END niUIGpuFuncs
 

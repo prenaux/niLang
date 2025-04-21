@@ -1,13 +1,3 @@
-struct niUIGpuFuncs_RayUniforms
-{
-    float rtWidth;
-    float rtHeight;
-    float cameraFarClipPlane;
-    float padding;
-    row_major float4x4 cameraInvView;
-    row_major float4x4 cameraInvViewProj;
-};
-
 struct niUIGpuFuncs_RayInstanceData
 {
     uint ibIndex;
@@ -18,6 +8,16 @@ struct niUIGpuFuncs_RayInstanceData
     uint materialColor;
 };
 
+struct niUIGpuFuncs_RayUniforms
+{
+    float rtWidth;
+    float rtHeight;
+    float cameraFarClipPlane;
+    float padding;
+    row_major float4x4 cameraInvView;
+    row_major float4x4 cameraInvViewProj;
+};
+
 struct niUIGpuFuncs_VertexRay
 {
     float3 pos;
@@ -26,9 +26,9 @@ struct niUIGpuFuncs_VertexRay
     float2 tex0;
 };
 
-ByteAddressBuffer nil_builtin_GetIndex[] : register(t0, space9);
 ByteAddressBuffer nil_builtin_GetRayInstanceData[] : register(t0, space9);
 ByteAddressBuffer nil_builtin_GetVertexRay[] : register(t0, space9);
+ByteAddressBuffer nil_builtin_GetIndex[] : register(t0, space9);
 cbuffer UBO_niUIGpuFuncs_RayUniforms : register(b0, space0)
 {
     niUIGpuFuncs_RayUniforms IN_1_aUniforms_v : packoffset(c0);
@@ -54,113 +54,174 @@ static RayQuery<RAY_FLAG_NONE> rayQuery_1;
 
 void frag_main()
 {
-    niUIGpuFuncs_RayUniforms _655;
-    _655.rtWidth = IN_1_aUniforms_v.rtWidth;
-    _655.rtHeight = IN_1_aUniforms_v.rtHeight;
-    _655.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
-    _655.padding = IN_1_aUniforms_v.padding;
-    _655.cameraInvView = IN_1_aUniforms_v.cameraInvView;
-    _655.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
-    float3 _921 = float3(_655.cameraInvView[3].x, _655.cameraInvView[3].y, _655.cameraInvView[3].z);
-    float4 _949 = mul(float4(((gl_FragCoord.x / _655.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _655.rtHeight) * 2.0f), 1.0f, 1.0f), _655.cameraInvViewProj);
-    RayDesc _4ident = {_921, 0.001000000047497451305389404296875f, normalize((_949 / _949.w.xxxx).xyz - _921), _655.cameraFarClipPlane};
+    niUIGpuFuncs_RayUniforms _991;
+    _991.rtWidth = IN_1_aUniforms_v.rtWidth;
+    _991.rtHeight = IN_1_aUniforms_v.rtHeight;
+    _991.cameraFarClipPlane = IN_1_aUniforms_v.cameraFarClipPlane;
+    _991.padding = IN_1_aUniforms_v.padding;
+    _991.cameraInvView = IN_1_aUniforms_v.cameraInvView;
+    _991.cameraInvViewProj = IN_1_aUniforms_v.cameraInvViewProj;
+    float3 _1202 = float3(_991.cameraInvView[3].x, _991.cameraInvView[3].y, _991.cameraInvView[3].z);
+    float4 _1233 = mul(float4(((gl_FragCoord.x / _991.rtWidth) * 2.0f) - 1.0f, 1.0f - ((gl_FragCoord.y / _991.rtHeight) * 2.0f), 1.0f, 1.0f), _991.cameraInvViewProj);
+    RayDesc _4ident = {_1202, 0.001000000047497451305389404296875f, normalize((_1233 / _1233.w.xxxx).xyz - _1202), _991.cameraFarClipPlane};
     rayQuery_1.TraceRayInline(IN_1_aAS, 0u, 255u, _4ident);
-    bool _746 = rayQuery_1.Proceed();
-    uint _747 = rayQuery_1.CommittedStatus();
-    int _748 = rayQuery_1.CommittedInstanceID();
-    uint _751 = uint(_748);
-    niUIGpuFuncs_RayInstanceData _753;
-    _753.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(0);
-    _753.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(4);
-    _753.firstIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(8);
-    _753.baseVertexIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(12);
-    _753.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(16);
-    _753.materialColor = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_751)].Load(20);
-    niUIGpuFuncs_RayInstanceData _754;
-    _754.ibIndex = _753.ibIndex;
-    _754.vbIndex = _753.vbIndex;
-    _754.firstIndex = _753.firstIndex;
-    _754.baseVertexIndex = _753.baseVertexIndex;
-    _754.texIndex = _753.texIndex;
-    _754.materialColor = _753.materialColor;
-    float4 _1425;
-    if (_747 == 1u)
+    for (;;)
     {
-        float4 _1426;
-        if (_754.vbIndex == 0u)
+        bool _1287 = rayQuery_1.Proceed();
+        if (!_1287)
         {
-            _1426 = float4(1.0f, 0.0f, 1.0f, 1.0f);
+            break;
+        }
+        uint _1292 = rayQuery_1.CandidateType();
+        if (_1292 == 0u)
+        {
+            rayQuery_1.CommitNonOpaqueTriangleHit();
+            rayQuery_1.Abort();
         }
         else
         {
-            int _766 = rayQuery_1.CommittedPrimitiveIndex();
-            uint _962 = _754.firstIndex + (3u * uint(_766));
-            uint _964 = _754.ibIndex;
-            uint _967 = _962;
-            uint _974 = _962 + 1u;
-            uint _981 = _962 + 2u;
-            uint _778 = _754.vbIndex;
-            uint _784 = _754.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_964)].Load(_967 * 4 + 0);
-            niUIGpuFuncs_VertexRay _786;
-            _786.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_784 * 36 + 0));
-            _786.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_784 * 36 + 12));
-            _786.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load(_784 * 36 + 24);
-            _786.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load2(_784 * 36 + 28));
-            niUIGpuFuncs_VertexRay _787;
-            _787.pos = _786.pos;
-            _787.normal = _786.normal;
-            _787.color = _786.color;
-            _787.tex0 = _786.tex0;
-            uint _796 = _754.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_964)].Load(_974 * 4 + 0);
-            niUIGpuFuncs_VertexRay _798;
-            _798.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_796 * 36 + 0));
-            _798.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_796 * 36 + 12));
-            _798.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load(_796 * 36 + 24);
-            _798.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load2(_796 * 36 + 28));
-            niUIGpuFuncs_VertexRay _799;
-            _799.pos = _798.pos;
-            _799.normal = _798.normal;
-            _799.color = _798.color;
-            _799.tex0 = _798.tex0;
-            uint _808 = _754.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_964)].Load(_981 * 4 + 0);
-            niUIGpuFuncs_VertexRay _810;
-            _810.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_808 * 36 + 0));
-            _810.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load3(_808 * 36 + 12));
-            _810.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load(_808 * 36 + 24);
-            _810.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_778)].Load2(_808 * 36 + 28));
-            niUIGpuFuncs_VertexRay _811;
-            _811.pos = _810.pos;
-            _811.normal = _810.normal;
-            _811.color = _810.color;
-            _811.tex0 = _810.tex0;
-            float2 _812 = rayQuery_1.CommittedTriangleBarycentrics();
-            float _992 = (1.0f - _812.x) - _812.y;
-            float4x3 _823 = rayQuery_1.CommittedObjectToWorld4x3();
-            float3 _826 = normalize(mul(float4(normalize(((_787.normal * _992) + (_799.normal * _812.x)) + (_811.normal * _812.y)), 0.0f), _823));
-            float4x3 _835 = rayQuery_1.CommittedObjectToWorld4x3();
-            float3 _1057 = mul(float4(((_787.pos * _992) + (_799.pos * _812.x)) + (_811.pos * _812.y), 1.0f), _835);
-            RayDesc _5ident = {_1057, 0.001000000047497451305389404296875f, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f), 10000.0f};
-            rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _5ident);
-            bool _1106 = rayQuery.Proceed();
-            uint _1107 = rayQuery.CommittedStatus();
-            RayDesc _6ident = {_1057, 0.001000000047497451305389404296875f, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f), 10000.0f};
-            rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _6ident);
-            bool _1174 = rayQuery.Proceed();
-            uint _1175 = rayQuery.CommittedStatus();
-            RayDesc _7ident = {_1057, 0.001000000047497451305389404296875f, float3(-0.0f, 1.0f, -0.0f), 10000.0f};
-            rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _7ident);
-            bool _1242 = rayQuery.Proceed();
-            uint _1243 = rayQuery.CommittedStatus();
-            _1426 = float4((lerp(0.2400000095367431640625f.xxx, 0.800000011920928955078125f.xxx, (((_1107 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_826, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx) + lerp(float3(0.12000000476837158203125f, 0.060000002384185791015625f, 0.0f), float3(0.4000000059604644775390625f, 0.20000000298023223876953125f, 0.0f), (((_1175 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_826, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx)) + lerp(float3(0.0f, 0.060000002384185791015625f, 0.12000000476837158203125f), float3(0.0f, 0.20000000298023223876953125f, 0.4000000059604644775390625f), (((_1243 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (_826.y * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx), 1.0f);
+            rayQuery_1.Abort();
         }
-        _1425 = _1426;
+        continue;
+    }
+    uint _1303 = rayQuery_1.CommittedStatus();
+    float3 _2627;
+    float3 _2628;
+    int _2629;
+    if (_1303 == 1u)
+    {
+        uint _1363 = rayQuery_1.CommittedStatus();
+        int _1364 = rayQuery_1.CommittedInstanceID();
+        uint _1369 = uint(_1364);
+        niUIGpuFuncs_RayInstanceData _1371;
+        _1371.ibIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(0);
+        _1371.vbIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(4);
+        _1371.firstIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(8);
+        _1371.baseVertexIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(12);
+        _1371.texIndex = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(16);
+        _1371.materialColor = nil_builtin_GetRayInstanceData[NonUniformResourceIndex(_1369)].Load(20);
+        niUIGpuFuncs_RayInstanceData _1373;
+        _1373.ibIndex = _1371.ibIndex;
+        _1373.vbIndex = _1371.vbIndex;
+        _1373.firstIndex = _1371.firstIndex;
+        _1373.baseVertexIndex = _1371.baseVertexIndex;
+        _1373.texIndex = _1371.texIndex;
+        _1373.materialColor = _1371.materialColor;
+        float3 _2617;
+        float3 _2621;
+        int _2625;
+        if (_1363 == 1u)
+        {
+            int _1388 = rayQuery_1.CommittedPrimitiveIndex();
+            float2 _1391 = rayQuery_1.CommittedTriangleBarycentrics();
+            float4x3 _1392 = rayQuery_1.CommittedObjectToWorld4x3();
+            bool _1393 = rayQuery_1.CommittedTriangleFrontFace();
+            bool _1436 = _1373.vbIndex == 0u;
+            float3 _2611;
+            float3 _2613;
+            if (_1436)
+            {
+                _2613 = 0.0f.xxx;
+                _2611 = 0.0f.xxx;
+            }
+            else
+            {
+                uint _1539 = _1373.firstIndex + (3u * uint(_1388));
+                uint _1541 = _1373.ibIndex;
+                uint _1544 = _1539;
+                uint _1551 = _1539 + 1u;
+                uint _1558 = _1539 + 2u;
+                uint _1446 = _1373.vbIndex;
+                uint _1451 = _1373.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1541)].Load(_1544 * 4 + 0);
+                niUIGpuFuncs_VertexRay _1453;
+                _1453.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1451 * 36 + 0));
+                _1453.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1451 * 36 + 12));
+                _1453.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load(_1451 * 36 + 24);
+                _1453.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load2(_1451 * 36 + 28));
+                niUIGpuFuncs_VertexRay _1454;
+                _1454.pos = _1453.pos;
+                _1454.normal = _1453.normal;
+                _1454.color = _1453.color;
+                _1454.tex0 = _1453.tex0;
+                uint _1461 = _1373.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1541)].Load(_1551 * 4 + 0);
+                niUIGpuFuncs_VertexRay _1463;
+                _1463.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1461 * 36 + 0));
+                _1463.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1461 * 36 + 12));
+                _1463.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load(_1461 * 36 + 24);
+                _1463.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load2(_1461 * 36 + 28));
+                niUIGpuFuncs_VertexRay _1464;
+                _1464.pos = _1463.pos;
+                _1464.normal = _1463.normal;
+                _1464.color = _1463.color;
+                _1464.tex0 = _1463.tex0;
+                uint _1471 = _1373.baseVertexIndex + nil_builtin_GetIndex[NonUniformResourceIndex(_1541)].Load(_1558 * 4 + 0);
+                niUIGpuFuncs_VertexRay _1473;
+                _1473.pos = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1471 * 36 + 0));
+                _1473.normal = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load3(_1471 * 36 + 12));
+                _1473.color = nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load(_1471 * 36 + 24);
+                _1473.tex0 = asfloat(nil_builtin_GetVertexRay[NonUniformResourceIndex(_1446)].Load2(_1471 * 36 + 28));
+                niUIGpuFuncs_VertexRay _1474;
+                _1474.pos = _1473.pos;
+                _1474.normal = _1473.normal;
+                _1474.color = _1473.color;
+                _1474.tex0 = _1473.tex0;
+                float _1569 = (1.0f - _1391.x) - _1391.y;
+                float3 _1487 = normalize(((_1454.normal * _1569) + (_1464.normal * _1391.x)) + (_1474.normal * _1391.y));
+                float3 _2609;
+                if (_1393 == false)
+                {
+                    _2609 = -_1487;
+                }
+                else
+                {
+                    _2609 = _1487;
+                }
+                _2613 = mul(float4(((_1454.pos * _1569) + (_1464.pos * _1391.x)) + (_1474.pos * _1391.y), 1.0f), _1392);
+                _2611 = normalize(mul(float4(_2609, 0.0f), _1392));
+            }
+            _2625 = _1436 ? (-1) : 1;
+            _2621 = _2613;
+            _2617 = _2611;
+        }
+        else
+        {
+            _2625 = (_1363 == 2u) ? 2 : 0;
+            _2621 = 0.0f.xxx;
+            _2617 = 0.0f.xxx;
+        }
+        _2629 = _2625;
+        _2628 = _2621;
+        _2627 = _2617;
     }
     else
     {
-        bool4 _1432 = (_747 == 2u).xxxx;
-        _1425 = float4(_1432.x ? float4(1.0f, 0.0f, 0.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _1432.y ? float4(1.0f, 0.0f, 0.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _1432.z ? float4(1.0f, 0.0f, 0.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _1432.w ? float4(1.0f, 0.0f, 0.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+        _2629 = 0;
+        _2628 = 0.0f.xxx;
+        _2627 = 0.0f.xxx;
     }
-    OUT_0_rval_color = _1425;
+    float4 _2633;
+    if (_2629 >= 1)
+    {
+        RayDesc _5ident = {_2628, 0.001000000047497451305389404296875f, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f), 10000.0f};
+        rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _5ident);
+        bool _1713 = rayQuery.Proceed();
+        uint _1714 = rayQuery.CommittedStatus();
+        RayDesc _6ident = {_2628, 0.001000000047497451305389404296875f, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f), 10000.0f};
+        rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _6ident);
+        bool _1781 = rayQuery.Proceed();
+        uint _1782 = rayQuery.CommittedStatus();
+        RayDesc _7ident = {_2628, 0.001000000047497451305389404296875f, float3(-0.0f, 1.0f, -0.0f), 10000.0f};
+        rayQuery.TraceRayInline(IN_1_aAS, 13u, 255u, _7ident);
+        bool _1849 = rayQuery.Proceed();
+        uint _1850 = rayQuery.CommittedStatus();
+        _2633 = float4((lerp(0.2400000095367431640625f.xxx, 0.800000011920928955078125f.xxx, (((_1714 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_2627, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx) + lerp(float3(0.12000000476837158203125f, 0.060000002384185791015625f, 0.0f), float3(0.4000000059604644775390625f, 0.20000000298023223876953125f, 0.0f), (((_1782 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (dot(_2627, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f)) * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx)) + lerp(float3(0.0f, 0.060000002384185791015625f, 0.12000000476837158203125f), float3(0.0f, 0.20000000298023223876953125f, 0.4000000059604644775390625f), (((_1850 == 1u) ? 0.0f : 1.0f) * clamp(max(0.0f, (_2627.y * 0.5f) + 0.5f), 0.0f, 1.0f)).xxx), 1.0f);
+    }
+    else
+    {
+        bool4 _2636 = (_2629 < 0).xxxx;
+        _2633 = float4(_2636.x ? float4(1.0f, 0.0f, 1.0f, 1.0f).x : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).x, _2636.y ? float4(1.0f, 0.0f, 1.0f, 1.0f).y : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).y, _2636.z ? float4(1.0f, 0.0f, 1.0f, 1.0f).z : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).z, _2636.w ? float4(1.0f, 0.0f, 1.0f, 1.0f).w : float4(0.0f, 0.5f, 0.800000011920928955078125f, 0.0f).w);
+    }
+    OUT_0_rval_color = _2633;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

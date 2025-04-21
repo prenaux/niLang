@@ -6,8 +6,19 @@
 		<Outputs>
 			<Output name="OUT_0_rval_color" type="vec4" location="0"/>
 		</Outputs>
+		<SSBOs>
+			<SSBO name="SBO_niUIGpuFuncs_RayInstanceData" type="_411" readonly="1" set="9" binding="0">
+				<array size="0"/>
+			</SSBO>
+			<SSBO name="SBO_GetVertexRay" type="_496" readonly="1" set="9" binding="0">
+				<array size="0"/>
+			</SSBO>
+			<SSBO name="SBO_GetIndex" type="_613" readonly="1" set="9" binding="0">
+				<array size="0"/>
+			</SSBO>
+		</SSBOs>
 		<UBOs>
-			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_289" set="0" binding="0"/>
+			<UBO name="UBO_niUIGpuFuncs_RayUniforms" type="_884" set="0" binding="0"/>
 		</UBOs>
 		<AccelerationStructures>
 			<AccelerationStructure name="IN_1_aAS" type="accelerationStructureNV" set="7" binding="0"/>

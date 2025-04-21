@@ -129,8 +129,8 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
   raytracer_normals_obj_ps
   raytracer_normals_world_ps
   raytracer_pos_world_ps
-  raytracer_lit_cube_ps
-  raytracer_lit_textured_cube_ps
+  raytracer_lit_ps
+  raytracer_lit_textured_ps
   raytracer_cullfront_ps
   raytracer_cullback_ps
   raytracer_mat_diffuse_ps
@@ -141,6 +141,7 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
   raytracer_mat_reflection_ps
   raytracer_reflection_ps
   raytracer_lit_reflection_ps
+  raytracer_isfrontface_ps
 ] ;
 
 DEPENDS $(PACKAGE) : $(PACKAGE)_nish ;

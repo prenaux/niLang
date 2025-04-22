@@ -1682,9 +1682,11 @@ struct sMetalEncoderFrameData : public ImplRC<iRunnable> {
 
   sMetalEncoderFrameData(ain<nn<cMetalGraphicsDriver>> aDriver)
   {
-    _stream = CreateGpuStream(aDriver, eGpuBufferUsageFlags_Vertex |
-                                         eGpuBufferUsageFlags_Index |
-                                         eGpuBufferUsageFlags_Uniform);
+    _stream =
+      CreateGpuStream(aDriver,
+                      eGpuBufferUsageFlags_Vertex | eGpuBufferUsageFlags_Index |
+                        eGpuBufferUsageFlags_Uniform,
+                      16);
   }
 
   void StartFrame(const tU32 anFrameNumber, const tU32 anCurrentFrame)

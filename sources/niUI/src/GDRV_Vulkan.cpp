@@ -85,7 +85,6 @@ niLetK knVulkanMaxDescrBindlessStorageBuffers = 100000_u32;
 static const char* const _vkRequiredDeviceExtensions[] = {
   VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME,
   VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME,
-  VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
   #if defined niVulkan_UseRobustness2
   VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,
   #endif
@@ -675,9 +674,11 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
 
   astl::array<VkPipelineLayout, eGpuFunctionBindType_Last> _vkPipelineLayouts;
 
+  #ifdef niVulkan_RayTracing
   VkDescriptorPool _bindlessPool = VK_NULL_HANDLE;
   VkDescriptorSet _bindlessStorageBuffersDescSet = VK_NULL_HANDLE;
   VkDescriptorSet _bindlessTexturesDescSet = VK_NULL_HANDLE;
+  #endif
 
   sVulkanDriver(ain<nn<iGraphics>> aGraphics)
       : _graphics(aGraphics)
@@ -737,6 +738,14 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
   {
     if (niGetInterfaceUUID(iFixedGpuPipelines) == aIID)
       return _fixedPipelines;
+    if (niGetInterfaceUUID(iGraphicsDriverRay) == aIID) {
+  #ifdef niVulkan_RayTracing
+      if (!_isRayTracingSupported)
+  #endif
+      {
+        return nullptr;
+      }
+    }
     return BaseImpl::QueryInterface(aIID);
   }
 
@@ -1532,7 +1541,6 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extDynamicStateFeatures = {
       .sType =
         VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT,
-      .pNext = &dynamicRenderingFeatures,
       .extendedDynamicState = VK_TRUE,
     };
     CHAIN_FEATURES(extDynamicStateFeatures);
@@ -1565,28 +1573,36 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     }
 
     // === RAY FEATURES SETUP ===
-    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {
-      .sType =
-        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-      .rayTracingPipeline = VK_TRUE
-    };
-    VkPhysicalDeviceAccelerationStructureFeaturesKHR
-      accelerationStructureFeatures = {
-        .sType =
-          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-        .accelerationStructure = VK_TRUE,
-      };
-    VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures = {
-      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
-      .rayQuery = VK_TRUE
-    };
     if (_isRayTracingSupported) {
       vk12.bufferDeviceAddress = VK_TRUE;
+
+      // Only create ray tracing features if they're supported
+      VkPhysicalDeviceRayTracingPipelineFeaturesKHR
+        rayTracingPipelineFeatures = {
+          .sType =
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+          .rayTracingPipeline = VK_TRUE
+        };
       CHAIN_FEATURES(rayTracingPipelineFeatures);
+
+      VkPhysicalDeviceAccelerationStructureFeaturesKHR
+        accelerationStructureFeatures = {
+          .sType =
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+          .accelerationStructure = VK_TRUE,
+        };
       CHAIN_FEATURES(accelerationStructureFeatures);
+
+      VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures = {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
+        .rayQuery = VK_TRUE
+      };
       CHAIN_FEATURES(rayQueryFeatures);
     }
   #endif // #ifdef niVulkan_RayTracing
+
+    // Explicitly terminate the feature chain
+    pLastFeatures->pNext = nullptr;
 
     // Gather the required extensions
     astl::vector<const char*> requiredExtensions;
@@ -2026,9 +2042,13 @@ struct sVulkanBuffer
 
     if (niFlagIs(_usage, eGpuBufferUsageFlags_Storage)) {
       _resourceIndex = _driver->_drmStorageBuffers->Register(this);
-      _VkDescrUpdateBuffer(_driver->_device,
-                           _driver->_bindlessStorageBuffersDescSet, _name,
-                           _resourceIndex, _vkBuffer);
+  #ifdef niVulkan_RayTracing
+      if (_driver->_isBindlessSupported) {
+        _VkDescrUpdateBuffer(_driver->_device,
+                             _driver->_bindlessStorageBuffersDescSet, _name,
+                             _resourceIndex, _vkBuffer);
+      }
+  #endif
     }
     return eTrue;
   }
@@ -2036,9 +2056,13 @@ struct sVulkanBuffer
   void _DestroyBuffer()
   {
     if (_resourceIndex != eInvalidHandle) {
-      _VkDescrUpdateBuffer(_driver->_device,
-                           _driver->_bindlessStorageBuffersDescSet, _name,
-                           _resourceIndex, _driver->_dummyBuffer->_vkBuffer);
+  #ifdef niVulkan_RayTracing
+      if (_driver->_isBindlessSupported) {
+        _VkDescrUpdateBuffer(_driver->_device,
+                             _driver->_bindlessStorageBuffersDescSet, _name,
+                             _resourceIndex, _driver->_dummyBuffer->_vkBuffer);
+      }
+  #endif
       niAssert(niFlagIs(_usage, eGpuBufferUsageFlags_Storage));
       _driver->_drmStorageBuffers->Unregister(this);
       _resourceIndex = eInvalidHandle;
@@ -2195,9 +2219,13 @@ struct sVulkanTexture
   {
     _subTexs.clear();
     if (_resourceIndex != eInvalidHandle) {
-      _VkDescrUpdateTexture(_driver->_device, _driver->_bindlessTexturesDescSet,
-                            _name, _resourceIndex,
-                            _driver->_dummyTexture->_vkView);
+  #ifdef niVulkan_RayTracing
+      if (_driver->_isBindlessSupported) {
+        _VkDescrUpdateTexture(_driver->_device,
+                              _driver->_bindlessTexturesDescSet, _name,
+                              _resourceIndex, _driver->_dummyTexture->_vkView);
+      }
+  #endif
       if (_driver->_graphics->GetTextureDeviceResourceManager()) {
         _driver->_graphics->GetTextureDeviceResourceManager()->Unregister(this);
       }
@@ -2365,10 +2393,12 @@ struct sVulkanTexture
 
     VK_CHECK(vkCreateImageView(_driver->_device, &viewInfo, nullptr, &_vkView),
              eFalse);
-    if (_resourceIndex != eInvalidHandle) {
+  #ifdef niVulkan_RayTracing
+    if (_driver->_isBindlessSupported && _resourceIndex != eInvalidHandle) {
       _VkDescrUpdateTexture(_driver->_device, _driver->_bindlessTexturesDescSet,
                             _name, _resourceIndex, _vkView);
     }
+  #endif
     return eTrue;
   }
 
@@ -3567,7 +3597,9 @@ struct sVulkanCommandEncoder
   }
 
   tBool _DoBindFixedDescLayout(tBool abWithRayInstances);
+  #ifdef niVulkan_RayTracing
   tBool _DoBindBindlessDescLayout(tBool abWithRayInstances);
+  #endif
   tBool _BindGpuFunction();
 
   virtual tBool __stdcall Draw(eGraphicsPrimitiveType aPrimType,
@@ -5156,12 +5188,14 @@ tBool sVulkanDriver::_DestroyVulkanDriverResources()
   _dummyTexture = nullptr;
   _dummyBuffer = nullptr;
 
+  #ifdef niVulkan_RayTracing
   if (_bindlessPool) {
     vkDestroyDescriptorPool(_device, _bindlessPool, nullptr);
     _bindlessPool = VK_NULL_HANDLE;
     _bindlessStorageBuffersDescSet = VK_NULL_HANDLE;
     _bindlessTexturesDescSet = VK_NULL_HANDLE;
   }
+  #endif
 
   niLoop (i, _vkPipelineLayouts.size()) {
     if (_vkPipelineLayouts[i] != VK_NULL_HANDLE) {
@@ -5274,8 +5308,11 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances)
   return eTrue;
 }
 
+  #ifdef niVulkan_RayTracing
 tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances)
 {
+  niCheck(_driver->_isBindlessSupported, eFalse);
+
   niLet pipeline = as_nn(_cache._lastRasterPipeline);
   niLet pipelineLayout = pipeline->_GetPipelineLayout();
 
@@ -5294,6 +5331,7 @@ tBool sVulkanCommandEncoder::_DoBindBindlessDescLayout(tBool abWithRayInstances)
 
   return eTrue;
 }
+  #endif
 
 tBool sVulkanCommandEncoder::_BindGpuFunction()
 {
@@ -5310,6 +5348,7 @@ tBool sVulkanCommandEncoder::_BindGpuFunction()
     niCheck(_DoBindFixedDescLayout(eTrue), eFalse);
     break;
   }
+  #ifdef niVulkan_RayTracing
   case eGpuFunctionBindType_Bindless: {
     niCheck(_DoBindBindlessDescLayout(eFalse), eFalse);
     break;
@@ -5318,6 +5357,7 @@ tBool sVulkanCommandEncoder::_BindGpuFunction()
     niCheck(_DoBindBindlessDescLayout(eTrue), eFalse);
     break;
   }
+  #endif
   default: {
     niError(
       niFmt("eGpuFunctionBindType '%s' (%d) not supported.",

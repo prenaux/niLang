@@ -139,7 +139,8 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :
   raytracer_mat_diffuse_b_ps
   raytracer_mat_diffuse_a_ps
   raytracer_mat_reflection_ps
-  raytracer_reflection_ps
+  raytracer_reflection_bounce_ps
+  raytracer_reflection_throughput_ps
   raytracer_lit_reflection_ps
   raytracer_isfrontface_ps
 ] ;

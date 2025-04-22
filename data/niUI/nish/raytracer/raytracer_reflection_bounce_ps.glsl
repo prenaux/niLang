@@ -35,11 +35,23 @@ vec2 vec2_Zero;
 // TypeStaticFwd: Vec3
 vec3 vec3_Zero;
 vec3 vec3_One;
+vec3 vec3_Black;
+vec3 vec3_Gray;
+vec3 vec3_Red;
+vec3 vec3_Yellow;
+vec3 vec3_Orange;
+vec3 vec3_Green;
+vec3 vec3_Blue;
+vec3 vec3_Cyan;
+vec3 vec3_White;
+vec3 vec3_Purple;
+vec3 vec3_Pink;
 // TypeMethFwd: PixelOutput
 nish_std_PixelOutput nish_std_PixelOutput_new(vec4 a_color);
 // TypeMethFwd: RayDesc
 nish_std_RayDesc nish_std_RayDesc_new(vec3 a_origin, vec3 a_direction, float a_tMin, float a_tMax);
 // FunctionFwd: nish:std
+vec3 nish_std_UIntToFixedColor(uint i);
 layout(set = 10, binding = 0) uniform texture2D nil_builtin_GetTexture2D[];
 vec3 nish_std_Vec3Transform_2_Vec3_Matrix4x3(vec3 v, mat4x3 m);
 vec3 nish_std_Vec3TransformNormal_2_Vec3_Matrix4x3(vec3 v, mat4x3 m);
@@ -68,6 +80,17 @@ void vec3_static_initialize() {
   // TypeStatic: Vec3
   vec3_Zero = vec3(0.0,0.0,0.0);
   vec3_One = vec3(1.0,1.0,1.0);
+  vec3_Black = vec3(0.0,0.0,0.0);
+  vec3_Gray = vec3(0.5,0.5,0.5);
+  vec3_Red = vec3(1.0,0.0,0.0);
+  vec3_Yellow = vec3(1.0,1.0,0.0);
+  vec3_Orange = vec3(1.0,0.5,0.0);
+  vec3_Green = vec3(0.0,1.0,0.0);
+  vec3_Blue = vec3(0.0,0.0,1.0);
+  vec3_Cyan = vec3(0.0,1.0,1.0);
+  vec3_White = vec3(1.0,1.0,1.0);
+  vec3_Purple = vec3(0.5,0.0,0.5);
+  vec3_Pink = vec3(1.0,0.0,1.0);
 }
 // TypeMeth: PixelOutput
 nish_std_PixelOutput nish_std_PixelOutput_new(vec4 a_color) {
@@ -85,18 +108,85 @@ nish_std_RayDesc nish_std_RayDesc_new(vec3 a_origin, vec3 a_direction, float a_t
   return t;
 }
 // Function: nish:std
+vec3 nish_std_UIntToFixedColor(uint i) {
+  vec3 _tmp_F;
+  bool _tmp_G = (i == 0);
+  if (_tmp_G) {
+    _tmp_F = vec3_Black;
+  }
+  else {
+    bool _tmp_J = (i == 1);
+    if (_tmp_J) {
+      _tmp_F = vec3_Gray;
+    }
+    else {
+      bool _tmp_M = (i == 2);
+      if (_tmp_M) {
+        _tmp_F = vec3_Red;
+      }
+      else {
+        bool _tmp_P = (i == 3);
+        if (_tmp_P) {
+          _tmp_F = vec3_Yellow;
+        }
+        else {
+          bool _tmp_S = (i == 4);
+          if (_tmp_S) {
+            _tmp_F = vec3_Orange;
+          }
+          else {
+            bool _tmp_V = (i == 5);
+            if (_tmp_V) {
+              _tmp_F = vec3_Green;
+            }
+            else {
+              bool _tmp_Y = (i == 6);
+              if (_tmp_Y) {
+                _tmp_F = vec3_Blue;
+              }
+              else {
+                bool _tmp_11 = (i == 7);
+                if (_tmp_11) {
+                  _tmp_F = vec3_Cyan;
+                }
+                else {
+                  bool _tmp_41 = (i == 8);
+                  if (_tmp_41) {
+                    _tmp_F = vec3_White;
+                  }
+                  else {
+                    bool _tmp_71 = (i == 9);
+                    if (_tmp_71) {
+                      _tmp_F = vec3_Purple;
+                    }
+                    else {
+                      {
+                        _tmp_F = vec3_Pink;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return _tmp_F;
+}
 vec3 nish_std_Vec3Transform_2_Vec3_Matrix4x3(vec3 v, mat4x3 m) {
-  vec3 _tmp_c = v;
-  return (m * vec4(_tmp_c.x,_tmp_c.y,_tmp_c.z,1.0));
+  vec3 _tmp_e1 = v;
+  return (m * vec4(_tmp_e1.x,_tmp_e1.y,_tmp_e1.z,1.0));
 }
 vec3 nish_std_Vec3TransformNormal_2_Vec3_Matrix4x3(vec3 v, mat4x3 m) {
-  vec3 _tmp_g = v;
-  vec3 r = (m * vec4(_tmp_g.x,_tmp_g.y,_tmp_g.z,0.0));
+  vec3 _tmp_i1 = v;
+  vec3 r = (m * vec4(_tmp_i1.x,_tmp_i1.y,_tmp_i1.z,0.0));
   return (r.xyz);
 }
 vec3 nish_std_Vec3TransformCoord(vec3 v, mat4 m) {
-  vec3 _tmp_m = v;
-  vec4 r = (m * vec4(_tmp_m.x,_tmp_m.y,_tmp_m.z,1.0));
+  vec3 _tmp_o1 = v;
+  vec4 r = (m * vec4(_tmp_o1.x,_tmp_o1.y,_tmp_o1.z,1.0));
   return ((r/r.w).xyz);
 }
 // ModuleInitialize: nish_std
@@ -164,7 +254,7 @@ struct niUIGpuFuncs_IntersectionResult {
 struct niUIGpuFuncs_TraceResult {
   uint bounceCount;
   vec3 accumulatedColor;
-  vec3 remainingLight;
+  vec3 throughput;
 };
 
 // TypeStaticFwd: IntersectionType
@@ -189,7 +279,7 @@ void niUIGpuFuncs_IntersectionResult_SetFromTriangleData(inout /* mut */ niUIGpu
 vec4 niUIGpuFuncs_IntersectionResult_ShadeIntersection(niUIGpuFuncs_IntersectionResult aIntersection, vec3 aViewDir, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
 
 // TypeMethFwd: TraceResult
-niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceResult_new(uint a_bounceCount, vec3 a_accumulatedColor, vec3 a_remainingLight);
+niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceResult_new(uint a_bounceCount, vec3 a_accumulatedColor, vec3 a_throughput);
 
 // FunctionFwd: niUIGpuFuncs
 layout(scalar, set = 9, binding = 0) readonly buffer SBO_niUIGpuFuncs_RayInstanceData { niUIGpuFuncs_RayInstanceData v; } nil_builtin_GetRayInstanceData[];
@@ -209,7 +299,7 @@ float niUIGpuFuncs_DirShadowRay(vec3 aPos, vec3 aDir, accelerationStructureEXT a
 vec3 niUIGpuFuncs_DirLight(vec3 worldPos, vec3 worldNormal, vec3 worldLightDir, vec3 lightColor, float cosBias, vec3 shadowColor, accelerationStructureEXT aAS);
 float niUIGpuFuncs_MaxComponent(vec3 v);
 niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceWithReflection(nish_std_RayDesc aInitialRay, uint aMaxBounces, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
-nish_std_PixelOutput niUIGpuFuncs_raytracer_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
+nish_std_PixelOutput niUIGpuFuncs_raytracer_reflection_bounce_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS);
 float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor);
 void niUIGpuFuncs_IntersectionType_static_initialize() {
 
@@ -366,11 +456,11 @@ vec4 niUIGpuFuncs_IntersectionResult_ShadeIntersection(niUIGpuFuncs_Intersection
 }
 
 // TypeMeth: TraceResult
-niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceResult_new(uint a_bounceCount, vec3 a_accumulatedColor, vec3 a_remainingLight) {
+niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceResult_new(uint a_bounceCount, vec3 a_accumulatedColor, vec3 a_throughput) {
   niUIGpuFuncs_TraceResult t;
   t.bounceCount = a_bounceCount;
   t.accumulatedColor = a_accumulatedColor;
-  t.remainingLight = a_remainingLight;
+  t.throughput = a_throughput;
   return t;
 }
 
@@ -488,7 +578,7 @@ float niUIGpuFuncs_MaxComponent(vec3 v) {
 niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceWithReflection(nish_std_RayDesc aInitialRay, uint aMaxBounces, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   uint bounceCount = 0;
   vec3 accumulatedColor = vec3_Zero;
-  vec3 remainingLight = vec3_One;
+  vec3 throughput = vec3_One;
   nish_std_RayDesc currentRay = aInitialRay;
   float surfaceOffset = 0.001;
   while(true) {
@@ -509,12 +599,12 @@ niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceWithReflection(nish_std_RayDesc aInit
       vec2 uv = intersection.uv;
       vec4 materialSample = niUIGpuFuncs_RayInstanceData_SampleMaterialDiffuseColor(instData,aSS,uv);
       reflectionFactor = niUIGpuFuncs_GetReflectionFactorFromMaterialColor(materialSample);
-      accumulatedColor = (accumulatedColor+(((surfaceShade.rgb)*(1.0 - reflectionFactor))*remainingLight));
-      bool _tmp_09 = (((bounceCount > aMaxBounces) || (reflectionFactor < 0.01)) || (niUIGpuFuncs_MaxComponent(remainingLight) < 0.01));
+      accumulatedColor = (accumulatedColor+(((surfaceShade.rgb)*(1.0 - reflectionFactor))*throughput));
+      bool _tmp_09 = (((bounceCount > aMaxBounces) || (reflectionFactor < 0.01)) || (niUIGpuFuncs_MaxComponent(throughput) < 0.01));
       if (_tmp_09) {
         break;
       }
-      remainingLight = (remainingLight*reflectionFactor);
+      throughput = (throughput*reflectionFactor);
       vec3 reflectionDir = reflect(currentRay.direction,worldNormal);
       vec3 _tmp_j9 = (worldPos+(worldNormal*surfaceOffset));
       vec3 _tmp_o9 = reflectionDir;
@@ -524,36 +614,36 @@ niUIGpuFuncs_TraceResult niUIGpuFuncs_TraceWithReflection(nish_std_RayDesc aInit
     }
     else {
       {
-        accumulatedColor = (accumulatedColor+((surfaceShade.rgb)*remainingLight));
+        accumulatedColor = (accumulatedColor+((surfaceShade.rgb)*throughput));
         break;
       }
     }
   }
   uint _tmp_B9 = bounceCount;
   vec3 _tmp_C9 = accumulatedColor;
-  vec3 _tmp_D9 = remainingLight;
+  vec3 _tmp_D9 = throughput;
   return niUIGpuFuncs_TraceResult_new(_tmp_B9, _tmp_C9, _tmp_D9);
 }
-nish_std_PixelOutput niUIGpuFuncs_raytracer_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
+nish_std_PixelOutput niUIGpuFuncs_raytracer_reflection_bounce_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   nish_std_RayDesc rayDesc = niUIGpuFuncs_MakeRayDesc(aInput,aUniforms);
-  niUIGpuFuncs_TraceResult result = niUIGpuFuncs_TraceWithReflection(rayDesc,2,aUniforms,aAS,aSS);
-  vec3 _tmp_P9 = result.remainingLight;
+  niUIGpuFuncs_TraceResult result = niUIGpuFuncs_TraceWithReflection(rayDesc,1,aUniforms,aAS,aSS);
+  vec3 _tmp_P9 = nish_std_UIntToFixedColor(result.bounceCount);
   vec4 _tmp_N9 = vec4(_tmp_P9.x,_tmp_P9.y,_tmp_P9.z,1.0);
   return nish_std_PixelOutput_new(_tmp_N9);
 }
 float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
   float factor = (aMatColor.z * (1.0 - (1.1 * max(aMatColor.x,aMatColor.y))));
-  float _tmp_2a;
-  bool _tmp_3a = (factor > 0.1);
-  if (_tmp_3a) {
-    _tmp_2a = min(pow(factor,1.5),1.0);
+  float _tmp_3a;
+  bool _tmp_4a = (factor > 0.1);
+  if (_tmp_4a) {
+    _tmp_3a = min(pow(factor,1.5),1.0);
   }
   else {
     {
-      _tmp_2a = 0.0;
+      _tmp_3a = 0.0;
     }
   }
-  return _tmp_2a;
+  return _tmp_3a;
 }
 
 // ModuleInitialize: niUIGpuFuncs
@@ -562,7 +652,7 @@ void niUIGpuFuncs_initialize() {
 }
 // MODULE END niUIGpuFuncs
 
-// Pixel Shader main: niUIGpuFuncs_raytracer_reflection_ps
+// Pixel Shader main: niUIGpuFuncs_raytracer_reflection_bounce_ps
 // type size: 48, underlying: float
 layout(set = 0, binding = 0) uniform UBO_niUIGpuFuncs_RayUniforms { niUIGpuFuncs_RayUniforms v; } IN_1_aUniforms;
 layout(set = 7, binding = 0) uniform accelerationStructureEXT IN_1_aAS;
@@ -576,7 +666,7 @@ void main(void) {
   aInput.fragCoord = gl_FragCoord;
   aInput.frontFacing = gl_FrontFacing;
   aUniforms = IN_1_aUniforms.v;
-  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_reflection_ps(aInput, aUniforms, IN_1_aAS, IN_1_aSS);
+  nish_std_PixelOutput _rval_ = niUIGpuFuncs_raytracer_reflection_bounce_ps(aInput, aUniforms, IN_1_aAS, IN_1_aSS);
   OUT_0_rval_color = _rval_.color;
 }
 

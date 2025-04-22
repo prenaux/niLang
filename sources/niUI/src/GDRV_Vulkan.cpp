@@ -48,13 +48,21 @@
 niDeclareModuleTrace_(niUI, TraceVulkanDescr);
   #define VULKAN_TRACE_DESCR(FMT) niModuleTrace_(niUI, TraceVulkanDescr, FMT);
 
+  #if !defined niVulkan_RayTracing
+    #define VULKAN_NO_RAY_TRACING(RET)       \
+      niError("Ray Tracing not supported."); \
+      return RET
+  #endif
+
 namespace ni {
 
 struct sVulkanBuffer;
 struct sVulkanTexture;
+  #ifdef niVulkan_RayTracing
 struct sVulkanRayPrimitives;
 struct sVulkanRayInstances;
 struct sVulkanRayPipeline;
+  #endif // #ifdef niVulkan_RayTracing
 
 _HDecl(__vktex_white__);
 _HDecl(__vkbuff_dummy__);
@@ -294,6 +302,13 @@ static const achar* const _ToVkPresentModeStr(VkPresentModeKHR mode)
   case VK_PRESENT_MODE_IMMEDIATE_KHR: return "IMMEDIATE";
   case VK_PRESENT_MODE_FIFO_KHR: return "FIFO";
   case VK_PRESENT_MODE_FIFO_RELAXED_KHR: return "FIFO_RELAXED";
+  #ifdef niOSX
+  case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
+    return "SHARED_DEMAND_REFRESH_KHR";
+  case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
+    return "SHARED_DEMAND_REFRESH_KHR";
+  case VK_PRESENT_MODE_MAX_ENUM_KHR: break;
+  #endif
   }
   return "UNKNOWN";
 };
@@ -639,11 +654,13 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
   tVkInstanceLayersSet _instanceLayers;
   tU32 _queueFamilyIndex = 0;
 
+  #ifdef niVulkan_RayTracing
+  tBool _isBindlessSupported = eFalse;
+
   tBool _isRayTracingSupported = eFalse;
   VkPhysicalDeviceRayTracingPipelinePropertiesKHR _rayTracingProps = {};
   VkPhysicalDeviceAccelerationStructurePropertiesKHR _accelStructProps = {};
-
-  tBool _isBindlessSupported = eFalse;
+  #endif
 
   LocalIDGenerator _idGenerator;
   VkSampler _ssCompiled[(eCompiledStates_SS_SmoothWhiteBorder -
@@ -883,6 +900,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
                       (tBool) !!robustness2Features.robustImageAccess2,
                       (tBool) !!robustness2Features.nullDescriptor));
 
+  #ifdef niVulkan_RayTracing
     // Check bindless support
     _isBindlessSupported =
       descriptorIndexingFeatures
@@ -1171,6 +1189,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
         Info,
         "Vulkan Raytracing & Mesh shader not supported because bindless isnt supported.");
     }
+  #endif // #ifdef niVulkan_RayTracing
   }
 
   tBool _InitPhysicalDevice()
@@ -1398,9 +1417,18 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     }
 
     // Check requirements
+  #ifdef niOSX
+    // MoltenVK only supports 8 maxBoundDescriptorSets, since we dont support
+    // RT there anyway we should be fine. Until we want full bindless that
+    // is...
+    niCheck(_deviceLimits.maxBoundDescriptorSets >=
+              eGLSLVulkanDescriptorSet_RayInstances,
+            eFalse);
+  #else
     niCheck(_deviceLimits.maxBoundDescriptorSets >=
               eGLSLVulkanDescriptorSet_Last,
             eFalse);
+  #endif
     niCheck(_deviceLimits.maxVertexInputBindings >=
               eGLSLVulkanVertexInputLayout_Last,
             eFalse);
@@ -1519,6 +1547,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     CHAIN_FEATURES(robustness2Features);
   #endif
 
+  #ifdef niVulkan_RayTracing
     // === BINDLESS SETUP ===
     if (_isBindlessSupported) {
       vk12.descriptorIndexing = VK_TRUE;
@@ -1557,6 +1586,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
       CHAIN_FEATURES(accelerationStructureFeatures);
       CHAIN_FEATURES(rayQueryFeatures);
     }
+  #endif // #ifdef niVulkan_RayTracing
 
     // Gather the required extensions
     astl::vector<const char*> requiredExtensions;
@@ -1566,6 +1596,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
       niLoop (i, knVkRequiredDeviceExtensionsCount) {
         requiredExtensions.push_back(_vkRequiredDeviceExtensions[i]);
       }
+  #ifdef niVulkan_RayTracing
       if (_isBindlessSupported) {
         niLoop (i, knVkRequiredBindlessExtensionsCount) {
           requiredExtensions.push_back(_vkRequiredBindlessExtensions[i]);
@@ -1576,6 +1607,7 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
           requiredExtensions.push_back(_vkRequiredRayTracingExtensions[i]);
         }
       }
+  #endif
     }
 
     // Create the device
@@ -1616,9 +1648,11 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     allocatorInfo.physicalDevice = _physicalDevice;
     allocatorInfo.device = _device;
     allocatorInfo.instance = _instance;
+  #ifdef niVulkan_RayTracing
     if (_isRayTracingSupported) {
       allocatorInfo.flags |= VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
     }
+  #endif // #ifdef niVulkan_RayTracing
   #ifdef niVulkan_Volk
     VmaVulkanFunctions vmaVulkanFuncs{ .vkGetInstanceProcAddr =
                                          vkGetInstanceProcAddr,
@@ -1725,7 +1759,12 @@ struct sVulkanDriver : public ImplRC<iGraphicsDriver, eImplFlags_Default,
     case eGraphicsCaps_BlitBackBuffer: return 0;
     case eGraphicsCaps_Wireframe: return 1;
     case eGraphicsCaps_IGpu: return 1;
-    case eGraphicsCaps_IRay: return _isRayTracingSupported ? 1 : 0;
+    case eGraphicsCaps_IRay:
+  #ifdef niVulkan_RayTracing
+      return _isRayTracingSupported ? 1 : 0;
+  #else
+      return 0;
+  #endif
     }
     return 0;
   }
@@ -1953,9 +1992,11 @@ struct sVulkanBuffer
                                       .size = anSize,
                                       .usage = _ToVkBufferUsageFlags(_usage) };
 
+  #ifdef niVulkan_RayTracing
     if (_driver->_isRayTracingSupported) {
       bufferInfo.usage |= VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
     }
+  #endif
 
     VmaAllocationCreateInfo allocInfo = {};
     switch (_memMode) {
@@ -2245,9 +2286,11 @@ struct sVulkanTexture
 
     if (niFlagIs(_flags, eTextureFlags_RenderTarget)) {
       imageInfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  #ifdef niVulkan_RayTracing
       if (_driver->_isRayTracingSupported) {
         imageInfo.usage |= VK_IMAGE_USAGE_STORAGE_BIT;
       }
+  #endif
     }
     else if (niFlagIs(_flags, eTextureFlags_DepthStencil)) {
       imageInfo.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -3052,8 +3095,10 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
   astl::vector<Ptr<sVulkanBuffer>> _trackedBuffers;
   astl::vector<Ptr<sVulkanTexture>> _trackedTextures;
   astl::vector<Ptr<sVulkanRasterPipeline>> _trackedGpuPipelines;
+  #ifdef niVulkan_RayTracing
   astl::vector<Ptr<iRayPipeline>> _trackedRayPipelines;
   astl::vector<Ptr<iRayInstances>> _trackedRayInstances;
+  #endif
   astl::vector<Ptr<iTexture>> _trackedOutputImages;
   Ptr<iGpuStream> _stream;
   sVulkanDescriptorPool _descriptorPool;
@@ -3101,6 +3146,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     return pipeline;
   }
 
+  #ifdef niVulkan_RayTracing
   niInline sVulkanRayPipeline* BindRayPipeline(iRayPipeline* apPipeline)
   {
     _trackedRayPipelines.push_back(apPipeline);
@@ -3112,6 +3158,7 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     _trackedRayInstances.push_back(apInstances);
     return (sVulkanRayInstances*)apInstances;
   }
+  #endif
 
   niInline sVulkanTexture* BindOutputImage(iTexture* apInstances)
   {
@@ -3141,8 +3188,10 @@ struct sVulkanEncoderFrameData : public ImplRC<iUnknown> {
     _trackedBuffers.clear();
     _trackedTextures.clear();
     _trackedGpuPipelines.clear();
+  #ifdef niVulkan_RayTracing
     _trackedRayPipelines.clear();
     _trackedRayInstances.clear();
+  #endif
     _trackedOutputImages.clear();
     _stream->Reset();
     _descriptorPool.ResetDescriptorPool(aDevice);
@@ -3228,8 +3277,10 @@ struct sVulkanCommandEncoder
     tFixedGpuPipelineId _lastFixedPipeline = 0;
     Ptr<sVulkanBuffer> _lastBuffer = nullptr;
     tU32 _lastBufferOffset = 0;
+  #ifdef niVulkan_RayTracing
     Ptr<iRayInstances> _lastRayInstances = nullptr;
     Ptr<sVulkanRayPipeline> _lastRayPipeline = nullptr;
+  #endif
     Ptr<sVulkanTexture> _lastRayOutputImage = nullptr;
   } _cache;
   VkFence _encoderInFlightFence = VK_NULL_HANDLE;
@@ -3400,7 +3451,9 @@ struct sVulkanCommandEncoder
     _cache._lastRasterPipeline =
       _GetCurrentFrame()->BindRasterPipeline(apPipeline);
     _cache._lastFixedPipeline = aFixedPipelineId;
+  #ifdef niVulkan_RayTracing
     _cache._lastRayPipeline = nullptr;
+  #endif
   }
 
   virtual void __stdcall SetPipeline(iGpuPipeline* apPipeline) niImpl
@@ -3584,6 +3637,8 @@ struct sVulkanScratchBuffer {
     return eTrue;
   }
 };
+
+  #if defined niVulkan_RayTracing
 
 static inline VkGeometryInstanceFlagsKHR
 _ToVkAccelerationStructureInstanceFlags(tRayInstanceFlags aFlags)
@@ -4661,18 +4716,24 @@ struct sVulkanRayBuildEncoder : public ImplRC<iRayBuildEncoder> {
     return instancesAS;
   }
 };
+  #endif
 
 tBool __stdcall sVulkanCommandEncoder::SetRayInstances(
   iRayInstances* apRayInstances)
 {
+  #ifdef niVulkan_RayTracing
   niCheckIsOK(apRayInstances, eFalse);
   _cache._lastRayInstances =
     _GetCurrentFrame()->BindRayInstances(apRayInstances);
   return eTrue;
+  #else
+  VULKAN_NO_RAY_TRACING(eFalse);
+  #endif
 }
 tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(
   iRayPipeline* apRayPipeline)
 {
+  #ifdef niVulkan_RayTracing
   niCheckIsOK(apRayPipeline, eFalse);
   if ((tIntPtr)_cache._lastRayPipeline.raw_ptr() == (tIntPtr)apRayPipeline)
     return eFalse;
@@ -4684,6 +4745,9 @@ tBool __stdcall sVulkanCommandEncoder::SetRayPipeline(
   _cache._lastFixedPipeline = 0;
   _cache._lastRayPipeline = _GetCurrentFrame()->BindRayPipeline(rayPipeline);
   return eTrue;
+  #else
+  VULKAN_NO_RAY_TRACING(eFalse);
+  #endif
 }
 tBool __stdcall sVulkanCommandEncoder::SetRayOutputImage(
   iTexture* apRayOutputImage)
@@ -4698,6 +4762,7 @@ tBool __stdcall sVulkanCommandEncoder::SetRayOutputImage(
 tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH,
                                                     tU32 anD)
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_driver->_isRayTracingSupported, eFalse);
   niCheckIsOK(_cache._lastRayPipeline, eFalse);
   niCheckIsOK(_cache._lastRayInstances, eFalse);
@@ -4751,6 +4816,9 @@ tBool __stdcall sVulkanCommandEncoder::DispatchRays(tU32 anW, tU32 anH,
   _ResumeRendering();
 
   return eTrue;
+  #else
+  VULKAN_NO_RAY_TRACING(eFalse);
+  #endif
 }
 
 tBool __stdcall sVulkanDriver::BlitBitmapToTexture(
@@ -4826,13 +4894,16 @@ tBool sVulkanDriver::_CreateVulkanDriverResources()
 
   // Create the descriptor set layouts
   niLet stageFlags =
-    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT |
-    (_isRayTracingSupported
-       ? (VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR |
-          VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
-          VK_SHADER_STAGE_ANY_HIT_BIT_KHR |
-          VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
-       : 0);
+    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT
+  #ifdef niVulkan_RayTracing
+    | (_isRayTracingSupported
+         ? (VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR |
+            VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+            VK_SHADER_STAGE_ANY_HIT_BIT_KHR |
+            VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+         : 0)
+  #endif
+    ;
 
   VK_CHECK(_VkCreateEmptyDescSetLayout(_device, _emptyDescrSet), eFalse);
   VK_CHECK(_VkCreateDescSetLayout(
@@ -4905,6 +4976,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources()
     CREATE_PIPELINE_LAYOUT(_vkPipelineLayouts[eGpuFunctionBindType_Fixed]);
   }
 
+  #ifdef niVulkan_RayTracing
   if (_isBindlessSupported) {
     VK_CHECK(_VkCreateBindlessDescSetLayout(
                _device, _descrSetLayouts[eGLSLVulkanDescriptorSet_AllBuffers],
@@ -5038,6 +5110,7 @@ tBool sVulkanDriver::_CreateVulkanDriverResources()
         _vkPipelineLayouts[eGpuFunctionBindType_BindlessRayInstances]);
     }
   }
+  #endif // #ifdef niVulkan_RayTracing
 
   // Create the dummy uniforms
   {
@@ -5183,6 +5256,7 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances)
             eFalse);
   }
 
+  #ifdef niVulkan_RayTracing
   if (abWithRayInstances) {
     niCheck(_cache._lastRayInstances.has_value(), eFalse);
     nn<sVulkanRayInstances> instancesAS =
@@ -5193,6 +5267,9 @@ tBool sVulkanCommandEncoder::_DoBindFixedDescLayout(tBool abWithRayInstances)
               instancesAS->_asHandle),
             eFalse);
   }
+  #else
+  niUnused(abWithRayInstances);
+  #endif
 
   return eTrue;
 }
@@ -6375,55 +6452,79 @@ Ptr<iGpuPipeline> sVulkanDriver::CreateGpuPipeline(
 Ptr<iRayPipeline> __stdcall sVulkanDriver::CreateRayPipeline(
   iHString* ahspName, iRayFunctionTable* apFunctionTable)
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   niCheckIsOK(apFunctionTable, nullptr);
   Ptr<sVulkanRayPipeline> rayPipeline = MakeNN<sVulkanRayPipeline>(
     as_nn(this), ahspName, as_nn((sVulkanRayFunctionTable*)apFunctionTable));
   niCheck(rayPipeline->_CreateRayPipeline(), nullptr);
   return rayPipeline;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 Ptr<iRayFunctionTable> __stdcall sVulkanDriver::CreateRayFunctionTable()
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   Ptr<sVulkanRayFunctionTable> rayFT =
     MakeNN<sVulkanRayFunctionTable>(as_nn(this));
   return rayFT;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 Ptr<iRayTrianglePrimitivesDesc> __stdcall sVulkanDriver::
   CreateRayTrianglePrimitivesDesc(iHString* ahspName)
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   Ptr<sVulkanRayTrianglePrimitivesDesc> as =
     MakeNN<sVulkanRayTrianglePrimitivesDesc>(as_nn(this), ahspName);
   return as;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 Ptr<iRayProceduralPrimitivesDesc> __stdcall sVulkanDriver::
   CreateRayProceduralPrimitivesDesc(iHString* ahspName)
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   Ptr<sVulkanRayProceduralPrimitivesDesc> as =
     MakeNN<sVulkanRayProceduralPrimitivesDesc>(as_nn(this), ahspName);
   return as;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 Ptr<iRayInstancesDesc> __stdcall sVulkanDriver::CreateRayInstancesDesc(
   iHString* ahspName)
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   Ptr<sVulkanRayInstancesDesc> as =
     MakeNN<sVulkanRayInstancesDesc>(as_nn(this), ahspName);
   return as;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 Ptr<iRayBuildEncoder> __stdcall sVulkanDriver::CreateRayBuildEncoder()
 {
+  #ifdef niVulkan_RayTracing
   niCheck(_isRayTracingSupported, nullptr);
   NN<sVulkanRayBuildEncoder> encoder =
     MakeNN<sVulkanRayBuildEncoder>(as_nn(this));
   return encoder;
+  #else
+  VULKAN_NO_RAY_TRACING(nullptr);
+  #endif
 }
 
 niExportFunc(iUnknown*) New_GraphicsDriver_Vulkan(const Var& avarA,

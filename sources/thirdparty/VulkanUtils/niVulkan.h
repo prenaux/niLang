@@ -23,6 +23,7 @@
 //===========================================================================
 #elif defined niLinux || defined niWindows
 #define niVulkan_Volk
+#define niVulkan_RayTracing
 
 #if defined niLinuxDesktop
 #define VK_USE_PLATFORM_XLIB_KHR

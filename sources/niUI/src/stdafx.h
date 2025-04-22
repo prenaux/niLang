@@ -26,7 +26,7 @@ using namespace ni;
   #define GDRV_AUTO "Metal"
   //#  define GDRV_GL2
   #define GDRV_METAL
-// #  define GDRV_VULKAN
+  #define GDRV_VULKAN
 #elif defined niIOSMac
   #define GDRV_AUTO "Metal"
   #define GDRV_METAL

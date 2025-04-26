@@ -34,6 +34,8 @@
     #define METAL_IOS
   #endif
 
+EA_DISABLE_CLANG_WARNING(-Wunguarded-availability-new);
+
 namespace ni {
 
   #define NISH_TARGET msl2_macos

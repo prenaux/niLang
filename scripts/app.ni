@@ -482,5 +482,13 @@ if (!::gUIContext) {
   }
 }
 
+if (::lang.getHostOS() == "osx") {
+  ::app.updateProgress = function() {
+    // TODO: This doesnt work on macOS because _EndFrame is called when
+    // displaying the frame buffer and we cant resume without getting a new
+    // drawable.
+  }
+}
+
 // Main entry point
 ::main <- ::app.main

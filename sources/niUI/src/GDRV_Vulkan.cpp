@@ -483,7 +483,8 @@ static tBool _VkTransitionImageLayout(VkCommandBuffer aCmdBuffer,
        aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
       (aOldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
        (aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ||
-        aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)) ||
+        aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ||
+        aNewLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)) ||
       (aOldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL &&
        aNewLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ||
       (aOldLayout == VK_IMAGE_LAYOUT_GENERAL &&
@@ -491,7 +492,8 @@ static tBool _VkTransitionImageLayout(VkCommandBuffer aCmdBuffer,
       (aOldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR &&
        aNewLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) ||
       (aOldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL &&
-       aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR))
+       (aNewLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR ||
+        aNewLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)))
   {
     vkCmdPipelineBarrier(aCmdBuffer, sourceStage, destinationStage, 0, 0,
                          nullptr, 0, nullptr, 1, &barrier);
@@ -5765,6 +5767,87 @@ struct sVulkanContextWindowMetal : public sVulkanContextBase {
       vkDestroyImage(device, _metalSurface._colorImage, nullptr);
       _metalSurface._colorImage = VK_NULL_HANDLE;
     }
+  }
+
+  virtual iBitmap2D* __stdcall CaptureFrontBuffer() const niImpl
+  {
+    niCheck(_metalSurface._colorImage != VK_NULL_HANDLE, nullptr);
+
+    // Get current metal surface image
+    VkImage srcImage = _metalSurface._colorImage;
+    tU32 width = _metalSurface._size.x;
+    tU32 height = _metalSurface._size.y;
+
+    // Create buffer to hold the image data
+    VkBuffer stagingBuffer;
+    VmaAllocation stagingAlloc;
+    tU32 bufferSize = width * height * 4; // Assuming 4 bytes per pixel (RGBA8)
+
+    VkBufferCreateInfo bufferInfo = { .sType =
+                                        VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                                      .size = bufferSize,
+                                      .usage =
+                                        VK_BUFFER_USAGE_TRANSFER_DST_BIT };
+
+    VmaAllocationCreateInfo allocInfo = { .usage = VMA_MEMORY_USAGE_CPU_ONLY };
+
+    VK_CHECK(vmaCreateBuffer(_driver->_allocator, &bufferInfo, &allocInfo,
+                             &stagingBuffer, &stagingAlloc, nullptr),
+             nullptr);
+    niDefer
+    {
+      vmaDestroyBuffer(_driver->_allocator, stagingBuffer, stagingAlloc);
+    };
+
+    // Copy image to buffer
+    VkCommandBuffer cmdBuf = _driver->BeginSingleTimeCommands();
+    if (cmdBuf == VK_NULL_HANDLE)
+      return nullptr;
+
+    // Transition image for transfer source
+    _VkTransitionImageLayout(cmdBuf, srcImage,
+                             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+    // Copy image to buffer
+    VkBufferImageCopy region = {
+      .bufferOffset = 0,
+      .bufferRowLength = 0,
+      .bufferImageHeight = 0,
+      .imageSubresource = { .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                            .mipLevel = 0,
+                            .baseArrayLayer = 0,
+                            .layerCount = 1 },
+      .imageOffset = { 0, 0, 0 },
+      .imageExtent = { width, height, 1 }
+    };
+
+    vkCmdCopyImageToBuffer(cmdBuf, srcImage,
+                           VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, stagingBuffer,
+                           1, &region);
+
+    // Transition image back
+    _VkTransitionImageLayout(cmdBuf, srcImage,
+                             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+    _driver->EndSingleTimeCommands(cmdBuf, eTrue);
+
+    // Create bitmap
+    Ptr<iBitmap2D> bitmap =
+      _driver->_graphics->CreateBitmap2D(width, height, "B8G8R8A8");
+    niCheck(bitmap.IsOK(), nullptr);
+
+    // Map buffer memory and copy to bitmap
+    void* data;
+    VK_CHECK(vmaMapMemory(_driver->_allocator, stagingAlloc, &data), nullptr);
+
+    // Copy data to bitmap
+    ni::MemCopy(bitmap->GetData(), (tPtr)data, bufferSize);
+
+    vmaUnmapMemory(_driver->_allocator, stagingAlloc);
+
+    return bitmap.GetRawAndSetNull();
   }
 };
   #endif

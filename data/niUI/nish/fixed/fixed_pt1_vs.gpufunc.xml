@@ -8,11 +8,12 @@
 			<Input name="IN_5_aInput_tex0" type="vec2" location="5"/>
 		</Inputs>
 		<Outputs>
+			<Output name="OUT_3_rval_normal" type="vec3" location="3"/>
 			<Output name="OUT_1_rval_color" type="vec4" location="1"/>
 			<Output name="OUT_2_rval_tex0" type="vec2" location="2"/>
 		</Outputs>
 		<UBOs>
-			<UBO name="UBO_niUIGpuFuncs_FixedUniforms" type="_95" set="0" binding="0"/>
+			<UBO name="UBO_niUIGpuFuncs_FixedUniforms" type="_113" set="0" binding="0"/>
 		</UBOs>
 	</Reflection>
 	<Target target="spv_vk12" code_path="fixed_pt1_vs.gpufunc.spv_vk12"/>

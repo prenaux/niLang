@@ -1,0 +1,60 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct niUIGpuFuncs_FixedUniforms
+{
+    float4x4 mtxWVP;
+    float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct niUIGpuFuncs_FixedUniforms_1
+{
+    float4x4 mtxWVP;
+    float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_niUIGpuFuncs_FixedUniforms
+{
+    niUIGpuFuncs_FixedUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_0_rval_color [[color(0)]];
+};
+
+struct main0_in
+{
+    float4 IN_1_aInput_color [[user(locn1)]];
+    float2 IN_2_aInput_tex0 [[user(locn2)]];
+    float3 IN_3_aInput_normal [[user(locn3)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], constant UBO_niUIGpuFuncs_FixedUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
+{
+    main0_out out = {};
+    niUIGpuFuncs_FixedUniforms _256;
+    _256.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _256.mtxW = IN_1_aUniforms.v.mtxW;
+    _256.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _256.padding0 = IN_1_aUniforms.v.padding0;
+    _256.padding1 = IN_1_aUniforms.v.padding1;
+    _256.padding2 = IN_1_aUniforms.v.padding2;
+    _256.materialColor = IN_1_aUniforms.v.materialColor;
+    float3 _341 = fast::normalize(in.IN_3_aInput_normal);
+    out.OUT_0_rval_color = (IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0) * in.IN_1_aInput_color) * float4((mix(float3(0.2400000095367431640625), float3(0.800000011920928955078125), float3(fast::clamp(fast::max(0.0, (dot(_341, float3(0.4016096591949462890625, 0.562253534793853759765625, -0.72289741039276123046875)) * 0.5) + 0.5), 0.0, 1.0))) + mix(float3(0.12000000476837158203125, 0.060000002384185791015625, 0.0), float3(0.4000000059604644775390625, 0.20000000298023223876953125, 0.0), float3(fast::clamp(fast::max(0.0, (dot(_341, float3(-0.707106769084930419921875, -0.0, -0.707106769084930419921875)) * 0.5) + 0.5), 0.0, 1.0)))) + mix(float3(0.0, 0.060000002384185791015625, 0.12000000476837158203125), float3(0.0, 0.20000000298023223876953125, 0.4000000059604644775390625), float3(fast::clamp(fast::max(0.0, (_341.y * 0.5) + 0.5), 0.0, 1.0))), 1.0);
+    return out;
+}
+

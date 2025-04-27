@@ -5,6 +5,7 @@
 // Type: VertexOutput
 struct nish_std_VertexOutput {
   vec4 position;
+  vec3 normal;
   vec4 color;
   vec2 tex0;
 };
@@ -30,6 +31,7 @@ nish_std_PixelOutput nish_std_PixelOutput_new(vec4 a_color) {
 // Type: FixedUniforms
 struct niUIGpuFuncs_FixedUniforms {
   mat4 mtxWVP;
+  mat4 mtxW;
   float alphaRef;
   float padding0;
   float padding1;
@@ -50,9 +52,10 @@ nish_std_PixelOutput niUIGpuFuncs_fixed_tex_ps(nish_std_VertexOutput aInput, niU
 
 // Pixel Shader main: niUIGpuFuncs_fixed_tex_ps
 layout(location = 0) in vec4 IN_0_aInput_position;
+layout(location = 3) in vec3 IN_3_aInput_normal;
 layout(location = 1) in vec4 IN_1_aInput_color;
 layout(location = 2) in vec2 IN_2_aInput_tex0;
-// type size: 48, underlying: float
+// type size: 64, underlying: float
 layout(set = 0, binding = 0) uniform UBO_niUIGpuFuncs_FixedUniforms { niUIGpuFuncs_FixedUniforms v; } IN_1_aUniforms;
 layout(set = 1, binding = 0) uniform texture2D IN_1_aTexture;
 layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
@@ -61,6 +64,7 @@ void main(void) {
   nish_std_VertexOutput aInput;
   niUIGpuFuncs_FixedUniforms aUniforms;
   aInput.position = IN_0_aInput_position;
+  aInput.normal = IN_3_aInput_normal;
   aInput.color = IN_1_aInput_color;
   aInput.tex0 = IN_2_aInput_tex0;
   aUniforms = IN_1_aUniforms.v;

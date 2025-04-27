@@ -1,0 +1,65 @@
+struct niUIGpuFuncs_FixedUniforms
+{
+    row_major float4x4 mtxWVP;
+    row_major float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+cbuffer UBO_niUIGpuFuncs_FixedUniforms : register(b0, space0)
+{
+    niUIGpuFuncs_FixedUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+Texture2D<float4> IN_1_aTexture : register(t0, space1);
+SamplerState IN_1_aSS : register(s0, space5);
+
+static float3 IN_3_aInput_normal;
+static float4 IN_1_aInput_color;
+static float2 IN_2_aInput_tex0;
+static float4 OUT_0_rval_color;
+
+struct SPIRV_Cross_Input
+{
+    float4 IN_1_aInput_color : TEXCOORD1;
+    float2 IN_2_aInput_tex0 : TEXCOORD2;
+    float3 IN_3_aInput_normal : TEXCOORD3;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_0_rval_color : SV_Target0;
+};
+
+void frag_main()
+{
+    niUIGpuFuncs_FixedUniforms _279;
+    _279.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _279.mtxW = IN_1_aUniforms_v.mtxW;
+    _279.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _279.padding0 = IN_1_aUniforms_v.padding0;
+    _279.padding1 = IN_1_aUniforms_v.padding1;
+    _279.padding2 = IN_1_aUniforms_v.padding2;
+    _279.materialColor = IN_1_aUniforms_v.materialColor;
+    float4 _311 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
+    if (_311.w < _279.alphaRef)
+    {
+        discard;
+    }
+    float3 _380 = normalize(IN_3_aInput_normal);
+    OUT_0_rval_color = (_311 * IN_1_aInput_color) * float4((lerp(0.2400000095367431640625f.xxx, 0.800000011920928955078125f.xxx, clamp(max(0.0f, (dot(_380, float3(0.4016096591949462890625f, 0.562253534793853759765625f, -0.72289741039276123046875f)) * 0.5f) + 0.5f), 0.0f, 1.0f).xxx) + lerp(float3(0.12000000476837158203125f, 0.060000002384185791015625f, 0.0f), float3(0.4000000059604644775390625f, 0.20000000298023223876953125f, 0.0f), clamp(max(0.0f, (dot(_380, float3(-0.707106769084930419921875f, -0.0f, -0.707106769084930419921875f)) * 0.5f) + 0.5f), 0.0f, 1.0f).xxx)) + lerp(float3(0.0f, 0.060000002384185791015625f, 0.12000000476837158203125f), float3(0.0f, 0.20000000298023223876953125f, 0.4000000059604644775390625f), clamp(max(0.0f, (_380.y * 0.5f) + 0.5f), 0.0f, 1.0f).xxx), 1.0f);
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_3_aInput_normal = stage_input.IN_3_aInput_normal;
+    IN_1_aInput_color = stage_input.IN_1_aInput_color;
+    IN_2_aInput_tex0 = stage_input.IN_2_aInput_tex0;
+    frag_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.OUT_0_rval_color = OUT_0_rval_color;
+    return stage_output;
+}

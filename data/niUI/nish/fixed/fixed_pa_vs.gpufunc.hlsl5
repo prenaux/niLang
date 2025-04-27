@@ -1,6 +1,7 @@
 struct niUIGpuFuncs_FixedUniforms
 {
     row_major float4x4 mtxWVP;
+    row_major float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -17,6 +18,7 @@ cbuffer UBO_niUIGpuFuncs_FixedUniforms : register(b0, space0)
 static float4 gl_Position;
 static float3 IN_0_aInput_position;
 static float4 IN_4_aInput_color;
+static float3 OUT_3_rval_normal;
 static float4 OUT_1_rval_color;
 static float2 OUT_2_rval_tex0;
 
@@ -30,20 +32,23 @@ struct SPIRV_Cross_Output
 {
     float4 OUT_1_rval_color : TEXCOORD1;
     float2 OUT_2_rval_tex0 : TEXCOORD2;
+    float3 OUT_3_rval_normal : TEXCOORD3;
     float4 gl_Position : SV_Position;
 };
 
 void vert_main()
 {
-    niUIGpuFuncs_FixedUniforms _113;
-    _113.mtxWVP = IN_1_aUniforms_v.mtxWVP;
-    _113.alphaRef = IN_1_aUniforms_v.alphaRef;
-    _113.padding0 = IN_1_aUniforms_v.padding0;
-    _113.padding1 = IN_1_aUniforms_v.padding1;
-    _113.padding2 = IN_1_aUniforms_v.padding2;
-    _113.materialColor = IN_1_aUniforms_v.materialColor;
-    gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _113.mtxWVP);
-    OUT_1_rval_color = IN_4_aInput_color * _113.materialColor;
+    niUIGpuFuncs_FixedUniforms _127;
+    _127.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _127.mtxW = IN_1_aUniforms_v.mtxW;
+    _127.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _127.padding0 = IN_1_aUniforms_v.padding0;
+    _127.padding1 = IN_1_aUniforms_v.padding1;
+    _127.padding2 = IN_1_aUniforms_v.padding2;
+    _127.materialColor = IN_1_aUniforms_v.materialColor;
+    gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _127.mtxWVP);
+    OUT_3_rval_normal = float3(0.0f, 1.0f, 0.0f);
+    OUT_1_rval_color = IN_4_aInput_color * _127.materialColor;
     OUT_2_rval_tex0 = 0.0f.xx;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
 }
@@ -55,6 +60,7 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
     vert_main();
     SPIRV_Cross_Output stage_output;
     stage_output.gl_Position = gl_Position;
+    stage_output.OUT_3_rval_normal = OUT_3_rval_normal;
     stage_output.OUT_1_rval_color = OUT_1_rval_color;
     stage_output.OUT_2_rval_tex0 = OUT_2_rval_tex0;
     return stage_output;

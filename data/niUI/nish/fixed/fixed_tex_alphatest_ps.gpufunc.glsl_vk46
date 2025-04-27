@@ -3,6 +3,7 @@
 struct niUIGpuFuncs_FixedUniforms
 {
     mat4 mtxWVP;
+    mat4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -10,7 +11,7 @@ struct niUIGpuFuncs_FixedUniforms
     vec4 materialColor;
 };
 
-uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[6];
+uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[10];
 layout(set = 1, binding = 0) uniform texture2D IN_1_aTexture;
 layout(set = 5, binding = 0) uniform sampler IN_1_aSS;
 
@@ -20,19 +21,20 @@ layout(location = 0) out vec4 OUT_0_rval_color;
 
 void main()
 {
-    niUIGpuFuncs_FixedUniforms _105 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), UBO_niUIGpuFuncs_FixedUniforms[4].x, UBO_niUIGpuFuncs_FixedUniforms[4].y, UBO_niUIGpuFuncs_FixedUniforms[4].z, UBO_niUIGpuFuncs_FixedUniforms[4].w, UBO_niUIGpuFuncs_FixedUniforms[5]);
-    niUIGpuFuncs_FixedUniforms _106;
-    _106.mtxWVP = _105.mtxWVP;
-    _106.alphaRef = _105.alphaRef;
-    _106.padding0 = _105.padding0;
-    _106.padding1 = _105.padding1;
-    _106.padding2 = _105.padding2;
-    _106.materialColor = _105.materialColor;
-    vec4 _131 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
-    if (_131.w < _106.alphaRef)
+    niUIGpuFuncs_FixedUniforms _112 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), mat4(UBO_niUIGpuFuncs_FixedUniforms[4], UBO_niUIGpuFuncs_FixedUniforms[5], UBO_niUIGpuFuncs_FixedUniforms[6], UBO_niUIGpuFuncs_FixedUniforms[7]), UBO_niUIGpuFuncs_FixedUniforms[8].x, UBO_niUIGpuFuncs_FixedUniforms[8].y, UBO_niUIGpuFuncs_FixedUniforms[8].z, UBO_niUIGpuFuncs_FixedUniforms[8].w, UBO_niUIGpuFuncs_FixedUniforms[9]);
+    niUIGpuFuncs_FixedUniforms _113;
+    _113.mtxWVP = _112.mtxWVP;
+    _113.mtxW = _112.mtxW;
+    _113.alphaRef = _112.alphaRef;
+    _113.padding0 = _112.padding0;
+    _113.padding1 = _112.padding1;
+    _113.padding2 = _112.padding2;
+    _113.materialColor = _112.materialColor;
+    vec4 _138 = texture(sampler2D(IN_1_aTexture, IN_1_aSS), IN_2_aInput_tex0);
+    if (_138.w < _113.alphaRef)
     {
         discard;
     }
-    OUT_0_rval_color = _131 * IN_1_aInput_color;
+    OUT_0_rval_color = _138 * IN_1_aInput_color;
 }
 

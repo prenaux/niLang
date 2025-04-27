@@ -115,8 +115,14 @@ DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_fixed :
   fixed_pa_vs
   fixed_pt1_vs
   fixed_pat1_vs
+  fixed_pn_vs
+  fixed_pna_vs
+  fixed_pnt1_vs
+  fixed_pnat1_vs
   fixed_tex_ps
   fixed_tex_alphatest_ps
+  fixed_lit_tex_ps
+  fixed_lit_tex_alphatest_ps
 ] ;
 
 DEPENDS $(PACKAGE)_nish : [ niBuildGpuFuncs $(PACKAGE)_nish_raytracer :

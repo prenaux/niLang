@@ -3,6 +3,7 @@
 struct niUIGpuFuncs_FixedUniforms
 {
     mat4 mtxWVP;
+    mat4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -10,24 +11,27 @@ struct niUIGpuFuncs_FixedUniforms
     vec4 materialColor;
 };
 
-uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[6];
+uniform vec4 UBO_niUIGpuFuncs_FixedUniforms[10];
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 5) in vec2 IN_5_aInput_tex0;
+layout(location = 3) out vec3 OUT_3_rval_normal;
 layout(location = 1) out vec4 OUT_1_rval_color;
 layout(location = 2) out vec2 OUT_2_rval_tex0;
 
 void main()
 {
-    niUIGpuFuncs_FixedUniforms _100 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), UBO_niUIGpuFuncs_FixedUniforms[4].x, UBO_niUIGpuFuncs_FixedUniforms[4].y, UBO_niUIGpuFuncs_FixedUniforms[4].z, UBO_niUIGpuFuncs_FixedUniforms[4].w, UBO_niUIGpuFuncs_FixedUniforms[5]);
-    niUIGpuFuncs_FixedUniforms _101;
-    _101.mtxWVP = _100.mtxWVP;
-    _101.alphaRef = _100.alphaRef;
-    _101.padding0 = _100.padding0;
-    _101.padding1 = _100.padding1;
-    _101.padding2 = _100.padding2;
-    _101.materialColor = _100.materialColor;
-    gl_Position = _101.mtxWVP * vec4(IN_0_aInput_position, 1.0);
-    OUT_1_rval_color = _101.materialColor;
+    niUIGpuFuncs_FixedUniforms _118 = niUIGpuFuncs_FixedUniforms(mat4(UBO_niUIGpuFuncs_FixedUniforms[0], UBO_niUIGpuFuncs_FixedUniforms[1], UBO_niUIGpuFuncs_FixedUniforms[2], UBO_niUIGpuFuncs_FixedUniforms[3]), mat4(UBO_niUIGpuFuncs_FixedUniforms[4], UBO_niUIGpuFuncs_FixedUniforms[5], UBO_niUIGpuFuncs_FixedUniforms[6], UBO_niUIGpuFuncs_FixedUniforms[7]), UBO_niUIGpuFuncs_FixedUniforms[8].x, UBO_niUIGpuFuncs_FixedUniforms[8].y, UBO_niUIGpuFuncs_FixedUniforms[8].z, UBO_niUIGpuFuncs_FixedUniforms[8].w, UBO_niUIGpuFuncs_FixedUniforms[9]);
+    niUIGpuFuncs_FixedUniforms _119;
+    _119.mtxWVP = _118.mtxWVP;
+    _119.mtxW = _118.mtxW;
+    _119.alphaRef = _118.alphaRef;
+    _119.padding0 = _118.padding0;
+    _119.padding1 = _118.padding1;
+    _119.padding2 = _118.padding2;
+    _119.materialColor = _118.materialColor;
+    gl_Position = _119.mtxWVP * vec4(IN_0_aInput_position, 1.0);
+    OUT_3_rval_normal = vec3(0.0, 1.0, 0.0);
+    OUT_1_rval_color = _119.materialColor;
     OUT_2_rval_tex0 = IN_5_aInput_tex0;
 }
 

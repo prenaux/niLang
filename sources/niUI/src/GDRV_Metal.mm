@@ -2165,12 +2165,14 @@ struct cMetalContextBase
     mCmdEncoder->SetViewport(mrectViewport);
     mCmdEncoder->SetScissorRect(mrectScissor);
 
-    niUIGpuFuncs_FixedUniforms fixedUniforms;
     {
+      niUIGpuFuncs_FixedUniforms fixedUniforms;
+
       const sMaterialChannel& chBase =
         _GetChannel(pDOMatDesc, eMaterialChannel_Base);
       const sMaterialChannel& chOpacity =
         _GetChannel(pDOMatDesc, eMaterialChannel_Opacity);
+
       mCmdEncoder->SetTexture(chBase.mTexture, 0);
       mCmdEncoder->SetSamplerState(chBase.mhSS, 0);
 
@@ -2183,11 +2185,11 @@ struct cMetalContextBase
         fixedUniforms.materialColor = sColor4f::White();
       }
       fixedUniforms.alphaRef = chOpacity.mColor.w;
-    }
 
-    {
-      sMatrixf mtxVP = this->GetFixedStates()->GetViewProjectionMatrix();
-      fixedUniforms.mtxWVP = apDrawOp->GetMatrix() * mtxVP;
+      fixedUniforms.mtxW = apDrawOp->GetMatrix();
+      fixedUniforms.mtxWVP = apDrawOp->GetMatrix() *
+                             this->GetFixedStates()->GetViewProjectionMatrix();
+
       mCmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,
                                        sizeof(fixedUniforms), 0);
     }

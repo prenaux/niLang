@@ -356,8 +356,14 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   NN<iGpuFunction> _vertFuncPA = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _vertFuncPT1 = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _vertFuncPAT1 = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPN = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPNA = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPNT1 = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _vertFuncPNAT1 = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTex = niDeferredInit(NN<iGpuFunction>);
   NN<iGpuFunction> _pixelFuncTexAlphaTest = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelFuncLitTex = niDeferredInit(NN<iGpuFunction>);
+  NN<iGpuFunction> _pixelFuncLitTexAlphaTest = niDeferredInit(NN<iGpuFunction>);
   NN<iTexture> _texWhite = niDeferredInit(NN<iTexture>);
 
   NN<iGpuPipeline> _pipelineClearColorDepth = niDeferredInit(NN<iGpuPipeline>);
@@ -390,8 +396,14 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPA, pa_vs);
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPT1, pt1_vs);
     LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPAT1, pat1_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPN, pn_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPNA, pna_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPNT1, pnt1_vs);
+    LOAD_FIXED_GPUFUNC(Vertex, _vertFuncPNAT1, pnat1_vs);
     LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTex, tex_ps);
     LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncTexAlphaTest, tex_alphatest_ps);
+    LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncLitTex, lit_tex_ps);
+    LOAD_FIXED_GPUFUNC(Pixel, _pixelFuncLitTexAlphaTest, lit_tex_alphatest_ps);
 
 #undef LOAD_FIXED_GPUFUNC
 
@@ -472,20 +484,40 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   iGpuFunction* __stdcall GetFixedGpuFuncVertex(ain<tFVF> aFVF) const niImpl
   {
     niUnused(aFVF);
-    if (aFVF & eFVF_ColorA) {
-      if (aFVF & eFVF_Tex1) {
-        return _vertFuncPAT1;
+    if (aFVF & eFVF_Normal) {
+      if (aFVF & eFVF_ColorA) {
+        if (aFVF & eFVF_Tex1) {
+          return _vertFuncPNAT1;
+        }
+        else {
+          return _vertFuncPNA;
+        }
       }
       else {
-        return _vertFuncPA;
+        if (aFVF & eFVF_Tex1) {
+          return _vertFuncPNT1;
+        }
+        else {
+          return _vertFuncPN;
+        }
       }
     }
     else {
-      if (aFVF & eFVF_Tex1) {
-        return _vertFuncPT1;
+      if (aFVF & eFVF_ColorA) {
+        if (aFVF & eFVF_Tex1) {
+          return _vertFuncPAT1;
+        }
+        else {
+          return _vertFuncPA;
+        }
       }
       else {
-        return _vertFuncP;
+        if (aFVF & eFVF_Tex1) {
+          return _vertFuncPT1;
+        }
+        else {
+          return _vertFuncP;
+        }
       }
     }
   }
@@ -493,11 +525,21 @@ struct sFixedGpuPipelines : public ImplRC<iFixedGpuPipelines> {
   iGpuFunction* __stdcall GetFixedGpuFuncPixel(
     ain<sMaterialDesc> aMatDesc) const niImpl
   {
-    if (aMatDesc.mFlags & eMaterialFlags_Transparent) {
-      return _pixelFuncTexAlphaTest;
+    if (aMatDesc.mFlags & eMaterialFlags_NoLighting) {
+      if (aMatDesc.mFlags & eMaterialFlags_Transparent) {
+        return _pixelFuncTexAlphaTest;
+      }
+      else {
+        return _pixelFuncTex;
+      }
     }
     else {
-      return _pixelFuncTex;
+      if (aMatDesc.mFlags & eMaterialFlags_Transparent) {
+        return _pixelFuncLitTexAlphaTest;
+      }
+      else {
+        return _pixelFuncLitTex;
+      }
     }
   }
 

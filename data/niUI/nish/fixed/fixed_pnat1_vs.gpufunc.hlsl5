@@ -1,0 +1,73 @@
+struct niUIGpuFuncs_FixedUniforms
+{
+    row_major float4x4 mtxWVP;
+    row_major float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+cbuffer UBO_niUIGpuFuncs_FixedUniforms : register(b0, space0)
+{
+    niUIGpuFuncs_FixedUniforms IN_1_aUniforms_v : packoffset(c0);
+};
+
+
+static float4 gl_Position;
+static float3 IN_0_aInput_position;
+static float3 IN_3_aInput_normal;
+static float4 IN_4_aInput_color;
+static float2 IN_5_aInput_tex0;
+static float3 OUT_3_rval_normal;
+static float4 OUT_1_rval_color;
+static float2 OUT_2_rval_tex0;
+
+struct SPIRV_Cross_Input
+{
+    float3 IN_0_aInput_position : TEXCOORD0;
+    float3 IN_3_aInput_normal : TEXCOORD3;
+    float4 IN_4_aInput_color : TEXCOORD4;
+    float2 IN_5_aInput_tex0 : TEXCOORD5;
+};
+
+struct SPIRV_Cross_Output
+{
+    float4 OUT_1_rval_color : TEXCOORD1;
+    float2 OUT_2_rval_tex0 : TEXCOORD2;
+    float3 OUT_3_rval_normal : TEXCOORD3;
+    float4 gl_Position : SV_Position;
+};
+
+void vert_main()
+{
+    niUIGpuFuncs_FixedUniforms _134;
+    _134.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _134.mtxW = IN_1_aUniforms_v.mtxW;
+    _134.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _134.padding0 = IN_1_aUniforms_v.padding0;
+    _134.padding1 = IN_1_aUniforms_v.padding1;
+    _134.padding2 = IN_1_aUniforms_v.padding2;
+    _134.materialColor = IN_1_aUniforms_v.materialColor;
+    gl_Position = mul(float4(IN_0_aInput_position, 1.0f), _134.mtxWVP);
+    OUT_3_rval_normal = normalize(mul(float4(IN_3_aInput_normal, 0.0f), _134.mtxW).xyz);
+    OUT_1_rval_color = IN_4_aInput_color * _134.materialColor;
+    OUT_2_rval_tex0 = IN_5_aInput_tex0;
+    gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
+}
+
+SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
+{
+    IN_0_aInput_position = stage_input.IN_0_aInput_position;
+    IN_3_aInput_normal = stage_input.IN_3_aInput_normal;
+    IN_4_aInput_color = stage_input.IN_4_aInput_color;
+    IN_5_aInput_tex0 = stage_input.IN_5_aInput_tex0;
+    vert_main();
+    SPIRV_Cross_Output stage_output;
+    stage_output.gl_Position = gl_Position;
+    stage_output.OUT_3_rval_normal = OUT_3_rval_normal;
+    stage_output.OUT_1_rval_color = OUT_1_rval_color;
+    stage_output.OUT_2_rval_tex0 = OUT_2_rval_tex0;
+    return stage_output;
+}

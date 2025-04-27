@@ -11,22 +11,30 @@ struct nish_std_VertexPA {
 // Type: VertexOutput
 struct nish_std_VertexOutput {
   vec4 position;
+  vec3 normal;
   vec4 color;
   vec2 tex0;
 };
 // TypeStaticFwd: Vec2
 vec2 vec2_Zero;
+// TypeStaticFwd: Vec3
+vec3 vec3_YAxis;
 // TypeMethFwd: VertexOutput
-nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec4 a_color, vec2 a_tex0);
+nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec3 a_normal, vec4 a_color, vec2 a_tex0);
 // FunctionFwd: nish:std
 void vec2_static_initialize() {
   // TypeStatic: Vec2
   vec2_Zero = vec2(0.0,0.0);
 }
+void vec3_static_initialize() {
+  // TypeStatic: Vec3
+  vec3_YAxis = vec3(0.0,1.0,0.0);
+}
 // TypeMeth: VertexOutput
-nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec4 a_color, vec2 a_tex0) {
+nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec3 a_normal, vec4 a_color, vec2 a_tex0) {
   nish_std_VertexOutput t;
   t.position = a_position;
+  t.normal = a_normal;
   t.color = a_color;
   t.tex0 = a_tex0;
   return t;
@@ -35,6 +43,7 @@ nish_std_VertexOutput nish_std_VertexOutput_new(vec4 a_position, vec4 a_color, v
 // ModuleInitialize: nish_std
 void nish_std_initialize() {
   vec2_static_initialize();
+  vec3_static_initialize();
 }
 // MODULE END nish:std
 // DO IMPORTS END niUIGpuFuncs
@@ -50,9 +59,10 @@ nish_std_VertexOutput niUIGpuFuncs_fixed_clear_vs(nish_std_VertexPA aInput) {
   vec4 outPos = vec4(_tmp_1.x,_tmp_1.y,_tmp_1.z,1.0);
   vec4 outColor = aInput.color;
   vec4 _tmp_6 = outPos;
-  vec4 _tmp_7 = outColor;
-  vec2 _tmp_8 = vec2_Zero;
-  return nish_std_VertexOutput_new(_tmp_6, _tmp_7, _tmp_8);
+  vec3 _tmp_7 = vec3_YAxis;
+  vec4 _tmp_8 = outColor;
+  vec2 _tmp_9 = vec2_Zero;
+  return nish_std_VertexOutput_new(_tmp_6, _tmp_7, _tmp_8, _tmp_9);
 }
 // MODULE END niUIGpuFuncs
 
@@ -60,6 +70,7 @@ nish_std_VertexOutput niUIGpuFuncs_fixed_clear_vs(nish_std_VertexPA aInput) {
 layout(location = 0) in vec3 IN_0_aInput_position;
 layout(location = 4) in vec4 IN_4_aInput_color;
 // layout() in vec4 gl_Position;
+layout(location = 3) out vec3 OUT_3_rval_normal;
 layout(location = 1) out vec4 OUT_1_rval_color;
 layout(location = 2) out vec2 OUT_2_rval_tex0;
 void main(void) {
@@ -69,6 +80,7 @@ void main(void) {
   aInput.color = IN_4_aInput_color;
   nish_std_VertexOutput _rval_ = niUIGpuFuncs_fixed_clear_vs(aInput);
   gl_Position = _rval_.position;
+  OUT_3_rval_normal = _rval_.normal;
   OUT_1_rval_color = _rval_.color;
   OUT_2_rval_tex0 = _rval_.tex0;
 }

@@ -750,10 +750,14 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
       }
       cmdEncoder->SetPipeline(mptrLastPipeline);
 
-      niUIGpuFuncs_FixedUniforms fixedUniforms;
+      cmdEncoder->SetViewport(mptrContext->GetViewport());
+      cmdEncoder->SetScissorRect(mptrContext->GetScissorRect());
+
+      cmdEncoder->SetTexture(chBase.mTexture, 0);
+      cmdEncoder->SetSamplerState(chBase.mhSS, 0);
+
       {
-        cmdEncoder->SetTexture(chBase.mTexture, 0);
-        cmdEncoder->SetSamplerState(chBase.mhSS, 0);
+        niUIGpuFuncs_FixedUniforms fixedUniforms;
         if (matDesc.mFlags & eMaterialFlags_DiffuseModulate ||
             !chBase.mTexture.raw_ptr())
         {
@@ -763,14 +767,9 @@ class cCanvasGraphics : public ImplRC<iCanvas, eImplFlags_Default> {
           fixedUniforms.materialColor = sColor4f::White();
         }
         fixedUniforms.alphaRef = chOpacity.mColor.w;
-      }
-
-      cmdEncoder->SetViewport(mptrContext->GetViewport());
-      cmdEncoder->SetScissorRect(mptrContext->GetScissorRect());
-      {
-        sMatrixf mtxVP =
-          mptrContext->GetFixedStates()->GetViewProjectionMatrix();
-        fixedUniforms.mtxWVP = mStates.mMatrix * mtxVP;
+        fixedUniforms.mtxW = mStates.mMatrix;
+        fixedUniforms.mtxWVP = mStates.mMatrix *
+            mptrContext->GetFixedStates()->GetViewProjectionMatrix();
         cmdEncoder->StreamUniformBuffer((tPtr)&fixedUniforms,
                                         sizeof(fixedUniforms), 0);
       }

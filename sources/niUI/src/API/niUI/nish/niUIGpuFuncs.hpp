@@ -12,12 +12,11 @@ struct niUIGpuFuncs_FixedUniforms {
 
   // Constructor
   niUIGpuFuncs_FixedUniforms();
-  niUIGpuFuncs_FixedUniforms(ni::ain<ni::sMatrixf> a_mtxWVP,
-                             ni::ain<ni::tF32> a_alphaRef,
-                             ni::ain<ni::sVec4f> a_materialColor);
+  niUIGpuFuncs_FixedUniforms(ni::ain<ni::sMatrixf> a_mtxWVP, ni::ain<ni::sMatrixf> a_mtxW, ni::ain<ni::tF32> a_alphaRef, ni::ain<ni::sVec4f> a_materialColor);
 
   // Variables
   ni::sMatrixf mtxWVP;
+  ni::sMatrixf mtxW;
   ni::tF32 alphaRef;
   ni::tF32 padding0;
   ni::tF32 padding1;
@@ -30,12 +29,7 @@ struct niUIGpuFuncs_RayInstanceData {
 
   // Constructor
   niUIGpuFuncs_RayInstanceData();
-  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex,
-                               ni::ain<ni::tU32> a_vbIndex,
-                               ni::ain<ni::tU32> a_firstIndex,
-                               ni::ain<ni::tU32> a_baseVertexIndex,
-                               ni::ain<ni::tU32> a_texIndex,
-                               ni::ain<ni::tU32> a_materialColor);
+  niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_materialColor);
 
   // Variables
   ni::tU32 ibIndex;
@@ -51,11 +45,7 @@ struct niUIGpuFuncs_RayUniforms {
 
   // Constructor
   niUIGpuFuncs_RayUniforms();
-  niUIGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth,
-                           ni::ain<ni::tF32> a_rtHeight,
-                           ni::ain<ni::tF32> a_cameraFarClipPlane,
-                           ni::ain<ni::sMatrixf> a_cameraInvView,
-                           ni::ain<ni::sMatrixf> a_cameraInvViewProj);
+  niUIGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvViewProj);
 
   // Variables
   ni::tF32 rtWidth;
@@ -69,27 +59,24 @@ struct niUIGpuFuncs_RayUniforms {
 // FunctionFwd: niUIGpuFuncs
 
 // TypeMeth: FixedUniforms
-inline niUIGpuFuncs_FixedUniforms::niUIGpuFuncs_FixedUniforms()
-{
+inline niUIGpuFuncs_FixedUniforms::niUIGpuFuncs_FixedUniforms() {
   this->mtxWVP = ni::sMatrixf::Identity();
+  this->mtxW = ni::sMatrixf::Identity();
   this->alphaRef = (ni::tF32)0.1;
   this->padding0 = (ni::tF32)0.0;
   this->padding1 = (ni::tF32)0.0;
   this->padding2 = (ni::tF32)0.0;
   this->materialColor = ni::sVec4f::White();
 }
-inline niUIGpuFuncs_FixedUniforms::niUIGpuFuncs_FixedUniforms(
-  ni::ain<ni::sMatrixf> a_mtxWVP, ni::ain<ni::tF32> a_alphaRef,
-  ni::ain<ni::sVec4f> a_materialColor)
-{
+inline niUIGpuFuncs_FixedUniforms::niUIGpuFuncs_FixedUniforms(ni::ain<ni::sMatrixf> a_mtxWVP, ni::ain<ni::sMatrixf> a_mtxW, ni::ain<ni::tF32> a_alphaRef, ni::ain<ni::sVec4f> a_materialColor) {
   this->mtxWVP = a_mtxWVP;
+  this->mtxW = a_mtxW;
   this->alphaRef = a_alphaRef;
   this->materialColor = a_materialColor;
 }
 
 // TypeMeth: RayInstanceData
-inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData()
-{
+inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData() {
   this->ibIndex = 0;
   this->vbIndex = 0;
   this->firstIndex = 0;
@@ -97,11 +84,7 @@ inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData()
   this->texIndex = 0;
   this->materialColor = 4294967295;
 }
-inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(
-  ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex,
-  ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex,
-  ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_materialColor)
-{
+inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(ni::ain<ni::tU32> a_ibIndex, ni::ain<ni::tU32> a_vbIndex, ni::ain<ni::tU32> a_firstIndex, ni::ain<ni::tU32> a_baseVertexIndex, ni::ain<ni::tU32> a_texIndex, ni::ain<ni::tU32> a_materialColor) {
   this->ibIndex = a_ibIndex;
   this->vbIndex = a_vbIndex;
   this->firstIndex = a_firstIndex;
@@ -111,8 +94,7 @@ inline niUIGpuFuncs_RayInstanceData::niUIGpuFuncs_RayInstanceData(
 }
 
 // TypeMeth: RayUniforms
-inline niUIGpuFuncs_RayUniforms::niUIGpuFuncs_RayUniforms()
-{
+inline niUIGpuFuncs_RayUniforms::niUIGpuFuncs_RayUniforms() {
   this->rtWidth = (ni::tF32)0.0;
   this->rtHeight = (ni::tF32)0.0;
   this->cameraFarClipPlane = (ni::tF32)10000.0;
@@ -120,11 +102,7 @@ inline niUIGpuFuncs_RayUniforms::niUIGpuFuncs_RayUniforms()
   this->cameraInvView = ni::sMatrixf::Identity();
   this->cameraInvViewProj = ni::sMatrixf::Identity();
 }
-inline niUIGpuFuncs_RayUniforms::niUIGpuFuncs_RayUniforms(
-  ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight,
-  ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView,
-  ni::ain<ni::sMatrixf> a_cameraInvViewProj)
-{
+inline niUIGpuFuncs_RayUniforms::niUIGpuFuncs_RayUniforms(ni::ain<ni::tF32> a_rtWidth, ni::ain<ni::tF32> a_rtHeight, ni::ain<ni::tF32> a_cameraFarClipPlane, ni::ain<ni::sMatrixf> a_cameraInvView, ni::ain<ni::sMatrixf> a_cameraInvViewProj) {
   this->rtWidth = a_rtWidth;
   this->rtHeight = a_rtHeight;
   this->cameraFarClipPlane = a_cameraFarClipPlane;

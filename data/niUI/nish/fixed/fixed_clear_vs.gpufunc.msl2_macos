@@ -7,6 +7,7 @@ struct main0_out
 {
     float4 OUT_1_rval_color [[user(locn1)]];
     float2 OUT_2_rval_tex0 [[user(locn2)]];
+    float3 OUT_3_rval_normal [[user(locn3)]];
     float4 gl_Position [[position]];
 };
 
@@ -20,6 +21,7 @@ vertex main0_out main0(main0_in in [[stage_in]])
 {
     main0_out out = {};
     out.gl_Position = float4(in.IN_0_aInput_position, 1.0);
+    out.OUT_3_rval_normal = float3(0.0, 1.0, 0.0);
     out.OUT_1_rval_color = in.IN_4_aInput_color;
     out.OUT_2_rval_tex0 = float2(0.0);
     return out;

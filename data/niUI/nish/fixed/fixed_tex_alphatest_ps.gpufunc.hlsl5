@@ -1,6 +1,7 @@
 struct niUIGpuFuncs_FixedUniforms
 {
     row_major float4x4 mtxWVP;
+    row_major float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -33,19 +34,20 @@ struct SPIRV_Cross_Output
 
 void frag_main()
 {
-    niUIGpuFuncs_FixedUniforms _106;
-    _106.mtxWVP = IN_1_aUniforms_v.mtxWVP;
-    _106.alphaRef = IN_1_aUniforms_v.alphaRef;
-    _106.padding0 = IN_1_aUniforms_v.padding0;
-    _106.padding1 = IN_1_aUniforms_v.padding1;
-    _106.padding2 = IN_1_aUniforms_v.padding2;
-    _106.materialColor = IN_1_aUniforms_v.materialColor;
-    float4 _131 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
-    if (_131.w < _106.alphaRef)
+    niUIGpuFuncs_FixedUniforms _113;
+    _113.mtxWVP = IN_1_aUniforms_v.mtxWVP;
+    _113.mtxW = IN_1_aUniforms_v.mtxW;
+    _113.alphaRef = IN_1_aUniforms_v.alphaRef;
+    _113.padding0 = IN_1_aUniforms_v.padding0;
+    _113.padding1 = IN_1_aUniforms_v.padding1;
+    _113.padding2 = IN_1_aUniforms_v.padding2;
+    _113.materialColor = IN_1_aUniforms_v.materialColor;
+    float4 _138 = IN_1_aTexture.Sample(IN_1_aSS, IN_2_aInput_tex0);
+    if (_138.w < _113.alphaRef)
     {
         discard;
     }
-    OUT_0_rval_color = _131 * IN_1_aInput_color;
+    OUT_0_rval_color = _138 * IN_1_aInput_color;
 }
 
 SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)

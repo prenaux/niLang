@@ -1,0 +1,64 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct niUIGpuFuncs_FixedUniforms
+{
+    float4x4 mtxWVP;
+    float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct niUIGpuFuncs_FixedUniforms_1
+{
+    float4x4 mtxWVP;
+    float4x4 mtxW;
+    float alphaRef;
+    float padding0;
+    float padding1;
+    float padding2;
+    float4 materialColor;
+};
+
+struct UBO_niUIGpuFuncs_FixedUniforms
+{
+    niUIGpuFuncs_FixedUniforms_1 v;
+};
+
+struct main0_out
+{
+    float4 OUT_1_rval_color [[user(locn1)]];
+    float2 OUT_2_rval_tex0 [[user(locn2)]];
+    float3 OUT_3_rval_normal [[user(locn3)]];
+    float4 gl_Position [[position]];
+};
+
+struct main0_in
+{
+    float3 IN_0_aInput_position [[attribute(0)]];
+    float3 IN_3_aInput_normal [[attribute(3)]];
+};
+
+vertex main0_out main0(main0_in in [[stage_in]], constant UBO_niUIGpuFuncs_FixedUniforms& IN_1_aUniforms [[buffer(0)]])
+{
+    main0_out out = {};
+    niUIGpuFuncs_FixedUniforms _131;
+    _131.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _131.mtxW = IN_1_aUniforms.v.mtxW;
+    _131.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _131.padding0 = IN_1_aUniforms.v.padding0;
+    _131.padding1 = IN_1_aUniforms.v.padding1;
+    _131.padding2 = IN_1_aUniforms.v.padding2;
+    _131.materialColor = IN_1_aUniforms.v.materialColor;
+    out.gl_Position = _131.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
+    out.OUT_3_rval_normal = fast::normalize((_131.mtxW * float4(in.IN_3_aInput_normal, 0.0)).xyz);
+    out.OUT_1_rval_color = _131.materialColor;
+    out.OUT_2_rval_tex0 = float2(0.0);
+    return out;
+}
+

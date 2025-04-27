@@ -6,6 +6,7 @@ using namespace metal;
 struct niUIGpuFuncs_FixedUniforms
 {
     float4x4 mtxWVP;
+    float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -16,6 +17,7 @@ struct niUIGpuFuncs_FixedUniforms
 struct niUIGpuFuncs_FixedUniforms_1
 {
     float4x4 mtxWVP;
+    float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -32,6 +34,7 @@ struct main0_out
 {
     float4 OUT_1_rval_color [[user(locn1)]];
     float2 OUT_2_rval_tex0 [[user(locn2)]];
+    float3 OUT_3_rval_normal [[user(locn3)]];
     float4 gl_Position [[position]];
 };
 
@@ -43,15 +46,17 @@ struct main0_in
 vertex main0_out main0(main0_in in [[stage_in]], constant UBO_niUIGpuFuncs_FixedUniforms& IN_1_aUniforms [[buffer(0)]])
 {
     main0_out out = {};
-    niUIGpuFuncs_FixedUniforms _106;
-    _106.mtxWVP = IN_1_aUniforms.v.mtxWVP;
-    _106.alphaRef = IN_1_aUniforms.v.alphaRef;
-    _106.padding0 = IN_1_aUniforms.v.padding0;
-    _106.padding1 = IN_1_aUniforms.v.padding1;
-    _106.padding2 = IN_1_aUniforms.v.padding2;
-    _106.materialColor = IN_1_aUniforms.v.materialColor;
-    out.gl_Position = _106.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
-    out.OUT_1_rval_color = _106.materialColor;
+    niUIGpuFuncs_FixedUniforms _120;
+    _120.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _120.mtxW = IN_1_aUniforms.v.mtxW;
+    _120.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _120.padding0 = IN_1_aUniforms.v.padding0;
+    _120.padding1 = IN_1_aUniforms.v.padding1;
+    _120.padding2 = IN_1_aUniforms.v.padding2;
+    _120.materialColor = IN_1_aUniforms.v.materialColor;
+    out.gl_Position = _120.mtxWVP * float4(in.IN_0_aInput_position, 1.0);
+    out.OUT_3_rval_normal = float3(0.0, 1.0, 0.0);
+    out.OUT_1_rval_color = _120.materialColor;
     out.OUT_2_rval_tex0 = float2(0.0);
     return out;
 }

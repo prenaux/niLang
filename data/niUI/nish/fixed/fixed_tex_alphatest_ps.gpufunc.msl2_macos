@@ -6,6 +6,7 @@ using namespace metal;
 struct niUIGpuFuncs_FixedUniforms
 {
     float4x4 mtxWVP;
+    float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -16,6 +17,7 @@ struct niUIGpuFuncs_FixedUniforms
 struct niUIGpuFuncs_FixedUniforms_1
 {
     float4x4 mtxWVP;
+    float4x4 mtxW;
     float alphaRef;
     float padding0;
     float padding1;
@@ -42,19 +44,20 @@ struct main0_in
 fragment main0_out main0(main0_in in [[stage_in]], constant UBO_niUIGpuFuncs_FixedUniforms& IN_1_aUniforms [[buffer(0)]], texture2d<float> IN_1_aTexture [[texture(0)]], sampler IN_1_aSS [[sampler(0)]])
 {
     main0_out out = {};
-    niUIGpuFuncs_FixedUniforms _106;
-    _106.mtxWVP = IN_1_aUniforms.v.mtxWVP;
-    _106.alphaRef = IN_1_aUniforms.v.alphaRef;
-    _106.padding0 = IN_1_aUniforms.v.padding0;
-    _106.padding1 = IN_1_aUniforms.v.padding1;
-    _106.padding2 = IN_1_aUniforms.v.padding2;
-    _106.materialColor = IN_1_aUniforms.v.materialColor;
-    float4 _131 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
-    if (_131.w < _106.alphaRef)
+    niUIGpuFuncs_FixedUniforms _113;
+    _113.mtxWVP = IN_1_aUniforms.v.mtxWVP;
+    _113.mtxW = IN_1_aUniforms.v.mtxW;
+    _113.alphaRef = IN_1_aUniforms.v.alphaRef;
+    _113.padding0 = IN_1_aUniforms.v.padding0;
+    _113.padding1 = IN_1_aUniforms.v.padding1;
+    _113.padding2 = IN_1_aUniforms.v.padding2;
+    _113.materialColor = IN_1_aUniforms.v.materialColor;
+    float4 _138 = IN_1_aTexture.sample(IN_1_aSS, in.IN_2_aInput_tex0);
+    if (_138.w < _113.alphaRef)
     {
         discard_fragment();
     }
-    out.OUT_0_rval_color = _131 * in.IN_1_aInput_color;
+    out.OUT_0_rval_color = _138 * in.IN_1_aInput_color;
     return out;
 }
 

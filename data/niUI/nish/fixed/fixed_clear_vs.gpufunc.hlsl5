@@ -1,6 +1,7 @@
 static float4 gl_Position;
 static float3 IN_0_aInput_position;
 static float4 IN_4_aInput_color;
+static float3 OUT_3_rval_normal;
 static float4 OUT_1_rval_color;
 static float2 OUT_2_rval_tex0;
 
@@ -14,12 +15,14 @@ struct SPIRV_Cross_Output
 {
     float4 OUT_1_rval_color : TEXCOORD1;
     float2 OUT_2_rval_tex0 : TEXCOORD2;
+    float3 OUT_3_rval_normal : TEXCOORD3;
     float4 gl_Position : SV_Position;
 };
 
 void vert_main()
 {
     gl_Position = float4(IN_0_aInput_position, 1.0f);
+    OUT_3_rval_normal = float3(0.0f, 1.0f, 0.0f);
     OUT_1_rval_color = IN_4_aInput_color;
     OUT_2_rval_tex0 = 0.0f.xx;
     gl_Position.z = (gl_Position.z + gl_Position.w) * 0.5;
@@ -32,6 +35,7 @@ SPIRV_Cross_Output main(SPIRV_Cross_Input stage_input)
     vert_main();
     SPIRV_Cross_Output stage_output;
     stage_output.gl_Position = gl_Position;
+    stage_output.OUT_3_rval_normal = OUT_3_rval_normal;
     stage_output.OUT_1_rval_color = OUT_1_rval_color;
     stage_output.OUT_2_rval_tex0 = OUT_2_rval_tex0;
     return stage_output;

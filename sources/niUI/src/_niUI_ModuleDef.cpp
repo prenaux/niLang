@@ -40146,6 +40146,7 @@ static const ni::sEnumValueDef Enum_eWidgetTreeCmd_Values[] = {
 	{ "SecondaryUnselected", ni::eWidgetTreeCmd_SecondaryUnselected },
 	{ "SetAttributes", ni::eWidgetTreeCmd_SetAttributes },
 	{ "SetName", ni::eWidgetTreeCmd_SetName },
+	{ "ExecuteAttribute", ni::eWidgetTreeCmd_ExecuteAttribute },
 };
 static const ni::sEnumDef Enum_eWidgetTreeCmd = {
 	"eWidgetTreeCmd",

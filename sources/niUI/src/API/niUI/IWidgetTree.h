@@ -64,6 +64,10 @@ enum eWidgetTreeCmd {
   //! \param A iWidgetTreeNode
   //! \param B the previous attributes
   eWidgetTreeCmd_SetName = 7,
+  //! A tree node's attribute has been double clicked.
+  //! \param A iWidgetTreeNode
+  //! \param B the flag of the attribute double clicked.
+  eWidgetTreeCmd_ExecuteAttribute = 8,
   //! \internal
   eWidgetTreeCmd_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 };

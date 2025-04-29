@@ -36881,6 +36881,12 @@
 					<params text="B the previous attributes "/>
 				</comments>
 			</value>
+			<value name="eWidgetTreeCmd_ExecuteAttribute" value="8">
+				<comments desc="A tree node&apos;s attribute has been double clicked. ">
+					<params text="A iWidgetTreeNode "/>
+					<params text="B the flag of the attribute double clicked. "/>
+				</comments>
+			</value>
 		</enum>
 		<enum name="eWidgetTreeNodeFlags">
 			<comments desc="Widget tree node flags. "/>

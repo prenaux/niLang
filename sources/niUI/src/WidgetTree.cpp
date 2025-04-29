@@ -1806,8 +1806,8 @@ void cWidgetTree::_ProcessClick(tU32 anMsg, const sVec2f& avMousePos,
         _CheckAttrCollision(pNode, mnNumVisibleAttributes, _kvAttrSize,
                             mpWidget->GetClientSize().x, avMousePos);
       if (attrCollided != eInvalidHandle) {
+        const tU32 attrFlag = niBit(attrCollided);
         if (anMsg == eUIMessage_LeftClickDown) {
-          const tU32 attrFlag = niBit(attrCollided);
           tU32 attr = pNode->GetAttributes();
           if (attr & attrFlag) {
             niFlagOff(attr, attrFlag);
@@ -1819,6 +1819,9 @@ void cWidgetTree::_ProcessClick(tU32 anMsg, const sVec2f& avMousePos,
         }
         else if (anMsg == eUIMessage_RightClickDown) {
           _DoSelect(pNode, aModifier, eTrue);
+        }
+        if (abExecute) {
+          pNode->_Notify(eWidgetTreeCmd_ExecuteAttribute, attrFlag);
         }
         return;
       }

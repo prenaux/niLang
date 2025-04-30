@@ -798,6 +798,7 @@ iIndexArray* CreateFixedGpuIndexArray(iGraphicsDriverGpu* apGpuDriver,
     nullptr, knFixedGpuIndexSize * anNumIndices, eGpuBufferMemoryMode_Shared,
     eGpuBufferUsageFlags_Index | eGpuBufferUsageFlags_Storage |
       eGpuBufferUsageFlags_RayBuildInput);
+  niCheckIsOK(iaBuffer, nullptr);
   return niNew sFixedGpuIndexArray(iaBuffer, aPrimitiveType, aUsage,
                                    anNumIndices, anMaxVertexIndex);
 }

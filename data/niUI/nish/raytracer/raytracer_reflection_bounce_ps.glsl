@@ -636,7 +636,7 @@ float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
   float _tmp_3a;
   bool _tmp_4a = (factor > 0.1);
   if (_tmp_4a) {
-    _tmp_3a = min(pow(factor,1.5),1.0);
+    _tmp_3a = min(factor,1.0);
   }
   else {
     {

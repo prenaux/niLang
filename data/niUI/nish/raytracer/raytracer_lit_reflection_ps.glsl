@@ -539,7 +539,7 @@ float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
   float _tmp_P9;
   bool _tmp_Q9 = (factor > 0.1);
   if (_tmp_Q9) {
-    _tmp_P9 = min(pow(factor,1.5),1.0);
+    _tmp_P9 = min(factor,1.0);
   }
   else {
     {
@@ -551,9 +551,9 @@ float niUIGpuFuncs_GetReflectionFactorFromMaterialColor(vec4 aMatColor) {
 nish_std_PixelOutput niUIGpuFuncs_raytracer_lit_reflection_ps(nish_std_PixelInput aInput, niUIGpuFuncs_RayUniforms aUniforms, accelerationStructureEXT aAS, sampler aSS) {
   nish_std_RayDesc rayDesc = niUIGpuFuncs_MakeRayDesc(aInput,aUniforms);
   niUIGpuFuncs_TraceResult result = niUIGpuFuncs_TraceWithReflection(rayDesc,1,aUniforms,aAS,aSS);
-  vec3 _tmp_8a = result.accumulatedColor;
-  vec4 _tmp_6a = vec4(_tmp_8a.x,_tmp_8a.y,_tmp_8a.z,1.0);
-  return nish_std_PixelOutput_new(_tmp_6a);
+  vec3 _tmp_6a = result.accumulatedColor;
+  vec4 _tmp_4a = vec4(_tmp_6a.x,_tmp_6a.y,_tmp_6a.z,1.0);
+  return nish_std_PixelOutput_new(_tmp_4a);
 }
 
 // ModuleInitialize: niUIGpuFuncs

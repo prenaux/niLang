@@ -40,11 +40,20 @@ if (!::gUIContext) {
       // ::println("UPDATE PROGRESS: timeSinceLastUpdate:" timeSinceLastUpdate
       //   "mLastUpdate:" mLastUpdate)
       if (timeSinceLastUpdate > 0.25) {
-        ::gUIContext.Update(0.0);
-        ::gUIContext.Draw();
-        ::gUIContext.DrawCursor(::?gWindow);
-        ::gGraphicsContext.Display(0, ::Rect());
-        ::gLang.UpdateFrameTime(currentTimer);
+        //
+        // NOTE: Commented out as it creates various stability issues with
+        //       the new drivers, they dont like the somewhat reentrant
+        //       calls. The fact that a log can trigger this in the middle
+        //       of a context resize probably doesnt help. We should have a
+        //       proper "we're loading" state in niLang/niUI/Vlk and queue
+        //       runnable in the main exe instead.
+        //
+
+        // ::gUIContext.Update(0.0);
+        // ::gUIContext.Draw();
+        // ::gUIContext.DrawCursor(::?gWindow);
+        // ::gGraphicsContext.Display(0, ::Rect());
+        // ::gLang.UpdateFrameTime(currentTimer);
         //::println("UPDATE PROGRESS: Done.")
       }
       else {

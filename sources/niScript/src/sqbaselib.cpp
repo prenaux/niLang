@@ -11,6 +11,7 @@
 #include "ScriptObject.h"
 #include <niLang/Utils/Path.h>
 #include <niLang/Utils/MessageID.h>
+#include <niLang/Utils/UnitSnap.h>
 #include <niLang/IRegex.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -845,6 +846,22 @@ static int number_delegate_tochar(HSQUIRRELVM v)
   const tU32 c = toint(o);
   StrSetChar(buffer, c);
   v->Push(_H(buffer));
+  return 1;
+}
+
+static int number_unitsnap(HSQUIRRELVM v)
+{
+  SQObjectPtr& o = stack_get(v, 1);
+  switch (_sqtype(o)) {
+  case OT_INTEGER:
+    v->Push(_int(o));
+    break;
+  case OT_FLOAT: {
+    v->Push(UnitSnapi(_float(o)));
+    break;
+  }
+  default: v->Push(_null_); break;
+  }
   return 1;
 }
 
@@ -2738,6 +2755,8 @@ SQRegFunction SQSharedState::_number_default_delegate_funcz[] = {
     _HC(typestr_string) },
   { _A("tochar"), number_delegate_tochar, 1, _A("n"), _HC(typestr_string) },
   { _A("ToChar"), number_delegate_tochar, 1, _A("n"), _HC(typestr_string) },
+  { "unitsnap", number_unitsnap, 1, NULL, _HC(typestr_int) },
+  { "UnitSnap", number_unitsnap, 1, NULL, _HC(typestr_int) },
   { 0, 0 }
 };
 

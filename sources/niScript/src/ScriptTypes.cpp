@@ -8,6 +8,7 @@
   #include <niLang/Math/MathVec3.h>
   #include <niLang/Math/MathVec4.h>
   #include <niLang/Math/MathMatrix.h>
+  #include <niLang/Utils/UnitSnap.h>
   #include "API/niScript/IScriptVM.h"
   #include "API/niScript_ModuleDef.h"
   #include "ScriptVM.h"
@@ -1624,6 +1625,15 @@ int vec2f_constructor(HSQUIRRELVM v)
   return 1;
 }
 
+///////////////////////////////////////////////
+static int vec2f_unitsnap(HSQUIRRELVM v)
+{
+  sScriptTypeVec2f* pV = sqa_getud<sScriptTypeVec2f>(v, -1);
+  if (!pV) return SQ_ERROR;
+  sqa_pushvec2f(v, UnitSnapf(pV->_val));
+  return 1;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Vec3
 
@@ -1864,6 +1874,15 @@ int vec3f_constructor(HSQUIRRELVM v)
                top));
   }
   sqa_pushvec3f(v, val);
+  return 1;
+}
+
+///////////////////////////////////////////////
+static int vec3f_unitsnap(HSQUIRRELVM v)
+{
+  sScriptTypeVec3f* pV = sqa_getud<sScriptTypeVec3f>(v, -1);
+  if (!pV) return SQ_ERROR;
+  sqa_pushvec3f(v, UnitSnapf(pV->_val));
   return 1;
 }
 
@@ -2274,6 +2293,15 @@ int rect_constructor(HSQUIRRELVM v)
   if (SQ_FAILED(r))
     return r;
   sqa_pushvec4f(v, Vec4<tF32>(val.x, val.y, val.x + val.z, val.y + val.w));
+  return 1;
+}
+
+///////////////////////////////////////////////
+static int vec4f_unitsnap(HSQUIRRELVM v)
+{
+  sScriptTypeVec4f* pV = sqa_getud<sScriptTypeVec4f>(v, -1);
+  if (!pV) return SQ_ERROR;
+  sqa_pushvec4f(v, UnitSnapf(pV->_val));
   return 1;
 }
 
@@ -2751,6 +2779,8 @@ SQRegFunction SQSharedState::_vec2f_default_delegate_funcz[] = {
   { "TransformNormal", vecop_transform_normal<sVec2f>, 2, NULL, _HC(Vec2) },
   { "_modulo", mathop_binary<mathop_Mod>, 1, NULL, _HC(Vec2) },
   { "_unm", mathop_unary<mathop_Neg>, 1, NULL, _HC(Vec2) },
+  { "unitsnap", vec2f_unitsnap, 1, NULL, _HC(Vec2) },
+  { "UnitSnap", vec2f_unitsnap, 1, NULL, _HC(Vec2) },
   { 0, 0 }
 };
 
@@ -2791,6 +2821,8 @@ SQRegFunction SQSharedState::_vec3f_default_delegate_funcz[] = {
   { "_unm", mathop_unary<mathop_Neg>, 1, NULL, _HC(Vec3) },
   { "toint", vec3f_toint, 1, NULL, _HC(typestr_int) },
   { "ToInt", vec3f_toint, 1, NULL, _HC(typestr_int) },
+  { "unitsnap", vec3f_unitsnap, 1, NULL, _HC(Vec3) },
+  { "UnitSnap", vec3f_unitsnap, 1, NULL, _HC(Vec3) },
   { 0, 0 }
 };
 
@@ -2847,6 +2879,8 @@ SQRegFunction SQSharedState::_vec4f_default_delegate_funcz[] = {
     _HC(typestr_float) },
   { "frame_border", rect_frameBorder, 2, NULL, _HC(Vec4) },
   { "GetFrameBorder", rect_frameBorder, 2, NULL, _HC(Vec4) },
+  { "unitsnap", vec4f_unitsnap, 1, NULL, _HC(Vec4) },
+  { "UnitSnap", vec4f_unitsnap, 1, NULL, _HC(Vec4) },
   { 0, 0 }
 };
 

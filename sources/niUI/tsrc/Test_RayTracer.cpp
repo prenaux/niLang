@@ -462,8 +462,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     drawOp->SetVertexArray(g->GetVertexArray());
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
-    drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
-    drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
+    drawOp->GetLocalBoundingVolume()->SetCenterSize(
+      sVec3f::Zero(), Vec3f(afSize, afSize, afSize));
     drawOp->SetMatrix(MatrixTranslation(avCenter));
     _geoms.emplace_back(sGeometry(drawOp));
     return eTrue;
@@ -490,8 +490,8 @@ struct RayTracerBase : public ni::cWidgetSinkImpl<> {
     drawOp->SetVertexArray(g->GetVertexArray());
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
-    drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
-    drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
+    drawOp->GetLocalBoundingVolume()->SetCenterSize(
+      sVec3f::Zero(), Vec3f(afSize, afSize, afSize));
     drawOp->SetMatrix(MatrixRotationY(aRot.y) * MatrixRotationX(aRot.x) *
                       MatrixTranslation(avCenter));
     _geoms.emplace_back(sGeometry(drawOp));

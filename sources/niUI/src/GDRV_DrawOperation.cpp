@@ -99,8 +99,7 @@ cDrawOperation::cDrawOperation()
   mFlags = 0;
   mPrimitiveType = eGraphicsPrimitiveType_TriangleList;
   mptrLocalBV = niNew cBoundingVolumeAABB();
-  mptrLocalBV->SetMin(-sVec3f::One());
-  mptrLocalBV->SetMax(+sVec3f::One());
+  mptrLocalBV->SetMinMax(-sVec3f::One(), +sVec3f::One());
   mptrWorldBV = mptrLocalBV->Clone();
 }
 
@@ -231,8 +230,7 @@ void __stdcall cDrawOperation::SetLocalBoundingVolume(iBoundingVolume* apBV)
   mptrLocalBV = apBV;
   if (!mptrLocalBV.IsOK()) {
     mptrLocalBV = niNew cBoundingVolumeAABB();
-    mptrLocalBV->SetCenter(sVec3f::Zero());
-    mptrLocalBV->SetSize(sVec3f::One());
+    mptrLocalBV->SetCenterSize(sVec3f::Zero(), sVec3f::One());
   }
   if (!mptrWorldBV.IsOK()) {
     mptrWorldBV = mptrLocalBV->Clone();

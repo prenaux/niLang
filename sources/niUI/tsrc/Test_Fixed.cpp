@@ -361,8 +361,8 @@ struct FixedBase : public ni::cWidgetSinkImpl<> {
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
     sMatrixf mtx;
-    drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
-    drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
+    drawOp->GetLocalBoundingVolume()->SetCenterSize(
+      sVec3f::Zero(), Vec3f(afSize, afSize, afSize));
     drawOp->SetMatrix(MatrixTranslation(mtx, avCenter));
     _drawOpSet->Insert(drawOp);
     return eTrue;
@@ -389,8 +389,8 @@ struct FixedBase : public ni::cWidgetSinkImpl<> {
     drawOp->SetIndexArray(g->GetIndexArray());
     drawOp->SetMaterial(mat);
     sMatrixf mtx;
-    drawOp->GetLocalBoundingVolume()->SetCenter(sVec3f::Zero());
-    drawOp->GetLocalBoundingVolume()->SetRadius(afSize);
+    drawOp->GetLocalBoundingVolume()->SetCenterSize(
+      sVec3f::Zero(), Vec3f(afSize, afSize, afSize));
     drawOp->SetMatrix(MatrixTranslation(mtx, avCenter));
     _drawOpSet->Insert(drawOp);
     return eTrue;

@@ -3131,7 +3131,7 @@
 				property_name2="center"
 				property_name="center">
 				<comments desc="Set the center. ">
-					<remark text="Deprecated, use SetCenterSize|SetCenterExtents. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
@@ -3160,7 +3160,7 @@
 				property_name2="radius"
 				property_name="radius">
 				<comments desc="Set the radius. ">
-					<remark text="Deprecated, use SetCenterRadius. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
@@ -3189,7 +3189,7 @@
 				property_name2="extents"
 				property_name="extents">
 				<comments desc="Set the extents. ">
-					<remark text="Deprecated, use SetCenterExtents. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
@@ -3218,7 +3218,7 @@
 				property_name2="size"
 				property_name="size">
 				<comments desc="Set the size. ">
-					<remark text="Deprecated, use SetCenterSize. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
@@ -3247,7 +3247,7 @@
 				property_name2="min"
 				property_name="min">
 				<comments desc="Set the minimum value. ">
-					<remark text="Deprecated, use SetMinMax. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
@@ -3276,7 +3276,7 @@
 				property_name2="max"
 				property_name="max">
 				<comments desc="Set the maximum value. ">
-					<remark text="Deprecated, use SetMinMax. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+					<remark text="Deprecated because unsafe. When either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
 				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter

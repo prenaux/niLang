@@ -1730,6 +1730,7 @@
     if (tokens.len() < 7)
       parserError(startLine,"Invalid method declaration.")
 
+    local inAttribute = 0
     local retType = ""
     local i = 1
     for ( ; i < tokens.len(); ++i) {
@@ -1739,6 +1740,21 @@
           v == "niCall" ||
           v == "niDelegateCall")
         break;
+
+      if (v == "niDeprecated") {
+        continue;
+      }
+      else if (v == "[" || v == "(") {
+        ++inAttribute;
+      }
+      else if (v == "]" || v == ")") {
+        ++inAttribute;
+      }
+
+      if (inAttribute > 0) {
+        continue;
+      }
+
       retType += v
       if (v != ":" && i+1 < tokens.len() &&
           tokens[i+1] != ":" &&

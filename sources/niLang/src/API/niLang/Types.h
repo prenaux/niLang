@@ -996,11 +996,11 @@ __forceinline bool IsNullPtr(const T* p)
 #ifndef niDeprecated
   #if defined(__cplusplus) && (__cplusplus >= 201402L)
     #define niDeprecated(since, replacement) \
-      [[deprecated("Since " #since "; use " #replacement)]]
+      [[deprecated("Deprecated since " #since "; use " #replacement)]]
   #elif defined(__GNUC__) || defined(__clang__)
     #define niDeprecated(since, replacement) __attribute__((deprecated))
   #elif defined(_MSC_VER)
-    #define niDeprecated(since, replacement) __declspec(deprecated)
+    #define niDeprecated(since, replacement) __declspec(deprecated("Deprecated since " #since "; use " #replacement))
   #else
     #define niDeprecated(since, replacement)
   #endif

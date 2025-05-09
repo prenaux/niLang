@@ -1742,6 +1742,29 @@
         break;
 
       if (v == "niDeprecated") {
+        // Parse niDeprecated(date, "alternative")
+        if (i+4 >= tokens.len()) {
+          parserError(startLine, "Invalid niDeprecated declaration - missing date and alternative parameters")
+        }
+        if (tokens[i+1] != "(") {
+          parserError(startLine, "Invalid niDeprecated declaration - missing opening parenthesis")
+        }
+        local date = tokens[i+2]
+        if (tokens[i+3] != ",") {
+          parserError(startLine, "Invalid niDeprecated declaration - missing comma between date and alternative")
+        }
+        if (tokens[i+4].startswith("\"")) {
+          local alt = tokens[i+4]
+          if (!alt.endswith("\"")) {
+            parserError(startLine, "Invalid niDeprecated declaration - unclosed alternative string")
+          }
+          alt = alt.slice(1,-1) // Remove quotes
+          attributes.Add({ name = "deprecated", value = date + "," + alt })
+          i += 5 // Skip past the closing parenthesis
+        }
+        else {
+          parserError(startLine, "Invalid niDeprecated declaration - alternative must be a string")
+        }
         continue;
       }
       else if (v == "[" || v == "(") {

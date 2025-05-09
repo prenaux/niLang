@@ -2307,6 +2307,7 @@ typedef enum eTypeFlags {
   eTypeFlags_MethodSetter = 0x00100000,
   eTypeFlags_MethodGetter = 0x00200000,
   eTypeFlags_MethodStatic = 0x00400000,
+  eTypeFlags_MethodDeprecated = 0x00800000,
   eTypeFlags_ForceDWORD niMaybeUnused = 0xFFFFFFFF
 } eTypeFlags;
 

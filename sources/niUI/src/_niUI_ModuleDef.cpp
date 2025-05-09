@@ -1654,7 +1654,7 @@ static const ni::sParameterDef iBoundingVolume_SetCenter_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetCenter = {
   "SetCenter",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "tBool",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "tBool",
   1, iBoundingVolume_SetCenter_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetCenter)
@@ -1681,7 +1681,7 @@ static const ni::sParameterDef iBoundingVolume_SetRadius_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetRadius = {
   "SetRadius",
-  ni::eTypeFlags_MethodSetter|0|ni::eType_F32, NULL, "void",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eType_F32, NULL, "void",
   1, iBoundingVolume_SetRadius_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetRadius)
@@ -1708,7 +1708,7 @@ static const ni::sParameterDef iBoundingVolume_SetExtents_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetExtents = {
   "SetExtents",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
   1, iBoundingVolume_SetExtents_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetExtents)
@@ -1735,7 +1735,7 @@ static const ni::sParameterDef iBoundingVolume_SetSize_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetSize = {
   "SetSize",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
   1, iBoundingVolume_SetSize_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetSize)
@@ -1762,7 +1762,7 @@ static const ni::sParameterDef iBoundingVolume_SetMin_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetMin = {
   "SetMin",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
   1, iBoundingVolume_SetMin_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetMin)
@@ -1789,7 +1789,7 @@ static const ni::sParameterDef iBoundingVolume_SetMax_Parameters[1] = {
 }; 
 static const ni::sMethodDef iBoundingVolume_SetMax = {
   "SetMax",
-  ni::eTypeFlags_MethodSetter|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
+  ni::eTypeFlags_MethodSetter|ni::eTypeFlags_MethodDeprecated|0|ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "void",
   1, iBoundingVolume_SetMax_Parameters,
 #ifndef niConfig_NoXCALL
   XCALL_CIMPL(iBoundingVolume_SetMax)

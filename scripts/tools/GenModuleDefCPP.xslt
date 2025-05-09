@@ -674,6 +674,11 @@ static const ni::sEnumDef Enum_</xsl:text><xsl:value-of select="@name"/><xsl:tex
 		<xsl:if test="@optional='yes'">
 			<xsl:text>ni::eTypeFlags_MethodOptional|</xsl:text>
 		</xsl:if>
+
+		<xsl:if test="@deprecated != ''">
+			<xsl:text>ni::eTypeFlags_MethodDeprecated|</xsl:text>
+		</xsl:if>
+
 		<xsl:text>0|</xsl:text>
 
     <xsl:choose>

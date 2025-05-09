@@ -267,6 +267,9 @@
 			<value name="eTypeFlags_MethodStatic" value="0x00400000">
 				<comments desc=""/>
 			</value>
+			<value name="eTypeFlags_MethodDeprecated" value="0x00800000">
+				<comments desc=""/>
+			</value>
 		</enum>
 		<enum name="eType">
 			<comments desc="Base types enumeration. "/>

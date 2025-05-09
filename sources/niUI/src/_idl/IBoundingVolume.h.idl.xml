@@ -74,6 +74,7 @@
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
 			</method>
 			<method
+				deprecated="20250905,SetCenterSize|SetCenterExtents"
 				java_name="setCenter"
 				name="SetCenter"
 				num_parameters="1"
@@ -103,6 +104,7 @@
 				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
 			</method>
 			<method
+				deprecated="20250905,SetCenterRadius"
 				java_name="setRadius"
 				name="SetRadius"
 				num_parameters="1"
@@ -132,6 +134,7 @@
 				<return type="tF32" typec="tF32" typei="ni::eType_F32"/>
 			</method>
 			<method
+				deprecated="20250905,SetCenterExtents"
 				java_name="setExtents"
 				name="SetExtents"
 				num_parameters="1"
@@ -161,6 +164,7 @@
 				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
 			</method>
 			<method
+				deprecated="20250905,SetCenterSize"
 				java_name="setSize"
 				name="SetSize"
 				num_parameters="1"
@@ -190,6 +194,7 @@
 				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
 			</method>
 			<method
+				deprecated="20250905,SetMinMax"
 				java_name="setMin"
 				name="SetMin"
 				num_parameters="1"
@@ -219,6 +224,7 @@
 				<return type="sVec3f" typec="sVec3f" typei="ni::eType_Vec3f"/>
 			</method>
 			<method
+				deprecated="20250905,SetMinMax"
 				java_name="setMax"
 				name="SetMax"
 				num_parameters="1"

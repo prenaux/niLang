@@ -27505,6 +27505,7 @@ static const ni::sEnumValueDef Enum_eTypeFlags_Values[] = {
 	{ "MethodSetter", ni::eTypeFlags_MethodSetter },
 	{ "MethodGetter", ni::eTypeFlags_MethodGetter },
 	{ "MethodStatic", ni::eTypeFlags_MethodStatic },
+	{ "MethodDeprecated", ni::eTypeFlags_MethodDeprecated },
 };
 static const ni::sEnumDef Enum_eTypeFlags = {
 	"eTypeFlags",

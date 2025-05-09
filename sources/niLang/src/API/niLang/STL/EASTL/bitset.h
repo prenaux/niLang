@@ -1118,7 +1118,7 @@ inline typename BitsetBase<NW, WordType>::size_type BitsetBase<
 }
 
 #if EASTL_DISABLE_BITSET_ARRAYBOUNDS_WARNING
-EA_DISABLE_GCC_WARNING(-Warray - bounds)
+EA_DISABLE_GCC_WARNING(-Warray-bounds)
 #endif
 
 template <size_t NW, typename WordType>

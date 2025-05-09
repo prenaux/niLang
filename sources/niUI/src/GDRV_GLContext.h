@@ -33,6 +33,8 @@
     #define __TSGL_STATIC_CORE__
 
   #elif defined niIOS
+    #define GL_SILENCE_DEPRECATION
+
     #if defined ni64
       #define USE_GLES3
       #define USE_GL_BIND_VAO
@@ -143,6 +145,7 @@ using GLhandle = void*;
 
 //// niOSX ///////////////////////////////////////////////////////////////////////////
 #elif defined niOSX
+  #define GL_SILENCE_DEPRECATION
   #include <niLang/Platforms/OSX/osxgl.h>
 
   #include <OpenGL/gl.h>

@@ -100,10 +100,6 @@
   #define niPragmaMinTypeInfoOn
   #define niPragmaMinTypeInfoOff
 
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  #pragma clang diagnostic ignored "-Wstrict-prototypes"
-
   //////////////////////////////////////////////////////////////////////////////////////////////
   // Main - Entry point
   #define niConsoleMain() int main(int argc, const char** argv)

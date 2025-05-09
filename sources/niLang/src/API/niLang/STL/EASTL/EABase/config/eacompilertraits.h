@@ -2419,7 +2419,7 @@ struct EANonCopyable {
   #elif defined(EA_COMPILER_CLANG) && \
     (!defined(EA_PLATFORM_ANDROID) || (EA_COMPILER_VERSION >= 380))
     #define EA_OPTIMIZE_OFF()                       \
-      EA_DISABLE_CLANG_WARNING(-Wunknown - pragmas) \
+      EA_DISABLE_CLANG_WARNING(-Wunknown-pragmas) \
       _Pragma("clang optimize off") EA_RESTORE_CLANG_WARNING()
   #else
     #define EA_OPTIMIZE_OFF()
@@ -2437,7 +2437,7 @@ struct EANonCopyable {
   #elif defined(EA_COMPILER_CLANG) && \
     (!defined(EA_PLATFORM_ANDROID) || (EA_COMPILER_VERSION >= 380))
     #define EA_OPTIMIZE_ON()                        \
-      EA_DISABLE_CLANG_WARNING(-Wunknown - pragmas) \
+      EA_DISABLE_CLANG_WARNING(-Wunknown-pragmas) \
       _Pragma("clang optimize on") EA_RESTORE_CLANG_WARNING()
   #else
     #define EA_OPTIMIZE_ON()

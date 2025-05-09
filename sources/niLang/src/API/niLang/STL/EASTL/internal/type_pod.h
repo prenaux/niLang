@@ -249,7 +249,7 @@ struct has_trivial_constructor
   #define EASTL_TYPE_TRAIT_has_trivial_constructor_CONFORMANCE \
     1 // has_trivial_constructor is conforming.
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_trivial_constructor
     : public eastl::integral_constant<bool, __has_trivial_constructor(T) ||
@@ -326,7 +326,7 @@ struct has_trivial_copy
   #define EASTL_TYPE_TRAIT_has_trivial_copy_CONFORMANCE \
     1 // has_trivial_copy is conforming.
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_trivial_copy
     : public eastl::integral_constant<
@@ -398,7 +398,7 @@ struct has_trivial_assign
   #define EASTL_TYPE_TRAIT_has_trivial_assign_CONFORMANCE \
     1 // has_trivial_assign is conforming.
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_trivial_assign
     : public integral_constant<
@@ -465,7 +465,7 @@ struct has_trivial_destructor
   #define EASTL_TYPE_TRAIT_has_trivial_destructor_CONFORMANCE \
     1 // has_trivial_destructor is conforming.
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_trivial_destructor
     : public eastl::integral_constant<bool, __has_trivial_destructor(T) ||
@@ -550,7 +550,7 @@ struct has_trivial_relocate
   (defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_CLANG))
   #define EASTL_TYPE_TRAIT_has_nothrow_constructor_CONFORMANCE 1
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_nothrow_constructor
     : public eastl::integral_constant<bool, __has_nothrow_constructor(T)> {};
@@ -605,7 +605,7 @@ struct
   (defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_CLANG))
   #define EASTL_TYPE_TRAIT_has_nothrow_copy_CONFORMANCE 1
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_nothrow_copy
     : public eastl::integral_constant<bool, __has_nothrow_copy(T)> {};
@@ -659,7 +659,7 @@ struct
   (defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_CLANG))
   #define EASTL_TYPE_TRAIT_has_nothrow_assign_CONFORMANCE 1
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct has_nothrow_assign
     : public eastl::integral_constant<bool, __has_nothrow_assign(T)> {};
@@ -2178,7 +2178,7 @@ EA_CONSTEXPR bool is_destructible_v = is_destructible<T>::value;
   #define EASTL_TYPE_TRAIT_is_trivially_destructible_CONFORMANCE \
     EASTL_TYPE_TRAIT_is_destructible_CONFORMANCE
 
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - builtins)
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-builtins)
 template <typename T>
 struct
   is_trivially_destructible // Can't use just __has_trivial_destructor(T) because some compilers give it slightly different meaning, and are just plain broken, such as VC++'s __has_trivial_destructor, which says false for fundamental types.

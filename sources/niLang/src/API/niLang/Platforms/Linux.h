@@ -111,13 +111,6 @@
   #define niPragmaMinTypeInfoOn
   #define niPragmaMinTypeInfoOff
 
-  #ifdef niCLang
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    #pragma clang diagnostic ignored "-Wstrict-prototypes"
-    #pragma clang diagnostic ignored "-Wdeprecated-enum-enum-conversion"
-  #endif
-
   //////////////////////////////////////////////////////////////////////////////////////////////
   // Main - Entry point
   #define niConsoleMain() int main(int argc, const char** argv)

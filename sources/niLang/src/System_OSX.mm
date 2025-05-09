@@ -15,6 +15,8 @@
   // Needed for _NSGetProgname
   #include <crt_externs.h>
 
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-declarations);
+
 using namespace ni;
 
   #define OSX_SWITCH_INOUT_ON_FOCUS

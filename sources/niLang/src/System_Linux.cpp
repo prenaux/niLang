@@ -1617,8 +1617,8 @@ class cLinuxWindow : public ni::ImplRC<ni::iOSWindow, ni::eImplFlags_Default,
   {
     const KeyCode xkeycode = e->xkey.keycode;
 
-    EA_DISABLE_GCC_WARNING(-Wtautological - compare)
-    EA_DISABLE_CLANG_WARNING(-Wtautological - compare)
+    EA_DISABLE_GCC_WARNING(-Wtautological-compare)
+    EA_DISABLE_CLANG_WARNING(-Wtautological-compare)
     const eKey scode = ((xkeycode >= 0) && (xkeycode < 256))
                          ? mXKeyToScan[xkeycode]
                          : eKey_Unknown;

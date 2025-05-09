@@ -122,12 +122,6 @@
   #define niPragmaMinTypeInfoOn
   #define niPragmaMinTypeInfoOff
 
-  #ifdef niCLang
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    #pragma clang diagnostic ignored "-Wstrict-prototypes"
-  #endif
-
   #define NI_QNX_ATOMIC_INLINE static __inline__ __attribute__((always_inline))
 NI_QNX_ATOMIC_INLINE int ni_qnx_atomic_swap(int new_value, volatile int* ptr)
 {

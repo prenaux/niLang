@@ -102,10 +102,6 @@
   #define niPragmaMinTypeInfoOn
   #define niPragmaMinTypeInfoOff
 
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  #pragma clang diagnostic ignored "-Wstrict-prototypes"
-
   //////////////////////////////////////////////////////////////////////////////////////////////
   #include "Unix/UnixConfig.h"
 

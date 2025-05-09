@@ -156,11 +156,23 @@
 niCAssert(sizeof(SYNC_INT_TYPE) == sizeof(long));
 
   // Atomic, ARM, iOS
-  #elif defined TARGET_OS_IPHONE
+  #elif defined __APPLE__
     #include <libkern/OSAtomic.h>
+
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-declarations)
+static inline int32_t _InterlockedIncrement32(volatile int32_t* __theValue)
+{
+  return OSAtomicIncrement32(__theValue);
+}
+static inline int32_t _InterlockedDecrement32(volatile int32_t* __theValue)
+{
+  return OSAtomicDecrement32(__theValue);
+}
+EA_RESTORE_CLANG_WARNING()
+
     #define SYNC_INT_TYPE int32_t
-    #define SYNC_INCREMENT(addr) (OSAtomicIncrement32(addr))
-    #define SYNC_DECREMENT(addr) (OSAtomicDecrement32(addr))
+    #define SYNC_INCREMENT(addr) (_InterlockedIncrement32(addr))
+    #define SYNC_DECREMENT(addr) (_InterlockedDecrement32(addr))
     #define SYNC_WRITE(addr, v) (*(addr)) = (v)
     #define SYNC_READ(addr) (*addr)
 
@@ -993,18 +1005,17 @@ __forceinline bool IsNullPtr(const T* p)
   #define niGetIfOK(x) (niIsOK(x) ? (x) : (NULL))
 #endif
 
+// clang-format off
 #ifndef niDeprecated
-  #if defined(__cplusplus) && (__cplusplus >= 201402L)
-    #define niDeprecated(since, replacement) \
-      [[deprecated("Deprecated since " #since "; use " #replacement)]]
-  #elif defined(__GNUC__) || defined(__clang__)
-    #define niDeprecated(since, replacement) __attribute__((deprecated))
+  #if defined(__GNUC__) || defined(__clang__)
+    #define niDeprecated(since, replacement) __attribute__((deprecated("Deprecated since " #since "; use " #replacement)))
   #elif defined(_MSC_VER)
     #define niDeprecated(since, replacement) __declspec(deprecated("Deprecated since " #since "; use " #replacement))
   #else
     #define niDeprecated(since, replacement)
   #endif
 #endif // niDeprecated
+// clang-format on
 
 #ifndef niUnreachable
   #if defined niMSVC
@@ -1934,9 +1945,8 @@ inline To down_cast(From* f)
 { // so we only accept pointers
     #if defined _DEBUG && defined _CPPRTTI
       #ifdef niMSVC
-          // The try/catch allows to mix RTTI/non-RTTI build on MSVC...
-        #pragma warning(push)
-        #pragma warning(disable : 4530)
+  // The try/catch allows to mix RTTI/non-RTTI build on MSVC...
+  EA_DISABLE_VC_WARNING(4530)
   try
       #endif
   {
@@ -1950,7 +1960,7 @@ inline To down_cast(From* f)
   catch (...)
   {
   }
-        #pragma warning(pop)
+  EA_RESTORE_VC_WARNING()
       #endif
     #endif
   return static_cast<To>(f);

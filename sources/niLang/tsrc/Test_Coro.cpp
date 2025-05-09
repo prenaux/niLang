@@ -7,7 +7,7 @@
   #if (__has_include(<experimental/coroutine>) && defined(__clang__))
 
 // Don't complain about your own stupid, thanks...
-EA_DISABLE_CLANG_WARNING(-Wdeprecated - experimental - coroutine);
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-experimental-coroutine);
 
     #include <experimental/coroutine>
 namespace std_coro = std::experimental;

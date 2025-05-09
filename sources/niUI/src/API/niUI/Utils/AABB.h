@@ -664,7 +664,7 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
   {
     cAABBf::SetCenterExtents(GetCenter(), avExtends);
   }
-  sVec3f __stdcall GetExtents() const
+  sVec3f __stdcall GetExtents() const niImpl
   {
     return cAABBf::GetExtents();
   }

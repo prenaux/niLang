@@ -10,6 +10,10 @@
  * @{
  */
 
+EA_RESTORE_VC_WARNING();
+EA_RESTORE_GCC_WARNING();
+EA_RESTORE_CLANG_WARNING();
+
 #ifndef _DEBUG
 
   #ifdef niConfig_MinModuleDefSize

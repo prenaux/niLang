@@ -93,7 +93,7 @@ static cString _GetDeviceCaps(id<MTLDevice> aDevice)
              (tU64)aDevice.recommendedMaxWorkingSetSize);
   #endif
 
-  EA_DISABLE_CLANG_WARNING(-Wunguarded - availability - new);
+  EA_DISABLE_CLANG_WARNING(-Wunguarded-availability-new);
   r += niFmt("  supportsFamily:");
   if ([aDevice supportsFamily:MTLGPUFamilyMetal3]) {
     r += niFmt(" Metal3,");

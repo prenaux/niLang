@@ -820,8 +820,8 @@ struct hash<wstring_view> {
 // defined literals without a leading '_' as they are reserved
 // for standard libary usage.
 EA_DISABLE_VC_WARNING(4455)
-EA_DISABLE_CLANG_WARNING(-Wuser - defined - literals)
-EA_DISABLE_GCC_WARNING(-Wliteral - suffix)
+EA_DISABLE_CLANG_WARNING(-Wuser-defined-literals)
+EA_DISABLE_GCC_WARNING(-Wliteral-suffix)
 
 inline namespace literals {
 inline namespace string_view_literals {
@@ -849,7 +849,7 @@ EA_CONSTEXPR inline wstring_view operator"" sv(const wchar_t* str,
 // We've seen _sv trigger the following warning on clang:
 // identifier '_sv' is reserved because it starts with '_' at global scope [-Wreserved-identifier]
 // Temporarily disable the warning until we figure out why it thinks _sv is "at global scope".
-EA_DISABLE_CLANG_WARNING(-Wreserved - identifier)
+EA_DISABLE_CLANG_WARNING(-Wreserved-identifier)
 // Backwards compatibility.
 EA_CONSTEXPR inline string_view operator"" _sv(const char* str,
                                                size_t len) EA_NOEXCEPT

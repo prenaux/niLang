@@ -14,7 +14,7 @@
  * @{
  */
 
-EA_DISABLE_CLANG_WARNING(-Wc++ 23 - extensions);
+EA_DISABLE_CLANG_WARNING(-Wc++23-extensions);
 
 namespace ni {
 namespace vmbind {

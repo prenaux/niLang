@@ -12,6 +12,10 @@
 
 #include <niLang/Utils/ObjModelImpl.h>
 
+EA_DISABLE_VC_WARNING(4996);
+EA_DISABLE_GCC_WARNING(-Wdeprecated-declarations);
+EA_DISABLE_CLANG_WARNING(-Wdeprecated-declarations);
+
 #ifdef USE_NICRT
   #ifdef niMSVC
     #pragma niNote("## Using ni CRT")

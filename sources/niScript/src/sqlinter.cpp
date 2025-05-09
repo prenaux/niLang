@@ -665,6 +665,7 @@ _DEF_LINT(typeof_usage, IsWarning, None);
 _DEF_LINT(typeof_invalid, IsError, None);
 _DEF_LINT(param_decl, IsError, None);
 _DEF_LINT(foreach_usage, IsError, None);
+_DEF_LINT(deprecated, IsWarning, None);
 
 // Pedantic lints
 _DEF_LINT(implicit_this_getk, IsWarning, IsPedantic);
@@ -880,6 +881,7 @@ struct sLinter {
     _REG_LINT(typeof_invalid);
     _REG_LINT(param_decl);
     _REG_LINT(foreach_usage);
+    _REG_LINT(deprecated);
   }
 #undef _REG_LINT
 
@@ -975,6 +977,7 @@ struct sLinter {
     _E(typeof_invalid)
     _E(param_decl)
     _E(foreach_usage)
+    _E(deprecated)
     else {
       _LINTERNAL_WARNING(niFmt("__lint unknown lint kind '%s'.", aName));
       return eFalse;
@@ -1123,10 +1126,11 @@ struct sLinter {
 
   void RegisterBuiltinTypesAndFuncs(SQTable* table);
 
-  SQObjectPtr ResolveTypeUUID(const achar* aTypeName, const tUUID& aTypeUUID)
+  SQObjectPtr ResolveTypeUUID(ain<LintClosure> aClosure, const achar* aTypeName,
+                              const tUUID& aTypeUUID)
   {
     if (aTypeUUID == niGetInterfaceUUID(iHString)) {
-      return GetRegisteredTypeDef(_ss._typeStr_string);
+      return GetRegisteredTypeDef(aClosure, _ss._typeStr_string);
     }
     else {
       niLet idef = ni::GetLang()->GetInterfaceDefFromUUID(aTypeUUID);
@@ -1221,7 +1225,7 @@ struct sLinter {
     niLet doGetElement = [&](iHString* aEl) -> SQObjectPtr {
       SQObjectPtr key = aEl;
       SQObjectPtr dest;
-      if (!DoLintGet(curr, key, dest, _OPEXT_GET_RAW))
+      if (!DoLintGet(aClosure, curr, key, dest, _OPEXT_GET_RAW))
         return _null_;
       return dest;
     };
@@ -1277,13 +1281,14 @@ struct sLinter {
     return curr;
   }
 
-  SQObjectPtr GetRegisteredTypeDef(const SQObjectPtr& aType)
+  SQObjectPtr GetRegisteredTypeDef(ain<LintClosure> aClosure,
+                                   const SQObjectPtr& aType)
   {
     if (sq_isnull(aType))
       return _null_;
 
     SQObjectPtr typeDef;
-    if (LintGet(_typedefs, aType, typeDef, 0)) {
+    if (LintGet(aClosure, _typedefs, aType, typeDef, 0)) {
       return typeDef;
     }
 
@@ -1321,7 +1326,7 @@ struct sLinter {
     // Already registered types
     {
       SQObjectPtr foundType = _null_;
-      if (LintGet(_typedefs, aType, foundType, 0)) {
+      if (LintGet(aClosure, _typedefs, aType, foundType, 0)) {
         return foundType;
       }
     }
@@ -1339,7 +1344,8 @@ struct sLinter {
       }
       else {
         niLet idef = foundInterfaceDef.value();
-        resolvedType = this->ResolveTypeUUID(idef->maszName, *idef->mUUID);
+        resolvedType =
+          this->ResolveTypeUUID(aClosure, idef->maszName, *idef->mUUID);
       }
     }
     // Table types
@@ -1357,7 +1363,8 @@ struct sLinter {
     return resolvedType;
   }
 
-  SQObjectPtr ResolveMethodRetType(ain<sInterfaceDef> aInterfaceDef,
+  SQObjectPtr ResolveMethodRetType(ain<LintClosure> aClosure,
+                                   ain<sInterfaceDef> aInterfaceDef,
                                    ain<sMethodDef> aMethodDef)
   {
     SQObjectPtr retType;
@@ -1378,7 +1385,7 @@ struct sLinter {
 
     case eScriptType_IUnknown: {
       if (aMethodDef.mReturnTypeUUID) {
-        retType = ResolveTypeUUID(aMethodDef.mReturnTypeName,
+        retType = ResolveTypeUUID(aClosure, aMethodDef.mReturnTypeName,
                                   *aMethodDef.mReturnTypeUUID);
       }
       else {
@@ -1625,7 +1632,8 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceGetInSingleDef(ain<nn<const sInterfaceDef>> apIDef,
+  bool _InterfaceGetInSingleDef(ain<LintClosure> aClosure,
+                                ain<nn<const sInterfaceDef>> apIDef,
                                 const SQObjectPtr& key, SQObjectPtr& dest,
                                 int opExt)
   {
@@ -1646,7 +1654,9 @@ struct sLinter {
         niLet destUD = (sScriptTypePropertyDef*)_userdata(dest);
         niLet pdefGet = destUD->pGetMethodDef;
         if (pdefGet && pdefGet->mnNumParameters == 0) {
-          dest = ResolveMethodRetType(*destUD->pInterfaceDef, *pdefGet);
+          _CheckPropertyDeprecated(aClosure, *destUD->pInterfaceDef, *pdefGet);
+          dest =
+            ResolveMethodRetType(aClosure, *destUD->pInterfaceDef, *pdefGet);
         }
       }
       return true;
@@ -1655,7 +1665,8 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceGetInParents(ain<nn<const sInterfaceDef>> apIDef,
+  bool _InterfaceGetInParents(ain<LintClosure> aClosure,
+                              ain<nn<const sInterfaceDef>> apIDef,
                               const SQObjectPtr& key, SQObjectPtr& dest,
                               int opExt)
   {
@@ -1677,7 +1688,8 @@ struct sLinter {
       }
 
       // look in the current base
-      if (_InterfaceGetInSingleDef(as_nn(baseIDef), key, dest, opExt)) {
+      if (_InterfaceGetInSingleDef(aClosure, as_nn(baseIDef), key, dest, opExt))
+      {
         return true;
       }
       if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
@@ -1685,7 +1697,7 @@ struct sLinter {
       }
 
       // go in the bases of the base...
-      if (_InterfaceGetInParents(as_nn(baseIDef), key, dest, opExt)) {
+      if (_InterfaceGetInParents(aClosure, as_nn(baseIDef), key, dest, opExt)) {
         return true;
       }
       if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
@@ -1696,7 +1708,8 @@ struct sLinter {
     return false;
   }
 
-  bool _InterfaceDefGet(ain<nn<const sInterfaceDef>> apIDef,
+  bool _InterfaceDefGet(ain<LintClosure> aClosure,
+                        ain<nn<const sInterfaceDef>> apIDef,
                         const SQObjectPtr& key, SQObjectPtr& dest, int opExt)
   {
     if (_stringhval(key) == _HC(QueryInterface)) {
@@ -1706,7 +1719,7 @@ struct sLinter {
     dest = _null_;
 
     // look in the interface
-    if (_InterfaceGetInSingleDef(apIDef, key, dest, opExt)) {
+    if (_InterfaceGetInSingleDef(aClosure, apIDef, key, dest, opExt)) {
       return true;
     }
     if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
@@ -1714,7 +1727,7 @@ struct sLinter {
     }
 
     // go in the base interfaces...
-    if (_InterfaceGetInParents(apIDef, key, dest, opExt)) {
+    if (_InterfaceGetInParents(aClosure, apIDef, key, dest, opExt)) {
       return true;
     }
     if (sqa_getscriptobjtype(dest) == eScriptType_ErrorCode) {
@@ -1723,6 +1736,21 @@ struct sLinter {
 
     // look in iUnknown
     return _ScriptTypeDelegateGet(eScriptType_IUnknown, key, dest, opExt);
+  }
+
+  void _CheckPropertyDeprecated(ain<LintClosure> aClosure,
+                                ain<sInterfaceDef> aInterfaceDef,
+                                ain<sMethodDef> apdefGetterOrSetter)
+  {
+    niVar& aLinter = *this;
+    if (_LENABLED(deprecated) &&
+        niFlagIs(apdefGetterOrSetter.mReturnType, eTypeFlags_MethodDeprecated))
+    {
+      niLet& thisfunc = aClosure._func;
+      _LINT_(deprecated, Vec2i(thisfunc->_sourceline, 0),
+             niFmt("Property '%s::%s' is deprecated.", aInterfaceDef.maszName,
+                   apdefGetterOrSetter.maszName));
+    }
   }
 
   bool _ScriptTypeDelegateGet(eScriptType aScriptType, const SQObjectPtr& key,
@@ -1782,8 +1810,8 @@ struct sLinter {
     }
   }
 
-  bool DoLintGet(const SQObjectPtr& self, const SQObjectPtr& key,
-                 SQObjectPtr& dest, int opExt)
+  bool DoLintGet(ain<LintClosure> aClosure, const SQObjectPtr& self,
+                 const SQObjectPtr& key, SQObjectPtr& dest, int opExt)
   {
     const SQSharedState& ss = this->_ss;
     switch (_sqtype(self)) {
@@ -1792,8 +1820,8 @@ struct sLinter {
         return true;
       // delegation
       if (_table(self)->GetDelegate()) {
-        return DoLintGet(SQObjectPtr(_table(self)->GetDelegate()), key, dest,
-                         opExt);
+        return DoLintGet(aClosure, SQObjectPtr(_table(self)->GetDelegate()),
+                         key, dest, opExt);
       }
       if (opExt & _OPEXT_GET_RAW) {
         return false;
@@ -1831,7 +1859,7 @@ struct sLinter {
       switch (ud->GetType()) {
       case eScriptType_InterfaceDef: {
         niLet selfIDef = as_nn(((sScriptTypeInterfaceDef*)ud)->pInterfaceDef);
-        niLet r = _InterfaceDefGet(selfIDef, key, dest, opExt);
+        niLet r = _InterfaceDefGet(aClosure, selfIDef, key, dest, opExt);
         if (r || sqa_getscriptobjtype(dest) == eScriptType_ErrorCode)
           return r;
         dest = niNew sScriptTypeErrorCode(
@@ -1843,16 +1871,18 @@ struct sLinter {
       case eScriptType_EnumDef: {
         SQObjectPtr enumTable =
           ((sScriptTypeEnumDef*)ud)->_GetTable(const_cast<SQSharedState&>(ss));
-        niLet r = DoLintGet(enumTable, key, dest, opExt);
+        niLet r = DoLintGet(aClosure, enumTable, key, dest, opExt);
         if (r || sqa_getscriptobjtype(dest) == eScriptType_ErrorCode)
           return r;
         break;
       }
       case eScriptType_PropertyDef: {
-        niLet pdefGet = ((sScriptTypePropertyDef*)ud)->pGetMethodDef;
+        niLet pdef = (sScriptTypePropertyDef*)ud;
+        niLet pdefGet = pdef->pGetMethodDef;
         if (pdefGet) {
+          _CheckPropertyDeprecated(aClosure, *pdef->pInterfaceDef, *pdefGet);
           dest = ResolveMethodRetType(
-            *((sScriptTypePropertyDef*)ud)->pInterfaceDef, *pdefGet);
+            aClosure, *((sScriptTypePropertyDef*)ud)->pInterfaceDef, *pdefGet);
           if (!sq_isnull(dest)) {
             return true;
           }
@@ -1867,8 +1897,8 @@ struct sLinter {
 
       bool getRetVal = false;
       if (ud->GetDelegate()) {
-        getRetVal = DoLintGet(SQObjectPtr(ud->GetDelegate()), key, dest,
-                              opExt | _OPEXT_GET_RAW);
+        getRetVal = DoLintGet(aClosure, SQObjectPtr(ud->GetDelegate()), key,
+                              dest, opExt | _OPEXT_GET_RAW);
         if (!getRetVal) {
           if (opExt & _OPEXT_GET_RAW)
             return false;
@@ -1889,10 +1919,10 @@ struct sLinter {
     }
   }
 
-  bool LintGet(const SQObjectPtr& self, const SQObjectPtr& key,
-               SQObjectPtr& dest, int opExt)
+  bool LintGet(ain<LintClosure> aClosure, const SQObjectPtr& self,
+               const SQObjectPtr& key, SQObjectPtr& dest, int opExt)
   {
-    bool r = DoLintGet(self, key, dest, opExt);
+    bool r = DoLintGet(aClosure, self, key, dest, opExt);
     if (!r) {
       if (opExt & _OPEXT_GET_SAFE) {
         return true;
@@ -1904,8 +1934,9 @@ struct sLinter {
 
   EA_DISABLE_VC_WARNING(4702 // warning C4702: unreachable code
   );
-  bool DoLintSet(cString& errDesc, const SQObjectPtr& self,
-                 const SQObjectPtr& key, const SQObjectPtr& val, int opExt)
+  bool DoLintSet(ain<LintClosure> aClosure, cString& errDesc,
+                 const SQObjectPtr& self, const SQObjectPtr& key,
+                 const SQObjectPtr& val, int opExt)
   {
     // niDebugFmt(("... DoLintSet: '%s' in %s", _ObjToString(key), _ObjToString(self)));
     switch (_sqtype(self)) {
@@ -1929,7 +1960,7 @@ struct sLinter {
       if (!_table(self)->Set(key, val)) {
         if (_table(self)->GetDelegate()) {
           SQObjectPtr v;
-          if (!DoLintGet(self, key, v, _OPEXT_LINT_SETVALUE)) {
+          if (!DoLintGet(aClosure, self, key, v, _OPEXT_LINT_SETVALUE)) {
             return false;
           }
           return _table(self)->NewSlot(key, val);
@@ -1950,30 +1981,34 @@ struct sLinter {
     case OT_IUNKNOWN:
       // TODO: This should not happen, it should be a sInterfaceDef. Should we niPanicAssert here?
       return false;
+
     default: {
       switch (sqa_getscriptobjtype(self)) {
       case eScriptType_PropertyDef: {
-        niLet selfUD = (sScriptTypePropertyDef*)_userdata(self);
-        niLet pdefSet = selfUD->pSetMethodDef;
+        niLet pdef = (sScriptTypePropertyDef*)_userdata(self);
+        niLet pdefSet = pdef->pSetMethodDef;
         if (!pdefSet) {
           errDesc.Format("no setter for indexed property");
           return false;
         }
-        else if (pdefSet->mnNumParameters == 2) {
-          return true;
-        }
         else {
-          errDesc.Format(
-            niFmt("invalid number of parameters '%d' for indexed property",
-                  pdefSet->mnNumParameters));
-          return false;
+          _CheckPropertyDeprecated(aClosure, *pdef->pInterfaceDef, *pdefSet);
+          if (pdefSet->mnNumParameters == 2) {
+            return true;
+          }
+          else {
+            errDesc.Format(
+              niFmt("invalid number of parameters '%d' for indexed property",
+                    pdefSet->mnNumParameters));
+            return false;
+          }
         }
         break;
       }
       default: {
         // niDebugFmt(("... DoLintSet: Try get %s[%s].", _ObjToString(self), _ObjToString(key)));
         SQObjectPtr dest;
-        if (!DoLintGet(self, key, dest,
+        if (!DoLintGet(aClosure, self, key, dest,
                        _OPEXT_LINT_SETVALUE | _OPEXT_LINT_DONT_DEREF_PROPERTY))
         {
           return false;
@@ -1995,6 +2030,8 @@ struct sLinter {
             return false;
           }
           else {
+            _CheckPropertyDeprecated(aClosure, *destUD->pInterfaceDef,
+                                     *pdefSet);
             return true;
           }
         }
@@ -2005,16 +2042,18 @@ struct sLinter {
         break;
       }
       }
+
       return false;
     }
     }
   }
   EA_RESTORE_VC_WARNING();
 
-  bool LintSet(cString& errDesc, const SQObjectPtr& self,
-               const SQObjectPtr& key, const SQObjectPtr& val, int opExt)
+  bool LintSet(ain<LintClosure> aClosure, cString& errDesc,
+               const SQObjectPtr& self, const SQObjectPtr& key,
+               const SQObjectPtr& val, int opExt)
   {
-    bool r = DoLintSet(errDesc, self, key, val, opExt);
+    bool r = DoLintSet(aClosure, errDesc, self, key, val, opExt);
     if (!r && !(opExt & _OPEXT_GET_SAFE)) {
       return false;
     }
@@ -2229,7 +2268,7 @@ struct sLintFuncCallCreateInstance : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet numParams = aCallArgs.size() - 1;
@@ -2279,7 +2318,7 @@ struct sLintFuncCallImport : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet objModuleName = aCallArgs[1];
@@ -2327,7 +2366,7 @@ struct sLintFuncCallGetLangDelegate : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet objDelegateName = aCallArgs[1];
@@ -2371,7 +2410,7 @@ struct sLintFuncCall_lint_check_type : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
@@ -2426,7 +2465,7 @@ struct sLintFuncCall_lint_as_type : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
@@ -2467,8 +2506,8 @@ struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
     return 2;
   }
 
-  static SQObjectPtr __stdcall _LintCallQueryInterface(sLinter& aLinter,
-                                                       ain<SQObjectPtr> qiID)
+  static SQObjectPtr __stdcall _LintCallQueryInterface(
+    sLinter& aLinter, ain<LintClosure> aClosure, ain<SQObjectPtr> qiID)
   {
     tHStringPtr qiName;
     tUUID qiUUID = kuuidZero;
@@ -2509,14 +2548,14 @@ struct sLintFuncCall_root_QueryInterface : public ImplRC<iLintFuncCall> {
     }
 
     // niDebugFmt(("... sLintFuncCall_this_QueryInterface: qiDef: %s", qiDef->maszName));
-    return aLinter.ResolveTypeUUID(niHStr(qiName), qiUUID);
+    return aLinter.ResolveTypeUUID(aClosure, niHStr(qiName), qiUUID);
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
-    return _LintCallQueryInterface(aLinter, aCallArgs[2]);
+    return _LintCallQueryInterface(aLinter, aClosure, aCallArgs[2]);
   }
 };
 
@@ -2536,11 +2575,11 @@ struct sLintFuncCall_this_QueryInterface : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     return sLintFuncCall_root_QueryInterface::_LintCallQueryInterface(
-      aLinter, aCallArgs[1]);
+      aLinter, aClosure, aCallArgs[1]);
   }
 };
 
@@ -2563,7 +2602,7 @@ struct sLintFuncCall_table_or_array_clone : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet objThis = aCallArgs[0];
@@ -2619,7 +2658,7 @@ struct sLintFuncCall_table_setdelegate : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& objTable = aCallArgs[0];
@@ -2674,7 +2713,7 @@ struct sLintFuncCall_table_getdelegate : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& objTable = aCallArgs[0];
@@ -2721,7 +2760,7 @@ struct sLintFuncCall_lint_this_as_type : public ImplRC<iLintFuncCall> {
   }
 
   virtual SQObjectPtr __stdcall LintCall(
-    sLinter& aLinter, const LintClosure& aClosure,
+    sLinter& aLinter, ain<LintClosure> aClosure,
     ain<astl::vector<SQObjectPtr>> aCallArgs)
   {
     niLet& expectedTypeArg = aCallArgs[1];
@@ -3239,7 +3278,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
           const SQOuterVar& v = funcproto->_outervalues[i];
           if (!v._blocal) { // environment object
             lintClosure->_outervalues.push_back(_null_);
-            if (!aLinter.LintGet(localthis, v._src,
+            if (!aLinter.LintGet(*lintClosure, localthis, v._src,
                                  lintClosure->_outervalues.back(), 0))
             {
               if (_LENABLED(key_notfound_outer)) {
@@ -3320,7 +3359,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
     }
     else {
       cString errDesc;
-      niLet didSet = aLinter.LintSet(errDesc, t, k, v, inst._ext);
+      niLet didSet = aLinter.LintSet(thisClosure, errDesc, t, k, v, inst._ext);
       if (!didSet) {
         if (_LENABLED(key_cant_set) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
@@ -3397,7 +3436,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
     }
     else {
-      niLet didGet = aLinter.LintGet(t, k, v, inst._ext);
+      niLet didGet = aLinter.LintGet(thisClosure, t, k, v, inst._ext);
       if (!didGet) {
         if (_LENABLED(key_notfound_getk) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
@@ -3427,7 +3466,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
     }
     else {
-      niLet didGet = aLinter.LintGet(t, k, v, inst._ext);
+      niLet didGet = aLinter.LintGet(thisClosure, t, k, v, inst._ext);
       if (!didGet) {
         if (_LENABLED(key_notfound_get) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
@@ -3477,7 +3516,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
     }
     else {
-      niLet didGet = aLinter.LintGet(t, k, v, inst._ext);
+      niLet didGet = aLinter.LintGet(thisClosure, t, k, v, inst._ext);
       if (!didGet) {
         if (_LENABLED(key_notfound_callk) &&
             (!sq_isnull(k) || _LENABLED(null_notfound)))
@@ -3604,7 +3643,16 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
         return _null_;
       }
 
-      return aLinter.ResolveMethodRetType(*aMeth.pInterfaceDef,
+      // Check if method is deprecated
+      if (_LENABLED(deprecated) &&
+          niFlagIs(aMeth.pMethodDef->mReturnType, eTypeFlags_MethodDeprecated))
+      {
+        _LINT(deprecated,
+              niFmt("Method '%s::%s' is deprecated.",
+                    aMeth.pInterfaceDef->maszName, aMeth.pMethodDef->maszName));
+      }
+
+      return aLinter.ResolveMethodRetType(thisClosure, *aMeth.pInterfaceDef,
                                           *aMeth.pMethodDef);
     };
 
@@ -3940,7 +3988,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
       else {
         SQObjectPtr currVal;
-        niLet didGet = aLinter.LintGet(opSelf, opKey, currVal, inst._ext);
+        niLet didGet =
+          aLinter.LintGet(thisClosure, opSelf, opKey, currVal, inst._ext);
         if (!didGet) {
           if (_LENABLED(key_notfound_getk) &&
               (!sq_isnull(opKey) || _LENABLED(null_notfound)))
@@ -4007,7 +4056,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
       else {
         SQObjectPtr currVal;
-        niLet didGet = aLinter.LintGet(opSelf, opKey, currVal, inst._ext);
+        niLet didGet =
+          aLinter.LintGet(thisClosure, opSelf, opKey, currVal, inst._ext);
         if (!didGet) {
           if (_LENABLED(key_notfound_getk) &&
               (!sq_isnull(opKey) || _LENABLED(null_notfound)))
@@ -4114,8 +4164,9 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       // value is the code point
       oval = niNew sScriptTypeResolvedType(aLinter._ss, eScriptType_Int);
       // iterator is iHStringCharIt
-      orefpos = aLinter.ResolveTypeUUID(niGetInterfaceID(iHStringCharIt),
-                                        niGetInterfaceUUID(iHStringCharIt));
+      orefpos =
+        aLinter.ResolveTypeUUID(thisClosure, niGetInterfaceID(iHStringCharIt),
+                                niGetInterfaceUUID(iHStringCharIt));
       break;
     }
     case eScriptType_Int: {
@@ -4129,8 +4180,9 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
           (*pV->pInterfaceDef->mUUID == niGetInterfaceUUID(iCollection)))
       {
         // the iterator type
-        orefpos = aLinter.ResolveTypeUUID(niGetInterfaceID(iIterator),
-                                          niGetInterfaceUUID(iIterator));
+        orefpos =
+          aLinter.ResolveTypeUUID(thisClosure, niGetInterfaceID(iIterator),
+                                  niGetInterfaceUUID(iIterator));
         // for now we dont retrieve the key/val type but we should be able
         // to derive it from the full typename in sMethodDef if we can carry
         // this here somehow

@@ -1704,7 +1704,7 @@ static const ni::sMethodDef iBoundingVolume_GetRadius = {
 
 // Method: SetExtents
 static const ni::sParameterDef iBoundingVolume_SetExtents_Parameters[1] = { 
-  { "avExtends", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
+  { "avExtents", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
 }; 
 static const ni::sMethodDef iBoundingVolume_SetExtents = {
   "SetExtents",
@@ -1936,6 +1936,70 @@ static const ni::sMethodDef iBoundingVolume_IntersectFrustum = {
 #endif
 };
 
+// Method: SetCenterSize
+static const ni::sParameterDef iBoundingVolume_SetCenterSize_Parameters[2] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avSize", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
+}; 
+static const ni::sMethodDef iBoundingVolume_SetCenterSize = {
+  "SetCenterSize",
+  0|ni::eType_Null, NULL, "void",
+  2, iBoundingVolume_SetCenterSize_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iBoundingVolume_SetCenterSize)
+#else
+  NULL
+#endif
+};
+
+// Method: SetCenterExtents
+static const ni::sParameterDef iBoundingVolume_SetCenterExtents_Parameters[2] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avExtents", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
+}; 
+static const ni::sMethodDef iBoundingVolume_SetCenterExtents = {
+  "SetCenterExtents",
+  0|ni::eType_Null, NULL, "void",
+  2, iBoundingVolume_SetCenterExtents_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iBoundingVolume_SetCenterExtents)
+#else
+  NULL
+#endif
+};
+
+// Method: SetCenterRadius
+static const ni::sParameterDef iBoundingVolume_SetCenterRadius_Parameters[2] = { 
+  { "avCenter", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "afRadius", ni::eType_F32, NULL, "tF32" }
+}; 
+static const ni::sMethodDef iBoundingVolume_SetCenterRadius = {
+  "SetCenterRadius",
+  0|ni::eType_Null, NULL, "void",
+  2, iBoundingVolume_SetCenterRadius_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iBoundingVolume_SetCenterRadius)
+#else
+  NULL
+#endif
+};
+
+// Method: SetMinMax
+static const ni::sParameterDef iBoundingVolume_SetMinMax_Parameters[2] = { 
+  { "avMin", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }, 
+  { "avMax", ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer, NULL, "const sVec3f&" }
+}; 
+static const ni::sMethodDef iBoundingVolume_SetMinMax = {
+  "SetMinMax",
+  0|ni::eType_Null, NULL, "void",
+  2, iBoundingVolume_SetMinMax_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iBoundingVolume_SetMinMax)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iBoundingVolume[] = {
 	&iBoundingVolume_Copy,
 	&iBoundingVolume_Clone,
@@ -1963,6 +2027,10 @@ static const ni::sMethodDef* Methods_iBoundingVolume[] = {
 	&iBoundingVolume_IntersectRay,
 	&iBoundingVolume_IntersectPoint,
 	&iBoundingVolume_IntersectFrustum,
+	&iBoundingVolume_SetCenterSize,
+	&iBoundingVolume_SetCenterExtents,
+	&iBoundingVolume_SetCenterRadius,
+	&iBoundingVolume_SetMinMax,
 
 };
 

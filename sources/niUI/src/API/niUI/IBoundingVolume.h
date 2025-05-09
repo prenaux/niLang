@@ -68,36 +68,49 @@ struct iBoundingVolume : public iUnknown {
 
   //! Set the center.
   //! {Property}
+  //! \remark Deprecated, use SetCenterSize|SetCenterExtents. Unsafe - when
+  //!  either of min/max is invalid/undefined this will generally result in a
+  //!  degenerate BV.
   virtual tBool __stdcall SetCenter(const sVec3f& avPos) = 0;
   //! Get the center.
   //! {Property}
   virtual sVec3f __stdcall GetCenter() const = 0;
   //! Set the radius.
   //! {Property}
+  //! \remark Deprecated, use SetCenterRadius. Unsafe - when either of min/max
+  //!  is invalid/undefined this will generally result in a degenerate BV.
   virtual void __stdcall SetRadius(tF32 afRadius) = 0;
   //! Get the radius.
   //! {Property}
   virtual tF32 __stdcall GetRadius() const = 0;
   //! Set the extents.
   //! {Property}
-  virtual void __stdcall SetExtents(const sVec3f& avExtends) = 0;
+  //! \remark Deprecated, use SetCenterExtents. Unsafe - when either of min/max
+  //!  is invalid/undefined this will generally result in a degenerate BV.
+  virtual void __stdcall SetExtents(const sVec3f& avExtents) = 0;
   //! Get the extents.
   //! {Property}
   virtual sVec3f __stdcall GetExtents() const = 0;
   //! Set the size.
   //! {Property}
+  //! \remark Deprecated, use SetCenterSize. Unsafe - when either of min/max
+  //!  is invalid/undefined this will generally result in a degenerate BV.
   virtual void __stdcall SetSize(const sVec3f& avSize) = 0;
   //! Get the size.
   //! {Property}
   virtual sVec3f __stdcall GetSize() const = 0;
   //! Set the minimum value.
   //! {Property}
+  //! \remark Deprecated, use SetMinMax. Unsafe - when either of min/max
+  //!  is invalid/undefined this will generally result in a degenerate BV.
   virtual void __stdcall SetMin(const sVec3f& avMin) = 0;
   //! Get the minimum value.
   //! {Property}
   virtual sVec3f __stdcall GetMin() const = 0;
   //! Set the maximum value.
   //! {Property}
+  //! \remark Deprecated, use SetMinMax. Unsafe - when either of min/max
+  //!  is invalid/undefined this will generally result in a degenerate BV.
   virtual void __stdcall SetMax(const sVec3f& avMax) = 0;
   //! Get the maximum value.
   //! {Property}
@@ -131,6 +144,22 @@ struct iBoundingVolume : public iUnknown {
   //! Intersect with a frustum.
   virtual eIntersectionResult __stdcall IntersectFrustum(
     iIntersection* apResult, const iFrustum* apFrustum) const = 0;
+  //! @}
+
+  //########################################################################################
+  //! \name Safe setters
+  //########################################################################################
+  //! @{
+
+  //! Set the center and size of the bounding volume.
+  virtual void __stdcall SetCenterSize(const sVec3f& avCenter, const sVec3f& avSize) = 0;
+  //! Set the center and extents of the bounding volume.
+  virtual void __stdcall SetCenterExtents(const sVec3f& avCenter, const sVec3f& avExtents) = 0;
+  //! Set the center and radius of the bounding volume.
+  virtual void __stdcall SetCenterRadius(const sVec3f& avCenter, tF32 afRadius) = 0;
+  //! Set the minimum and maximum points of the bounding volume.
+  virtual void __stdcall SetMinMax(const sVec3f& avMin, const sVec3f& avMax) = 0;
+
   //! @}
 };
 

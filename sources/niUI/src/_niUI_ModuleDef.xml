@@ -3130,7 +3130,9 @@
 				property="set"
 				property_name2="center"
 				property_name="center">
-				<comments desc="Set the center. "/>
+				<comments desc="Set the center. ">
+					<remark text="Deprecated, use SetCenterSize|SetCenterExtents. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
 				<parameter
 					last="1"
@@ -3157,7 +3159,9 @@
 				property="set"
 				property_name2="radius"
 				property_name="radius">
-				<comments desc="Set the radius. "/>
+				<comments desc="Set the radius. ">
+					<remark text="Deprecated, use SetCenterRadius. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -3184,11 +3188,13 @@
 				property="set"
 				property_name2="extents"
 				property_name="extents">
-				<comments desc="Set the extents. "/>
+				<comments desc="Set the extents. ">
+					<remark text="Deprecated, use SetCenterExtents. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
-					name="avExtends"
+					name="avExtents"
 					type="const sVec3f &amp;"
 					typec="const sVec3f&amp;"
 					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
@@ -3211,7 +3217,9 @@
 				property="set"
 				property_name2="size"
 				property_name="size">
-				<comments desc="Set the size. "/>
+				<comments desc="Set the size. ">
+					<remark text="Deprecated, use SetCenterSize. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -3238,7 +3246,9 @@
 				property="set"
 				property_name2="min"
 				property_name="min">
-				<comments desc="Set the minimum value. "/>
+				<comments desc="Set the minimum value. ">
+					<remark text="Deprecated, use SetMinMax. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -3265,7 +3275,9 @@
 				property="set"
 				property_name2="max"
 				property_name="max">
-				<comments desc="Set the maximum value. "/>
+				<comments desc="Set the maximum value. ">
+					<remark text="Deprecated, use SetMinMax. Unsafe - when either of min/max is invalid/undefined this will generally result in a degenerate BV. "/>
+				</comments>
 				<return type="void" typec="void" typei="ni::eType_Null"/>
 				<parameter
 					last="1"
@@ -3410,6 +3422,66 @@
 					type="const iFrustum *"
 					typec="const iFrustum*"
 					typei="ni::eTypeFlags_Constant|ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setCenterSize" name="SetCenterSize" num_parameters="2">
+				<comments desc="Set the center and size of the bounding volume. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avSize"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setCenterExtents" name="SetCenterExtents" num_parameters="2">
+				<comments desc="Set the center and extents of the bounding volume. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avExtents"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+			</method>
+			<method java_name="setCenterRadius" name="SetCenterRadius" num_parameters="2">
+				<comments desc="Set the center and radius of the bounding volume. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avCenter"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="afRadius"
+					type="tF32"
+					typec="tF32"
+					typei="ni::eType_F32"/>
+			</method>
+			<method java_name="setMinMax" name="SetMinMax" num_parameters="2">
+				<comments desc="Set the minimum and maximum points of the bounding volume. "/>
+				<return type="void" typec="void" typei="ni::eType_Null"/>
+				<parameter
+					name="avMin"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
+				<parameter
+					last="1"
+					name="avMax"
+					type="const sVec3f &amp;"
+					typec="const sVec3f&amp;"
+					typei="ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer"/>
 			</method>
 		</interface>
 	</namespace>

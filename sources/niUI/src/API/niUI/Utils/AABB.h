@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 #include "../IBoundingVolume.h"
 #include "../IFrustum.h"
+#include <niLang/Math/MathVec3.h>
 
 namespace ni {
 /** \addtogroup niUI
@@ -144,6 +145,12 @@ class cAABB {
     mvMin = min;
     mvMax = max;
   }
+
+  void SetMinMax(const sVec3<T>& avMin, const sVec3<T>& avMax) {
+    VecMinimize(this->mvMin, avMin, avMax);
+    VecMaximize(this->mvMax, avMin, avMax);
+  }
+
   void SetMin(const sVec3<T>& min)
   {
     mvMin = min;
@@ -603,57 +610,57 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
   }
 
   //// iBoundingVolume //////////////////////////
-  tBool __stdcall Copy(iBoundingVolume* apSrc)
+  tBool __stdcall Copy(iBoundingVolume* apSrc) niImpl
   {
     SetMin(apSrc->GetMin());
     SetMax(apSrc->GetMax());
     return eTrue;
   }
-  iBoundingVolume* __stdcall Clone() const
+  iBoundingVolume* __stdcall Clone() const niImpl
   {
     cBoundingVolumeAABB* pNew = niNew cBoundingVolumeAABB();
     pNew->mvMin = this->mvMin;
     pNew->mvMax = this->mvMax;
     return pNew;
   }
-  eBoundingVolumeType __stdcall GetType() const
+  eBoundingVolumeType __stdcall GetType() const niImpl
   {
     return eBoundingVolumeType_AABB;
   }
-  tBool __stdcall Begin(tBool abReset)
+  tBool __stdcall Begin(tBool abReset) niImpl
   {
     if (abReset)
       cAABBf::Reset();
     return eTrue;
   }
-  tBool __stdcall End()
+  tBool __stdcall End() niImpl
   {
     return eTrue;
   }
-  tBool __stdcall AddPoint(const sVec3f& avPoint)
+  tBool __stdcall AddPoint(const sVec3f& avPoint) niImpl
   {
     cAABBf::SetPoint(avPoint);
     return eTrue;
   }
-  tBool __stdcall SetCenter(const sVec3f& avPos)
+  tBool __stdcall SetCenter(const sVec3f& avPos) niImpl
   {
     sVec3f vExtents = GetExtents();
     cAABBf::SetCenterExtents(avPos, vExtents);
     return eTrue;
   }
-  sVec3f __stdcall GetCenter() const
+  sVec3f __stdcall GetCenter() const niImpl
   {
     return cAABBf::GetCenter();
   }
-  void __stdcall SetRadius(tF32 afRadius)
+  void __stdcall SetRadius(tF32 afRadius) niImpl
   {
     cAABBf::SetCenterExtents(GetCenter(), afRadius);
   }
-  tF32 __stdcall GetRadius() const
+  tF32 __stdcall GetRadius() const niImpl
   {
     return cAABBf::GetMaxSize() * 0.5f;
   }
-  void __stdcall SetExtents(const sVec3f& avExtends)
+  void __stdcall SetExtents(const sVec3f& avExtends) niImpl
   {
     cAABBf::SetCenterExtents(GetCenter(), avExtends);
   }
@@ -661,59 +668,59 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
   {
     return cAABBf::GetExtents();
   }
-  void __stdcall SetSize(const sVec3f& avSize)
+  void __stdcall SetSize(const sVec3f& avSize) niImpl
   {
     cAABBf::SetCenterSize(GetCenter(), avSize);
   }
-  sVec3f __stdcall GetSize() const
+  sVec3f __stdcall GetSize() const niImpl
   {
     return cAABBf::GetSize();
   }
-  void __stdcall SetMin(const sVec3f& avMin)
+  void __stdcall SetMin(const sVec3f& avMin) niImpl
   {
     cAABBf::SetMin(avMin);
   }
-  sVec3f __stdcall GetMin() const
+  sVec3f __stdcall GetMin() const niImpl
   {
     return cAABBf::GetMin();
   }
-  void __stdcall SetMax(const sVec3f& avMax)
+  void __stdcall SetMax(const sVec3f& avMax) niImpl
   {
     cAABBf::SetMax(avMax);
   }
-  sVec3f __stdcall GetMax() const
+  sVec3f __stdcall GetMax() const niImpl
   {
     return cAABBf::GetMax();
   }
-  tBool __stdcall Translate(const sVec3f& avV)
+  tBool __stdcall Translate(const sVec3f& avV) niImpl
   {
     cAABBf::Translate(avV);
     return eTrue;
   }
-  tBool __stdcall Rotate(const sMatrixf& amtxRotation)
+  tBool __stdcall Rotate(const sMatrixf& amtxRotation) niImpl
   {
     cAABBf::Rotate(amtxRotation);
     return eTrue;
   }
-  tBool __stdcall Transform(const sMatrixf& aMatrix)
+  tBool __stdcall Transform(const sMatrixf& aMatrix) niImpl
   {
     cAABBf::Transform(aMatrix);
     return eTrue;
   }
-  void __stdcall Inflate(tF32 afPercent)
+  void __stdcall Inflate(tF32 afPercent) niImpl
   {
     cAABBf::Inflate(afPercent);
   }
   eIntersectionResult __stdcall IntersectAABB(iIntersection* apResult,
                                               const sVec3f& avMin,
-                                              const sVec3f& avMax) const
+                                              const sVec3f& avMax) const niImpl
   {
     return cAABBf::Intersect(avMin, avMax) ? eIntersectionResult_Intersect
                                            : eIntersectionResult_None;
   }
   eIntersectionResult __stdcall IntersectRay(iIntersection* apResult,
                                              const sVec3f& avPos,
-                                             const sVec3f& avDir) const
+                                             const sVec3f& avDir) const niImpl
   {
     eIntersectionResult res = eIntersectionResult_None;
     sVec3f vPos;
@@ -727,7 +734,7 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
     return res;
   }
   eIntersectionResult __stdcall IntersectPoint(iIntersection* apResult,
-                                               const sVec3f& aPosition) const
+                                               const sVec3f& aPosition) const niImpl
   {
     eIntersectionResult res = eIntersectionResult_None;
     if (cAABBf::Intersect(aPosition)) {
@@ -740,7 +747,7 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
     return res;
   }
   eIntersectionResult __stdcall IntersectFrustum(
-    iIntersection* apResult, const iFrustum* apFrustum) const
+    iIntersection* apResult, const iFrustum* apFrustum) const niImpl
   {
     eIntersectionResult res =
       apFrustum ? (eIntersectionResult)apFrustum->CullAABB(mvMin, mvMax)
@@ -749,6 +756,24 @@ class cBoundingVolumeAABB : public ImplRC<iBoundingVolume>, public cAABBf {
       apResult->SetResult(res);
     }
     return res;
+  }
+
+  void __stdcall SetCenterSize(const sVec3f& avCenter, const sVec3f& avSize) niImpl
+  {
+    cAABBf::SetCenterSize(avCenter, avSize);
+  }
+  void __stdcall SetCenterExtents(const sVec3f& avCenter, const sVec3f& avExtents) niImpl
+  {
+    cAABBf::SetCenterExtents(avCenter, avExtents);
+  }
+  void __stdcall SetCenterRadius(const sVec3f& avCenter, tF32 afRadius) niImpl
+  {
+    sVec3f extents(afRadius, afRadius, afRadius);
+    cAABBf::SetCenterExtents(avCenter, extents);
+  }
+  void __stdcall SetMinMax(const sVec3f& avMin, const sVec3f& avMax) niImpl
+  {
+    cAABBf::SetMinMax(avMin,avMax);
   }
   //// iBoundingVolume //////////////////////////
 };

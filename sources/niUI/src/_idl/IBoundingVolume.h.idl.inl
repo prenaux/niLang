@@ -96,9 +96,9 @@ IDLC_METH_END(ni,iBoundingVolume,GetRadius,0)
 
 /** ni -> iBoundingVolume::SetExtents/1 **/
 IDLC_METH_BEGIN(ni,iBoundingVolume,SetExtents,1)
-	IDLC_DECL_VAR(sVec3f,avExtends)
-	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avExtends)
-	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetExtents,1,(avExtends))
+	IDLC_DECL_VAR(sVec3f,avExtents)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avExtents)
+	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetExtents,1,(avExtents))
 IDLC_METH_END(ni,iBoundingVolume,SetExtents,1)
 
 /** ni -> iBoundingVolume::GetExtents/0 **/
@@ -231,6 +231,42 @@ IDLC_METH_BEGIN(ni,iBoundingVolume,IntersectFrustum,2)
 	IDLC_METH_CALL(_Ret,ni,iBoundingVolume,IntersectFrustum,2,(apResult,apFrustum))
 	IDLC_RET_FROM_ENUM(eIntersectionResult,_Ret)
 IDLC_METH_END(ni,iBoundingVolume,IntersectFrustum,2)
+
+/** ni -> iBoundingVolume::SetCenterSize/2 **/
+IDLC_METH_BEGIN(ni,iBoundingVolume,SetCenterSize,2)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(sVec3f,avSize)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avSize)
+	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetCenterSize,2,(avCenter,avSize))
+IDLC_METH_END(ni,iBoundingVolume,SetCenterSize,2)
+
+/** ni -> iBoundingVolume::SetCenterExtents/2 **/
+IDLC_METH_BEGIN(ni,iBoundingVolume,SetCenterExtents,2)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(sVec3f,avExtents)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avExtents)
+	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetCenterExtents,2,(avCenter,avExtents))
+IDLC_METH_END(ni,iBoundingVolume,SetCenterExtents,2)
+
+/** ni -> iBoundingVolume::SetCenterRadius/2 **/
+IDLC_METH_BEGIN(ni,iBoundingVolume,SetCenterRadius,2)
+	IDLC_DECL_VAR(sVec3f,avCenter)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avCenter)
+	IDLC_DECL_VAR(tF32,afRadius)
+	IDLC_BUF_TO_BASE(ni::eType_F32,afRadius)
+	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetCenterRadius,2,(avCenter,afRadius))
+IDLC_METH_END(ni,iBoundingVolume,SetCenterRadius,2)
+
+/** ni -> iBoundingVolume::SetMinMax/2 **/
+IDLC_METH_BEGIN(ni,iBoundingVolume,SetMinMax,2)
+	IDLC_DECL_VAR(sVec3f,avMin)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMin)
+	IDLC_DECL_VAR(sVec3f,avMax)
+	IDLC_BUF_TO_BASE(ni::eTypeFlags_Constant|ni::eType_Vec3f|ni::eTypeFlags_Pointer,avMax)
+	IDLC_METH_CALL_VOID(ni,iBoundingVolume,SetMinMax,2,(avMin,avMax))
+IDLC_METH_END(ni,iBoundingVolume,SetMinMax,2)
 
 IDLC_END_INTF(ni,iBoundingVolume)
 

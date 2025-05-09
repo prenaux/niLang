@@ -637,9 +637,9 @@ typedef astl::hash_map<const SQFunctionProto*, Ptr<LintClosure>>
               _LKEY(internal_warning), *thisfunc,                \
               thisfunc->GetSourceLineCol(), MSG)
 #define _LENABLED(KIND) aLinter.IsEnabled(_LKEY(KIND))
-#define _LINT_(KIND, LINECOL, MSG) \
-  aLinter.Log(_LKEY(KIND), _LNAME(KIND), _LKEY(KIND), *thisfunc, LINECOL, MSG)
-#define _LINT(KIND, MSG) _LINT_(KIND, getlinecol(inst), MSG)
+#define _LINT(KIND, MSG)                                         \
+  aLinter.Log(_LKEY(KIND), _LNAME(KIND), _LKEY(KIND), *thisfunc, \
+              aLinter._currentErrorLine, MSG)
 
 static tU32 _lintKeyGen = 0;
 #define _DEF_LINT(NAME, CAT1, CAT2)                                  \
@@ -795,6 +795,8 @@ struct sLinter {
   astl::vector<cString> _logs;
   tU32 _numLintErrors = 0;
   tU32 _numLintWarnings = 0;
+
+  sVec2i _currentErrorLine = sVec2i::Zero();
 
   astl::vector<NN<SQTable>> _tables;
   astl::vector<NN<SQArray>> _arrays;
@@ -1747,9 +1749,9 @@ struct sLinter {
         niFlagIs(apdefGetterOrSetter.mReturnType, eTypeFlags_MethodDeprecated))
     {
       niLet& thisfunc = aClosure._func;
-      _LINT_(deprecated, Vec2i(thisfunc->_sourceline, 0),
-             niFmt("Property '%s::%s' is deprecated.", aInterfaceDef.maszName,
-                   apdefGetterOrSetter.maszName));
+      _LINT(deprecated,
+            niFmt("Property '%s::%s' is deprecated.", aInterfaceDef.maszName,
+                  apdefGetterOrSetter.maszName));
     }
   }
 
@@ -2985,8 +2987,11 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
   _LTRACE(("paramssize: %s\n", thisfunc_paramssize));
   _LTRACE(("rettype: %s\n", _ObjToString(thisfunc_resolvedrettype)));
 
-  auto getlinecol = [&](const SQInstruction& inst) -> sVec2i {
-    return SQFunctionProto::_GetLineCol(_instructions, &inst, _lineinfos);
+  niLet wasErrorLine = aLinter._currentErrorLine;
+  aLinter._currentErrorLine = thisfunc->GetSourceLineCol();
+  niDefer
+  {
+    aLinter._currentErrorLine = wasErrorLine;
   };
 
   // Build the symbol tables & functions list
@@ -3047,8 +3052,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
           }
         }
         else if (firstOptional >= 0) {
-          _LINT_(
-            param_decl, thisfunc->GetSourceLineCol(),
+          _LINT(
+            param_decl,
             niFmt(
               "Non-optional parameter[%d] %s after optional parameter[%d] %s.",
               pi - 1, _ObjToString(param._name), firstOptional,
@@ -3062,12 +3067,12 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
         param._type, thisClosure, thisClosure._thisWhenAssigned);
       if (sqa_getscriptobjtype(resolvedParamType) == eScriptType_ErrorCode) {
         if (_LENABLED(param_decl)) {
-          _LINT_(param_decl, thisfunc->GetSourceLineCol(),
-                 niFmt("Cant resolve type %s of parameter[%d] %s: %s",
-                       _ObjToString(param._type), pi - 1,
-                       _ObjToString(param._name),
-                       ((sScriptTypeErrorCode*)_userdata(resolvedParamType))
-                         ->_strErrorDesc));
+          _LINT(param_decl,
+                niFmt("Cant resolve type %s of parameter[%d] %s: %s",
+                      _ObjToString(param._type), pi - 1,
+                      _ObjToString(param._name),
+                      ((sScriptTypeErrorCode*)_userdata(resolvedParamType))
+                        ->_strErrorDesc));
         }
       }
       stack[si]._value = resolvedParamType;
@@ -3767,7 +3772,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
   astl::stack<sLintScope> scopes;
 
   auto lint_typeof_eq = [&](ain<nn<sLintTypeofInfo>> typeofInfo,
-                            const SQObjectPtr& eqLiteral, ain<sVec2i> lineCol) {
+                            const SQObjectPtr& eqLiteral) {
     //niLet& ss = aLinter._ss;
     niLet typeofObj = typeofInfo->_obj;
     niLet resolvedType = aLinter.ResolveType(eqLiteral, thisClosure, _null_);
@@ -3779,8 +3784,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
 
     if (!sq_isstring(eqLiteral)) {
       if (_LENABLED(typeof_usage)) {
-        _LINT_(
-          typeof_usage, lineCol,
+        _LINT(
+          typeof_usage,
           niFmt(
             "typeof_eq: Typedef should be a literal string but got '%s', when checking type of '%s'.",
             _ObjToString(eqLiteral), typeofInfo->_sstr));
@@ -3789,9 +3794,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
     else {
       if (sqa_getscriptobjtype(resolvedType) == eScriptType_ErrorCode) {
         if (_LENABLED(typeof_usage)) {
-          _LINT_(typeof_usage, lineCol,
-                 niFmt("typeof_eq: Invalid typeof test type: %s.",
-                       _ObjToString(resolvedType)));
+          _LINT(typeof_usage, niFmt("typeof_eq: Invalid typeof test type: %s.",
+                                    _ObjToString(resolvedType)));
         }
       }
 
@@ -3813,8 +3817,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
           // TODO: Can we check this?
         }
         else if (_LENABLED(typeof_invalid)) {
-          _LINT_(typeof_invalid, lineCol,
-                 niFmt("typeof_eq: Unknown typeof typename: '%s'.", typeofStr));
+          _LINT(typeof_invalid,
+                niFmt("typeof_eq: Unknown typeof typename: '%s'.", typeofStr));
         }
       }
 
@@ -3836,8 +3840,8 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       }
       else {
         if (_LENABLED(typeof_usage)) {
-          _LINT_(
-            typeof_usage, lineCol,
+          _LINT(
+            typeof_usage,
             "typeof_eq: Typeof == used outside of a switch condition prevents linting.");
         }
       }
@@ -3919,7 +3923,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       if (resolvedTypeLeft.IsOK() && resolvedTypeLeft->_opcode == _OP_TYPEOF) {
         NN<sLintTypeofInfo> typeofInfo{ ni::QueryInterface<sLintTypeofInfo>(
           resolvedTypeLeft->_opcodeInfo) };
-        lint_typeof_eq(typeofInfo, eqRight, getlinecol(inst));
+        lint_typeof_eq(typeofInfo, eqRight);
       }
     }
 
@@ -3929,7 +3933,7 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
       {
         NN<sLintTypeofInfo> typeofInfo{ ni::QueryInterface<sLintTypeofInfo>(
           resolvedTypeRight->_opcodeInfo) };
-        lint_typeof_eq(typeofInfo, eqLeft, getlinecol(inst));
+        lint_typeof_eq(typeofInfo, eqLeft);
       }
     }
 
@@ -4234,10 +4238,6 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
   _LTRACE(("--- INST ----------------------------------------------\n"));
   // prologue checks
   {
-    niLet inst = 0; // placeholder
-    niLet getlinecol = [&](niLet _) {
-      return Vec2i(thisfunc->_sourceline, 0);
-    };
     niLet retscripttype = sqa_getscriptobjtype(thisfunc_resolvedrettype);
     if (retscripttype == eScriptType_Null && _LENABLED(ret_type_is_null)) {
       if (_LENABLED(ret_type_is_null)) {
@@ -4257,6 +4257,17 @@ void SQFunctionProto::_LintTrace(sLinter& aLinter, SQTable* rootTable,
   // instructioncs check
   niLoop (i, _instructions.size()) {
     niLet& inst = _instructions[i];
+
+    // TODO: Using _GetLineCol isnt optimal, we could iterate _lineinfos in
+    // parallel to make this more efficient.
+    niLet wasErrorLine = aLinter._currentErrorLine;
+    aLinter._currentErrorLine =
+      SQFunctionProto::_GetLineCol(_instructions, &inst, _lineinfos);
+    niDefer
+    {
+      aLinter._currentErrorLine = wasErrorLine;
+    };
+
     _LTRACE(("%s %d %d %d %d (%s)", _GetOpDesc(inst.op), inst._arg0, inst._arg1,
              inst._arg2, inst._arg3, _GetOpExt(inst._ext)));
     switch (inst.op) {

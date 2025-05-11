@@ -11,6 +11,10 @@ other programming languages. By default, niLang offers integration with
 niScript (a Squirrel scripting language derivative) and the Java Virtual
 Machine (JVM).
 
+# Weeee
+
+Test change to test ham-vcs.
+
 # Setup the environment
 
 ```

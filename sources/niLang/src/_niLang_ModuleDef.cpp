@@ -21376,6 +21376,21 @@ static const ni::sMethodDef iOSWindow_GetGraphicsAPI = {
 #endif
 };
 
+// Method: SetTaskbarAppID
+static const ni::sParameterDef iOSWindow_SetTaskbarAppID_Parameters[1] = { 
+  { "ahspID", ni::eType_IUnknown|ni::eTypeFlags_Pointer, &niGetInterfaceUUID(iHString), "iHString*" }
+}; 
+static const ni::sMethodDef iOSWindow_SetTaskbarAppID = {
+  "SetTaskbarAppID",
+  0|ni::eType_I8, NULL, "tBool",
+  1, iOSWindow_SetTaskbarAppID_Parameters,
+#ifndef niConfig_NoXCALL
+  XCALL_CIMPL(iOSWindow_SetTaskbarAppID)
+#else
+  NULL
+#endif
+};
+
 static const ni::sMethodDef* Methods_iOSWindow[] = {
 	&iOSWindow_GetParent,
 	&iOSWindow_SetClientAreaWindow,
@@ -21436,6 +21451,7 @@ static const ni::sMethodDef* Methods_iOSWindow[] = {
 	&iOSWindow_IsParentWindow,
 	&iOSWindow_AttachGraphicsAPI,
 	&iOSWindow_GetGraphicsAPI,
+	&iOSWindow_SetTaskbarAppID,
 
 };
 

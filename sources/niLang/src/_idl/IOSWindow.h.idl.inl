@@ -454,6 +454,15 @@ IDLC_METH_BEGIN(ni,iOSWindow,GetGraphicsAPI,0)
 	IDLC_RET_FROM_INTF(iOSGraphicsAPI,_Ret)
 IDLC_METH_END(ni,iOSWindow,GetGraphicsAPI,0)
 
+/** ni -> iOSWindow::SetTaskbarAppID/1 **/
+IDLC_METH_BEGIN(ni,iOSWindow,SetTaskbarAppID,1)
+	IDLC_DECL_VAR(iHString*,ahspID)
+	IDLC_BUF_TO_INTF(iHString,ahspID)
+	IDLC_DECL_RETVAR(tBool,_Ret)
+	IDLC_METH_CALL(_Ret,ni,iOSWindow,SetTaskbarAppID,1,(ahspID))
+	IDLC_RET_FROM_BASE(ni::eType_I8,_Ret)
+IDLC_METH_END(ni,iOSWindow,SetTaskbarAppID,1)
+
 IDLC_END_INTF(ni,iOSWindow)
 
 /** interface : iOSWindowGeneric **/

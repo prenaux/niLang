@@ -772,6 +772,14 @@ struct iOSWindow : public iUnknown {
   //! Get the graphics API attached to the window.
   //! {Property}
   virtual iOSGraphicsAPI* __stdcall GetGraphicsAPI() const = 0;
+
+  //! Set a unique taskbar ID for this window.
+  //! \remark This allows controlling how windows are grouped in the Windows
+  //!  taskbar. Different IDs will create separate taskbar buttons for
+  //!  windows of the same application.
+  //! \param ahspID String ID that identifies this window in the taskbar
+  //! \return eTrue if successful, eFalse if failed
+  virtual tBool __stdcall SetTaskbarAppID(iHString* ahspID) = 0;
 };
 
 //! Generic window.

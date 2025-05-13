@@ -19641,6 +19641,21 @@
 				<comments desc="Get the graphics API attached to the window. "/>
 				<return type="iOSGraphicsAPI *" typec="iOSGraphicsAPI*" typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
 			</method>
+			<method java_name="setTaskbarAppID" name="SetTaskbarAppID" num_parameters="1">
+				<comments desc="Set a unique taskbar ID for this window " return="eTrue if successful, eFalse if failed ">
+					<remark text="This allows controlling how windows are grouped in the Windows taskbar. "/>
+					<remark text="Different IDs will create separate taskbar buttons for windows of the same application. "/>
+					<remark text="This must be called after window creation but before the window is shown. "/>
+					<params text="ahspID String ID that identifies this window in the taskbar "/>
+				</comments>
+				<return type="tBool" typec="tBool" typei="ni::eType_I8"/>
+				<parameter
+					last="1"
+					name="ahspID"
+					type="iHString *"
+					typec="iHString*"
+					typei="ni::eType_IUnknown|ni::eTypeFlags_Pointer"/>
+			</method>
 		</interface>
 		<interface name="iOSWindowGeneric" uuid1="18265B02-E973-45F3-BC74-0DF8D0608EA2" uuid2="0x18265b02,0xe973,0x45f3,0xbc,0x74,0x0d,0xf8,0xd0,0x60,0x8e,0xa2">
 			<comments desc="Generic window. "/>

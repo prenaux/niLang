@@ -6,6 +6,7 @@
   #include "API/niLang/IOSWindow.h"
   #include <niLang/IFile.h>
   #include <niLang/ILang.h>
+  #include "API/niLang/STL/scope_guard.h"
 
   #include "API/niLang/Platforms/Win32/Win32_Redef.h"
   #include "API/niLang/Platforms/Win32/Win32_File.h"
@@ -13,6 +14,14 @@
   #include "API/niLang/Platforms/Win32/Win32_DC.h"
   #include <commdlg.h>
   #include <shellapi.h>
+  #include <propkey.h>     // For PKEY_AppUserModel_ID
+  #include <propvarutil.h> // For InitPropVariantFromStringW, PropVariantClear
+
+// Link with Propsys.lib
+//#pragma comment(lib, "Propsys.lib")
+
+// Hidden because of WIN32_LEAN_AND_MEAN?
+SHSTDAPI SHGetPropertyStoreForWindow(HWND hwnd, REFIID riid, void** ppv);
 
   // #define USE_IDROPTARGET
   #ifdef USE_IDROPTARGET
@@ -681,23 +690,27 @@ static tIntPtr __stdcall _GetLastErrorCode()
   }
   return _nLastErr;
 }
+static cString _FormatErrorMessage(HRESULT hr)
+{
+  LPVOID lpMsgBuf = NULL;
+  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                  FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, (DWORD)hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&lpMsgBuf, 0, NULL);
+  cString strErr = (LPCTSTR)lpMsgBuf;
+  LocalFree(lpMsgBuf);
+  return strErr;
+}
 static const achar* _GetLastErrorMessage()
 {
   tIntPtr currErr = ::GetLastError();
   if (currErr != _nLastErr || _strLastErr.IsEmpty()) {
     if (currErr == S_OK) {
       _nLastErr = currErr;
-      _strLastErr = _A("OK");
+      _strLastErr = "OK";
     }
     else {
-      LPVOID lpMsgBuf = NULL;
-      FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-          FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, (DWORD)currErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMsgBuf, 0, NULL);
-      _strLastErr = (LPCTSTR)lpMsgBuf;
-      LocalFree(lpMsgBuf);
+      _strLastErr = _FormatErrorMessage(currErr);
     }
   }
   return _strLastErr.Chars();
@@ -2211,6 +2224,62 @@ class cOSWindowWindows
     return mptrAttachedGraphicsAPI;
   }
 
+  ///////////////////////////////////////////////
+  tBool __stdcall SetTaskbarAppID(iHString* ahspID) niImpl
+  {
+    niCheck(ahspID != nullptr && ahspID->IsOK(), eFalse);
+    niCheck(mHandle != NULL, eFalse);
+
+    IPropertyStore* pps = nullptr;
+    HRESULT hr = SHGetPropertyStoreForWindow(mHandle, IID_PPV_ARGS(&pps));
+
+    if (FAILED(hr)) {
+      niWarning(niFmt("SHGetPropertyStoreForWindow failed: %s (0x%08X)",
+                      _FormatErrorMessage(hr), static_cast<unsigned int>(hr)));
+      return eFalse;
+    }
+    niDefer
+    {
+      if (pps)
+        pps->Release();
+    };
+
+    cString strID_utf8 = ahspID->GetChars();
+    ni::Windows::UTF16Buffer utf16AppIDBuffer;
+    niWin32_UTF8ToUTF16(
+      utf16AppIDBuffer,
+      strID_utf8.Chars()); // Assumes null-terminated UTF-16 result
+    LPCWSTR wideAppIDString = utf16AppIDBuffer.data();
+
+    if (!wideAppIDString || wideAppIDString[0] == L'\0') {
+      niWarning("Converted AppUserModelID string is null or empty.");
+      return eFalse;
+    }
+
+    PROPVARIANT pv;
+    PropVariantInit(&pv);
+    niDefer
+    {
+      PropVariantClear(&pv);
+    }; // Ensures pv is always cleared
+
+    hr = InitPropVariantFromString(wideAppIDString, &pv);
+    if (FAILED(hr)) {
+      niWarning(niFmt("InitPropVariantFromString failed: %s (0x%08X)",
+                      _FormatErrorMessage(hr), static_cast<unsigned int>(hr)));
+      return eFalse;
+    }
+
+    hr = pps->SetValue(PKEY_AppUserModel_ID, pv);
+    if (FAILED(hr)) {
+      niWarning(niFmt("Failed to set PKEY_AppUserModel_ID: %s (0x%08X)",
+                      _FormatErrorMessage(hr), static_cast<unsigned int>(hr)));
+      return eFalse;
+    }
+
+    return eTrue;
+  }
+
  public:
   Ptr<iOSGraphicsAPI> mptrAttachedGraphicsAPI;
   Ptr<iOSWindow> mptrParentWindow;
@@ -3351,7 +3420,8 @@ struct sOpenFileNameDialog {
     }
     // Convert forward slashes to backslashes
     for (wchar_t* p = wInitDir.data(); *p; ++p) {
-      if (*p == L'/') *p = L'\\';
+      if (*p == L'/')
+        *p = L'\\';
     }
     ofn.lpstrInitialDir = wInitDir.data();
   }

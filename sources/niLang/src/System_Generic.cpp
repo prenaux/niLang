@@ -466,6 +466,12 @@ class cOSWindowGeneric
     return mptrAttachedGraphicsAPI;
   }
 
+  ///////////////////////////////////////////////
+  tBool __stdcall SetTaskbarAppID(iHString* ahspID)
+  {
+    return eTrue;
+  }
+
  private:
   Ptr<iOSGraphicsAPI> mptrAttachedGraphicsAPI;
   Ptr<tMessageHandlerSinkLst> mptrMT;

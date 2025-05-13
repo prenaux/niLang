@@ -100,7 +100,7 @@ class DC {
   {
     UTF16Buffer wString;
     niWin32_UTF8ToUTF16(wString, pszString);
-    return niWin32API(DrawText)(mhDC, wString.begin(), -1, rcBounds, iFormat);
+    return niWin32API(DrawText)(mhDC, wString.data(), -1, rcBounds, iFormat);
   };
 
   BOOL TextOut(const TCHAR* pszString, UINT iX, UINT iY)

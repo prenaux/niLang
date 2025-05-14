@@ -1117,7 +1117,7 @@ class cThreadedWindow : public ni::ImplRC<ni::iUnknown> {
   {
     // Post a message so that GetMessage returns if its waiting.
     niWin32API(PostMessage)(mhWnd, WM_DESTROY, 0, 0);
-    mThread->Join(eInvalidHandle);
+    mThread->Join(5000);
   }
 
   static tIntPtr _ThreadProc(void* apData)
